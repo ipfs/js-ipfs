@@ -1,56 +1,27 @@
 'use strict'
 
-const assert = require('assert')
-const mortice = require('mortice')
-const nanoid = require('nanoid')
 const pull = require('pull-stream/pull')
 const pullThrough = require('pull-stream/throughs/through')
 const pullAsyncMap = require('pull-stream/throughs/async-map')
 const EventEmitter = require('events')
+const Mutex = require('../../../utils/mutex')
 const log = require('debug')('ipfs:gc:lock')
 
 class GCLock extends EventEmitter {
   constructor (repoOwner) {
     super()
 
-    // Ensure that we get a different mutex for each instance of GCLock
-    // (There should only be one GCLock instance per IPFS instance, but
-    // there may be multiple IPFS instances, eg in unit tests)
-    const randId = nanoid()
-    this.mutex = mortice(randId, {
-      singleProcess: repoOwner
-    })
-
-    this.lockId = 0
+    this.mutex = new Mutex(repoOwner, { log })
   }
 
   readLock (lockedFn, cb) {
-    return this.lock('readLock', lockedFn, cb)
+    this.emit(`readLock request`)
+    return this.mutex.readLock(lockedFn, cb)
   }
 
   writeLock (lockedFn, cb) {
-    return this.lock('writeLock', lockedFn, cb)
-  }
-
-  lock (type, lockedFn, cb) {
-    assert(typeof lockedFn === 'function', `first argument to GCLock.${type} must be a function`)
-    assert(typeof cb === 'function', `second argument to GCLock.${type} must be a callback function`)
-
-    const lockId = this.lockId++
-    log(`[${lockId}] ${type} requested`)
-    this.emit(`${type} request`, lockId)
-    const locked = () => new Promise((resolve, reject) => {
-      this.emit(`${type} start`, lockId)
-      log(`[${lockId}] ${type} started`)
-      lockedFn((err, res) => {
-        this.emit(`${type} release`, lockId)
-        log(`[${lockId}] ${type} released`)
-        err ? reject(err) : resolve(res)
-      })
-    })
-
-    const lock = this.mutex[type](locked)
-    return lock.then(res => cb(null, res), cb)
+    this.emit(`writeLock request`)
+    return this.mutex.writeLock(lockedFn, cb)
   }
 
   pullReadLock (lockedPullFn) {
@@ -73,51 +44,29 @@ class GCLock extends EventEmitter {
 }
 
 class PullLocker {
-  constructor (emitter, mutex, type, lockId) {
+  constructor (emitter, mutex, type) {
     this.emitter = emitter
     this.mutex = mutex
     this.type = type
-    this.lockId = lockId
 
-    // This Promise resolves when the mutex gives us permission to start
-    // running the locked piece of code
-    this.lockReady = new Promise((resolve) => {
-      this.lockReadyResolver = resolve
-    })
+    // The function to call to release the lock. It is set when the lock is taken
+    this.releaseLock = null
   }
 
-  // Returns a Promise that resolves when the locked piece of code completes
-  _locked () {
-    return new Promise((resolve, reject) => {
-      this.releaseLock = (err) => err ? reject(err) : resolve()
-
-      log(`[${this.lockId}] ${this.type} (pull) started`)
-      this.emitter.emit(`${this.type} start`, this.lockId)
-
-      // The locked piece of code is ready to start, so resolve the
-      // this.lockReady Promise (created in the constructor)
-      this.lockReadyResolver()
-    })
-  }
-
-  // Requests a lock and then waits for the mutex to give us permission to run
-  // the locked piece of code
   take () {
     return pull(
       pullAsyncMap((i, cb) => {
-        if (!this.lock) {
-          log(`[${this.lockId}] ${this.type} (pull) requested`)
-          this.emitter.emit(`${this.type} request`, this.lockId)
-          // Request the lock
-          this.lock = this.mutex[this.type](() => this._locked())
-          // If there is an error, it gets passed through to the caller using
-          // pull streams, so here we just catch the error and ignore it so
-          // that there isn't an UnhandledPromiseRejectionWarning
-          this.lock.catch(() => {})
+        if (this.lockRequested) {
+          return cb(null, i)
         }
+        this.lockRequested = true
 
-        // Wait for the mutex to give us permission
-        this.lockReady.then(() => cb(null, i))
+        this.emitter.emit(`${this.type} request`)
+
+        this.mutex[this.type]((releaseLock) => {
+          cb(null, i)
+          this.releaseLock = releaseLock
+        })
       })
     )
   }
@@ -125,8 +74,6 @@ class PullLocker {
   // Releases the lock
   release () {
     return pullThrough(null, (err) => {
-      log(`[${this.lockId}] ${this.type} (pull) released`)
-      this.emitter.emit(`${this.type} release`, this.lockId)
       this.releaseLock(err)
     })
   }
