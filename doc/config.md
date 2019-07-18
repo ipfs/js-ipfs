@@ -5,13 +5,22 @@ The js-ipfs config file is a JSON document located in the root directory of the 
 ## Table of Contents
 
 - [`Addresses`](#addresses)
+  - API
+  - Delegates
+  - Gateway
+  - Swarm
 - [`Bootstrap`](#bootstrap)
 - [`Datastore`](#datastore)
+  - [`Spec`](#spec)
 - [`Discovery`](#discovery)
+  - MDNS
+  - webRTCStar
 - [`Identity`](#identity)
+  - [`PeerID`](#peerid)
+  - [`PrivKey`](#privkey)
 - [`Keychain`](#keychain)
 - [`Swarm`](#swarm)
-
+  - [`ConnMgr`](#connmgr)
 
 ## `Addresses`
 Contains information about various listener addresses to be used by this node.
@@ -59,40 +68,40 @@ initiate a connection to the network.
 Contains information related to the construction and operation of the on-disk
 storage system.
 
-- `Spec`
-	Spec defines the structure of the IPFS datastore. It is a composable structure, where each datastore is represented by a JSON object. Datastores can wrap other datastores to provide extra functionality (e.g. metrics, logging, or caching).
+#### Spec
+Spec defines the structure of the IPFS datastore. It is a composable structure, where each datastore is represented by a JSON object. Datastores can wrap other datastores to provide extra functionality (e.g. metrics, logging, or caching).
 
-	This can be changed manually, however, if you make any changes that require a different on-disk structure, you will need to run the [ipfs-ds-convert tool](https://github.com/ipfs/ipfs-ds-convert) to migrate data into the new structures.
+This can be changed manually, however, if you make any changes that require a different on-disk structure, you will need to run the [ipfs-ds-convert tool](https://github.com/ipfs/ipfs-ds-convert) to migrate data into the new structures.
 
-	Default:
-	```
+Default:
+```json
+{
+	"mounts": [
 	{
-		"mounts": [
-		{
-			"child": {
-			"path": "blocks",
-			"shardFunc": "/repo/flatfs/shard/v1/next-to-last/2",
-			"sync": true,
-			"type": "flatfs"
-			},
-			"mountpoint": "/blocks",
-			"prefix": "flatfs.datastore",
-			"type": "measure"
+		"child": {
+		"path": "blocks",
+		"shardFunc": "/repo/flatfs/shard/v1/next-to-last/2",
+		"sync": true,
+		"type": "flatfs"
 		},
-		{
-			"child": {
-			"compression": "none",
-			"path": "datastore",
-			"type": "levelds"
-			},
-			"mountpoint": "/",
-			"prefix": "leveldb.datastore",
-			"type": "measure"
-		}
-		],
-		"type": "mount"
+		"mountpoint": "/blocks",
+		"prefix": "flatfs.datastore",
+		"type": "measure"
+	},
+	{
+		"child": {
+		"compression": "none",
+		"path": "datastore",
+		"type": "levelds"
+		},
+		"mountpoint": "/",
+		"prefix": "leveldb.datastore",
+		"type": "measure"
 	}
-	```
+	],
+	"type": "mount"
+}
+```
 
 ## `Discovery`
 Contains options for configuring IPFS node discovery mechanisms.
@@ -124,21 +133,34 @@ Contains options for configuring IPFS node discovery mechanisms.
 
 ## `Identity`
 
-- `PeerID`
-	The unique PKI identity label for this configs peer. Set on init and never read, its merely here for convenience. IPFS will always generate the peerID from its keypair at runtime.
+#### PeerID
+The unique PKI identity label for this configs peer. Set on init and never read, its merely here for convenience. IPFS will always generate the peerID from its keypair at runtime.
 
-- `PrivKey`
-	The base64 encoded protobuf describing (and containing) the nodes private key.
+#### PrivKey
+The base64 encoded protobuf describing (and containing) the nodes private key.
 
 ## `Keychain`
+We can customize the key management and criptographically protected messages by changing the Keychain options. Those options are used for generating the derived encryption key (`DEK`). The `DEK` object, along with the passPhrase, is the input to a PBKDF2 function.
 
+Default:
+```json
+{
+  "dek": {
+    "keyLength": 512/8,
+	"iterationCount": 1000,
+	"salt": "at least 16 characters long",
+	"hash": "sha2-512"
+  }
+}
+```
 
+You can check the [parameter choice for pbkdf2](https://cryptosense.com/parameter-choice-for-pbkdf2/) for more information.
 
 ## `Swarm`
 
 Options for configuring the swarm.
 
-### `ConnMgr`
+#### ConnMgr
 
 The connection manager determines which and how many connections to keep and can be configured to keep.
 
@@ -159,7 +181,6 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
 2. Once `HighWater` is reached, it closes connections until `LowWater` is reached.
 
 **Example:**
-
 
 ```json
 {
