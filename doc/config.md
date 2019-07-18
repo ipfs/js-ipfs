@@ -23,6 +23,16 @@ Contains information about various listener addresses to be used by this node.
 
 	Default: `/ip4/127.0.0.1/tcp/5002`
 
+- `Delegates`
+	Delegate peers are used to find peers and retrieve content from the network on your behalf.
+
+	Array of [Multiaddr](https://github.com/multiformats/multiaddr/) describing which addresses to use as delegate nodes, in order to create a delegate routers.
+
+	Default:
+	```json
+	[]
+	```
+
 - `Gateway`
 	A gateway is exposed by the IPFS daemon, which allows an easy way to access content from IPFS, using an IPFS path.
 
