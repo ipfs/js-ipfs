@@ -35,12 +35,8 @@ class Mutex {
   * @param {function(err, res)} [cb] A function that is called when the locked function completes
   * @returns {void}
   */
-  _lock (type, lockedFn, cb) {
+  _lock (type, lockedFn, cb = noop) {
     assert(typeof lockedFn === 'function', `first argument to CBLock.${type}() must be a function`)
-
-    if (typeof cb === 'undefined') {
-      cb = noop
-    }
     assert(typeof cb === 'function', `second argument to CBLock.${type}() must be a callback function`)
 
     const lockId = this.lockId++
