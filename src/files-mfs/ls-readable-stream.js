@@ -69,7 +69,7 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    it('should ls -l directory', (done) => {
+    it('should ls directory with long option', (done) => {
       const testDir = `/test-${hat()}`
 
       series([
@@ -78,7 +78,7 @@ module.exports = (createCommon, options) => {
       ], (err) => {
         expect(err).to.not.exist()
 
-        const stream = ipfs.files.lsReadableStream(testDir, { l: true })
+        const stream = ipfs.files.lsReadableStream(testDir, { long: true })
 
         let entries = []
 

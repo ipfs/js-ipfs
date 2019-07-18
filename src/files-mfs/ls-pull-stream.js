@@ -71,7 +71,7 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    it('should ls -l directory', (done) => {
+    it('should ls directory with long option', (done) => {
       const testDir = `/test-${hat()}`
 
       series([
@@ -81,7 +81,7 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
 
         pull(
-          ipfs.files.lsPullStream(testDir, { l: true }),
+          ipfs.files.lsPullStream(testDir, { long: true }),
           collect((err, entries) => {
             expect(err).to.not.exist()
             expect(entries.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
