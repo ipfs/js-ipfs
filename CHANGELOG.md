@@ -1,3 +1,13 @@
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.11.7...v0.12.0) (2019-07-18)
+
+
+### Features
+
+* support -p flag on cp ([#56](https://github.com/ipfs/js-ipfs-mfs/issues/56)) ([0743d90](https://github.com/ipfs/js-ipfs-mfs/commit/0743d90))
+
+
+
 <a name="0.11.7"></a>
 ## [0.11.7](https://github.com/ipfs/js-ipfs-mfs/compare/v0.11.6...v0.11.7) (2019-07-12)
 
