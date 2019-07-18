@@ -12,6 +12,28 @@ const pEvent = require('p-event')
 const env = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
 
+// We need to detect when a readLock or writeLock is requested for the tests
+// so we override the Mutex class to emit an event
+const EventEmitter = require('events')
+const Mutex = require('../../src/utils/mutex')
+
+class MutexEmitter extends Mutex {
+  constructor (repoOwner) {
+    super(repoOwner)
+    this.emitter = new EventEmitter()
+  }
+
+  readLock (lockedFn, cb) {
+    this.emitter.emit('readLock request')
+    return super.readLock(lockedFn, cb)
+  }
+
+  writeLock (lockedFn, cb) {
+    this.emitter.emit('writeLock request')
+    return super.writeLock(lockedFn, cb)
+  }
+}
+
 describe('gc', function () {
   const fixtures = [{
     path: 'test/my/path1',
@@ -29,6 +51,7 @@ describe('gc', function () {
 
   let ipfsd
   let ipfs
+  let lockEmitter
 
   before(function (done) {
     this.timeout(40 * 1000)
@@ -47,6 +70,11 @@ describe('gc', function () {
 
       ipfsd = node
       ipfs = ipfsd.api
+
+      // Replace the Mutex with one that emits events when a readLock or
+      // writeLock is requested (needed in the tests below)
+      ipfs._gcLock.mutex = new MutexEmitter(ipfs._options.repoOwner)
+      lockEmitter = ipfs._gcLock.mutex.emitter
 
       done()
     })
@@ -79,13 +107,13 @@ describe('gc', function () {
       it(`garbage collection should wait for pending ${test.name} to finish`, async () => {
         // Add blocks to IPFS
         // Note: add operation will take a read lock
-        const addLockRequested = pEvent(ipfs._gcLock, 'readLock request')
+        const addLockRequested = pEvent(lockEmitter, 'readLock request')
         const add1 = test.add1()
 
         // Once add lock has been requested, start GC
         await addLockRequested
         // Note: GC will take a write lock
-        const gcStarted = pEvent(ipfs._gcLock, 'writeLock request')
+        const gcStarted = pEvent(lockEmitter, 'writeLock request')
         const gc = ipfs.repo.gc()
 
         // Once GC has started, start second add
@@ -109,13 +137,13 @@ describe('gc', function () {
     it('garbage collection should wait for pending add + pin to finish', async () => {
       // Add blocks to IPFS
       // Note: add operation will take a read lock
-      const addLockRequested = pEvent(ipfs._gcLock, 'readLock request')
+      const addLockRequested = pEvent(lockEmitter, 'readLock request')
       const add1 = ipfs.add(fixtures[2], { pin: true })
 
       // Once add lock has been requested, start GC
       await addLockRequested
       // Note: GC will take a write lock
-      const gcStarted = pEvent(ipfs._gcLock, 'writeLock request')
+      const gcStarted = pEvent(lockEmitter, 'writeLock request')
       const gc = ipfs.repo.gc()
 
       // Once GC has started, start second add
@@ -142,13 +170,13 @@ describe('gc', function () {
 
       // Remove first block from IPFS
       // Note: block rm will take a write lock
-      const rmLockRequested = pEvent(ipfs._gcLock, 'writeLock request')
+      const rmLockRequested = pEvent(lockEmitter, 'writeLock request')
       const rm1 = ipfs.block.rm(cid1)
 
       // Once rm lock has been requested, start GC
       await rmLockRequested
       // Note: GC will take a write lock
-      const gcStarted = pEvent(ipfs._gcLock, 'writeLock request')
+      const gcStarted = pEvent(lockEmitter, 'writeLock request')
       const gc = ipfs.repo.gc()
 
       // Once GC has started, start second rm
@@ -185,7 +213,7 @@ describe('gc', function () {
 
       // Pin first block
       // Note: pin add will take a read lock
-      const pinLockRequested = pEvent(ipfs._gcLock, 'readLock request')
+      const pinLockRequested = pEvent(lockEmitter, 'readLock request')
       const pin1 = ipfs.pin.add(cid1)
 
       // Once pin lock has been requested, start GC
@@ -222,13 +250,13 @@ describe('gc', function () {
 
       // Unpin first block
       // Note: pin rm will take a read lock
-      const pinLockRequested = pEvent(ipfs._gcLock, 'readLock request')
+      const pinLockRequested = pEvent(lockEmitter, 'readLock request')
       const pinRm1 = ipfs.pin.rm(cid1)
 
       // Once pin lock has been requested, start GC
       await pinLockRequested
       // Note: GC will take a write lock
-      const gcStarted = pEvent(ipfs._gcLock, 'writeLock request')
+      const gcStarted = pEvent(lockEmitter, 'writeLock request')
       const gc = ipfs.repo.gc()
 
       // Once GC has started, start second pin rm

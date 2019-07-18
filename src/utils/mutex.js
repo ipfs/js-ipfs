@@ -8,7 +8,7 @@ const noop = () => {}
 
 // Wrap mortice to present a callback interface
 class Mutex {
-  constructor (repoOwner, options) {
+  constructor (repoOwner, options = {}) {
     // Ensure that we get a different mutex for each instance of the lock
     const randId = nanoid()
     this.mutex = mortice(randId, {
