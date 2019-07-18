@@ -1,6 +1,7 @@
 'use strict'
 
 const mkdir = require('./mkdir')
+const stat = require('./stat')
 const log = require('debug')('ipfs:mfs:cp')
 const errCode = require('err-code')
 const updateTree = require('./utils/update-tree')
@@ -56,12 +57,31 @@ module.exports = (context) => {
       log('Destination does not exist')
 
       if (sources.length > 1) {
+        // copying multiple files to one location, destination will be a directory
         if (!options.parents) {
           throw errCode(new Error('destination did not exist, pass -p to create intermediate directories'), 'ERR_INVALID_PARAMS')
         }
 
         await mkdir(context)(destination.path, options)
         destination = await toMfsPath(context, destination.path)
+      } else if (destination.parts.length > 1) {
+        // copying to a folder, create it if necessary
+        const parentFolder = `/${destination.parts.slice(0, -1).join('/')}`
+
+        try {
+          await stat(context)(parentFolder, options)
+        } catch (err) {
+          if (err.code !== 'ERR_NOT_FOUND') {
+            throw err
+          }
+
+          if (!options.parents) {
+            throw errCode(new Error('destination did not exist, pass -p to create intermediate directories'), 'ERR_INVALID_PARAMS')
+          }
+
+          await mkdir(context)(parentFolder, options)
+          destination = await toMfsPath(context, destination.path)
+        }
       }
     }
 
