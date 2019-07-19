@@ -195,7 +195,7 @@ class PinManager {
         cb => this.pinset.loadSet(pinRoot.value, PinTypes.direct, cb)
       ], (err, keys) => {
         if (err) { return callback(err) }
-        const [ rKeys, dKeys ] = keys
+        const [rKeys, dKeys] = keys
 
         this.directPins = new Set(dKeys.map(toB58String))
         this.recursivePins = new Set(rKeys.map(toB58String))

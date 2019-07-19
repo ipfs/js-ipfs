@@ -58,7 +58,7 @@ describe('gc', function () {
 
     const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
 
-    let config = { Bootstrap: [] }
+    const config = { Bootstrap: [] }
     if (env.isNode) {
       config.Addresses = {
         Swarm: ['/ip4/127.0.0.1/tcp/0']
