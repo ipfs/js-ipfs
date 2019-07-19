@@ -2,16 +2,13 @@
 
 const assert = require('assert')
 const mortice = require('mortice')
-const nanoid = require('nanoid')
 const setImmediate = require('async/setImmediate')
 const noop = () => {}
 
 // Wrap mortice to present a callback interface
 class Mutex {
   constructor (repoOwner, options = {}) {
-    // Ensure that we get a different mutex for each instance of the lock
-    const randId = nanoid()
-    this.mutex = mortice(randId, {
+    this.mutex = mortice(options.morticeId, {
       singleProcess: repoOwner
     })
 
