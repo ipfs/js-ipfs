@@ -1,11 +1,19 @@
 # `js-ipfs` Examples and Tutorials
 
-In this folder, you can find a variety of examples to help you get started in using js-ipfs, in Node.js and in the Browser. Every example has a specific purpose and some of each incorporate a full tutorial that you can follow through, helping you expand your knowledge about IPFS and the Distributed Web in General.
+In this folder and on [ProtoSchool](https://proto.school), you can find a variety of examples to help you get started with js-ipfs, in Node.js and in the Browser. Every example has a specific purpose and some of them incorporate a full tutorial that you can follow through, helping you expand your knowledge about IPFS and the Distributed Web in general.
 
 Let us know if you find any issue or if you want to contribute and add a new tutorial, feel welcome to submit a PR, thank you!
 
 ## Tutorials
 
+### On ProtoSchool
+[ProtoSchool](https://proto.school) offers tutorials on decentralized web protocols, through both [interactive tutorials](https://proto.school/#/tutorials) and [local chapter events](https://proto.school/#/chapters). These IPFS tutorials use js-ipfs in the browser:
+- [Mutable File System (MFS)](https://proto.school/#/mutable-file-system/) - Explores the Files API, which lets you work with files and directories as if you were using a traditional name-based file system.
+- [P2P Data links with content addressing](https://proto.school/#/basics/) - An introductory look at the DAG API.
+- [Blogging on the Decentralized Web](https://proto.school/#/blog/) - An intermediate DAG API challenge using CIDs to link complex data structures.
+
+### In this repo
+Clone this repo to explore these tutorials on your local machine:
 - [Tutorial: IPFS 101, spawn a node and add a file to IPFS](./ipfs-101)
 - [Tutorial: Build a tiny browser app to exchange files between nodes](./exchange-files-in-browser)
 - [Tutorial: Resolve through IPLD graphs with the dag API](./traverse-ipld-graphs)
