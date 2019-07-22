@@ -45,8 +45,8 @@ describe('libp2p customization', function () {
           Enabled: false
         }
       },
-      EXPERIMENTAL: {
-        pubsub: false
+      pubsub: {
+        enabled: false
       }
     }
     datastore = new MemoryStore()
@@ -149,8 +149,8 @@ describe('libp2p customization', function () {
               enabled: true
             }
           },
-          EXPERIMENTAL: {
-            pubsub: false
+          pubsub: {
+            enabled: false
           }
         })
         expect(_libp2p._transport).to.have.length(3)
@@ -177,8 +177,8 @@ describe('libp2p customization', function () {
               }
             }
           },
-          EXPERIMENTAL: {
-            pubsub: true
+          pubsub: {
+            enabled: true
           },
           libp2p: {
             modules: {
@@ -213,9 +213,6 @@ describe('libp2p customization', function () {
             websocketStar: {
               enabled: true
             }
-          },
-          EXPERIMENTAL: {
-            pubsub: true
           }
         })
         expect(_libp2p._transport).to.have.length(1)

@@ -7,6 +7,7 @@ const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
+const GossipSub = require('libp2p-gossipsub')
 const libp2p = require('libp2p')
 const mergeOptions = require('merge-options')
 const multiaddr = require('multiaddr')
@@ -46,7 +47,8 @@ class Node extends libp2p {
           wsstar.discovery,
           Bootstrap
         ],
-        dht: KadDHT
+        dht: KadDHT,
+        pubsub: GossipSub
       },
       config: {
         peerDiscovery: {
@@ -64,8 +66,8 @@ class Node extends libp2p {
         dht: {
           enabled: false
         },
-        EXPERIMENTAL: {
-          pubsub: false
+        pubsub: {
+          enabled: false
         }
       }
     }
