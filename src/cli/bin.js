@@ -49,8 +49,6 @@ cli
     }
   })
   .catch(({ error, argv }) => {
-    console.log('TCL: error', error)
-
     getIpfs = argv.getIpfs
     if (error.message) {
       print(error.message)
