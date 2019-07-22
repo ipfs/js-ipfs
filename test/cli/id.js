@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const parser = require('../../src/cli/parser')
 const YargsPromise = require('yargs-promise')
 
-describe('id', () => {
+describe.only('id', () => {
   const cli = new YargsPromise(parser)
 
   it('get the id', () => {

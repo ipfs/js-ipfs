@@ -16,6 +16,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const id = await ipfs.id()
+      console.log('TCL: handler -> id', id)
 
       return JSON.stringify(id, '', 2)
     })())
