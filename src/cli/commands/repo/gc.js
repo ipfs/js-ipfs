@@ -15,7 +15,7 @@ module.exports = {
     'stream-errors': {
       desc: 'Output individual errors thrown when deleting blocks.',
       type: 'boolean',
-      default: false
+      default: true
     }
   },
 
@@ -25,9 +25,9 @@ module.exports = {
       const res = await ipfs.repo.gc()
       for (const r of res) {
         if (r.err) {
-          streamErrors && print(r.err, true, true)
+          streamErrors && print(r.err.message, true, true)
         } else {
-          print((quiet ? '' : 'Removed ') + r.cid)
+          print((quiet ? '' : 'removed ') + r.cid)
         }
       }
     })())
