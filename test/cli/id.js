@@ -9,8 +9,7 @@ const YargsPromise = require('yargs-promise')
 const clearModule = require('clear-module')
 chai.use(dirtyChai)
 
-// eslint-disable-next-line no-only-tests/no-only-tests
-describe.only('id', () => {
+describe('id', () => {
   let cli
   let cliUtils
   beforeEach(() => {
