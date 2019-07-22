@@ -93,10 +93,7 @@ module.exports = function name (self) {
       const key = options.key || 'self'
 
       if (!self.isOnline()) {
-        const errMsg = utils.OFFLINE_ERROR
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
+        return callback(errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR'))
       }
 
       // TODO: params related logic should be in the core implementation
@@ -162,10 +159,7 @@ module.exports = function name (self) {
 
       // TODO: params related logic should be in the core implementation
       if (offline && options.nocache) {
-        const error = 'cannot specify both offline and nocache'
-
-        log.error(error)
-        return callback(errcode(new Error(error), 'ERR_NOCACHE_AND_OFFLINE'))
+        return callback(errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE'))
       }
 
       // Set node id as name for being resolved, if it is not received
@@ -187,17 +181,15 @@ module.exports = function name (self) {
         }
 
         log.error(err)
-        return callback(errcode(new Error('Invalid IPNS name.'), 'ERR_IPNS_INVALID_NAME'))
+        return callback(errcode(new Error('Invalid IPNS name'), 'ERR_IPNS_INVALID_NAME'))
       }
 
       // multihash is valid lets resolve with IPNS
       // IPNS resolve needs a online daemon
       if (!self.isOnline() && !offline) {
-        const errMsg = utils.OFFLINE_ERROR
-
-        log.error(errMsg)
-        return callback(errcode(errMsg, 'OFFLINE_ERROR'))
+        return callback(errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR'))
       }
+
       self._ipns.resolve(`/${namespace}/${hash}`, options, appendRemainder(callback, remainder))
     }),
     pubsub: namePubsub(self)

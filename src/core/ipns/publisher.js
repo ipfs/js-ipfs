@@ -23,10 +23,7 @@ class IpnsPublisher {
   // publish record with a eol
   publishWithEOL (privKey, value, lifetime, callback) {
     if (!privKey || !privKey.bytes) {
-      const errMsg = `one or more of the provided parameters are not defined`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
+      return callback(errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY'))
     }
 
     PeerId.createFromPrivKey(privKey.bytes, (err, peerId) => {

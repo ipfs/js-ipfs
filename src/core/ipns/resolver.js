@@ -23,10 +23,7 @@ class IpnsResolver {
     }
 
     if (typeof name !== 'string') {
-      const errMsg = `one or more of the provided parameters are not valid`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PARAMETER'))
+      return callback(errcode(new Error('invalid name'), 'ERR_INVALID_NAME'))
     }
 
     options = options || {}
@@ -35,10 +32,7 @@ class IpnsResolver {
     const nameSegments = name.split('/')
 
     if (nameSegments.length !== 3 || nameSegments[0] !== '') {
-      const errMsg = `invalid name syntax for ${name}`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_NAME_SYNTAX'))
+      return callback(errcode(new Error('invalid name'), 'ERR_INVALID_NAME'))
     }
 
     const key = nameSegments[2]
@@ -101,16 +95,11 @@ class IpnsResolver {
 
     this._routing.get(routingKey.toBuffer(), (err, record) => {
       if (err) {
+        log.error(err)
         if (err.code !== 'ERR_NOT_FOUND') {
-          const errMsg = `unexpected error getting the ipns record ${peerId.id}`
-
-          log.error(errMsg)
-          return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD'))
+          return callback(errcode(new Error(`unexpected error getting the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD'))
         }
-        const errMsg = `record requested was not found for ${name} (${routingKey}) in the network`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
+        return callback(errcode(new Error(`record requested was not found for ${name} (${routingKey}) in the network`), 'ERR_NO_RECORD_FOUND'))
       }
 
       // IPNS entry
@@ -118,10 +107,8 @@ class IpnsResolver {
       try {
         ipnsEntry = ipns.unmarshal(record)
       } catch (err) {
-        const errMsg = `found ipns record that we couldn't convert to a value`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_INVALID_RECORD_RECEIVED'))
+        log.error(err)
+        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
       // if the record has a public key validate it
@@ -132,26 +119,19 @@ class IpnsResolver {
       // Otherwise, try to get the public key from routing
       this._routing.get(routingKey.toBuffer(), (err, pubKey) => {
         if (err) {
+          log.error(err)
           if (err.code !== 'ERR_NOT_FOUND') {
-            const errMsg = `unexpected error getting the public key for the ipns record ${peerId.id}`
-
-            log.error(errMsg)
-            return callback(errcode(new Error(errMsg), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY'))
+            return callback(errcode(new Error(`unexpected error getting the public key for the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY'))
           }
-          const errMsg = `public key requested was not found for ${name} (${routingPubKey}) in the network`
-
-          log.error(errMsg)
-          return callback(errcode(new Error(errMsg), 'ERR_NO_RECORD_FOUND'))
+          return callback(errcode(new Error(`public key requested was not found for ${name} (${routingPubKey}) in the network`), 'ERR_NO_RECORD_FOUND'))
         }
 
         try {
           // Insert it into the peer id, in order to be validated by IPNS validator
           peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
         } catch (err) {
-          const errMsg = `found public key record that we couldn't convert to a value`
-
-          log.error(errMsg)
-          return callback(errcode(new Error(errMsg), 'ERR_INVALID_PUB_KEY_RECEIVED'))
+          log.error(err)
+          return callback(errcode(new Error(`found public key record that we couldn't convert to a value`), 'ERR_INVALID_PUB_KEY_RECEIVED'))
         }
 
         this._validateRecord(peerId, ipnsEntry, callback)

@@ -29,10 +29,7 @@ class IpnsRepublisher {
 
   start () {
     if (this._republishHandle) {
-      const errMsg = 'already running'
-
-      log.error(errMsg)
-      throw errcode(new Error(errMsg), 'ERR_REPUBLISH_ALREADY_RUNNING')
+      throw errcode(new Error('already running'), 'ERR_REPUBLISH_ALREADY_RUNNING')
     }
 
     // TODO: this handler should be isolated in another module
@@ -78,10 +75,7 @@ class IpnsRepublisher {
     const republishHandle = this._republishHandle
 
     if (!republishHandle) {
-      const errMsg = 'not running'
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_REPUBLISH_NOT_RUNNING'))
+      return callback(errcode(new Error('not running'), 'ERR_REPUBLISH_NOT_RUNNING'))
     }
 
     this._republishHandle = null
@@ -134,10 +128,7 @@ class IpnsRepublisher {
 
   _republishEntry (privateKey, callback) {
     if (!privateKey || !privateKey.bytes) {
-      const errMsg = `one or more of the provided parameters are not defined`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
+      return callback(errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY'))
     }
 
     waterfall([
@@ -154,29 +145,20 @@ class IpnsRepublisher {
 
   _getPreviousValue (peerId, callback) {
     if (!(PeerId.isPeerId(peerId))) {
-      const errMsg = `peerId received is not valid`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
+      return callback(errcode(new Error('invalid peer ID'), 'ERR_INVALID_PEER_ID'))
     }
 
     this._datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
       // error handling
       // no need to republish
       if (err && err.notFound) {
-        const errMsg = `no previous entry for record with id: ${peerId.id}`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_NO_ENTRY_FOUND'))
+        return callback(errcode(new Error(`no previous entry for record with id: ${peerId.id}`), 'ERR_NO_ENTRY_FOUND'))
       } else if (err) {
         return callback(err)
       }
 
       if (!Buffer.isBuffer(dsVal)) {
-        const errMsg = `found ipns record that we couldn't process`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
+        return callback(errcode(new Error("found ipns record that we couldn't process"), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       // unmarshal data
@@ -184,10 +166,8 @@ class IpnsRepublisher {
       try {
         record = ipns.unmarshal(dsVal)
       } catch (err) {
-        const errMsg = `found ipns record that we couldn't convert to a value`
-
-        log.error(errMsg)
-        return callback(errcode(new Error(errMsg), 'ERR_INVALID_IPNS_RECORD'))
+        log.error(err)
+        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       callback(null, record.value)

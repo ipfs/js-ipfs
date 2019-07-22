@@ -69,10 +69,7 @@ class IpnsPubsubDatastore {
     const subscriber = this._subscriptions[key]
 
     if (!subscriber) {
-      const errMsg = `key ${key} does not correspond to a subscription`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
+      return callback(errcode(new Error(`key ${key} does not correspond to a subscription`), 'ERR_INVALID_KEY'))
     }
 
     let keys
@@ -105,10 +102,7 @@ class IpnsPubsubDatastore {
    */
   cancel (name, callback) {
     if (typeof name !== 'string') {
-      const errMsg = `received subscription name is not valid`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_SUBSCRIPTION_NAME'))
+      return callback(errcode(new Error('invalid subscription name'), 'ERR_INVALID_SUBSCRIPTION_NAME'))
     }
 
     // Trim /ipns/ prefix from the name
