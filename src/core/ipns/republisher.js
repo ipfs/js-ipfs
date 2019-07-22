@@ -29,7 +29,7 @@ class IpnsRepublisher {
 
   start () {
     if (this._republishHandle) {
-      throw errcode(new Error('already running'), 'ERR_REPUBLISH_ALREADY_RUNNING')
+      throw errcode(new Error('republisher is already running'), 'ERR_REPUBLISH_ALREADY_RUNNING')
     }
 
     // TODO: this handler should be isolated in another module
