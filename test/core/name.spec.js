@@ -217,7 +217,7 @@ describe('name', function () {
     it('should error to publish if does not receive private key', function (done) {
       node._ipns.publisher.publish(null, ipfsRef, (err) => {
         expect(err).to.exist()
-        expect(err.code).to.equal('ERR_UNDEFINED_PARAMETER')
+        expect(err.code).to.equal('ERR_INVALID_PRIVATE_KEY')
         done()
       })
     })
@@ -286,7 +286,7 @@ describe('name', function () {
     it('should error to resolve if the received name is not a string', function (done) {
       node._ipns.resolver.resolve(false, (err) => {
         expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_PARAMETER')
+        expect(err.code).to.equal('ERR_INVALID_NAME')
         done()
       })
     })
@@ -294,7 +294,7 @@ describe('name', function () {
     it('should error to resolve if receives an invalid ipns path', function (done) {
       node._ipns.resolver.resolve('ipns/<cid>', (err) => {
         expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_NAME_SYNTAX')
+        expect(err.code).to.equal('ERR_INVALID_NAME')
         done()
       })
     })
