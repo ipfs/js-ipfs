@@ -158,9 +158,6 @@ class PinManager {
         })
       },
 
-      // hack for CLI tests
-      cb => this.repo.closed ? this.repo.open(cb) : cb(null, null),
-
       // save root to datastore under a consistent key
       cb => this.repo.datastore.put(PIN_DS_KEY, root.multihash, cb)
     ], (err, res) => {
@@ -172,9 +169,7 @@ class PinManager {
 
   load (callback) {
     waterfall([
-      // hack for CLI tests
-      (cb) => this.repo.closed ? this.repo.datastore.open(cb) : cb(null, null),
-      (_, cb) => this.repo.datastore.has(PIN_DS_KEY, cb),
+      (cb) => this.repo.datastore.has(PIN_DS_KEY, cb),
       (has, cb) => has ? cb() : cb(new Error('No pins to load')),
       (cb) => this.repo.datastore.get(PIN_DS_KEY, cb),
       (mh, cb) => {
