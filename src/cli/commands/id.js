@@ -16,6 +16,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const id = await ipfs.id()
+      // eslint-disable-next-line no-console
       console.log('TCL: handler -> id', id)
 
       return JSON.stringify(id, '', 2)

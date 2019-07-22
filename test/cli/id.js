@@ -5,6 +5,7 @@ const expect = require('chai').expect
 const parser = require('../../src/cli/parser')
 const YargsPromise = require('yargs-promise')
 
+// eslint-disable-next-line no-only-tests/no-only-tests
 describe.only('id', () => {
   const cli = new YargsPromise(parser)
 
