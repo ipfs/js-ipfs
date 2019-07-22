@@ -3,35 +3,34 @@
 /* eslint-disable no-console */
 'use strict'
 
-process.on('uncaughtException', (err) => {
-  console.info(err)
-
-  throw err
-})
-
-process.on('unhandledRejection', (err) => {
-  console.info(err)
-
-  throw err
-})
-
 const semver = require('semver')
+const YargsPromise = require('yargs-promise')
+const updateNotifier = require('update-notifier')
+const debug = require('debug')('ipfs:cli')
+const parser = require('./parser')
+const commandAlias = require('./command-alias')
+const { print } = require('./utils')
 const pkg = require('../../package.json')
 
+// Handle any uncaught error
+process.once('uncaughtException', (err, origin) => {
+  if (origin === 'uncaughtException') {
+    print(err.message)
+    debug(err)
+  }
+})
+process.once('unhandledRejection', (err) => {
+  print(err.message)
+  debug(err)
+})
+
+// Check for node version
 if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
   console.error(`Please update your Node.js version to ${pkg.engines.node}`)
   process.exit(1)
 }
 
-const YargsPromise = require('yargs-promise')
-const updateNotifier = require('update-notifier')
-const onExit = require('async-exit-hook')
-const utils = require('./utils')
-const print = utils.print
-const debug = require('debug')('ipfs:cli')
-const parser = require('./parser')
-const commandAlias = require('./command-alias')
-
+// Check if an update is available and notify
 const oneWeek = 1000 * 60 * 60 * 24 * 7
 updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
@@ -50,30 +49,21 @@ cli
     }
   })
   .catch(({ error, argv }) => {
+    console.log('TCL: error', error)
+
     getIpfs = argv.getIpfs
-    if (error) {
-      throw error
+    if (error.message) {
+      print(error.message)
+      debug(error)
+    } else {
+      print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
+      debug(error)
     }
-    throw new Error('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
+    process.exit(1)
   })
-
-onExit(cb => {
-  // If an IPFS instance was used in the handler then clean it up here
-  if (getIpfs && getIpfs.instance) {
-    const cleanup = getIpfs.rest[0]
-
-    return cleanup()
-      .then(() => cb())
-      .catch(err => {
-        print(err.message)
-        debug(err)
-        cb()
-      })
-  }
-  cb()
-})
-
-onExit.unhandledRejectionHandler(err => {
-  print(err.message)
-  debug(err)
-})
+  .finally(() => {
+    if (getIpfs && getIpfs.instance) {
+      const cleanup = getIpfs.rest[0]
+      return cleanup()
+    }
+  })
