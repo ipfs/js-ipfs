@@ -135,7 +135,7 @@
     "libp2p-webrtc-star": "~0.16.0",
     "libp2p-websocket-star-multi": "~0.4.3",
     "libp2p-websockets": "~0.12.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "mafmt": "^6.0.2",
     "merge-options": "^1.0.1",
     "mime-types": "^2.1.21",
