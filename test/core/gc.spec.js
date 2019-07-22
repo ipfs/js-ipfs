@@ -193,7 +193,7 @@ describe('gc', function () {
         expect(err.code).eql('ERR_DB_DELETE_FAILED')
       }
 
-      // Confirm second second block has been removed
+      // Confirm second block has been removed
       const localRefs = (await ipfs.refs.local()).map(r => r.ref)
       expect(localRefs).not.includes(cid2.toString())
 
