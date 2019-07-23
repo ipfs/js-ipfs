@@ -21,9 +21,7 @@ const isNamePubsubEnabled = (node) => {
 // Get pubsub from IPNS routing
 const getPubsubRouting = (node) => {
   if (!node._ipns || !node._options.EXPERIMENTAL.ipnsPubsub) {
-    const errMsg = 'IPNS pubsub subsystem is not enabled'
-
-    throw errcode(errMsg, 'ERR_IPNS_PUBSUB_NOT_ENABLED')
+    throw errcode(new Error('IPNS pubsub subsystem is not enabled'), 'ERR_IPNS_PUBSUB_NOT_ENABLED')
   }
 
   // Only one store and it is pubsub
@@ -35,9 +33,7 @@ const getPubsubRouting = (node) => {
   const pubsub = (node._ipns.routing.stores || []).find(s => IpnsPubsubDatastore.isIpnsPubsubDatastore(s))
 
   if (!pubsub) {
-    const errMsg = 'IPNS pubsub datastore not found'
-
-    throw errcode(errMsg, 'ERR_PUBSUB_DATASTORE_NOT_FOUND')
+    throw errcode(new Error('IPNS pubsub datastore not found'), 'ERR_PUBSUB_DATASTORE_NOT_FOUND')
   }
 
   return pubsub

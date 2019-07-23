@@ -21,7 +21,7 @@ module.exports = (domain, opts, callback) => {
 
 function recursiveResolveDnslink (domain, depth, callback) {
   if (depth === 0) {
-    return callback(errcode(`recursion limit exceeded`, 'ERR_DNSLINK_RECURSION_LIMIT'))
+    return callback(errcode(new Error('recursion limit exceeded'), 'ERR_DNSLINK_RECURSION_LIMIT'))
   }
 
   return resolveDnslink(domain)
@@ -70,7 +70,7 @@ function resolveDnslink (domain) {
       // we now have dns text entries as an array of strings
       // only records passing the DNSLINK_REGEX text are included
       if (dnslinkRecords.length === 0) {
-        throw errcode(`No dnslink records found for domain: ${domain}`, 'ERR_DNSLINK_NOT_FOUND')
+        throw errcode(new Error(`No dnslink records found for domain: ${domain}`), 'ERR_DNSLINK_NOT_FOUND')
       }
       return dnslinkRecords[0]
     })

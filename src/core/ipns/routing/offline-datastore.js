@@ -25,17 +25,11 @@ class OfflineDatastore {
    */
   put (key, value, callback) {
     if (!Buffer.isBuffer(key)) {
-      const errMsg = `Offline datastore key must be a buffer`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
+      return callback(errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY'))
     }
 
     if (!Buffer.isBuffer(value)) {
-      const errMsg = `Offline datastore value must be a buffer`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_VALUE'))
+      return callback(errcode(new Error('Offline datastore value must be a buffer'), 'ERR_INVALID_VALUE'))
     }
 
     let routingKey
@@ -43,10 +37,8 @@ class OfflineDatastore {
     try {
       routingKey = this._routingKey(key)
     } catch (err) {
-      const errMsg = `Not possible to generate the routing key`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_GENERATING_ROUTING_KEY'))
+      log.error(err)
+      return callback(errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY'))
     }
 
     // Marshal to libp2p record as the DHT does
@@ -63,10 +55,7 @@ class OfflineDatastore {
    */
   get (key, callback) {
     if (!Buffer.isBuffer(key)) {
-      const errMsg = `Offline datastore key must be a buffer`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_KEY'))
+      return callback(errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY'))
     }
 
     let routingKey
@@ -74,10 +63,8 @@ class OfflineDatastore {
     try {
       routingKey = this._routingKey(key)
     } catch (err) {
-      const errMsg = `Not possible to generate the routing key`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_GENERATING_ROUTING_KEY'))
+      log.error(err)
+      return callback(errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY'))
     }
 
     this._repo.datastore.get(routingKey, (err, res) => {

@@ -64,10 +64,7 @@ class IPNS {
   // Resolve
   resolve (name, options, callback) {
     if (typeof name !== 'string') {
-      const errMsg = `name received is not valid`
-
-      log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_INVALID_NAME'))
+      return callback(errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME'))
     }
 
     if (typeof options === 'function') {
