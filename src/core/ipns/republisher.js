@@ -75,7 +75,7 @@ class IpnsRepublisher {
     const republishHandle = this._republishHandle
 
     if (!republishHandle) {
-      return callback(errcode(new Error('not running'), 'ERR_REPUBLISH_NOT_RUNNING'))
+      return callback(errcode(new Error('republisher is not running'), 'ERR_REPUBLISH_NOT_RUNNING'))
     }
 
     this._republishHandle = null
