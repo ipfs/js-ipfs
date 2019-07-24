@@ -19,6 +19,8 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`PeerID`](#peerid)
   - [`PrivKey`](#privkey)
 - [`Keychain`](#keychain)
+- [`Pubsub`](#pubsub)
+  - [`Router`](#router)
 - [`Swarm`](#swarm)
   - [`ConnMgr`](#connmgr)
 
@@ -167,6 +169,16 @@ Default:
 ```
 
 You can check the [parameter choice for pbkdf2](https://cryptosense.com/parameter-choice-for-pbkdf2/) for more information.
+
+## `Pubsub`
+
+Options for configuring the pubsub subsystem.
+
+### `Router`
+
+A string value for specifying which pubsub routing protocol to use. You can either use `gossipsub` in order to use the [ChainSafe/gossipsub-js](https://github.com/ChainSafe/gossipsub-js) implementation, or `floodsub` to use the [libp2p/js-libp2p-floodsub](https://github.com/libp2p/js-libp2p-floodsub) implementation. You can read more about these implementations on the [libp2p/specs/pubsub](https://github.com/libp2p/specs/tree/master/pubsub) document.
+
+Default: `gossipsub`
 
 ## `Swarm`
 
