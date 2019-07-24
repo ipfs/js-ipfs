@@ -68,6 +68,9 @@ const configSchema = s({
       }))
     })),
     Bootstrap: optional(s(['multiaddr-ipfs'])),
+    Pubsub: optional(s({
+      Router: 'string?'
+    })),
     Swarm: optional(s({
       ConnMgr: optional(s({
         LowWater: 'number?',

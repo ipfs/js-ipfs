@@ -34,23 +34,6 @@ describe('interface-ipfs-core tests', function () {
     ]
   })
 
-  tests.config(defaultCommonFactory, {
-    skip: [
-      {
-        name: 'should set a number',
-        reason: 'Failing - needs to be fixed'
-      },
-      {
-        name: 'should output changes but not save them for dry run',
-        reason: 'not implemented'
-      },
-      {
-        name: 'should set a config profile',
-        reason: 'not implemented'
-      }
-    ]
-  })
-
   tests.dag(defaultCommonFactory)
 
   tests.dht(CommonFactory.create({

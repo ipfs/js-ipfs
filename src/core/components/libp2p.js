@@ -64,7 +64,9 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
     peerBook,
     modules: {
       contentRouting,
-      peerRouting
+      peerRouting,
+      pubsub: get(config, 'Pubsub.Router', 'gossipsub') === 'floodsub'
+        ? require('libp2p-floodsub') : require('libp2p-gossipsub')
     },
     config: {
       peerDiscovery: {
