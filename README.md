@@ -324,7 +324,7 @@ Configure remote preload nodes. The remote will preload content added on this no
 
 | Type | Default |
 |------|---------|
-| object | `{ pubsub: false, sharding: false, dht: false }` |
+| object | `{ pubsub: false, ipnsPubsub: false, sharding: false }` |
 
 Enable and configure experimental features.
 
