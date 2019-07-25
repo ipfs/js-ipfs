@@ -1,3 +1,14 @@
+<a name="0.108.1"></a>
+## [0.108.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.108.0...v0.108.1) (2019-07-25)
+
+
+### Bug Fixes
+
+* reword resolve test with async/await ([#504](https://github.com/ipfs/interface-ipfs-core/issues/504)) ([3f7410a](https://github.com/ipfs/interface-ipfs-core/commit/3f7410a))
+* use the correct option name for files.ls long ([#502](https://github.com/ipfs/interface-ipfs-core/issues/502)) ([ed4988d](https://github.com/ipfs/interface-ipfs-core/commit/ed4988d))
+
+
+
 <a name="0.108.0"></a>
 # [0.108.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.107.3...v0.108.0) (2019-07-17)
 
