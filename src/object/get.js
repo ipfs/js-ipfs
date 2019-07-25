@@ -321,7 +321,7 @@ module.exports = (createCommon, options) => {
 
     it('should supply unaltered data', () => {
       // has to be big enough to span several DAGNodes
-      let data = crypto.randomBytes(1024 * 3000)
+      const data = crypto.randomBytes(1024 * 3000)
 
       return ipfs.add({
         path: '',

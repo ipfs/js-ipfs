@@ -54,8 +54,7 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
 
         const stream = ipfs.files.lsReadableStream(testDir)
-
-        let entries = []
+        const entries = []
 
         stream.on('data', entry => entries.push(entry))
 
@@ -79,8 +78,7 @@ module.exports = (createCommon, options) => {
         expect(err).to.not.exist()
 
         const stream = ipfs.files.lsReadableStream(testDir, { long: true })
-
-        let entries = []
+        const entries = []
 
         stream.on('data', entry => entries.push(entry))
 

@@ -35,13 +35,13 @@ module.exports = (createCommon, options) => {
     it('should resolve an IPFS hash', async () => {
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
 
-      const [ { hash } ] = await ipfs.add(content)
+      const [{ hash }] = await ipfs.add(content)
       const path = await ipfs.resolve(`/ipfs/${hash}`)
       expect(path).to.equal(`/ipfs/${hash}`)
     })
 
     it('should resolve an IPFS hash and return a base64url encoded CID in path', async () => {
-      const [ { hash } ] = await ipfs.add(Buffer.from('base64url encoded'))
+      const [{ hash }] = await ipfs.add(Buffer.from('base64url encoded'))
       const path = await ipfs.resolve(`/ipfs/${hash}`, { cidBase: 'base64url' })
       const [,, cid] = path.split('/')
 

@@ -37,8 +37,8 @@ module.exports = (createCommon, options) => {
 
     it('should return a Readable Stream of Readable Streams', (done) => {
       const stream = ipfs.getReadableStream(fixtures.smallFile.cid)
+      const files = []
 
-      let files = []
       stream.pipe(through.obj((file, enc, next) => {
         file.content.pipe(concat((content) => {
           files.push({ path: file.path, content: content })
