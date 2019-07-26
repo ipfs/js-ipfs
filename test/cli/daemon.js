@@ -96,13 +96,13 @@ describe('daemon', () => {
     this.timeout(20 * 1000)
 
     const apiAddrs = [
-      '/ip4/127.0.0.1/tcp/55001',
-      '/ip4/127.0.0.1/tcp/55002'
+      '/ip4/127.0.0.1/tcp/0',
+      '/dns4/localhost/tcp/0'
     ]
 
     const gatewayAddrs = [
-      '/ip4/127.0.0.1/tcp/64080',
-      '/ip4/127.0.0.1/tcp/64081'
+      '/ip4/127.0.0.1/tcp/0',
+      '/dns4/localhost/tcp/0'
     ]
 
     await ipfs('init')
@@ -124,8 +124,8 @@ describe('daemon', () => {
       })
     })
 
-    apiAddrs.forEach(addr => expect(out).to.include(`API listening on ${addr}`))
-    gatewayAddrs.forEach(addr => expect(out).to.include(`Gateway (read only) listening on ${addr}`))
+    apiAddrs.forEach(addr => expect(out).to.include(`API listening on ${addr.slice(0, -2)}`))
+    gatewayAddrs.forEach(addr => expect(out).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
   })
 
   it('should allow no bind addresses for API and Gateway', async function () {
