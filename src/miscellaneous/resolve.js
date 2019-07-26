@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 5] */
 'use strict'
 
 const isIpfs = require('is-ipfs')
@@ -6,6 +7,7 @@ const loadFixture = require('aegir/fixtures')
 const hat = require('hat')
 const multibase = require('multibase')
 const { spawnNodeWithId } = require('../utils/spawn')
+const { connect } = require('../utils/swarm')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -88,11 +90,23 @@ module.exports = (createCommon, options) => {
     it('should resolve IPNS link recursively', async function () {
       this.timeout(20 * 1000)
 
+      // Ensure another node exists for publishing to
+      await new Promise((resolve, reject) => {
+        common.setup((err, factory) => {
+          if (err) return reject(err)
+          spawnNodeWithId(factory, (err, node) => {
+            if (err) return reject(err)
+            const addr = node.peerId.addresses.find((a) => a.includes('127.0.0.1'))
+            connect(ipfs, addr, resolve)
+          })
+        })
+      })
+
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name' })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name', resolve: false })
 
       return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: true }))
         .to.eq(`/ipfs/${path}`)
