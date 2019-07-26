@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "33.1.0",
+  "version": "33.1.1",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -142,6 +142,7 @@
     "Kristoffer Ström <kristoffer@rymdkoloni.se>",
     "Marcin Rataj <lidel@lidel.org>",
     "Matt Bell <mappum@gmail.com>",
+    "Matt Ober <matt.ober3@gmail.com>",
     "Maxime Lathuilière <k@maxlath.eu>",
     "Michael Bradley <michaelsbradleyjr@gmail.com>",
     "Michael Muré <michael.mure@consensys.net>",
@@ -163,6 +164,7 @@
     "SeungWon <ksw3894@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Tara Vancil <tbvanc@gmail.com>",
+    "Teri Chadbourne <terichadbourne@users.noreply.github.com>",
     "Travis Person <travis@protocol.ai>",
     "Travis Person <travis.person@gmail.com>",
     "Vasco Santos <vasco.santos@ua.pt>",
