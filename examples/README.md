@@ -26,6 +26,7 @@ Clone this repo to explore these tutorials on your local machine:
 
 - [js-ipfs in the browser with Browserify](./browser-browserify)
 - [js-ipfs in the browser with Parcel.js](./browser-parceljs)
+- [js-ipfs in the browser with Vue](./browser-vue)
 - [js-ipfs in the browser with WebPack](./browser-webpack)
 - [js-ipfs in the browser with a `<script>` tag](./browser-script-tag)
 - [js-ipfs in electron](./run-in-electron)
