@@ -1,3 +1,13 @@
+<a name="0.109.0"></a>
+# [0.109.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.108.1...v0.109.0) (2019-07-26)
+
+
+### Bug Fixes
+
+* resolve IPNS recursively test ([#507](https://github.com/ipfs/interface-ipfs-core/issues/507)) ([1db8abe](https://github.com/ipfs/interface-ipfs-core/commit/1db8abe))
+
+
+
 <a name="0.108.1"></a>
 ## [0.108.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.108.0...v0.108.1) (2019-07-25)
 
