@@ -6,7 +6,12 @@ module.exports = [
   {
     method: '*',
     path: '/api/v0/pubsub/sub',
-    handler: resources.pubsub.subscribe.handler
+    handler: resources.pubsub.subscribe.handler,
+    options: {
+      timeout: {
+        socket: false
+      }
+    }
   },
   {
     method: '*',
