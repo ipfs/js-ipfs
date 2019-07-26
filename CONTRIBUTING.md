@@ -26,6 +26,32 @@ Tests in the browser
 $ npm run test:browser
 ```
 
+### Writing a new core interface test
+
+The core interface tests are kept in a separate repo, because they are used by multiple other projects. To add a core interface test, follow this guide:
+
+1. Clone this project repo and the interface core tests repo:
+    * `git clone https://github.com/ipfs/js-ipfs-http-client.git`
+    * `git clone https://github.com/ipfs/interface-js-ipfs-core.git`
+1. Install dependencies and globally [link](https://docs.npmjs.com/cli/link) the interface core tests:
+    * `cd interface-js-ipfs-core`
+    * `npm install`
+    * `npm link`
+1. Write your test
+1. Install dependencies for this project and link to the interface core tests
+    * `cd ../js-ipfs-http-client`
+    * `npm install`
+    * `npm link interface-ipfs-core`
+1. Run the tests:
+    * `npm test`
+
+Next:
+
+1. Send a PR to `ipfs/interface-js-ipfs-core` (please also add to the documentation!)
+1. This will be reviewed by a core contributor and they will perform the same steps as above
+1. When merged, a new version of `interface-ipfs-core` will be released
+1. Finally, a PR needs to be created or updated to `ipfs/js-ipfs-http-client` to use the new version
+
 ## Building browser version
 
 ```bash
