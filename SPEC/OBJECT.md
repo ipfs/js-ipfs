@@ -198,7 +198,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 `options` is a optional argument of type object, that can contain the following properties:
 
-- `enc`, the encoding of multihash (base58, base64, etc), if any.
+- `timeout`, A timeout to pass to the IPFS daemon so the request expires after a certain amount of time without any response. NOTE: not yet supported in JS IPFS.
 
 `callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful and `stats` is an Object with following format:
 
@@ -220,7 +220,7 @@ If no `callback` is passed, a [promise][] is returned.
 ```JavaScript
 const multihash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
 
-ipfs.object.stat(multihash, (err, stats) => {
+ipfs.object.stat(multihash, {timeout: '10s'}, (err, stats) => {
   if (err) {
     throw err
   }
