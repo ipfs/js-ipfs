@@ -21,7 +21,8 @@ module.exports = (send) => {
 
     send({
       path: 'object/stat',
-      args: cid.toString()
+      args: cid.toString(),
+      qs: opts
     }, callback)
   })
 }

@@ -49,6 +49,11 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'replace',
         reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-http-client/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
+      },
+      // config.profile
+      {
+        name: 'profile',
+        reason: 'TODO not yet implemented https://github.com/ipfs/js-ipfs-http-client/pull/1030'
       }
     ]
   })
@@ -182,7 +187,14 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(defaultCommonFactory, {
+    skip: [
+      {
+        name: 'should ls directory with long option',
+        reason: 'TODO unskip when go-ipfs supports --long https://github.com/ipfs/go-ipfs/pull/6528'
+      }
+    ]
+  })
 
   tests.key(defaultCommonFactory, {
     skip: [
