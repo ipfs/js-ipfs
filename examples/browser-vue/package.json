@@ -10,7 +10,6 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "ipfs": "file:../../",
-    "pify": "^4.0.1",
     "vue": "^2.6.10"
   },
   "devDependencies": {

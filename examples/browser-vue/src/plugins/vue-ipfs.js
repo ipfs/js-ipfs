@@ -1,16 +1,8 @@
 import IPFS from 'ipfs'
 
-function promisifyIpfs(opts) {
-  return new Promise((resolve, reject) => {
-    const node = new IPFS(opts)
-    node.once('ready', () => resolve(node))
-    node.once('error', err => reject(err))
-  })
-}
-
 const plugin = {
   install(Vue, opts = {}) {
-    Vue.prototype.$ipfs = promisifyIpfs(opts)
+    Vue.prototype.$ipfs = IPFS.create(opts)
   },
 }
 

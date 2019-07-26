@@ -8,8 +8,6 @@
 </template>
 
 <script>
-import pify from "pify";
-
 export default {
   name: "IpfsInfo",
   data: function() {
@@ -29,7 +27,7 @@ export default {
         const ipfs = await this.$ipfs;
         // Call ipfs `id` method.
         // Returns the identity of the Peer.
-        const { agentVersion, id } = await pify(ipfs.id)();
+        const { agentVersion, id } = await ipfs.id();
         this.agentVersion = agentVersion;
         this.id = id;
         // Set successful status text.
