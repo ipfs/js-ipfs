@@ -1,3 +1,13 @@
+<a name="33.1.1"></a>
+## [33.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.0...v33.1.1) (2019-07-26)
+
+
+### Bug Fixes
+
+* allow passing timeout option to object stat ([#1055](https://github.com/ipfs/js-ipfs-http-client/issues/1055)) ([92b0594](https://github.com/ipfs/js-ipfs-http-client/commit/92b0594))
+
+
+
 <a name="33.1.0"></a>
 # [33.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.2...v33.1.0) (2019-07-11)
 
