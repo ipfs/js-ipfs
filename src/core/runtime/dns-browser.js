@@ -32,11 +32,17 @@ module.exports = (domain, opts, callback) => {
   opts = opts || {}
   domain = encodeURIComponent(domain)
 
-  if (cache.has(domain)) {
-    const response = cache.get(domain)
+  // `opts` impact returned value, so we cache per domain+opts
+  const query = `${domain}${JSON.stringify(opts)}`
+
+  // try cache first
+  if (!opts.nocache && cache.has(query)) {
+    const response = cache.get(query)
     return unpackResponse(domain, response, callback)
   }
 
+  // fallback to sending DNSLink query to ipfs.io
+  // TODO: replace this with generic DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
   let url = `https://ipfs.io/api/v0/dns?arg=${domain}`
   Object.keys(opts).forEach(prop => {
     url += `&${encodeURIComponent(prop)}=${encodeURIComponent(opts[prop])}`
@@ -47,7 +53,7 @@ module.exports = (domain, opts, callback) => {
       return response.json()
     })
     .then((response) => {
-      cache.set(domain, response, ttl)
+      cache.set(query, response, ttl)
       return unpackResponse(domain, response, callback)
     })
     .catch((error) => {
