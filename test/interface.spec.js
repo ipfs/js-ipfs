@@ -178,11 +178,6 @@ describe('interface-ipfs-core tests', () => {
       isNode ? null : {
         name: 'should readable stream ls with a base58 encoded CID',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .refs
-      {
-        name: 'dag refs test',
-        reason: 'FIXME unskip when 0.4.21 is released'
       }
     ]
   })
