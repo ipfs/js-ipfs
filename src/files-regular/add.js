@@ -325,6 +325,33 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    it('should add files to a directory non sequentially', function (done) {
+      const content = path => ({
+        path: `test-dir/${path}`,
+        content: fixtures.directory.files[path.split('/').pop()]
+      })
+
+      const input = [
+        content('a/pp.txt'),
+        content('a/holmes.txt'),
+        content('b/jungle.txt'),
+        content('a/alice.txt')
+      ]
+
+      ipfs.add(input, (err, filesAdded) => {
+        expect(err).to.not.exist()
+
+        const toPath = ({ path }) => path
+        const nonSeqDirFilePaths = input.map(toPath).filter(p => p.includes('/a/'))
+        const filesAddedPaths = filesAdded.map(toPath)
+
+        expect(nonSeqDirFilePaths.every(p => filesAddedPaths.includes(p)))
+          .to.be.true()
+
+        done()
+      })
+    })
+
     it('should fail when passed invalid input', (done) => {
       const nonValid = 'sfdasfasfs'
 
