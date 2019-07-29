@@ -10,13 +10,7 @@ log.error = debug('ipfs:http-api:resolve:error')
 module.exports = {
   validate: {
     query: Joi.object().keys({
-      r: Joi.alternatives()
-        .when('recursive', {
-          is: Joi.any().exist(),
-          then: Joi.any().forbidden(),
-          otherwise: Joi.boolean()
-        }),
-      recursive: Joi.boolean(),
+      recursive: Joi.boolean().default(true),
       arg: Joi.string().required(),
       'cid-base': Joi.string().valid(multibase.names)
     }).unknown()
@@ -24,7 +18,7 @@ module.exports = {
   async handler (request, h) {
     const { ipfs } = request.server.app
     const name = request.query.arg
-    const recursive = request.query.r || request.query.recursive || true
+    const recursive = request.query.recursive
     const cidBase = request.query['cid-base']
 
     log(name, { recursive, cidBase })
