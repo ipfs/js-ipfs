@@ -66,7 +66,7 @@
     "multihashes": "~0.4.14",
     "ndjson": "github:hugomrdias/ndjson#feat/readable-stream3",
     "once": "^1.4.0",
-    "peer-id": "~0.12.2",
+    "peer-id": "~0.12.3",
     "peer-info": "~0.15.1",
     "promisify-es6": "^1.0.3",
     "pull-defer": "~0.2.3",
