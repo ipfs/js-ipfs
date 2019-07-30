@@ -2,6 +2,7 @@
 'use strict'
 
 const { default: PQueue } = require('p-queue')
+const { default: ky } = require('ky-universal')
 const debug = require('debug')
 
 const log = debug('ipfs:preload')
@@ -17,15 +18,14 @@ module.exports = function preload (url, callback) {
   const controller = new AbortController()
   const signal = controller.signal
 
-  _httpQueue.add(() => fetch(url, { signal })
-    .then(res => {
-      if (!res.ok) {
-        log.error('failed to preload', url, res.status, res.statusText)
-        throw new Error(`failed to preload ${url}`)
-      }
-      setImmediate(callback)
-    })
-  ).catch((err) => setImmediate(() => callback(err)))
+  _httpQueue.add(async () => {
+    const res = await ky(url, { signal })
+    if (!res.ok) {
+      log.error('failed to preload', url, res.status, res.statusText)
+      throw new Error(`failed to preload ${url}`)
+    }
+    setImmediate(callback)
+  }).catch((err) => setImmediate(() => callback(err)))
 
   return {
     cancel: () => controller.abort()

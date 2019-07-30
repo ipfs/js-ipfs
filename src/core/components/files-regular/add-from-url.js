@@ -1,7 +1,7 @@
 'use strict'
 
 const { URL } = require('iso-url')
-const fetch = require('../../runtime/fetch-nodejs')
+const { default: ky } = require('ky-universal')
 
 module.exports = (self) => {
   return async (url, options, callback) => {
@@ -14,7 +14,10 @@ module.exports = (self) => {
 
     try {
       const parsedUrl = new URL(url)
-      const res = await fetch(url)
+      const res = await ky(url, {
+        timeout: 15000,
+        retry: 3
+      })
 
       if (!res.ok) {
         throw new Error('unexpected status code: ' + res.status)

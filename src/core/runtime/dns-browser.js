@@ -3,6 +3,7 @@
 
 const TLRU = require('../../utils/tlru')
 const { default: PQueue } = require('p-queue')
+const { default: ky } = require('ky-universal')
 
 // Avoid sending multiple queries for the same hostname by caching results
 const cache = new TLRU(1000)
@@ -46,12 +47,9 @@ module.exports = (domain, opts, callback) => {
     url += `&${encodeURIComponent(prop)}=${encodeURIComponent(opts[prop])}`
   })
 
-  _httpQueue.add(() => fetch(url, { mode: 'cors' })
-    .then((response) => response.json())
-    .then((response) => {
-      cache.set(query, response, ttl)
-      setImmediate(() => unpackResponse(domain, response, callback))
-    })
-    .catch((err) => setImmediate(() => callback(err)))
-  )
+  _httpQueue.add(async () => {
+    const response = await ky(url, { mode: 'cors' }).json()
+    cache.set(query, response, ttl)
+    setImmediate(() => unpackResponse(domain, response, callback))
+  }).catch((err) => setImmediate(() => callback(err)))
 }
