@@ -25,9 +25,7 @@ module.exports = function preload (url, callback) {
       }
       return res.text()
     })
-    .then(() => callback())
-    .catch(callback)
-  ).catch(callback)
+  ).then(() => callback(), callback)
 
   return {
     cancel: () => controller.abort()
