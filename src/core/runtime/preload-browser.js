@@ -23,9 +23,9 @@ module.exports = function preload (url, callback) {
         log.error('failed to preload', url, res.status, res.statusText)
         throw new Error(`failed to preload ${url}`)
       }
-      return res.text()
+      setImmediate(callback)
     })
-  ).then(() => callback(), callback)
+  ).catch((err) => setImmediate(() => callback(err)))
 
   return {
     cancel: () => controller.abort()

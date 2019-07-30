@@ -18,10 +18,8 @@ const _httpQueue = new PQueue({ concurrency: 4 })
 function unpackResponse (domain, response, callback) {
   if (response.Path) {
     return callback(null, response.Path)
-  } else {
-    const err = new Error(response.Message)
-    return callback(err)
   }
+  return callback(new Error(response.Message))
 }
 
 module.exports = (domain, opts, callback) => {
@@ -49,15 +47,11 @@ module.exports = (domain, opts, callback) => {
   })
 
   _httpQueue.add(() => fetch(url, { mode: 'cors' })
-    .then((response) => {
-      return response.json()
-    })
+    .then((response) => response.json())
     .then((response) => {
       cache.set(query, response, ttl)
-      return unpackResponse(domain, response, callback)
+      setImmediate(() => unpackResponse(domain, response, callback))
     })
-    .catch((error) => {
-      callback(error)
-    })
+    .catch((err) => setImmediate(() => callback(err)))
   )
 }
