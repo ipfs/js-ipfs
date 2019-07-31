@@ -4,6 +4,7 @@
 const TLRU = require('../../utils/tlru')
 const { default: PQueue } = require('p-queue')
 const { default: ky } = require('ky-universal')
+const nodeify = require('promise-nodeify')
 
 // Avoid sending multiple queries for the same hostname by caching results
 const cache = new TLRU(1000)
@@ -26,38 +27,36 @@ const api = ky.create({
         const query = new URLSearchParams(new URL(response.url).search).toString()
         const json = await response.json()
         cache.set(query, json, ttl)
-        return json
       }
     ]
   }
 })
 
-function unpackResponse (response, callback) {
-  if (response.Path) {
-    return callback(null, response.Path)
-  }
-  return callback(new Error(response.Message))
+const ipfsPath = (response) => {
+  if (response.Path) return response.Path
+  throw new Error(response.Message)
 }
 
-module.exports = (domain, opts, callback) => {
+module.exports = (fqdn, opts = {}, cb) => {
   if (typeof opts === 'function') {
-    callback = opts
+    cb = opts
     opts = {}
   }
-  opts = opts || {}
+  const resolveDnslink = async (fqdn, opts = {}) => {
+    const searchParams = new URLSearchParams(opts)
+    searchParams.set('arg', fqdn)
 
-  const searchParams = new URLSearchParams(opts)
-  searchParams.set('arg', domain)
+    // try cache first
+    const query = searchParams.toString()
+    if (!opts.nocache && cache.has(query)) {
+      const response = cache.get(query)
+      return ipfsPath(response)
+    }
 
-  // try cache first
-  const query = searchParams.toString()
-  if (!opts.nocache && cache.has(query)) {
-    const response = cache.get(query)
-    return setImmediate(() => unpackResponse(response, callback))
+    // fallback to delegated DNS resolver
+    const response = await _httpQueue.add(() => api.get('dns', { searchParams }).json())
+    return ipfsPath(response)
   }
 
-  _httpQueue.add(async () => {
-    const response = await api.get('dns', { searchParams })
-    setImmediate(() => unpackResponse(response, callback))
-  }).catch((err) => setImmediate(() => callback(err)))
+  return nodeify(resolveDnslink(fqdn, opts), cb)
 }
