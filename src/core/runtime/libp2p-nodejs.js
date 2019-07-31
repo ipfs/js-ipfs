@@ -23,8 +23,8 @@ class Node extends libp2p {
 
     const defaults = {
       switch: {
-        blacklistTTL: 2 * 60 * 1e3, // 2 minute base
-        blackListAttempts: 5, // back off 5 times
+        denyTTL: 2 * 60 * 1e3, // 2 minute base
+        denyAttempts: 5, // back off 5 times
         maxParallelDials: 150,
         maxColdCalls: 50,
         dialTimeout: 10e3 // Be strict with dial time
