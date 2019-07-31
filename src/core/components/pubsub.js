@@ -26,7 +26,7 @@ module.exports = function pubsub (self) {
         return self.libp2p.pubsub.subscribe(topic, handler, options)
       }
 
-      self.libp2p.pubsub.subscribe(topic, options, handler, callback)
+      self.libp2p.pubsub.subscribe(topic, handler, options, callback)
     },
 
     unsubscribe: (topic, handler, callback) => {
