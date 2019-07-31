@@ -19,11 +19,7 @@ module.exports = function preload (url, callback) {
   const signal = controller.signal
 
   _httpQueue.add(async () => {
-    const res = await ky(url, { signal })
-    if (!res.ok) {
-      log.error('failed to preload', url, res.status, res.statusText)
-      throw new Error(`failed to preload ${url}`)
-    }
+    await ky.get(url, { signal })
     setImmediate(callback)
   }).catch((err) => setImmediate(() => callback(err)))
 

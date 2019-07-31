@@ -11,22 +11,10 @@ module.exports = (self) => {
     }
 
     let files
-
     try {
-      const parsedUrl = new URL(url)
-      const res = await ky(url, {
-        timeout: 15000,
-        retry: 3
-      })
-
-      if (!res.ok) {
-        throw new Error('unexpected status code: ' + res.status)
-      }
-
-      // TODO: use res.body when supported
+      const res = await ky.get(url)
+      const path = decodeURIComponent(new URL(res.url).pathname.split('/').pop())
       const content = Buffer.from(await res.arrayBuffer())
-      const path = decodeURIComponent(parsedUrl.pathname.split('/').pop())
-
       files = await self.add({ content, path }, options)
     } catch (err) {
       if (callback) {

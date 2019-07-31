@@ -16,7 +16,23 @@ const ttl = 60 * 1000
 // we don't want preload calls to exhaust the limit (~6)
 const _httpQueue = new PQueue({ concurrency: 4 })
 
-function unpackResponse (domain, response, callback) {
+// Delegated HTTP resolver sending DNSLink queries to ipfs.io
+// TODO: replace hardcoded host with configurable DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
+const api = ky.create({
+  prefixUrl: 'https://ipfs.io/api/v0/',
+  hooks: {
+    afterResponse: [
+      async response => {
+        const query = new URLSearchParams(new URL(response.url).search).toString()
+        const json = await response.json()
+        cache.set(query, json, ttl)
+        return json
+      }
+    ]
+  }
+})
+
+function unpackResponse (response, callback) {
   if (response.Path) {
     return callback(null, response.Path)
   }
@@ -29,27 +45,19 @@ module.exports = (domain, opts, callback) => {
     opts = {}
   }
   opts = opts || {}
-  domain = encodeURIComponent(domain)
 
-  // `opts` impact returned value, so we cache per domain+opts
-  const query = `${domain}${JSON.stringify(opts)}`
+  const searchParams = new URLSearchParams(opts)
+  searchParams.set('arg', domain)
 
   // try cache first
+  const query = searchParams.toString()
   if (!opts.nocache && cache.has(query)) {
     const response = cache.get(query)
-    return unpackResponse(domain, response, callback)
+    return setImmediate(() => unpackResponse(response, callback))
   }
 
-  // fallback to sending DNSLink query to ipfs.io
-  // TODO: replace this with generic DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
-  let url = `https://ipfs.io/api/v0/dns?arg=${domain}`
-  Object.keys(opts).forEach(prop => {
-    url += `&${encodeURIComponent(prop)}=${encodeURIComponent(opts[prop])}`
-  })
-
   _httpQueue.add(async () => {
-    const response = await ky(url, { mode: 'cors' }).json()
-    cache.set(query, response, ttl)
-    setImmediate(() => unpackResponse(domain, response, callback))
+    const response = await api.get('dns', { searchParams })
+    setImmediate(() => unpackResponse(response, callback))
   }).catch((err) => setImmediate(() => callback(err)))
 }
