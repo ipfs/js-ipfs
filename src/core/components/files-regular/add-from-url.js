@@ -2,31 +2,21 @@
 
 const { URL } = require('iso-url')
 const { default: ky } = require('ky-universal')
+const nodeify = require('promise-nodeify')
 
-module.exports = (self) => {
-  return async (url, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
+module.exports = (ipfs) => {
+  const addFromURL = async (url, opts = {}) => {
+    const res = await ky.get(url)
+    const path = decodeURIComponent(new URL(res.url).pathname.split('/').pop())
+    const content = Buffer.from(await res.arrayBuffer())
+    return ipfs.add({ content, path }, opts)
+  }
+
+  return (name, opts = {}, cb) => {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = {}
     }
-
-    let files
-    try {
-      const res = await ky.get(url)
-      const path = decodeURIComponent(new URL(res.url).pathname.split('/').pop())
-      const content = Buffer.from(await res.arrayBuffer())
-      files = await self.add({ content, path }, options)
-    } catch (err) {
-      if (callback) {
-        return callback(err)
-      }
-      throw err
-    }
-
-    if (callback) {
-      callback(null, files)
-    }
-
-    return files
+    return nodeify(addFromURL(name, opts), cb)
   }
 }
