@@ -3,8 +3,7 @@
 /* eslint-env browser */
 
 const Ipfs = require('../../')
-const videoStream = require('videostream')
-const ipfs = new Ipfs({ repo: 'ipfs-' + Math.random() })
+const VideoStream = require('videostream')
 const {
   dragDrop,
   statusMessages,
@@ -12,9 +11,11 @@ const {
   log
 } = require('./utils')
 
-log('IPFS: Initialising')
+document.addEventListener('DOMContentLoaded', async () => {
+  const ipfs = await Ipfs.create({ repo: 'ipfs-' + Math.random() })
 
-ipfs.on('ready', () => {
+  log('IPFS: Initialising')
+
   // Set up event listeners on the <video> element from index.html
   const videoElement = createVideoElement()
   const hashInput = document.getElementById('hash')
@@ -27,7 +28,7 @@ ipfs.on('ready', () => {
     log(`IPFS: Playing ${hashInput.value.trim()}`)
 
     // Set up the video stream an attach it to our <video> element
-    videoStream({
+    const videoStream = new VideoStream({
       createReadStream: function createReadStream (opts) {
         const start = opts.start
 
@@ -61,6 +62,8 @@ ipfs.on('ready', () => {
         return stream
       }
     }, videoElement)
+
+    videoElement.addEventListener('error', () => log(videoStream.detailedError))
   }
 
   // Allow adding files to IPFS via drag and drop
