@@ -4,6 +4,7 @@ const exporter = require('ipfs-unixfs-exporter')
 const toPullStream = require('async-iterator-to-pull-stream')
 const errCode = require('err-code')
 const pull = require('pull-stream/pull')
+const pullError = require('pull-stream/sources/error')
 const map = require('pull-stream/throughs/map')
 const { normalizePath, mapFile } = require('./utils')
 
@@ -17,7 +18,7 @@ module.exports = function (self) {
       try {
         pathComponents = normalizePath(ipfsPath).split('/')
       } catch (err) {
-        return pull.error(errCode(err, 'ERR_INVALID_PATH'))
+        return pullError(errCode(err, 'ERR_INVALID_PATH'))
       }
 
       self._preload(pathComponents[0])

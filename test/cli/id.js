@@ -1,25 +1,43 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
-const runOnAndOff = require('../utils/on-and-off')
+const sinon = require('sinon')
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+const YargsPromise = require('yargs-promise')
+const clearModule = require('clear-module')
+chai.use(dirtyChai)
 
-describe('id', () => runOnAndOff((thing) => {
-  let ipfs
-
-  before(function () {
-    this.timeout(60 * 1000)
-    ipfs = thing.ipfs
+describe('id', () => {
+  let cli
+  let cliUtils
+  beforeEach(() => {
+    cliUtils = require('../../src/cli/utils')
+    cli = new YargsPromise(require('../../src/cli/parser'))
+  })
+  afterEach(() => {
+    sinon.restore()
+    // TODO: the lines below shouldn't be necessary, cli needs refactor to simplify testability
+    // Force the next require to not use require cache
+    clearModule('../../src/cli/utils')
+    clearModule('../../src/cli/parser')
   })
 
-  it('get the id', function () {
-    this.timeout(60 * 1000)
+  it('should output formatted json string', async () => {
+    const fakeId = sinon.fake.returns(
+      { id: 'id', publicKey: 'publicKey' }
+    )
 
-    return ipfs('id').then((res) => {
-      const id = JSON.parse(res)
-      expect(id).to.have.property('id')
-      expect(id).to.have.property('publicKey')
-      expect(id).to.have.property('addresses')
-    })
+    sinon
+      .stub(cliUtils, 'getIPFS')
+      .callsArgWith(1, null, { id: fakeId })
+
+    // TODO: the lines below shouldn't be necessary, cli needs refactor to simplify testability
+    // Force the next require to not use require cache
+    clearModule('../../src/cli/commands/id.js')
+    const { data } = await cli.parse('id')
+
+    expect(data).to.eq('{\n  "id": "id",\n  "publicKey": "publicKey"\n}')
   })
-}))
+})
