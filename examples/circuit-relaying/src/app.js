@@ -4,54 +4,54 @@
 const IPFS = require('ipfs')
 const Helpers = require('./helpers')
 
-const $peerId = document.querySelector('#peer-id')
-const $message = document.querySelector('#message')
-const $msgs = document.querySelector('#msgs')
-const $send = document.querySelector('#send')
-const $peer = document.querySelector('#peer')
-const $connect = document.querySelector('#connect')
-const $pAddrs = document.querySelector('#peers-addrs')
-const $room = document.querySelector('#room')
-const $roomId = document.querySelector('#room-id')
+document.addEventListener('DOMContentLoaded', async () => {
+  const $peerId = document.querySelector('#peer-id')
+  const $message = document.querySelector('#message')
+  const $msgs = document.querySelector('#msgs')
+  const $send = document.querySelector('#send')
+  const $peer = document.querySelector('#peer')
+  const $connect = document.querySelector('#connect')
+  const $pAddrs = document.querySelector('#peers-addrs')
+  const $room = document.querySelector('#room')
+  const $roomId = document.querySelector('#room-id')
 
-let roomName = `default`
-const fragment = window.location.hash.substr(1)
-if (fragment) {
-  roomName = fragment
-}
-
-$pAddrs.value = ''
-$room.innerText = roomName
-
-const repo = () => {
-  return 'ipfs/pubsub-demo/' + Math.random()
-}
-
-const ipfs = new IPFS({
-  repo: repo(),
-  relay: {
-    enabled: true, // enable relay dialer/listener (STOP)
-    hop: {
-      enabled: true // make this node a relay (HOP)
-    }
-  },
-  EXPERIMENTAL: {
-    pubsub: true // enable pubsub
-  },
-  config: {
-    Bootstrap: []
+  let roomName = `default`
+  const fragment = window.location.hash.substr(1)
+  if (fragment) {
+    roomName = fragment
   }
-})
 
-const peersSet = new Set()
-const helpers = Helpers(ipfs, peersSet)
-const createRoom = helpers.createRoom
-const sendMsg = helpers.sendMsg
-const updatePeers = helpers.updatePeers
-const updateAddrs = helpers.updateAddrs
+  $pAddrs.value = ''
+  $room.innerText = roomName
 
-ipfs.once('ready', () => ipfs.id((err, info) => {
-  if (err) { throw err }
+  const repo = () => {
+    return 'ipfs/pubsub-demo/' + Math.random()
+  }
+
+  const ipfs = await IPFS.create({
+    repo: repo(),
+    relay: {
+      enabled: true, // enable relay dialer/listener (STOP)
+      hop: {
+        enabled: true // make this node a relay (HOP)
+      }
+    },
+    EXPERIMENTAL: {
+      pubsub: true // enable pubsub
+    },
+    config: {
+      Bootstrap: []
+    }
+  })
+
+  const peersSet = new Set()
+  const helpers = Helpers(ipfs, peersSet)
+  const createRoom = helpers.createRoom
+  const sendMsg = helpers.sendMsg
+  const updatePeers = helpers.updatePeers
+  const updateAddrs = helpers.updateAddrs
+
+  const info = await ipfs.id()
   console.log('IPFS node ready with id ' + info.id)
 
   let room = createRoom(roomName)
@@ -97,14 +97,14 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
     }
   })
 
-  $connect.addEventListener('click', () => {
+  $connect.addEventListener('click', async () => {
     const peer = $peer.value
     $peer.value = ''
-    ipfs.swarm.connect(peer, (err) => {
-      if (err) {
-        return console.error(err)
-      }
-      $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
-    })
+    try {
+      await ipfs.swarm.connect(peer)
+    } catch (err) {
+      return console.error(err)
+    }
+    $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
   })
-}))
+})
