@@ -143,7 +143,7 @@
     "multiaddr": "^6.1.0",
     "multiaddr-to-uri": "^4.0.1",
     "multibase": "~0.6.0",
-    "multicodec": "~0.5.1",
+    "multicodec": "~0.5.5",
     "multihashes": "~0.4.14",
     "multihashing-async": "~0.6.0",
     "node-fetch": "^2.3.0",
