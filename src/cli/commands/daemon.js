@@ -32,7 +32,7 @@ module.exports = {
       })
       .option('enable-preload', {
         type: 'boolean',
-        default: true
+        default: process.env.NODE_ENV !== 'test' // preload by default, unless in test env
       })
   },
 

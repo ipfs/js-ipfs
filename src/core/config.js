@@ -31,7 +31,10 @@ const configSchema = s({
     enabled: 'boolean?',
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
-  }, { enabled: true, interval: 30 * 1000 }),
+  }, { // defaults
+    enabled: process.env.NODE_ENV !== 'test', // preload by default, unless in test env
+    interval: 30 * 1000
+  }),
   pubsub: optional(s({
     enabled: 'boolean?'
   })),

@@ -51,7 +51,7 @@ class IPFS extends EventEmitter {
         enabled: false
       },
       preload: {
-        enabled: true,
+        enabled: process.env.NODE_ENV !== 'test', // preload by default, unless in test env
         addresses: [
           '/dnsaddr/node0.preload.ipfs.io/https',
           '/dnsaddr/node1.preload.ipfs.io/https'
