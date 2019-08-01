@@ -2,7 +2,7 @@
 
 You can use IPFS in your in-browser JavaScript code with just a `<script>` tag.
 
-```
+```html
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 ```
 
