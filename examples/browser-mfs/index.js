@@ -3,9 +3,6 @@
 /* eslint-env browser */
 
 const IPFS = require('ipfs')
-const ipfs = new IPFS({
-  repo: `ipfs-${Math.random()}`
-})
 const {
   dragDrop,
   log,
@@ -25,11 +22,15 @@ const {
 } = require('./forms')
 const mime = require('mime-sniffer')
 
-hideForms()
+document.addEventListener('DOMContentLoaded', async () => {
+  const ipfs = await IPFS.create({
+    repo: `ipfs-${Math.random()}`
+  })
 
-log('IPFS: Initialising')
+  hideForms()
 
-ipfs.on('ready', () => {
+  log('IPFS: Initialising')
+
   // Allow adding files to IPFS via drag and drop
   dragDrop(async (files) => {
     /* eslint-disable-next-line no-alert */
