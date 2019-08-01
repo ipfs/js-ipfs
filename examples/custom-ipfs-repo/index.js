@@ -61,47 +61,38 @@ const customRepositoryOptions = {
   lock: fsLock
 }
 
-// Initialize our IPFS node with the custom repo options
-const node = new IPFS({
-  repo: new Repo('/tmp/custom-repo/.ipfs', customRepositoryOptions)
-})
+async function main () {
+  // Initialize our IPFS node with the custom repo options
+  const node = await IPFS.create({
+    repo: new Repo('/tmp/custom-repo/.ipfs', customRepositoryOptions)
+  })
 
-// Test the new repo by adding and fetching some data
-node.on('ready', () => {
+  // Test the new repo by adding and fetching some data
   console.log('Ready')
-  node.version()
-    .then((version) => {
-      console.log('Version:', version.version)
-    })
-    // Once we have the version, let's add a file to IPFS
-    .then(() => {
-      return node.add({
-        path: 'test-data.txt',
-        content: Buffer.from('We are using a customized repo!')
-      })
-    })
-    // Log out the added files metadata and cat the file from IPFS
-    .then((filesAdded) => {
-      console.log('\nAdded file:', filesAdded[0].path, filesAdded[0].hash)
-      return node.cat(filesAdded[0].hash)
-    })
-    // Print out the files contents to console
-    .then((data) => {
-      console.log('\nFetched file content:')
-      process.stdout.write(data)
-    })
-    // Log out the error, if there is one
-    .catch((err) => {
-      console.log('File Processing Error:', err)
-    })
-    // After everything is done, shut the node down
-    // We don't need to worry about catching errors here
-    .then(() => {
-      console.log('\n\nStopping the node')
-      return node.stop()
-    })
-    // Let users know where they can inspect the repo
-    .then(() => {
-      console.log('Check "/tmp/custom-repo/.ipfs" to see what your customized repository looks like on disk.')
-    })
-})
+  const { version } = await node.version()
+  console.log('Version:', version)
+
+  // Once we have the version, let's add a file to IPFS
+  const filesAdded = await node.add({
+    path: 'test-data.txt',
+    content: Buffer.from('We are using a customized repo!')
+  })
+
+  // Log out the added files metadata and cat the file from IPFS
+  console.log('\nAdded file:', filesAdded[0].path, filesAdded[0].hash)
+
+  const data = await node.cat(filesAdded[0].hash)
+
+  // Print out the files contents to console
+  console.log('\nFetched file content:')
+  process.stdout.write(data)
+
+  // After everything is done, shut the node down
+  console.log('\n\nStopping the node')
+  await node.stop()
+
+  // Let users know where they can inspect the repo
+  console.log('Check "/tmp/custom-repo/.ipfs" to see what your customized repository looks like on disk.')
+}
+
+main()
