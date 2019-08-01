@@ -10,7 +10,6 @@ const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
 const MPLEX = require('pull-mplex')
 const SECIO = require('libp2p-secio')
-const assert = require('assert')
 
 /**
  * Options for the libp2p bundle
@@ -104,14 +103,11 @@ const libp2pBundle = (opts) => {
   })
 }
 
-// Now that we have our custom libp2p bundle, let's start up the ipfs node!
-const node = new IPFS({
-  libp2p: libp2pBundle
-})
-
-// Listen for the node to start, so we can log out some metrics
-node.once('start', (err) => {
-  assert.ifError(err, 'Should startup without issue')
+async function main () {
+  // Now that we have our custom libp2p bundle, let's start up the ipfs node!
+  const node = await IPFS.create({
+    libp2p: libp2pBundle
+  })
 
   // Lets log out the number of peers we have every 2 seconds
   setInterval(() => {
@@ -133,4 +129,6 @@ node.once('start', (err) => {
       console.log(`\nBandwidth Stats: ${JSON.stringify(stats, null, 2)}\n`)
     })
   }, 4000)
-})
+}
+
+main()
