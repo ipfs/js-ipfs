@@ -10,71 +10,50 @@ class App extends React.Component {
     super(props)
     this.state = {
       id: null,
-      version: null,
-      protocol_version: null,
-      added_file_hash: null,
-      added_file_contents: null
+      agentVersion: null,
+      protocolVersion: null,
+      addedFileHash: null,
+      addedFileContents: null
     }
   }
+
   componentDidMount () {
-    const self = this
-    let node
-
-    create()
-
-    function create () {
-      // Create the IPFS node instance
-
-      node = new IPFS({ repo: String(Math.random() + Date.now()) })
-
-      node.once('ready', () => {
-        console.log('IPFS node is ready')
-        ops()
-      })
-    }
-
-    function ops () {
-      node.id((err, res) => {
-        if (err) {
-          throw err
-        }
-        self.setState({
-          id: res.id,
-          version: res.agentVersion,
-          protocol_version: res.protocolVersion
-        })
-      })
-
-      node.add([Buffer.from(stringToUse)], (err, filesAdded) => {
-        if (err) { throw err }
-
-        const hash = filesAdded[0].hash
-        self.setState({ added_file_hash: hash })
-
-        node.cat(hash, (err, data) => {
-          if (err) { throw err }
-          self.setState({ added_file_contents: data.toString() })
-        })
-      })
-    }
+    this.ops()
   }
+
+  async ops () {
+    const node = await IPFS.create({ repo: String(Math.random() + Date.now()) })
+
+    console.log('IPFS node is ready')
+
+    const { id, agentVersion, protocolVersion } = await node.id()
+
+    this.setState({ id, agentVersion, protocolVersion })
+
+    const [{ hash }] = await node.add(Buffer.from(stringToUse))
+    this.setState({ addedFileHash: hash })
+
+    const data = await node.cat(hash)
+    this.setState({ addedFileContents: data.toString() })
+  }
+
   render () {
     return (
       <div style={{ textAlign: 'center' }}>
         <h1>Everything is working!</h1>
         <p>Your ID is <strong>{this.state.id}</strong></p>
-        <p>Your IPFS version is <strong>{this.state.version}</strong></p>
-        <p>Your IPFS protocol version is <strong>{this.state.protocol_version}</strong></p>
+        <p>Your IPFS version is <strong>{this.state.agentVersion}</strong></p>
+        <p>Your IPFS protocol version is <strong>{this.state.protocolVersion}</strong></p>
         <hr />
         <div>
           Added a file! <br />
-          {this.state.added_file_hash}
+          {this.state.addedFileHash}
         </div>
         <br />
         <br />
         <p>
           Contents of this file: <br />
-          {this.state.added_file_contents}
+          {this.state.addedFileContents}
         </p>
       </div>
     )
