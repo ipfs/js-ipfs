@@ -1,6 +1,6 @@
 <h1 align="center">
-  <a href="https://ipfs.io">
-    <img src="https://ipfs.io/ipfs/QmVk7srrwahXLNmcDYvyUEJptyoxpndnRa57YJ11L4jV26/ipfs.js.png" alt="IPFS in JavaScript logo" width="450" />
+  <a href="https://js.ipfs.io">
+    <img src="https://ipfs.io/ipfs/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh/js-ipfs-sticker.png" alt="IPFS in JavaScript logo" width="244" />
   </a>
 </h1>
 
