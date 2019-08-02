@@ -1,11 +1,9 @@
 'use strict'
 
-const createNode = require('./create-node.js')
+const createNode = require('./create-node')
 
-createNode((err, ipfs) => {
-  if (err) {
-    throw err
-  }
+async function main () {
+  const ipfs = await createNode()
 
   console.log('\nStart of the example:')
 
@@ -14,12 +12,10 @@ createNode((err, ipfs) => {
     likes: ['js-ipfs', 'icecream', 'steak']
   }
 
-  ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
-    if (err) {
-      throw err
-    }
-    console.log(cid.toBaseEncodedString())
-    // should print:
-    //   bafyreigsccjrxlioppkkzv27se4gxh2aygbxfnsobkaxxqiuni544uk66a
-  })
-})
+  const cid = await ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+  console.log(cid.toString())
+  // should print:
+  //   bafyreigsccjrxlioppkkzv27se4gxh2aygbxfnsobkaxxqiuni544uk66a
+}
+
+main()

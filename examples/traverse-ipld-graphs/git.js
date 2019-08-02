@@ -1,17 +1,15 @@
 'use strict'
 
-const createNode = require('./create-node.js')
-const asyncEach = require('async/each')
+const createNode = require('./create-node')
 const path = require('path')
 const multihashing = require('multihashing-async')
 const Block = require('ipfs-block')
 const CID = require('cids')
-const fs = require('fs')
+const fs = require('fs').promises
+const { promisify } = require('util')
 
-createNode((err, ipfs) => {
-  if (err) {
-    throw err
-  }
+async function main () {
+  const ipfs = await createNode()
 
   console.log('\nStart of the example:')
 
@@ -28,46 +26,35 @@ createNode((err, ipfs) => {
     path.join(__dirname, '/git-objects/ee71cef5001b84b0314438f76cf0acd338a2fd21')
   ]
 
-  asyncEach(gitObjects, (gitObjectsPath, cb) => {
-    const data = fs.readFileSync(gitObjectsPath)
+  await Promise.all(gitObjects.map(async gitObjectsPath => {
+    const data = await fs.readFile(gitObjectsPath)
+    const multihash = await promisify(multihashing)(data, 'sha1')
 
-    multihashing(data, 'sha1', (err, multihash) => {
-      if (err) {
-        return cb(err)
-      }
-      const cid = new CID(1, 'git-raw', multihash)
-      console.log(cid.toBaseEncodedString())
+    const cid = new CID(1, 'git-raw', multihash)
+    console.log(cid.toString())
 
-      ipfs.block.put(new Block(data, cid), cb)
-    })
-  }, (err) => {
-    if (err) {
-      throw err
+    await ipfs.block.put(new Block(data, cid))
+  }))
+
+  const v1tag = 'z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue'
+
+  async function logResult (fn, comment) {
+    const result = await fn()
+
+    if (Buffer.isBuffer(result.value)) { // Blobs (files) are returned as buffer instance
+      result.value = result.value.toString()
     }
 
-    const v1tag = 'z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue'
+    console.log('-'.repeat(80))
+    console.log(comment)
+    console.log(result.value)
+  }
 
-    function errOrLog (comment) {
-      return (err, result) => {
-        if (err) {
-          throw err
-        }
+  await logResult(() => ipfs.dag.get(v1tag + '/'), 'Tag object:')
+  await logResult(() => ipfs.dag.get(v1tag + '/object/message'), 'Tagged commit message:')
+  await logResult(() => ipfs.dag.get(v1tag + '/object/parents/0/message'), 'Parent of tagged commit:')
+  await logResult(() => ipfs.dag.get(v1tag + '/object/tree/src/hash/hello/hash'), '/src/hello file:')
+  await logResult(() => ipfs.dag.get(v1tag + '/object/parents/0/tree/src/hash/hello/hash'), 'previous version of /src/hello file:')
+}
 
-        if (Buffer.isBuffer(result.value)) { // Blobs (files) are returned as buffer instance
-          result.value = result.value.toString()
-        }
-
-        console.log('-'.repeat(80))
-        console.log(comment)
-        console.log(result.value)
-      }
-    }
-
-    ipfs.dag.get(v1tag + '/', errOrLog('Tag object:'))
-    ipfs.dag.get(v1tag + '/object/message', errOrLog('Tagged commit message:'))
-    ipfs.dag.get(v1tag + '/object/parents/0/message', errOrLog('Parent of tagged commit:'))
-
-    ipfs.dag.get(v1tag + '/object/tree/src/hash/hello/hash', errOrLog('/src/hello file:'))
-    ipfs.dag.get(v1tag + '/object/parents/0/tree/src/hash/hello/hash', errOrLog('previous version of /src/hello file:'))
-  })
-})
+main()
