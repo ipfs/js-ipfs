@@ -51,8 +51,8 @@ const removeFromDirectory = async (context, options) => {
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
-  const newParentNode = await DAGNode.rmLink(options.parent, options.name)
-  const cid = await context.ipld.put(newParentNode, format, {
+  options.parent.rmLink(options.name)
+  const cid = await context.ipld.put(options.parent, format, {
     cidVersion: options.cidVersion,
     hashAlg
   })
@@ -60,7 +60,7 @@ const removeFromDirectory = async (context, options) => {
   log(`Updated regular directory ${cid}`)
 
   return {
-    node: newParentNode,
+    node: options.parent,
     cid
   }
 }
@@ -104,11 +104,11 @@ const updateShard = async (context, positions, child, options) => {
   if (link.Name === `${prefix}${child.name}`) {
     log(`Removing existing link ${link.Name}`)
 
-    const newNode = await DAGNode.rmLink(node, link.Name)
+    node.rmLink(link.Name)
 
     await bucket.del(child.name)
 
-    return updateHamtDirectory(context, newNode.Links, bucket, options)
+    return updateHamtDirectory(context, node.Links, bucket, options)
   }
 
   log(`Descending into sub-shard ${link.Name} for ${prefix}${child.name}`)
@@ -135,8 +135,8 @@ const updateShard = async (context, positions, child, options) => {
 }
 
 const updateShardParent = async (context, bucket, parent, oldName, newName, size, cid, options) => {
-  parent = await DAGNode.rmLink(parent, oldName)
-  parent = await DAGNode.addLink(parent, new DAGLink(newName, size, cid))
+  parent.rmLink(oldName)
+  parent.addLink(new DAGLink(newName, size, cid))
 
   return updateHamtDirectory(context, parent.Links, bucket, options)
 }

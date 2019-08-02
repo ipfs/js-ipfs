@@ -2,7 +2,6 @@
 
 const core = require('../../src/core')
 const isWebWorker = require('detect-webworker')
-const promisify = require('promisify-es6')
 const {
   MemoryDatastore
 } = require('interface-datastore')
@@ -19,13 +18,6 @@ const createMfs = async () => {
       keys: MemoryDatastore,
       datastore: MemoryDatastore
     }
-  })
-
-  repo.init = promisify(repo.init, {
-    context: repo
-  })
-  repo.open = promisify(repo.open, {
-    context: repo
   })
 
   await repo.init({})

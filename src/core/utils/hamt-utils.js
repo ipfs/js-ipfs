@@ -21,7 +21,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
-  const parent = DAGNode.create(dir.marshal(), links)
+  const parent = new DAGNode(dir.marshal(), links)
   const cid = await context.ipld.put(parent, format, {
     cidVersion: options.cidVersion,
     hashAlg,

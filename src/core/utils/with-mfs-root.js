@@ -30,7 +30,7 @@ const loadMfsRoot = async (context) => {
     }
 
     log('Creating new MFS root')
-    const node = DAGNode.create(new UnixFs('directory').marshal())
+    const node = new DAGNode(new UnixFs('directory').marshal())
     cid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: 0,
       hashAlg: mh.names['sha2-256'] // why can't ipld look this up?

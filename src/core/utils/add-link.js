@@ -87,21 +87,21 @@ const convertToShardedDirectory = async (context, options) => {
 }
 
 const addToDirectory = async (context, options) => {
-  let parent = await DAGNode.rmLink(options.parent, options.name)
-  parent = await DAGNode.addLink(parent, new DAGLink(options.name, options.size, options.cid))
+  options.parent.rmLink(options.name)
+  options.parent.addLink(new DAGLink(options.name, options.size, options.cid))
 
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
   // Persist the new parent DAGNode
-  const cid = await context.ipld.put(parent, format, {
+  const cid = await context.ipld.put(options.parent, format, {
     cidVersion: options.cidVersion,
     hashAlg,
     hashOnly: !options.flush
   })
 
   return {
-    node: parent,
+    node: options.parent,
     cid
   }
 }
@@ -120,15 +120,13 @@ const addToShardedDirectory = async (context, options) => {
   const newLink = result.node.Links
     .find(link => link.Name.substring(0, 2) === path[0].prefix)
 
-  let parent = options.parent
-
   if (oldLink) {
-    parent = await DAGNode.rmLink(options.parent, oldLink.Name)
+    options.parent.rmLink(oldLink.Name)
   }
 
-  parent = await DAGNode.addLink(parent, newLink)
+  options.parent.addLink(newLink)
 
-  return updateHamtDirectory(context, parent.Links, path[0].bucket, options)
+  return updateHamtDirectory(context, options.parent.Links, path[0].bucket, options)
 }
 
 const addFileToShardedDirectory = async (context, options) => {

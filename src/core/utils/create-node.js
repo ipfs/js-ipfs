@@ -11,7 +11,7 @@ const createNode = async (context, type, options) => {
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
-  const node = DAGNode.create(new UnixFS(type).marshal())
+  const node = new DAGNode(new UnixFS(type).marshal())
   const cid = await context.ipld.put(node, format, {
     cidVersion: options.cidVersion,
     hashAlg
