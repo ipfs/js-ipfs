@@ -202,13 +202,13 @@ async function getFile () {
 
   const files = await node.get(hash)
 
-  return files.map(async (file) => {
+  return Promise.all(files.map(async (file) => {
     if (file.content) {
       await appendFile(file.name, hash, file.size, file.content)
       onSuccess(`The ${file.name} file was added.`)
       $emptyRow.style.display = 'none'
     }
-  })
+  }))
 }
 
 /* Drag & Drop
@@ -224,12 +224,12 @@ async function onDrop (event) {
 
   const files = Array.from(event.dataTransfer.files)
 
-  for (let i = 0; i < files.length; i++) {
-    fileSize = files[i].size
+  for (const file of files) {
+    fileSize = file.size // Note: fileSize is used by updateProgress
 
     const filesAdded = await node.add({
-      path: files[i].name,
-      content: files[i]
+      path: file.name,
+      content: file
     }, { wrapWithDirectory: true, progress: updateProgress })
 
     // As we are wrapping the content we use that hash to keep

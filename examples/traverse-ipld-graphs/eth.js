@@ -18,8 +18,8 @@ async function main () {
     path.join(__dirname, '/eth-blocks/block_302517')
   ]
 
-  for (let i = 0; i < ethBlocks.length; i++) {
-    const data = await fs.readFile(ethBlocks[i])
+  for (const ethBlockPath of ethBlocks) {
+    const data = await fs.readFile(ethBlockPath)
     const multihash = await promisify(multihashing)(data, 'keccak-256')
 
     const cid = new CID(1, 'eth-block', multihash)
