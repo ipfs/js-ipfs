@@ -1,13 +1,14 @@
 'use strict'
 
-const { Buffer } = require('../../')
-
 const log = (line) => {
+  if (!line) return
+
   const output = document.getElementById('output')
   let message
 
   if (line.message) {
     message = `Error: ${line.message.toString()}`
+    console.error(line)
   } else {
     message = line
   }
@@ -29,39 +30,30 @@ const dragDrop = (ipfs) => {
     event.preventDefault()
   }
 
-  container.ondrop = (event) => {
+  container.ondrop = async (event) => {
     event.preventDefault()
 
-    Array.prototype.slice.call(event.dataTransfer.items)
+    const files = Array.from(event.dataTransfer.items)
       .filter(item => item.kind === 'file')
       .map(item => item.getAsFile())
-      .forEach(file => {
-        const progress = log(`IPFS: Adding ${file.name} 0%`)
 
-        const reader = new window.FileReader()
-        reader.onload = (event) => {
-          ipfs.add({
-            path: file.name,
-            content: Buffer.from(event.target.result)
-          }, {
-            progress: (addedBytes) => {
-              progress.textContent = `IPFS: Adding ${file.name} ${parseInt((addedBytes / file.size) * 100)}%\r\n`
-            }
-          }, (error, added) => {
-            if (error) {
-              return log(error)
-            }
-
-            const hash = added[0].hash
-
-            log(`IPFS: Added ${hash}`)
-
-            document.querySelector('#hash').value = hash
-          })
+    for (const file of files) {
+      const progress = log(`IPFS: Adding ${file.name} 0%`)
+      const added = await ipfs.add({
+        path: file.name,
+        content: file
+      }, {
+        progress: (addedBytes) => {
+          progress.textContent = `IPFS: Adding ${file.name} ${parseInt((addedBytes / file.size) * 100)}%\r\n`
         }
-
-        reader.readAsArrayBuffer(file)
       })
+
+      const hash = added[0].hash
+
+      log(`IPFS: Added ${hash}`)
+
+      document.querySelector('#hash').value = hash
+    }
 
     if (event.dataTransfer.items && event.dataTransfer.items.clear) {
       event.dataTransfer.items.clear()

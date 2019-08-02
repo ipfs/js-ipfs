@@ -2,6 +2,7 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const { Buffer } = IPFS
 
 // Node
 const $nodeId = document.querySelector('.node-id')
@@ -13,7 +14,7 @@ const $peersList = $peers.querySelector('tbody')
 const $multiaddrInput = document.querySelector('#multiaddr-input')
 const $connectButton = document.querySelector('#peer-btn')
 // Files
-const $multihashInput = document.querySelector('#multihash-input')
+const $cidInput = document.querySelector('#cid-input')
 const $fetchButton = document.querySelector('#fetch-btn')
 const $dragContainer = document.querySelector('#drag-container')
 const $progressBar = document.querySelector('#progress-bar')
@@ -35,13 +36,12 @@ let fileSize = 0
 
 let node
 let info
-let Buffer = IPFS.Buffer
 
 /* ===========================================================================
    Start the IPFS node
    =========================================================================== */
 
-function start () {
+async function start () {
   if (!node) {
     const options = {
       EXPERIMENTAL: {
@@ -55,22 +55,49 @@ function start () {
       }
     }
 
-    node = new IPFS(options)
+    node = await IPFS.create(options)
 
-    node.once('start', () => {
-      node.id()
-        .then((id) => {
-          info = id
-          updateView('ready', node)
-          onSuccess('Node is ready.')
-          setInterval(refreshPeerList, 1000)
-          setInterval(sendFileList, 10000)
-        })
-        .catch((error) => onError(error))
+    try {
+      info = await node.id()
+      updateView('ready', node)
+    } catch (err) {
+      return onError(err)
+    }
 
-      subscribeToWorkpsace()
+    onSuccess('Node is ready.')
 
-      window.addEventListener('hashchange', workspaceUpdated)
+    setInterval(async () => {
+      try {
+        await refreshPeerList()
+      } catch (err) {
+        err.message = `Failed to refresh the peer list: ${err.message}`
+        onError(err)
+      }
+    }, 1000)
+
+    setInterval(async () => {
+      try {
+        await sendFileList()
+      } catch (err) {
+        err.message = `Failed to publish the file list: ${err.message}`
+        onError(err)
+      }
+    }, 10000)
+
+    try {
+      await subscribeToWorkpsace()
+    } catch (err) {
+      err.message = `Failed to subscribe to the workspace: ${err.message}`
+      return onError(err)
+    }
+
+    window.addEventListener('hashchange', async () => {
+      try {
+        await workspaceUpdated()
+      } catch (err) {
+        err.message = `Failed to subscribe to the updated workspace: ${err.message}`
+        onError(err)
+      }
     })
   }
 }
@@ -85,47 +112,39 @@ const messageHandler = (message) => {
   const messageSender = message.from
 
   // append new files when someone uploads them
-  if (myNode !== messageSender && !isFileInList(hash)) {
-    $multihashInput.value = hash
+  if (myNode !== messageSender && !FILES.includes(hash)) {
+    $cidInput.value = hash
     getFile()
   }
 }
 
-const subscribeToWorkpsace = () => {
-  node.pubsub.subscribe(workspace, messageHandler)
-    .then(() => {
-      const msg = `Subscribed to workspace ${workspace}`
-      $logs.innerHTML = msg
-    })
-    .catch(() => onError('An error occurred when subscribing to the workspace.'))
+const subscribeToWorkpsace = async () => {
+  await node.pubsub.subscribe(workspace, messageHandler)
+  const msg = `Subscribed to workspace ${workspace}`
+  $logs.innerHTML = msg
 }
 
 // unsubscribe from old workspace and re-subscribe to new one
-const workspaceUpdated = () => {
-  node.pubsub.unsubscribe(workspace).then(() => {
-    // clear files from old workspace
-    FILES = []
-    $fileHistory.innerHTML = ''
+const workspaceUpdated = async () => {
+  await node.pubsub.unsubscribe(workspace)
+  // clear files from old workspace
+  FILES = []
+  $fileHistory.innerHTML = ''
 
-    workspace = location.hash
-    subscribeToWorkpsace()
-  })
+  workspace = location.hash
+  await subscribeToWorkpsace()
 }
 
 const publishHash = (hash) => {
   const data = Buffer.from(hash)
-
-  node.pubsub.publish(workspace, data)
-    .catch(() => onError('An error occurred when publishing the message.'))
+  return node.pubsub.publish(workspace, data)
 }
 
 /* ===========================================================================
    Files handling
    =========================================================================== */
 
-const isFileInList = (hash) => FILES.indexOf(hash) !== -1
-
-const sendFileList = () => FILES.forEach((hash) => publishHash(hash))
+const sendFileList = () => Promise.all(FILES.map(publishHash))
 
 const updateProgress = (bytesLoaded) => {
   let percent = 100 - ((bytesLoaded / fileSize) * 100)
@@ -165,33 +184,31 @@ function appendFile (name, hash, size, data) {
 
   $fileHistory.insertBefore(row, $fileHistory.firstChild)
 
-  publishHash(hash)
+  return publishHash(hash)
 }
 
-function getFile () {
-  const hash = $multihashInput.value
+async function getFile () {
+  const hash = $cidInput.value
 
-  $multihashInput.value = ''
+  $cidInput.value = ''
 
   if (!hash) {
-    return onError('No multihash was inserted.')
-  } else if (isFileInList(hash)) {
+    return onError('No CID was inserted.')
+  } else if (FILES.includes(hash)) {
     return onSuccess('The file is already in the current workspace.')
   }
 
   FILES.push(hash)
 
-  node.get(hash)
-    .then((files) => {
-      files.forEach((file) => {
-        if (file.content) {
-          appendFile(file.name, hash, file.size, file.content)
-          onSuccess(`The ${file.name} file was added.`)
-          $emptyRow.style.display = 'none'
-        }
-      })
-    })
-    .catch(() => onError('An error occurred when fetching the files.'))
+  const files = await node.get(hash)
+
+  return Promise.all(files.map(async (file) => {
+    if (file.content) {
+      await appendFile(file.name, hash, file.size, file.content)
+      onSuccess(`The ${file.name} file was added.`)
+      $emptyRow.style.display = 'none'
+    }
+  }))
 }
 
 /* Drag & Drop
@@ -201,91 +218,65 @@ const onDragEnter = () => $dragContainer.classList.add('dragging')
 
 const onDragLeave = () => $dragContainer.classList.remove('dragging')
 
-function onDrop (event) {
+async function onDrop (event) {
   onDragLeave()
   event.preventDefault()
 
-  const dt = event.dataTransfer
-  const filesDropped = dt.files
+  const files = Array.from(event.dataTransfer.files)
 
-  function readFileContents (file) {
-    return new Promise((resolve) => {
-      const reader = new window.FileReader()
-      reader.onload = (event) => resolve(event.target.result)
-      reader.readAsArrayBuffer(file)
-    })
+  for (const file of files) {
+    fileSize = file.size // Note: fileSize is used by updateProgress
+
+    const filesAdded = await node.add({
+      path: file.name,
+      content: file
+    }, { wrapWithDirectory: true, progress: updateProgress })
+
+    // As we are wrapping the content we use that hash to keep
+    // the original file name when adding it to the table
+    $cidInput.value = filesAdded[1].hash
+
+    resetProgress()
+    await getFile()
   }
-
-  const files = []
-  for (let i = 0; i < filesDropped.length; i++) {
-    files.push(filesDropped[i])
-  }
-
-  files.forEach((file) => {
-    readFileContents(file)
-      .then((buffer) => {
-        fileSize = file.size
-
-        node.add({
-          path: file.name,
-          content: Buffer.from(buffer)
-        }, { wrapWithDirectory: true, progress: updateProgress }, (err, filesAdded) => {
-          if (err) {
-            return onError(err)
-          }
-
-          // As we are wrapping the content we use that hash to keep
-          // the original file name when adding it to the table
-          $multihashInput.value = filesAdded[1].hash
-
-          resetProgress()
-          getFile()
-        })
-      })
-      .catch(onError)
-  })
 }
 
 /* ===========================================================================
    Peers handling
    =========================================================================== */
 
-function connectToPeer (event) {
+async function connectToPeer (event) {
   const multiaddr = $multiaddrInput.value
 
   if (!multiaddr) {
-    return onError('No multiaddr was inserted.')
+    throw new Error('No multiaddr was inserted.')
   }
 
-  node.swarm.connect(multiaddr)
-    .then(() => {
-      onSuccess(`Successfully connected to peer.`)
-      $multiaddrInput.value = ''
-    })
-    .catch(() => onError('An error occurred when connecting to the peer.'))
+  await node.swarm.connect(multiaddr)
+
+  onSuccess(`Successfully connected to peer.`)
+  $multiaddrInput.value = ''
 }
 
-function refreshPeerList () {
-  node.swarm.peers()
-    .then((peers) => {
-      const peersAsHtml = peers.reverse()
-        .map((peer) => {
-          if (peer.addr) {
-            const addr = peer.addr.toString()
-            if (addr.indexOf('ipfs') >= 0) {
-              return addr
-            } else {
-              return addr + peer.peer.id.toB58String()
-            }
-          }
-        })
-        .map((addr) => {
-          return `<tr><td>${addr}</td></tr>`
-        }).join('')
+async function refreshPeerList () {
+  const peers = await node.swarm.peers()
 
-      $peersList.innerHTML = peersAsHtml
+  const peersAsHtml = peers.reverse()
+    .map((peer) => {
+      if (peer.addr) {
+        const addr = peer.addr.toString()
+        if (addr.indexOf('ipfs') >= 0) {
+          return addr
+        } else {
+          return addr + peer.peer.id.toB58String()
+        }
+      }
     })
-    .catch((error) => onError(error))
+    .map((addr) => {
+      return `<tr><td>${addr}</td></tr>`
+    }).join('')
+
+  $peersList.innerHTML = peersAsHtml
 }
 
 /* ===========================================================================
@@ -298,6 +289,7 @@ function onSuccess (msg) {
 }
 
 function onError (err) {
+  console.log(err)
   let msg = 'An error occured, check the dev console'
 
   if (err.stack !== undefined) {
@@ -345,10 +337,31 @@ const startApplication = () => {
   // Setup event listeners
   $dragContainer.addEventListener('dragenter', onDragEnter)
   $dragContainer.addEventListener('dragover', onDragEnter)
-  $dragContainer.addEventListener('drop', onDrop)
+  $dragContainer.addEventListener('drop', async e => {
+    try {
+      await onDrop(e)
+    } catch (err) {
+      err.message = `Failed to add files: ${err.message}`
+      onError(err)
+    }
+  })
   $dragContainer.addEventListener('dragleave', onDragLeave)
-  $fetchButton.addEventListener('click', getFile)
-  $connectButton.addEventListener('click', connectToPeer)
+  $fetchButton.addEventListener('click', async () => {
+    try {
+      await getFile()
+    } catch (err) {
+      err.message = `Failed to fetch CID: ${err.message}`
+      onError(err)
+    }
+  })
+  $connectButton.addEventListener('click', async () => {
+    try {
+      await connectToPeer()
+    } catch (err) {
+      err.message = `Failed to connect to peer: ${err.message}`
+      onError(err)
+    }
+  })
   $workspaceBtn.addEventListener('click', () => {
     window.location.hash = $workspaceInput.value
   })

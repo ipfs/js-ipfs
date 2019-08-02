@@ -4,12 +4,14 @@
   <title>IPFS in the Browser</title>
   <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
   <script type="text/javascript">
-    const node = new Ipfs({ repo: 'ipfs-' + Math.random() })
+    document.addEventListener('DOMContentLoaded', async () => {
+      const node = await Ipfs.create({ repo: 'ipfs-' + Math.random() })
+      window.node = node
 
-    node.once('ready', () => {
-      console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
+      const status = node.isOnline() ? 'online' : 'offline'
 
-      document.getElementById("status").innerHTML= 'Node status: ' + (node.isOnline() ? 'online' : 'offline')
+      console.log(`Node status: ${status}`)
+      document.getElementById('status').innerHTML = `Node status: ${status}`
 
       // You can write more code here to use it. Use methods like
       // node.add, node.get. See the API docs here:
@@ -29,25 +31,24 @@
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
     const { Buffer } = Ipfs
-    node.add(new Buffer('Hello world!'), (err, filesAdded) => {
-      if (err) {
-        return console.error('Error - ipfs add', err, res)
-      }
 
+    async function addFile () {
+      const filesAdded = await node.add(Buffer.from('Hello world!'))
       filesAdded.forEach((file) => console.log('successfully stored', file.hash))
-    })
+    }
+
+    addFile()
   </code>
 
   <p>You can cat that same file. If you used the exact same string as above ('Hello world!') you should have an hash like this: 'QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY'</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY', function (err, data) {
-      if (err) {
-        return console.error('Error - ipfs files cat', err, res)
-      }
-
+    async function catFile () {
+      const data = await node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY')
       console.log(data.toString())
-    })
+    }
+
+    catFile()
   </code>
 </body>
 </html>

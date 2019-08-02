@@ -3,39 +3,27 @@
 /* global Ipfs */
 /* eslint-env browser */
 
-const repoPath = `ipfs-${Math.random()}`
-const ipfs = new Ipfs({ repo: repoPath })
 const { Buffer } = Ipfs
 
-ipfs.on('ready', () => {
-  const directory = 'directory'
+const main = async () => {
+  const repoPath = `ipfs-${Math.random()}`
+  const ipfs = await Ipfs.create({ repo: repoPath })
+
+  const directoryName = 'directory'
 
   // Our list of files
-  const files = createFiles(directory)
+  const inputFiles = createFiles(directoryName)
 
-  streamFiles(directory, files, (err, directoryHash) => {
-    if (err) {
-      return log(`There was an error adding the files ${err}`)
-    }
+  const directoryHash = await streamFiles(ipfs, directoryName, inputFiles)
 
-    ipfs.ls(directoryHash, (err, files) => {
-      if (err) {
-        return log(`There was an error listing the files ${err}`)
-      }
+  const fileList = await ipfs.ls(directoryHash)
 
-      log(`
---
+  log(`\n--\n\nDirectory contents:\n\n${directoryName}/ ${directoryHash}`)
 
-Directory contents:
-
-${directory}/ ${directoryHash}`)
-
-      files.forEach((file, index) => {
-        log(` ${index < files.length - 1 ? '\u251C' : '\u2514'}\u2500 ${file.name} ${file.path} ${file.hash}`)
-      })
-    })
+  fileList.forEach((file, index) => {
+    log(` ${index < fileList.length - 1 ? '\u251C' : '\u2514'}\u2500 ${file.name} ${file.path} ${file.hash}`)
   })
-})
+}
 
 const createFiles = (directory) => {
   return [{
@@ -52,25 +40,30 @@ const createFiles = (directory) => {
   }]
 }
 
-const streamFiles = (directory, files, cb) => {
+const streamFiles = (ipfs, directory, files) => new Promise((resolve, reject) => {
   // Create a stream to write files to
   const stream = ipfs.addReadableStream()
-  stream.on('data', function (data) {
+
+  stream.on('data', (data) => {
     log(`Added ${data.path} hash: ${data.hash}`)
 
     // The last data event will contain the directory hash
     if (data.path === directory) {
-      cb(null, data.hash)
+      resolve(data.hash)
     }
   })
+
+  stream.on('error', reject)
 
   // Add the files one by one
   files.forEach(file => stream.write(file))
 
   // When we have no more files to add, close the stream
   stream.end()
-}
+})
 
 const log = (line) => {
   document.getElementById('output').appendChild(document.createTextNode(`${line}\r\n`))
 }
+
+main()

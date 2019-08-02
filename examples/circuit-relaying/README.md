@@ -8,7 +8,7 @@ In p2p networks there are many cases where two nodes can't talk to each other di
 
 #### How does circuit relay work?
 
->for a more in-depth explanation take a look at the [relay spec](https://github.com/libp2p/specs/blob/master/relay/README.md) and `js-libp2p-circuit` [README](https://github.com/libp2p/js-libp2p-circuit/blob/master/README.md)
+> For a more in-depth explanation take a look at the [relay spec](https://github.com/libp2p/specs/blob/master/relay/README.md) and `js-libp2p-circuit` [README](https://github.com/libp2p/js-libp2p-circuit/blob/master/README.md)
 
 Here is a simple diagram depicting how a typical circuit-relay connection might look:
 
@@ -137,7 +137,7 @@ You can use a `go-ipfs` or a `js-ipfs` node as a relay. We'll demonstrate how to
 
 In order to enable the relay functionality in `go-ipfs` we need to edit it's configuration file, located under `~/.ipfs/config`:
 
-```js
+```json
   "Swarm": {
     "AddrFilters": null,
     "ConnMgr": {
@@ -157,7 +157,7 @@ The two options we're looking for are `DisableRelay` and `EnableRelayHop`. We wa
 
 We also need to make sure our go node can be dialed from the browser. For that, we need to enable a transport that both the browser and the go node can communicate over. We will use the web sockets transport, although there are others that can be used, such as `webrtc-star` and `websocket-star`. To enable the transport and set the interface and port we need to edit the `~/.ipfs/config` one more time. Let's find the `Swarm` array and add our desired address there. I picked `/ip4/0.0.0.0/tcp/4004/ws` because it is a port I know is not being used by anything on my machine, but we can also use port `0` so that the OS chooses a random available port for us — either one should work.
 
-```
+```json
   "Swarm": [
     "/ip4/0.0.0.0/tcp/4001",
     "/ip4/0.0.0.0/tcp/4004/ws",
@@ -190,7 +190,7 @@ We can start the relay nodes by either running `ipfs daemon` or `jsipfs daemon`:
 
 **go ipfs**
 
-```
+```console
 $ ipfs daemon
 Initializing daemon...
 Swarm listening on /ip4/127.0.0.1/tcp/4001
@@ -208,7 +208,7 @@ Daemon is ready
 
 In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
 
-```
+```console
 $ ipfs id
 {
         "ID": "QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
@@ -229,7 +229,7 @@ We can then grab the resolved multiaddr from the `Addresses` array — `/ip4/127
 
 **js ipfs**
 
-```
+```console
 $ jsipfs daemon
 Initializing daemon...
 Swarm listening on /p2p-circuit/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
@@ -249,14 +249,14 @@ Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...`. Note
 
 Now that we have ipfs installed and initialized, let's set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Let's `cd` into the `examples/circuit-relaying` directory and run:
 
-```
+```sh
 npm install
 ```
 
 After it finishes, we should be able to run the project with `npm start` and get output similar to:
 
-```
-npm run start
+```sh
+npm start
 Server running at http://localhost:1234
 ```
 
@@ -306,8 +306,9 @@ Good question!
   - _Notice the `relay.enabled` below_
 
 you can find it in [src/app.js](src/app.js)
+
 ```js
-const ipfs = new IPFS({
+const ipfs = await IPFS.create({
   repo: repo(),
   relay: {
     enabled: true,
@@ -323,15 +324,15 @@ const ipfs = new IPFS({
 
 - We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
 
-- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L102...L107) - lines 102-107
+- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L103...L108) - lines 103-108
 
 ```js
-ipfs.swarm.connect(peer, (err) => {
-  if (err) {
-    return console.error(err)
-  }
-  $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
-})
+try {
+  await ipfs.swarm.connect(peer)
+} catch (err) {
+  return console.error(err)
+}
+$pAddrs.innerHTML += `<li>${peer.trim()}</li>`
 ```
 
 The above code snippet handles connecting to other nodes using `ipfs.swarm.connect`. Notice how there wasn't anything special we had to do to use the circuit once we had everything connected; all the magic is in the multiaddr! [Multiaddrs](https://multiformats.io/multiaddr/) are **AWESOME**!

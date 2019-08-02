@@ -40,7 +40,7 @@ export default function useIpfsFactory ({ commands }) {
     } else {
       try {
         console.time('IPFS Started')
-        ipfs = await promiseMeJsIpfs(Ipfs, {})
+        ipfs = await Ipfs.create()
         console.timeEnd('IPFS Started')
       } catch (error) {
         console.error('IPFS init error:', error)
@@ -53,12 +53,4 @@ export default function useIpfsFactory ({ commands }) {
   }
 
   return { ipfs, isIpfsReady, ipfsInitError }
-}
-
-function promiseMeJsIpfs (Ipfs, opts) {
-  return new Promise((resolve, reject) => {
-    const ipfs = new Ipfs(opts)
-    ipfs.once('ready', () => resolve(ipfs))
-    ipfs.once('error', err => reject(err))
-  })
 }

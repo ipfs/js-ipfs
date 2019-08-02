@@ -2,9 +2,8 @@
 
 const IPFS = require('ipfs')
 
-const node = new IPFS()
-
-node.on('ready', async () => {
+async function main () {
+  const node = await IPFS.create()
   const version = await node.version()
 
   console.log('Version:', version.version)
@@ -19,4 +18,6 @@ node.on('ready', async () => {
   const fileBuffer = await node.cat(filesAdded[0].hash)
 
   console.log('Added file contents:', fileBuffer.toString())
-})
+}
+
+main()

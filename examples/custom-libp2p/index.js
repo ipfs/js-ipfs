@@ -10,7 +10,6 @@ const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
 const MPLEX = require('pull-mplex')
 const SECIO = require('libp2p-secio')
-const assert = require('assert')
 
 /**
  * Options for the libp2p bundle
@@ -104,33 +103,31 @@ const libp2pBundle = (opts) => {
   })
 }
 
-// Now that we have our custom libp2p bundle, let's start up the ipfs node!
-const node = new IPFS({
-  libp2p: libp2pBundle
-})
-
-// Listen for the node to start, so we can log out some metrics
-node.once('start', (err) => {
-  assert.ifError(err, 'Should startup without issue')
+async function main () {
+  // Now that we have our custom libp2p bundle, let's start up the ipfs node!
+  const node = await IPFS.create({
+    libp2p: libp2pBundle
+  })
 
   // Lets log out the number of peers we have every 2 seconds
-  setInterval(() => {
-    node.swarm.peers((err, peers) => {
-      if (err) {
-        console.log('An error occurred trying to check our peers:', err)
-        process.exit(1)
-      }
+  setInterval(async () => {
+    try {
+      const peers = await node.swarm.peers()
       console.log(`The node now has ${peers.length} peers.`)
-    })
+    } catch (err) {
+      console.log('An error occurred trying to check our peers:', err)
+    }
   }, 2000)
 
   // Log out the bandwidth stats every 4 seconds so we can see how our configuration is doing
-  setInterval(() => {
-    node.stats.bw((err, stats) => {
-      if (err) {
-        console.log('An error occurred trying to check our stats:', err)
-      }
+  setInterval(async () => {
+    try {
+      const stats = await node.stats.bw()
       console.log(`\nBandwidth Stats: ${JSON.stringify(stats, null, 2)}\n`)
-    })
+    } catch (err) {
+      console.log('An error occurred trying to check our stats:', err)
+    }
   }, 4000)
-})
+}
+
+main()

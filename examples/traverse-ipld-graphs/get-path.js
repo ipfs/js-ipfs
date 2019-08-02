@@ -1,11 +1,9 @@
 'use strict'
 
-const createNode = require('./create-node.js')
+const createNode = require('./create-node')
 
-createNode((err, ipfs) => {
-  if (err) {
-    throw err
-  }
+async function main () {
+  const ipfs = await createNode()
 
   console.log('\nStart of the example:')
 
@@ -14,35 +12,17 @@ createNode((err, ipfs) => {
     likes: ['js-ipfs', 'icecream', 'steak']
   }
 
-  ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
-    if (err) {
-      throw err
-    }
+  const cid = await ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+  let result
 
-    ipfs.dag.get(cid, 'name', (err, result) => {
-      if (err) {
-        throw err
-      }
+  result = await ipfs.dag.get(cid, 'name')
+  console.log(result.value)
 
-      console.log(result.value, result.remainderPath)
-    })
+  result = await ipfs.dag.get(cid, 'likes')
+  console.log(result.value)
 
-    ipfs.dag.get(cid, 'likes', (err, result) => {
-      if (err) {
-        throw err
-      }
+  result = await ipfs.dag.get(cid + '/likes/0')
+  console.log(result.value)
+}
 
-      console.log(result.value)
-    })
-
-    const cidStr = cid.toBaseEncodedString()
-
-    ipfs.dag.get(cidStr + '/likes/0', (err, result) => {
-      if (err) {
-        throw err
-      }
-
-      console.log(result.value)
-    })
-  })
-})
+main()

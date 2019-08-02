@@ -1,21 +1,21 @@
 import 'babel-polyfill'
 import IPFS from 'ipfs'
 
-// IPFS node setup
-const node = new IPFS({ repo: String(Math.random() + Date.now()) })
+document.addEventListener('DOMContentLoaded', async () => {
+  // IPFS node setup
+  const node = await IPFS.create({ repo: String(Math.random() + Date.now()) })
 
-// UI elements
-const status = document.getElementById('status')
-const output = document.getElementById('output')
+  // UI elements
+  const status = document.getElementById('status')
+  const output = document.getElementById('output')
 
-output.textContent = ''
+  output.textContent = ''
 
-function log (txt) {
-  console.info(txt)
-  output.textContent += `${txt.trim()}\n`
-}
+  function log (txt) {
+    console.info(txt)
+    output.textContent += `${txt.trim()}\n`
+  }
 
-node.on('ready', async () => {
   status.innerText = 'Connected to IPFS :)'
 
   const version = await node.version()

@@ -1,17 +1,15 @@
 'use strict'
 
-const createNode = require('./create-node.js')
-const asyncEach = require('async/each')
+const createNode = require('./create-node')
 const path = require('path')
 const multihashing = require('multihashing-async')
 const Block = require('ipfs-block')
 const CID = require('cids')
-const fs = require('fs')
+const fs = require('fs').promises
+const { promisify } = require('util')
 
-createNode((err, ipfs) => {
-  if (err) {
-    throw err
-  }
+async function main () {
+  const ipfs = await createNode()
 
   console.log('\nStart of the example:')
 
@@ -20,34 +18,25 @@ createNode((err, ipfs) => {
     path.join(__dirname, '/eth-blocks/block_302517')
   ]
 
-  asyncEach(ethBlocks, (ethBlockPath, cb) => {
-    const data = fs.readFileSync(ethBlockPath)
+  for (const ethBlockPath of ethBlocks) {
+    const data = await fs.readFile(ethBlockPath)
+    const multihash = await promisify(multihashing)(data, 'keccak-256')
 
-    multihashing(data, 'keccak-256', (err, multihash) => {
-      if (err) {
-        cb(err)
-      }
-      const cid = new CID(1, 'eth-block', multihash)
-      // console.log(cid.toBaseEncodedString())
+    const cid = new CID(1, 'eth-block', multihash)
+    // console.log(cid.toBaseEncodedString())
 
-      ipfs.block.put(new Block(data, cid), cb)
-    })
-  }, (err) => {
-    if (err) {
-      throw err
-    }
+    await ipfs.block.put(new Block(data, cid))
+  }
 
-    const block302516 = 'z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA'
-    const block302517 = 'z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj'
+  const block302516 = 'z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA'
+  const block302517 = 'z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj'
+  let res
 
-    function errOrLog (err, result) {
-      if (err) {
-        throw err
-      }
-      console.log(result.value.toString('hex'))
-    }
+  res = await ipfs.dag.get(block302516 + '/number')
+  console.log(res.value.toString('hex'))
 
-    ipfs.dag.get(block302516 + '/number', errOrLog)
-    ipfs.dag.get(block302517 + '/parent/number', errOrLog)
-  })
-})
+  res = await ipfs.dag.get(block302517 + '/parent/number')
+  console.log(res.value.toString('hex'))
+}
+
+main()
