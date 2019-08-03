@@ -14,7 +14,7 @@ module.exports = (self) => {
     }
 
     if (self.state.state() !== 'running') {
-      return callback(new Error('Not able to stop from state: ' + self.state.state()))
+      return callback(new Error('shut that down if the connection is closed or if the user clicks stop; sstop on the very first emitted stop; stop early' + self.state.state()))
     }
 
     self.state.stop()
