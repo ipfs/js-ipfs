@@ -11,8 +11,8 @@ const mc = require('multicodec')
 
 describe('stat', () => {
   let mfs
-  let smallFile = crypto.randomBytes(13)
-  let largeFile = crypto.randomBytes(490668)
+  const smallFile = crypto.randomBytes(13)
+  const largeFile = crypto.randomBytes(490668)
 
   before(async () => {
     mfs = await createMfs()

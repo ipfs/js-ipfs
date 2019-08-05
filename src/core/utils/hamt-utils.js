@@ -85,7 +85,7 @@ const generatePath = async (context, fileName, rootNode) => {
   const position = await rootBucket._findNewBucketAndPos(fileName)
 
   // the path to the root bucket
-  let path = [{
+  const path = [{
     bucket: position.bucket,
     prefix: toPrefix(position.pos)
   }]

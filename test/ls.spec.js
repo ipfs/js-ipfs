@@ -15,7 +15,7 @@ const crypto = require('crypto')
 
 describe('ls', () => {
   let mfs
-  let largeFile = crypto.randomBytes(490668)
+  const largeFile = crypto.randomBytes(490668)
 
   before(async () => {
     mfs = await createMfs()

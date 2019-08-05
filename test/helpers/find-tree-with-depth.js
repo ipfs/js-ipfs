@@ -22,7 +22,7 @@ const findTreeWithDepth = async (ipld, children, depth) => {
   }
 }
 
-const load = async (ipld, cid) => {
+const load = (ipld, cid) => {
   return new Promise((resolve, reject) => {
     ipld.get(cid, (err, res) => {
       if (err) {

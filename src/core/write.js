@@ -174,7 +174,7 @@ const write = async (context, source, destination, options) => {
     }
   })
 
-  let result = await last(importer([{
+  const result = await last(importer([{
     content: content
   }], context.ipld, {
     progress: options.progress,
@@ -216,7 +216,7 @@ const asyncZeroes = (count, chunkSize = MAX_CHUNK_SIZE) => {
   const buf = Buffer.alloc(chunkSize, 0)
 
   const stream = {
-    [Symbol.asyncIterator]: async function * _asyncZeroes () {
+    [Symbol.asyncIterator]: function * _asyncZeroes () {
       while (true) {
         yield buf.slice()
       }

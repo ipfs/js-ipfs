@@ -9,7 +9,7 @@ module.exports = (options = {}, defaults) => {
 
   const output = {}
 
-  for (let key in defaults) {
+  for (const key in defaults) {
     if (options[key] !== null && options[key] !== undefined) {
       output[key] = options[key]
     } else {

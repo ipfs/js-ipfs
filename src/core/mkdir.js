@@ -53,9 +53,9 @@ module.exports = (context) => {
       throw errCode(new Error("path cannot have the prefix 'ipfs'"), 'ERR_INVALID_PATH')
     }
 
-    let root = await withMfsRoot(context)
+    const root = await withMfsRoot(context)
     let parent
-    let trail = []
+    const trail = []
     const emptyDir = await createNode(context, 'directory', options)
 
     // make sure the containing folder exists, creating it if necessary

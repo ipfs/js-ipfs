@@ -11,7 +11,7 @@ const streamToBuffer = require('./helpers/stream-to-buffer')
 
 describe('read', () => {
   let mfs
-  let smallFile = crypto.randomBytes(13)
+  const smallFile = crypto.randomBytes(13)
 
   before(async () => {
     mfs = await createMfs()
@@ -32,7 +32,7 @@ describe('read', () => {
 
     it('reads a file with an offset', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      let data = crypto.randomBytes(100)
+      const data = crypto.randomBytes(100)
       const offset = 10
 
       await mfs.write(path, data, {
@@ -48,7 +48,7 @@ describe('read', () => {
 
     it('reads a file with a length', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      let data = crypto.randomBytes(100)
+      const data = crypto.randomBytes(100)
       const length = 10
 
       await mfs.write(path, data, {
@@ -64,7 +64,7 @@ describe('read', () => {
 
     it('reads a file with a legacy count argument', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      let data = crypto.randomBytes(100)
+      const data = crypto.randomBytes(100)
       const length = 10
 
       await mfs.write(path, data, {
@@ -80,7 +80,7 @@ describe('read', () => {
 
     it('reads a file with an offset and a length', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      let data = crypto.randomBytes(100)
+      const data = crypto.randomBytes(100)
       const offset = 10
       const length = 10
 
@@ -98,7 +98,7 @@ describe('read', () => {
 
     it('reads a file with an offset and a legacy count argument', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      let data = crypto.randomBytes(100)
+      const data = crypto.randomBytes(100)
       const offset = 10
       const length = 10
 

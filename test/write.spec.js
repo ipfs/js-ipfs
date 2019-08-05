@@ -25,8 +25,8 @@ if (isNode) {
 
 describe('write', () => {
   let mfs
-  let smallFile = crypto.randomBytes(13)
-  let largeFile = crypto.randomBytes(490668)
+  const smallFile = crypto.randomBytes(13)
+  const largeFile = crypto.randomBytes(490668)
 
   const runTest = (fn) => {
     const iterations = 5
@@ -44,7 +44,7 @@ describe('write', () => {
       type: 'Really large file',
       path: `/really-large-file-${Math.random()}.jpg`,
       content: {
-        [Symbol.asyncIterator]: async function * () {
+        [Symbol.asyncIterator]: function * () {
           for (let i = 0; i < iterations; i++) {
             yield largeFile
           }

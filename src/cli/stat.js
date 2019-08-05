@@ -49,7 +49,7 @@ Type: <type>`,
   },
 
   handler (argv) {
-    let {
+    const {
       path,
       getIpfs,
       format,

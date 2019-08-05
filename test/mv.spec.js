@@ -37,7 +37,7 @@ describe('mv', () => {
   it('moves a file', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
-    let data = crypto.randomBytes(500)
+    const data = crypto.randomBytes(500)
 
     await mfs.write(source, data, {
       create: true

@@ -134,7 +134,7 @@ const updateShard = async (context, positions, child, options) => {
   return updateShardParent(context, bucket, node, prefix, newName, size, result.cid, options)
 }
 
-const updateShardParent = async (context, bucket, parent, oldName, newName, size, cid, options) => {
+const updateShardParent = (context, bucket, parent, oldName, newName, size, cid, options) => {
   parent.rmLink(oldName)
   parent.addLink(new DAGLink(newName, size, cid))
 

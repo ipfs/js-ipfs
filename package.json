@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
   "devDependencies": {
-    "aegir": "^18.0.2",
+    "aegir": "^20.0.0",
     "async-iterator-all": "^1.0.0",
     "chai": "^4.2.0",
     "detect-node": "^2.0.4",
@@ -48,7 +48,7 @@
     "ipfs-repo": "~0.27.0",
     "ipld": "~0.25.0",
     "memdown": "^4.0.0",
-    "temp-write": "^3.4.0"
+    "temp-write": "^4.0.0"
   },
   "dependencies": {
     "@hapi/boom": "^7.4.2",
@@ -56,13 +56,13 @@
     "async-iterator-last": "^1.0.0",
     "cids": "~0.7.1",
     "debug": "^4.1.0",
-    "err-code": "^1.1.2",
+    "err-code": "^2.0.0",
     "hamt-sharding": "~0.0.2",
     "interface-datastore": "~0.7.0",
     "ipfs-multipart": "~0.1.0",
     "ipfs-unixfs": "~0.1.16",
-    "ipfs-unixfs-exporter": "~0.37.6",
-    "ipfs-unixfs-importer": "~0.39.9",
+    "ipfs-unixfs-exporter": "~0.38.0",
+    "ipfs-unixfs-importer": "~0.40.0",
     "ipld-dag-pb": "~0.18.0",
     "joi-browser": "^13.4.0",
     "mortice": "^1.2.1",

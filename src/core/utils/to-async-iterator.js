@@ -7,7 +7,7 @@ const {
   MAX_CHUNK_SIZE
 } = require('./constants')
 
-const toAsyncIterator = async (content) => {
+const toAsyncIterator = (content) => {
   if (!content) {
     throw errCode(new Error('paths must start with a leading /'), 'ERR_INVALID_PATH')
   }
@@ -23,7 +23,7 @@ const toAsyncIterator = async (content) => {
     log('Content was array-like')
 
     return {
-      [Symbol.asyncIterator]: async function * bufferContent () {
+      [Symbol.asyncIterator]: function * bufferContent () {
         yield content
       }
     }
@@ -46,7 +46,7 @@ const toAsyncIterator = async (content) => {
     let index = 0
 
     const iterator = {
-      next: async () => {
+      next: () => {
         if (index > content.size) {
           return {
             done: true

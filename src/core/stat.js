@@ -22,7 +22,7 @@ module.exports = (context) => {
       mfsPath
     } = await toMfsPath(context, path)
 
-    let exportPath = type === 'ipfs' && cid ? cid : mfsPath
+    const exportPath = type === 'ipfs' && cid ? cid : mfsPath
     let file
 
     try {

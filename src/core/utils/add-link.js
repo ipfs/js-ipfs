@@ -1,7 +1,6 @@
 'use strict'
 
 const {
-  DAGNode,
   DAGLink
 } = require('ipld-dag-pb')
 const CID = require('cids')
@@ -157,11 +156,11 @@ const addFileToShardedDirectory = async (context, options) => {
   let index = 0
 
   while (index < path.length) {
-    let segment = path[index]
+    const segment = path[index]
     index++
-    let node = segment.node
+    const node = segment.node
 
-    let link = node.Links
+    const link = node.Links
       .find(link => link.Name.substring(0, 2) === segment.prefix)
 
     if (!link) {
@@ -230,7 +229,7 @@ const addFileToShardedDirectory = async (context, options) => {
 const toBucketPath = (position) => {
   let bucket = position.bucket
   let positionInBucket = position.pos
-  let path = [{
+  const path = [{
     bucket,
     prefix: toPrefix(positionInBucket)
   }]

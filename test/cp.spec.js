@@ -90,7 +90,7 @@ describe('cp', () => {
   it('copies a file to new location', async () => {
     const source = `/source-file-${Math.random()}.txt`
     const destination = `/dest-file-${Math.random()}.txt`
-    let data = crypto.randomBytes(500)
+    const data = crypto.randomBytes(500)
 
     await mfs.write(source, data, {
       create: true
@@ -98,7 +98,7 @@ describe('cp', () => {
 
     await mfs.cp(source, destination)
 
-    let buffer = await streamToBuffer(mfs.read(destination))
+    const buffer = await streamToBuffer(mfs.read(destination))
 
     expect(buffer).to.deep.equal(data)
   })

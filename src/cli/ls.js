@@ -38,7 +38,7 @@ module.exports = {
   },
 
   handler (argv) {
-    let {
+    const {
       path,
       getIpfs,
       long,

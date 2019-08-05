@@ -32,7 +32,7 @@ module.exports = {
   },
 
   handler (argv) {
-    let {
+    const {
       source,
       dest,
       getIpfs,

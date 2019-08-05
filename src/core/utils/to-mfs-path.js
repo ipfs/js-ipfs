@@ -11,7 +11,7 @@ const errCode = require('err-code')
 const IPFS_PREFIX = 'ipfs'
 
 const toMfsPath = async (context, path) => {
-  let outputArray = Array.isArray(path)
+  const outputArray = Array.isArray(path)
   let paths = Array.isArray(path) ? path : [path]
   const root = await loadMfsRoot(context)
 

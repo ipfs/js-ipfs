@@ -12,7 +12,7 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    let {
+    const {
       path,
       getIpfs
     } = argv
