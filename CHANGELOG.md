@@ -1,3 +1,12 @@
+# [0.13.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.12.0...v0.13.0) (2019-08-05)
+
+
+### Bug Fixes
+
+* update to newest IPLD libraries ([c21e032](https://github.com/ipfs/js-ipfs-mfs/commit/c21e032))
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.11.7...v0.12.0) (2019-07-18)
 
