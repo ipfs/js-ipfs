@@ -161,7 +161,7 @@
     "pull-ndjson": "~0.1.1",
     "pull-pushable": "^2.2.0",
     "pull-sort": "^1.0.1",
-    "pull-stream": "^3.6.13",
+    "pull-stream": "^3.6.14",
     "pull-stream-to-async-iterator": "^1.0.2",
     "pull-stream-to-stream": "^1.3.4",
     "pull-traverse": "^1.0.3",
