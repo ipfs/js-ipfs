@@ -17,10 +17,20 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
   tests.bootstrap(defaultCommonFactory)
 
   tests.config(defaultCommonFactory, {
-    skip: [{
-      name: 'should set a number',
-      reason: 'Failing - needs to be fixed'
-    }]
+    skip: [
+      {
+        name: 'should set a number',
+        reason: 'Failing - needs to be fixed'
+      },
+      {
+        name: 'should output changes but not save them for dry run',
+        reason: 'TODO unskip when https://github.com/ipfs/js-ipfs/pull/2165 is merged'
+      },
+      {
+        name: 'should set a config profile',
+        reason: 'TODO unskip when https://github.com/ipfs/js-ipfs/pull/2165 is merged'
+      }
+    ]
   })
 
   tests.dag(defaultCommonFactory, {
@@ -122,7 +132,14 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }
   }))
 
-  tests.object(defaultCommonFactory)
+  tests.object(defaultCommonFactory, {
+    skip: [
+      {
+        name: 'should respect timeout option',
+        reason: 'js-ipfs doesn\'t support timeout yet'
+      }
+    ]
+  })
 
   tests.pin(defaultCommonFactory)
 
