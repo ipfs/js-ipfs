@@ -1,55 +1,445 @@
 <!doctype html>
-<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>ipfs - Documentation</title><link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500|Roboto:300,500,700" rel="stylesheet"/><style>body{margin: 0;
-padding: 0;
-color: #000;
-font-family: Roboto, sans-serif;
-font-weight: 300;
-line-height: 26px;
-font-size: 17px;}*{-moz-box-sizing: border-box;
-box-sizing: border-box;}</style></head><body><main id="app"><div data-radium="true"><div style="box-shadow:0px 2px 3px 0px rgba(0, 0, 0, 0.25);height:65px;width:100%;min-width:100%;margin-left:0px;margin-right:0px;position:fixed;z-index:99;background:#FFFFFF;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;" data-radium="true"><div style="margin-right:auto;margin-left:auto;padding-left:15px;padding-right:15px;" class="rmq-87b609c0 rmq-159a7c96 rmq-27601239" data-radium="true"><div style="margin-left:-15px;margin-right:-15px;" data-radium="true"><div style="position:relative;min-height:1px;padding-left:15px;padding-right:15px;float:left;width:50.00000%;" class="rmq-aa1729d5 rmq-a22eaf97 rmq-1918856d rmq-6156e77b rmq-21ab0466 rmq-a01b93a4 rmq-d226cb7e rmq-5cc71c8" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:inherit;font-size:36px;margin-right:20px;"><g><path d="m30 22.5h-5c-1.3 0-2.5 1.3-2.5 2.5h10c0-1.3-1.2-2.5-2.5-2.5z m-2.1-16.2c-6.6 0-8.2 1.2-9.1 2.1-1-0.9-2.6-2.1-9.2-2.1s-9.6 1.7-9.6 3v22.9c1.1-0.6 4.6-1.9 8.4-2.2 4.4-0.4 9.1 0.4 9.1 1.2 0 0.7 0.3 1.3 1.2 1.3h0.1c0.9 0 1.2-0.6 1.2-1.2 0-0.9 4.6-1.7 9.1-1.3 3.7 0.3 7.3 1.6 8.4 2.2v-22.9c0-1.3-3.1-3-9.6-3z m-10.4 22.3c-1.2-0.6-4-1.1-7.5-1.1s-6.6 0.5-7.5 1.1v-17.3s2.5-2.4 7.5-2.4 7.5 1.1 7.5 2.4v17.3z m17.5 0c-0.9-0.6-4-1.1-7.5-1.1s-6.3 0.5-7.5 1.1v-17.3s2.5-2.4 7.5-2.4 7.5 1.1 7.5 2.4v17.3z m-5-11.1h-5c-1.3 0-2.5 1.3-2.5 2.5h10c0-1.3-1.2-2.5-2.5-2.5z m0-5h-5c-1.3 0-2.5 1.3-2.5 2.5h10c0-1.3-1.2-2.5-2.5-2.5z m-17.5 5h-5c-1.2 0-2.5 1.2-2.5 2.5h10c0-1.2-1.2-2.5-2.5-2.5z m0 5h-5c-1.2 0-2.5 1.2-2.5 2.5h10c0-1.2-1.2-2.5-2.5-2.5z m0-10h-5c-1.2 0-2.5 1.2-2.5 2.5h10c0-1.2-1.2-2.5-2.5-2.5z"></path></g></svg><div style="display:inline-block;" data-radium="true"><div style="text-transform:uppercase;font-family:Roboto, sans-serif;" data-radium="true">ipfs</div><div style="font-family:Roboto Mono, Menlo, Monaco, Courier, monospace;font-weight:300;" data-radium="true">0.36.4</div></div></div><div style="position:relative;min-height:1px;padding-left:15px;padding-right:15px;float:right !important;width:25.00000%;text-align:right;font-size:36px;" class="rmq-aa1729d5 rmq-a22eaf97 rmq-1918856d rmq-6156e77b rmq-77267d84 rmq-5c0c1446 rmq-4605701c rmq-34ee8e6a" data-radium="true"><a href="https://js.ipfs.io"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m20 0c-11 0-20 9-20 20 0 8.8 5.7 16.3 13.7 19 1 0.2 1.3-0.5 1.3-1 0-0.5 0-2 0-3.7-5.5 1.2-6.7-2.4-6.7-2.4-0.9-2.3-2.2-2.9-2.2-2.9-1.9-1.2 0.1-1.2 0.1-1.2 2 0.1 3.1 2.1 3.1 2.1 1.7 3 4.6 2.1 5.8 1.6 0.2-1.3 0.7-2.2 1.3-2.7-4.5-0.5-9.2-2.2-9.2-9.8 0-2.2 0.8-4 2.1-5.4-0.2-0.5-0.9-2.6 0.2-5.3 0 0 1.7-0.5 5.5 2 1.6-0.4 3.3-0.6 5-0.6 1.7 0 3.4 0.2 5 0.7 3.8-2.6 5.5-2.1 5.5-2.1 1.1 2.8 0.4 4.8 0.2 5.3 1.3 1.4 2.1 3.2 2.1 5.4 0 7.6-4.7 9.3-9.2 9.8 0.7 0.6 1.4 1.9 1.4 3.7 0 2.7 0 4.9 0 5.5 0 0.6 0.3 1.2 1.3 1 8-2.7 13.7-10.2 13.7-19 0-11-9-20-20-20z"></path></g></svg></a></div><div style="clear:both;" data-radium="true"></div></div><div style="clear:both;" data-radium="true"></div></div></div><div style="margin-right:auto;margin-left:auto;padding-left:15px;padding-right:15px;padding-top:104px;" class="rmq-87b609c0 rmq-159a7c96 rmq-27601239" data-radium="true"><div style="margin-left:-15px;margin-right:-15px;" data-radium="true"><div style="position:fixed;min-height:1px;padding-left:15px;padding-right:15px;float:left;width:8.33333%;height:80%;max-width:300px;" class="rmq-aa1729d5 rmq-a22eaf97 rmq-1918856d rmq-6156e77b rmq-5c4c5b38 rmq-5c0c1446 rmq-4605701c rmq-34ee8e6a rmq-35757987 rmq-f09e82ae" data-radium="true"><div style="border-radius:4px;border:1px solid #e6e9ed;padding-top:0;padding-bottom:0;margin-top:26px;font-family:Roboto, sans-serif;font-weight:500;font-size:15px;line-height:18px;max-height:70vh;overflow-x:auto;" data-radium="true"><ul style="list-style:none;margin-top:0;margin-bottom:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#intro" data-radium="true">Intro</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#put" data-radium="true">put</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#get" data-radium="true">get</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#getsubscriptions" data-radium="true">getSubscriptions</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#cancel" data-radium="true">cancel</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#version" data-radium="true">version</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#put" data-radium="true">put</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#get" data-radium="true">get</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#parseipfspath" data-radium="true">parseIpfsPath</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#normalizepath" data-radium="true">normalizePath</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#resolvepath" data-radium="true">resolvePath</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#pinproto" data-radium="true">pin.proto</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#glob-source" data-radium="true">glob-source</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#parsechunkerstring" data-radium="true">parseChunkerString</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#parserabinstring" data-radium="true">parseRabinString</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#get" data-radium="true">get</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#put" data-radium="true">put</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#findprovs" data-radium="true">findProvs</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#findpeer" data-radium="true">findPeer</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#provide" data-radium="true">provide</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#query" data-radium="true">query</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#cidtostring" data-radium="true">cidToString</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#publish" data-radium="true">publish</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#resolve" data-radium="true">resolve</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#state" data-radium="true">state</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:1px solid #e6e9ed;" data-radium="true"><a style="color:#000;" href="#cancel" data-radium="true">cancel</a></li></div><div data-radium="true"><li style="padding-left:20px;padding-right:20px;padding-top:13px;padding-bottom:13px;border-bottom:none;" data-radium="true"><a style="color:#000;" href="#subs" data-radium="true">subs</a></li></div></ul></div></div><div style="position:relative;min-height:1px;padding-left:15px;padding-right:15px;float:left;width:100.00000%;" class="rmq-aa1729d5 rmq-a22eaf97 rmq-1918856d rmq-6156e77b rmq-89bb2272 rmq-2d0e68c6 rmq-3752549c rmq-3b9282ea rmq-4d29a8df rmq-ea7683a5 rmq-ad95cc33" data-radium="true"><div class="content" data-radium="true"><style>h1, h2, h3, h4, h5, h6{font-family: Roboto, sans-serif;
-font-weight: 300;}h1{font-size: 48px;
-line-height: 72px;}h2{font-size: 24px;
-line-height: 36px;}h3{font-size: 19px;
-line-height: 29px;
-font-weight: 400;}h4{font-size: 17px;
-line-height: 22px;
-font-weight: 400;}a{text-decoration: none;
-color: #00AAFF;
-:hover: [object Object];}a.anchor:before{content: "";
-display: block;
-height: 100px;
-margin: -80px 0 0;}.content blockquote{padding-left: 20px;
-margin: 0;
-border-left: 4px solid #eee;}.content ul, content li{list-style: none;}.content ul li:before{color: #CCC;
-float: left;
-margin-left: -20px;
-margin-top: 1px;
-content: "•";}pre.hljs, pre > code{font-family: Roboto Mono, Menlo, Monaco, Courier, monospace;
-display: block;
-padding: 12px 15px 12px 15px;
-border-radius: 4px;
-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-margin-bottom: 30px;
-position: relative;
-overflow-x: auto;
-font-size: 13px;
-color: #666;
-white-space: pre;}code{font-family: Roboto Mono, Menlo, Monaco, Courier, monospace;
-display: inline;
-font-size: 13px;
-font-weight: 400;
-margin: 0 2px;
-padding: 1px 6px;
-box-shadow: 0 0 0 1px #DDD;
-white-space: nowrap;
-border-radius: 4px;}.hljs{display: block;
-overflow-x: auto;}.hljs-comment, .hljs-quote{color: #998;
-font-style: italic;}.hljs-keyword, .hljs-selector-tag, .hljs-subst{color: #333;
-font-weight: bold;}.hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable, .hljs-tag .hljs-attr{color: #008080;}.hljs-string, .hljs-doctag{color: #d14;}.hljs-title, .hljs-section, .hljs-selector-id{color: #900;
-font-weight: bold;}.hljs-subst{font-weight: normal;}.hljs-type, .hljs-class .hljs-title{color: #458;
-font-weight: bold;}.hljs-tag, .hljs-name, .hljs-attribute{color: #000080;
-font-weight: normal;}.hljs-regexp, .hljs-link{color: #009926;}.hljs-symbol, .hljs-bullet{color: #990073;}.hljs-built_in, .hljs-builtin-name{color: #0086b3;}.hljs-meta{color: #999;
-font-weight: bold;}.hljs-deletion{background: #fdd;}.hljs-addition{background: #dfd;}.hljs-emphasis{font-style: italic;}.hljs-strong{font-weight: bold;}</style><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="intro"></a>Intro</h1><div><p>Installable via  <code>npm install --save ipfs</code>, it can also be used directly in the browser.</p>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>ipfs 0.37.0-rc.1 | Documentation</title>
+  <meta name='description' content='JavaScript implementation of the IPFS specification'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <link href='assets/bass.css' rel='stylesheet'>
+  <link href='assets/style.css' rel='stylesheet'>
+  <link href='assets/github.css' rel='stylesheet'>
+  <link href='assets/split.css' rel='stylesheet'>
+</head>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <h3 class='mb0 no-anchor'>ipfs</h3>
+          <div class='mb1'><code>0.37.0-rc.1</code></div>
+          <input
+            placeholder='Filter'
+            id='filter-input'
+            class='col12 block input'
+            type='text' />
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#intro'
+                  class="h5 bold black caps">
+                  Intro
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ipfs'
+                  class=" toggle-sibling">
+                  IPFS
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#ipfs_ipns'
+                        class='regular pre-open'>
+                        #_ipns
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ipfs'
+                  class=" toggle-sibling">
+                  IPFS
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#ipfs_ipns'
+                        class='regular pre-open'>
+                        #_ipns
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#tlru'
+                  class=" toggle-sibling">
+                  TLRU
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#tlruget'
+                        class='regular pre-open'>
+                        .get
+                      </a></li>
+                    
+                      <li><a
+                        href='#tlruset'
+                        class='regular pre-open'>
+                        .set
+                      </a></li>
+                    
+                      <li><a
+                        href='#tlruhas'
+                        class='regular pre-open'>
+                        .has
+                      </a></li>
+                    
+                      <li><a
+                        href='#tlruremove'
+                        class='regular pre-open'>
+                        .remove
+                      </a></li>
+                    
+                      <li><a
+                        href='#tlruclear'
+                        class='regular pre-open'>
+                        .clear
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#put'
+                  class="">
+                  put
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#get'
+                  class="">
+                  get
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#getsubscriptions'
+                  class="">
+                  getSubscriptions
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#cancel'
+                  class="">
+                  cancel
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#version'
+                  class="">
+                  version
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#put'
+                  class="">
+                  put
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#get'
+                  class="">
+                  get
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#parseipfspath'
+                  class="">
+                  parseIpfsPath
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#normalizepath'
+                  class="">
+                  normalizePath
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#resolvepath'
+                  class="">
+                  resolvePath
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#pinproto'
+                  class="">
+                  pin.proto
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#glob-source'
+                  class="">
+                  glob-source
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#parsechunkerstring'
+                  class="">
+                  parseChunkerString
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#parserabinstring'
+                  class="">
+                  parseRabinString
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#get'
+                  class="">
+                  get
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#put'
+                  class="">
+                  put
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#findprovs'
+                  class="">
+                  findProvs
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#findpeer'
+                  class="">
+                  findPeer
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#provide'
+                  class="">
+                  provide
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#query'
+                  class="">
+                  query
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#cidtostring'
+                  class="">
+                  cidToString
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#name'
+                  class="">
+                  name
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#name'
+                  class="">
+                  name
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#publish'
+                  class="">
+                  publish
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#resolve'
+                  class="">
+                  resolve
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#state'
+                  class="">
+                  state
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#cancel'
+                  class="">
+                  cancel
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#subs'
+                  class="">
+                  subs
+                  
+                </a>
+                
+                </li>
+              
+            </ul>
+          </div>
+          <div class='mt1 h6 quiet'>
+            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+        
+          
+            <div class='keyline-top-not py2'><section class='py2 clearfix'>
+
+  <h2 id='intro' class='mt0'>
+    Intro
+  </h2>
+
+  
+    <p>Installable via  <code>npm install --save ipfs</code>, it can also be used directly in the browser.</p>
 <h2>Download</h2>
 <p>The source is available for download from <a href="undefined">GitHub</a>. Alternatively, you can install using npm:</p>
 <pre class='hljs'>$ npm install --save ipfs</pre>
@@ -64,51 +454,1467 @@ font-weight: bold;}.hljs-deletion{background: #fdd;}.hljs-addition{background: #
 <li><a href="https://unpkg.com/ipfs/dist/index.min.js">https://unpkg.com/ipfs/dist/index.min.js</a></li>
 <li><a href="https://unpkg.com/ipfs/dist/index.js">https://unpkg.com/ipfs/dist/index.js</a></li>
 </ul>
-</div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="put"></a>put<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/pubsub-datastore.js#L32-L34" title="src/core/ipns/routing/pubsub-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Put a value to the pubsub datastore indexed by the received key properly encoded.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">identifier of the value.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>value: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">value to be stored.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="get"></a>get<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/pubsub-datastore.js#L44-L65" title="src/core/ipns/routing/pubsub-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Get a value from the pubsub datastore indexed by the received key properly encoded.
+
+  
+</section></div>
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='ipfs'>
+      IPFS
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/index.js#L39-L167'>
+      <span>src/core/index.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new IPFS(options: any)</div>
+  
+  
+    <p>
+      Extends
+      
+        EventEmitter
+      
+    </p>
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='ipfs_ipns'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_ipns</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/index.js#L89-L89'>
+      <span>src/core/index.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_ipns</div>
+  
+    <p>
+      Type:
+      IPNS
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='ipfs'>
+      IPFS
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/index.js#L39-L167'>
+      <span>src/core/index.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new IPFS()</div>
+  
+  
+    <p>
+      Extends
+      
+        EventEmitter
+      
+    </p>
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='ipfs_ipns'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_ipns</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/index.js#L89-L89'>
+      <span>src/core/index.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_ipns</div>
+  
+    <p>
+      Type:
+      IPNS
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='tlru'>
+      TLRU
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L11-L85'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Time Aware Least Recent Used Cache</p>
+
+    <div class='pre p1 fill-light mt0'>new TLRU()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='tlruget'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>get(key)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L29-L38'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get the value from the a key</p>
+
+    <div class='pre p1 fill-light mt0'>get(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='tlruset'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>set(key, value, ttl)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L48-L50'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Set a key value pair</p>
+
+    <div class='pre p1 fill-light mt0'>set(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: any, ttl: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>ttl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    in miliseconds
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='tlruhas'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>has(key)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L59-L65'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Find if the cache has the key</p>
+
+    <div class='pre p1 fill-light mt0'>has(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='tlruremove'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>remove(key)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L73-L75'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Remove key</p>
+
+    <div class='pre p1 fill-light mt0'>remove(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='tlruclear'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>clear()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/tlru.js#L82-L84'>
+      <span>src/utils/tlru.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Clears the cache</p>
+
+    <div class='pre p1 fill-light mt0'>clear()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='put'>
+      put
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/pubsub-datastore.js#L32-L34'>
+      <span>src/core/ipns/routing/pubsub-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Put a value to the pubsub datastore indexed by the received key properly encoded.</p>
+
+    <div class='pre p1 fill-light mt0'>put(key: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, value: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    identifier of the value.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    value to be stored.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='get'>
+      get
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/pubsub-datastore.js#L44-L65'>
+      <span>src/core/ipns/routing/pubsub-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get a value from the pubsub datastore indexed by the received key properly encoded.
 Moreover, the identifier topic is subscribed and the pubsub datastore records will be
 updated once new publishes occur.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">identifier of the value to be obtained.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="getsubscriptions"></a>getSubscriptions<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/pubsub-datastore.js#L94-L98" title="src/core/ipns/routing/pubsub-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Get pubsub subscriptions related to ipns.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="cancel"></a>cancel<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/pubsub-datastore.js#L106-L143" title="src/core/ipns/routing/pubsub-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Cancel pubsub subscriptions related to ipns.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">ipns path to cancel the pubsub subscription.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="version"></a>version<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/repo.js#L19-L39" title="src/core/components/repo.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>If the repo has been initialized, report the current version.
+
+    <div class='pre p1 fill-light mt0'>get(key: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    identifier of the value to be obtained.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='getsubscriptions'>
+      getSubscriptions
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/pubsub-datastore.js#L91-L95'>
+      <span>src/core/ipns/routing/pubsub-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get pubsub subscriptions related to ipns.</p>
+
+    <div class='pre p1 fill-light mt0'>getSubscriptions(callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='cancel'>
+      cancel
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/pubsub-datastore.js#L103-L137'>
+      <span>src/core/ipns/routing/pubsub-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Cancel pubsub subscriptions related to ipns.</p>
+
+    <div class='pre p1 fill-light mt0'>cancel(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    ipns path to cancel the pubsub subscription.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='version'>
+      version
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/repo.js#L19-L39'>
+      <span>src/core/components/repo.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>If the repo has been initialized, report the current version.
 Otherwise report the version that would be initialized.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="put"></a>put<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/offline-datastore.js#L26-L56" title="src/core/ipns/routing/offline-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Put a value to the local datastore indexed by the received key properly encoded.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">identifier of the value.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>value: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">value to be stored.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="get"></a>get<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/ipns/routing/offline-datastore.js#L64-L99" title="src/core/ipns/routing/offline-datastore.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Get a value from the local datastore indexed by the received key properly encoded.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true">identifier of the value to be obtained.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>void</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="parseipfspath"></a>parseIpfsPath<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/utils.js#L23-L39" title="src/core/utils.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Break an ipfs-path down into it's hash and an array of links.</p>
+
+    <div class='pre p1 fill-light mt0'>version</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='put'>
+      put
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/offline-datastore.js#L26-L48'>
+      <span>src/core/ipns/routing/offline-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Put a value to the local datastore indexed by the received key properly encoded.</p>
+
+    <div class='pre p1 fill-light mt0'>put(key: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, value: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    identifier of the value.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    value to be stored.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='get'>
+      get
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/ipns/routing/offline-datastore.js#L56-L86'>
+      <span>src/core/ipns/routing/offline-datastore.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get a value from the local datastore indexed by the received key properly encoded.</p>
+
+    <div class='pre p1 fill-light mt0'>get(key: <a href="https://nodejs.org/api/buffer.html">Buffer</a>, callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>)): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    identifier of the value to be obtained.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='parseipfspath'>
+      parseIpfsPath
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/utils.js#L23-L39'>
+      <span>src/core/utils.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Break an ipfs-path down into it's hash and an array of links.</p>
 <p>examples:
 b58Hash -> { hash: 'b58Hash', links: [] }
 b58Hash/mercury/venus -> { hash: 'b58Hash', links: ['mercury', 'venus']}
 /ipfs/b58Hash/links/by/name -> { hash: 'b58Hash', links: ['links', 'by', 'name'] }</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>ipfsPath: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">An ipfs-path
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code><span> { hash: base58 string, links: 
+
+    <div class='pre p1 fill-light mt0'>parseIpfsPath(ipfsPath: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>ipfsPath</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    An ipfs-path
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        { hash: base58 string, links: 
 [string]
 , ?err: Error }
-</span></div></div><div data-radium="true"><h4>Throws</h4><div data-radium="true"><code>any</code><span> on an invalid @param ipfsPath
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="normalizepath"></a>normalizePath<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/utils.js#L54-L62" title="src/core/utils.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Returns a well-formed ipfs Path.
+
+      
+    
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Throws</div>
+    <ul>
+      
+        <li>any: on an invalid @param ipfsPath
+</li>
+      
+    </ul>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='normalizepath'>
+      normalizePath
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/utils.js#L54-L62'>
+      <span>src/core/utils.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Returns a well-formed ipfs Path.
 The returned path will always be prefixed with /ipfs/ or /ipns/.
 If the received string is not a valid ipfs path, an error will be returned
 examples:
 b58Hash -> { hash: 'b58Hash', links: [] }
 b58Hash/mercury/venus -> { hash: 'b58Hash', links: ['mercury', 'venus']}
 /ipfs/b58Hash/links/by/name -> { hash: 'b58Hash', links: ['links', 'by', 'name'] }</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>pathStr: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">An ipfs-path, or ipns-path or a cid
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code><span> ipfs-path or ipns-path
-</span></div></div><div data-radium="true"><h4>Throws</h4><div data-radium="true"><code>any</code><span> on an invalid @param ipfsPath
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="resolvepath"></a>resolvePath<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/utils.js#L81-L136" title="src/core/utils.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Resolve various styles of an ipfs-path to the hash of the target node.
+
+    <div class='pre p1 fill-light mt0'>normalizePath</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>pathStr</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    An ipfs-path, or ipns-path or a cid
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:
+        ipfs-path or ipns-path
+
+      
+    
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Throws</div>
+    <ul>
+      
+        <li>any: on an invalid @param ipfsPath
+</li>
+      
+    </ul>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='resolvepath'>
+      resolvePath
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/utils.js#L81-L136'>
+      <span>src/core/utils.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Resolve various styles of an ipfs-path to the hash of the target node.
 Follows links in the path.</p>
 <p>Accepts formats:</p>
 <ul>
@@ -120,122 +1926,1783 @@ Follows links in the path.</p>
 <li>multihash Buffer</li>
 <li>Arrays of the above</li>
 </ul>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>objectAPI: IPFS</code>:  <div style="display:inline-block;" data-radium="true">The IPFS object api
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>&#x3C;err, res></code>:  <div style="display:inline-block;" data-radium="true">res is Array&#x3C;Buffer(hash)>
+
+    <div class='pre p1 fill-light mt0'>resolvePath</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>objectAPI</span> <code class='quiet'>(<a href="#ipfs">IPFS</a>)</code>
+	    The IPFS object api
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>&#x3C;err, res>)</code>
+	    res is Array&#x3C;Buffer(hash)>
 if no callback is passed, returns a Promise
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="pinproto"></a>pin.proto<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/pin.proto.js#L7-L19" title="src/core/components/pin.proto.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Protobuf interface
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='pinproto'>
+      pin.proto
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/pin.proto.js#L7-L19'>
+      <span>src/core/components/pin.proto.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Protobuf interface
 from go-ipfs/pin/internal/pb/header.proto</p>
-</div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="glob-source"></a>glob-source<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/utils/files/glob-source.js#L25-L58" title="src/utils/files/glob-source.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Create a pull stream source that can be piped to ipfs.addPullStream for the
+
+    <div class='pre p1 fill-light mt0'>pin.proto</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='glob-source'>
+      glob-source
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/files/glob-source.js#L25-L58'>
+      <span>src/utils/files/glob-source.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Create a pull stream source that can be piped to ipfs.addPullStream for the
 provided file paths.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>args: ...any</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?</code>:  <div style="display:inline-block;" data-radium="true">Optional options
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.recursive: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>:  <div style="display:inline-block;" data-radium="true">Recursively glob all paths in directories
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.hidden: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>:  <div style="display:inline-block;" data-radium="true">Include .dot files in matched paths
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.ignore: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>>?</code>:  <div style="display:inline-block;" data-radium="true">Glob paths to ignore
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.followSymlinks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>:  <div style="display:inline-block;" data-radium="true">follow symlinks
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a></code><span> pull stream source
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="parsechunkerstring"></a>parseChunkerString<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/files-regular/utils.js#L36-L61" title="src/core/components/files-regular/utils.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>chunker: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">Chunker algorithm supported formats:
+
+    <div class='pre p1 fill-light mt0'>glob-source(args: ...any, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>args</span> <code class='quiet'>(...any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
+	    Optional options
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.recursive</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>
+  </td>
+  <td class='break-word'><span>Recursively glob all paths in directories
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.hidden</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>
+  </td>
+  <td class='break-word'><span>Include .dot files in matched paths
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.ignore</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>>?</code>
+  </td>
+  <td class='break-word'><span>Glob paths to ignore
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.followSymlinks</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>
+  </td>
+  <td class='break-word'><span>follow symlinks
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a></code>:
+        pull stream source
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='parsechunkerstring'>
+      parseChunkerString
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/files-regular/utils.js#L36-L61'>
+      <span>src/core/components/files-regular/utils.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine</p>
+
+    <div class='pre p1 fill-light mt0'>parseChunkerString</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>chunker</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    Chunker algorithm supported formats:
 "size-{size}"
 "rabin"
 "rabin-{avg}"
 "rabin-{min}-{avg}-{max}"
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code><span> Chunker options for DAGBuilder
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="parserabinstring"></a>parseRabinString<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/files-regular/utils.js#L73-L93" title="src/core/components/files-regular/utils.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Parses rabin chunker string</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>chunker: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">Chunker algorithm supported formats:
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        Chunker options for DAGBuilder
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='parserabinstring'>
+      parseRabinString
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/files-regular/utils.js#L73-L93'>
+      <span>src/core/components/files-regular/utils.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parses rabin chunker string</p>
+
+    <div class='pre p1 fill-light mt0'>parseRabinString</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>chunker</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    Chunker algorithm supported formats:
 "rabin"
 "rabin-{avg}"
 "rabin-{min}-{avg}-{max}"
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code><span> rabin chunker options
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="get"></a>get<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L28-L47" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Given a key, query the DHT for its best value.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true"></div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:  <div style="display:inline-block;" data-radium="true">get options
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.timeout: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:  <div style="display:inline-block;" data-radium="true">optional timeout
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="put"></a>put<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L61-L73" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Write a key/value pair to the DHT.</p>
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        rabin chunker options
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='get'>
+      get
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L28-L47'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Given a key, query the DHT for its best value.</p>
+
+    <div class='pre p1 fill-light mt0'>get</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    get options
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.timeout</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+  </td>
+  <td class='break-word'><span>optional timeout
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='put'>
+      put
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L61-L73'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Write a key/value pair to the DHT.</p>
 <p>Given a key of the form /foo/bar and a value of any
 form, this will write that value to the DHT with
 that key.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true"></div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>value: <a href="https://nodejs.org/api/buffer.html">Buffer</a></code>:  <div style="display:inline-block;" data-radium="true"></div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="findprovs"></a>findProvs<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L85-L104" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Find peers in the DHT that can provide a specific value, given a key.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>key: CID</code>:  <div style="display:inline-block;" data-radium="true">They key to find providers for.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:  <div style="display:inline-block;" data-radium="true">findProviders options
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.timeout: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:  <div style="display:inline-block;" data-radium="true">how long the query should maximally run, in milliseconds (default: 60000)
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.maxNumProviders: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:  <div style="display:inline-block;" data-radium="true">maximum number of providers to find
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;PeerInfo> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="findpeer"></a>findPeer<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L113-L119" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Query the DHT for all multiaddresses associated with a <code>PeerId</code>.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>peer: PeerId</code>:  <div style="display:inline-block;" data-radium="true">The id of the peer to search for.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, PeerInfo)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;PeerInfo> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="provide"></a>provide<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L130-L165" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Announce to the network that we are providing given values.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>keys: (CID | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;CID>)</code>:  <div style="display:inline-block;" data-radium="true">The keys that should be announced.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:  <div style="display:inline-block;" data-radium="true">provide options
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.recursive: bool (=false)</code>:  <div style="display:inline-block;" data-radium="true">Provide not only the given object but also all objects linked from it.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="query"></a>query<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/dht.js#L174-L193" title="src/core/components/dht.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Find the closest peers to a given <code>PeerId</code>, by querying the DHT.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>peer: PeerId</code>:  <div style="display:inline-block;" data-radium="true">The 
+
+    <div class='pre p1 fill-light mt0'>put</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://nodejs.org/api/buffer.html">Buffer</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='findprovs'>
+      findProvs
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L85-L104'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Find peers in the DHT that can provide a specific value, given a key.</p>
+
+    <div class='pre p1 fill-light mt0'>findProvs</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>key</span> <code class='quiet'>(CID)</code>
+	    They key to find providers for.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    findProviders options
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.timeout</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+  </td>
+  <td class='break-word'><span>how long the query should maximally run, in milliseconds (default: 60000)
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.maxNumProviders</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+  </td>
+  <td class='break-word'><span>maximum number of providers to find
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;PeerInfo> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='findpeer'>
+      findPeer
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L113-L119'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Query the DHT for all multiaddresses associated with a <code>PeerId</code>.</p>
+
+    <div class='pre p1 fill-light mt0'>findPeer</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>peer</span> <code class='quiet'>(PeerId)</code>
+	    The id of the peer to search for.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, PeerInfo)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;PeerInfo> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='provide'>
+      provide
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L130-L165'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Announce to the network that we are providing given values.</p>
+
+    <div class='pre p1 fill-light mt0'>provide</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>keys</span> <code class='quiet'>((CID | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;CID>))</code>
+	    The keys that should be announced.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    provide options
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.recursive</span> <code class='quiet'>bool</code>
+  
+    (default <code>false</code>)
+  </td>
+  <td class='break-word'><span>Provide not only the given object but also all objects linked from it.
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='query'>
+      query
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/dht.js#L174-L193'>
+      <span>src/core/components/dht.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Find the closest peers to a given <code>PeerId</code>, by querying the DHT.</p>
+
+    <div class='pre p1 fill-light mt0'>query</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>peer</span> <code class='quiet'>(PeerId)</code>
+	    The 
 <code>PeerId</code>
  to run the query agains.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="cidtostring"></a>cidToString<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/utils/cid.js#L20-L34" title="src/utils/cid.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Stringify a CID encoded in the requested base, upgrading to v1 if necessary.</p>
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;PeerInfo>> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='cidtostring'>
+      cidToString
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/utils/cid.js#L20-L34'>
+      <span>src/utils/cid.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Stringify a CID encoded in the requested base, upgrading to v1 if necessary.</p>
 <p>Setting upgrade to false will disable automatic CID upgrading from v0 to v1
 which is necessary if the multibase is something other than base58btc. Note
 that it will also not apply the encoding (since v0 CIDs can only be encoded
 as base58btc).</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>cid: (CID | <a href="https://nodejs.org/api/buffer.html">Buffer</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>:  <div style="display:inline-block;" data-radium="true">The CID to encode
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?</code>:  <div style="display:inline-block;" data-radium="true">Optional options
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.base: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>?</code>:  <div style="display:inline-block;" data-radium="true">Name of multibase codec to encode the CID with
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.upgrade: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>:  <div style="display:inline-block;" data-radium="true">Automatically upgrade v0 CIDs to v1 when
+
+    <div class='pre p1 fill-light mt0'>cidToString(cid: (CID | <a href="https://nodejs.org/api/buffer.html">Buffer</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>), options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>cid</span> <code class='quiet'>((CID | <a href="https://nodejs.org/api/buffer.html">Buffer</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>))</code>
+	    The CID to encode
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
+	    Optional options
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.base</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>?</code>
+  </td>
+  <td class='break-word'><span>Name of multibase codec to encode the CID with
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.upgrade</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>?</code>
+  </td>
+  <td class='break-word'><span>Automatically upgrade v0 CIDs to v1 when
 necessary. Default: true.
-</div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="publish"></a>publish<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/name.js#L59-L110" title="src/core/components/name.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>IPNS is a PKI namespace, where names are the hashes of public keys, and
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='name'>
+      name
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name.js#L63-L197'>
+      <span>src/core/components/name.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>name(self: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>self</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='name'>
+      name
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name.js#L63-L197'>
+      <span>src/core/components/name.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>IPNS - Inter-Planetary Naming System</p>
+
+    <div class='pre p1 fill-light mt0'>name(self: <a href="#ipfs">IPFS</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>self</span> <code class='quiet'>(<a href="#ipfs">IPFS</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='publish'>
+      publish
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name.js#L84-L135'>
+      <span>src/core/components/name.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>IPNS is a PKI namespace, where names are the hashes of public keys, and
 the private key enables publishing new (signed) values. In both publish
 and resolve, the default name used is the node's own PeerID,
 which is the hash of its public key.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">ipfs path of the object to be published.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:  <div style="display:inline-block;" data-radium="true">ipfs publish options.
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.resolve: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:  <div style="display:inline-block;" data-radium="true">resolve given path before publishing.
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.lifetime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">time duration that the record will be valid for.
+
+    <div class='pre p1 fill-light mt0'>publish</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    ipfs path of the object to be published.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    ipfs publish options.
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.resolve</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+  </td>
+  <td class='break-word'><span>resolve given path before publishing.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.lifetime</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+  </td>
+  <td class='break-word'><span>time duration that the record will be valid for.
 This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
 "ns", "ms", "s", "m", "h". Default is 24h.
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.ttl: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">time duration this record should be cached for (NOT IMPLEMENTED YET).
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.ttl</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+  </td>
+  <td class='break-word'><span>time duration this record should be cached for (NOT IMPLEMENTED YET).
 This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
 "ns", "ms", "s", "m", "h" (caution: experimental).
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">name of the key to be used, as listed by 'ipfs key list -l'.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="resolve"></a>resolve<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/name.js#L122-L165" title="src/core/components/name.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Given a key, query the DHT for its best value.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">ipns name to resolve. Defaults to your node's peerID.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:  <div style="display:inline-block;" data-radium="true">ipfs resolve options.
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.nocache: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:  <div style="display:inline-block;" data-radium="true">do not use cached entries.
-</div></li><li style="padding-bottom:13px;" data-radium="true"><code>options.recursive: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:  <div style="display:inline-block;" data-radium="true">resolve until the result is not an IPNS name.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="state"></a>state<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/name-pubsub.js#L53-L57" title="src/core/components/name-pubsub.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Query the state of IPNS pubsub.</p>
-</div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="cancel"></a>cancel<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/name-pubsub.js#L65-L74" title="src/core/components/name-pubsub.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Cancel a name subscription.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>:  <div style="display:inline-block;" data-radium="true">subscription name.
-</div></li></div><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div><div style="margin-bottom:104px;" data-radium="true"><h1 data-radium="true"><a class="anchor" name="subs"></a>subs<a href="https://git@github.com/:ipfs/js-ipfs/blob/88f4e264ee14986c2b2eb16263f747631ef58958/src/core/components/name-pubsub.js#L81-L90" title="src/core/components/name-pubsub.js" style="float:right;" data-radium="true"><svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" style="vertical-align:middle;"><g><path d="m26.3 7.5l-3.8 3.8 8.8 8.7-8.8 8.8 3.8 3.7 11.2-12.5-11.2-12.5z m-12.5 0l-11.3 12.5 11.3 12.5 3.7-3.7-8.7-8.8 8.7-8.7-3.7-3.8z"></path></g></svg></a></h1><div><p>Show current name subscriptions.</p>
-</div><div data-radium="true"><h4>Parameters</h4><ol style="list-style:none;margin-left:0;padding-left:0;" data-radium="true"><div data-radium="true"><li style="padding-bottom:13px;" data-radium="true"><code>callback: function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?</code>:  <div style="display:inline-block;" data-radium="true"></div></li></div></ol></div><div data-radium="true"><h4>Returns</h4><div data-radium="true"><code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code><span> 
-</span></div></div></div></div></div><div style="clear:both;" data-radium="true"></div></div><div style="clear:both;" data-radium="true"></div></div><style>@media (min-width: 768px) and (max-width: 991px){ .rmq-87b609c0{width: 750px !important;}}
-@media (min-width: 992px) and (max-width: 1199px){ .rmq-159a7c96{width: 970px !important;}}
-@media (min-width: 1200px){ .rmq-27601239{width: 1170px !important;}}
-@media (min-width: 480px) and (max-width: 767px){ .rmq-aa1729d5{float: left !important;}}
-@media (min-width: 768px) and (max-width: 991px){ .rmq-a22eaf97{float: left !important;}}
-@media (min-width: 992px) and (max-width: 1199px){ .rmq-1918856d{float: left !important;}}
-@media (min-width: 1200px){ .rmq-6156e77b{float: left !important;}}
-@media (min-width: 480px) and (max-width: 767px) { .rmq-21ab0466{width: 50.00000% !important;}}
-@media (min-width: 768px) and (max-width: 991px) { .rmq-a01b93a4{width: 50.00000% !important;}}
-@media (min-width: 992px) and (max-width: 1199px) { .rmq-d226cb7e{width: 50.00000% !important;}}
-@media (min-width: 1200px) { .rmq-5cc71c8{width: 50.00000% !important;}}
-@media (min-width: 480px) and (max-width: 767px) { .rmq-77267d84{width: 25.00000% !important;}}
-@media (min-width: 768px) and (max-width: 991px) { .rmq-5c0c1446{width: 25.00000% !important;}}
-@media (min-width: 992px) and (max-width: 1199px) { .rmq-4605701c{width: 25.00000% !important;}}
-@media (min-width: 1200px) { .rmq-34ee8e6a{width: 25.00000% !important;}}
-@media (min-width: 480px) and (max-width: 767px) { .rmq-5c4c5b38{width: 8.33333% !important;}}
-@media (max-width: 479px){ .rmq-35757987{display: none !important;}}
-@media (min-width: 480px) and (max-width: 767px)  { .rmq-f09e82ae{display: none !important;}}
-@media (min-width: 480px) and (max-width: 767px) { .rmq-89bb2272{width: 100.00000% !important;}}
-@media (min-width: 768px) and (max-width: 991px) { .rmq-2d0e68c6{width: 66.66667% !important;}}
-@media (min-width: 992px) and (max-width: 1199px) { .rmq-3752549c{width: 66.66667% !important;}}
-@media (min-width: 1200px) { .rmq-3b9282ea{width: 66.66667% !important;}}
-@media (min-width: 768px) and (max-width: 991px)  { .rmq-4d29a8df{left: 33.33333% !important;}}
-@media (min-width: 992px) and (max-width: 1199px)  { .rmq-ea7683a5{left: 33.33333% !important;}}
-@media (min-width: 1200px)  { .rmq-ad95cc33{left: 33.33333% !important;}}</style></div></main></body></html>
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.key</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+  </td>
+  <td class='break-word'><span>name of the key to be used, as listed by 'ipfs key list -l'.
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='resolve'>
+      resolve
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name.js#L147-L194'>
+      <span>src/core/components/name.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Given a key, query the DHT for its best value.</p>
+
+    <div class='pre p1 fill-light mt0'>resolve</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    ipns name to resolve. Defaults to your node's peerID.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    ipfs resolve options.
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.nocache</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+  </td>
+  <td class='break-word'><span>do not use cached entries.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.recursive</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+  </td>
+  <td class='break-word'><span>resolve until the result is not an IPNS name.
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='state'>
+      state
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name-pubsub.js#L49-L53'>
+      <span>src/core/components/name-pubsub.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Query the state of IPNS pubsub.</p>
+
+    <div class='pre p1 fill-light mt0'>state</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='cancel'>
+      cancel
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name-pubsub.js#L61-L70'>
+      <span>src/core/components/name-pubsub.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Cancel a name subscription.</p>
+
+    <div class='pre p1 fill-light mt0'>cancel</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    subscription name.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='subs'>
+      subs
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://git@github.com/:ipfs/js-ipfs/blob/36293353a18c2fd92880ca0d1cb692af35212543/src/core/components/name-pubsub.js#L77-L86'>
+      <span>src/core/components/name-pubsub.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Show current name subscriptions.</p>
+
+    <div class='pre p1 fill-light mt0'>subs</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>callback</span> <code class='quiet'>(function (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>)?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | void)</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+      </div>
+    </div>
+  <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
+  <script src='assets/site.js'></script>
+</body>
+</html>
