@@ -91,6 +91,7 @@ module.exports = (createCommon, options) => {
         expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
         expect(peer).to.have.a.property('peer')
         expect(peer).to.have.a.property('latency')
+        expect(peer.latency).to.match(/n\/a|[0-9]+m?s/) // n/a or 3ms or 3s
 
         // Only available in 0.4.5
         // expect(peer).to.have.a.property('muxer')
