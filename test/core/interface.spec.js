@@ -5,7 +5,7 @@ const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 const isNode = require('detect-node')
 
-describe.only('interface-ipfs-core tests', function () {
+describe('interface-ipfs-core tests', function () {
   this.timeout(20 * 1000)
 
   const defaultCommonFactory = CommonFactory.create()
