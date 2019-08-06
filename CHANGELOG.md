@@ -1,3 +1,18 @@
+<a name="0.37.0-rc.1"></a>
+# [0.37.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.0...v0.37.0-rc.1) (2019-08-06)
+
+
+### Bug Fixes
+
+* add CORS headers to gateway responses ([#2254](https://github.com/ipfs/js-ipfs/issues/2254)) ([5156a47](https://github.com/ipfs/js-ipfs/commit/5156a47))
+* disable socket timeout for pubsub subscriptions ([#2303](https://github.com/ipfs/js-ipfs/issues/2303)) ([3583cc2](https://github.com/ipfs/js-ipfs/commit/3583cc2))
+* move mfs cmds and safer exit ([#1981](https://github.com/ipfs/js-ipfs/issues/1981)) ([fee0141](https://github.com/ipfs/js-ipfs/commit/fee0141))
+* swarm.peers latency value when unknown ([#2336](https://github.com/ipfs/js-ipfs/issues/2336)) ([6248ec1](https://github.com/ipfs/js-ipfs/commit/6248ec1))
+* use ephemeral ports in API/Gateway bind test ([#2305](https://github.com/ipfs/js-ipfs/issues/2305)) ([24679af](https://github.com/ipfs/js-ipfs/commit/24679af))
+* **package:** update ipfs-mfs to version 0.12.0 ([#2275](https://github.com/ipfs/js-ipfs/issues/2275)) ([c15f146](https://github.com/ipfs/js-ipfs/commit/c15f146))
+
+
+
 <a name="0.37.0-rc.0"></a>
 # [0.37.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.4...v0.37.0-rc.0) (2019-07-17)
 
