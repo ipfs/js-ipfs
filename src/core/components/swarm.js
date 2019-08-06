@@ -34,7 +34,7 @@ module.exports = function swarm (self) {
           peer: peer.id
         }
         if (verbose) {
-          tupple.latency = 'unknown'
+          tupple.latency = 'n/a'
         }
 
         peers.push(tupple)
