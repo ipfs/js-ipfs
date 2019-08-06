@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.37.0-rc.0",
+  "version": "0.37.0-rc.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -239,7 +239,7 @@
     "Diogo Silva <fsdiogo@gmail.com>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
     "Dominic Della Valle <ddvpublic@Gmail.com>",
-    "Dzmitry Das <dbachko@gmail.com>",
+    "Dzmitry Bachko <dbachko@gmail.com>",
     "Enrico Marino <enrico.marino@email.com>",
     "Faheel Ahmad <faheel@live.in>",
     "Felix Yan <felixonmars@archlinux.org>",
@@ -282,6 +282,7 @@
     "Molly <momack2@users.noreply.github.com>",
     "Mounish Sai <pvsmounish@gmail.com>",
     "My9Bot <34904312+My9Bot@users.noreply.github.com>",
+    "Nick Poulden <nick@poulden.com>",
     "Nitin Patel <31539366+niinpatel@users.noreply.github.com>",
     "Nuno Nogueira <nunofmn@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
