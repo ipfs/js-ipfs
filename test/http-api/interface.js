@@ -61,7 +61,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }
   }), {
     skip: {
-      reason: 'TODO: unskip when DHT is enabled in 0.36'
+      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 

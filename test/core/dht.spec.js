@@ -12,7 +12,7 @@ const isNode = require('detect-node')
 const IPFSFactory = require('ipfsd-ctl')
 const IPFS = require('../../src/core')
 
-// TODO: unskip when DHT is enabled in 0.36
+// TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
 describe.skip('dht', () => {
   describe('enabled', () => {
     let ipfsd, ipfs
