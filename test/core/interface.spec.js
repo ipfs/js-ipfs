@@ -52,7 +52,7 @@ describe('interface-ipfs-core tests', function () {
     }
   }), {
     skip: {
-      reason: 'TODO: unskip when DHT is enabled in 0.36'
+      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 
