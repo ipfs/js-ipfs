@@ -7,6 +7,7 @@ const debug = require('debug')
 const CID = require('cids')
 const shuffle = require('array-shuffle')
 const preload = require('./runtime/preload-nodejs')
+const { removeTrailingSlash } = require('../utils/path')
 
 const log = debug('ipfs:preload')
 log.error = debug('ipfs:preload:error')
@@ -86,7 +87,8 @@ module.exports = self => {
 }
 
 function apiAddrToUri (addr) {
-  if (!(addr.endsWith('http') || addr.endsWith('https'))) {
+  addr = removeTrailingSlash(addr)
+  if (!(addr.endsWith('/http') || addr.endsWith('/https') || addr.endsWith('/tls/http'))) {
     addr = addr + '/http'
   }
   return toUri(addr)

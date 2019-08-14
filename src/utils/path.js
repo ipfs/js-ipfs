@@ -17,7 +17,7 @@ function removeLeadingSlash (url) {
 }
 
 function removeTrailingSlash (url) {
-  if (url.endsWith('/')) {
+  if (url && url.endsWith('/')) {
     url = url.substring(0, url.length - 1)
   }
 

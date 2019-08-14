@@ -12,7 +12,7 @@ const peek = require('buffer-peek-stream')
 
 const multibase = require('multibase')
 const { resolver } = require('ipfs-http-response')
-const PathUtils = require('../utils/path')
+const PathUtils = require('../../../utils/path')
 const { cidToString } = require('../../../utils/cid')
 const isIPFS = require('is-ipfs')
 
