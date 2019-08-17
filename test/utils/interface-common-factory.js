@@ -7,6 +7,7 @@ const ipfsClient = require('ipfs-http-client')
 const callbackify = require('callbackify')
 const mergeOptions = require('merge-options')
 const IPFS = require('../../src')
+const callbackify = require('callbackify')
 
 function createFactory (options) {
   options = options || {}
