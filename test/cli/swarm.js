@@ -9,7 +9,6 @@ chai.use(dirtyChai)
 const sinon = require('sinon')
 const ipfsExec = require('../utils/ipfs-exec')
 const path = require('path')
-const parallel = require('async/parallel')
 const addrsCommand = require('../../src/cli/commands/swarm/addrs')
 
 const multiaddr = require('multiaddr')
@@ -41,43 +40,30 @@ describe('swarm', () => {
     let ipfsA
 
     const nodes = []
-    before(function (done) {
+    before(async function () {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(80 * 1000)
 
-      parallel([
-        (cb) => {
-          df.spawn({
-            exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-            config,
-            initOptions: { bits: 512 }
-          }, (err, node) => {
-            expect(err).to.not.exist()
-            ipfsA = ipfsExec(node.repoPath)
-            nodes.push(node)
-            cb()
-          })
-        },
-        (cb) => {
-          df.spawn({
-            exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-            config,
-            initOptions: { bits: 512 }
-          }, (err, node) => {
-            expect(err).to.not.exist()
-            node.api.id((err, id) => {
-              expect(err).to.not.exist()
-              bMultiaddr = id.addresses[0]
-              nodes.push(node)
-              cb()
-            })
-          })
-        }
-      ], done)
+      const res = await Promise.all([
+        df.spawn({
+          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+          config,
+          initOptions: { bits: 512 }
+        }),
+        df.spawn({
+          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+          config,
+          initOptions: { bits: 512 }
+        })
+      ])
+      ipfsA = ipfsExec(res[0].repoPath)
+      const id = await res[1].api.id()
+      bMultiaddr = id.addresses[0]
+      nodes.push(...res)
     })
 
-    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after(() => Promise.all(nodes.map((node) => node.stop())))
 
     it('connect', () => {
       return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {

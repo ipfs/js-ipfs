@@ -6,9 +6,9 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
-const waterfall = require('async/waterfall')
+const promisify = require('promisify-es6')
+const ncp = promisify(require('ncp').ncp)
+const rimraf = promisify(require('rimraf'))
 
 const isWindows = require('../utils/platforms').isWindows
 const skipOnWindows = isWindows() ? describe.skip : describe
@@ -35,44 +35,31 @@ skipOnWindows('config endpoint', () => {
     setTimeout(done, 5 * 1000)
   })
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
 
-    ncp(repoExample, repoPath, (err) => {
-      expect(err).to.not.exist()
+    await ncp(repoExample, repoPath)
 
-      waterfall([
-        (cb) => df.spawn({
-          repoPath: repoPath,
-          initOptions: { bits: 512 },
-          config: { Bootstrap: [] },
-          disposable: false,
-          start: true
-        }, cb),
-        (_ipfsd, cb) => {
-          ipfsd = _ipfsd
-          ipfsd.start(cb)
-        }
-      ], (err) => {
-        expect(err).to.not.exist()
-        ipfs = ipfsd.api
-
-        updatedConfig = () => {
-          const config = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
-          return JSON.parse(config, 'utf8')
-        }
-
-        done()
-      })
+    ipfsd = await df.spawn({
+      repoPath: repoPath,
+      initOptions: { bits: 512 },
+      config: { Bootstrap: [] },
+      disposable: false,
+      start: true
     })
+    await ipfsd.start()
+    ipfs = ipfsd.api
+
+    updatedConfig = () => {
+      const config = fs.readFileSync(path.join(__dirname, '../repo-tests-run/config'))
+      return JSON.parse(config, 'utf8')
+    }
   })
 
-  after(function (done) {
+  after(async function () {
     this.timeout(50 * 1000)
-    rimraf(repoPath, (err) => {
-      expect(err).to.not.exist()
-      ipfsd.stop(done)
-    })
+    await rimraf(repoPath)
+    await ipfsd.stop()
   })
 
   describe('.config', () => {

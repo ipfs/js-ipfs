@@ -12,20 +12,16 @@ const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli
 describe('dns endpoint', () => {
   let ipfs = null
   let ipfsd = null
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({
+    ipfsd = await df.spawn({
       initOptions: { bits: 512 },
       config: { Bootstrap: [] }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after((done) => ipfsd.stop(done))
+  after(() => ipfsd.stop())
 
   describe('.dns', () => {
     it('resolve ipfs.io dns', function (done) {

@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const series = require('async/series')
 const parallel = require('async/parallel')
 const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
@@ -41,24 +40,16 @@ describe.skip('dht', () => {
   let multiaddrB
 
   // spawn daemons
-  before(function (done) {
+  before(async function () {
     this.timeout(80 * 1000)
-    series([
-      (cb) => df.spawn(daemonOpts, (err, _ipfsd) => {
-        expect(err).to.not.exist()
 
-        ipfsA = ipfsExec(_ipfsd.repoPath)
-        nodes.push(_ipfsd)
-        cb()
-      }),
-      (cb) => df.spawn(daemonOpts, (err, _ipfsd) => {
-        expect(err).to.not.exist()
+    const ipfsdA = await df.spawn(daemonOpts)
+    ipfsA = ipfsExec(ipfsdA.repoPath)
+    nodes.push(ipfsdA)
 
-        ipfsB = ipfsExec(_ipfsd.repoPath)
-        nodes.push(_ipfsd)
-        cb()
-      })
-    ], done)
+    const ipfsdB = await df.spawn(daemonOpts)
+    ipfsB = ipfsExec(ipfsdB.repoPath)
+    nodes.push(ipfsdB)
   })
 
   // get ids
@@ -88,7 +79,7 @@ describe.skip('dht', () => {
     nodes[0].api.swarm.connect(multiaddrB, done)
   })
 
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+  after(() => Promise.all(nodes.map((node) => node.stop())))
 
   it('should be able to put a value to the dht and get it afterwards', function () {
     this.timeout(60 * 1000)

@@ -28,15 +28,15 @@ const config = {
   }
 }
 
-function spawnNode ({ dht = false, type = 'js' }, cb) {
+const spawnNode = ({ dht = false, type = 'js' }) => {
   const args = dht ? [] : ['--offline']
   const factory = type === 'js' ? df : dfProc
-  factory.spawn({
+  return factory.spawn({
     args,
     config,
     initOptions: { bits: 512 },
     preload: { enabled: false }
-  }, cb)
+  })
 }
 
 // Determine if a ping response object is a pong, or something else, like a status message
@@ -56,18 +56,11 @@ describe('ping', function () {
     let ipfsdBId
 
     // Spawn nodes
-    before(function (done) {
+    before(async function () {
       this.timeout(60 * 1000)
 
-      series([
-        spawnNode.bind(null, { dht: false, type: 'proc' }),
-        spawnNode.bind(null, { dht: false })
-      ], (err, ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsdA = ipfsd[0]
-        ipfsdB = ipfsd[1]
-        done()
-      })
+      ipfsdA = await spawnNode({ dht: false, type: 'proc' })
+      ipfsdB = await spawnNode({ dht: false })
     })
 
     // Get the peer info object
@@ -112,30 +105,20 @@ describe('ping', function () {
     let ipfsdBId
 
     // Spawn nodes
-    before(function (done) {
+    before(async function () {
       this.timeout(60 * 1000)
 
-      series([
-        spawnNode.bind(null, { dht: false }),
-        spawnNode.bind(null, { dht: false })
-      ], (err, ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsdA = ipfsd[0]
-        ipfsdB = ipfsd[1]
-        done()
-      })
+      ipfsdA = await spawnNode({ dht: false })
+      ipfsdB = await spawnNode({ dht: false })
     })
 
     // Get the peer info object
-    before(function (done) {
+    before(async function () {
       this.timeout(60 * 1000)
 
-      ipfsdB.api.id((err, peerInfo) => {
-        expect(err).to.not.exist()
-        ipfsdBId = peerInfo.id
-        bMultiaddr = peerInfo.addresses[0]
-        done()
-      })
+      const peerInfo = await ipfsdB.api.id()
+      ipfsdBId = peerInfo.id
+      bMultiaddr = peerInfo.addresses[0]
     })
 
     // Connect the nodes
@@ -144,14 +127,14 @@ describe('ping', function () {
       ipfsdA.api.swarm.connect(bMultiaddr, done)
     })
 
-    after((done) => {
-      if (!ipfsdA) return done()
-      ipfsdA.stop(done)
+    after(async () => {
+      if (!ipfsdA) return
+      await ipfsdA.stop()
     })
 
-    after((done) => {
-      if (!ipfsdB) return done()
-      ipfsdB.stop(done)
+    after(async () => {
+      if (!ipfsdB) return
+      await ipfsdB.stop()
     })
 
     it('sends the specified number of packets', (done) => {

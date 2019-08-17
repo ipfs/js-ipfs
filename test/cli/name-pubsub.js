@@ -8,30 +8,27 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const path = require('path')
 const parallel = require('async/parallel')
-const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({ type: 'js' })
 
-const spawnDaemon = (callback) => {
-  df.spawn({
-    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-    args: ['--enable-namesys-pubsub'],
-    initOptions: { bits: 512 },
-    config: {
-      Bootstrap: [],
-      Discovery: {
-        MDNS: {
-          Enabled: false
-        },
-        webRTCStar: {
-          Enabled: false
-        }
+const spawnDaemon = () => df.spawn({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  args: ['--enable-namesys-pubsub'],
+  initOptions: { bits: 512 },
+  config: {
+    Bootstrap: [],
+    Discovery: {
+      MDNS: {
+        Enabled: false
+      },
+      webRTCStar: {
+        Enabled: false
       }
     }
-  }, callback)
-}
+  }
+})
 
 describe('name-pubsub', () => {
   describe('enabled', () => {
@@ -43,29 +40,18 @@ describe('name-pubsub', () => {
     const nodes = []
 
     // Spawn daemons
-    before(function (done) {
+    before(async function () {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(80 * 1000)
 
-      series([
-        (cb) => {
-          spawnDaemon((err, node) => {
-            expect(err).to.not.exist()
-            ipfsA = ipfsExec(node.repoPath)
-            nodes.push(node)
-            cb()
-          })
-        },
-        (cb) => {
-          spawnDaemon((err, node) => {
-            expect(err).to.not.exist()
-            ipfsB = ipfsExec(node.repoPath)
-            nodes.push(node)
-            cb()
-          })
-        }
-      ], done)
+      const nodeA = await spawnDaemon()
+      ipfsA = ipfsExec(nodeA.repoPath)
+      nodes.push(nodeA)
+
+      const nodeB = await spawnDaemon()
+      ipfsB = ipfsExec(nodeB.repoPath)
+      nodes.push(nodeB)
     })
 
     // Get node ids
@@ -97,7 +83,7 @@ describe('name-pubsub', () => {
         })
     })
 
-    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after(() => Promise.all(nodes.map((node) => node.stop())))
 
     describe('pubsub commands', () => {
       it('should get enabled state of pubsub', function () {
@@ -166,27 +152,27 @@ describe('name-pubsub', () => {
 
   describe('disabled', () => {
     let ipfsA
-    const nodes = []
+    let node
 
     // Spawn daemons
-    before(function (done) {
+    before(async function () {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(80 * 1000)
 
-      df.spawn({
+      node = await df.spawn({
         exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         config: {},
         initOptions: { bits: 512 }
-      }, (err, node) => {
-        expect(err).to.not.exist()
-        ipfsA = ipfsExec(node.repoPath)
-        nodes.push(node)
-        done()
       })
+      ipfsA = ipfsExec(node.repoPath)
     })
 
-    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after(() => {
+      if (node) {
+        return node.stop()
+      }
+    })
 
     it('should get disabled state of pubsub', function () {
       return ipfsA('name pubsub state')

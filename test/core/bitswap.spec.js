@@ -17,6 +17,7 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 const path = require('path')
 const IPFSFactory = require('ipfsd-ctl')
+const callbackify = require('callbackify')
 
 const IPFS = require('../../src/core')
 
@@ -63,7 +64,7 @@ function connectNodes (remoteNode, inProcNode, callback) {
 let nodes = []
 
 function addNode (fDaemon, inProcNode, callback) {
-  fDaemon.spawn({
+  callbackify.variadic(fDaemon.spawn.bind(fDaemon))({
     exec: isNode ? path.resolve(`${__dirname}/../../src/cli/bin.js`) : './src/cli/bin.js',
     initOptions: { bits: 512 },
     config: {
@@ -97,7 +98,7 @@ describe('bitswap', function () {
     fInProc = IPFSFactory.create({ type: 'proc' })
   })
 
-  beforeEach(function (done) {
+  beforeEach(async function () {
     this.timeout(60 * 1000)
 
     let config = {
@@ -120,26 +121,19 @@ describe('bitswap', function () {
       })
     }
 
-    fInProc.spawn({
+    const ipfsd = await fInProc.spawn({
       exec: IPFS,
       config: config,
       initOptions: { bits: 512 }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      nodes.push(_ipfsd)
-      inProcNode = _ipfsd.api
-      done()
     })
+    nodes.push(ipfsd)
+    inProcNode = ipfsd.api
   })
 
-  afterEach(function (done) {
+  afterEach(async function () {
     this.timeout(80 * 1000)
-    const tasks = nodes.map((node) => (cb) => node.stop(cb))
-    parallel(tasks, (err) => {
-      expect(err).to.not.exist()
-      nodes = []
-      done()
-    })
+    await Promise.all(nodes.map((node) => node.stop()))
+    nodes = []
   })
 
   describe('transfer a block between', () => {

@@ -16,25 +16,19 @@ const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli
 describe('.files', () => {
   let ipfs = null
   let ipfsd = null
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({
+    ipfsd = await df.spawn({
       initOptions: { bits: 512 },
       config: { Bootstrap: [] }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after(function (done) {
+  after(function () {
     this.timeout(20 * 1000)
     if (ipfsd) {
-      ipfsd.stop(done)
-    } else {
-      done()
+      return ipfsd.stop()
     }
   })
 

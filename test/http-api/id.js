@@ -6,9 +6,9 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
-const waterfall = require('async/waterfall')
+const promisify = require('promisify-es6')
+const ncp = promisify(require('ncp').ncp)
+const rimraf = promisify(require('rimraf'))
 const path = require('path')
 
 const isWindows = require('../utils/platforms').isWindows
@@ -23,37 +23,24 @@ skipOnWindows('id endpoint', () => {
 
   let ipfs = null
   let ipfsd = null
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
 
-    ncp(repoExample, repoPath, (err) => {
-      expect(err).to.not.exist()
-
-      waterfall([
-        (cb) => df.spawn({
-          repoPath: repoPath,
-          initOptions: { bits: 512 },
-          config: { Bootstrap: [] },
-          disposable: false,
-          start: true
-        }, cb),
-        (_ipfsd, cb) => {
-          ipfsd = _ipfsd
-          ipfsd.start(cb)
-        }
-      ], (err) => {
-        expect(err).to.not.exist()
-        ipfs = ipfsd.api
-        done()
-      })
+    await ncp(repoExample, repoPath)
+    ipfsd = await df.spawn({
+      repoPath: repoPath,
+      initOptions: { bits: 512 },
+      config: { Bootstrap: [] },
+      disposable: false,
+      start: true
     })
+    await ipfsd.start()
+    ipfs = ipfsd.api
   })
 
-  after((done) => {
-    rimraf(repoPath, (err) => {
-      expect(err).to.not.exist()
-      ipfsd.stop(done)
-    })
+  after(async () => {
+    await rimraf(repoPath)
+    return ipfsd.stop()
   })
 
   describe('.id', () => {

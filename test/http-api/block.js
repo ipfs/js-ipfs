@@ -16,22 +16,18 @@ describe('block endpoint', () => {
   let ipfs = null
   let ipfsd = null
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
 
-    df.spawn({
+    ipfsd = await df.spawn({
       initOptions: { bits: 512 },
       config: { Bootstrap: [] },
       args: []
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after((done) => ipfsd.stop(done))
+  after(() => ipfsd.stop())
 
   describe('.block', () => {
     describe('.put', () => {

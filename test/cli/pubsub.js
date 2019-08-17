@@ -12,7 +12,6 @@ const ipfsExec = require('../utils/ipfs-exec')
 const IPFS = require('../../src')
 const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
 
 const config = {
   Bootstrap: [],
@@ -37,43 +36,47 @@ describe('pubsub', function () {
   const topicB = 'nonscentsB'
   const topicC = 'nonscentsC'
 
-  before(function (done) {
+  before(async function () {
     this.timeout(60 * 1000)
 
-    DaemonFactory
-      .create({ type: 'proc' })
-      .spawn({
-        exec: IPFS,
-        initOptions: { bits: 512 },
-        config,
-        args: ['--enable-pubsub-experiment']
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsdA = _ipfsd
-        node = _ipfsd.api
-        done()
-      })
+    const df = DaemonFactory.create({ type: 'proc' })
+    ipfsdA = await df.spawn({
+      exec: IPFS,
+      initOptions: { bits: 512 },
+      config,
+      args: ['--enable-pubsub-experiment']
+    })
+    node = ipfsdA.api
   })
 
-  after((done) => ipfsdB.stop(done))
+  after(() => {
+    if (ipfsdB) {
+      return ipfsdB.stop()
+    }
+  })
 
-  before((done) => {
-    df.spawn({
+  before(async () => {
+    const df = DaemonFactory.create({ type: 'js' })
+    ipfsdB = await df.spawn({
       initOptions: { bits: 512 },
       args: ['--enable-pubsub-experiment'],
       exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      httpApi = _ipfsd.api
-      ipfsdB = _ipfsd
-      httpApi.repoPath = ipfsdB.repoPath
-      done()
     })
+    httpApi = ipfsdB.api
+    httpApi.repoPath = ipfsdB.repoPath
   })
 
-  after((done) => ipfsdA.stop(done))
-  after((done) => ipfsdB.stop(done))
+  after(() => {
+    if (ipfsdA) {
+      return ipfsdA.stop()
+    }
+  })
+  after(() => {
+    if (ipfsdB) {
+      return ipfsdB.stop()
+    }
+  })
 
   before((done) => {
     cli = ipfsExec(httpApi.repoPath)

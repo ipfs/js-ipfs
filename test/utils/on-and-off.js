@@ -2,10 +2,6 @@
 'use strict'
 
 const hat = require('hat')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
 
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
@@ -45,29 +41,27 @@ function on (tests) {
     const thing = {}
 
     let ipfsd
-    before(function (done) {
+    before(async function () {
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
       this.timeout(60 * 1000)
 
-      df.spawn({
+      ipfsd = await df.spawn({
         type: 'js',
         exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
         initOptions: { bits: 512 },
         config: { Bootstrap: [] }
-      }, (err, node) => {
-        expect(err).to.not.exist()
-        ipfsd = node
-        thing.ipfs = ipfsExec(node.repoPath)
-        thing.ipfs.repoPath = node.repoPath
-        done()
       })
+      thing.ipfs = ipfsExec(ipfsd.repoPath)
+      thing.ipfs.repoPath = ipfsd.repoPath
     })
 
-    after(function (done) {
-      this.timeout(15 * 1000)
-      ipfsd.stop(done)
+    after(function () {
+      if (ipfsd) {
+        this.timeout(15 * 1000)
+        return ipfsd.stop()
+      }
     })
 
     tests(thing)

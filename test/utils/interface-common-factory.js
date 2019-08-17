@@ -5,6 +5,7 @@ const each = require('async/each')
 const IPFSFactory = require('ipfsd-ctl')
 const ipfsClient = require('ipfs-http-client')
 const IPFS = require('../../src')
+const callbackify = require('callbackify')
 
 function createFactory (options) {
   options = options || {}
@@ -31,6 +32,8 @@ function createFactory (options) {
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
+  const callbackifiedSpawn = callbackify.variadic(
+    ipfsFactory.spawn.bind(ipfsFactory))
 
   return function createCommon () {
     const nodes = []
@@ -42,7 +45,7 @@ function createFactory (options) {
       setup = (callback) => {
         callback(null, {
           spawnNode (cb) {
-            ipfsFactory.spawn(options.spawnOptions, (err, _ipfsd) => {
+            callbackifiedSpawn(options.spawnOptions, (err, _ipfsd) => {
               if (err) {
                 return cb(err)
               }
@@ -58,7 +61,7 @@ function createFactory (options) {
     if (options.createTeardown) {
       teardown = options.createTeardown({ ipfsFactory, nodes }, options)
     } else {
-      teardown = callback => each(nodes, (node, cb) => node.stop(cb), callback)
+      teardown = callback => each(nodes, (node, cb) => callbackify.variadic(node.stop.bind(node))(cb), callback)
     }
 
     return { setup, teardown }
