@@ -2,7 +2,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const { DAGNode, DAGLink, util } = require('ipld-dag-pb')
+const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
 const map = require('async/map')
 const mapSeries = require('async/mapSeries')
@@ -12,6 +12,7 @@ const eachLimit = require('async/eachLimit')
 const waterfall = require('async/waterfall')
 const detectLimit = require('async/detectLimit')
 const setImmediate = require('async/setImmediate')
+const queue = require('async/queue')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
 const multibase = require('multibase')
@@ -52,30 +53,49 @@ module.exports = (self) => {
   const recursiveKeys = () =>
     Array.from(recursivePins).map(key => new CID(key).buffer)
 
+  function walkDag ({ cid, onCid = () => {} }, cb) {
+    const q = queue(function ({ cid }, done) {
+      dag.get(cid, { preload: false }, function (err, result) {
+        if (err) {
+          return done(err)
+        }
+
+        onCid(cid)
+
+        if (result.value.Links) {
+          q.push(result.value.Links.map(link => ({
+            cid: link.Hash
+          })))
+        }
+
+        done()
+      })
+    }, concurrencyLimit)
+    q.drain = () => {
+      cb()
+    }
+    q.error = (err) => {
+      q.kill()
+      cb(err)
+    }
+    q.push({ cid })
+  }
+
   function getIndirectKeys (callback) {
     const indirectKeys = new Set()
     eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
-      dag._getRecursive(multihash, (err, nodes) => {
-        if (err) {
-          return cb(err)
-        }
+      // load every hash in the graph
+      walkDag({
+        cid: new CID(multihash),
+        onCid: (cid) => {
+          cid = cid.toString()
 
-        map(nodes, (node, cb) => util.cid(util.serialize(node), {
-          cidVersion: 0
-        }).then(cid => cb(null, cid), cb), (err, cids) => {
-          if (err) {
-            return cb(err)
+          // recursive pins pre-empt indirect pins
+          if (!recursivePins.has(cid)) {
+            indirectKeys.add(cid)
           }
-
-          cids
-            .map(cid => cid.toString())
-            // recursive pins pre-empt indirect pins
-            .filter(key => !recursivePins.has(key))
-            .forEach(key => indirectKeys.add(key))
-
-          cb()
-        })
-      })
+        }
+      }, cb)
     }, (err) => {
       if (err) { return callback(err) }
       callback(null, Array.from(indirectKeys))
@@ -184,7 +204,9 @@ module.exports = (self) => {
 
         // verify that each hash can be pinned
         map(mhs, (multihash, cb) => {
-          const key = toB58String(multihash)
+          const cid = new CID(multihash)
+          const key = cid.toBaseEncodedString()
+
           if (recursive) {
             if (recursivePins.has(key)) {
               // it's already pinned recursively
@@ -193,11 +215,10 @@ module.exports = (self) => {
 
             // entire graph of nested links should be pinned,
             // so make sure we have all the objects
-            dag._getRecursive(key, { preload: options.preload }, (err) => {
-              if (err) { return cb(err) }
-              // found all objects, we can add the pin
-              return cb(null, key)
-            })
+            walkDag({
+              dag,
+              cid
+            }, (err) => cb(err, key))
           } else {
             if (recursivePins.has(key)) {
               // recursive supersedes direct, can't have both
@@ -209,8 +230,10 @@ module.exports = (self) => {
             }
 
             // make sure we have the object
-            dag.get(new CID(multihash), { preload: options.preload }, (err) => {
-              if (err) { return cb(err) }
+            dag.get(cid, (err) => {
+              if (err) {
+                return cb(err)
+              }
               // found the object, we can add the pin
               return cb(null, key)
             })
