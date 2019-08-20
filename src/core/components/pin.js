@@ -230,7 +230,7 @@ module.exports = (self) => {
             }
 
             // make sure we have the object
-            dag.get(cid, (err) => {
+            dag.get(cid, { preload: options.preload }, (err) => {
               if (err) {
                 return cb(err)
               }
