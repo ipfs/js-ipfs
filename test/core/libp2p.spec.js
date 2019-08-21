@@ -147,7 +147,10 @@ describe('libp2p customization', function () {
             }
           },
           pubsub: {
-            enabled: false
+            enabled: false,
+            emitSelf: true,
+            signMessages: true,
+            strictSigning: true
           }
         })
         expect(_libp2p._transport).to.have.length(3)
