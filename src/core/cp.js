@@ -113,7 +113,7 @@ const copyToFile = async (context, source, destination, destinationTrail, option
 
   parent = await addSourceToParent(context, source, destination, parent, options)
 
-  // update the tree with the new containg directory
+  // update the tree with the new containing directory
   destinationTrail.push(parent)
 
   const newRootCid = await updateTree(context, destinationTrail, options)
@@ -130,7 +130,7 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
     destination = await addSourceToParent(context, source, source.name, destination, options)
   }
 
-  // update the tree with the new containg directory
+  // update the tree with the new containing directory
   destinationTrail[destinationTrail.length - 1] = destination
 
   const newRootCid = await updateTree(context, destinationTrail, options)
