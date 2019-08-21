@@ -141,7 +141,7 @@
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
     "multiaddr": "^6.1.0",
-    "multiaddr-to-uri": "^4.0.1",
+    "multiaddr-to-uri": "^5.0.0",
     "multibase": "~0.6.0",
     "multicodec": "~0.5.5",
     "multihashes": "~0.4.14",
