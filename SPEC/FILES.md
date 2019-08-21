@@ -2,7 +2,7 @@
 
 > The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://github.com/ipfs/specs/issues/98). [We are currently going through a revamping process of these APIs to make them more user-friendly](https://github.com/ipfs/interface-ipfs-core/issues/284).
 
-#### The Regular API 
+#### The Regular API
 The regular, top-level API for add, cat, get and ls Files on IPFS
   - [add](#add)
   - [addFromFs](#addfromfs)
@@ -19,8 +19,8 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
   - [ls](#ls)
   - [lsPullStream](#lspullstream)
   - [lsReadableStream](#lsreadablestream)
-  
-#### The Files API 
+
+#### The Files API
 The Files API, aka MFS (Mutable File System)
 
 _Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
@@ -700,6 +700,7 @@ Where:
 - `from` is the path(s) of the source to copy.  It might be:
   - An existing MFS path to a file or a directory (e.g. `/my-dir/my-file.txt`)
   - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `to` is the path of the destination to copy to
 - `options` is an optional Object that might contain the following keys:
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
@@ -779,7 +780,10 @@ ipfs.files.mkdir('/my/beautiful/directory', (err) => {
 
 Where:
 
-- `path` is the path to the file or directory to stat
+- `path` is the path to the file or directory to stat. It might be:
+  - An existing MFS path to a file or directory (e.g. `/my-dir/a.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `hash` is a Boolean value to return only the hash  (default: false)
   - `size` is a Boolean value to return only the size  (default: false)
@@ -862,7 +866,10 @@ ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
 
 Where:
 
-- `path` is the path of the file to read and must point to a file (and not a directory)
+- `path` is the path of the file to read and must point to a file (and not a directory). It might be:
+  - An existing MFS path to a file (e.g. `/my-dir/a.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
@@ -890,7 +897,10 @@ ipfs.files.read('/hello-world', (error, buf) => {
 
 Where:
 
-- `path` is the path of the file to read and must point to a file (and not a directory)
+- `path` is the path of the file to read and must point to a file (and not a directory). It might be:
+  - An existing MFS path to a file (e.g. `/my-dir/a.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
@@ -914,7 +924,10 @@ stream.on('data', (buf) => console.log(buf.toString('utf8')))
 
 Where:
 
-- `path` is the path of the file to read and must point to a file (and not a directory)
+- `path` is the path of the file to read and must point to a file (and not a directory). It might be:
+  - An existing MFS path to a file (e.g. `/my-dir/a.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
@@ -1050,7 +1063,10 @@ ipfs.files.flush('/', (err) => {
 
 Where:
 
-- `path` is an optional string to show listing for (default: `/`)
+- `path` is an optional string to show listing for (default: `/`). It might be:
+  - An existing MFS path to a directory (e.g. `/my-dir`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
@@ -1087,7 +1103,10 @@ ipfs.files.ls('/screenshots', function (err, files) {
 
 Where:
 
-- `path` is an optional string to show listing for (default: `/`)
+- `path` is an optional string to show listing for (default: `/`). It might be:
+  - An existing MFS path to a directory (e.g. `/my-dir`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
@@ -1120,7 +1139,10 @@ stream.on('data', (file) => {
 
 Where:
 
-- `path` is an optional string to show listing for (default: `/`)
+- `path` is an optional string to show listing for (default: `/`). It might be:
+  - An existing MFS path to a directory (e.g. `/my-dir`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
