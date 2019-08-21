@@ -13,16 +13,13 @@ const { Key } = require('interface-datastore')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 const debug = require('debug')
+const { cidToString } = require('../../../utils/cid')
 
 const createPinSet = require('./pin-set')
 
 // arbitrary limit to the number of concurrent dag operations
 const concurrencyLimit = 300
 const PIN_DS_KEY = new Key('/local/pins')
-
-function toB58String (hash) {
-  return new CID(hash).toBaseEncodedString()
-}
 
 function invalidPinTypeErr (type) {
   const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
@@ -192,8 +189,8 @@ class PinManager {
         if (err) { return callback(err) }
         const [rKeys, dKeys] = keys
 
-        this.directPins = new Set(dKeys.map(toB58String))
-        this.recursivePins = new Set(rKeys.map(toB58String))
+        this.directPins = new Set(dKeys.map(k => cidToString(k)))
+        this.recursivePins = new Set(rKeys.map(k => cidToString(k)))
 
         this.log('Loaded pins from the datastore')
         return callback(null)
@@ -202,7 +199,7 @@ class PinManager {
   }
 
   isPinnedWithType (multihash, type, callback) {
-    const key = toB58String(multihash)
+    const key = cidToString(multihash)
     const { recursive, direct, all } = PinTypes
 
     // recursive

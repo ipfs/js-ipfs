@@ -5,14 +5,15 @@ const CID = require('cids')
 const base32 = require('base32.js')
 const parallel = require('async/parallel')
 const mapLimit = require('async/mapLimit')
-const { Key } = require('interface-datastore')
 const expErr = require('explain-error')
 const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:gc')
+// TODO: Use exported key from root when upgraded to ipfs-mfs@>=13
+// https://github.com/ipfs/js-ipfs-mfs/pull/58
+const { MFS_ROOT_KEY } = require('ipfs-mfs/src/core/utils/constants')
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
-const MFS_ROOT_DS_KEY = new Key('/local/filesroot')
 
 // Perform mark and sweep garbage collection
 module.exports = function gc (self) {
@@ -72,7 +73,7 @@ function createMarkedSet (ipfs, callback) {
     }),
 
     // The MFS root and all its descendants
-    (cb) => ipfs._repo.root.get(MFS_ROOT_DS_KEY, (err, mh) => {
+    (cb) => ipfs._repo.root.get(MFS_ROOT_KEY, (err, mh) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
           log(`No blocks in MFS`)
@@ -147,6 +148,8 @@ function deleteUnmarkedBlocks (ipfs, markedSet, blockKeys, callback) {
   })
 }
 
+// TODO: Use exported utility when upgrade to ipfs-repo@>=0.27.1
+// https://github.com/ipfs/js-ipfs-repo/pull/206
 function dsKeyToCid (key) {
   // Block key is of the form /<base32 encoded string>
   const decoder = new base32.Decoder()

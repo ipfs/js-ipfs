@@ -116,7 +116,7 @@ function pinFile (file, self, opts, cb) {
   const isRootDir = !file.path.includes('/')
   const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
   if (shouldPin) {
-    // Note: we take a GC lock wherever we call addPullStream(), so tell
+    // Note: addPullStream() has already taken a GC lock, so tell
     // pin.add() not to take a (second) GC lock
     return self.pin.add(file.hash, { preload: false, lock: false }, err => cb(err, file))
   } else {

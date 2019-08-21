@@ -2,7 +2,6 @@
 
 const assert = require('assert')
 const mortice = require('mortice')
-const setImmediate = require('async/setImmediate')
 const noop = () => {}
 
 // Wrap mortice to present a callback interface
@@ -33,8 +32,8 @@ class Mutex {
   * @returns {void}
   */
   _lock (type, lockedFn, cb = noop) {
-    assert(typeof lockedFn === 'function', `first argument to CBLock.${type}() must be a function`)
-    assert(typeof cb === 'function', `second argument to CBLock.${type}() must be a callback function`)
+    assert(typeof lockedFn === 'function', `first argument to Mutex.${type}() must be a function`)
+    assert(typeof cb === 'function', `second argument to Mutex.${type}() must be a callback function`)
 
     const lockId = this.lockId++
     this.log(`[${lockId}] ${type} requested`)
@@ -55,10 +54,7 @@ class Mutex {
     const lock = this.mutex[type](locked)
 
     // When the locked piece of code is complete, the Promise resolves
-    return lock.then(
-      (res) => setImmediate(() => cb(null, res)),
-      (err) => setImmediate(() => cb(err))
-    )
+    return lock.then(res => cb(null, res), cb)
   }
 }
 
