@@ -9,6 +9,8 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
+const pull = require('pull-stream')
+const CID = require('cids')
 
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
@@ -325,6 +327,142 @@ describe('preload', () => {
         MockPreloadNode.waitForCids(cid.toBaseEncodedString(), done)
       })
     })
+  })
+
+  it('should preload content retrieved with files.ls', done => {
+    let dirCid
+
+    waterfall([
+      cb => ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }, cb),
+      (res, cb) => {
+        dirCid = res[res.length - 1].hash
+        MockPreloadNode.waitForCids(dirCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => ipfs.files.ls(`/ipfs/${dirCid}`, err => cb(err)),
+      cb => MockPreloadNode.waitForCids(dirCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.ls by CID', done => {
+    let dirCid
+
+    waterfall([
+      cb => ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }, cb),
+      (res, cb) => {
+        dirCid = res[res.length - 1].hash
+        MockPreloadNode.waitForCids(dirCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => ipfs.files.ls(new CID(dirCid), err => cb(err)),
+      cb => MockPreloadNode.waitForCids(dirCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.lsReadableStream', done => {
+    let dirCid
+
+    waterfall([
+      cb => ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }, cb),
+      (res, cb) => {
+        dirCid = res[res.length - 1].hash
+        MockPreloadNode.waitForCids(dirCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => {
+        ipfs.files.lsReadableStream(`/ipfs/${dirCid}`)
+          .on('data', () => {})
+          .on('error', cb)
+          .on('end', cb)
+      },
+      cb => MockPreloadNode.waitForCids(dirCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.lsPullStream', done => {
+    let dirCid
+
+    waterfall([
+      cb => ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }, cb),
+      (res, cb) => {
+        dirCid = res[res.length - 1].hash
+        MockPreloadNode.waitForCids(dirCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => pull(
+        ipfs.files.lsPullStream(`/ipfs/${dirCid}`),
+        pull.onEnd(cb)
+      ),
+      cb => MockPreloadNode.waitForCids(dirCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.read', done => {
+    let fileCid
+
+    waterfall([
+      cb => ipfs.add(Buffer.from(hat()), cb),
+      (res, cb) => {
+        fileCid = res[0].hash
+        MockPreloadNode.waitForCids(fileCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => ipfs.files.read(`/ipfs/${fileCid}`, err => cb(err)),
+      cb => MockPreloadNode.waitForCids(fileCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.readReadableStream', done => {
+    let fileCid
+
+    waterfall([
+      cb => ipfs.add(Buffer.from(hat()), cb),
+      (res, cb) => {
+        fileCid = res[0].hash
+        MockPreloadNode.waitForCids(fileCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => {
+        ipfs.files.readReadableStream(`/ipfs/${fileCid}`)
+          .on('data', () => {})
+          .on('error', cb)
+          .on('end', cb)
+      },
+      cb => MockPreloadNode.waitForCids(fileCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.readPullStream', done => {
+    let fileCid
+
+    waterfall([
+      cb => ipfs.add(Buffer.from(hat()), cb),
+      (res, cb) => {
+        fileCid = res[0].hash
+        MockPreloadNode.waitForCids(fileCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => pull(
+        ipfs.files.readPullStream(`/ipfs/${fileCid}`),
+        pull.onEnd(cb)
+      ),
+      cb => MockPreloadNode.waitForCids(fileCid, cb)
+    ], done)
+  })
+
+  it('should preload content retrieved with files.stat', done => {
+    let fileCid
+
+    waterfall([
+      cb => ipfs.add(Buffer.from(hat()), cb),
+      (res, cb) => {
+        fileCid = res[0].hash
+        MockPreloadNode.waitForCids(fileCid, cb)
+      },
+      cb => MockPreloadNode.clearPreloadCids(cb),
+      cb => ipfs.files.stat(`/ipfs/${fileCid}`, err => cb(err)),
+      cb => MockPreloadNode.waitForCids(fileCid, cb)
+    ], done)
   })
 })
 

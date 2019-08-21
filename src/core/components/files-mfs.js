@@ -40,8 +40,6 @@ module.exports = self => {
         cids.push(p.split('/')[2])
       } else if (isIpfs.cid(p)) {
         cids.push(p)
-      } else if (isIpfs.cidPath(p)) {
-        cids.push(p.split('/')[0])
       }
       return cids
     }, [])
@@ -93,7 +91,7 @@ module.exports = self => {
     }),
     mkdir: callbackify.variadic(methods.mkdir),
     mv: callbackify.variadic(withPreload(methods.mv)),
-    read: callbackify(withPreload(async (path, options = {}) => {
+    read: callbackify.variadic(withPreload(async (path, options = {}) => {
       return Buffer.concat(await all(methods.read(path, options)))
     })),
     readPullStream: withPreload((path, options = {}) => {
@@ -103,7 +101,7 @@ module.exports = self => {
       return toReadableStream(methods.read(path, options))
     }),
     rm: callbackify.variadic(methods.rm),
-    stat: callbackify(withPreload(async (path, options = {}) => {
+    stat: callbackify.variadic(withPreload(async (path, options = {}) => {
       const stats = await methods.stat(path, options)
 
       stats.hash = cidToString(stats.cid, { base: options.cidBase })
