@@ -53,9 +53,9 @@ module.exports = (self) => {
   const recursiveKeys = () =>
     Array.from(recursivePins).map(key => new CID(key).buffer)
 
-  function walkDag ({ cid, onCid = () => {} }, cb) {
+  function walkDag ({ cid, preload = false, onCid = () => {} }, cb) {
     const q = queue(function ({ cid }, done) {
-      dag.get(cid, { preload: false }, function (err, result) {
+      dag.get(cid, { preload }, function (err, result) {
         if (err) {
           return done(err)
         }
@@ -217,7 +217,8 @@ module.exports = (self) => {
             // so make sure we have all the objects
             walkDag({
               dag,
-              cid
+              cid,
+              preload: options.preload
             }, (err) => cb(err, key))
           } else {
             if (recursivePins.has(key)) {
