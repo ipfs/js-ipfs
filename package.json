@@ -59,7 +59,7 @@
     "err-code": "^2.0.0",
     "hamt-sharding": "~0.0.2",
     "interface-datastore": "~0.7.0",
-    "ipfs-multipart": "~0.1.0",
+    "ipfs-multipart": "~0.2.0",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.38.0",
     "ipfs-unixfs-importer": "~0.40.0",

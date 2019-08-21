@@ -28,39 +28,33 @@ const mfsWrite = {
       shardSplitThreshold
     } = request.query
 
-    const fileStream = await new Promise((resolve, reject) => {
-      const parser = multipart.reqParser(request.payload)
-      let fileStream
+    let files = 0
 
-      parser.on('file', (_, stream) => {
-        if (fileStream) {
-          return reject(Boom.badRequest('Please only send one file'))
+    for await (const entry of multipart(request)) {
+      if (entry.type === 'file') {
+        files++
+
+        if (files > 1) {
+          throw Boom.badRequest('Please only send one file')
         }
 
-        fileStream = stream
-        resolve(fileStream)
-      })
-
-      parser.on('error', (error) => {
-        reject(error)
-      })
-    })
-
-    await ipfs.files.write(arg, fileStream, {
-      offset,
-      length,
-      create,
-      truncate,
-      rawLeaves,
-      cidVersion,
-      hashAlg,
-      format,
-      parents,
-      progress,
-      strategy,
-      flush,
-      shardSplitThreshold
-    })
+        await ipfs.files.write(arg, entry.content, {
+          offset,
+          length,
+          create,
+          truncate,
+          rawLeaves,
+          cidVersion,
+          hashAlg,
+          format,
+          parents,
+          progress,
+          strategy,
+          flush,
+          shardSplitThreshold
+        })
+      }
+    }
 
     return h.response()
   },
