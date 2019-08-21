@@ -340,7 +340,7 @@ describe('preload', () => {
       },
       cb => MockPreloadNode.clearPreloadCids(cb),
       cb => ipfs.files.ls(`/ipfs/${dirCid}`, err => cb(err)),
-      cb => MockPreloadNode.waitForCids(dirCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${dirCid}`, cb)
     ], done)
   })
 
@@ -375,7 +375,7 @@ describe('preload', () => {
           .on('error', cb)
           .on('end', cb)
       },
-      cb => MockPreloadNode.waitForCids(dirCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${dirCid}`, cb)
     ], done)
   })
 
@@ -393,7 +393,7 @@ describe('preload', () => {
         ipfs.files.lsPullStream(`/ipfs/${dirCid}`),
         pull.onEnd(cb)
       ),
-      cb => MockPreloadNode.waitForCids(dirCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${dirCid}`, cb)
     ], done)
   })
 
@@ -408,7 +408,7 @@ describe('preload', () => {
       },
       cb => MockPreloadNode.clearPreloadCids(cb),
       cb => ipfs.files.read(`/ipfs/${fileCid}`, err => cb(err)),
-      cb => MockPreloadNode.waitForCids(fileCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${fileCid}`, cb)
     ], done)
   })
 
@@ -428,7 +428,7 @@ describe('preload', () => {
           .on('error', cb)
           .on('end', cb)
       },
-      cb => MockPreloadNode.waitForCids(fileCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${fileCid}`, cb)
     ], done)
   })
 
@@ -446,7 +446,7 @@ describe('preload', () => {
         ipfs.files.readPullStream(`/ipfs/${fileCid}`),
         pull.onEnd(cb)
       ),
-      cb => MockPreloadNode.waitForCids(fileCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${fileCid}`, cb)
     ], done)
   })
 
@@ -461,7 +461,7 @@ describe('preload', () => {
       },
       cb => MockPreloadNode.clearPreloadCids(cb),
       cb => ipfs.files.stat(`/ipfs/${fileCid}`, err => cb(err)),
-      cb => MockPreloadNode.waitForCids(fileCid, cb)
+      cb => MockPreloadNode.waitForCids(`/ipfs/${fileCid}`, cb)
     ], done)
   })
 })

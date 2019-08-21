@@ -35,19 +35,12 @@ module.exports = self => {
   })
 
   const withPreload = fn => (...args) => {
-    const cids = args.reduce((cids, p) => {
-      if (isIpfs.ipfsPath(p)) {
-        cids.push(p.split('/')[2])
-      } else if (isIpfs.cid(p)) {
-        cids.push(p)
-      }
-      return cids
-    }, [])
+    const paths = args.filter(arg => isIpfs.ipfsPath(arg) || isIpfs.cid(arg))
 
-    if (cids.length) {
+    if (paths.length) {
       const options = args[args.length - 1]
       if (options.preload !== false) {
-        cids.forEach(cid => self._preload(cid))
+        paths.forEach(path => self._preload(path))
       }
     }
 
