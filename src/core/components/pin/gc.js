@@ -41,6 +41,7 @@ module.exports = function gc (self) {
             log('GC failed to delete unmarked blocks', err)
             return lockCb(err)
           }
+
           lockCb(null, res)
         })
       })
