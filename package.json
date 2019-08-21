@@ -121,7 +121,7 @@
     "iso-url": "~0.4.6",
     "just-safe-set": "^2.1.0",
     "kind-of": "^6.0.2",
-    "libp2p": "^0.26.0",
+    "libp2p": "~0.26.1",
     "libp2p-bootstrap": "~0.9.3",
     "libp2p-crypto": "~0.16.0",
     "libp2p-delegated-content-routing": "^0.2.4",
