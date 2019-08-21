@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@hapi/ammo": "^3.1.0",
-    "@hapi/boom": "^7.4.2",
+    "@hapi/boom": "^7.4.3",
     "@hapi/hapi": "^18.3.1",
     "@hapi/joi": "^15.0.1",
     "array-shuffle": "^1.0.1",
