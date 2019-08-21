@@ -81,12 +81,13 @@ module.exports = (self) => {
     q.push({ cid })
   }
 
-  function getIndirectKeys (callback) {
+  function getIndirectKeys ({ preload }, callback) {
     const indirectKeys = new Set()
     eachLimit(recursiveKeys(), concurrencyLimit, (multihash, cb) => {
       // load every hash in the graph
       walkDag({
         cid: new CID(multihash),
+        preload: preload || false,
         onCid: (cid) => {
           cid = cid.toString()
 
@@ -398,7 +399,7 @@ module.exports = (self) => {
           )
         }
         if (type === types.indirect || type === types.all) {
-          getIndirectKeys((err, indirects) => {
+          getIndirectKeys(options, (err, indirects) => {
             if (err) { return callback(err) }
             pins = pins
               // if something is pinned both directly and indirectly,
