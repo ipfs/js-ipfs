@@ -32,7 +32,7 @@ module.exports = self => {
 
   let stopped = true
   let requests = []
-  const apiUris = options.addresses.map(apiAddrToUri)
+  const apiUris = options.addresses.map(toUri)
 
   const api = (cid, callback) => {
     callback = callback || noop
@@ -83,11 +83,4 @@ module.exports = self => {
   }
 
   return api
-}
-
-function apiAddrToUri (addr) {
-  if (!(addr.endsWith('http') || addr.endsWith('https'))) {
-    addr = addr + '/http'
-  }
-  return toUri(addr)
 }
