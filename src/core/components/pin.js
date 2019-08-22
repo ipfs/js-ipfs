@@ -48,7 +48,7 @@ module.exports = (self) => {
 
               // entire graph of nested links should be pinned,
               // so make sure we have all the objects
-              dag._getRecursive(key, { preload: options.preload }, (err) => {
+              pinManager.fetchCompleteDag(key, { preload: options.preload }, (err) => {
                 if (err) { return cb(err) }
                 // found all objects, we can add the pin
                 return cb(null, key)
@@ -242,7 +242,7 @@ module.exports = (self) => {
           )
         }
         if (type === PinTypes.indirect || type === PinTypes.all) {
-          pinManager.getIndirectKeys((err, indirects) => {
+          pinManager.getIndirectKeys(options, (err, indirects) => {
             if (err) { return callback(err) }
             pins = pins
               // if something is pinned both directly and indirectly,
