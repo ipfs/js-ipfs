@@ -4,14 +4,15 @@
 const each = require('async/each')
 const IPFSFactory = require('ipfsd-ctl')
 const ipfsClient = require('ipfs-http-client')
-const IPFS = require('../../src')
 const callbackify = require('callbackify')
+const mergeOptions = require('merge-options')
+const IPFS = require('../../src')
 
 function createFactory (options) {
   options = options || {}
 
   options.factoryOptions = options.factoryOptions || { type: 'proc', exec: IPFS }
-  options.spawnOptions = options.spawnOptions || {
+  options.spawnOptions = mergeOptions({
     initOptions: { bits: 512 },
     config: {
       Bootstrap: [],
@@ -25,7 +26,7 @@ function createFactory (options) {
       }
     },
     preload: { enabled: false }
-  }
+  }, options.spawnOptions)
 
   if (options.factoryOptions.type !== 'proc') {
     options.factoryOptions.IpfsClient = options.factoryOptions.IpfsClient || ipfsClient

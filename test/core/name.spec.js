@@ -87,7 +87,7 @@ describe('name', function () {
     })
   })
 
-  // TODO: unskip when DHT is enabled in 0.36
+  // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
   describe.skip('work with dht', () => {
     let nodes
     let nodeA
