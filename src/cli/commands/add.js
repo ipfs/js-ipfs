@@ -149,6 +149,11 @@ module.exports = {
       type: 'boolean',
       default: true,
       describe: 'Pin this object when adding'
+    },
+    preload: {
+      type: 'boolean',
+      default: true,
+      describe: 'Preload this object when adding'
     }
   },
 
@@ -166,7 +171,8 @@ module.exports = {
         hashAlg: argv.hash,
         wrapWithDirectory: argv.wrapWithDirectory,
         pin: argv.pin,
-        chunker: argv.chunker
+        chunker: argv.chunker,
+        preload: argv.preload
       }
 
       if (options.enableShardingExperiment && argv.isDaemonOn()) {
