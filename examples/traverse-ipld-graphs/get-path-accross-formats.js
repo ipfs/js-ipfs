@@ -1,7 +1,9 @@
 'use strict'
 
 const createNode = require('./create-node')
-const dagPB = require('ipld-dag-pb')
+const {
+  DAGNode
+} = require('ipld-dag-pb')
 
 async function main () {
   const ipfs = await createNode()
@@ -9,7 +11,7 @@ async function main () {
   console.log('\nStart of the example:')
 
   const someData = Buffer.from('capoeira')
-  const pbNode = dagPB.DAGNode.create(someData)
+  const pbNode = new DAGNode(someData)
 
   const pbNodeCid = await ipfs.dag.put(pbNode, {
     format: 'dag-pb',

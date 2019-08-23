@@ -9,14 +9,14 @@ module.exports = function (self) {
   return () => {
     const deferred = pullDefer.source()
 
-    self._repo.blocks.query({ keysOnly: true }, (err, blocks) => {
-      if (err) {
-        return deferred.resolve(pull.error(err))
+    self._repo.blocks.query({ keysOnly: true }).then(
+      (blocks) => {
+        const refs = blocks.map(b => dsKeyToRef(b.key))
+        deferred.resolve(pull.values(refs))
+      }, (err) => {
+        deferred.resolve(pull.error(err))
       }
-
-      const refs = blocks.map(b => dsKeyToRef(b.key))
-      deferred.resolve(pull.values(refs))
-    })
+    )
 
     return deferred
   }

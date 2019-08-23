@@ -9,7 +9,6 @@ const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
-const promisify = require('promisify-es6')
 
 class Daemon {
   constructor (options) {
@@ -75,7 +74,7 @@ class Daemon {
 
     // for the CLI to know the where abouts of the API
     if (this._httpApi._apiServers.length) {
-      await promisify(ipfs._repo.apiAddr.set)(this._httpApi._apiServers[0].info.ma)
+      await ipfs._repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
     this._log('started')

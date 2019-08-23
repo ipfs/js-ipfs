@@ -137,7 +137,7 @@ class PinManager {
         let empty
 
         try {
-          empty = DAGNode.create(Buffer.alloc(0))
+          empty = new DAGNode(Buffer.alloc(0))
         } catch (err) {
           return cb(err)
         }
@@ -155,7 +155,7 @@ class PinManager {
         let node
 
         try {
-          node = DAGNode.create(Buffer.alloc(0), [dLink, rLink])
+          node = new DAGNode(Buffer.alloc(0), [dLink, rLink])
         } catch (err) {
           return cb(err)
         }

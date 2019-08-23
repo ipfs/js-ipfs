@@ -2,6 +2,7 @@
 'use strict'
 
 const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const CID = require('cids')
 const map = require('async/map')
 const mapSeries = require('async/mapSeries')
@@ -23,79 +24,72 @@ module.exports = (self) => {
   const pinManager = new PinManager(self._repo, dag)
 
   const pin = {
-    add: promisify((paths, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    add: callbackify(async (paths, options) => {
       options = options || {}
 
       const recursive = options.recursive == null ? true : options.recursive
 
-      resolvePath(self.object, paths, (err, mhs) => {
-        if (err) { return callback(err) }
+      const multihashes = await resolvePath(self.object, paths)
+      const pinAdd = (pinComplete) => {
+        // verify that each hash can be pinned
+        map(multihashes, (multihash, cb) => {
+          const cid = new CID(multihash)
+          const key = cid.toBaseEncodedString()
 
-        const pinAdd = (pinComplete) => {
-          // verify that each hash can be pinned
-          map(mhs, (multihash, cb) => {
-            const cid = new CID(multihash)
-            const key = cid.toBaseEncodedString()
-
-            if (recursive) {
-              if (pinManager.recursivePins.has(key)) {
-                // it's already pinned recursively
-                return cb(null, key)
-              }
-
-              // entire graph of nested links should be pinned,
-              // so make sure we have all the objects
-              pinManager.fetchCompleteDag(key, { preload: options.preload }, (err) => {
-                if (err) { return cb(err) }
-                // found all objects, we can add the pin
-                return cb(null, key)
-              })
-            } else {
-              if (pinManager.recursivePins.has(key)) {
-                // recursive supersedes direct, can't have both
-                return cb(new Error(`${key} already pinned recursively`))
-              }
-              if (pinManager.directPins.has(key)) {
-                // already directly pinned
-                return cb(null, key)
-              }
-
-              // make sure we have the object
-              dag.get(cid, { preload: options.preload }, (err) => {
-                if (err) { return cb(err) }
-                // found the object, we can add the pin
-                return cb(null, key)
-              })
+          if (recursive) {
+            if (pinManager.recursivePins.has(key)) {
+              // it's already pinned recursively
+              return cb(null, key)
             }
-          }, (err, results) => {
-            if (err) { return pinComplete(err) }
 
-            // update the pin sets in memory
-            const pinset = recursive ? pinManager.recursivePins : pinManager.directPins
-            results.forEach(key => pinset.add(key))
-
-            // persist updated pin sets to datastore
-            pinManager.flushPins((err, root) => {
-              if (err) { return pinComplete(err) }
-              pinComplete(null, results.map(hash => ({ hash })))
+            // entire graph of nested links should be pinned,
+            // so make sure we have all the objects
+            pinManager.fetchCompleteDag(key, { preload: options.preload }, (err) => {
+              if (err) { return cb(err) }
+              // found all objects, we can add the pin
+              return cb(null, key)
             })
-          })
-        }
+          } else {
+            if (pinManager.recursivePins.has(key)) {
+              // recursive supersedes direct, can't have both
+              return cb(new Error(`${key} already pinned recursively`))
+            }
+            if (pinManager.directPins.has(key)) {
+              // already directly pinned
+              return cb(null, key)
+            }
 
-        // When adding a file, we take a lock that gets released after pinning
-        // is complete, so don't take a second lock here
-        const lock = options.lock !== false
-        if (lock) {
-          self._gcLock.readLock(pinAdd, callback)
-        } else {
-          pinAdd(callback)
-        }
-      })
+            // make sure we have the object
+            dag.get(cid, { preload: options.preload }, (err) => {
+              if (err) { return cb(err) }
+              // found the object, we can add the pin
+              return cb(null, key)
+            })
+          }
+        }, (err, results) => {
+          if (err) { return pinComplete(err) }
+
+          // update the pin sets in memory
+          const pinset = recursive ? pinManager.recursivePins : pinManager.directPins
+          results.forEach(key => pinset.add(key))
+
+          // persist updated pin sets to datastore
+          pinManager.flushPins((err, root) => {
+            if (err) { return pinComplete(err) }
+            pinComplete(null, results.map(hash => ({ hash })))
+          })
+        })
+      }
+
+      // When adding a file, we take a lock that gets released after pinning
+      // is complete, so don't take a second lock here
+      const lock = options.lock !== false
+
+      if (lock) {
+        self._gcLock.readLock(pinAdd, callback)
+      } else {
+        pinAdd(callback)
+      }
     }),
 
     rm: promisify((paths, options, callback) => {

@@ -2,6 +2,7 @@
 
 const promisify = require('promisify-es6')
 const repoVersion = require('ipfs-repo').repoVersion
+const callbackify = require('callbackify')
 
 module.exports = function repo (self) {
   return {
@@ -16,26 +17,26 @@ module.exports = function repo (self) {
      * @param {function(Error, Number)} [callback]
      * @returns {undefined}
      */
-    version: promisify((callback) => {
-      self._repo._isInitialized(err => {
-        if (err) {
-          // TODO: (dryajov) This is really hacky, there must be a better way
-          const match = [
-            /Key not found in database \[\/version\]/,
-            /ENOENT/,
-            /repo is not initialized yet/
-          ].some((m) => {
-            return m.test(err.message)
-          })
-          if (match) {
-            // this repo has not been initialized
-            return callback(null, repoVersion)
-          }
-          return callback(err)
+    version: callbackify(async () => {
+      try {
+        await self._repo._checkInitialized()
+      } catch (err) {
+        // TODO: (dryajov) This is really hacky, there must be a better way
+        const match = [
+          /Key not found in database \[\/version\]/,
+          /ENOENT/,
+          /repo is not initialized yet/
+        ].some((m) => {
+          return m.test(err.message)
+        })
+        if (match) {
+          // this repo has not been initialized
+          return repoVersion
         }
+        throw err
+      }
 
-        self._repo.version.get(callback)
-      })
+      return self._repo.version.get()
     }),
 
     gc: require('./pin/gc')(self),

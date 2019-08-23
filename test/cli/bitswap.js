@@ -23,7 +23,7 @@ describe('bitswap', () => runOn((thing) => {
   })
 
   before(function (done) {
-    this.timeout(60 * 1000)
+    //this.timeout(60 * 1000)
 
     PeerId.create({ bits: 512 }, (err, peer) => {
       expect(err).to.not.exist()
@@ -33,7 +33,7 @@ describe('bitswap', () => runOn((thing) => {
   })
 
   before(function (done) {
-    this.timeout(2 * 60 * 1000)
+    //this.timeout(2 * 60 * 1000)
 
     const test = (cb) => {
       ipfs('bitswap wantlist')
@@ -48,7 +48,7 @@ describe('bitswap', () => runOn((thing) => {
   })
 
   it('wantlist', function () {
-    this.timeout(20 * 1000)
+    //this.timeout(20 * 1000)
     return ipfs('bitswap wantlist').then((out) => {
       expect(out).to.include(key0)
       expect(out).to.include(key1)

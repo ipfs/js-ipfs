@@ -15,17 +15,21 @@ module.exports = (self) => {
     // Checks if a repo exists, and if so opens it
     // Will return callback with a bool indicating the existence
     // of the repo
-    (cb) => {
+    // TODO vmx 2019-08-05: THIS WON'T WORK IN THE BROWSER due to transpiling, this needs a proper fix. This is just a hack to keep things moving
+    async () => {
       // nothing to do
       if (!self._repo.closed) {
-        return cb(null, true)
+        return true
       }
 
-      self._repo.open((err, res) => {
-        if (isRepoUninitializedError(err)) return cb(null, false)
-        if (err) return cb(err)
-        cb(null, true)
-      })
+      try {
+        const res = await self._repo.open()
+      } catch (err) {
+        if (isRepoUninitializedError(err)) return false
+        if (err) throw err
+      }
+
+      return true
     },
     (repoOpened, cb) => {
       // Init with existing initialized, opened, repo

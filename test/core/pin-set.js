@@ -53,7 +53,7 @@ function createNode (data, links = [], callback) {
   let node
 
   try {
-    node = DAGNode.create(data, links)
+    node = new DAGNode(data, links)
   } catch (err) {
     return callback(err)
   }
@@ -252,7 +252,7 @@ describe('pinSet', function () {
         pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          const rootNode = DAGNode.create('pins', [{ Hash: result.cid }])
+          const rootNode = new DAGNode('pins', [{ Hash: result.cid }])
           pinSet.getInternalCids(rootNode, (err, cids) => {
             expect(err).to.not.exist()
             expect(cids.length).to.eql(2)

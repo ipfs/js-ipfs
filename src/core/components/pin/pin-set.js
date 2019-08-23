@@ -159,7 +159,7 @@ exports = module.exports = function (dag) {
           let rootNode
 
           try {
-            rootNode = DAGNode.create(rootData, rootLinks)
+            rootNode = new DAGNode(rootData, rootLinks)
           } catch (err) {
             return storePinsCb(err)
           }
@@ -194,7 +194,7 @@ exports = module.exports = function (dag) {
             let rootNode
 
             try {
-              rootNode = DAGNode.create(headerBuf, fanoutLinks)
+              rootNode = new DAGNode(headerBuf, fanoutLinks)
             } catch (err) {
               return storePinsCb(err)
             }

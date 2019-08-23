@@ -15,7 +15,7 @@ describe('block', () => {
   let ipfsd, ipfs
 
   before(async function () {
-    this.timeout(20 * 1000)
+    //this.timeout(20 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc' })
 
