@@ -122,6 +122,9 @@ describe('daemon', () => {
           res.kill()
         }
       })
+      res.stderr.on('data', (data) => {
+        reject(new Error(data.toString('utf8')))
+      })
     })
 
     apiAddrs.forEach(addr => expect(out).to.include(`API listening on ${addr.slice(0, -2)}`))
