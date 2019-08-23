@@ -247,7 +247,7 @@ module.exports = (self) => {
         }
 
         if (type === PinTypes.indirect || type === PinTypes.all) {
-          pinManager.getIndirectKeys((err, indirects) => {
+          pinManager.getIndirectKeys(options, (err, indirects) => {
             if (err) { return callback(err) }
             pins = pins
               // if something is pinned both directly and indirectly,

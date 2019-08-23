@@ -1,14 +1,14 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { DAGNode, DAGLink, util } = require('ipld-dag-pb')
+const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
-const map = require('async/map')
 const series = require('async/series')
 const parallel = require('async/parallel')
 const eachLimit = require('async/eachLimit')
 const waterfall = require('async/waterfall')
 const detectLimit = require('async/detectLimit')
+const queue = require('async/queue')
 const { Key } = require('interface-datastore')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
@@ -43,6 +43,34 @@ class PinManager {
     this.recursivePins = new Set()
   }
 
+  _walkDag ({ cid, preload = false, onCid = () => {} }, cb) {
+    const q = queue(({ cid }, done) => {
+      this.dag.get(cid, { preload }, (err, result) => {
+        if (err) {
+          return done(err)
+        }
+
+        onCid(cid)
+
+        if (result.value.Links) {
+          q.push(result.value.Links.map(link => ({
+            cid: link.Hash
+          })))
+        }
+
+        done()
+      })
+    }, concurrencyLimit)
+    q.drain = () => {
+      cb()
+    }
+    q.error = (err) => {
+      q.kill()
+      cb(err)
+    }
+    q.push({ cid })
+  }
+
   directKeys () {
     return Array.from(this.directPins, key => new CID(key).buffer)
   }
@@ -51,30 +79,21 @@ class PinManager {
     return Array.from(this.recursivePins, key => new CID(key).buffer)
   }
 
-  getIndirectKeys (callback) {
+  getIndirectKeys ({ preload }, callback) {
     const indirectKeys = new Set()
     eachLimit(this.recursiveKeys(), concurrencyLimit, (multihash, cb) => {
-      this.dag._getRecursive(multihash, (err, nodes) => {
-        if (err) {
-          return cb(err)
-        }
+      this._walkDag({
+        cid: new CID(multihash),
+        preload: preload || false,
+        onCid: (cid) => {
+          cid = cid.toString()
 
-        map(nodes, (node, cb) => util.cid(util.serialize(node), {
-          cidVersion: 0
-        }).then(cid => cb(null, cid), cb), (err, cids) => {
-          if (err) {
-            return cb(err)
+          // recursive pins pre-empt indirect pins
+          if (!this.recursivePins.has(cid)) {
+            indirectKeys.add(cid)
           }
-
-          cids
-            .map(cid => cid.toString())
-            // recursive pins pre-empt indirect pins
-            .filter(key => !this.recursivePins.has(key))
-            .forEach(key => indirectKeys.add(key))
-
-          cb()
-        })
-      })
+        }
+      }, cb)
     }, (err) => {
       if (err) { return callback(err) }
       callback(null, Array.from(indirectKeys))
@@ -281,6 +300,13 @@ class PinManager {
         })
       })
     })
+  }
+
+  fetchCompleteDag (cid, options, callback) {
+    this._walkDag({
+      cid,
+      preload: options.preload
+    }, callback)
   }
 
   // Returns an error if the pin type is invalid
