@@ -26,27 +26,17 @@ class IPNS {
   }
 
   // Publish
-  publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime, callback) {
+  async publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
     try {
       value = normalizePath(value)
-    } catch (err) {
-      log.error(err)
-      return callback(err)
-    }
 
-    series([
-      (cb) => createFromPrivKey(privKey.bytes, cb),
-      (cb) => this.publisher.publishWithEOL(privKey, value, lifetime, cb)
-    ], (err, results) => {
-      if (err) {
-        log.error(err)
-        return callback(err)
-      }
+      const peerId = await createFromPrivKey(privKey.bytes)
+      await this.publisher.publishWithEOL(privKey, value, lifetime)
 
       log(`IPNS value ${value} was published correctly`)
 
       // // Add to cache
-      const id = results[0].toB58String()
+      const id = peerId.toB58String()
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
@@ -54,22 +44,21 @@ class IPNS {
 
       log(`IPNS value ${value} was cached correctly`)
 
-      callback(null, {
+      return {
         name: id,
         value: value
-      })
-    })
+      }
+    } catch (err) {
+      log.error(err)
+
+      throw err
+    }
   }
 
   // Resolve
-  resolve (name, options, callback) {
+  async resolve (name, options) {
     if (typeof name !== 'string') {
-      return callback(errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME'))
-    }
-
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
+      throw errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME')
     }
 
     options = options || {}
@@ -81,26 +70,27 @@ class IPNS {
       const result = this.cache.get(id)
 
       if (result) {
-        return callback(null, result)
+        return result
       }
     }
 
-    this.resolver.resolve(name, options, (err, result) => {
-      if (err) {
-        log.error(err)
-        return callback(err)
-      }
+    try {
+      const result = await this.resolver.resolve(name, options)
 
       log(`IPNS record from ${name} was resolved correctly`)
 
-      callback(null, result)
-    })
+      return result
+    } catch (err) {
+      log.error(err)
+
+      throw err
+    }
   }
 
   // Initialize keyspace
   // sets the ipns record for the given key to point to an empty directory
-  initializeKeyspace (privKey, value, callback) {
-    this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime, callback)
+  async initializeKeyspace (privKey, value) { // eslint-disable-line require-await
+    return this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime)
   }
 }
 

@@ -2,7 +2,7 @@
 
 const defaultConfig = require('../runtime/config-nodejs.js')
 const isMultiaddr = require('mafmt').IPFS.matches
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
 function isValidMultiaddr (ma) {
   try {
@@ -18,76 +18,47 @@ function invalidMultiaddrError (ma) {
 
 module.exports = function bootstrap (self) {
   return {
-    list: promisify((callback) => {
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-        callback(null, { Peers: config.Bootstrap })
-      })
+    list: callbackify(async () => {
+      const config = await self._repo.config.get()
+      return { Peers: config.Bootstrap }
     }),
-    add: promisify((multiaddr, args, callback) => {
-      if (typeof args === 'function') {
-        callback = args
-        args = { default: false }
-      }
-
+    add: callbackify(async (multiaddr, args = { default: false }) => {
       if (multiaddr && !isValidMultiaddr(multiaddr)) {
-        return setImmediate(() => callback(invalidMultiaddrError(multiaddr)))
+        throw invalidMultiaddrError(multiaddr)
       }
 
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-        if (args.default) {
-          config.Bootstrap = defaultConfig().Bootstrap
-        } else if (multiaddr && config.Bootstrap.indexOf(multiaddr) === -1) {
-          config.Bootstrap.push(multiaddr)
-        }
-        self._repo.config.set(config, (err) => {
-          if (err) {
-            return callback(err)
-          }
+      const config = self._repo.config.get()
+      if (args.default) {
+        config.Bootstrap = defaultConfig().Bootstrap
+      } else if (multiaddr && config.Bootstrap.indexOf(multiaddr) === -1) {
+        config.Bootstrap.push(multiaddr)
+      }
+      await self._repo.config.set(config)
 
-          callback(null, {
-            Peers: args.default ? defaultConfig().Bootstrap : [multiaddr]
-          })
-        })
-      })
+      return {
+        Peers: args.default ? defaultConfig().Bootstrap : [multiaddr]
+      }
     }),
-    rm: promisify((multiaddr, args, callback) => {
-      if (typeof args === 'function') {
-        callback = args
-        args = { all: false }
-      }
+    rm: callbackify(async (multiaddr, args = { all: false }) => {
       if (multiaddr && !isValidMultiaddr(multiaddr)) {
-        return setImmediate(() => callback(invalidMultiaddrError(multiaddr)))
+        throw invalidMultiaddrError(multiaddr)
       }
 
-      self._repo.config.get((err, config) => {
-        if (err) {
-          return callback(err)
-        }
-        if (args.all) {
-          config.Bootstrap = []
-        } else {
-          config.Bootstrap = config.Bootstrap.filter((mh) => mh !== multiaddr)
-        }
+      const config = await self._repo.config.get()
+      if (args.all) {
+        config.Bootstrap = []
+      } else {
+        config.Bootstrap = config.Bootstrap.filter((mh) => mh !== multiaddr)
+      }
 
-        self._repo.config.set(config, (err) => {
-          if (err) {
-            return callback(err)
-          }
+      await self._repo.config.set(config)
 
-          const res = []
-          if (!args.all && multiaddr) {
-            res.push(multiaddr)
-          }
+      const res = []
+      if (!args.all && multiaddr) {
+        res.push(multiaddr)
+      }
 
-          callback(null, { Peers: res })
-        })
-      })
+      return { Peers: res }
     })
   }
 }

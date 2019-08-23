@@ -60,7 +60,7 @@ function parseJSONBuffer (buf, callback) {
   }
 
   try {
-    callback(null, DAGNode.create(data, links))
+    callback(null, new DAGNode(data, links))
   } catch (err) {
     callback(err)
   }
@@ -177,7 +177,7 @@ module.exports = function object (self) {
       let node
 
       try {
-        node = DAGNode.create(data)
+        node = new DAGNode(data)
       } catch (err) {
         return callback(err)
       }
@@ -218,7 +218,7 @@ module.exports = function object (self) {
           })
         } else {
           try {
-            node = DAGNode.create(obj)
+            node = new DAGNode(obj)
           } catch (err) {
             return callback(err)
           }
@@ -231,7 +231,7 @@ module.exports = function object (self) {
         next()
       } else if (typeof obj === 'object') {
         try {
-          node = DAGNode.create(obj.Data, obj.Links)
+          node = new DAGNode(obj.Data, obj.Links)
         } catch (err) {
           return callback(err)
         }
@@ -389,9 +389,8 @@ module.exports = function object (self) {
     patch: promisify({
       addLink (multihash, link, options, callback) {
         editAndSave((node, cb) => {
-          DAGNode.addLink(node, link).then((node) => {
-            cb(null, node)
-          }, cb)
+          node.addLink(link)
+          cb(null, node)
         })(multihash, options, callback)
       },
 
@@ -400,7 +399,7 @@ module.exports = function object (self) {
           linkRef = linkRef.Name || linkRef.name
 
           try {
-            node = DAGNode.rmLink(node, linkRef)
+            node.rmLink(linkRef)
           } catch (err) {
             return cb(err)
           }
@@ -414,7 +413,7 @@ module.exports = function object (self) {
           const newData = Buffer.concat([node.Data, data])
 
           try {
-            node = DAGNode.create(newData, node.Links)
+            node = new DAGNode(newData, node.Links)
           } catch (err) {
             return cb(err)
           }
@@ -426,7 +425,7 @@ module.exports = function object (self) {
       setData (multihash, data, options, callback) {
         editAndSave((node, cb) => {
           try {
-            node = DAGNode.create(data, node.Links)
+            node = new DAGNode(data, node.Links)
           } catch (err) {
             return cb(err)
           }

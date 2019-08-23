@@ -1,12 +1,13 @@
 'use strict'
 
 const promisify = require('promisify-es6')
-const every = require('async/every')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const CID = require('cids')
 const each = require('async/each')
 const nextTick = require('async/nextTick')
+const { every, forEach } = require('p-iteration')
+const callbackify = require('callbackify')
 
 const errcode = require('err-code')
 
@@ -127,7 +128,7 @@ module.exports = (self) => {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    provide: promisify((keys, options, callback) => {
+    provide: callbackify(async (keys, options) => {
       if (!Array.isArray(keys)) {
         keys = [keys]
       }
@@ -139,29 +140,25 @@ module.exports = (self) => {
       options = options || {}
 
       // ensure blocks are actually local
-      every(keys, (key, cb) => {
-        self._repo.blocks.has(key, cb)
-      }, (err, has) => {
-        if (err) {
-          return callback(err)
-        }
-
-        if (!has) {
-          const errMsg = 'block(s) not found locally, cannot provide'
-
-          log.error(errMsg)
-          return callback(errcode(errMsg, 'ERR_BLOCK_NOT_FOUND'))
-        }
-
-        if (options.recursive) {
-          // TODO: Implement recursive providing
-          return callback(errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET'))
-        } else {
-          each(keys, (cid, cb) => {
-            self.libp2p.contentRouting.provide(cid, cb)
-          }, callback)
-        }
+      const has = await every(keys, async (key) => {
+        return self._repo.blocks.has(key)
       })
+
+      if (!has) {
+        const errMsg = 'block(s) not found locally, cannot provide'
+
+        log.error(errMsg)
+        throw errcode(errMsg, 'ERR_BLOCK_NOT_FOUND')
+      }
+
+      if (options.recursive) {
+        // TODO: Implement recursive providing
+        throw errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET')
+      } else {
+        forEach(keys, (cid) => {
+            self.libp2p.contentRouting.provide(cid)
+        })
+      }
     }),
 
     /**
