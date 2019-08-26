@@ -19,9 +19,10 @@ const {
 const CID = require('cids')
 
 const IPFS = require('../../src/core')
-const createPinSet = require('../../src/core/components/pin-set')
+const createPinSet = require('../../src/core/components/pin/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
+const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
 const defaultFanout = 256
 const maxItems = 8192
 
@@ -186,7 +187,7 @@ describe('pinSet', function () {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 
-        pinSet.walkItems(node, () => {}, (err, res) => {
+        pinSet.walkItems(node, {}, (err, res) => {
           expect(err).to.exist()
           expect(res).to.not.exist()
           done()
@@ -194,9 +195,33 @@ describe('pinSet', function () {
       })
     })
 
+    it('visits all links of a root node', function (done) {
+      this.timeout(90 * 1000)
+
+      const seenPins = []
+      const stepPin = (link, idx, data) => seenPins.push({ link, idx, data })
+      const seenBins = []
+      const stepBin = (link, idx, data) => seenBins.push({ link, idx, data })
+
+      createNodes(maxItems + 1, (err, nodes) => {
+        expect(err).to.not.exist()
+
+        pinSet.storeSet(nodes, (err, result) => {
+          expect(err).to.not.exist()
+
+          pinSet.walkItems(result.node, { stepPin, stepBin }, err => {
+            expect(err).to.not.exist()
+            expect(seenPins).to.have.length(maxItems + 1)
+            expect(seenBins).to.have.length(defaultFanout)
+            done()
+          })
+        })
+      })
+    })
+
     it('visits all non-fanout links of a root node', function (done) {
       const seen = []
-      const walker = (link, idx, data) => seen.push({ link, idx, data })
+      const stepPin = (link, idx, data) => seen.push({ link, idx, data })
 
       createNodes(defaultFanout, (err, nodes) => {
         expect(err).to.not.exist()
@@ -204,7 +229,7 @@ describe('pinSet', function () {
         pinSet.storeSet(nodes, (err, result) => {
           expect(err).to.not.exist()
 
-          pinSet.walkItems(result.node, walker, err => {
+          pinSet.walkItems(result.node, { stepPin }, err => {
             expect(err).to.not.exist()
             expect(seen).to.have.length(defaultFanout)
             expect(seen[0].idx).to.eql(defaultFanout)
@@ -212,6 +237,28 @@ describe('pinSet', function () {
               expect(item.data).to.eql(Buffer.alloc(0))
               expect(item.link).to.exist()
             })
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  describe('getInternalCids', function () {
+    it('gets all links and empty key CID', function (done) {
+      createNodes(defaultFanout, (err, nodes) => {
+        expect(err).to.not.exist()
+
+        pinSet.storeSet(nodes, (err, result) => {
+          expect(err).to.not.exist()
+
+          const rootNode = DAGNode.create('pins', [{ Hash: result.cid }])
+          pinSet.getInternalCids(rootNode, (err, cids) => {
+            expect(err).to.not.exist()
+            expect(cids.length).to.eql(2)
+            const cidStrs = cids.map(c => c.toString())
+            expect(cidStrs).includes(emptyKeyHash)
+            expect(cidStrs).includes(result.cid.toString())
             done()
           })
         })

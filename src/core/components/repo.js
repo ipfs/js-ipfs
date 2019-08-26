@@ -38,14 +38,7 @@ module.exports = function repo (self) {
       })
     }),
 
-    gc: promisify((options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      callback(new Error('Not implemented'))
-    }),
+    gc: require('./pin/gc')(self),
 
     stat: promisify((options, callback) => {
       if (typeof options === 'function') {
