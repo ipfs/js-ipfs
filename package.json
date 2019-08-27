@@ -99,7 +99,7 @@
     "ipfs-http-client": "^33.1.1",
     "ipfs-http-response": "~0.3.1",
     "ipfs-mfs": "~0.12.0",
-    "ipfs-multipart": "~0.1.1",
+    "ipfs-multipart": "~0.2.0",
     "ipfs-repo": "~0.26.6",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.37.7",
