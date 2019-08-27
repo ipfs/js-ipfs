@@ -1,6 +1,6 @@
 {
   "name": "ipfs-multipart",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A set of utilities to help dealing with IPFS multipart.",
   "keywords": [
     "ipfs",
@@ -41,6 +41,7 @@
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
+    "Alex Potsides <alex@achingbrain.net>",
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Hugo Dias <hugomrdias@gmail.com>",
     "Hugo Dias <mail@hugodias.me>",
