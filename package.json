@@ -53,6 +53,7 @@
     "ipld-dag-pb": "~0.17.3",
     "is-ipfs": "~0.6.1",
     "is-plain-object": "^3.0.0",
+    "it-pushable": "^1.2.1",
     "libp2p-crypto": "~0.16.0",
     "multiaddr": "^6.0.0",
     "multibase": "~0.6.0",
@@ -63,6 +64,7 @@
     "pull-stream": "^3.6.11",
     "pump": "^3.0.0",
     "readable-stream": "^3.1.1",
+    "streaming-iterables": "^4.1.0",
     "through2": "^3.0.0"
   },
   "devDependencies": {

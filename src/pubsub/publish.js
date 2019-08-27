@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const timesSeries = require('async/timesSeries')
 const hat = require('hat')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -33,26 +32,29 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should error on string messags', (done) => {
+    it('should error on string messags', async () => {
       const topic = getTopic()
-      ipfs.pubsub.publish(topic, 'hello friend', (err) => {
+      try {
+        await ipfs.pubsub.publish(topic, 'hello friend')
+      } catch (err) {
         expect(err).to.exist()
-        done()
-      })
+        return
+      }
+      throw new Error('did not error on string message')
     })
 
-    it('should publish message from buffer', (done) => {
+    it('should publish message from buffer', () => {
       const topic = getTopic()
-      ipfs.pubsub.publish(topic, Buffer.from(hat()), done)
+      return ipfs.pubsub.publish(topic, Buffer.from(hat()))
     })
 
-    it('should publish 10 times within time limit', (done) => {
+    it('should publish 10 times within time limit', async () => {
       const count = 10
       const topic = getTopic()
 
-      timesSeries(count, (_, cb) => {
-        ipfs.pubsub.publish(topic, Buffer.from(hat()), cb)
-      }, done)
+      for (let i = 0; i < count; i++) {
+        await ipfs.pubsub.publish(topic, Buffer.from(hat()))
+      }
     })
   })
 }

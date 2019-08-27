@@ -1,50 +1,27 @@
 'use strict'
 
 const hat = require('hat')
+const delay = require('../utils/delay')
 
-function waitForPeers (ipfs, topic, peersToWait, waitForMs, callback) {
+async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
   const start = Date.now()
 
-  const checkPeers = () => {
-    ipfs.pubsub.peers(topic, (err, peers) => {
-      if (err) {
-        return callback(err)
-      }
+  while (true) {
+    const peers = await ipfs.pubsub.peers(topic)
+    const everyPeerFound = peersToWait.every(p => peers.includes(p))
 
-      const missingPeers = peersToWait
-        .map((e) => peers.indexOf(e) !== -1)
-        .filter((e) => !e)
+    if (everyPeerFound) {
+      return
+    }
 
-      if (missingPeers.length === 0) {
-        return callback()
-      }
+    if (Date.now() > start + waitForMs) {
+      throw new Error(`Timed out waiting for peers to be subscribed to "${topic}"`)
+    }
 
-      if (Date.now() > start + waitForMs) {
-        return callback(new Error('Timed out waiting for peers'))
-      }
-
-      setTimeout(checkPeers, 10)
-    })
+    await delay(10)
   }
-
-  checkPeers()
 }
 
 exports.waitForPeers = waitForPeers
-
-function makeCheck (n, done) {
-  let i = 0
-  return (err) => {
-    if (err) {
-      return done(err)
-    }
-
-    if (++i === n) {
-      done()
-    }
-  }
-}
-
-exports.makeCheck = makeCheck
 
 exports.getTopic = () => 'pubsub-tests-' + hat()

@@ -1,10 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const eachSeries = require('async/eachSeries')
-const timesSeries = require('async/timesSeries')
+const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const delay = require('../utils/delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -33,38 +33,34 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should subscribe and unsubscribe 10 times', (done) => {
-      const count = 10
-      const someTopic = getTopic()
+    // Browser/worker has max ~5 open HTTP requests to the same origin
+    const count = isBrowser || isWebWorker ? 5 : 10
 
-      timesSeries(count, (_, cb) => {
-        const handler = (msg) => {}
-        ipfs.pubsub.subscribe(someTopic, handler, (err) => cb(err, handler))
-      }, (err, handlers) => {
-        expect(err).to.not.exist()
-        eachSeries(
-          handlers,
-          (handler, cb) => ipfs.pubsub.unsubscribe(someTopic, handler, cb),
-          (err) => {
-            expect(err).to.not.exist()
-            // Assert unsubscribe worked
-            ipfs.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist()
-              expect(topics).to.eql([])
-              done()
-            })
-          }
-        )
-      })
+    it(`should subscribe and unsubscribe ${count} times`, async () => {
+      const someTopic = getTopic()
+      const handlers = Array.from(Array(count), () => msg => {})
+
+      for (let i = 0; i < count; i++) {
+        await ipfs.pubsub.subscribe(someTopic, handlers[i])
+      }
+
+      for (let i = 0; i < count; i++) {
+        await ipfs.pubsub.unsubscribe(someTopic, handlers[i])
+      }
+
+      await delay(100)
+      const topics = await ipfs.pubsub.ls()
+      expect(topics).to.eql([])
     })
 
-    it('should subscribe 10 handlers and unsunscribe once with no reference to the handlers', async () => {
-      const count = 10
+    it(`should subscribe ${count} handlers and unsunscribe once with no reference to the handlers`, async () => {
       const someTopic = getTopic()
       for (let i = 0; i < count; i++) {
         await ipfs.pubsub.subscribe(someTopic, (msg) => {})
       }
       await ipfs.pubsub.unsubscribe(someTopic)
+
+      await delay(100)
       const topics = await ipfs.pubsub.ls()
       expect(topics).to.eql([])
     })

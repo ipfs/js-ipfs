@@ -2,11 +2,11 @@
 'use strict'
 
 const parallel = require('async/parallel')
-const series = require('async/series')
 const { spawnNodesWithId } = require('../utils/spawn')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
+const delay = require('../utils/delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -19,6 +19,7 @@ module.exports = (createCommon, options) => {
     let ipfs1
     let ipfs2
     let ipfs3
+    let subscribedTopics = []
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -40,6 +41,16 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    afterEach(async () => {
+      const nodes = [ipfs1, ipfs2, ipfs3]
+      for (let i = 0; i < subscribedTopics.length; i++) {
+        const topic = subscribedTopics[i]
+        await Promise.all(nodes.map(ipfs => ipfs.pubsub.unsubscribe(topic)))
+      }
+      subscribedTopics = []
+      await delay(100)
+    })
+
     after((done) => common.teardown(done))
 
     before((done) => {
@@ -52,94 +63,64 @@ module.exports = (createCommon, options) => {
       ], done)
     })
 
-    it('should not error when not subscribed to a topic', (done) => {
+    it('should not error when not subscribed to a topic', async () => {
       const topic = getTopic()
-      ipfs1.pubsub.peers(topic, (err, peers) => {
-        expect(err).to.not.exist()
-        // Should be empty() but as mentioned below go-ipfs returns more than it should
-        // expect(peers).to.be.empty()
-
-        done()
-      })
+      const peers = await ipfs1.pubsub.peers(topic)
+      expect(peers).to.exist()
+      // Should be empty() but as mentioned below go-ipfs returns more than it should
+      // expect(peers).to.be.empty()
     })
 
-    it('should not return extra peers', (done) => {
+    it('should not return extra peers', async () => {
       // Currently go-ipfs returns peers that have not been
       // subscribed to the topic. Enable when go-ipfs has been fixed
-      const sub1 = (msg) => {}
-      const sub2 = (msg) => {}
-      const sub3 = (msg) => {}
+      const sub1 = () => {}
+      const sub2 = () => {}
+      const sub3 = () => {}
 
       const topic = getTopic()
       const topicOther = topic + 'different topic'
 
-      series([
-        (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-        (cb) => ipfs2.pubsub.subscribe(topicOther, sub2, cb),
-        (cb) => ipfs3.pubsub.subscribe(topicOther, sub3, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
+      subscribedTopics = [topic, topicOther]
 
-        ipfs1.pubsub.peers(topic, (err, peers) => {
-          expect(err).to.not.exist()
-          expect(peers).to.be.empty()
+      await ipfs1.pubsub.subscribe(topic, sub1)
+      await ipfs2.pubsub.subscribe(topicOther, sub2)
+      await ipfs3.pubsub.subscribe(topicOther, sub3)
 
-          parallel([
-            (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
-            (cb) => ipfs2.pubsub.unsubscribe(topicOther, sub2, cb),
-            (cb) => ipfs3.pubsub.unsubscribe(topicOther, sub3, cb)
-          ], done)
-        })
-      })
+      const peers = await ipfs1.pubsub.peers(topic)
+      expect(peers).to.be.empty()
     })
 
-    it('should return peers for a topic - one peer', (done) => {
+    it('should return peers for a topic - one peer', async () => {
       // Currently go-ipfs returns peers that have not been
       // subscribed to the topic. Enable when go-ipfs has been fixed
-      const sub1 = (msg) => {}
-      const sub2 = (msg) => {}
-      const sub3 = (msg) => {}
+      const sub1 = () => {}
+      const sub2 = () => {}
+      const sub3 = () => {}
       const topic = getTopic()
 
-      series([
-        (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-        (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-        (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
-        (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
+      subscribedTopics = [topic]
 
-        parallel([
-          (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb),
-          (cb) => ipfs3.pubsub.unsubscribe(topic, sub3, cb)
-        ], done)
-      })
+      await ipfs1.pubsub.subscribe(topic, sub1)
+      await ipfs2.pubsub.subscribe(topic, sub2)
+      await ipfs3.pubsub.subscribe(topic, sub3)
+
+      await waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000)
     })
 
-    it('should return peers for a topic - multiple peers', (done) => {
-      const sub1 = (msg) => {}
-      const sub2 = (msg) => {}
-      const sub3 = (msg) => {}
+    it('should return peers for a topic - multiple peers', async () => {
+      const sub1 = () => {}
+      const sub2 = () => {}
+      const sub3 = () => {}
       const topic = getTopic()
 
-      series([
-        (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-        (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-        (cb) => ipfs3.pubsub.subscribe(topic, sub3, cb),
-        (cb) => waitForPeers(ipfs1, topic, [
-          ipfs2.peerId.id,
-          ipfs3.peerId.id
-        ], 30000, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
+      subscribedTopics = [topic]
 
-        parallel([
-          (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb),
-          (cb) => ipfs3.pubsub.unsubscribe(topic, sub3, cb)
-        ], done)
-      })
+      await ipfs1.pubsub.subscribe(topic, sub1)
+      await ipfs2.pubsub.subscribe(topic, sub2)
+      await ipfs3.pubsub.subscribe(topic, sub3)
+
+      await waitForPeers(ipfs1, topic, [ipfs2.peerId.id, ipfs3.peerId.id], 30000)
     })
   })
 }
