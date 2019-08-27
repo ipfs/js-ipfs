@@ -1,6 +1,8 @@
 'use strict'
 
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
+const through = require('pull-stream/throughs/through')
+const end = require('pull-stream/sinks/on-end')
 const promisify = require('promisify-es6')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
@@ -11,17 +13,35 @@ const { createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('../../utils/files/glob-source')
 
-async function getTotalBytes (paths, cb) {
+async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
   return sizes.reduce((total, size) => total + size, 0)
 }
 
-function addPipeline (source, addStream, options) {
+function addPipeline (source, addStream, options, log) {
+  let finalHash
+
   return new Promise((resolve, reject) => {
     pull(
       source,
       addStream,
-      pull.collect((err, added) => {
+      through((file) => {
+        const cid = finalHash = cidToString(file.hash, { base: options.cidBase })
+
+        if (options.silent || options.quieter) {
+          return
+        }
+
+        let message = cid
+
+        if (!options.quiet) {
+          // print the hash twice if we are piping from stdin
+          message = `added ${cid} ${options.file ? file.path || '' : cid}`.trim()
+        }
+
+        log(message)
+      }),
+      end((err) => {
         if (err) {
           // Tweak the error message and add more relevant infor for the CLI
           if (err.code === 'ERR_DIR_NON_RECURSIVE') {
@@ -30,31 +50,9 @@ function addPipeline (source, addStream, options) {
           return reject(err)
         }
 
-        if (options.silent) return resolve()
-
         if (options.quieter) {
-          options.print(added.pop().hash)
-          return resolve()
+          log(finalHash)
         }
-
-        added
-          .sort((a, b) => {
-            if (a.path > b.path) {
-              return 1
-            }
-            if (a.path < b.path) {
-              return -1
-            }
-            return 0
-          })
-          .reverse()
-          .map((file) => {
-            const log = options.quiet ? [] : ['added']
-            log.push(cidToString(file.hash, { base: options.cidBase }))
-            if (!options.quiet && file.path.length > 0) log.push(file.path)
-            return log.join(' ')
-          })
-          .forEach((msg) => options.print(msg))
 
         resolve()
       })
@@ -179,25 +177,40 @@ module.exports = {
         throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
       }
 
+      let bar
+      let log = argv.print
+
+      if (argv.quieter || argv.quiet || argv.silent) {
+        argv.progress = false
+      }
+
+      if (argv.progress && argv.file) {
+        const totalBytes = await getTotalBytes(argv.file)
+        bar = createProgressBar(totalBytes)
+
+        if (process.stdout.isTTY) {
+          // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs
+          log = bar.interrupt.bind(bar)
+        }
+
+        options.progress = byteLength => {
+          bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
+        }
+      }
+
       const source = argv.file
         ? globSource(...argv.file, { recursive: argv.recursive })
         : toPull.source(process.stdin) // Pipe directly to ipfs.add
 
       const adder = ipfs.addPullStream(options)
 
-      // No progress or piping directly to ipfs.add: no need to getTotalBytes
-      if (!argv.progress || !argv.file) {
-        return addPipeline(source, adder, argv)
+      try {
+        await addPipeline(source, adder, argv, log)
+      } finally {
+        if (bar) {
+          bar.terminate()
+        }
       }
-
-      const totalBytes = await getTotalBytes(argv.file)
-      const bar = createProgressBar(totalBytes)
-
-      options.progress = byteLength => {
-        bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
-      }
-
-      return addPipeline(source, adder, argv)
     })())
   }
 }
