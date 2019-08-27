@@ -8,6 +8,7 @@ const varint = require('varint')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const multicodec = require('multicodec')
 const someSeries = require('async/someSeries')
+const eachSeries = require('async/eachSeries')
 const eachOfSeries = require('async/eachOfSeries')
 
 const pbSchema = require('./pin.proto')
@@ -230,15 +231,15 @@ exports = module.exports = function (dag) {
       dag.get(link.Hash, '', { preload: false }, (err, res) => {
         if (err) { return callback(err) }
         const keys = []
-        const step = link => keys.push(link.Hash.buffer)
-        pinSet.walkItems(res.value, step, err => {
+        const stepPin = link => keys.push(link.Hash.buffer)
+        pinSet.walkItems(res.value, { stepPin }, err => {
           if (err) { return callback(err) }
           return callback(null, keys)
         })
       })
     },
 
-    walkItems: (node, step, callback) => {
+    walkItems: (node, { stepPin = () => {}, stepBin = () => {} }, callback) => {
       let pbh
       try {
         pbh = readHeader(node)
@@ -253,19 +254,37 @@ exports = module.exports = function (dag) {
           const linkHash = link.Hash.buffer
 
           if (!emptyKey.equals(linkHash)) {
+            stepBin(link, idx, pbh.data)
+
             // walk the links of this fanout bin
             return dag.get(linkHash, '', { preload: false }, (err, res) => {
               if (err) { return eachCb(err) }
-              pinSet.walkItems(res.value, step, eachCb)
+              pinSet.walkItems(res.value, { stepPin, stepBin }, eachCb)
             })
           }
         } else {
           // otherwise, the link is a pin
-          step(link, idx, pbh.data)
+          stepPin(link, idx, pbh.data)
         }
 
         eachCb(null)
       }, callback)
+    },
+
+    getInternalCids: (rootNode, callback) => {
+      // "Empty block" used by the pinner
+      const cids = [new CID(emptyKey)]
+
+      const stepBin = link => cids.push(link.Hash)
+      eachSeries(rootNode.Links, (topLevelLink, cb) => {
+        cids.push(topLevelLink.Hash)
+
+        dag.get(topLevelLink.Hash, '', { preload: false }, (err, res) => {
+          if (err) { return cb(err) }
+
+          pinSet.walkItems(res.value, { stepBin }, cb)
+        })
+      }, (err) => callback(err, cids))
     }
   }
   return pinSet

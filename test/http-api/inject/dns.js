@@ -11,11 +11,26 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('resolve ipfs.io dns', async () => {
+    it('resolve ipfs.io DNS', async () => {
       const res = await api.inject({
         method: 'GET',
         url: '/api/v0/dns?arg=ipfs.io'
       })
+
+      expect(res.result).to.have.property('Path')
+    })
+
+    it('resolve ipfs.enstest.eth ENS', async function () {
+      const res = await api.inject({
+        method: 'GET',
+        url: '/api/v0/dns?arg=ipfs.enstest.eth'
+      })
+
+      // TODO: eth.link domains have no SLA yet and are liable to be down...
+      // Remove skip when reliable!
+      if (res.statusCode === 500) {
+        return this.skip()
+      }
 
       expect(res.result).to.have.property('Path')
     })

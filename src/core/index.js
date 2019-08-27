@@ -20,12 +20,14 @@ const EventEmitter = require('events')
 const config = require('./config')
 const boot = require('./boot')
 const components = require('./components')
+const GCLock = require('./components/pin/gc-lock')
 
 // replaced by repo-browser when running in the browser
 const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
+
 /**
  * @typedef { import("./ipns/index") } IPNS
  */
@@ -89,6 +91,11 @@ class IPFS extends EventEmitter {
     this._ipns = undefined
     // eslint-disable-next-line no-console
     this._print = this._options.silent ? this.log : console.log
+    this._gcLock = new GCLock(this._options.repoOwner, {
+      // Make sure GCLock is specific to repo, for tests where there are
+      // multiple instances of IPFS
+      morticeId: this._repo.path
+    })
 
     // IPFS Core exposed components
     //   - for booting up a node

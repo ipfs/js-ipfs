@@ -162,7 +162,8 @@ exports.add = {
         pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean(),
         chunker: Joi.string(),
-        trickle: Joi.boolean()
+        trickle: Joi.boolean(),
+        preload: Joi.boolean().default(true)
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -220,7 +221,8 @@ exports.add = {
       wrapWithDirectory: request.query['wrap-with-directory'],
       pin: request.query.pin,
       chunker: request.query.chunker,
-      strategy: request.query.trickle ? 'trickle' : 'balanced'
+      strategy: request.query.trickle ? 'trickle' : 'balanced',
+      preload: request.query.preload
     }
 
     const aborter = abortable()

@@ -23,20 +23,20 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-function serverCreator (serverAddrs, createServer, ipfs) {
+async function serverCreator (serverAddrs, createServer, ipfs) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
 
-  const processServer = async address => {
+  const servers = []
+  for (const address of serverAddrs) {
     const addrParts = address.split('/')
     const server = await createServer(addrParts[2], addrParts[4], ipfs)
     await server.start()
     server.info.ma = hapiInfoToMultiaddr(server.info)
-    return server
+    servers.push(server)
   }
-
-  return Promise.all(serverAddrs.map(processServer))
+  return servers
 }
 
 class HttpApi {
