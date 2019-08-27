@@ -1,3 +1,26 @@
+<a name="0.38.0-pre.0"></a>
+# [0.38.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.37.1...v0.38.0-pre.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* make progress bar work again when adding files ([#2386](https://github.com/ipfs/js-ipfs/issues/2386)) ([f6dcb0f](https://github.com/ipfs/js-ipfs/commit/f6dcb0f)), closes [#2379](https://github.com/ipfs/js-ipfs/issues/2379)
+* really allow logo to appear on npm ([02e521e](https://github.com/ipfs/js-ipfs/commit/02e521e))
+
+
+### Features
+
+* garbage collection ([#2022](https://github.com/ipfs/js-ipfs/issues/2022)) ([44045b0](https://github.com/ipfs/js-ipfs/commit/44045b0))
+
+
+### BREAKING CHANGES
+
+* Order of output from the CLI command `ipfs add` may change between invocations given the same files since it is not longer buffered and sorted.
+
+Previously, js-ipfs buffered all hashes of added files and sorted them before outputting to the terminal, this might be because the `glob` module does not return stable results.  This gives a poor user experience as you see nothing then everything, compared to `go-ipfs` which prints out the hashes as they become available.  The tradeoff is the order might be slightly different between invocations, though the hashes are always the same as we sort DAGNode links before serializing so it doesn't matter what order you import them in.
+
+
+
 <a name="0.37.1"></a>
 ## [0.37.1](https://github.com/ipfs/js-ipfs/compare/v0.37.0...v0.37.1) (2019-08-23)
 
