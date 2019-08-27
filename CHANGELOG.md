@@ -1,3 +1,13 @@
+<a name="0.110.0"></a>
+# [0.110.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.109.1...v0.110.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* reduce the number of concurrent requests in browser ([#505](https://github.com/ipfs/interface-ipfs-core/issues/505)) ([7596634](https://github.com/ipfs/interface-ipfs-core/commit/7596634))
+
+
+
 <a name="0.109.1"></a>
 ## [0.109.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.109.0...v0.109.1) (2019-08-06)
 
