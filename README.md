@@ -27,31 +27,30 @@ npm install ipfs-multipart
 ## Usage
 ```javascript
 const http = require('http')
-const IPFSMultipart = require('ipfs-multipart')
+const parser = require('ipfs-multipart')
 
-http.createServer((req, res) => {
+http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.headers['content-type']) {
-    const parser = IPFSMultipart.reqParser(req)
 
-    parser.on('file', (fileName, fileStream) => {
-      console.log(`file ${fileName} start`)
+    for await (const entry of parser(req)) {
+      if (entry.type === 'directory') {
+        console.log(`dir ${entry.name} start`)
+      }
 
-      fileStream.on('data', (data) => {
-        console.log(`file ${fileName} contents:`, data.toString())
-      })
+      if (entry.type === 'file') {
+        console.log(`file ${entry.name} start`)
 
-      fileStream.on('end', (data) => {
-        console.log(`file ${fileName} end`)
-      })
-    })
+        for await (const data of entry.content) {
+          console.log(`file ${entry.name} contents:`, data.toString())
+        }
 
-    parser.on('end', () => {
-      console.log('finished parsing')
-      res.writeHead(200)
-      res.end()
-    })
+        console.log(`file ${entry.name} end`)
+      }
+    }
 
-    return
+    console.log('finished parsing')
+    res.writeHead(200)
+    res.end()
   }
 
   res.writeHead(404)

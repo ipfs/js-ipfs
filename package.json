@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "@hapi/content": "^4.1.0",
-    "dicer": "~0.3.0"
+    "it-multipart": "~0.0.2"
   },
   "devDependencies": {
     "aegir": "^20.0.0",
     "chai": "^4.2.0",
-    "ipfs-api": "github:ipfs/js-ipfs-api#1fd9749",
+    "ipfs-http-client": "^33.1.1",
     "request": "^2.88.0"
   },
   "engines": {

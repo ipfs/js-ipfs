@@ -1,10 +1,7 @@
 'use strict'
 
-const Dicer = require('dicer')
 const Content = require('@hapi/content')
-const stream = require('stream')
-const util = require('util')
-const Transform = stream.Transform
+const multipart = require('it-multipart')
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
@@ -25,79 +22,79 @@ const parseDisposition = (disposition) => {
 }
 
 const parseHeader = (header) => {
-  const type = Content.type(header['content-type'][0])
-  const disposition = parseDisposition(header['content-disposition'][0])
+  const type = Content.type(header['content-type'])
+  const disposition = parseDisposition(header['content-disposition'])
 
   const details = type
-  details.name = disposition.name
+  details.name = decodeURIComponent(disposition.name)
   details.type = disposition.type
 
   return details
 }
 
-/**
- * Parser
- *
- * @constructor
- * @param {Object} options
- * @returns {Parser}
- */
-function Parser (options) {
-  // allow use without new
-  if (!(this instanceof Parser)) {
-    return new Parser(options)
+const collect = async (stream) => {
+  const buffers = []
+  let size = 0
+
+  for await (const buf of stream) {
+    size += buf.length
+    buffers.push(buf)
   }
 
-  this.dicer = new Dicer({ boundary: options.boundary })
-
-  this.dicer.on('part', (part) => this.handlePart(part))
-
-  this.dicer.on('error', (err) => this.emit('err', err))
-
-  this.dicer.on('finish', () => {
-    this.emit('finish')
-    this.emit('end')
-  })
-
-  Transform.call(this, options)
-}
-util.inherits(Parser, Transform)
-
-Parser.prototype._transform = function (chunk, enc, cb) {
-  this.dicer.write(chunk, enc)
-  cb()
+  return Buffer.concat(buffers, size)
 }
 
-Parser.prototype._flush = function (cb) {
-  this.dicer.end()
-  cb()
+const ignore = async (stream) => {
+  for await (const _ of stream) { // eslint-disable-line no-unused-vars
+
+  }
 }
 
-Parser.prototype.handlePart = function (part) {
-  part.on('header', (header) => {
-    const partHeader = parseHeader(header)
+async function * parser (stream, options) {
+  for await (const part of multipart(stream, options.boundary)) {
+    const partHeader = parseHeader(part.headers)
 
     if (isDirectory(partHeader.mime)) {
-      part.on('data', () => false)
-      this.emit('directory', partHeader.name)
-      return
+      yield {
+        type: 'directory',
+        name: partHeader.name
+      }
+
+      await ignore(part.body)
+
+      continue
     }
 
     if (partHeader.mime === applicationSymlink) {
-      part.on('data', (target) => this.emit('symlink', partHeader.name, target.toString()))
-      return
+      const target = await collect(part.body)
+
+      yield {
+        type: 'symlink',
+        name: partHeader.name,
+        target: target.toString('utf8')
+      }
+
+      continue
     }
 
     if (partHeader.boundary) {
       // recursively parse nested multiparts
-      const parser = new Parser({ boundary: partHeader.boundary })
-      parser.on('file', (file) => this.emit('file', file))
-      part.pipe(parser)
-      return
+      for await (const entry of parser(part, {
+        ...options,
+        boundary: partHeader.boundary
+      })) {
+        yield entry
+      }
+
+      continue
     }
 
-    this.emit('file', partHeader.name, part)
-  })
+    yield {
+      type: 'file',
+      name: partHeader.name,
+      content: part.body
+    }
+  }
 }
 
-module.exports = Parser
+module.exports = parser

@@ -1,20 +1,17 @@
 'use strict'
 
 const content = require('@hapi/content')
-const Parser = require('./parser')
+const parser = require('./parser')
 
-module.exports = {
-  Parser,
-  /**
-   * Request Parser
-   *
-   * @param {Object} req - Request
-   * @returns {Parser}
-   */
-  reqParser: (req) => {
-    const boundary = content.type(req.headers['content-type']).boundary
-    const parser = new Parser({ boundary: boundary })
-    req.pipe(parser)
-    return parser
-  }
+/**
+ * Request Parser
+ *
+ * @param {Object} req - Request
+ * @param {Object} options - Options passed to stream constructors
+ * @returns {Object} an async iterable
+ */
+module.exports = (req, options = {}) => {
+  options.boundary = content.type(req.headers['content-type']).boundary
+
+  return parser(req.payload || req, options)
 }

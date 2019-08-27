@@ -3,31 +3,23 @@
 /* eslint-disable no-console */
 
 const http = require('http')
-const IPFSMultipart = require('.')
+const multipart = require('ipfs-multipart')
 
-http.createServer((req, res) => {
+http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.headers['content-type']) {
-    const parser = IPFSMultipart.reqParser(req)
+    for await (const part of multipart(req)) {
+      console.log(`file ${part.name} start`)
 
-    parser.on('file', (fileName, fileStream) => {
-      console.log(`file ${fileName} start`)
+      if (part.type === 'file') {
+        for await (const chunk of part.content) {
+          console.log(`file ${part.name} contents:`, chunk.toString())
+        }
+      }
+    }
 
-      fileStream.on('data', (data) => {
-        console.log(`file ${fileName} contents:`, data.toString())
-      })
-
-      fileStream.on('end', (data) => {
-        console.log(`file ${fileName} end`)
-      })
-    })
-
-    parser.on('end', () => {
-      console.log('finished parsing')
-      res.writeHead(200)
-      res.end()
-    })
-
-    return
+    console.log('finished parsing')
+    res.writeHead(200)
+    res.end()
   }
 
   res.writeHead(404)
