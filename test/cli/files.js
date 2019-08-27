@@ -170,7 +170,10 @@ describe('files', () => runOnAndOff((thing) => {
 
     return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
       .then((out) => {
-        expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
+        // glob module does not return stable matches
+        recursiveGetDirResults.forEach(line => { // eslint-disable-line max-nested-callbacks
+          expect(out).to.include(line)
+        })
       })
   })
 
@@ -179,7 +182,10 @@ describe('files', () => runOnAndOff((thing) => {
 
     return ipfs('add -r test/fixtures/test-data/recursive-get-dir/')
       .then((out) => {
-        expect(out).to.eql(recursiveGetDirResults.join('\n') + '\n')
+        // glob module does not return stable matches
+        recursiveGetDirResults.forEach(line => { // eslint-disable-line max-nested-callbacks
+          expect(out).to.include(line)
+        })
       })
   })
 

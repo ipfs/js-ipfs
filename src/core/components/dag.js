@@ -4,9 +4,7 @@ const promisify = require('promisify-es6')
 const CID = require('cids')
 const pull = require('pull-stream')
 const iterToPull = require('async-iterator-to-pull-stream')
-const mapAsync = require('async/map')
 const setImmediate = require('async/setImmediate')
-const flattenDeep = require('just-flatten-it')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 
@@ -180,38 +178,6 @@ module.exports = function dag (self) {
         iterToPull(self._ipld.tree(cid, path, options)),
         pull.collect(callback)
       )
-    }),
-
-    // TODO - use IPLD selectors once they are implemented
-    _getRecursive: promisify((multihash, options, callback) => {
-      // gets flat array of all DAGNodes in tree given by multihash
-
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      options = options || {}
-
-      let cid
-
-      try {
-        cid = new CID(multihash)
-      } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
-      }
-
-      self.dag.get(cid, '', options, (err, res) => {
-        if (err) { return callback(err) }
-
-        mapAsync(res.value.Links, (link, cb) => {
-          self.dag._getRecursive(link.Hash, options, cb)
-        }, (err, nodes) => {
-          // console.log('nodes:', nodes)
-          if (err) return callback(err)
-          callback(null, flattenDeep([res.value, nodes]))
-        })
-      })
     })
   }
 }

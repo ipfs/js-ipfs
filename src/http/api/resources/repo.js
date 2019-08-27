@@ -1,9 +1,28 @@
 'use strict'
 
-exports.gc = async (request, h) => {
-  const { ipfs } = request.server.app
-  await ipfs.repo.gc()
-  return h.response()
+const Joi = require('@hapi/joi')
+
+exports.gc = {
+  validate: {
+    query: Joi.object().keys({
+      'stream-errors': Joi.boolean().default(false)
+    }).unknown()
+  },
+
+  async handler (request, h) {
+    const streamErrors = request.query['stream-errors']
+    const { ipfs } = request.server.app
+    const res = await ipfs.repo.gc()
+
+    const filtered = res.filter(r => !r.err || streamErrors)
+    const response = filtered.map(r => {
+      return {
+        Err: r.err && r.err.message,
+        Key: !r.err && { '/': r.cid.toString() }
+      }
+    })
+    return h.response(response)
+  }
 }
 
 exports.version = async (request, h) => {
