@@ -4,15 +4,6 @@
       "packages": [
         "package.json"
       ]
-    },
-    "examples": {
-      "packages": [
-        "examples/bundle-browserify/package.json",
-        "examples/bundle-webpack/package.json",
-        "examples/name-api/package.json",
-        "examples/sub-module/package.json",
-        "examples/upload-file-via-browser/package.json"
-      ]
     }
   }
 }
