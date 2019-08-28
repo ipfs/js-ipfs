@@ -53,35 +53,33 @@ describe('gc', function () {
   let ipfs
   let lockEmitter
 
-  before(function (done) {
+  before(async function () {
     this.timeout(40 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
 
     const config = { Bootstrap: [] }
+
     if (env.isNode) {
       config.Addresses = {
         Swarm: ['/ip4/127.0.0.1/tcp/0']
       }
     }
 
-    factory.spawn({ config }, (err, node) => {
-      expect(err).to.not.exist()
+    ipfsd = await factory.spawn({ config })
+    ipfs = ipfsd.api
 
-      ipfsd = node
-      ipfs = ipfsd.api
 
-      // Replace the Mutex with one that emits events when a readLock or
-      // writeLock is requested (needed in the tests below)
-      ipfs._gcLock.mutex = new MutexEmitter(ipfs._options.repoOwner)
-      lockEmitter = ipfs._gcLock.mutex.emitter
-
-      done()
-    })
+    // Replace the Mutex with one that emits events when a readLock or
+    // writeLock is requested (needed in the tests below)
+    ipfs._gcLock.mutex = new MutexEmitter(ipfs._options.repoOwner)
+    lockEmitter = ipfs._gcLock.mutex.emitter
   })
 
-  after((done) => {
-    ipfsd.stop(done)
+  after(() => {
+    if (ipfsd) {
+      return ipfsd.stop()
+    }
   })
 
   const blockAddTests = [{
