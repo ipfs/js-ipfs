@@ -213,7 +213,10 @@ describe('daemon', () => {
 
     return new Promise((resolve, reject) => {
       daemon.stdout.on('data', (data) => {
-        reject(new Error('Output was received ' + data.toString('utf8')))
+        reject(new Error('Output was received on stdout ' + data.toString('utf8')))
+      })
+      daemon.stderr.on('data', (data) => {
+        reject(new Error('Output was received stderr ' + data.toString('utf8')))
       })
 
       setTimeout(() => {
