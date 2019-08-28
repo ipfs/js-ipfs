@@ -27,7 +27,7 @@ module.exports = (send) => {
         res = [res]
       }
 
-      let responses = []
+      const responses = []
       res.forEach(result => {
         // 4 = Provider
         if (result.Type !== 4) return

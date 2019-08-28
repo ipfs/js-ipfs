@@ -27,7 +27,6 @@ function headers (file, i) {
 
 module.exports = (send, path) => {
   return (options) => {
-    let request
     let ended = false
     let writing = false
 
@@ -84,7 +83,7 @@ module.exports = (send, path) => {
     qs.hash = propOrProp(options, 'hash', 'hashAlg')
 
     if (options.strategy === 'trickle' || options.trickle) {
-      qs['trickle'] = 'true'
+      qs.trickle = 'true'
     }
 
     const args = {
@@ -102,7 +101,7 @@ module.exports = (send, path) => {
       retStream.emit('error', err)
     })
 
-    request = send(args, (err, response) => {
+    const request = send(args, (err, response) => {
       if (err) {
         return retStream.emit('error', err)
       }

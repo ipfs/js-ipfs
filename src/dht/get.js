@@ -35,8 +35,7 @@ module.exports = (send) => {
       if (res.Type === 5) {
         done(null, res.Extra)
       } else {
-        let error = new Error('key was not found (type 6)')
-        done(error)
+        done(new Error('key was not found (type 6)'))
       }
     }
 

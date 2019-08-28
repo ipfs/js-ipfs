@@ -67,7 +67,7 @@ class Multipart extends Transform {
 
     this.push(leading)
 
-    let content = file.content || Buffer.alloc(0)
+    const content = file.content || Buffer.alloc(0)
 
     if (Buffer.isBuffer(content)) {
       this.push(content)

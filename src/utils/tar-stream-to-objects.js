@@ -20,8 +20,8 @@ class ObjectsStreams extends ReadableStream {
   { path: 'string', content: Stream<Readable> }
 */
 const TarStreamToObjects = (inputStream, callback) => {
-  let outputStream = new ObjectsStreams()
-  let extractStream = tar.extract()
+  const outputStream = new ObjectsStreams()
+  const extractStream = tar.extract()
 
   extractStream
     .on('entry', (header, stream, next) => {

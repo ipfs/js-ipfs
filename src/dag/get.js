@@ -42,8 +42,8 @@ module.exports = (send) => {
         }, cb)
       },
       (resolved, cb) => {
-        block(send).get(new CID(resolved['Cid']['/']), (err, ipfsBlock) => {
-          cb(err, ipfsBlock, resolved['RemPath'])
+        block(send).get(new CID(resolved.Cid['/']), (err, ipfsBlock) => {
+          cb(err, ipfsBlock, resolved.RemPath)
         })
       },
       (ipfsBlock, path, cb) => {

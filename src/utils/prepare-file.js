@@ -106,7 +106,7 @@ function contentToStream (content) {
 }
 
 function prepareFile (file, opts) {
-  let files = [].concat(file)
+  const files = [].concat(file)
 
   return flatmap(files, (file) => {
     // add from fs with file path

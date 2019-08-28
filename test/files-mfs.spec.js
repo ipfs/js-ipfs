@@ -65,10 +65,10 @@ describe('.files (the MFS API part)', function () {
   })
 
   it('.add with Buffer module', (done) => {
-    let Buffer = require('buffer').Buffer
+    const { Buffer } = require('buffer')
 
-    let expectedBufferMultihash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
-    let file = Buffer.from('hello')
+    const expectedBufferMultihash = 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX'
+    const file = Buffer.from('hello')
 
     ipfs.add(file, (err, res) => {
       expect(err).to.not.exist()

@@ -10,7 +10,7 @@ class PubsubMessageStream extends TransformStream {
   }
 
   static from (inputStream, callback) {
-    let outputStream = inputStream.pipe(new PubsubMessageStream())
+    const outputStream = inputStream.pipe(new PubsubMessageStream())
     inputStream.on('end', () => outputStream.emit('end'))
     callback(null, outputStream)
   }

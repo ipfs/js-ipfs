@@ -77,8 +77,8 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      if (result['Cid']) {
-        return callback(null, new CID(result['Cid']['/']))
+      if (result.Cid) {
+        return callback(null, new CID(result.Cid['/']))
       } else {
         return callback(result)
       }
