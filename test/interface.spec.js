@@ -226,7 +226,7 @@ describe('interface-ipfs-core tests', () => {
   tests.namePubsub(CommonFactory.create({
     spawnOptions: {
       args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024 }
+      initOptions: { bits: 1024, profile: 'test' }
     }
   }), {
     skip: [
@@ -267,22 +267,20 @@ describe('interface-ipfs-core tests', () => {
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
       args: ['--enable-pubsub-experiment'],
-      initOptions: { bits: 1024 }
+      initOptions: { bits: 1024, profile: 'test' }
     }
   }), {
-    skip: isNode ? [
+    skip: isWindows ? [
       // pubsub.subscribe
-      isWindows ? {
+      {
         name: 'should send/receive 100 messages',
         reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-      } : null,
-      isWindows ? {
+      },
+      {
         name: 'should receive multiple messages',
         reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-      } : null
-    ] : {
-      reason: 'FIXME pubsub is not supported in the browser https://github.com/ipfs/js-ipfs-http-client/issues/518'
-    }
+      }
+    ] : null
   })
 
   tests.repo(defaultCommonFactory)
