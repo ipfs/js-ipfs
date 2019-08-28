@@ -81,11 +81,15 @@ module.exports = (repoPath, opts) => {
       .catch(err => {
         caught = true
         expect(err).to.exist()
+
+        return err
       })
-      .then(() => {
+      .then((res) => {
         if (!caught) {
           throw new Error(`jsipfs expected to fail during command: jsipfs ${args.join(' ')}`)
         }
+
+        return res
       })
   }
 
