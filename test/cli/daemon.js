@@ -26,28 +26,29 @@ const checkLock = (repo) => {
   }
 }
 
-async function testSignal (ipfs, sig, config) {
+async function testSignal (ipfs, sig) {
   await ipfs('init')
   await ipfs('config', 'Addresses', JSON.stringify({
     API: '/ip4/127.0.0.1/tcp/0',
     Gateway: '/ip4/127.0.0.1/tcp/0'
   }), '--json')
 
-  const proc = ipfs('daemon')
-
   return new Promise((resolve, reject) => {
-    proc.stdout.on('data', (data) => {
-      if (data.toString().includes(`Daemon is ready`)) {
-        if (proc.kill(sig)) {
-          resolve()
-        } else {
-          reject(new Error(`Unable to ${sig} process`))
-        }
+    const daemon = ipfs('daemon')
+    let stdout = ''
+
+    daemon.stdout.on('data', (data) => {
+      stdout += data.toString('utf8')
+
+      if (stdout.includes('Daemon is ready')) {
+        daemon.kill(sig)
+        resolve()
       }
     })
-    proc.stderr.on('data', (data) => {
-      if (data.toString().length > 0) {
-        reject(new Error(data))
+
+    daemon.catch((err) => {
+      if (!err.signal.includes(sig)) {
+        reject(err)
       }
     })
   })
@@ -76,9 +77,7 @@ describe('daemon', () => {
       Gateway: '/ip4/127.0.0.1/tcp/0'
     }), '--json')
 
-    const stdout = await ipfs('daemon', {
-      timeout: 1000 * 120
-    })
+    const stdout = await ipfs('daemon')
 
     expect(stdout).to.include('Daemon is ready')
   })
@@ -113,10 +112,9 @@ describe('daemon', () => {
 
     try {
       await daemon
-      throw new Error('Did not kill process')
+      throw new Error('fail')
     } catch (err) {
-      // because we killed the process
-      expect(err.message).to.include('SIGTERM')
+      expect(err.killed).to.be.true()
 
       apiAddrs.forEach(addr => expect(err.stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
       gatewayAddrs.forEach(addr => expect(err.stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
@@ -145,8 +143,7 @@ describe('daemon', () => {
       await daemon
       throw new Error('Did not kill process')
     } catch (err) {
-      // because we killed the process
-      expect(err.message).to.include('SIGTERM')
+      expect(err.killed).to.be.true()
 
       expect(err.stdout).to.not.include('API listening on')
       expect(err.stdout).to.not.include('Gateway (read only) listening on')
@@ -199,8 +196,8 @@ describe('daemon', () => {
       await daemon
       throw new Error('Did not kill process')
     } catch (err) {
-      // because we killed the process
-      expect(err.message).to.include('SIGTERM')
+      expect(err.killed).to.be.true()
+
       expect(err.stdout).to.be.empty()
       expect(err.stderr).to.be.empty()
     }
@@ -233,8 +230,7 @@ describe('daemon', () => {
       await daemon
       throw new Error('Did not kill process')
     } catch (err) {
-      // because we killed the process
-      expect(err.message).to.include('SIGTERM')
+      expect(err.killed).to.be.true()
 
       expect(err.stdout).to.include(`js-ipfs version: ${pkg.version}`)
       expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
