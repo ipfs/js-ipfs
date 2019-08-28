@@ -15,6 +15,7 @@ const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const KadDHT = require('libp2p-kad-dht')
 const Libp2p = require('libp2p')
+const isNode = require('detect-node')
 
 const libp2pComponent = require('../../src/core/components/libp2p')
 
@@ -319,7 +320,7 @@ describe('libp2p customization', function () {
       })
     })
 
-    it('select floodsub as pubsub router', (done) => {
+    it('select floodsub as pubsub router if node', (done) => {
       const ipfs = {
         _repo: {
           datastore
@@ -337,7 +338,15 @@ describe('libp2p customization', function () {
         }
       }
 
-      _libp2p = libp2pComponent(ipfs, customConfig)
+      try {
+        _libp2p = libp2pComponent(ipfs, customConfig)
+      } catch (err) {
+        if (!isNode) {
+          expect(err).to.exist()
+          expect(err.code).to.eql('ERR_NOT_SUPPORTED')
+          done()
+        }
+      }
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()

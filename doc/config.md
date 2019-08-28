@@ -172,7 +172,7 @@ You can check the [parameter choice for pbkdf2](https://cryptosense.com/paramete
 
 ## `Pubsub`
 
-Options for configuring the pubsub subsystem.
+Options for configuring the pubsub subsystem. It is important pointing out that this is not supported in the browser. If you want to configure a different pubsub router in the browser you must configure `libp2p.modules.pubsub` options instead.
 
 ### `Router`
 

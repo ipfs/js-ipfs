@@ -70,7 +70,8 @@ class Node extends libp2p {
           }
         },
         pubsub: {
-          enabled: false
+          enabled: false,
+          emitSelf: true
         }
       }
     }
