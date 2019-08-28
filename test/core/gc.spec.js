@@ -57,7 +57,6 @@ describe('gc', function () {
     this.timeout(40 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
-
     const config = { Bootstrap: [] }
 
     if (env.isNode) {
@@ -68,7 +67,6 @@ describe('gc', function () {
 
     ipfsd = await factory.spawn({ config })
     ipfs = ipfsd.api
-
 
     // Replace the Mutex with one that emits events when a readLock or
     // writeLock is requested (needed in the tests below)
