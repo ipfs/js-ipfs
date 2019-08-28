@@ -44,7 +44,7 @@
     "debug": "^4.1.0",
     "detect-node": "^2.0.4",
     "end-of-stream": "^1.4.1",
-    "err-code": "^1.1.2",
+    "err-code": "^2.0.0",
     "explain-error": "^1.0.4",
     "flatmap": "0.0.3",
     "glob": "^7.1.3",
