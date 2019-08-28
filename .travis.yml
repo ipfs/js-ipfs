@@ -12,6 +12,7 @@ node_js:
 os:
   - linux
   - osx
+  - windows
 
 script: npx nyc -s npm run test:node -- --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
@@ -21,13 +22,8 @@ jobs:
     - name: electron-renderer
 
   fast_finish: true
-  
-  include:
-    - os: windows
-      filter_secrets: false
-      cache: false
-    
 
+  include:
     - stage: check
       script:
         - npx aegir build --bundlesize
@@ -45,12 +41,12 @@ jobs:
       addons:
         firefox: latest
       script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
-    
+
     - stage: test
       name: electron-main
       script:
         - xvfb-run npx aegir test -t electron-main -- --bail
-    
+
     - stage: test
       name: electron-renderer
       script:
