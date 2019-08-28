@@ -91,7 +91,7 @@
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
     "dirty-chai": "^2.0.1",
-    "go-ipfs-dep": "0.4.21",
+    "go-ipfs-dep": "^0.4.22",
     "interface-ipfs-core": "^0.111.0",
     "ipfsd-ctl": "~0.43.0",
     "nock": "^10.0.2",
