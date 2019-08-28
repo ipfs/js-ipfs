@@ -47,7 +47,7 @@ async function testSignal (ipfs, sig) {
     })
 
     daemon.catch((err) => {
-      if (!err.signal.includes(sig)) {
+      if (!err.killed) {
         reject(err)
       }
     })
@@ -77,9 +77,25 @@ describe('daemon', () => {
       Gateway: '/ip4/127.0.0.1/tcp/0'
     }), '--json')
 
-    const stdout = await ipfs('daemon')
+    const daemon = ipfs('daemon')
+    let stdout = ''
 
-    expect(stdout).to.include('Daemon is ready')
+    daemon.stdout.on('data', (data) => {
+      stdout += data.toString('utf8')
+
+      if (stdout.includes('Daemon is ready')) {
+        daemon.kill()
+      }
+    })
+
+    try {
+      await daemon
+      throw new Error('Did not kill process')
+    } catch (err) {
+      expect(err.killed).to.be.true()
+
+      expect(stdout).to.include('Daemon is ready')
+    }
   })
 
   it('should allow bind to multiple addresses for API and Gateway', async function () {
@@ -112,7 +128,7 @@ describe('daemon', () => {
 
     try {
       await daemon
-      throw new Error('fail')
+      throw new Error('Did not kill process')
     } catch (err) {
       expect(err.killed).to.be.true()
 
@@ -187,20 +203,24 @@ describe('daemon', () => {
     await ipfs('init')
 
     const daemon = ipfs('daemon --silent')
-
-    setTimeout(() => {
+    const stop = (err) => {
       daemon.kill()
-    }, 5 * 1000)
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
-
-      expect(err.stdout).to.be.empty()
-      expect(err.stderr).to.be.empty()
+      if (err) {
+        throw err
+      }
     }
+
+    return new Promise((resolve, reject) => {
+      daemon.stdout.on('data', (data) => {
+        reject(new Error('Output was received ' + data.toString('utf8')))
+      })
+
+      setTimeout(() => {
+        resolve()
+      }, 5 * 1000)
+    })
+      .then(stop, stop)
   })
 
   it('should present ipfs path help when option help is received', async function () {
