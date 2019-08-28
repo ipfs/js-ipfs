@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.110.0",
+  "version": "0.111.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -116,8 +116,8 @@
     "Thiago Delgado <thiagodelgado111@gmail.com>",
     "Travis Person <travis@protocol.ai>",
     "Travis Person <travis@protoco.ai>",
-    "Vasco Santos <vasco.santos@ua.pt>",
     "Vasco Santos <vasco.santos@moxy.studio>",
+    "Vasco Santos <vasco.santos@ua.pt>",
     "Volker Mische <volker.mische@gmail.com>",
     "Vutsal Singhal <vutsalsinghal@gmail.com>",
     "dirkmc <dirkmdev@gmail.com>",
