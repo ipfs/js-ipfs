@@ -34,12 +34,12 @@ module.exports = self => {
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
-  const api = (cid, callback) => {
+  const api = (path, callback) => {
     callback = callback || noop
 
-    if (typeof cid !== 'string') {
+    if (typeof path !== 'string') {
       try {
-        cid = new CID(cid).toBaseEncodedString()
+        path = new CID(path).toBaseEncodedString()
       } catch (err) {
         return setImmediate(() => callback(err))
       }
@@ -50,14 +50,14 @@ module.exports = self => {
     const now = Date.now()
 
     retry({ times: fallbackApiUris.length }, (cb) => {
-      if (stopped) return cb(new Error(`preload aborted for ${cid}`))
+      if (stopped) return cb(new Error(`preload aborted for ${path}`))
 
       // Remove failed request from a previous attempt
       requests = requests.filter(r => r !== request)
 
       const apiUri = fallbackApiUris.shift()
 
-      request = preload(`${apiUri}/api/v0/refs?r=true&arg=${cid}`, cb)
+      request = preload(`${apiUri}/api/v0/refs?r=true&arg=${encodeURIComponent(path)}`, cb)
       requests = requests.concat(request)
     }, (err) => {
       requests = requests.filter(r => r !== request)
@@ -66,7 +66,7 @@ module.exports = self => {
         return callback(err)
       }
 
-      log(`preloaded ${cid} in ${Date.now() - now}ms`)
+      log(`preloaded ${path} in ${Date.now() - now}ms`)
       callback()
     })
   }

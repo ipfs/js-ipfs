@@ -116,7 +116,9 @@ function pinFile (file, self, opts, cb) {
   const isRootDir = !file.path.includes('/')
   const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
   if (shouldPin) {
-    return self.pin.add(file.hash, { preload: false }, err => cb(err, file))
+    // Note: addPullStream() has already taken a GC lock, so tell
+    // pin.add() not to take a (second) GC lock
+    return self.pin.add(file.hash, { preload: false, lock: false }, err => cb(err, file))
   } else {
     cb(null, file)
   }
@@ -156,7 +158,7 @@ module.exports = function (self) {
     }
 
     opts.progress = progress
-    return pull(
+    return self._gcLock.pullReadLock(() => pull(
       pullMap(content => normalizeContent(content, opts)),
       pullFlatten(),
       pullMap(file => ({
@@ -167,6 +169,6 @@ module.exports = function (self) {
       pullAsyncMap((file, cb) => prepareFile(file, self, opts, cb)),
       pullMap(file => preloadFile(file, self, opts)),
       pullAsyncMap((file, cb) => pinFile(file, self, opts, cb))
-    )
+    ))
   }
 }

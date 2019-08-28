@@ -1,3 +1,46 @@
+<a name="0.38.0-pre.0"></a>
+# [0.38.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.37.1...v0.38.0-pre.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* make progress bar work again when adding files ([#2386](https://github.com/ipfs/js-ipfs/issues/2386)) ([f6dcb0f](https://github.com/ipfs/js-ipfs/commit/f6dcb0f)), closes [#2379](https://github.com/ipfs/js-ipfs/issues/2379)
+* really allow logo to appear on npm ([02e521e](https://github.com/ipfs/js-ipfs/commit/02e521e))
+
+
+### Features
+
+* garbage collection ([#2022](https://github.com/ipfs/js-ipfs/issues/2022)) ([44045b0](https://github.com/ipfs/js-ipfs/commit/44045b0))
+
+
+### BREAKING CHANGES
+
+* Order of output from the CLI command `ipfs add` may change between invocations given the same files since it is not longer buffered and sorted.
+
+Previously, js-ipfs buffered all hashes of added files and sorted them before outputting to the terminal, this might be because the `glob` module does not return stable results.  This gives a poor user experience as you see nothing then everything, compared to `go-ipfs` which prints out the hashes as they become available.  The tradeoff is the order might be slightly different between invocations, though the hashes are always the same as we sort DAGNode links before serializing so it doesn't matter what order you import them in.
+
+
+
+<a name="0.37.1"></a>
+## [0.37.1](https://github.com/ipfs/js-ipfs/compare/v0.37.0...v0.37.1) (2019-08-23)
+
+
+### Bug Fixes
+
+* create HTTP servers in series ([#2388](https://github.com/ipfs/js-ipfs/issues/2388)) ([970a269](https://github.com/ipfs/js-ipfs/commit/970a269))
+* enable preload on MFS commands that accept IPFS paths ([#2355](https://github.com/ipfs/js-ipfs/issues/2355)) ([0e0d1dd](https://github.com/ipfs/js-ipfs/commit/0e0d1dd))
+* **package:** update yargs to version 14.0.0 ([#2371](https://github.com/ipfs/js-ipfs/issues/2371)) ([5aadb2d](https://github.com/ipfs/js-ipfs/commit/5aadb2d))
+* do not load all of a DAG into memory when pinning ([#2372](https://github.com/ipfs/js-ipfs/issues/2372)) ([f357c28](https://github.com/ipfs/js-ipfs/commit/f357c28)), closes [#2310](https://github.com/ipfs/js-ipfs/issues/2310)
+* preload addreses with trailing slash ([#2377](https://github.com/ipfs/js-ipfs/issues/2377)) ([c607971](https://github.com/ipfs/js-ipfs/commit/c607971)), closes [#2333](https://github.com/ipfs/js-ipfs/issues/2333)
+
+
+### Features
+
+* allow controlling preload from cli and http api ([#2384](https://github.com/ipfs/js-ipfs/issues/2384)) ([5878a0a](https://github.com/ipfs/js-ipfs/commit/5878a0a))
+* resolution of .eth names via .eth.link ([#2373](https://github.com/ipfs/js-ipfs/issues/2373)) ([7e02140](https://github.com/ipfs/js-ipfs/commit/7e02140))
+
+
+
 <a name="0.37.0"></a>
 # [0.37.0](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.1...v0.37.0) (2019-08-06)
 

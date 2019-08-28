@@ -5,12 +5,31 @@ module.exports = {
 
   describe: 'Perform a garbage collection sweep on the repo.',
 
-  builder: {},
+  builder: {
+    quiet: {
+      alias: 'q',
+      desc: 'Write minimal output',
+      type: 'boolean',
+      default: false
+    },
+    'stream-errors': {
+      desc: 'Output individual errors thrown when deleting blocks.',
+      type: 'boolean',
+      default: true
+    }
+  },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      await ipfs.repo.gc()
+  handler ({ getIpfs, print, quiet, streamErrors, resolve }) {
+    resolve((async () => {
+      const ipfs = await getIpfs()
+      const res = await ipfs.repo.gc()
+      for (const r of res) {
+        if (r.err) {
+          streamErrors && print(r.err.message, true, true)
+        } else {
+          print((quiet ? '' : 'removed ') + r.cid)
+        }
+      }
     })())
   }
 }

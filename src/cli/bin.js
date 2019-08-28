@@ -5,7 +5,7 @@
 
 // Handle any uncaught errors
 process.once('uncaughtException', (err, origin) => {
-  if (origin === 'uncaughtException') {
+  if (!origin || origin === 'uncaughtException') {
     console.error(err)
     process.exit(1)
   }
