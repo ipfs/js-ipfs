@@ -25,7 +25,8 @@ jobs:
   include:
     - stage: check
       script:
-        - npx aegir build --bundlesize
+        # https://bundlesize-store.now.sh/values?repo=ipfs/js-ipfs&token=[secure] is 500ing
+        # - npx aegir build --bundlesize
         - npx aegir dep-check -- -i wrtc -i electron-webrtc
         - npm run lint
 
