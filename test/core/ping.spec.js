@@ -94,7 +94,7 @@ describe('ping', function () {
       }
     })
 
-    it.only('can ping via a promise without options', async () => {
+    it('can ping via a promise without options', async () => {
       const res = await ipfsdA.api.ping(ipfsdBId)
 
       expect(res.length).to.be.ok()
