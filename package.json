@@ -17,7 +17,8 @@
   "browser": {
     "glob": false,
     "fs": false,
-    "stream": "readable-stream"
+    "stream": "readable-stream",
+    "ky-universal": "ky/umd"
   },
   "repository": "github:ipfs/js-ipfs-http-client",
   "scripts": {

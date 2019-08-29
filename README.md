@@ -203,7 +203,7 @@ const ipfs = ipfsClient({
   - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
   - [`ipfs.lsReadableStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lsreadablestream)
 - [MFS (mutable file system) specific](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
-  
+
   _Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
   - [`ipfs.files.cp([from, to], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
   - [`ipfs.files.flush([path], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
@@ -233,7 +233,7 @@ const ipfs = ipfsClient({
 #### Graph
 
 - [dag](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DAG.md)
-  
+
   _Explore the DAG API through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/basics)._
   - [`ipfs.dag.get(cid, [path], [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DAG.md#dagget)
   - [`ipfs.dag.put(dagNode, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DAG.md#dagput)
@@ -338,28 +338,6 @@ const ipfs = ipfsClient({
   - [`ipfs.key.list([options, callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keylist)
   - [`ipfs.key.rename(oldName, newName, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrename)
   - [`ipfs.key.rm(name, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/KEY.md#keyrm)
-
-#### Pubsub Caveat
-
-**Currently, the [PubSub API only works in Node.js environment](https://github.com/ipfs/js-ipfs-http-client/issues/518)**
-
-We currently don't support pubsub when run in the browser, and we test it with separate set of tests to make sure if it's being used in the browser, pubsub errors.
-
-More info: https://github.com/ipfs/js-ipfs-http-client/issues/518
-
-This means:
-- You can use pubsub from js-ipfs-http-client in Node.js
-- You can use pubsub from js-ipfs-http-client in Electron
-  (when js-ipfs-http-client is ran in the main process of Electron)
-- You can't use pubsub from js-ipfs-http-client in the browser
-- You can't use pubsub from js-ipfs-http-client in Electron's
-  renderer process
-- You can use pubsub from js-ipfs in the browsers
-- You can use pubsub from js-ipfs in Node.js
-- You can use pubsub from js-ipfs in Electron
-  (in both the main process and the renderer process)
-- See https://github.com/ipfs/js-ipfs for details on
-  pubsub in js-ipfs
 
 #### Instance utils
 
