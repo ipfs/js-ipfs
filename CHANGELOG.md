@@ -1,3 +1,20 @@
+<a name="34.0.0"></a>
+# [34.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.1...v34.0.0) (2019-08-29)
+
+
+### Bug Fixes
+
+* **package:** update err-code to version 2.0.0 ([#1053](https://github.com/ipfs/js-ipfs-http-client/issues/1053)) ([3515070](https://github.com/ipfs/js-ipfs-http-client/commit/3515070))
+
+
+### Features
+
+* browser pubsub ([#1059](https://github.com/ipfs/js-ipfs-http-client/issues/1059)) ([3764d06](https://github.com/ipfs/js-ipfs-http-client/commit/3764d06))
+* expose pin and preload arguments ([#1079](https://github.com/ipfs/js-ipfs-http-client/issues/1079)) ([e3ed6e9](https://github.com/ipfs/js-ipfs-http-client/commit/e3ed6e9))
+* support adding files via async iterator ([#1078](https://github.com/ipfs/js-ipfs-http-client/issues/1078)) ([377042b](https://github.com/ipfs/js-ipfs-http-client/commit/377042b))
+
+
+
 <a name="33.1.1"></a>
 ## [33.1.1](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.0...v33.1.1) (2019-07-26)
 
