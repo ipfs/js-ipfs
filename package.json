@@ -189,7 +189,7 @@
     "dir-compare": "^1.7.3",
     "dirty-chai": "^2.0.1",
     "execa": "^2.0.4",
-    "form-data": "^2.5.0",
+    "form-data": "^2.5.1",
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.110.0",
     "ipfsd-ctl": "^0.43.0",
