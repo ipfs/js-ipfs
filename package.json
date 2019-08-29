@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "33.1.1",
+  "version": "34.0.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -183,6 +183,7 @@
     "dmitriy ryajov <dryajov@dmitriys-MacBook-Pro.local>",
     "elsehow <yes@cosmopol.is>",
     "ethers <ethereum@outlook.com>",
+    "greenkeeper[bot] <23040076+greenkeeper[bot]@users.noreply.github.com>",
     "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
     "haad <haad@headbanggames.com>",
     "kumavis <kumavis@users.noreply.github.com>",
