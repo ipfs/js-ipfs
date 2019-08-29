@@ -14,29 +14,23 @@ const IPFS = require('../../src/core')
 describe('block', () => {
   let ipfsd, ipfs
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc' })
 
-    factory.spawn({
+    ipfsd = await factory.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
       config: { Bootstrap: [] },
       preload: { enabled: false }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = _ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after((done) => {
+  after(() => {
     if (ipfsd) {
-      ipfsd.stop(done)
-    } else {
-      done()
+      return ipfsd.stop()
     }
   })
 

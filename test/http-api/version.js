@@ -12,9 +12,9 @@ const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli
 describe('version endpoint', () => {
   let ipfs = null
   let ipfsd = null
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({
+    ipfsd = await df.spawn({
       initOptions: { bits: 512 },
       config: {
         Bootstrap: [],
@@ -27,15 +27,11 @@ describe('version endpoint', () => {
           }
         }
       }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after((done) => ipfsd.stop(done))
+  after(() => ipfsd.stop())
 
   describe('.version', () => {
     it('get the version', (done) => {

@@ -42,27 +42,26 @@ describe('name', function () {
     let node
     let ipfsd
 
-    before(function (done) {
+    before(async function () {
       this.timeout(40 * 1000)
-      df.spawn({
+      ipfsd = await df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`, '--offline'],
         config: { Bootstrap: [] },
         preload: { enabled: false }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsd = _ipfsd
-        node = _ipfsd.api
-
-        done()
       })
+      node = ipfsd.api
     })
 
     afterEach(() => {
       sinon.restore()
     })
 
-    after((done) => ipfsd.stop(done))
+    after(() => {
+      if (ipfsd) {
+        return ipfsd.stop()
+      }
+    })
 
     it('should republish entries after 60 seconds', function (done) {
       this.timeout(120 * 1000)
@@ -181,9 +180,9 @@ describe('name', function () {
     let nodeId
     let ipfsd
 
-    before(function (done) {
+    before(async function () {
       this.timeout(40 * 1000)
-      df.spawn({
+      ipfsd = await df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`],
         config: {
@@ -198,21 +197,18 @@ describe('name', function () {
           }
         },
         preload: { enabled: false }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsd = _ipfsd
-        node = _ipfsd.api
-
-        node.id().then((res) => {
-          expect(res.id).to.exist()
-
-          nodeId = res.id
-          done()
-        })
       })
+      node = ipfsd.api
+
+      const res = await node.id()
+      nodeId = res.id
     })
 
-    after((done) => ipfsd.stop(done))
+    after(() => {
+      if (ipfsd) {
+        return ipfsd.stop()
+      }
+    })
 
     it('should error to publish if does not receive private key', function (done) {
       node._ipns.publisher.publish(null, ipfsRef, (err) => {
@@ -358,9 +354,9 @@ describe('name', function () {
     let ipfsd
     let nodeId
 
-    before(function (done) {
+    before(async function () {
       this.timeout(40 * 1000)
-      df.spawn({
+      ipfsd = await df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`, '--offline'],
         config: {
@@ -375,21 +371,18 @@ describe('name', function () {
           }
         },
         preload: { enabled: false }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        node = _ipfsd.api
-        ipfsd = _ipfsd
-
-        node.id().then((res) => {
-          expect(res.id).to.exist()
-
-          nodeId = res.id
-          done()
-        })
       })
+      node = ipfsd.api
+
+      const res = await node.id()
+      nodeId = res.id
     })
 
-    after((done) => ipfsd.stop(done))
+    after(() => {
+      if (ipfsd) {
+        return ipfsd.stop()
+      }
+    })
 
     it('should resolve an ipfs path correctly', function (done) {
       node.add(fixture, (err, res) => {

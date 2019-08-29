@@ -31,10 +31,10 @@ describe('files directory (sharding tests)', () => {
     let ipfs
     let ipfsd
 
-    before(function (done) {
+    before(async function () {
       this.timeout(40 * 1000)
 
-      df.spawn({
+      ipfsd = await df.spawn({
         exec: IPFS,
         initOptions: { bits: 512 },
         config: {
@@ -49,17 +49,15 @@ describe('files directory (sharding tests)', () => {
           }
         },
         preload: { enabled: false }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsd = _ipfsd
-        ipfs = _ipfsd.api
-        done()
       })
+      ipfs = ipfsd.api
     })
 
-    after(function (done) {
-      this.timeout(40 * 1000)
-      ipfsd.stop(done)
+    after(function () {
+      if (ipfsd) {
+        this.timeout(40 * 1000)
+        return ipfsd.stop()
+      }
     })
 
     it('should be able to add dir without sharding', function (done) {
@@ -83,10 +81,10 @@ describe('files directory (sharding tests)', () => {
     let ipfs
     let ipfsd
 
-    before(function (done) {
+    before(async function () {
       this.timeout(40 * 1000)
 
-      df.spawn({
+      ipfsd = await df.spawn({
         exec: IPFS,
         initOptions: { bits: 512 },
         args: ['--enable-sharding-experiment'],
@@ -102,17 +100,15 @@ describe('files directory (sharding tests)', () => {
           }
         },
         preload: { enabled: false }
-      }, (err, _ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsd = _ipfsd
-        ipfs = _ipfsd.api
-        done()
       })
+      ipfs = ipfsd.api
     })
 
-    after(function (done) {
-      this.timeout(40 * 1000)
-      ipfsd.stop(done)
+    after(function () {
+      if (ipfsd) {
+        this.timeout(40 * 1000)
+        return ipfsd.stop()
+      }
     })
 
     it('should be able to add dir with sharding', function (done) {

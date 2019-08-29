@@ -10,7 +10,6 @@ chai.use(dirtyChai)
 
 const base64url = require('base64url')
 const { fromB58String } = require('multihashes')
-const parallel = require('async/parallel')
 const retry = require('async/retry')
 const series = require('async/series')
 
@@ -38,52 +37,46 @@ describe('name-pubsub', function () {
   let idA
   let idB
 
-  const createNode = (callback) => {
-    df.spawn({
-      exec: IPFS,
-      args: [`--pass ${hat()}`, '--enable-namesys-pubsub'],
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
+  const createNode = () => df.spawn({
+    exec: IPFS,
+    args: [`--pass ${hat()}`, '--enable-namesys-pubsub'],
+    config: {
+      Bootstrap: [],
+      Discovery: {
+        MDNS: {
+          Enabled: false
+        },
+        webRTCStar: {
+          Enabled: false
         }
-      },
-      preload: { enabled: false }
-    }, callback)
-  }
-
-  before(function (done) {
-    this.timeout(40 * 1000)
-
-    parallel([
-      (cb) => createNode(cb),
-      (cb) => createNode(cb)
-    ], (err, _nodes) => {
-      expect(err).to.not.exist()
-
-      nodes = _nodes
-      nodeA = _nodes[0].api
-      nodeB = _nodes[1].api
-
-      parallel([
-        (cb) => nodeA.id(cb),
-        (cb) => nodeB.id(cb)
-      ], (err, ids) => {
-        expect(err).to.not.exist()
-
-        idA = ids[0]
-        idB = ids[1]
-        nodeA.swarm.connect(ids[1].addresses[0], done)
-      })
-    })
+      }
+    },
+    preload: { enabled: false }
   })
 
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+  before(async function () {
+    this.timeout(40 * 1000)
+
+    nodes = await Promise.all([
+      createNode(),
+      createNode()
+    ])
+
+    nodeA = nodes[0].api
+    nodeB = nodes[1].api
+
+    const ids = await Promise.all([
+      nodeA.id(),
+      nodeB.id()
+    ])
+
+    idA = ids[0]
+    idB = ids[1]
+
+    await nodeA.swarm.connect(idB.addresses[0])
+  })
+
+  after(() => Promise.all(nodes.map((node) => node.stop())))
 
   it('should publish and then resolve correctly', function (done) {
     this.timeout(80 * 1000)

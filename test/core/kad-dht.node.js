@@ -24,14 +24,12 @@ const config = {
   }
 }
 
-function createNode (callback) {
-  f.spawn({
-    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-    config,
-    initOptions: { bits: 512 },
-    args: ['--preload-enabled=false']
-  }, callback)
-}
+const createNode = () => f.spawn({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  config,
+  initOptions: { bits: 512 },
+  args: ['--preload-enabled=false']
+})
 
 describe.skip('kad-dht is routing content and peers correctly', () => {
   let nodeA

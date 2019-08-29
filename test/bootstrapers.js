@@ -1,10 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
 const IPFS = require('..')
 const IPFSFactory = require('ipfsd-ctl')
 const bootstrapList = require('../src/core/runtime/config-browser.js')().Bootstrap
@@ -17,25 +13,21 @@ const waitFor = require('./utils/wait-for')
 describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
   let ipfsd
 
-  before(function (done) {
+  before(async () => {
     this.timeout(30 * 1000)
 
     const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
 
-    factory.spawn({
+    ipfsd = await factory.spawn({
       config: {
         Addresses: {
           Swarm: []
         }
       }
-    }, (err, node) => {
-      expect(err).to.not.exist()
-      ipfsd = node
-      done()
     })
   })
 
-  after(done => ipfsd.stop(done))
+  after(() => ipfsd.stop())
 
   it('a node connects to bootstrappers', function (done) {
     this.timeout(2 * 60 * 1000)

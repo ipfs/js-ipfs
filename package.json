@@ -192,7 +192,7 @@
     "form-data": "^2.5.1",
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.110.0",
-    "ipfsd-ctl": "^0.43.0",
+    "ipfsd-ctl": "^0.44.1",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",

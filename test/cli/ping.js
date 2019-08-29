@@ -4,7 +4,6 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const series = require('async/series')
 const DaemonFactory = require('ipfsd-ctl')
 const ipfsExec = require('../utils/ipfs-exec')
 const path = require('path')
@@ -30,44 +29,29 @@ describe('ping', function () {
   let ipfsdBId
   let cli
 
-  before((done) => {
-    this.timeout(60 * 1000)
-    series([
-      (cb) => {
-        df.spawn({
-          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-          config,
-          initOptions: { bits: 512 }
-        }, (err, _ipfsd) => {
-          expect(err).to.not.exist()
-          ipfsdB = _ipfsd
-          cb()
-        })
-      },
-      (cb) => {
-        ipfsdB.api.id((err, peerInfo) => {
-          expect(err).to.not.exist()
-          ipfsdBId = peerInfo.id
-          bMultiaddr = peerInfo.addresses[0]
-          cb()
-        })
-      }
-    ], done)
-  })
-
-  before(function (done) {
+  before(async function () {
     this.timeout(60 * 1000)
 
-    df.spawn({
+    ipfsdB = await df.spawn({
       exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config,
-      initoptions: { bits: 512 }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsdA = _ipfsd
-      // Without DHT we need to have an already established connection
-      ipfsdA.api.swarm.connect(bMultiaddr, done)
+      initOptions: { bits: 512 }
     })
+    const peerInfo = await ipfsdB.api.id()
+    ipfsdBId = peerInfo.id
+    bMultiaddr = peerInfo.addresses[0]
+  })
+
+  before(async function () {
+    this.timeout(60 * 1000)
+
+    ipfsdA = await df.spawn({
+      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+      config,
+      initOptions: { bits: 512 }
+    })
+    // Without DHT we need to have an already established connection
+    await ipfsdA.api.swarm.connect(bMultiaddr)
   })
 
   before((done) => {
@@ -76,14 +60,15 @@ describe('ping', function () {
     done()
   })
 
-  after((done) => {
-    if (!ipfsdA) return done()
-    ipfsdA.stop(done)
+  after(() => {
+    if (ipfsdA) {
+      return ipfsdA.stop()
+    }
   })
-
-  after((done) => {
-    if (!ipfsdB) return done()
-    ipfsdB.stop(done)
+  after(() => {
+    if (ipfsdB) {
+      return ipfsdB.stop()
+    }
   })
 
   it('ping host', (done) => {

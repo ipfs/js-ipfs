@@ -7,8 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const parallel = require('async/parallel')
-const series = require('async/series')
 const waterfall = require('async/waterfall')
 const multiaddr = require('multiaddr')
 const crypto = require('crypto')
@@ -31,13 +29,8 @@ const baseConf = {
   }
 }
 
-function setupInProcNode (addrs, hop, callback) {
-  if (typeof hop === 'function') {
-    callback = hop
-    hop = false
-  }
-
-  procDf.spawn({
+const setupInProcNode = async (addrs, hop) => {
+  const ipfsd = await procDf.spawn({
     libp2p: {
       config: {
         relay: {
@@ -54,12 +47,10 @@ function setupInProcNode (addrs, hop, callback) {
       }
     }),
     preload: { enabled: false }
-  }, (err, ipfsd) => {
-    expect(err).to.not.exist()
-    ipfsd.api.id((err, id) => {
-      callback(err, { ipfsd, addrs: id.addresses })
-    })
   })
+  const id = await ipfsd.api.id()
+
+  return { ipfsd, addrs: id.addresses }
 }
 
 const wsAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => a.includes('/ws'))
@@ -78,43 +69,39 @@ describe('circuit relay', () => {
     let relayNode
 
     let nodes
-    before('create and connect', function (done) {
-      parallel([
-        (cb) => setupInProcNode([
+    before('create and connect', async () => {
+      const res = await Promise.all([
+        setupInProcNode([
           '/ip4/0.0.0.0/tcp/0',
           '/ip4/0.0.0.0/tcp/0/ws'
-        ], true, cb),
-        (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0'], cb),
-        (cb) => setupInProcNode(['/ip4/0.0.0.0/tcp/0/ws'], cb)
-      ], function (err, res) {
-        expect(err).to.not.exist()
-        nodes = res.map((node) => node.ipfsd)
+        ], true),
+        setupInProcNode(['/ip4/0.0.0.0/tcp/0']),
+        setupInProcNode(['/ip4/0.0.0.0/tcp/0/ws'])
+      ])
+      nodes = res.map((node) => node.ipfsd)
 
-        relayNode = res[0].ipfsd
+      relayNode = res[0].ipfsd
 
-        nodeAAddr = tcpAddr(res[1].addrs)
-        nodeA = res[1].ipfsd.api
+      nodeAAddr = tcpAddr(res[1].addrs)
+      nodeA = res[1].ipfsd.api
 
-        nodeBAddr = wsAddr(res[2].addrs)
+      nodeBAddr = wsAddr(res[2].addrs)
 
-        nodeB = res[2].ipfsd.api
-        nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
+      nodeB = res[2].ipfsd.api
+      nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
 
-        // ensure we have an address string
-        expect(nodeAAddr).to.be.a('string')
-        expect(nodeBAddr).to.be.a('string')
-        expect(nodeBCircuitAddr).to.be.a('string')
+      // ensure we have an address string
+      expect(nodeAAddr).to.be.a('string')
+      expect(nodeBAddr).to.be.a('string')
+      expect(nodeBCircuitAddr).to.be.a('string')
 
-        series([
-          (cb) => relayNode.api.swarm.connect(nodeAAddr, cb),
-          (cb) => relayNode.api.swarm.connect(nodeBAddr, cb),
-          (cb) => setTimeout(cb, 1000),
-          (cb) => nodeA.swarm.connect(nodeBCircuitAddr, cb)
-        ], done)
-      })
+      await relayNode.api.swarm.connect(nodeAAddr)
+      await relayNode.api.swarm.connect(nodeBAddr)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      await nodeA.swarm.connect(nodeBCircuitAddr)
     })
 
-    after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+    after(() => Promise.all(nodes.map((node) => node.stop())))
 
     it('should transfer', function (done) {
       const data = crypto.randomBytes(128)

@@ -14,27 +14,21 @@ describe('pin', function () {
   this.timeout(10 * 1000)
   let ipfsd, ipfs
 
-  before(function (done) {
+  before(async () => {
     const factory = IPFSFactory.create({ type: 'proc' })
 
-    factory.spawn({
+    ipfsd = await factory.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
       config: { Bootstrap: [] },
       preload: { enabled: false }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = _ipfsd.api
-      done()
     })
+    ipfs = ipfsd.api
   })
 
-  after((done) => {
+  after(() => {
     if (ipfsd) {
-      ipfsd.stop(done)
-    } else {
-      done()
+      return ipfsd.stop()
     }
   })
 

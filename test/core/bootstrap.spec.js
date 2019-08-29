@@ -20,9 +20,9 @@ describe('bootstrap', () => {
   let node
   let ipfsd
 
-  before(function (done) {
+  before(async function () {
     this.timeout(40 * 1000)
-    df.spawn({
+    ipfsd = await df.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
       config: {
@@ -31,15 +31,15 @@ describe('bootstrap', () => {
         }
       },
       preload: { enabled: false }
-    }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      node = _ipfsd.api
-      done()
     })
+    node = ipfsd.api
   })
 
-  after((done) => ipfsd.stop(done))
+  after(() => {
+    if (ipfsd) {
+      return ipfsd.stop()
+    }
+  })
 
   const defaultList = [
     '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
