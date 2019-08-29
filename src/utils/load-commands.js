@@ -9,6 +9,7 @@ function requireCommands () {
     addFromFs: require('../files-regular/add-from-fs'),
     addFromURL: require('../files-regular/add-from-url'),
     addFromStream: require('../files-regular/add'),
+    _addAsyncIterator: require('../files-regular/add-async-iterator'),
     cat: require('../files-regular/cat'),
     catReadableStream: require('../files-regular/cat-readable-stream'),
     catPullStream: require('../files-regular/cat-pull-stream'),
