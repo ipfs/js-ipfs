@@ -203,20 +203,25 @@ describe('daemon', () => {
     await ipfs('init')
 
     const daemon = ipfs('daemon --silent')
-    const stop = (err) => {
+    const stop = async (err) => {
       daemon.kill()
 
       if (err) {
         throw err
       }
+
+      try {
+        await daemon
+      } catch (err) {
+        if (!err.killed) {
+          throw err
+        }
+      }
     }
 
     return new Promise((resolve, reject) => {
       daemon.stdout.on('data', (data) => {
-        reject(new Error('Output was received on stdout ' + data.toString('utf8')))
-      })
-      daemon.stderr.on('data', (data) => {
-        reject(new Error('Output was received stderr ' + data.toString('utf8')))
+        reject(new Error('Output was received ' + data.toString('utf8')))
       })
 
       setTimeout(() => {

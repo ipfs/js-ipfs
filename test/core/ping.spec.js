@@ -6,13 +6,14 @@ const dirtyChai = require('dirty-chai')
 const pull = require('pull-stream/pull')
 const drain = require('pull-stream/sinks/drain')
 const parallel = require('async/parallel')
-const series = require('async/series')
 const DaemonFactory = require('ipfsd-ctl')
 const isNode = require('detect-node')
 const path = require('path')
 const expect = chai.expect
 chai.use(dirtyChai)
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`)
+})
 const dfProc = DaemonFactory.create({
   exec: require('../../'),
   type: 'proc'
@@ -31,6 +32,7 @@ const config = {
 const spawnNode = ({ dht = false, type = 'js' }) => {
   const args = dht ? [] : ['--offline']
   const factory = type === 'js' ? df : dfProc
+
   return factory.spawn({
     args,
     config,
@@ -76,20 +78,23 @@ describe('ping', function () {
     // Connect the nodes
     before(async function () {
       this.timeout(60 * 1000)
+
       await ipfsdA.api.swarm.connect(bMultiaddr)
     })
 
     after(async () => {
-      if (!ipfsdA) return
-      await ipfsdA.stop()
+      if (ipfsdB) {
+        await ipfsdB.stop()
+      }
     })
 
     after(async () => {
-      if (!ipfsdB) return
-      await ipfsdB.stop()
+      if (ipfsdA) {
+        await ipfsdA.stop()
+      }
     })
 
-    it('can ping via a promise without options', async () => {
+    it.only('can ping via a promise without options', async () => {
       const res = await ipfsdA.api.ping(ipfsdBId)
 
       expect(res.length).to.be.ok()
@@ -128,13 +133,15 @@ describe('ping', function () {
     })
 
     after(async () => {
-      if (!ipfsdA) return
-      await ipfsdA.stop()
+      if (ipfsdA) {
+        await ipfsdA.stop()
+      }
     })
 
     after(async () => {
-      if (!ipfsdB) return
-      await ipfsdB.stop()
+      if (ipfsdB) {
+        await ipfsdB.stop()
+      }
     })
 
     it('sends the specified number of packets', (done) => {
@@ -191,20 +198,12 @@ describe('ping', function () {
     let ipfsdCId
 
     // Spawn nodes
-    before(function (done) {
+    before(async function () {
       this.timeout(60 * 1000)
 
-      series([
-        spawnNode.bind(null, { dht: true }),
-        spawnNode.bind(null, { dht: true }),
-        spawnNode.bind(null, { dht: true })
-      ], (err, ipfsd) => {
-        expect(err).to.not.exist()
-        ipfsdA = ipfsd[0]
-        ipfsdB = ipfsd[1]
-        ipfsdC = ipfsd[2]
-        done()
-      })
+      ipfsdA = await spawnNode({ dht: true })
+      ipfsdB = await spawnNode({ dht: true })
+      ipfsdC = await spawnNode({ dht: true })
     })
 
     // Get the peer info objects
@@ -249,19 +248,22 @@ describe('ping', function () {
       })
     })
 
-    after((done) => {
-      if (!ipfsdA) return done()
-      ipfsdA.stop(done)
+    after(async () => {
+      if (ipfsdA) {
+        await ipfsdA.stop()
+      }
     })
 
-    after((done) => {
-      if (!ipfsdB) return done()
-      ipfsdB.stop(done)
+    after(async () => {
+      if (ipfsdB) {
+        await ipfsdB.stop()
+      }
     })
 
-    after((done) => {
-      if (!ipfsdC) return done()
-      ipfsdC.stop(done)
+    after(async () => {
+      if (ipfsdC) {
+        await ipfsdC.stop()
+      }
     })
 
     it('if enabled uses the DHT peer routing to find peer', (done) => {
