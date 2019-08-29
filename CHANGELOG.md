@@ -1,3 +1,13 @@
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.13.0...v0.13.1) (2019-08-29)
+
+
+### Features
+
+* export MFS root key ([265eee5](https://github.com/ipfs/js-ipfs-mfs/commit/265eee5)), closes [/github.com/ipfs/js-ipfs/pull/2022/files#r303383848](https://github.com//github.com/ipfs/js-ipfs/pull/2022/files/issues/r303383848)
+
+
+
 # [0.13.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.12.0...v0.13.0) (2019-08-05)
 
 
