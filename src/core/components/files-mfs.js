@@ -54,7 +54,7 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
 
   const methods = {
     ...methodsOriginal,
-    // cp: withPreload(methodsOriginal.cp),
+    cp: withPreload(methodsOriginal.cp),
     ls: withPreload(methodsOriginal.ls),
     mv: withPreload(methodsOriginal.mv),
     read: withPreload(methodsOriginal.read),
