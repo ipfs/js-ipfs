@@ -42,7 +42,7 @@ module.exports = (createCommon, options) => {
     it('should not move not found file/dir, expect error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.mv([`${testDir}/404`, `${testDir}/a`], (err) => {
+      ipfs.files.mv(`${testDir}/404`, `${testDir}/a`, (err) => {
         expect(err).to.exist()
         done()
       })
@@ -57,7 +57,7 @@ module.exports = (createCommon, options) => {
       ], (err) => {
         expect(err).to.not.exist()
 
-        ipfs.files.mv([`${testDir}/a`, `${testDir}/c`], (err) => {
+        ipfs.files.mv(`${testDir}/a`, `${testDir}/c`, (err) => {
           expect(err).to.not.exist()
           done()
         })
@@ -70,7 +70,7 @@ module.exports = (createCommon, options) => {
       ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, (err) => {
         expect(err).to.not.exist()
 
-        ipfs.files.mv(['/test/lv1/lv2', '/test/lv1/lv4'], (err) => {
+        ipfs.files.mv('/test/lv1/lv2', '/test/lv1/lv4', (err) => {
           expect(err).to.not.exist()
           done()
         })

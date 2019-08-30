@@ -35,7 +35,7 @@ module.exports = (createCommon, options) => {
     it('should copy file, expect error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.cp([`${testDir}/c`, `${testDir}/b`], (err) => {
+      ipfs.files.cp(`${testDir}/c`, `${testDir}/b`, (err) => {
         expect(err).to.exist()
         done()
       })
@@ -47,7 +47,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => ipfs.files.mkdir(testDir, { p: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/a`, Buffer.from('TEST'), { create: true }, cb),
-        (cb) => ipfs.files.cp([`${testDir}/a`, `${testDir}/b`], cb)
+        (cb) => ipfs.files.cp(`${testDir}/a`, `${testDir}/b`, cb)
       ], (err) => {
         expect(err).to.not.exist()
         done()
@@ -57,7 +57,7 @@ module.exports = (createCommon, options) => {
     it('should copy dir, expect error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.cp([`${testDir}/lv1/lv3`, `${testDir}/lv1/lv4`], (err) => {
+      ipfs.files.cp(`${testDir}/lv1/lv3`, `${testDir}/lv1/lv4`, (err) => {
         expect(err).to.exist()
         done()
       })
@@ -68,7 +68,7 @@ module.exports = (createCommon, options) => {
 
       series([
         (cb) => ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, cb),
-        (cb) => ipfs.files.cp([`${testDir}/lv1/lv2`, `${testDir}/lv1/lv3`], cb)
+        (cb) => ipfs.files.cp(`${testDir}/lv1/lv2`, `${testDir}/lv1/lv3`, cb)
       ], (err) => {
         expect(err).to.not.exist()
         done()
