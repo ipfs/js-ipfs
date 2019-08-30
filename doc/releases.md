@@ -4,8 +4,16 @@
 
 - [Release Philosophy](#release-philosophy)
 - [Release Flow](#release-flow)
+  - [Stage 0 - Automated Testing](#stage-0-automated-testing)
+  - [Stage 1 - Internal Testing](#stage-1-internal-testing)
+  - [Stage 2 - Community Dev Testing](#stage-2-community-dev-testing)
+  - [Stage 3 - Community Prod Testing](#stage-2-community-prod-testing)
+  - [Stage 4 - Release](#stage-4-release)
+- [Release Cycle](#release-cycle)
+  - [Patch Releases](#patch-releases)
 - [Performing a Release](#performing-a-release)
 - [Release Version Numbers](#release-version-numbers)
+  - [Pre-Releases and Release Candidates](#pre-releases-and-release-candidates)
 
 ## Release Philosophy
 
@@ -16,6 +24,8 @@ We might expand the six week release schedule in case of:
 - In case of a large community event that takes the core team availability away (e.g. IPFS Conf, Dev Meetings, IPFS Camp, etc.)
 
 ## Release Flow
+
+![js-ipfs release flow cartoon](https://ipfs.io/ipfs/QmU5pwcGh38DqzLy3rK8GAHuWm2kK87oGqDAtqZYWhxjab)
 
 js-ipfs releases come in 5 stages designed to gradually roll out changes and reduce the impact of any regressions that may have been introduced. If we need to merge non-trivial<sup>[2]</sup> changes during the process, we start over at stage 0.
 
