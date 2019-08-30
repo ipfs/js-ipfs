@@ -6,6 +6,10 @@
 
 <List of items with PRs and/or Issues to be considered for this release>
 
+# 🚢 Estimated shipping date
+
+<Date this release will ship on if everything goes to plan>
+
 # 🔦 Highlights
 
 <Top highlights for this release>
