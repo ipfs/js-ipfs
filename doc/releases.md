@@ -1,9 +1,9 @@
-# Release Flow
+# Releases
 
 ## Table of Contents
 
 - [Release Philosophy](#release-philosophy)
-- [Release Flow](#release-flow-1)
+- [Release Flow](#release-flow)
   - [Stage 0 - Automated Testing](#stage-0--automated-testing)
   - [Stage 1 - Internal Testing](#stage-1--internal-testing)
   - [Stage 2 - Community Dev Testing](#stage-2--community-dev-testing)
@@ -20,6 +20,7 @@
 js-ipfs aims to have release every six weeks, two releases per quarter. During these 6 week releases, we go through 4 different stages that gives us the opportunity to test the new version against our test environments (unit, interop, integration), QA in our current production environment, IPFS apps (e.g. Desktop and WebUI) and with our community and _early testers_<sup>[1]</sup> that have IPFS running in production.
 
 We might expand the six week release schedule in case of:
+
 - No new updates to be added
 - In case of a large community event that takes the core team availability away (e.g. IPFS Conf, Dev Meetings, IPFS Camp, etc.)
 
@@ -65,7 +66,7 @@ At this stage, we consider the release to be "production ready" and will ask the
 
 ### Stage 4 - Release
 
-At this stage, the release is "battle hardened" and ready for wide deployment. A new version is published to npm, announcements are made and a blog post is published to ipfs.io.
+At this stage, the release is "battle hardened" and ready for wide deployment. A new version is published to npm, announcements are made and a blog post is published to [ipfs.io/blog](https://ipfs.io/blog).
 
 ## Release Cycle
 
@@ -93,9 +94,9 @@ This issue is pinned and labeled ["release"](https://github.com/ipfs/js-ipfs/iss
 
 js-ipfs is currently pre-1.0. In semver terms this means [anything may change at any time](https://semver.org/#spec-item-4).
 
-However, js-ipfs currently reserves MINOR version increments for BREAKING CHANGES and/or major feature additions and PATCH version increments for bug fixes or backwards compatible minor feature additions.
+However, js-ipfs follows semver "shifted by one". This means js-ipfs reserves MINOR version increments for BREAKING CHANGES and/or major feature additions and PATCH version increments for bug fixes and _backwards compatible_ minor feature additions.
 
-Post 1.x.x (future), MAJOR version number increments will contain BREAKING CHANGES, MINOR version increments will be reserved for new features and PATCH version increments for bug fixes.
+Post `1.x.x` (future), MAJOR version number increments will contain BREAKING CHANGES, MINOR version increments will be reserved for backwards compatible new features and PATCH version increments for bug fixes.
 
 We do not yet retroactively apply fixes to older releases (no Long Term Support releases for now), which means that we always recommend users to update to the latest, whenever possible.
 
