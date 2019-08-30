@@ -37,8 +37,8 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: (cb) => preloadNode.start(cb),
-      post: (cb) => preloadNode.stop(cb)
+      pre: (cb) => batch('start', cb, preloadNode, httpEchoServer),
+      post: (cb) => batch('stop', cb, preloadNode, httpEchoServer)
     },
     browser: {
       pre: (cb) => batch('start', cb, ipfsdServer, preloadNode, httpEchoServer),
