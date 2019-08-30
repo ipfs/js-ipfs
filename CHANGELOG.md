@@ -1,3 +1,13 @@
+<a name="0.111.1"></a>
+## [0.111.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.0...v0.111.1) (2019-08-30)
+
+
+### Bug Fixes
+
+* change `cp` and `mv` tests to the current spec ([#515](https://github.com/ipfs/interface-ipfs-core/issues/515)) ([b107e57](https://github.com/ipfs/interface-ipfs-core/commit/b107e57))
+
+
+
 <a name="0.111.0"></a>
 # [0.111.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.110.0...v0.111.0) (2019-08-28)
 
