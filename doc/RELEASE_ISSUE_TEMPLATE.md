@@ -23,11 +23,24 @@
     - [ ] interop
     - [ ] sharness
 - [ ] **Stage 1 - Internal Testing**
+  - [ ] Publish a release candidate to npm
+    ```sh
+    # Clean out node_modules and re-install dependencies
+    # (Ensures you have the latest versions for the browser build)
+    rm -rf node_modules package-lock.json
+    npm install
+
+    # Minor prerelease (e.g. 0.33.1 -> 0.34.0-rc.0)
+    npx aegir release --type preminor --preid rc --dist-tag next
+
+    # Increment prerelease (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
+    npx aegir release --type prerelease --preid rc --dist-tag next
+    ```
   - Network Testing:
     - test lab things - TBD
   - Infrastructure Testing:
     - TBD
-  - [ ] IPFS Application Testing -  Run the tests of the following applications:
+  - [ ] IPFS Application Testing - Run the tests of the following applications:
     - [ ] [webui](https://github.com/ipfs-shipyard/ipfs-webui)
     - [ ] [ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)
     - [ ] [ipfs-companion](https://github.com/ipfs-shipyard/ipfs-companion)
@@ -37,70 +50,57 @@
     - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
 - [ ] **Stage 2 - Community Dev Testing**
   - [ ] Reach out to the IPFS _early testers_ listed in [doc/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
-  - [ ] Reach out to on IRC for additional early testers.
-  - [ ] Run tests available in the following repos with the latest beta (check when all tests pass):
+  - [ ] Reach out on IRC for additional early testers.
+  - [ ] Run tests available in the following repos with the latest RC:
     - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
     - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
 - [ ] **Stage 3 - Community Prod Testing**
   - [ ] Documentation
-    - [ ] Ensure that [CHANGELOG.md](https://github.com/ipfs/go-ipfs/tree/master/CHANGELOG.md) is up to date
-    - [ ] Ensure that [README.md](https://github.com/ipfs/go-ipfs/tree/master/README.md)  is up to date
-    - [ ] Ensure that all the examples we have produced for go-ipfs run without problems
-    - [ ] Update HTTP-API Documentation on the Website using https://github.com/ipfs/http-api-docs
-  - [ ] Invite the IPFS [_early testers_](https://github.com/ipfs/go-ipfs/tree/master/docs/EARLY_TESTERS.md) to deploy the release to part of their production infrastructure.
-  - [ ] Invite the wider community through (link to the release issue):
+    - [ ] Ensure that [README.md](https://github.com/ipfs/js-ipfs/tree/master/README.md) is up to date
+    - [ ] Ensure that all the examples run without problems:
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-add-readable-stream
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-browserify
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-mfs
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-parceljs
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-readablestream
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-script-tag
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-video-streaming
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-vue
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-webpack
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/custom-ipfs-repo
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/exchange-files-in-browser
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/explore-ethereum-blockchain
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/ipfs-101
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/run-in-electron
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/running-multiple-nodes
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/traverse-ipld-graphs
+    - [ ] Update [js.ipfs.io](https://js.ipfs.io) examples to use the latest js-ipfs
+  - [ ] Invite the IPFS [_early testers_](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) to deploy the release to part of their production infrastructure.
+  - [ ] Invite the wider community (link to the release issue):
     - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
     - [ ] Twitter
     - [ ] IRC
 - [ ] **Stage 4 - Release**
-  - [ ] Final preparation
-    - [ ] Verify that version string in [`repo/version.go`](https://github.com/ipfs/go-ipfs/tree/master/repo/version.go) has been updated
-    - [ ] tag commit with vX.Y.Z
-    - [ ] update release branch to point to release commit (`git merge vX.Y.Z`).
-    - [ ] Release published
-      - [ ] to [dist.ipfs.io](https://dist.ipfs.io)
-      - [ ] to [npm-go-ipfs](https://github.com/ipfs/npm-go-ipfs)
-      - [ ] to [chocolatey](https://chocolatey.org/packages/ipfs)
-      - [ ] to [github](https://github.com/ipfs/go-ipfs/releases)
-  - [ ] Publish a Release Blog post (at minimum, a c&p of this release issue with all the highlights, API changes, link to changelog and thank yous)
+  - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [this script](https://gist.github.com/alanshaw/5a2d9465c5a05b201d949551bdb1fcc3).
+  - [ ] Publish to npm:
+    ```sh
+    # Clean out node_modules and re-install dependencies
+    # (Ensures you have the latest versions for the browser build)
+    rm -rf node_modules package-lock.json
+    npm install
+
+    # lint, build, test, tag, publish
+    npm run release-minor
+    ```
+  - [ ] Publish a blog post to [github.com/ipfs/blog](https://github.com/ipfs/blog) (at minimum, a c&p of this release issue with all the highlights, API changes and thank yous)
   - [ ] Broadcasting (link to blog post)
     - [ ] Twitter
     - [ ] IRC
     - [ ] [Reddit](https://reddit.com/r/ipfs)
     - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
     - [ ] Announce it on the [IPFS Users Mailing List](https://groups.google.com/forum/#!forum/ipfs-users)
-
-
-
-
-
-
-
-
-
-- Robustness and quality
-
-
-  - [ ] Run tests of the following projects with the new release:
-    - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
-    - [ ] [peer-base](https://github.com/peer-base/peer-base)
-    - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
-    - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
-    - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
-  - [ ] Update js.ipfs.io examples and Service Worker Gateway to use latest js-ipfs
-- Documentation
-  - [ ] Ensure that README.md is up to date
-  - [ ] Ensure that all the examples run
-- Communication
-  - [ ] Create the release issue
-  - [ ] Take a snapshot of everyone that has contributed to this release (including its subdeps in IPFS, libp2p, IPLD and multiformats) using [`name-your-contributors`](https://www.npmjs.com/package/name-your-contributors). Generate a nice markdown list with [this script](https://gist.github.com/alanshaw/5a2d9465c5a05b201d949551bdb1fcc3).
-  - [ ] Announcements (both pre-release and post-release)
-    - [ ] Twitter
-    - [ ] IRC
-    - [ ] Reddit
-    - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
-    - [ ] Announce it on the [IPFS Users mlist](https://groups.google.com/forum/#!forum/ipfs-users)
-  - [ ] Blog post
   - [ ] Copy release notes to the [GitHub Release description](https://github.com/ipfs/js-ipfs/releases)
 
 # ❤️ Huge thank you to everyone that made this release possible
