@@ -8,6 +8,8 @@ const mergeOptions = require('merge-options')
 const NoKeychain = require('./no-keychain')
 const callbackify = require('callbackify')
 const promisify = require('promisify-es6')
+const KeyTransformDatastore = require('datastore-core').KeytransformDatastore
+const keychainTransformer = require('../../utils/keychain-encoder')
 
 /*
  * Load stuff from Repo into memory
@@ -36,7 +38,8 @@ module.exports = function preStart (self) {
       // most likely an init or upgrade has happened
     } else if (pass) {
       const keychainOptions = Object.assign({ passPhrase: pass }, config.Keychain)
-      self._keychain = new Keychain(self._repo.keys, keychainOptions)
+      const keychainTransformedDatastore = new KeyTransformDatastore(self._repo.keys, keychainTransformer)
+      self._keychain = new Keychain(keychainTransformedDatastore, keychainOptions)
       self.log('keychain constructed')
     } else {
       self._keychain = new NoKeychain()
