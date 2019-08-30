@@ -25,9 +25,9 @@ We might expand the six week release schedule in case of:
 
 ## Release Flow
 
-![js-ipfs release flow cartoon](https://ipfs.io/ipfs/QmU5pwcGh38DqzLy3rK8GAHuWm2kK87oGqDAtqZYWhxjab)
-
 js-ipfs releases come in 5 stages designed to gradually roll out changes and reduce the impact of any regressions that may have been introduced. If we need to merge non-trivial<sup>[2]</sup> changes during the process, we start over at stage 0.
+
+![js-ipfs release flow cartoon](https://ipfs.io/ipfs/QmU5pwcGh38DqzLy3rK8GAHuWm2kK87oGqDAtqZYWhxjab)
 
 ### Stage 0 - Automated Testing
 
@@ -40,7 +40,7 @@ At this stage, we'll:
 1. Start a partial-rollout to our own infrastructure.
 2. Test against applications in the [ipfs](https://github.com/ipfs/) and [ipfs-shipyard](https://github.com/ipfs-shipyard/) organisations and a selection of other hand picked projects.
 
-**Goal(s):**
+**Goals:**
 
 1. Make sure we haven't introduced any obvious regressions.
 2. Test the release in an environment we can monitor and easily roll back (i.e. our own infra).
@@ -49,7 +49,7 @@ At this stage, we'll:
 
 At this stage, we'll announce the impending release to the community and ask for pre-release testers.
 
-**Goal(s):**
+**Goal:**
 
 Test the release in as many non-production environments as possible. This is relatively low-risk but gives us a _breadth_ of testing internal testing can't.
 
@@ -57,7 +57,7 @@ Test the release in as many non-production environments as possible. This is rel
 
 At this stage, we consider the release to be "production ready" and will ask the community and our early testers to (partially) deploy the release to their production infrastructure.
 
-**Goal(s):**
+**Goals:**
 
 1. Test the release in some production environments with heavy workloads.
 2. Partially roll-out an upgrade to see how it affects the network.
