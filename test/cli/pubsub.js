@@ -44,7 +44,7 @@ describe('pubsub', function () {
       exec: IPFS,
       initOptions: { bits: 512 },
       config,
-      args: ['--enable-pubsub-experiment']
+      args: ['--enable-pubsub']
     })
     node = ipfsdA.api
   })
@@ -59,7 +59,7 @@ describe('pubsub', function () {
     const df = DaemonFactory.create({ type: 'js' })
     ipfsdB = await df.spawn({
       initOptions: { bits: 512 },
-      args: ['--enable-pubsub-experiment'],
+      args: ['--enable-pubsub'],
       exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config
     })

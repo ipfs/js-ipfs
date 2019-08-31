@@ -119,7 +119,7 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
         }
       },
       pubsub: {
-        enabled: get(options, 'EXPERIMENTAL.pubsub', false)
+        enabled: get(options, 'pubsub.enabled', false)
       }
     },
     connectionManager: get(options, 'connectionManager',

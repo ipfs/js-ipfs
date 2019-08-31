@@ -98,8 +98,8 @@ describe('config', () => {
 
   it('should validate valid EXPERIMENTAL', () => {
     const cfgs = [
-      { EXPERIMENTAL: { pubsub: true, dht: true, sharding: true } },
-      { EXPERIMENTAL: { pubsub: false, dht: false, sharding: false } },
+      { EXPERIMENTAL: { dht: true, sharding: true } },
+      { EXPERIMENTAL: { dht: false, sharding: false } },
       { EXPERIMENTAL: undefined }
     ]
 
@@ -108,7 +108,6 @@ describe('config', () => {
 
   it('should validate invalid EXPERIMENTAL', () => {
     const cfgs = [
-      { EXPERIMENTAL: { pubsub: 138 } },
       { EXPERIMENTAL: { dht: 138 } },
       { EXPERIMENTAL: { sharding: 138 } }
     ]

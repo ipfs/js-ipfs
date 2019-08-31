@@ -149,7 +149,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
-      args: ['--enable-pubsub-experiment'],
+      args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
   }), {

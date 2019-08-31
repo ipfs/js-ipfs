@@ -32,6 +32,9 @@ const configSchema = s({
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
   }, { enabled: true, interval: 30 * 1000 }),
+  pubsub: optional(s({
+    enabled: 'boolean?'
+  })),
   init: optional(union(['boolean', s({
     bits: 'number?',
     emptyRepo: 'boolean?',
