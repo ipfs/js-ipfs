@@ -26,7 +26,7 @@ Note: `stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`
 
 Where:
 
-- `options` is an opcional object that might contain the following keys:
+- `options` is an optional object that might contain the following keys:
   - `peer` specifies a peer to print bandwidth for.
   - `proto` specifies a protocol to print bandwidth for.
   - `poll` is used to print bandwidth at an interval.
