@@ -15,6 +15,7 @@ const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const KadDHT = require('libp2p-kad-dht')
 const Libp2p = require('libp2p')
+const isNode = require('detect-node')
 
 const libp2pComponent = require('../../src/core/components/libp2p')
 
@@ -44,9 +45,6 @@ describe('libp2p customization', function () {
         webRTCStar: {
           Enabled: false
         }
-      },
-      EXPERIMENTAL: {
-        pubsub: false
       }
     }
     datastore = new MemoryStore()
@@ -149,8 +147,11 @@ describe('libp2p customization', function () {
               enabled: true
             }
           },
-          EXPERIMENTAL: {
-            pubsub: false
+          pubsub: {
+            enabled: false,
+            emitSelf: true,
+            signMessages: true,
+            strictSigning: true
           }
         })
         expect(_libp2p._transport).to.have.length(3)
@@ -177,8 +178,8 @@ describe('libp2p customization', function () {
               }
             }
           },
-          EXPERIMENTAL: {
-            pubsub: true
+          pubsub: {
+            enabled: true
           },
           libp2p: {
             modules: {
@@ -213,9 +214,6 @@ describe('libp2p customization', function () {
             websocketStar: {
               enabled: true
             }
-          },
-          EXPERIMENTAL: {
-            pubsub: true
           }
         })
         expect(_libp2p._transport).to.have.length(1)
@@ -289,6 +287,70 @@ describe('libp2p customization', function () {
           port: '443',
           protocol: 'https'
         })
+        done()
+      })
+    })
+  })
+
+  describe('bundle via custom config for pubsub', () => {
+    it('select gossipsub as pubsub router', (done) => {
+      const ipfs = {
+        _repo: {
+          datastore
+        },
+        _peerInfo: peerInfo,
+        _peerBook: peerBook,
+        // eslint-disable-next-line no-console
+        _print: console.log,
+        _options: {}
+      }
+      const customConfig = {
+        ...testConfig,
+        Pubsub: {
+          Router: 'gossipsub'
+        }
+      }
+
+      _libp2p = libp2pComponent(ipfs, customConfig)
+
+      _libp2p.start((err) => {
+        expect(err).to.not.exist()
+        expect(_libp2p._modules.pubsub).to.eql(require('libp2p-gossipsub'))
+        done()
+      })
+    })
+
+    it('select floodsub as pubsub router if node', (done) => {
+      const ipfs = {
+        _repo: {
+          datastore
+        },
+        _peerInfo: peerInfo,
+        _peerBook: peerBook,
+        // eslint-disable-next-line no-console
+        _print: console.log,
+        _options: {}
+      }
+      const customConfig = {
+        ...testConfig,
+        Pubsub: {
+          Router: 'floodsub'
+        }
+      }
+
+      try {
+        _libp2p = libp2pComponent(ipfs, customConfig)
+      } catch (err) {
+        if (!isNode) {
+          expect(err).to.exist()
+          expect(err.code).to.eql('ERR_NOT_SUPPORTED')
+          done()
+        }
+      }
+
+      _libp2p.start((err) => {
+        expect(err).to.not.exist()
+        expect(_libp2p._modules.pubsub).to.eql(require('libp2p-floodsub'))
         done()
       })
     })

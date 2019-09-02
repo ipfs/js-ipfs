@@ -29,8 +29,8 @@ describe('pubsub disabled', () => {
       preload: {
         enabled: false
       },
-      EXPERIMENTAL: {
-        pubsub: false
+      pubsub: {
+        enabled: false
       }
     })
 

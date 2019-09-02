@@ -96,8 +96,8 @@ const libp2pBundle = (opts) => {
           timeout: 2e3 // End the query quickly since we're running so frequently
         }
       },
-      EXPERIMENTAL: {
-        pubsub: true
+      pubsub: {
+        enabled: true
       }
     }
   })

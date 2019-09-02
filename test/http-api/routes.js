@@ -26,9 +26,7 @@ describe('HTTP API', () => {
       repo: repoTests,
       pass: hat(),
       config,
-      EXPERIMENTAL: {
-        pubsub: true
-      },
+      pubsub: { enabled: true },
       preload: { enabled: false }
     })
     await ncp(repoExample, repoTests)

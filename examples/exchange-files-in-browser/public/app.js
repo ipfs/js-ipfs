@@ -44,8 +44,8 @@ let info
 async function start () {
   if (!node) {
     const options = {
-      EXPERIMENTAL: {
-        pubsub: true
+      pubsub: {
+        enabled: true
       },
       repo: 'ipfs-' + Math.random(),
       config: {

@@ -15,6 +15,7 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 const debug = require('debug')
 const mergeOptions = require('merge-options')
+const get = require('dlv')
 const EventEmitter = require('events')
 
 const config = require('./config')
@@ -46,6 +47,9 @@ class IPFS extends EventEmitter {
       init: true,
       start: true,
       EXPERIMENTAL: {},
+      pubsub: {
+        enabled: false
+      },
       preload: {
         enabled: true,
         addresses: [
@@ -131,13 +135,14 @@ class IPFS extends EventEmitter {
     this.stats = components.stats(this)
     this.resolve = components.resolve(this)
 
-    if (this._options.EXPERIMENTAL.pubsub) {
-      this.log('EXPERIMENTAL pubsub is enabled')
+    if (this._options.pubsub.enabled) {
+      this.log('pubsub is enabled')
     }
     if (this._options.EXPERIMENTAL.ipnsPubsub) {
-      if (!this._options.EXPERIMENTAL.pubsub) {
-        this.log('EXPERIMENTAL pubsub is enabled to use IPNS pubsub')
-        this._options.EXPERIMENTAL.pubsub = true
+      // if (!this._options.pubsub.enabled) {
+      if (!get(this._options, 'pubsub.enabled', false)) {
+        this.log('pubsub is enabled to use EXPERIMENTAL IPNS pubsub')
+        this._options.pubsub.enabled = true
       }
 
       this.log('EXPERIMENTAL IPNS pubsub is enabled')

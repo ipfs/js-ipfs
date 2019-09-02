@@ -2,10 +2,12 @@
 
 const get = require('dlv')
 const mergeOptions = require('merge-options')
+const errCode = require('err-code')
 const ipnsUtils = require('../ipns/routing/utils')
 const multiaddr = require('multiaddr')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
+const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 module.exports = function libp2p (self, config) {
   const options = self._options || {}
@@ -58,13 +60,24 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
     peerRouting = [new DelegatedPeerRouter(delegatedApiOptions)]
   }
 
+  const getPubsubRouter = () => {
+    const router = get(config, 'Pubsub.Router', 'gossipsub')
+
+    if (!PubsubRouters[router]) {
+      throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
+    }
+
+    return PubsubRouters[router]
+  }
+
   const libp2pDefaults = {
     datastore,
     peerInfo,
     peerBook,
     modules: {
       contentRouting,
-      peerRouting
+      peerRouting,
+      pubsub: getPubsubRouter()
     },
     config: {
       peerDiscovery: {
@@ -105,8 +118,8 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
           ipns: ipnsUtils.selector
         }
       },
-      EXPERIMENTAL: {
-        pubsub: get(options, 'EXPERIMENTAL.pubsub', false)
+      pubsub: {
+        enabled: get(options, 'pubsub.enabled', false)
       }
     },
     connectionManager: get(options, 'connectionManager',

@@ -6,6 +6,7 @@ const WS = require('libp2p-websockets')
 const WebSocketStarMulti = require('libp2p-websocket-star-multi')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
+const GossipSub = require('libp2p-gossipsub')
 const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
@@ -22,8 +23,8 @@ class Node extends libp2p {
 
     const defaults = {
       switch: {
-        blacklistTTL: 2 * 60 * 1e3, // 2 minute base
-        blackListAttempts: 5, // back off 5 times
+        denyTTL: 2 * 60 * 1e3, // 2 minute base
+        denyAttempts: 5, // back off 5 times
         maxParallelDials: 150,
         maxColdCalls: 50,
         dialTimeout: 10e3 // Be strict with dial time
@@ -45,7 +46,8 @@ class Node extends libp2p {
           Bootstrap,
           wsstar.discovery
         ],
-        dht: KadDHT
+        dht: KadDHT,
+        pubsub: GossipSub
       },
       config: {
         peerDiscovery: {
@@ -67,8 +69,9 @@ class Node extends libp2p {
             enabled: false
           }
         },
-        EXPERIMENTAL: {
-          pubsub: false
+        pubsub: {
+          enabled: false,
+          emitSelf: true
         }
       }
     }

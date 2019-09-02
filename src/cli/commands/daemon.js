@@ -16,7 +16,8 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-pubsub-experiment', {
+      .option('enable-pubsub', {
+        alias: 'enable-pubsub-experiment',
         type: 'boolean',
         default: false
       })
@@ -53,8 +54,8 @@ module.exports = {
         offline: argv.offline,
         pass: argv.pass,
         preload: { enabled: argv.enablePreload },
+        pubsub: { enabled: argv.enablePubsub },
         EXPERIMENTAL: {
-          pubsub: argv.enablePubsubExperiment,
           ipnsPubsub: argv.enableNamesysPubsub,
           dht: argv.enableDhtExperiment,
           sharding: argv.enableShardingExperiment

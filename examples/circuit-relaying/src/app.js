@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         enabled: true // make this node a relay (HOP)
       }
     },
-    EXPERIMENTAL: {
-      pubsub: true // enable pubsub
+    pubsub: {
+      enabled: true
     },
     config: {
       Bootstrap: []
