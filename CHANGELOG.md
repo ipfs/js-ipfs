@@ -1,3 +1,28 @@
+<a name="0.38.0-pre.1"></a>
+# [0.38.0-pre.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.0...v0.38.0-pre.1) (2019-09-02)
+
+
+### Bug Fixes
+
+* **package:** update ipfs-http-client to version 34.0.0 ([#2407](https://github.com/ipfs/js-ipfs/issues/2407)) ([f7e5094](https://github.com/ipfs/js-ipfs/commit/f7e5094))
+
+
+### Features
+
+* gossipsub as default pubsub ([#2298](https://github.com/ipfs/js-ipfs/issues/2298)) ([902e045](https://github.com/ipfs/js-ipfs/commit/902e045))
+
+
+### Reverts
+
+* update of ipfs-http-client ([#2412](https://github.com/ipfs/js-ipfs/issues/2412)) ([f6cf876](https://github.com/ipfs/js-ipfs/commit/f6cf876))
+
+
+### BREAKING CHANGES
+
+* The default pubsub implementation has changed from floodsub to [gossipsub](https://github.com/ChainSafe/gossipsub-js). Additionally, to enable pubsub programmatically set `pubsub.enabled: true` instead of `EXPERIMENTAL.pubsub: true` or via the CLI pass `--enable-pubsub` instead of `--enable-pubsub-experiment` to `jsipfs daemon`.
+
+
+
 <a name="0.38.0-pre.0"></a>
 # [0.38.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.37.1...v0.38.0-pre.0) (2019-08-27)
 
