@@ -151,7 +151,14 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
       args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
-  }))
+  }), {
+    skip: [
+      {
+        name: 'should publish message from string',
+        reason: 'not implemented'
+      }
+    ]
+  })
 
   tests.repo(defaultCommonFactory)
 
