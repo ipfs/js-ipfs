@@ -16,7 +16,7 @@ const streamFromFileReader = (file, options) => {
       this.fileReader.onloadend = (event) => {
         const data = event.target.result
         if (data.byteLength === 0) {
-          this.push(null)
+          return this.push(null)
         }
         this.push(new Uint8Array(data))
       }
