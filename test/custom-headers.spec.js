@@ -17,23 +17,25 @@ describe('custom headers', function () {
   let ipfs
   let ipfsd
   // initialize ipfs with custom headers
-  before(done => {
-    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsClient({
-        host: 'localhost',
-        port: 6001,
-        protocol: 'http',
-        headers: {
-          authorization: 'Bearer ' + 'YOLO'
-        }
-      })
-      done()
+  before(async () => {
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
+      }
+    })
+
+    ipfs = ipfsClient({
+      host: 'localhost',
+      port: 6001,
+      protocol: 'http',
+      headers: {
+        authorization: 'Bearer ' + 'YOLO'
+      }
     })
   })
 
-  it('are supported', done => {
+  it('are supported', (done) => {
     // spin up a test http server to inspect the requests made by the library
     const server = require('http').createServer((req, res) => {
       req.on('data', () => {})
@@ -57,5 +59,9 @@ describe('custom headers', function () {
     })
   })
 
-  after(done => ipfsd.stop(done))
+  after(async () => {
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
+  })
 })

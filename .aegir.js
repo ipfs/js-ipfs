@@ -22,7 +22,9 @@ module.exports = {
     singleRun: true
   },
   hooks: {
-    pre: server.start.bind(server),
-    post: server.stop.bind(server)
+    browser: {
+      pre: () => server.start(),
+      post: () => server.stop()
+    }
   }
 }

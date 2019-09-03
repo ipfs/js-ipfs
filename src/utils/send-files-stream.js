@@ -78,8 +78,8 @@ module.exports = (send, path) => {
     qs['raw-leaves'] = propOrProp(options, 'raw-leaves', 'rawLeaves')
     qs['only-hash'] = propOrProp(options, 'only-hash', 'onlyHash')
     qs['wrap-with-directory'] = propOrProp(options, 'wrap-with-directory', 'wrapWithDirectory')
-    qs['pin'] = propOrProp(options, 'pin')
-    qs['preload'] = propOrProp(options, 'preload')
+    qs.pin = propOrProp(options, 'pin')
+    qs.preload = propOrProp(options, 'preload')
     qs.hash = propOrProp(options, 'hash', 'hashAlg')
 
     if (options.strategy === 'trickle' || options.trickle) {

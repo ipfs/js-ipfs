@@ -3,13 +3,12 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
+const chaiAsPromised = require('chai-as-promised')
 const expect = chai.expect
 chai.use(dirtyChai)
-
-const parallel = require('async/parallel')
-const series = require('async/series')
+chai.use(chaiAsPromised)
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
 
 const ipfsClient = require('../src')
 const PingMessageStream = require('../src/utils/ping-message-stream')
@@ -29,126 +28,97 @@ describe('.ping', function () {
   let otherd
   let otherId
 
-  before(function (done) {
+  before(async function () {
     this.timeout(30 * 1000) // slow CI
 
-    series([
-      (cb) => {
-        f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-          expect(err).to.not.exist()
-          ipfsd = _ipfsd
-          ipfs = ipfsClient(_ipfsd.apiAddr)
-          cb()
-        })
-      },
-      (cb) => {
-        f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, node) => {
-          expect(err).to.not.exist()
-          other = node.api
-          otherd = node
-          cb()
-        })
-      },
-      (cb) => {
-        parallel([
-          (cb) => {
-            ipfs.id((err, id) => {
-              expect(err).to.not.exist()
-              const ma = id.addresses[0]
-              other.swarm.connect(ma, cb)
-            })
-          },
-          (cb) => {
-            other.id((err, id) => {
-              expect(err).to.not.exist()
-              otherId = id.id
-              cb()
-            })
-          }
-        ], cb)
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
       }
-    ], done)
-  })
+    })
+    ipfs = ipfsClient(ipfsd.apiAddr)
 
-  after((done) => {
-    parallel([
-      (cb) => {
-        if (!ipfsd) return cb()
-        ipfsd.stop(cb)
-      },
-      (cb) => {
-        if (!otherd) return cb()
-        otherd.stop(cb)
+    otherd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
       }
-    ], done)
-  })
-
-  it('.ping with default n', (done) => {
-    ipfs.ping(otherId, (err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.be.an('array')
-      expect(res.filter(isPong)).to.have.lengthOf(1)
-      res.forEach(packet => {
-        expect(packet).to.have.keys('success', 'time', 'text')
-        expect(packet.time).to.be.a('number')
-      })
-      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-      expect(resultMsg).to.exist()
-      done()
     })
+    other = otherd.api
+
+    const ma = (await ipfs.id()).addresses[0]
+    await other.swarm.connect(ma)
+
+    otherId = (await other.id()).id
   })
 
-  it('.ping with count = 2', (done) => {
-    ipfs.ping(otherId, { count: 2 }, (err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.be.an('array')
-      expect(res.filter(isPong)).to.have.lengthOf(2)
-      res.forEach(packet => {
-        expect(packet).to.have.keys('success', 'time', 'text')
-        expect(packet.time).to.be.a('number')
-      })
-      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-      expect(resultMsg).to.exist()
-      done()
+  after(async () => {
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
+
+    if (otherd) {
+      await otherd.stop()
+    }
+  })
+
+  it('.ping with default n', async () => {
+    const res = await ipfs.ping(otherId)
+
+    expect(res).to.be.an('array')
+    expect(res.filter(isPong)).to.have.lengthOf(1)
+    res.forEach(packet => {
+      expect(packet).to.have.keys('success', 'time', 'text')
+      expect(packet.time).to.be.a('number')
     })
+
+    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
+    expect(resultMsg).to.exist()
   })
 
-  it('.ping with n = 2', (done) => {
-    ipfs.ping(otherId, { n: 2 }, (err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.be.an('array')
-      expect(res.filter(isPong)).to.have.lengthOf(2)
-      res.forEach(packet => {
-        expect(packet).to.have.keys('success', 'time', 'text')
-        expect(packet.time).to.be.a('number')
-      })
-      const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-      expect(resultMsg).to.exist()
-      done()
+  it('.ping with count = 2', async () => {
+    const res = await ipfs.ping(otherId, { count: 2 })
+
+    expect(res).to.be.an('array')
+    expect(res.filter(isPong)).to.have.lengthOf(2)
+    res.forEach(packet => {
+      expect(packet).to.have.keys('success', 'time', 'text')
+      expect(packet.time).to.be.a('number')
     })
+    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
+    expect(resultMsg).to.exist()
   })
 
-  it('.ping fails with count & n', function (done) {
+  it('.ping with n = 2', async () => {
+    const res = await ipfs.ping(otherId, { n: 2 })
+
+    expect(res).to.be.an('array')
+    expect(res.filter(isPong)).to.have.lengthOf(2)
+    res.forEach(packet => {
+      expect(packet).to.have.keys('success', 'time', 'text')
+      expect(packet.time).to.be.a('number')
+    })
+    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
+    expect(resultMsg).to.exist()
+  })
+
+  it('.ping fails with count & n', async function () {
     this.timeout(20 * 1000)
 
-    ipfs.ping(otherId, { count: 2, n: 2 }, (err, res) => {
-      expect(err).to.exist()
-      done()
-    })
+    await expect(ipfs.ping(otherId, { count: 2, n: 2 })).to.be.rejected()
   })
 
-  it('.ping with Promises', () => {
-    return ipfs.ping(otherId)
-      .then((res) => {
-        expect(res).to.be.an('array')
-        expect(res.filter(isPong)).to.have.lengthOf(1)
-        res.forEach(packet => {
-          expect(packet).to.have.keys('success', 'time', 'text')
-          expect(packet.time).to.be.a('number')
-        })
-        const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-        expect(resultMsg).to.exist()
-      })
+  it('.ping with Promises', async () => {
+    const res = await ipfs.ping(otherId)
+    expect(res).to.be.an('array')
+    expect(res.filter(isPong)).to.have.lengthOf(1)
+    res.forEach(packet => {
+      expect(packet).to.have.keys('success', 'time', 'text')
+      expect(packet.time).to.be.a('number')
+    })
+    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
+    expect(resultMsg).to.exist()
   })
 
   it('.pingPullStream', (done) => {

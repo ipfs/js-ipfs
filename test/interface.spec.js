@@ -304,14 +304,11 @@ describe('interface-ipfs-core tests', () => {
 
             const spawnOptions = { repoPath, config, initOptions: { bits: 1024, profile: 'test' } }
 
-            ipfsFactory.spawn(spawnOptions, (err, _ipfsd) => {
-              if (err) {
-                return cb(err)
-              }
-
-              nodes.push(_ipfsd)
-              cb(null, ipfsClient(_ipfsd.apiAddr))
-            })
+            ipfsFactory.spawn(spawnOptions)
+              .then(ipfsd => {
+                nodes.push(ipfsd)
+                cb(null, ipfsClient(ipfsd.apiAddr))
+              }, cb)
           }
         })
       }

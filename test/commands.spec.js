@@ -16,34 +16,25 @@ describe('.commands', function () {
   let ipfsd
   let ipfs
 
-  before((done) => {
-    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsClient(_ipfsd.apiAddr)
-      done()
+  before(async () => {
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
+      }
     })
+    ipfs = ipfsClient(ipfsd.apiAddr)
   })
 
-  after((done) => {
-    if (!ipfsd) return done()
-    ipfsd.stop(done)
+  after(async () => {
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
   })
 
-  it('lists commands', (done) => {
-    ipfs.commands((err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.exist()
-      done()
-    })
-  })
+  it('lists commands', async () => {
+    const res = await ipfs.commands()
 
-  describe('promise', () => {
-    it('lists commands', () => {
-      return ipfs.commands()
-        .then((res) => {
-          expect(res).to.exist()
-        })
-    })
+    expect(res).to.exist()
   })
 })

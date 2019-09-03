@@ -109,36 +109,30 @@ describe('ipfs-http-client constructor tests', () => {
     let apiAddr
     let ipfsd
 
-    before(function (done) {
+    before(async function () {
       this.timeout(60 * 1000) // slow CI
 
-      f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, node) => {
-        expect(err).to.not.exist()
-        ipfsd = node
-        apiAddr = node.apiAddr.toString()
-        done()
-      })
+      ipfsd = await f.spawn({ initOptions: { bits: 1024, profile: 'test' } })
+      apiAddr = ipfsd.apiAddr.toString()
     })
 
-    after((done) => {
-      if (!ipfsd) return done()
-      ipfsd.stop(done)
+    after(async () => {
+      if (ipfsd) {
+        await ipfsd.stop()
+      }
     })
 
-    it('can connect to an ipfs http api', (done) => {
-      clientWorks(ipfsClient(apiAddr), done)
+    it('can connect to an ipfs http api', async () => {
+      await clientWorks(ipfsClient(apiAddr))
     })
   })
 })
 
-function clientWorks (client, done) {
-  client.id((err, id) => {
-    expect(err).to.not.exist()
+async function clientWorks (client) {
+  const id = await client.id()
 
-    expect(id).to.have.a.property('id')
-    expect(id).to.have.a.property('publicKey')
-    done()
-  })
+  expect(id).to.have.a.property('id')
+  expect(id).to.have.a.property('publicKey')
 }
 
 function expectConfig (ipfs, { host, port, protocol, apiPath }) {

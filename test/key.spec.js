@@ -16,73 +16,42 @@ describe('.key', function () {
   let ipfsd
   let ipfs
 
-  before((done) => {
-    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsClient(_ipfsd.apiAddr)
-      done()
+  before(async () => {
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
+      }
+    })
+    ipfs = ipfsClient(ipfsd.apiAddr)
+  })
+
+  after(async () => {
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
+  })
+
+  describe('.gen', () => {
+    it('create a new rsa key', async () => {
+      const res = await ipfs.key.gen('foobarsa', { type: 'rsa', size: 2048 })
+
+      expect(res).to.exist()
+    })
+
+    it('create a new ed25519 key', async () => {
+      const res = await ipfs.key.gen('bazed', { type: 'ed25519' })
+
+      expect(res).to.exist()
     })
   })
 
-  after((done) => {
-    if (!ipfsd) return done()
-    ipfsd.stop(done)
-  })
+  describe('.list', () => {
+    it('both keys show up + self', async () => {
+      const res = await ipfs.key.list()
 
-  describe('Callback API', () => {
-    describe('.gen', () => {
-      it('create a new rsa key', (done) => {
-        ipfs.key.gen('foobarsa', { type: 'rsa', size: 2048 }, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          done()
-        })
-      })
-
-      it('create a new ed25519 key', (done) => {
-        ipfs.key.gen('bazed', { type: 'ed25519' }, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          done()
-        })
-      })
-    })
-
-    describe('.list', () => {
-      it('both keys show up + self', (done) => {
-        ipfs.key.list((err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          expect(res.length).to.equal(3)
-          done()
-        })
-      })
-    })
-  })
-
-  describe('Promise API', () => {
-    describe('.gen', () => {
-      it('create a new rsa key', () => {
-        return ipfs.key.gen('foobarsa2', { type: 'rsa', size: 2048 }).then((res) => {
-          expect(res).to.exist()
-        })
-      })
-
-      it('create a new ed25519 key', () => {
-        return ipfs.key.gen('bazed2', { type: 'ed25519' }).then((res) => {
-          expect(res).to.exist()
-        })
-      })
-    })
-
-    describe('.list', () => {
-      it('4 keys to show up + self', () => {
-        return ipfs.key.list().then((res) => {
-          expect(res).to.exist()
-          expect(res.length).to.equal(5)
-        })
-      })
+      expect(res).to.exist()
+      expect(res.length).to.equal(3)
     })
   })
 })

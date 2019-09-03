@@ -23,14 +23,11 @@ function createFactory (options) {
       setup = (callback) => {
         callback(null, {
           spawnNode (cb) {
-            ipfsFactory.spawn(options.spawnOptions, (err, _ipfsd) => {
-              if (err) {
-                return cb(err)
-              }
-
-              nodes.push(_ipfsd)
-              cb(null, ipfsClient(_ipfsd.apiAddr))
-            })
+            ipfsFactory.spawn(options.spawnOptions)
+              .then((ipfsd) => {
+                nodes.push(ipfsd)
+                cb(null, ipfsClient(ipfsd.apiAddr))
+              }, cb)
           }
         })
       }
@@ -39,7 +36,7 @@ function createFactory (options) {
     if (options.createTeardown) {
       teardown = options.createTeardown({ ipfsFactory, nodes }, options)
     } else {
-      teardown = callback => each(nodes, (node, cb) => node.stop(cb), callback)
+      teardown = callback => each(nodes, (node, cb) => node.stop().then(cb, cb), callback)
     }
 
     return { setup, teardown }

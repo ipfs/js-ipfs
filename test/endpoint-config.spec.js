@@ -17,21 +17,24 @@ describe('.getEndpointConfig', () => {
   let ipfsd
   let ipfs
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000) // slow CI
 
-    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsClient(_ipfsd.apiAddr)
-      done()
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
+      }
     })
+    ipfs = ipfsClient(ipfsd.apiAddr)
   })
 
-  after(function (done) {
+  after(async function () {
     this.timeout(10 * 1000)
-    if (!ipfsd) return done()
-    ipfsd.stop(done)
+
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
   })
 
   it('should return the endpoint configuration', function () {

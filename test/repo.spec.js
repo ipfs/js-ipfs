@@ -15,43 +15,39 @@ describe('.repo', function () {
   let ipfs
   let ipfsd
 
-  before((done) => {
-    f.spawn({ initOptions: { bits: 1024, profile: 'test' } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsClient(_ipfsd.apiAddr)
-      done()
+  before(async () => {
+    ipfsd = await f.spawn({
+      initOptions: {
+        bits: 1024,
+        profile: 'test'
+      }
     })
+    ipfs = ipfsClient(ipfsd.apiAddr)
   })
 
-  after((done) => {
-    if (!ipfsd) return done()
-    ipfsd.stop(done)
+  after(async () => {
+    if (ipfsd) {
+      await ipfsd.stop()
+    }
   })
 
-  it('.repo.gc', (done) => {
-    ipfs.repo.gc((err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.exist()
-      done()
-    })
+  it('.repo.gc', async () => {
+    const res = await ipfs.repo.gc()
+
+    expect(res).to.exist()
   })
 
-  it('.repo.stat', (done) => {
-    ipfs.repo.stat((err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.exist()
-      expect(res).to.have.a.property('numObjects')
-      expect(res).to.have.a.property('repoSize')
-      done()
-    })
+  it('.repo.stat', async () => {
+    const res = await ipfs.repo.stat()
+
+    expect(res).to.exist()
+    expect(res).to.have.a.property('numObjects')
+    expect(res).to.have.a.property('repoSize')
   })
 
-  it('.repo.version', (done) => {
-    ipfs.repo.version((err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.exist()
-      done()
-    })
+  it('.repo.version', async () => {
+    const res = await ipfs.repo.version()
+
+    expect(res).to.exist()
   })
 })
