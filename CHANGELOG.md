@@ -1,3 +1,13 @@
+<a name="0.112.0"></a>
+# [0.112.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.1...v0.112.0) (2019-09-03)
+
+
+### Bug Fixes
+
+* supported add inputs ([#519](https://github.com/ipfs/interface-ipfs-core/issues/519)) ([ddc4fe7](https://github.com/ipfs/interface-ipfs-core/commit/ddc4fe7))
+
+
+
 <a name="0.111.1"></a>
 ## [0.111.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.0...v0.111.1) (2019-08-30)
 
