@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.111.1",
+  "version": "0.112.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -88,6 +88,7 @@
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Karlsson <jacob.karlsson95@gmail.com>",
     "Jason Papakostas <vithos@gmail.com>",
+    "Jim Pick <jim@protocol.ai>",
     "Joel Gustafson <joelg@mit.edu>",
     "Jonathan <jkrone@vt.edu>",
     "Kevin Simper <kevin.simper@gmail.com>",
