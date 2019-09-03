@@ -45,7 +45,6 @@
     "dirty-chai": "^2.0.1",
     "es6-promisify": "^6.0.1",
     "hat": "0.0.3",
-    "into-stream": "^5.1.0",
     "ipfs-block": "~0.8.0",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-utils": "~0.0.3",

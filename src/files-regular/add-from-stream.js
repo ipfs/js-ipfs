@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const loadFixture = require('aegir/fixtures')
-const into = require('into-stream')
+const { Readable } = require('readable-stream')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { fixtures } = require('./utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -33,11 +33,17 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     it('should add from a stream', (done) => {
-      const testData = loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
+      const stream = new Readable({
+        read () {
+          this.push(fixtures.bigFile.data)
+          this.push(null)
+        }
+      })
 
-      ipfs.addFromStream(into(testData), (err, result) => {
+      ipfs.addFromStream(stream, (err, result) => {
         expect(err).to.not.exist()
         expect(result.length).to.equal(1)
+        expect(result[0].hash).to.equal(fixtures.bigFile.cid)
         done()
       })
     })
