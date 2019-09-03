@@ -123,4 +123,4 @@ Would you like to contribute to the IPFS project and don't know how? Well, there
 
 # ⁉️ Do you have questions?
 
-The best place to ask your questions about IPFS, how it works and what you can do with it is at [discuss.ipfs.io](http://discuss.ipfs.io). We are also available at the `#ipfs` channel on Freenode.
+The best place to ask your questions about IPFS, how it works and what you can do with it is at [discuss.ipfs.io](https://discuss.ipfs.io). We are also available at the `#ipfs` channel on Freenode.
