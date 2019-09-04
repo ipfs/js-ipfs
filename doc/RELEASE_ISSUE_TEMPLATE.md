@@ -8,7 +8,7 @@
 
 # 🚢 Estimated shipping date
 
-<Date this release will ship on if everything goes to plan>
+<Date this release will ship on if everything goes to plan (week beginning...)>
 
 # 🔦 Highlights
 
