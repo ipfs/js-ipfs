@@ -8,6 +8,7 @@ module.exports = (arg) => {
   return {
     get: require('./get')(send),
     set: require('./set')(send),
-    replace: require('./replace')(send)
+    replace: require('./replace')(send),
+    profile: require('./profile')(send)
   }
 }

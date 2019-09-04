@@ -42,6 +42,7 @@ describe('submodules', () => {
     expect(cfg.get).to.be.a('function')
     expect(cfg.set).to.be.a('function')
     expect(cfg.replace).to.be.a('function')
+    expect(cfg.profile).to.be.a('function')
   })
 
   it('dht', () => {
