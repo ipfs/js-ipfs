@@ -24,7 +24,7 @@ const api = ky.create({
   hooks: {
     afterResponse: [
       async response => {
-        const query = new URLSearchParams(new URL(response.url).search).toString()
+        const query = new URL(response.url).search.slice(1)
         const json = await response.json()
         cache.set(query, json, ttl)
       }

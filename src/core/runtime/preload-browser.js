@@ -18,10 +18,7 @@ module.exports = function preload (url, callback) {
   const controller = new AbortController()
   const signal = controller.signal
 
-  _httpQueue.add(async () => {
-    await ky.get(url, { signal })
-    setImmediate(callback)
-  }).catch((err) => setImmediate(() => callback(err)))
+  _httpQueue.add(() => ky.get(url, { signal })).then(() => callback(), callback)
 
   return {
     cancel: () => controller.abort()
