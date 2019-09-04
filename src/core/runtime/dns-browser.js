@@ -23,7 +23,7 @@ const api = ky.create({
   prefixUrl: 'https://ipfs.io/api/v0/',
   hooks: {
     afterResponse: [
-      async response => {
+      async (input, options, response) => {
         const query = new URL(response.url).search.slice(1)
         const json = await response.json()
         cache.set(query, json, ttl)
