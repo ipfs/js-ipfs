@@ -1,3 +1,13 @@
+<a name="35.1.0"></a>
+# [35.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.0.0...v35.1.0) (2019-09-04)
+
+
+### Features
+
+* add config profile endpoint ([#1030](https://github.com/ipfs/js-ipfs-http-client/issues/1030)) ([3aaa3ee](https://github.com/ipfs/js-ipfs-http-client/commit/3aaa3ee))
+
+
+
 <a name="35.0.0"></a>
 # [35.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v34.0.0...v35.0.0) (2019-09-04)
 
