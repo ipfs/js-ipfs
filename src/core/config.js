@@ -32,9 +32,6 @@ const configSchema = s({
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
   }, { enabled: true, interval: 30 * 1000 }),
-  pubsub: optional(s({
-    enabled: 'boolean?'
-  })),
   init: optional(union(['boolean', s({
     bits: 'number?',
     emptyRepo: 'boolean?',
@@ -72,7 +69,8 @@ const configSchema = s({
     })),
     Bootstrap: optional(s(['multiaddr-ipfs'])),
     Pubsub: optional(s({
-      Router: 'string?'
+      Router: 'string?',
+      Enabled: 'boolean?'
     })),
     Swarm: optional(s({
       ConnMgr: optional(s({

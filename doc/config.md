@@ -180,6 +180,12 @@ A string value for specifying which pubsub routing protocol to use. You can eith
 
 Default: `gossipsub`
 
+### `Enabled`
+
+A boolean value for wether or not pubsub router should be active.
+
+Default: `true`
+
 ## `Swarm`
 
 Options for configuring the swarm.

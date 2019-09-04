@@ -49,10 +49,7 @@ exports.getIPFS = (argv, callback) => {
     repo: exports.getRepoPath(),
     init: false,
     start: false,
-    pass: argv.pass,
-    pubsub: {
-      enabled: true
-    }
+    pass: argv.pass
   })
 
   const cleanup = promisify((cb) => {

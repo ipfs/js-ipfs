@@ -136,7 +136,6 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
-      args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
   }), {

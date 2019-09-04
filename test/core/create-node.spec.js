@@ -387,6 +387,31 @@ describe('create node', function () {
     })
   })
 
+  it('disable pubsub', function (done) {
+    this.timeout(80 * 1000)
+
+    if (!isNode) { return done() }
+
+    const node = new IPFS({
+      repo: tempRepo,
+      init: { bits: 512 },
+      config: {
+        Pubsub: {
+          Enabled: false
+        }
+      }
+    })
+
+    node.once('start', (err) => {
+      expect(err).to.not.exist()
+      node.pubsub.peers('topic', (err) => {
+        expect(err).to.exist()
+        expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
+        node.stop(done)
+      })
+    })
+  })
+
   it('start and stop, start and stop', function (done) {
     this.timeout(80 * 1000)
 
