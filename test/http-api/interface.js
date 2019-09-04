@@ -91,7 +91,10 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb()
+    createTeardown: () => cb => cb(),
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
   }))
 
   tests.name(CommonFactory.create({
