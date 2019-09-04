@@ -105,7 +105,7 @@
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.37.7",
     "ipfs-unixfs-importer": "~0.39.11",
-    "ipfs-utils": "~0.0.4",
+    "ipfs-utils": "~0.1.0",
     "ipld": "~0.24.1",
     "ipld-bitcoin": "~0.3.0",
     "ipld-dag-cbor": "~0.15.0",
