@@ -126,11 +126,6 @@ describe('interface-ipfs-core tests', () => {
         name: 'should add readable stream of valid files and dirs',
         reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       },
-      // .addFromStream
-      isNode ? null : {
-        name: 'addFromStream',
-        reason: 'Not designed to run in the browser'
-      },
       // .addFromFs
       isNode ? null : {
         name: 'addFromFs',

@@ -1,28 +1,12 @@
 'use strict'
 
-function requireCommands () {
-  return {
-    // Files Regular (not MFS)
-    add: require('../files-regular/add'),
-    addReadableStream: require('../files-regular/add-readable-stream'),
-    addPullStream: require('../files-regular/add-pull-stream'),
-    addFromFs: require('../files-regular/add-from-fs'),
-    addFromURL: require('../files-regular/add-from-url'),
-    addFromStream: require('../files-regular/add'),
-    _addAsyncIterator: require('../files-regular/add-async-iterator'),
-    cat: require('../files-regular/cat'),
-    catReadableStream: require('../files-regular/cat-readable-stream'),
-    catPullStream: require('../files-regular/cat-pull-stream'),
-    get: require('../files-regular/get'),
-    getReadableStream: require('../files-regular/get-readable-stream'),
-    getPullStream: require('../files-regular/get-pull-stream'),
-    ls: require('../files-regular/ls'),
-    lsReadableStream: require('../files-regular/ls-readable-stream'),
-    lsPullStream: require('../files-regular/ls-pull-stream'),
-    refs: require('../files-regular/refs'),
-    refsReadableStream: require('../files-regular/refs-readable-stream'),
-    refsPullStream: require('../files-regular/refs-pull-stream'),
+function requireCommands (send, config) {
+  const cmds = {
+    ...require('../files-regular')(config),
+    getEndpointConfig: require('../get-endpoint-config')(config)
+  }
 
+  const subCmds = {
     // Files MFS (Mutable Filesystem)
     files: require('../files-mfs'),
 
@@ -60,21 +44,14 @@ function requireCommands () {
     stats: require('../stats'),
     update: require('../update'),
     version: require('../version'),
-    resolve: require('../resolve'),
-    // ipfs-http-client instance
-    getEndpointConfig: (send, config) => require('../get-endpoint-config')(config)
+    resolve: require('../resolve')
   }
-}
 
-function loadCommands (send, config) {
-  const files = requireCommands()
-  const cmds = {}
-
-  Object.keys(files).forEach((file) => {
-    cmds[file] = files[file](send, config)
+  Object.keys(subCmds).forEach((file) => {
+    cmds[file] = subCmds[file](send, config)
   })
 
   return cmds
 }
 
-module.exports = loadCommands
+module.exports = requireCommands

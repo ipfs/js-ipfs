@@ -3,7 +3,6 @@
 const promisify = require('promisify-es6')
 const concatStream = require('concat-stream')
 const once = require('once')
-const FileResultStreamConverter = require('../utils/file-result-stream-converter')
 const SendFilesStream = require('../utils/send-files-stream')
 
 module.exports = (send) => {
@@ -29,8 +28,7 @@ module.exports = (send) => {
 
     const options = {
       args: pathDst,
-      qs: opts,
-      converter: FileResultStreamConverter
+      qs: opts
     }
 
     const stream = sendFilesStream({ qs: options })
