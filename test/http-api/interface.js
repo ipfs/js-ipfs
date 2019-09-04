@@ -91,23 +91,11 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb()
-  }), {
-    skip: [
-      {
-        name: 'should resolve an IPNS DNS link',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      },
-      {
-        name: 'should resolve IPNS link recursively',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      },
-      {
-        name: 'should recursively resolve ipfs.io',
-        reason: 'TODO: ipfs.io dnslink=/ipns/website.ipfs.io & IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      }
-    ]
-  })
+    createTeardown: () => cb => cb(),
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
+  }))
 
   tests.name(CommonFactory.create({
     spawnOptions: {
@@ -151,7 +139,14 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
       args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
-  }))
+  }), {
+    skip: [
+      {
+        name: 'should publish message from string',
+        reason: 'not implemented'
+      }
+    ]
+  })
 
   tests.repo(defaultCommonFactory)
 

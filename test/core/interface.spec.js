@@ -92,19 +92,11 @@ describe('interface-ipfs-core tests', function () {
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb()
-  }), {
-    skip: [
-      {
-        name: 'should resolve an IPNS DNS link',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      },
-      {
-        name: 'should resolve IPNS link recursively',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      }
-    ]
-  })
+    createTeardown: () => cb => cb(),
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
+  }))
 
   tests.name(CommonFactory.create({
     spawnOptions: {
@@ -153,7 +145,12 @@ describe('interface-ipfs-core tests', function () {
       initOptions: { bits: 512 }
     }
   }), {
-    skip: isNode ? null : {
+    skip: isNode ? [
+      {
+        name: 'should publish message from string',
+        reason: 'not implemented'
+      }
+    ] : {
       reason: 'FIXME: disabled because no swarm addresses'
     }
   })
