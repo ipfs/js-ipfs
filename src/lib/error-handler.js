@@ -7,7 +7,7 @@ function isJsonResponse (res) {
   return (res.headers.get('Content-Type') || '').startsWith('application/json')
 }
 
-module.exports = async function errorHandler (response) {
+module.exports = async function errorHandler (input, options, response) {
   if (response.ok) return
 
   let msg
