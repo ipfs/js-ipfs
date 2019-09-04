@@ -28,10 +28,12 @@
   "dependencies": {
     "buffer": "^5.2.1",
     "err-code": "^2.0.0",
+    "fs-extra": "^8.1.0",
     "is-buffer": "^2.0.3",
     "is-electron": "^2.2.0",
     "is-pull-stream": "0.0.0",
     "is-stream": "^2.0.0",
+    "it-glob": "0.0.4",
     "kind-of": "^6.0.2",
     "pull-stream-to-async-iterator": "^1.0.2",
     "readable-stream": "^3.4.0"
@@ -40,6 +42,7 @@
     "aegir": "^20.0.0",
     "async-iterator-all": "^1.0.0",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
     "electron": "^6.0.6",
     "electron-mocha": "^8.0.3",
@@ -47,5 +50,8 @@
   },
   "contributors": [
     "Hugo Dias <hugomrdias@gmail.com>"
-  ]
+  ],
+  "browser": {
+    "fs-extra": false
+  }
 }
