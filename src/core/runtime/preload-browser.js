@@ -17,8 +17,9 @@ module.exports = function preload (url, callback) {
 
   const controller = new AbortController()
   const signal = controller.signal
+  const cb = () => setImmediate(callback) // https://github.com/ipfs/js-ipfs/pull/2304#discussion_r320700893
 
-  _httpQueue.add(() => ky.get(url, { signal })).then(() => callback(), callback)
+  _httpQueue.add(() => ky.get(url, { signal })).then(cb, cb)
 
   return {
     cancel: () => controller.abort()
