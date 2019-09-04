@@ -108,7 +108,7 @@
     "go-ipfs-dep": "^0.4.22",
     "interface-ipfs-core": "^0.112.0",
     "ipfsd-ctl": "~0.45.0",
-    "nock": "^10.0.2",
+    "nock": "^11.3.2",
     "stream-equal": "^1.1.1"
   },
   "engines": {
