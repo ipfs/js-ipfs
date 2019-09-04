@@ -94,7 +94,7 @@ This issue is pinned and labeled ["release"](https://github.com/ipfs/js-ipfs/iss
 
 js-ipfs is currently pre-1.0. In semver terms this means [anything may change at any time](https://semver.org/#spec-item-4).
 
-However, js-ipfs follows semver "shifted by one". This means js-ipfs reserves MINOR version increments for BREAKING CHANGES and/or major feature additions and PATCH version increments for bug fixes and _backwards compatible_ minor feature additions.
+However, pre-1.0 js-ipfs reserves MINOR version increments for BREAKING CHANGES _and_ feature additions and PATCH version increments for bug fixes.
 
 Post `1.x.x` (future), MAJOR version number increments will contain BREAKING CHANGES, MINOR version increments will be reserved for backwards compatible new features and PATCH version increments for bug fixes.
 
