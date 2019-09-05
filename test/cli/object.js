@@ -2,6 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const hat = require('hat')
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
 const UnixFs = require('ipfs-unixfs')
@@ -139,7 +140,7 @@ describe('object', () => runOnAndOff((thing) => {
 
     // has to be big enough to span several DAGNodes
     const data = crypto.randomBytes(1024 * 300)
-    const file = path.join(os.tmpdir(), `file-${Math.random()}.txt`)
+    const file = path.join(os.tmpdir(), `file-${hat()}.txt`)
 
     fs.writeFileSync(file, data)
 

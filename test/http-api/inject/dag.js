@@ -2,6 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const hat = require('hat')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
@@ -260,7 +261,7 @@ module.exports = (http) => {
       it('pins a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: Math.random()
+          disambiguator: hat()
         }
 
         const res = await api.inject({
@@ -280,7 +281,7 @@ module.exports = (http) => {
       it('does not pin a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: Math.random()
+          disambiguator: hat()
         }
 
         const res = await api.inject({
