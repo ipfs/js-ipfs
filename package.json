@@ -32,7 +32,7 @@
   "devDependencies": {
     "aegir": "^20.0.0",
     "chai": "^4.2.0",
-    "ipfs-http-client": "^34.0.0",
+    "ipfs-http-client": "^35.1.0",
     "request": "^2.88.0"
   },
   "engines": {
