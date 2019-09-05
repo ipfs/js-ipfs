@@ -58,13 +58,22 @@ describe('interface-ipfs-core tests', function () {
   })
 
   tests.filesRegular(defaultCommonFactory, {
-    skip: isNode ? null : [{
+    skip: [
+      {
+        name: 'should add a string',
+        reason: 'TODO: unskip when https://github.com/ipfs/js-ipfs/pull/2379 is merged'
+      },
+      {
+        name: 'should add a TypedArray',
+        reason: 'TODO: unskip when https://github.com/ipfs/js-ipfs/pull/2379 is merged'
+      }
+    ].concat(isNode ? [] : [{
       name: 'addFromStream',
       reason: 'Not designed to run in the browser'
     }, {
       name: 'addFromFs',
       reason: 'Not designed to run in the browser'
-    }]
+    }])
   })
 
   tests.filesMFS(defaultCommonFactory)
