@@ -24,12 +24,12 @@ describe('pubsub disabled', () => {
       config: {
         Addresses: {
           Swarm: []
+        },
+        Pubsub: {
+          Enabled: false
         }
       },
       preload: {
-        enabled: false
-      },
-      pubsub: {
         enabled: false
       }
     })

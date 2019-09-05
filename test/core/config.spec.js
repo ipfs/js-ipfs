@@ -154,6 +154,9 @@ describe('config', () => {
       { config: { Swarm: { ConnMgr: undefined } } },
       { config: { Swarm: undefined } },
 
+      { config: { Pubsub: { Enabled: true, Router: 'gossipsub' } } },
+      { config: { Pubsub: { Enabled: false } } },
+
       { config: undefined }
     ]
 
@@ -183,6 +186,8 @@ describe('config', () => {
       { config: { Swarm: { ConnMgr: { LowWater: {}, HighWater: 500 } } } },
       { config: { Swarm: { ConnMgr: 138 } } },
       { config: { Swarm: 138 } },
+
+      { config: { Pubsub: { Enabled: 1 } } },
 
       { config: 138 }
     ]
