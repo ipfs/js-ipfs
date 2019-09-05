@@ -139,7 +139,7 @@ describe('bitswap', function () {
 
   describe('transfer a block between', () => {
     it('2 peers', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(160 * 1000)
 
       let remoteNode
       let block
@@ -163,7 +163,7 @@ describe('bitswap', function () {
     })
 
     it('3 peers', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(160 * 1000)
 
       let blocks
       const remoteNodes = []
