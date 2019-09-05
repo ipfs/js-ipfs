@@ -23,7 +23,7 @@ const daemonReady = (daemon, fn) => {
         } catch (err) {
           reject(err)
         }
-        daemon.kill()
+        daemon.cancel()
       }
     })
     daemon.stderr.on('data', () => reject(new Error('Daemon didnt start')))
