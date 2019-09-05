@@ -21,9 +21,5 @@ exports.fixtures = Object.freeze({
   bigFile: Object.freeze({
     cid: 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq',
     data: loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
-  }),
-  sslOpts: Object.freeze({
-    key: loadFixture('test/fixtures/ssl/privkey.pem', 'interface-ipfs-core'),
-    cert: loadFixture('test/fixtures/ssl/cert.pem', 'interface-ipfs-core')
   })
 })
