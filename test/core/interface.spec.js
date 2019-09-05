@@ -145,12 +145,7 @@ describe('interface-ipfs-core tests', function () {
       initOptions: { bits: 512 }
     }
   }), {
-    skip: isNode ? [
-      {
-        name: 'should publish message from string',
-        reason: 'not implemented'
-      }
-    ] : {
+    skip: isNode ? null : {
       reason: 'FIXME: disabled because no swarm addresses'
     }
   })
