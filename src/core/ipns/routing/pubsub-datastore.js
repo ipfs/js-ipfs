@@ -52,7 +52,7 @@ class IpnsPubsubDatastore {
 
         this._subscriptions[stringifiedTopic] = id
 
-        log(`subscribed pubsub ${stringifiedTopic}: ${id}`)
+        console.log(`subscribed pubsub ${stringifiedTopic}: ${id}`)
       }
 
       // If no data was obtained, after storing the subscription, return the error.
@@ -91,6 +91,7 @@ class IpnsPubsubDatastore {
   getSubscriptions (callback) {
     const subscriptions = Object.values(this._subscriptions).filter(Boolean)
 
+    console.log('subs', subscriptions.map((sub) => `${ipns.namespace}${sub}`))
     return callback(null, subscriptions.map((sub) => `${ipns.namespace}${sub}`))
   }
 
