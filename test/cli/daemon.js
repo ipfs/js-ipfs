@@ -9,10 +9,29 @@ const os = require('os')
 const path = require('path')
 const hat = require('hat')
 const fs = require('fs')
+const tempWrite = require('temp-write')
 const pkg = require('../../package.json')
 
 const skipOnWindows = isWindows() ? it.skip : it
+const daemonReady = (daemon, fn) => {
+  let r = null
+  const p = new Promise((resolve, reject) => {
+    daemon.stdout.on('data', async (data) => {
+      if (data.toString().includes('Daemon is ready')) {
+        try {
+          r = await fn()
+        } catch (err) {
+          reject(err)
+        }
+        daemon.kill()
+      }
+    })
+    daemon.stderr.on('data', () => reject(new Error('Daemon didnt start')))
+    daemon.then(() => resolve(r)).catch(reject)
+  })
 
+  return p
+}
 const checkLock = (repo) => {
   // skip on windows
   // https://github.com/ipfs/js-ipfsd-ctl/pull/155#issuecomment-326983530
@@ -264,5 +283,35 @@ describe('daemon', () => {
       expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
       expect(err.stdout).to.include(`Node.js version: ${process.versions.node}`)
     }
+  })
+
+  it('should init', async function () {
+    this.timeout(100 * 1000)
+    const daemon = ipfs('daemon --init')
+    let stdout = ''
+
+    daemon.stdout.on('data', (data) => {
+      stdout += data.toString('utf8')
+
+      if (stdout.includes('Daemon is ready')) {
+        daemon.kill()
+      }
+    })
+
+    try {
+      await daemon
+      throw new Error('Did not kill process')
+    } catch (err) {
+      expect(err.killed).to.be.true()
+    }
+  })
+
+  it('should init with custom config', async function () {
+    this.timeout(100 * 1000)
+    const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
+    const daemon = ipfs(`daemon --init --init-config ${configPath}`)
+
+    const r = await daemonReady(daemon, () => ipfs('config \'Addresses.API\''))
+    expect(r).to.be.eq('/ip4/127.0.0.1/tcp/9999')
   })
 })

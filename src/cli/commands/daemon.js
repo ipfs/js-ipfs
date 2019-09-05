@@ -1,9 +1,11 @@
 'use strict'
 
 const os = require('os')
+const fs = require('fs')
 const toUri = require('multiaddr-to-uri')
 const { ipfsPathHelp } = require('../utils')
 const { isTest } = require('ipfs-utils/src/env')
+const debug = require('debug')('ipfs:cli:daemon')
 
 module.exports = {
   command: 'daemon',
@@ -13,6 +15,15 @@ module.exports = {
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
+      .option('init', {
+        type: 'boolean',
+        default: false,
+        desc: 'Initialize ipfs with default settings if not already initialized.'
+      })
+      .option('init-config', {
+        type: 'string',
+        desc: 'Path to existing configuration file to be loaded during --init.'
+      })
       .option('enable-sharding-experiment', {
         type: 'boolean',
         default: false
@@ -42,9 +53,23 @@ module.exports = {
 
       const repoPath = argv.getRepoPath()
 
+      let config = {}
+      // read and parse config file
+      if (argv.initConfig) {
+        try {
+          const raw = fs.readFileSync(argv.initConfig)
+          config = JSON.parse(raw)
+        } catch (error) {
+          debug(error)
+          throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
+        }
+      }
+
       // Required inline to reduce startup time
       const Daemon = require('../../cli/daemon')
       const daemon = new Daemon({
+        init: argv.init,
+        config,
         silent: argv.silent,
         repo: process.env.IPFS_PATH,
         offline: argv.offline,

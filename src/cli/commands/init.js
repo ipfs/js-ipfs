@@ -1,15 +1,17 @@
 'use strict'
 
+const fs = require('fs')
+const debug = require('debug')('ipfs:cli:init')
 const { ipfsPathHelp } = require('../utils')
 
 module.exports = {
-  command: 'init [config] [options]',
+  command: 'init [default-config] [options]',
   describe: 'Initialize a local IPFS node',
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
-      .positional('config', {
-        describe: 'Node config, this should JSON and will be merged with the default config. Check https://github.com/ipfs/js-ipfs#optionsconfig',
+      .positional('default-config', {
+        describe: 'Initialize with the given configuration. Path to the config file. Check https://github.com/ipfs/js-ipfs#optionsconfig',
         type: 'string'
       })
       .option('bits', {
@@ -34,6 +36,18 @@ module.exports = {
     argv.resolve((async () => {
       const path = argv.getRepoPath()
 
+      let config = {}
+      // read and parse config file
+      if (argv.defaultConfig) {
+        try {
+          const raw = fs.readFileSync(argv.defaultConfig)
+          config = JSON.parse(raw)
+        } catch (error) {
+          debug(error)
+          throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
+        }
+      }
+
       argv.print(`initializing ipfs node at ${path}`)
 
       // Required inline to reduce startup time
@@ -44,7 +58,7 @@ module.exports = {
         repo: new Repo(path),
         init: false,
         start: false,
-        config: argv.config || {}
+        config
       })
 
       try {

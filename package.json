@@ -207,7 +207,8 @@
     "qs": "^6.5.2",
     "rimraf": "^3.0.0",
     "sinon": "^7.4.2",
-    "stream-to-promise": "^2.2.0"
+    "stream-to-promise": "^2.2.0",
+    "temp-write": "^4.0.0"
   },
   "optionalDependencies": {
     "prom-client": "^11.5.3",
