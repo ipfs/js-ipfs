@@ -17,11 +17,6 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-pubsub', {
-        alias: 'enable-pubsub-experiment',
-        type: 'boolean',
-        default: false
-      })
       .option('offline', {
         type: 'boolean',
         desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
@@ -55,7 +50,6 @@ module.exports = {
         offline: argv.offline,
         pass: argv.pass,
         preload: { enabled: argv.enablePreload },
-        pubsub: { enabled: argv.enablePubsub },
         EXPERIMENTAL: {
           ipnsPubsub: argv.enableNamesysPubsub,
           dht: argv.enableDhtExperiment,

@@ -148,7 +148,7 @@ describe('libp2p customization', function () {
             }
           },
           pubsub: {
-            enabled: false,
+            enabled: true,
             emitSelf: true,
             signMessages: true,
             strictSigning: true

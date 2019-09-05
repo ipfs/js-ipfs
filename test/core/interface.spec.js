@@ -147,16 +147,10 @@ describe('interface-ipfs-core tests', function () {
 
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
-      args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
   }), {
-    skip: isNode ? [
-      {
-        name: 'should publish message from string',
-        reason: 'not implemented'
-      }
-    ] : {
+    skip: isNode ? null : {
       reason: 'FIXME: disabled because no swarm addresses'
     }
   })
