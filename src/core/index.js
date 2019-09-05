@@ -28,6 +28,7 @@ const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
+const { isTest } = require('ipfs-utils/src/env')
 
 /**
  * @typedef { import("./ipns/index") } IPNS
@@ -51,7 +52,7 @@ class IPFS extends EventEmitter {
         enabled: false
       },
       preload: {
-        enabled: process.env.NODE_ENV !== 'test', // preload by default, unless in test env
+        enabled: !isTest, // preload by default, unless in test env
         addresses: [
           '/dnsaddr/node0.preload.ipfs.io/https',
           '/dnsaddr/node1.preload.ipfs.io/https'

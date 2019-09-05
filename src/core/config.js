@@ -3,6 +3,7 @@
 const Multiaddr = require('multiaddr')
 const mafmt = require('mafmt')
 const { struct, superstruct } = require('superstruct')
+const { isTest } = require('ipfs-utils/src/env')
 
 const { optional, union } = struct
 const s = superstruct({
@@ -32,7 +33,7 @@ const configSchema = s({
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
   }, { // defaults
-    enabled: process.env.NODE_ENV !== 'test', // preload by default, unless in test env
+    enabled: !isTest, // preload by default, unless in test env
     interval: 30 * 1000
   }),
   pubsub: optional(s({
