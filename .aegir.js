@@ -11,8 +11,7 @@ const httpEchoServer = EchoHttpServer.createServer() // used by addFromURL
 
 const batch = (call, done, ...srvs) => parallel(srvs.map(srv => cb => {
   if (srv === ipfsdServer) {
-    srv[call]()
-    cb()
+    (srv[call]()).then(() => cb())
   } else {
     srv[call](cb)
   }
