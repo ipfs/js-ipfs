@@ -312,6 +312,6 @@ describe('daemon', () => {
     const daemon = ipfs(`daemon --init --init-config ${configPath}`)
 
     const r = await daemonReady(daemon, () => ipfs('config \'Addresses.API\''))
-    expect(r).to.be.eq('/ip4/127.0.0.1/tcp/9999')
+    expect(r).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
   })
 })
