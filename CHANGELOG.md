@@ -1,3 +1,13 @@
+<a name="0.113.0"></a>
+# [0.113.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.112.0...v0.113.0) (2019-09-05)
+
+
+### Bug Fixes
+
+* **package:** update ipfs-utils to version 0.1.0 ([#521](https://github.com/ipfs/interface-ipfs-core/issues/521)) ([56caa89](https://github.com/ipfs/interface-ipfs-core/commit/56caa89))
+
+
+
 <a name="0.112.0"></a>
 # [0.112.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.1...v0.112.0) (2019-09-03)
 
