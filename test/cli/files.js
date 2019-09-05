@@ -335,7 +335,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add --only-hash does not add a file to the datastore', function () {
     this.timeout(30 * 1000)
     this.slow(10 * 1000)
-    const content = String(Math.random())
+    const content = hat()
     const filepath = path.join(os.tmpdir(), `${content}.txt`)
     fs.writeFileSync(filepath, content)
 
@@ -356,7 +356,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add pins by default', function () {
     this.timeout(10 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
-    const content = String(Math.random())
+    const content = hat()
     fs.writeFileSync(filePath, content)
 
     return ipfs(`add -Q ${filePath}`)
@@ -371,7 +371,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add does not pin with --pin=false', function () {
     this.timeout(20 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
-    const content = String(Math.random())
+    const content = hat()
     fs.writeFileSync(filePath, content)
 
     return ipfs(`add -Q --pin=false ${filePath}`)
