@@ -74,7 +74,7 @@ describe('init', function () {
     return ipfs(`init ${configPath}`).then((res) => {
       const configRaw = fs.readFileSync(path.join(repoPath, 'config')).toString()
       const config = JSON.parse(configRaw)
-      expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/99999')
+      expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/9999')
     })
   })
 })
