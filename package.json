@@ -142,7 +142,7 @@
     "merge-options": "^1.0.1",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
-    "mortice": "^1.2.2",
+    "mortice": "^2.0.0",
     "multiaddr": "^6.1.0",
     "multiaddr-to-uri": "^5.0.0",
     "multibase": "~0.6.0",
