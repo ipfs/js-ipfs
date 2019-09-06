@@ -103,7 +103,7 @@
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "~0.37.7",
     "ipfs-unixfs-importer": "~0.39.11",
-    "ipfs-utils": "https://github.com/ipfs/js-ipfs-utils/tarball/136b0e6e99b7df735e7cc8238825d51efaffb443/js-ipfs-utils.tar.gz",
+    "ipfs-utils": "~0.2.0",
     "ipld": "~0.24.1",
     "ipld-bitcoin": "~0.3.0",
     "ipld-dag-cbor": "~0.15.0",
