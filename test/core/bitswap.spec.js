@@ -2,6 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const hat = require('hat')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
@@ -22,7 +23,7 @@ const callbackify = require('callbackify')
 const IPFS = require('../../src/core')
 
 function makeBlock (callback) {
-  const d = Buffer.from(`IPFS is awesome ${Math.random()}`)
+  const d = Buffer.from(`IPFS is awesome ${hat()}`)
 
   multihashing(d, 'sha2-256', (err, multihash) => {
     if (err) {
@@ -138,7 +139,7 @@ describe('bitswap', function () {
 
   describe('transfer a block between', () => {
     it('2 peers', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(160 * 1000)
 
       let remoteNode
       let block
@@ -162,7 +163,7 @@ describe('bitswap', function () {
     })
 
     it('3 peers', function (done) {
-      this.timeout(80 * 1000)
+      this.timeout(160 * 1000)
 
       let blocks
       const remoteNodes = []
@@ -214,7 +215,7 @@ describe('bitswap', function () {
     it('2 peers', (done) => {
       // TODO make this test more interesting (10Mb file)
       // TODO remove randomness from the test
-      const file = Buffer.from(`I love IPFS <3 ${Math.random()}`)
+      const file = Buffer.from(`I love IPFS <3 ${hat()}`)
 
       waterfall([
         // 0. Start node
