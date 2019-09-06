@@ -119,7 +119,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
         }
       }
     }
-  }), { only: true })
+  }))
 
   tests.object(defaultCommonFactory, {
     skip: [
