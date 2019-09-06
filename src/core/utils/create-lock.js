@@ -18,18 +18,26 @@ module.exports = (repoOwner) => {
 
   lock = {
     readLock: (func) => {
-      return (...args) => {
-        return mutex.readLock(() => {
-          return func.apply(null, args)
-        })
+      return async (...args) => {
+        const releaseLock = await mutex.readLock()
+
+        try {
+          return await func.apply(null, args)
+        } finally {
+          releaseLock()
+        }
       }
     },
 
     writeLock: (func) => {
-      return (...args) => {
-        return mutex.writeLock(() => {
-          return func.apply(null, args)
-        })
+      return async (...args) => {
+        const releaseLock = await mutex.writeLock()
+
+        try {
+          return await func.apply(null, args)
+        } finally {
+          releaseLock()
+        }
       }
     }
   }
