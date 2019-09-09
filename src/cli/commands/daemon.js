@@ -15,11 +15,6 @@ module.exports = {
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
-      .option('init', {
-        type: 'boolean',
-        default: false,
-        desc: 'Initialize ipfs with default settings if not already initialized.'
-      })
       .option('init-config', {
         type: 'string',
         desc: 'Path to existing configuration file to be loaded during --init.'
@@ -68,7 +63,6 @@ module.exports = {
       // Required inline to reduce startup time
       const Daemon = require('../../cli/daemon')
       const daemon = new Daemon({
-        init: argv.init,
         config,
         silent: argv.silent,
         repo: process.env.IPFS_PATH,

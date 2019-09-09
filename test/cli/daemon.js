@@ -215,14 +215,6 @@ describe('daemon', () => {
     checkLock(repoPath)
   })
 
-  it('gives error if user hasn\'t run init before', async function () {
-    this.timeout(100 * 1000)
-
-    const err = await ipfs.fail('daemon')
-
-    expect(err.stdout).to.include('no initialized ipfs repo found in ' + repoPath)
-  })
-
   it('should be silent', async function () {
     this.timeout(100 * 1000)
     await ipfs('init')
@@ -291,9 +283,9 @@ describe('daemon', () => {
     }
   })
 
-  it('should init', async function () {
+  it('should init by default if not already', async function () {
     this.timeout(100 * 1000)
-    const daemon = ipfs('daemon --init')
+    const daemon = ipfs('daemon')
     let stdout = ''
 
     daemon.stdout.on('data', (data) => {
@@ -315,7 +307,7 @@ describe('daemon', () => {
   it('should init with custom config', async function () {
     this.timeout(100 * 1000)
     const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
-    const daemon = ipfs(`daemon --init --init-config ${configPath}`)
+    const daemon = ipfs(`daemon --init-config ${configPath}`)
 
     const r = await daemonReady(daemon, () => ipfs('config \'Addresses.API\''))
     expect(r).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
