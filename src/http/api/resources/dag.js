@@ -11,6 +11,7 @@ const debug = require('debug')
 const {
   cidToString
 } = require('../../../utils/cid')
+const all = require('async-iterator-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
 
@@ -149,17 +150,19 @@ exports.put = {
       throw Boom.badRequest("File argument 'object data' is required")
     }
 
-    const fileStream = await new Promise((resolve, reject) => {
-      multipart.reqParser(request.payload)
-        .on('file', (name, stream) => resolve(stream))
-        .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
-    })
+    let data
 
-    const data = await new Promise((resolve, reject) => {
-      fileStream
-        .on('data', data => resolve(data))
-        .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
-    })
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
+
+      data = Buffer.concat(await all(part.content))
+    }
+
+    if (!data) {
+      throw Boom.badRequest("File argument 'object data' is required")
+    }
 
     let format = request.query.format
 

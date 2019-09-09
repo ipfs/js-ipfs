@@ -3,19 +3,11 @@
 const IPFSFactory = require('ipfsd-ctl')
 const parallel = require('async/parallel')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
-const EchoHttpServer = require('interface-ipfs-core/src/utils/echo-http-server')
+const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 
 const ipfsdServer = IPFSFactory.createServer()
 const preloadNode = MockPreloadNode.createNode()
-const httpEchoServer = EchoHttpServer.createServer() // used by addFromURL
-
-const batch = (call, done, ...srvs) => parallel(srvs.map(srv => cb => {
-  if (srv === ipfsdServer) {
-    (srv[call]()).then(() => cb())
-  } else {
-    srv[call](cb)
-  }
-}), done)
+const echoServer = EchoServer.createServer()
 
 module.exports = {
   bundlesize: { maxSize: '692kB' },
@@ -36,12 +28,40 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: (cb) => batch('start', cb, preloadNode, httpEchoServer),
-      post: (cb) => batch('stop', cb, preloadNode, httpEchoServer)
+      pre: (cb) => {
+        parallel([
+          (cb) => preloadNode.start(cb),
+          (cb) => echoServer.start(cb)
+        ], cb)
+      },
+      post: (cb) => {
+        parallel([
+          (cb) => preloadNode.stop(cb),
+          (cb) => echoServer.stop(cb)
+        ], cb)
+      }
     },
     browser: {
-      pre: (cb) => batch('start', cb, ipfsdServer, preloadNode, httpEchoServer),
-      post: (cb) => batch('stop', cb, ipfsdServer, preloadNode, httpEchoServer)
+      pre: (cb) => {
+        parallel([
+          (cb) => {
+            ipfsdServer.start()
+            cb()
+          },
+          (cb) => preloadNode.start(cb),
+          (cb) => echoServer.start(cb)
+        ], cb)
+      },
+      post: (cb) => {
+        parallel([
+          (cb) => {
+            ipfsdServer.stop()
+            cb()
+          },
+          (cb) => preloadNode.stop(cb),
+          (cb) => echoServer.stop(cb)
+        ], cb)
+      }
     }
   }
 }

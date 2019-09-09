@@ -6,7 +6,6 @@ const tar = require('tar-stream')
 const log = debug('ipfs:http-api:files')
 log.error = debug('ipfs:http-api:files:error')
 const pull = require('pull-stream')
-const toPull = require('stream-to-pull-stream')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const abortable = require('pull-abortable')
@@ -19,6 +18,7 @@ const isIpfs = require('is-ipfs')
 const promisify = require('promisify-es6')
 const { cidToString } = require('../../../utils/cid')
 const { Format } = require('../../../core/components/files-regular/refs')
+const pipe = require('it-pipe')
 
 function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
@@ -169,112 +169,92 @@ exports.add = {
       .options({ allowUnknown: true })
   },
 
-  async handler (request, h) {
+  handler (request, h) {
     if (!request.payload) {
       throw Boom.badRequest('Array, Buffer, or String is required.')
     }
 
     const { ipfs } = request.server.app
-
-    const fileAdder = await new Promise((resolve, reject) => {
-      // TODO: make pull-multipart
-      const parser = multipart.reqParser(request.payload)
-      let filesParsed = false
-      const adder = pushable()
-
-      parser.on('file', (fileName, fileStream) => {
-        if (!filesParsed) {
-          resolve(adder)
-          filesParsed = true
-        }
-
-        adder.push({
-          path: decodeURIComponent(fileName),
-          content: toPull(fileStream)
-        })
-      })
-
-      parser.on('directory', (dirName) => {
-        adder.push({
-          path: decodeURIComponent(dirName),
-          content: ''
-        })
-      })
-
-      parser.on('end', () => {
-        if (!filesParsed) {
-          reject(new Error("File argument 'data' is required."))
-        }
-        adder.end()
-      })
-    })
-
-    const replyStream = pushable()
-    const progressHandler = bytes => replyStream.push({ Bytes: bytes })
-
-    const options = {
-      cidVersion: request.query['cid-version'],
-      rawLeaves: request.query['raw-leaves'],
-      progress: request.query.progress ? progressHandler : null,
-      onlyHash: request.query['only-hash'],
-      hashAlg: request.query.hash,
-      wrapWithDirectory: request.query['wrap-with-directory'],
-      pin: request.query.pin,
-      chunker: request.query.chunker,
-      strategy: request.query.trickle ? 'trickle' : 'balanced',
-      preload: request.query.preload
+    let filesParsed = false
+    let currentFileName
+    const output = new PassThrough()
+    const progressHandler = bytes => {
+      output.write(JSON.stringify({
+        Name: currentFileName,
+        Bytes: bytes
+      }) + '\n')
     }
 
-    const aborter = abortable()
-    const stream = toStream.source(pull(
-      replyStream,
-      aborter,
-      ndjson.serialize()
-    ))
+    pipe(
+      multipart(request),
+      async function * (source) {
+        for await (const entry of source) {
+          currentFileName = entry.name || 'unknown'
 
-    // const stream = toStream.source(replyStream.source)
-    // hapi is not very clever and throws if no
-    // - _read method
-    // - _readableState object
-    // are there :(
-    if (!stream._read) {
-      stream._read = () => {}
-      stream._readableState = {}
-      stream.unpipe = () => {}
-    }
+          if (entry.type === 'file') {
+            filesParsed = true
 
-    let filesAdded = false
-
-    pull(
-      fileAdder,
-      ipfs.addPullStream(options),
-      pull.map(file => ({
-        Name: file.path, // addPullStream already turned this into a hash if it wanted to
-        Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
-        Size: file.size
-      })),
-      pull.drain(
-        file => {
-          replyStream.push(file)
-          filesAdded = true
-        },
-        err => {
-          if (err || !filesAdded) {
-            request.raw.res.addTrailers({
-              'X-Stream-Error': JSON.stringify({
-                Message: err ? err.message : 'Failed to add files.',
-                Code: 0
-              })
-            })
-            return aborter.abort()
+            yield {
+              path: entry.name,
+              content: entry.content
+            }
           }
 
-          replyStream.end()
-        }
-      )
-    )
+          if (entry.type === 'directory') {
+            filesParsed = true
 
-    return h.response(stream)
+            yield {
+              path: entry.name
+            }
+          }
+        }
+      },
+      function (source) {
+        return ipfs._addAsyncIterator(source, {
+          cidVersion: request.query['cid-version'],
+          rawLeaves: request.query['raw-leaves'],
+          progress: request.query.progress ? progressHandler : null,
+          onlyHash: request.query['only-hash'],
+          hashAlg: request.query.hash,
+          wrapWithDirectory: request.query['wrap-with-directory'],
+          pin: request.query.pin,
+          chunker: request.query.chunker,
+          strategy: request.query.trickle ? 'trickle' : 'balanced',
+          preload: request.query.preload
+        })
+      },
+      async function (source) {
+        for await (const file of source) {
+          output.write(JSON.stringify({
+            Name: file.path,
+            Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
+            Size: file.size
+          }) + '\n')
+        }
+      }
+    )
+      .then(() => {
+        if (!filesParsed) {
+          throw new Error("File argument 'data' is required.")
+        }
+      })
+      .catch(err => {
+        if (!filesParsed) {
+          output.write(' ')
+        }
+
+        request.raw.res.addTrailers({
+          'X-Stream-Error': JSON.stringify({
+            Message: err.message,
+            Code: 0
+          })
+        })
+      })
+      .then(() => {
+        output.end()
+      })
+
+    return h.response(output)
       .header('x-chunked-output', '1')
       .header('content-type', 'application/json')
       .header('Trailer', 'X-Stream-Error')

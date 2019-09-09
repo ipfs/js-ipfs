@@ -1,10 +1,9 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
-module.exports = self => {
-  return promisify((...args) => {
-    const callback = args.pop()
-    callback(new Error('not available in the browser'))
+module.exports = () => {
+  return callbackify(() => {
+    throw new Error('not available in the browser')
   })
 }

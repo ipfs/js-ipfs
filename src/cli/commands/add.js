@@ -1,63 +1,17 @@
 'use strict'
 
-const pull = require('pull-stream/pull')
-const through = require('pull-stream/throughs/through')
-const end = require('pull-stream/sinks/on-end')
 const promisify = require('promisify-es6')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
 const mh = require('multihashes')
 const multibase = require('multibase')
-const toPull = require('stream-to-pull-stream')
 const { createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
-const globSource = require('../../utils/files/glob-source')
+const globSource = require('ipfs-utils/src/files/glob-source')
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
   return sizes.reduce((total, size) => total + size, 0)
-}
-
-function addPipeline (source, addStream, options, log) {
-  let finalHash
-
-  return new Promise((resolve, reject) => {
-    pull(
-      source,
-      addStream,
-      through((file) => {
-        const cid = finalHash = cidToString(file.hash, { base: options.cidBase })
-
-        if (options.silent || options.quieter) {
-          return
-        }
-
-        let message = cid
-
-        if (!options.quiet) {
-          // print the hash twice if we are piping from stdin
-          message = `added ${cid} ${options.file ? file.path || '' : cid}`.trim()
-        }
-
-        log(message)
-      }),
-      end((err) => {
-        if (err) {
-          // Tweak the error message and add more relevant infor for the CLI
-          if (err.code === 'ERR_DIR_NON_RECURSIVE') {
-            err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
-          }
-          return reject(err)
-        }
-
-        if (options.quieter) {
-          log(finalHash)
-        }
-
-        resolve()
-      })
-    )
-  })
 }
 
 module.exports = {
@@ -199,17 +153,51 @@ module.exports = {
       }
 
       const source = argv.file
-        ? globSource(...argv.file, { recursive: argv.recursive })
-        : toPull.source(process.stdin) // Pipe directly to ipfs.add
+        ? globSource(argv.file, { recursive: argv.recursive })
+        : process.stdin // Pipe directly to ipfs.add
 
-      const adder = ipfs.addPullStream(options)
+      let finalHash
 
       try {
-        await addPipeline(source, adder, argv, log)
-      } finally {
+        for await (const file of ipfs._addAsyncIterator(source, options)) {
+          if (argv.silent) {
+            continue
+          }
+
+          if (argv.quieter) {
+            finalHash = file.hash
+            continue
+          }
+
+          const cid = cidToString(file.hash, { base: argv.cidBase })
+          let message = cid
+
+          if (!argv.quiet) {
+            // print the hash twice if we are piping from stdin
+            message = `added ${cid} ${argv.file ? file.path || '' : cid}`.trim()
+          }
+
+          log(message)
+        }
+      } catch (err) {
         if (bar) {
           bar.terminate()
         }
+
+        // Tweak the error message and add more relevant infor for the CLI
+        if (err.code === 'ERR_DIR_NON_RECURSIVE') {
+          err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
+        }
+
+        throw err
+      }
+
+      if (bar) {
+        bar.terminate()
+      }
+
+      if (argv.quieter) {
+        log(cidToString(finalHash, { base: argv.cidBase }))
       }
     })())
   }

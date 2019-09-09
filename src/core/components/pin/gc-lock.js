@@ -58,13 +58,14 @@ class PullLocker {
       }
 
       // Request the lock
-      this.mutex[this.type]((releaseLock) => {
-        // The lock has been granted, so run the locked piece of code
-        cb(null, i)
+      this.mutex[this.type]()
+        .then(release => {
+          // Save the release function to be called when the stream completes
+          this.releaseLock = release
 
-        // Save the release function to be called when the stream completes
-        this.releaseLock = releaseLock
-      })
+          // The lock has been granted, so run the locked piece of code
+          cb(null, i)
+        }, cb)
     })
   }
 
