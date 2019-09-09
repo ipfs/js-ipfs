@@ -7,6 +7,7 @@ const multibase = require('multibase')
 const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
+const all = require('async-iterator-all')
 const log = debug('ipfs:http-api:block')
 log.error = debug('ipfs:http-api:block:error')
 
@@ -55,31 +56,26 @@ exports.put = {
   },
 
   // pre request handler that parses the args and returns `data` which is assigned to `request.pre.args`
-  parseArgs: (request, h) => {
+  parseArgs: async (request, h) => {
     if (!request.payload) {
       throw Boom.badRequest("File argument 'data' is required")
     }
 
-    return new Promise((resolve, reject) => {
-      const parser = multipart.reqParser(request.payload)
-      let file
+    let data
 
-      parser.on('file', (fileName, fileStream) => {
-        file = Buffer.alloc(0)
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
 
-        fileStream.on('data', (data) => {
-          file = Buffer.concat([file, data])
-        })
-      })
+      data = Buffer.concat(await all(part.content))
+    }
 
-      parser.on('end', () => {
-        if (!file) {
-          return reject(Boom.badRequest("File argument 'data' is required"))
-        }
+    if (!data) {
+      throw Boom.badRequest("File argument 'data' is required")
+    }
 
-        resolve({ data: file })
-      })
-    })
+    return { data }
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid

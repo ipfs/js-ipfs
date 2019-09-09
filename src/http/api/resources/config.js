@@ -7,6 +7,7 @@ const log = debug('ipfs:http-api:config')
 log.error = debug('ipfs:http-api:config:error')
 const multipart = require('ipfs-multipart')
 const Boom = require('@hapi/boom')
+const all = require('async-iterator-all')
 
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`
@@ -127,20 +128,22 @@ exports.replace = {
       throw Boom.badRequest("Argument 'file' is required")
     }
 
-    const fileStream = await new Promise((resolve, reject) => {
-      multipart.reqParser(request.payload)
-        .on('file', (fileName, fileStream) => resolve(fileStream))
-        .on('end', () => reject(Boom.badRequest("Argument 'file' is required")))
-    })
+    let file
 
-    const file = await new Promise((resolve, reject) => {
-      fileStream
-        .on('data', data => resolve(data))
-        .on('end', () => reject(Boom.badRequest("Argument 'file' is required")))
-    })
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
+
+      file = Buffer.concat(await all(part.content))
+    }
+
+    if (!file) {
+      throw Boom.badRequest("Argument 'file' is required")
+    }
 
     try {
-      return { config: JSON.parse(file.toString()) }
+      return { config: JSON.parse(file.toString('utf8')) }
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to decode file as config' })
     }

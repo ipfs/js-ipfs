@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
+const all = require('async-iterator-all')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 const Joi = require('@hapi/joi')
@@ -126,18 +127,19 @@ exports.put = {
     }
 
     const enc = request.query.inputenc
+    let data
 
-    const fileStream = await new Promise((resolve, reject) => {
-      multipart.reqParser(request.payload)
-        .on('file', (name, stream) => resolve(stream))
-        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-    })
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
 
-    const data = await new Promise((resolve, reject) => {
-      fileStream
-        .on('data', data => resolve(data))
-        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-    })
+      data = Buffer.concat(await all(part.content))
+    }
+
+    if (!data) {
+      throw Boom.badRequest("File argument 'data' is required")
+    }
 
     if (enc === 'protobuf') {
       try {
@@ -291,19 +293,21 @@ exports.parseKeyAndData = async (request, h) => {
     throw Boom.badRequest('invalid ipfs ref path')
   }
 
-  const fileStream = await new Promise((resolve, reject) => {
-    multipart.reqParser(request.payload)
-      .on('file', (fileName, fileStream) => resolve(fileStream))
-      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-  })
+  let data
 
-  const fileData = await new Promise((resolve, reject) => {
-    fileStream
-      .on('data', data => resolve(data))
-      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-  })
+  for await (const part of multipart(request)) {
+    if (part.type !== 'file') {
+      continue
+    }
 
-  return { data: fileData, key: cid }
+    data = Buffer.concat(await all(part.content))
+  }
+
+  if (!data) {
+    throw Boom.badRequest("File argument 'data' is required")
+  }
+
+  return { data, key: cid }
 }
 
 exports.patchAppendData = {
