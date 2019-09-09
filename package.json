@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.38.0-pre.1",
+  "version": "0.38.0-rc.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -220,7 +220,6 @@
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
     "Alex North <alex@alexnorth.me>",
-    "Alex Potsides <alex@achingbrain.net>",
     "Andrew Nesbitt <andrewnez@gmail.com>",
     "Andrew de Andrade <andrew@deandrade.com.br>",
     "André Cruz <andremiguelcruz@msn.com>",
@@ -322,6 +321,7 @@
     "Xiao Liang <yxliang01@users.noreply.github.com>",
     "Yahya <ya7yaz@gmail.com>",
     "Yole <yole@ultiledger.io>",
+    "achingbrain <alex@achingbrain.net>",
     "bitspill <bitspill+github@bitspill.net>",
     "datafatmunger <jbg@peerparty.org>",
     "dirkmc <dirkmdev@gmail.com>",
