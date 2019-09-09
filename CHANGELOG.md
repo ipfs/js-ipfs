@@ -1,3 +1,27 @@
+<a name="0.38.0-rc.0"></a>
+# [0.38.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.1...v0.38.0-rc.0) (2019-09-09)
+
+
+### Bug Fixes
+
+* **tests:** remove Math.random from  tests ([#2431](https://github.com/ipfs/js-ipfs/issues/2431)) ([60bf020](https://github.com/ipfs/js-ipfs/commit/60bf020))
+
+
+### Features
+
+* add support for ipns and recursive to ipfs resolve ([#2297](https://github.com/ipfs/js-ipfs/issues/2297)) ([039675e](https://github.com/ipfs/js-ipfs/commit/039675e))
+* enable pubsub via config file and enabled by default ([#2427](https://github.com/ipfs/js-ipfs/issues/2427)) ([27751cf](https://github.com/ipfs/js-ipfs/commit/27751cf)), closes [ipfs/js-ipfsd-ctl#366](https://github.com/ipfs/js-ipfsd-ctl/issues/366) [ipfs/go-ipfs#6621](https://github.com/ipfs/go-ipfs/issues/6621)
+* support adding async iterators ([#2379](https://github.com/ipfs/js-ipfs/issues/2379)) ([3878f0f](https://github.com/ipfs/js-ipfs/commit/3878f0f))
+* web ui 2.5.1 ([#2434](https://github.com/ipfs/js-ipfs/issues/2434)) ([39ef553](https://github.com/ipfs/js-ipfs/commit/39ef553))
+
+
+### BREAKING CHANGES
+
+* pubsub is now enabled by default and the experimental flag was removed
+* `recursive` is now `true` by default in `ipfs resolve`
+
+
+
 <a name="0.38.0-pre.1"></a>
 # [0.38.0-pre.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.0...v0.38.0-pre.1) (2019-09-02)
 
