@@ -14,19 +14,18 @@
     ["ipfs/js-ipfs-unixfs-importer", "ipfs-unixfs-importer"],
     ["ipfs/js-ipfs-mfs", "ipfs-mfs"],
 
+    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs"],
+
     "Repo",
     ["ipfs/js-ipfs-repo", "ipfs-repo"],
 
     "Exchange",
     ["ipfs/js-ipfs-block-service", "ipfs-block-service"],
+    ["ipfs/js-ipfs-block", "ipfs-block"],
     ["ipfs/js-ipfs-bitswap", "ipfs-bitswap"],
 
     "IPNS",
-    ["ipfs/js-ipfs-name", "ipfs-block-name"],
-
-    "Data Types",
-    ["ipfs/js-ipfs-block", "ipfs-block"],
-    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs"],
+    ["ipfs/js-ipfs-name", "ipfs-ipfs-name"],
 
     "Generics/Utils",
     ["ipfs/js-ipfs-utils", "ipfs-utils"],
