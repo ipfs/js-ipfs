@@ -25,7 +25,7 @@
     ["ipfs/js-ipfs-bitswap", "ipfs-bitswap"],
 
     "IPNS",
-    ["ipfs/js-ipfs-name", "ipfs-ipfs-name"],
+    ["ipfs/js-ipfs-name", "js-ipfs-name"],
 
     "Generics/Utils",
     ["ipfs/js-ipfs-utils", "ipfs-utils"],
