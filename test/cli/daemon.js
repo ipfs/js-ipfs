@@ -13,13 +13,13 @@ const tempWrite = require('temp-write')
 const pkg = require('../../package.json')
 
 const skipOnWindows = isWindows() ? it.skip : it
-const daemonReady = (daemon, fn) => {
+const daemonReady = (daemon, cb) => {
   let r = null
   const p = new Promise((resolve, reject) => {
     daemon.stdout.on('data', async (data) => {
       if (data.toString().includes('Daemon is ready')) {
         try {
-          r = await fn()
+          r = await cb()
         } catch (err) {
           reject(err)
         }
