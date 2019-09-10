@@ -7,7 +7,7 @@ cache: false
 stages:
   - check
   - test
-  - cov
+  - tag
 
 node_js:
   - '10'
@@ -18,8 +18,14 @@ os:
   - osx
   - windows
 
+env:
+  # This stops Windows builds from hanging
+  # https://travis-ci.community/t/timeout-after-build-finished-and-succeeded/1336
+  - YARN_GPG=no
+
 script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
-after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+after_success:
+  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
   include:
@@ -54,6 +60,17 @@ jobs:
       name: electron-renderer
       script:
         - xvfb-run npx aegir test -t electron-renderer -- --bail --timeout 10000
+
+    - stage: test
+      name: interop
+      script:
+        - npm run test:interop
+
+    - stage: tag
+      if: branch = master AND type = push AND fork = false
+      name: update-last-successful-build
+      script:
+        - npx aegir update-last-successful-build
 
 notifications:
   email: false
