@@ -33,8 +33,9 @@ class TLRU {
         this.lru.remove(key)
         return undefined
       }
+      return value.value
     }
-    return value.value
+    return undefined
   }
 
   /**

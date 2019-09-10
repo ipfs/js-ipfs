@@ -3,6 +3,7 @@
 const os = require('os')
 const toUri = require('multiaddr-to-uri')
 const { ipfsPathHelp } = require('../utils')
+const { isTest } = require('ipfs-utils/src/env')
 
 module.exports = {
   command: 'daemon',
@@ -27,7 +28,7 @@ module.exports = {
       })
       .option('enable-preload', {
         type: 'boolean',
-        default: true
+        default: !isTest // preload by default, unless in test env
       })
   },
 

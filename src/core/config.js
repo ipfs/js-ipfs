@@ -3,6 +3,7 @@
 const Multiaddr = require('multiaddr')
 const mafmt = require('mafmt')
 const { struct, superstruct } = require('superstruct')
+const { isTest } = require('ipfs-utils/src/env')
 
 const { optional, union } = struct
 const s = superstruct({
@@ -31,7 +32,7 @@ const configSchema = s({
     enabled: 'boolean?',
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
-  }, { enabled: true, interval: 30 * 1000 }),
+  }, { enabled: !isTest, interval: 30 * 1000 }),
   init: optional(union(['boolean', s({
     bits: 'number?',
     emptyRepo: 'boolean?',
