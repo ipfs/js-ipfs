@@ -47,6 +47,7 @@
     "test:node:cli": "aegir test -t node -f test/cli/index.js",
     "test:node:interface": "aegir test -t node -f test/core/interface.spec.js",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
+    "test:interop": "IPFS_JS_EXEC=$PWD/src/cli/bin.js ipfs-interop",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:node": "echo \"Error: no benchmarks yet\" && exit 1",
@@ -141,7 +142,7 @@
     "libp2p-websocket-star-multi": "~0.4.3",
     "libp2p-websockets": "~0.12.3",
     "lodash": "^4.17.15",
-    "mafmt": "^6.0.2",
+    "mafmt": "^6.0.10",
     "merge-options": "^1.0.1",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
@@ -186,7 +187,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^20.0.0",
+    "aegir": "^20.1.0",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "clear-module": "^4.0.0",
@@ -198,6 +199,7 @@
     "form-data": "^2.5.1",
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.113.0",
+    "ipfs-interop": "~0.1.0",
     "ipfsd-ctl": "~0.46.0",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
