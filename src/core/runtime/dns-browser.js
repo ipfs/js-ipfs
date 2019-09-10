@@ -15,7 +15,7 @@ const ttl = 60 * 1000
 
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)
-const _httpQueue = new PQueue({ concurrency: 4 })
+const httpQueue = new PQueue({ concurrency: 4 })
 
 // Delegated HTTP resolver sending DNSLink queries to ipfs.io
 // TODO: replace hardcoded host with configurable DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
@@ -54,7 +54,7 @@ module.exports = (fqdn, opts = {}, cb) => {
     }
 
     // fallback to delegated DNS resolver
-    const response = await _httpQueue.add(() => api.get('dns', { searchParams }).json())
+    const response = await httpQueue.add(() => api.get('dns', { searchParams }).json())
     return ipfsPath(response)
   }
 

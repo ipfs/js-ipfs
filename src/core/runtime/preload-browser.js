@@ -10,7 +10,7 @@ log.error = debug('ipfs:preload:error')
 
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)
-const _httpQueue = new PQueue({ concurrency: 4 })
+const httpQueue = new PQueue({ concurrency: 4 })
 
 module.exports = function preload (url, callback) {
   log(url)
@@ -19,7 +19,7 @@ module.exports = function preload (url, callback) {
   const signal = controller.signal
   const cb = () => setImmediate(callback) // https://github.com/ipfs/js-ipfs/pull/2304#discussion_r320700893
 
-  _httpQueue.add(() => ky.get(url, { signal })).then(cb, cb)
+  httpQueue.add(() => ky.get(url, { signal })).then(cb, cb)
 
   return {
     cancel: () => controller.abort()
