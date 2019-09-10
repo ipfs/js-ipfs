@@ -74,7 +74,7 @@
     "just-kebab-case": "^1.1.0",
     "just-map-keys": "^1.1.0",
     "kind-of": "^6.0.2",
-    "ky": "^0.13.0",
+    "ky": "^0.14.0",
     "ky-universal": "^0.3.0",
     "lru-cache": "^5.1.1",
     "multiaddr": "^6.0.6",
