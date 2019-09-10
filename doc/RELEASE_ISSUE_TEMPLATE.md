@@ -61,6 +61,9 @@
 - [ ] **Stage 3 - Community Prod Testing**
   - [ ] Documentation
     - [ ] Ensure that [README.md](https://github.com/ipfs/js-ipfs/tree/master/README.md) is up to date
+      - [ ] Install section
+      - [ ] API calls
+      - [ ] Packages Listing
     - [ ] Ensure that all the examples run without problems:
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-add-readable-stream
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-browserify
