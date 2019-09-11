@@ -24,7 +24,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('opts', () => {
       const host = 'wizard.world'
-      const port = '999'
+      const port = 999
       const protocol = 'https'
       const ipfs = ipfsClient({ host, port, protocol })
       expectConfig(ipfs, { host, port, protocol })
@@ -32,7 +32,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr dns4 string (implicit http)', () => {
       const host = 'foo.com'
-      const port = '1001'
+      const port = 1001
       const protocol = 'http' // default to http if not specified in multiaddr
       const addr = `/dns4/${host}/tcp/${port}`
       const ipfs = ipfsClient(addr)
@@ -41,7 +41,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr dns4 string (explicit https)', () => {
       const host = 'foo.com'
-      const port = '1001'
+      const port = 1001
       const protocol = 'https'
       const addr = `/dns4/${host}/tcp/${port}/${protocol}`
       const ipfs = ipfsClient(addr)
@@ -50,7 +50,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr dns4 string, explicit https in opts', () => {
       const host = 'foo.com'
-      const port = '1001'
+      const port = 1001
       const protocol = 'https'
       const addr = `/dns4/${host}/tcp/${port}`
       const ipfs = ipfsClient(addr, { protocol })
@@ -59,7 +59,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr ipv4 string (implicit http)', () => {
       const host = '101.101.101.101'
-      const port = '1001'
+      const port = 1001
       const protocol = 'http'
       const addr = `/ip4/${host}/tcp/${port}`
       const ipfs = ipfsClient(addr)
@@ -68,7 +68,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr ipv4 string (explicit https)', () => {
       const host = '101.101.101.101'
-      const port = '1001'
+      const port = 1001
       const protocol = 'https'
       const addr = `/ip4/${host}/tcp/${port}/${protocol}`
       const ipfs = ipfsClient(addr)
@@ -77,7 +77,7 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('multiaddr instance', () => {
       const host = 'ace.place'
-      const port = '1001'
+      const port = 1001
       const addr = multiaddr(`/dns4/${host}/tcp/${port}`)
       const ipfs = ipfsClient(addr)
       expectConfig(ipfs, { host, port })
@@ -85,14 +85,14 @@ describe('ipfs-http-client constructor tests', () => {
 
     it('host and port strings', () => {
       const host = '1.1.1.1'
-      const port = '9999'
+      const port = 9999
       const ipfs = ipfsClient(host, port)
       expectConfig(ipfs, { host, port })
     })
 
     it('host, port and api path', () => {
       const host = '10.100.100.255'
-      const port = '9999'
+      const port = 9999
       const apiPath = '/future/api/v1/'
       const ipfs = ipfsClient(host, port, { 'api-path': apiPath })
       expectConfig(ipfs, { host, port, apiPath })
