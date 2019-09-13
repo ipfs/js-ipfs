@@ -1,3 +1,13 @@
+<a name="0.113.1"></a>
+## [0.113.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.113.0...v0.113.1) (2019-09-13)
+
+
+### Bug Fixes
+
+* make pubsub unsubscribe tests work in electron renderer ([eedfe3d](https://github.com/ipfs/interface-ipfs-core/commit/eedfe3d))
+
+
+
 <a name="0.113.0"></a>
 # [0.113.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.112.0...v0.113.0) (2019-09-05)
 
