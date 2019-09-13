@@ -16,26 +16,26 @@ module.exports = function repo (self) {
      * @param {function(Error, Number)} [callback]
      * @returns {undefined}
      */
-    version: promisify((callback) => {
-      self._repo._isInitialized(err => {
-        if (err) {
-          // TODO: (dryajov) This is really hacky, there must be a better way
-          const match = [
-            /Key not found in database \[\/version\]/,
-            /ENOENT/,
-            /repo is not initialized yet/
-          ].some((m) => {
-            return m.test(err.message)
-          })
-          if (match) {
-            // this repo has not been initialized
-            return callback(null, repoVersion)
-          }
-          return callback(err)
-        }
+    version: promisify(async (callback) => {
+      const err = await self._repo._checkInitialized()
 
-        self._repo.version.get(callback)
-      })
+      if (err) {
+        // TODO: (dryajov) This is really hacky, there must be a better way
+        const match = [
+          /Key not found in database \[\/version\]/,
+          /ENOENT/,
+          /repo is not initialized yet/
+        ].some((m) => {
+          return m.test(err.message)
+        })
+        if (match) {
+          // this repo has not been initialized
+          return callback(null, repoVersion)
+        }
+        return callback(err)
+      }
+
+      self._repo.version.get(callback)
     }),
 
     gc: require('./pin/gc')(self),
