@@ -29,16 +29,16 @@
 - [ ] **Stage 1 - Internal Testing**
   - [ ] Publish a release candidate to npm
     ```sh
-    # Clean out node_modules and re-install dependencies
-    # (Ensures you have the latest versions for the browser build)
-    rm -rf node_modules package-lock.json
-    npm install
+    # All succesful builds of master update the `build/last-successful branch which contains a npm-shrinkwrap.json.
+    # This command checks that branch out, installs it's dependencies using `npm ci`, creates a release branch
+    # (e.g. v0.34.x), updates the minor prerelease version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
+    npx aegir publish-rc
 
-    # Minor prerelease (e.g. 0.33.1 -> 0.34.0-rc.0)
-    npx aegir release --type preminor --preid rc --dist-tag next
-
-    # Increment prerelease (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
-    npx aegir release --type prerelease --preid rc --dist-tag next
+    # Later we may wish to update the rc.  It's assumed you've already cherry-picked/otherwise merged the new commits
+    # into the release branch on github (e.g. not locally) and CI has passed.  This command pulls the latest release
+    # branch, installs it's dependencies `npm ci`, increments the prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
+    # and publishes it to npm
+    npx aegir update-rc v0.34.x
     ```
   - Network Testing:
     - test lab things - TBD
