@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
+const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('../utils/delay')
@@ -34,7 +34,7 @@ module.exports = (createCommon, options) => {
     after((done) => common.teardown(done))
 
     // Browser/worker has max ~5 open HTTP requests to the same origin
-    const count = isBrowser || isWebWorker ? 5 : 10
+    const count = isBrowser || isWebWorker || isElectronRenderer ? 5 : 10
 
     it(`should subscribe and unsubscribe ${count} times`, async () => {
       const someTopic = getTopic()
