@@ -22,7 +22,7 @@ We will ask early testers to participate at two points in the process:
 
 ## Who has signed up?
 
-No early testers volunteers yet!
+- [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs) - install your dependencies via the distributed web!
 
 ## How to sign up?
 
