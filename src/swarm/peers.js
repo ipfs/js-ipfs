@@ -1,13 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const auto = require('async/auto')
 const multiaddr = require('multiaddr')
 const PeerId = require('peer-id')
-const os = require('os')
-const path = require('path')
-const hat = require('hat')
-const { spawnNodesWithId } = require('../utils/spawn')
+const delay = require('delay')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -16,31 +12,18 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.swarm.peers', function () {
-    this.timeout(80 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfsA
     let ipfsB
-    let ipfsFactory
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(100 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        ipfsFactory = factory
-
-        spawnNodesWithId(2, factory, (err, nodes) => {
-          expect(err).to.not.exist()
-          ipfsA = nodes[0]
-          ipfsB = nodes[1]
-          ipfsA.swarm.connect(ipfsB.peerId.addresses[0], done)
-        })
-      })
+    before(async () => {
+      ipfsA = await common.setup()
+      ipfsB = await common.setup()
+      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     it('should list peers this node is connected to', (done) => {
       ipfsA.swarm.peers((err, peers) => {
@@ -119,44 +102,20 @@ module.exports = (createCommon, options) => {
       }
     }
 
-    function getRepoPath () {
-      return path.join(os.tmpdir(), '.ipfs-' + hat())
-    }
-
-    it('should list peers only once', (done) => {
+    it('should list peers only once', async () => {
       const config = getConfig(['/ip4/127.0.0.1/tcp/0'])
 
-      auto({
-        nodeA: (cb) => ipfsFactory.spawnNode(getRepoPath(), config, cb),
-        nodeB: ['nodeA', (_, cb) => {
-          ipfsFactory.spawnNode(getRepoPath(), config, cb)
-        }],
-        nodeBAddress: ['nodeB', (res, cb) => {
-          res.nodeB.id((err, info) => {
-            if (err) return cb(err)
-            cb(null, info.addresses[0])
-          })
-        }],
-        connectA2B: ['nodeA', 'nodeBAddress', (res, cb) => {
-          res.nodeA.swarm.connect(res.nodeBAddress, cb)
-        }],
-        // time for identify
-        wait: ['connectA2B', (_, cb) => setTimeout(cb, 1000)],
-        nodeAPeers: ['nodeA', 'wait', (res, cb) => {
-          res.nodeA.swarm.peers(cb)
-        }],
-        nodeBPeers: ['nodeB', 'wait', (res, cb) => {
-          res.nodeB.swarm.peers(cb)
-        }]
-      }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res.nodeAPeers).to.have.length(1)
-        expect(res.nodeBPeers).to.have.length(1)
-        done()
-      })
+      const nodeA = await common.setup({}, { config })
+      const nodeB = await common.setup({}, { config })
+      await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+      await delay(1000)
+      const peersA = await nodeA.swarm.peers()
+      const peersB = await nodeB.swarm.peers()
+      expect(peersA).to.have.length(1)
+      expect(peersB).to.have.length(1)
     })
 
-    it('should list peers only once even if they have multiple addresses', (done) => {
+    it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
       const configA = getConfig([
         '/ip4/127.0.0.1/tcp/16543',
@@ -166,35 +125,14 @@ module.exports = (createCommon, options) => {
         '/ip4/127.0.0.1/tcp/26545',
         '/ip4/127.0.0.1/tcp/26546'
       ])
-
-      auto({
-        nodeA: (cb) => ipfsFactory.spawnNode(getRepoPath(), configA, cb),
-        nodeB: ['nodeA', (_, cb) => {
-          ipfsFactory.spawnNode(getRepoPath(), configB, cb)
-        }],
-        nodeBAddress: ['nodeB', (res, cb) => {
-          res.nodeB.id((err, info) => {
-            if (err) return cb(err)
-            cb(null, info.addresses[0])
-          })
-        }],
-        connectA2B: ['nodeA', 'nodeBAddress', (res, cb) => {
-          res.nodeA.swarm.connect(res.nodeBAddress, cb)
-        }],
-        // time for identify
-        wait: ['connectA2B', (_, cb) => setTimeout(cb, 1000)],
-        nodeAPeers: ['nodeA', 'wait', (res, cb) => {
-          res.nodeA.swarm.peers(cb)
-        }],
-        nodeBPeers: ['nodeB', 'wait', (res, cb) => {
-          res.nodeB.swarm.peers(cb)
-        }]
-      }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res.nodeAPeers).to.have.length(1)
-        expect(res.nodeBPeers).to.have.length(1)
-        done()
-      })
+      const nodeA = await common.setup({}, { configA })
+      const nodeB = await common.setup({}, { configB })
+      await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+      await delay(1000)
+      const peersA = await nodeA.swarm.peers()
+      const peersB = await nodeB.swarm.peers()
+      expect(peersA).to.have.length(1)
+      expect(peersB).to.have.length(1)
     })
   })
 }

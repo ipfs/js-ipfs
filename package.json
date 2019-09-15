@@ -42,6 +42,7 @@
     "chai": "^4.2.0",
     "cids": "~0.7.1",
     "concat-stream": "^2.0.0",
+    "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
     "es6-promisify": "^6.0.1",
     "hat": "0.0.3",
