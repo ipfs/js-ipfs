@@ -9,7 +9,7 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.swarm.localAddrs', function () {
-    this.timeout(60 * 1000)
+    this.timeout(80 * 1000)
 
     let ipfs
 
