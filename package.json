@@ -46,7 +46,8 @@
     "dirty-chai": "^2.0.1",
     "electron": "^6.0.6",
     "electron-mocha": "^8.0.3",
-    "pull-stream": "^3.6.13"
+    "pull-stream": "^3.6.13",
+    "readable-stream-2": "npm:readable-stream@^2.0.0"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
