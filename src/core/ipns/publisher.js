@@ -48,7 +48,7 @@ class IpnsPublisher {
 
   _putRecordToRouting (record, peerId, callback) {
     if (!(PeerId.isPeerId(peerId))) {
-      const errMsg = `peerId received is not valid`
+      const errMsg = 'peerId received is not valid'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
@@ -87,7 +87,7 @@ class IpnsPublisher {
 
   _publishEntry (key, entry, peerId, callback) {
     if (!(Key.isKey(key))) {
-      const errMsg = `datastore key does not have a valid format`
+      const errMsg = 'datastore key does not have a valid format'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY'))
@@ -118,14 +118,14 @@ class IpnsPublisher {
 
   _publishPublicKey (key, publicKey, peerId, callback) {
     if ((!Key.isKey(key))) {
-      const errMsg = `datastore key does not have a valid format`
+      const errMsg = 'datastore key does not have a valid format'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY'))
     }
 
     if (!publicKey || !publicKey.bytes) {
-      const errMsg = `one or more of the provided parameters are not defined`
+      const errMsg = 'one or more of the provided parameters are not defined'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER'))
@@ -149,7 +149,7 @@ class IpnsPublisher {
   // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
   _getPublished (peerId, options, callback) {
     if (!(PeerId.isPeerId(peerId))) {
-      const errMsg = `peerId received is not valid`
+      const errMsg = 'peerId received is not valid'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))
@@ -209,7 +209,7 @@ class IpnsPublisher {
 
   _updateOrCreateRecord (privKey, value, validity, peerId, callback) {
     if (!(PeerId.isPeerId(peerId))) {
-      const errMsg = `peerId received is not valid`
+      const errMsg = 'peerId received is not valid'
 
       log.error(errMsg)
       return callback(errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID'))

@@ -34,7 +34,7 @@ describe('gc', () => {
     const errMsg = 'some err'
     const printSpy = setupMocks(cids, errMsg)
 
-    await cli.parse(`repo gc`)
+    await cli.parse('repo gc')
 
     const exp = cids.map(c => 'removed ' + c).concat(errMsg)
     for (let i = 0; i < exp.length; i++) {
@@ -49,7 +49,7 @@ describe('gc', () => {
     ]
     const printSpy = setupMocks(cids)
 
-    await cli.parse(`repo gc --quiet`)
+    await cli.parse('repo gc --quiet')
 
     const exp = cids.map(c => c.toString())
     for (let i = 0; i < exp.length; i++) {
@@ -60,7 +60,7 @@ describe('gc', () => {
   it('gc with --stream-errors=false does not print errors', async () => {
     const printSpy = setupMocks([], 'some err')
 
-    await cli.parse(`repo gc --stream-errors=false`)
+    await cli.parse('repo gc --stream-errors=false')
     sinon.assert.notCalled(printSpy)
   })
 })

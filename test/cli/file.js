@@ -18,7 +18,7 @@ describe('file ls', () => runOnAndOff((thing) => {
   it('prints a filename', () => {
     return ipfs(`file ls ${file}`)
       .then((out) => expect(out).to.eql(
-        `This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.\n` +
+        'This functionality is deprecated, and will be removed in future versions. If possible, please use \'ipfs ls\' instead.\n' +
         `${file}\n`
       ))
   })
@@ -26,7 +26,7 @@ describe('file ls', () => runOnAndOff((thing) => {
   it('prints the filenames in a directory', () => {
     return ipfs(`file ls ${dir}`)
       .then((out) => expect(out).to.eql(
-        `This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.\n` +
+        'This functionality is deprecated, and will be removed in future versions. If possible, please use \'ipfs ls\' instead.\n' +
         'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT\n' +
         'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN\n' +
         'QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv\n' +

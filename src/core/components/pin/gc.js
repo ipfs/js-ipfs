@@ -77,7 +77,7 @@ function createMarkedSet (ipfs, callback) {
     (cb) => ipfs._repo.root.get(MFS_ROOT_KEY, (err, mh) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
-          log(`No blocks in MFS`)
+          log('No blocks in MFS')
           return cb(null, [])
         }
         return cb(expErr(err, 'Could not get MFS root from datastore'))

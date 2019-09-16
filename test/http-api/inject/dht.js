@@ -20,7 +20,7 @@ module.exports = (http) => {
       it('returns 400 if no peerId is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/dht/findpeer`
+          url: '/api/v0/dht/findpeer'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -42,7 +42,7 @@ module.exports = (http) => {
       it('returns 400 if no key is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/dht/findprovs`
+          url: '/api/v0/dht/findprovs'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -65,7 +65,7 @@ module.exports = (http) => {
       it('returns 400 if no key is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/dht/get`
+          url: '/api/v0/dht/get'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -98,7 +98,7 @@ module.exports = (http) => {
       it('returns 400 if no key is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/dht/provide`
+          url: '/api/v0/dht/provide'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -120,7 +120,7 @@ module.exports = (http) => {
       it('returns 400 if no key or value is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/dht/put`
+          url: '/api/v0/dht/put'
         })
 
         expect(res.statusCode).to.equal(400)
