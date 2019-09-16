@@ -199,7 +199,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.113.0",
     "ipfs-interop": "~0.1.0",
-    "ipfsd-ctl": "~0.46.0",
+    "ipfsd-ctl": "0.46.0",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
