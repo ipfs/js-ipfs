@@ -1,3 +1,14 @@
+<a name="0.114.0"></a>
+# [0.114.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.113.1...v0.114.0) (2019-09-16)
+
+
+### Bug Fixes
+
+* change swarm test ([00341f9](https://github.com/ipfs/interface-ipfs-core/commit/00341f9))
+* new setup ([b724e65](https://github.com/ipfs/interface-ipfs-core/commit/b724e65))
+
+
+
 <a name="0.113.1"></a>
 ## [0.113.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.113.0...v0.113.1) (2019-09-13)
 
