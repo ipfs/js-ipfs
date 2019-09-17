@@ -128,8 +128,8 @@ describe('swarm', () => {
           promise.then(({ data }) => {
             expect(data).to.eql([
               `${peerInfo.id.toB58String()} (2)`,
-              `\t/ip4/127.0.0.1/tcp/4001`,
-              `\t/ip4/127.0.0.1/tcp/4001/ws`
+              '\t/ip4/127.0.0.1/tcp/4001',
+              '\t/ip4/127.0.0.1/tcp/4001/ws'
             ].join('\n'))
             done()
           })

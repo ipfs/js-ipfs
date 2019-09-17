@@ -180,10 +180,10 @@ describe('utils', () => {
       })
     })
 
-    it(`should error when a link doesn't exist`, function (done) {
+    it('should error when a link doesn\'t exist', function (done) {
       utils.resolvePath(node.object, `${aboutPath}/fusion`, err => {
         expect(err.message).to.include(
-          `no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q`
+          'no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
         )
         done()
       })

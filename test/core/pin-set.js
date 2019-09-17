@@ -183,7 +183,7 @@ describe('pinSet', function () {
   })
 
   describe('walkItems', function () {
-    it(`fails if node doesn't have a pin-set protobuf header`, function (done) {
+    it('fails if node doesn\'t have a pin-set protobuf header', function (done) {
       createNode('datum', (err, node) => {
         expect(err).to.not.exist()
 

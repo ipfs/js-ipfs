@@ -57,7 +57,7 @@ const wsAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => a.includes(
 const tcpAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => !a.includes('/ws'))
 
 describe('circuit relay', () => {
-  describe(`A <-> R <-> B`, function () {
+  describe('A <-> R <-> B', function () {
     this.timeout(80 * 1000)
 
     let nodeA

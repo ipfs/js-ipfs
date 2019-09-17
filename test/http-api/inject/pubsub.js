@@ -23,7 +23,7 @@ module.exports = (http) => {
       it('returns 400 if no topic is provided', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/sub`
+          url: '/api/v0/pubsub/sub'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -60,7 +60,7 @@ module.exports = (http) => {
       it('returns 400 if no buffer is provided', async () => {
         const res = await api.inject({
           method: 'POST',
-          url: `/api/v0/pubsub/pub?arg=&arg=`
+          url: '/api/v0/pubsub/pub?arg=&arg='
         })
 
         expect(res.statusCode).to.equal(400)
@@ -81,7 +81,7 @@ module.exports = (http) => {
       it('returns 200', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/pubsub/ls`
+          url: '/api/v0/pubsub/ls'
         })
         expect(res.statusCode).to.equal(200)
         expect(res.result.Strings).to.be.eql([topic])

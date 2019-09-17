@@ -167,7 +167,7 @@ class IpnsRepublisher {
         record = ipns.unmarshal(dsVal)
       } catch (err) {
         log.error(err)
-        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_IPNS_RECORD'))
+        return callback(errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_IPNS_RECORD'))
       }
 
       callback(null, record.value)
