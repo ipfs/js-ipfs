@@ -97,7 +97,7 @@
     "ipfs-bitswap": "~0.25.1",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.15.2",
-    "ipfs-http-client": "^35.1.0",
+    "ipfs-http-client": "^37.0.0",
     "ipfs-http-response": "~0.3.1",
     "ipfs-mfs": "^0.12.2",
     "ipfs-multipart": "^0.2.0",
