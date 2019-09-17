@@ -234,7 +234,7 @@ describe('HTTP Gateway', function () {
     })
     expect(resFirst.statusCode).to.equal(200)
     expect(resFirst.headers['etag']).to.equal(`"${cid}"`)
-    expect(resFirst.headers['content-disposition']).to.equal(`inline; filename*=UTF-8''pretty-name-in-utf8-%C3%B3%C3%B0%C5%9B%C3%B3%C3%B0%C5%82%C4%85%C5%9B%C5%81.txt`)
+    expect(resFirst.headers['content-disposition']).to.equal('inline; filename*=UTF-8\'\'pretty-name-in-utf8-%C3%B3%C3%B0%C5%9B%C3%B3%C3%B0%C5%82%C4%85%C5%9B%C5%81.txt')
   })
 
   it('load a big file (15MB)', async () => {

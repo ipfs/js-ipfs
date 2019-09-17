@@ -17,12 +17,12 @@ module.exports = {
     commit: {
       type: 'boolean',
       default: false,
-      describe: `Include the version's commit hash`
+      describe: 'Include the version\'s commit hash'
     },
     repo: {
       type: 'boolean',
       default: false,
-      describe: `Print only the repo's version number`
+      describe: 'Print only the repo\'s version number'
     },
     all: {
       type: 'boolean',

@@ -98,7 +98,7 @@ describe('.files', () => {
         create: true
       })
         .then(() => ipfs.files.cp(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -122,7 +122,7 @@ describe('.files', () => {
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.cp(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -148,7 +148,7 @@ describe('.files', () => {
         create: true
       })
         .then(() => ipfs.files.cp([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -172,7 +172,7 @@ describe('.files', () => {
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.cp([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -196,7 +196,7 @@ describe('.files', () => {
       const directory = `directory-${hat()}`
 
       return ipfs.files.mkdir(`/${directory}`)
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -218,7 +218,7 @@ describe('.files', () => {
         create: true
       })
         .then(() => ipfs.files.mv(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const sourceFile = files
             .filter(file => file.name === source)
@@ -240,7 +240,7 @@ describe('.files', () => {
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.mv(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -266,7 +266,7 @@ describe('.files', () => {
         create: true
       })
         .then(() => ipfs.files.mv([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const sourceFile = files
             .filter(file => file.name === source)
@@ -288,7 +288,7 @@ describe('.files', () => {
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.mv([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -330,7 +330,7 @@ describe('.files', () => {
         create: true
       })
         .then(() => ipfs.files.rm(`/${fileName}`))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const file = files
             .filter(file => file.name === fileName)
@@ -351,7 +351,7 @@ describe('.files', () => {
         .then(() => ipfs.files.rm(`/${dirName}`, {
           recursive: true
         }))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const dir = files
             .filter(file => file.name === dirName)

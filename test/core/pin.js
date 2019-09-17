@@ -240,14 +240,22 @@ describe('pin', function () {
         return pin.ls()
           .then(out =>
             expect(out).to.deep.include.members([
-              { type: 'recursive',
-                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys' },
-              { type: 'indirect',
-                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG' },
-              { type: 'indirect',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q' },
-              { type: 'indirect',
-                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi' }
+              {
+                type: 'recursive',
+                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
+              },
+              {
+                type: 'indirect',
+                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG'
+              },
+              {
+                type: 'indirect',
+                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
+              },
+              {
+                type: 'indirect',
+                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
+              }
             ])
           )
       })
@@ -256,8 +264,10 @@ describe('pin', function () {
         return pin.ls({ type: 'direct' })
           .then(out =>
             expect(out).to.deep.include.members([
-              { type: 'direct',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q' }
+              {
+                type: 'direct',
+                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
+              }
             ])
           )
       })
@@ -266,8 +276,10 @@ describe('pin', function () {
         return pin.ls({ type: 'recursive' })
           .then(out =>
             expect(out).to.deep.include.members([
-              { type: 'recursive',
-                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys' }
+              {
+                type: 'recursive',
+                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
+              }
             ])
           )
       })
@@ -276,12 +288,18 @@ describe('pin', function () {
         return pin.ls({ type: 'indirect' })
           .then(out =>
             expect(out).to.deep.include.members([
-              { type: 'indirect',
-                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG' },
-              { type: 'indirect',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q' },
-              { type: 'indirect',
-                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi' }
+              {
+                type: 'indirect',
+                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG'
+              },
+              {
+                type: 'indirect',
+                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
+              },
+              {
+                type: 'indirect',
+                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
+              }
             ])
           )
       })
@@ -290,8 +308,10 @@ describe('pin', function () {
         return pin.ls(pins.mercuryDir, { type: 'direct' })
           .then(out =>
             expect(out).to.have.deep.members([
-              { type: 'direct',
-                hash: pins.mercuryDir }
+              {
+                type: 'direct',
+                hash: pins.mercuryDir
+              }
             ])
           )
       })
@@ -300,8 +320,10 @@ describe('pin', function () {
         return pin.ls(`/ipfs/${pins.root}/mercury/`, { type: 'direct' })
           .then(out =>
             expect(out).to.have.deep.members([
-              { type: 'direct',
-                hash: pins.mercuryDir }
+              {
+                type: 'direct',
+                hash: pins.mercuryDir
+              }
             ])
           )
       })
@@ -326,8 +348,10 @@ describe('pin', function () {
         return pin.ls(pins.root, { type: 'recursive' })
           .then(out =>
             expect(out).to.have.deep.members([
-              { type: 'recursive',
-                hash: pins.root }
+              {
+                type: 'recursive',
+                hash: pins.root
+              }
             ])
           )
       })
@@ -344,8 +368,10 @@ describe('pin', function () {
         return pin.ls(pins.solarWiki, { type: 'indirect' })
           .then(out =>
             expect(out).to.have.deep.members([
-              { type: `indirect through ${pins.root}`,
-                hash: pins.solarWiki }
+              {
+                type: `indirect through ${pins.root}`,
+                hash: pins.solarWiki
+              }
             ])
           )
       })
