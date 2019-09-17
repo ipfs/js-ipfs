@@ -1,3 +1,13 @@
+<a name="36.1.0"></a>
+# [36.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.0.0...v36.1.0) (2019-09-17)
+
+
+### Bug Fixes
+
+* fix electron renderer tests and a couple more bugs ([#1105](https://github.com/ipfs/js-ipfs-http-client/issues/1105)) ([a631a21](https://github.com/ipfs/js-ipfs-http-client/commit/a631a21))
+
+
+
 <a name="36.0.0"></a>
 # [36.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.1.0...v36.0.0) (2019-09-11)
 
