@@ -1,3 +1,8 @@
+<a name="37.0.1"></a>
+## [37.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.0...v37.0.1) (2019-09-17)
+
+
+
 <a name="37.0.0"></a>
 # [37.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.1.0...v37.0.0) (2019-09-17)
 
