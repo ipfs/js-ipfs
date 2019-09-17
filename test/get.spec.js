@@ -9,7 +9,6 @@ const chaiAsPromised = require('chai-as-promised')
 const expect = chai.expect
 chai.use(dirtyChai)
 chai.use(chaiAsPromised)
-const isNode = require('detect-node')
 const loadFixture = require('aegir/fixtures')
 
 const ipfsClient = require('../src')
@@ -75,26 +74,19 @@ describe('.get (specific go-ipfs features)', function () {
   })
 
   it('add path containing "+"s (for testing get)', async () => {
-    if (!isNode) {
-      return
-    }
-
     const filename = 'ti,c64x+mega++mod-pic.txt'
     const subdir = 'tmp/c++files'
     const expectedCid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
+    const path = `${subdir}/${filename}`
     const files = await ipfs.add([{
-      path: subdir + '/' + filename,
-      content: Buffer.from(subdir + '/' + filename, 'utf-8')
+      path,
+      content: Buffer.from(path)
     }])
 
     expect(files[2].hash).to.equal(expectedCid)
   })
 
   it('get path containing "+"s', async () => {
-    if (!isNode) {
-      return
-    }
-
     const cid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
     let count = 0
     const files = await ipfs.get(cid)

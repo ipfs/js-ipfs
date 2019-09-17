@@ -4,7 +4,6 @@
 const tests = require('interface-ipfs-core')
 const isNode = require('detect-node')
 const CommonFactory = require('./utils/interface-common-factory')
-const ipfsClient = require('../src')
 const isWindows = process.platform && process.platform === 'win32'
 
 describe('interface-ipfs-core tests', () => {
@@ -102,38 +101,9 @@ describe('interface-ipfs-core tests', () => {
 
   tests.filesRegular(defaultCommonFactory, {
     skip: [
-      // .add
-      isNode ? null : {
-        name: 'should add a nested directory as array of tupples',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      isNode ? null : {
-        name: 'should add a nested directory as array of tupples with progress',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .addPullStream
-      isNode ? null : {
-        name: 'should add pull stream of valid files and dirs',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .addReadableStream
-      isNode ? null : {
-        name: 'should add readable stream of valid files and dirs',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
       // .addFromFs
       isNode ? null : {
         name: 'addFromFs',
-        reason: 'Not designed to run in the browser'
-      },
-      // .addFromURL
-      isNode ? null : {
-        name: 'addFromURL',
-        reason: 'Not designed to run in the browser'
-      },
-      // TODO: remove when interface-ipfs-core updated
-      isNode ? null : {
-        name: 'addFromUrl',
         reason: 'Not designed to run in the browser'
       },
       // .catPullStream
@@ -148,26 +118,6 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should export a chunk of a file in a Readable Stream',
         reason: 'TODO not implemented in go-ipfs yet'
-      },
-      // .get
-      isNode ? null : {
-        name: 'should get a directory',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .ls
-      isNode ? null : {
-        name: 'should ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .lsPullStream
-      isNode ? null : {
-        name: 'should pull stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
-      },
-      // .lsReadableStream
-      isNode ? null : {
-        name: 'should readable stream ls with a base58 encoded CID',
-        reason: 'FIXME https://github.com/ipfs/js-ipfs-http-client/issues/339'
       }
     ]
   })
@@ -277,31 +227,5 @@ describe('interface-ipfs-core tests', () => {
 
   tests.stats(defaultCommonFactory)
 
-  tests.swarm(CommonFactory.create({
-    createSetup ({ ipfsFactory, nodes }) {
-      return callback => {
-        callback(null, {
-          spawnNode (repoPath, config, cb) {
-            if (typeof repoPath === 'function') {
-              cb = repoPath
-              repoPath = undefined
-            }
-
-            if (typeof config === 'function') {
-              cb = config
-              config = undefined
-            }
-
-            const spawnOptions = { repoPath, config, initOptions: { bits: 1024, profile: 'test' } }
-
-            ipfsFactory.spawn(spawnOptions)
-              .then(ipfsd => {
-                nodes.push(ipfsd)
-                cb(null, ipfsClient(ipfsd.apiAddr))
-              }, cb)
-          }
-        })
-      }
-    }
-  }))
+  tests.swarm(CommonFactory.createAsync())
 })

@@ -11,6 +11,7 @@ module.exports = (arg) => {
       callback = opts
       opts = undefined
     }
+
     send({
       path: 'id',
       args: opts

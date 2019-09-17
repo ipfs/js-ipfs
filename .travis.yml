@@ -1,13 +1,14 @@
 language: node_js
 cache: npm
+
 stages:
   - check
   - test
   - cov
 
 node_js:
-  - '10'
   - '12'
+  - '10'
 
 os:
   - linux
@@ -18,11 +19,6 @@ script: npx nyc -s npm run test:node -- --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
-  allow_failures:
-    - name: electron-renderer
-
-  fast_finish: true
-
   include:
     - stage: check
       script:
@@ -44,13 +40,15 @@ jobs:
 
     - stage: test
       name: electron-main
+      os: osx
       script:
-        - xvfb-run npx aegir test -t electron-main -- --bail
+        - npx aegir test -t electron-main --bail
 
     - stage: test
       name: electron-renderer
+      os: osx
       script:
-        - xvfb-run npx aegir test -t electron-renderer -- --bail
+        - npx aegir test -t electron-renderer --bail
 
 notifications:
   email: false

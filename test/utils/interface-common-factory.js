@@ -4,11 +4,12 @@
 const each = require('async/each')
 const IPFSFactory = require('ipfsd-ctl')
 const ipfsClient = require('../../src')
+const merge = require('merge-options')
 
 function createFactory (options) {
   options = options || {}
 
-  options.factoryOptions = options.factoryOptions || {}
+  options.factoryOptions = options.factoryOptions || { IpfsClient: ipfsClient }
   options.spawnOptions = options.spawnOptions || { initOptions: { bits: 1024, profile: 'test' } }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
@@ -26,8 +27,11 @@ function createFactory (options) {
             ipfsFactory.spawn(options.spawnOptions)
               .then((ipfsd) => {
                 nodes.push(ipfsd)
-                cb(null, ipfsClient(ipfsd.apiAddr))
-              }, cb)
+                setImmediate(() => cb(null, ipfsd.api))
+              })
+              .catch(err => {
+                setImmediate(() => cb(err))
+              })
           }
         })
       }
@@ -36,11 +40,50 @@ function createFactory (options) {
     if (options.createTeardown) {
       teardown = options.createTeardown({ ipfsFactory, nodes }, options)
     } else {
-      teardown = callback => each(nodes, (node, cb) => node.stop().then(cb, cb), callback)
+      teardown = callback => each(nodes, (node, cb) => {
+        node
+          .stop()
+          .then(() => setImmediate(() => cb()))
+          .catch(err => setImmediate(() => cb(err)))
+      }, callback)
     }
 
     return { setup, teardown }
   }
 }
 
-exports.create = createFactory
+function createAsync (createFactoryOptions, createSpawnOptions) {
+  return () => {
+    const nodes = []
+    const setup = async (factoryOptions = {}, spawnOptions) => {
+      const ipfsFactory = IPFSFactory.create(merge(
+        { IpfsClient: ipfsClient },
+        factoryOptions,
+        createFactoryOptions
+      ))
+      const node = await ipfsFactory.spawn(merge(
+        { initOptions: { profile: 'test' } },
+        spawnOptions,
+        createSpawnOptions
+      ))
+      nodes.push(node)
+
+      const id = await node.api.id()
+      node.api.peerId = id
+
+      return node.api
+    }
+
+    const teardown = () => {
+      return Promise.all(nodes.map(n => n.stop()))
+    }
+    return {
+      setup,
+      teardown
+    }
+  }
+}
+module.exports = {
+  createAsync,
+  create: createFactory
+}

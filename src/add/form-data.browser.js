@@ -1,7 +1,6 @@
 'use strict'
 /* eslint-env browser */
 
-const { Buffer } = require('buffer')
 const normaliseInput = require('ipfs-utils/src/files/normalise-input')
 
 exports.toFormData = async input => {
@@ -16,12 +15,12 @@ exports.toFormData = async input => {
       // One day, this will be browser streams
       const bufs = []
       for await (const chunk of file.content) {
-        bufs.push(Buffer.isBuffer(chunk) ? chunk.buffer : chunk)
+        bufs.push(chunk)
       }
 
-      formData.append(`file-${i}`, new Blob(bufs, { type: 'application/octet-stream' }), file.path)
+      formData.append(`file-${i}`, new Blob(bufs, { type: 'application/octet-stream' }), encodeURIComponent(file.path))
     } else {
-      formData.append(`dir-${i}`, new Blob([], { type: 'application/x-directory' }), file.path)
+      formData.append(`dir-${i}`, new Blob([], { type: 'application/x-directory' }), encodeURIComponent(file.path))
     }
 
     i++
