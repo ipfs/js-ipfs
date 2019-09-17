@@ -2,13 +2,14 @@
 
 const nodeify = require('promise-nodeify')
 const moduleConfig = require('../utils/module-config')
-const { collectify, pullify, streamify } = require('../lib/converters')
+const { concatify, collectify, pullify, streamify } = require('../lib/converters')
 
 module.exports = (arg) => {
   const send = moduleConfig(arg)
   const add = require('../add')(arg)
   const addFromFs = require('../add-from-fs')(arg)
   const addFromURL = require('../add-from-url')(arg)
+  const cat = require('../cat')(arg)
 
   return {
     add: (input, options, callback) => {
@@ -42,9 +43,15 @@ module.exports = (arg) => {
       return nodeify(collectify(add)(input, options), callback)
     },
     _addAsyncIterator: add,
-    cat: require('../files-regular/cat')(send),
-    catReadableStream: require('../files-regular/cat-readable-stream')(send),
-    catPullStream: require('../files-regular/cat-pull-stream')(send),
+    cat: (path, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      return nodeify(concatify(cat)(path, options), callback)
+    },
+    catReadableStream: streamify.readable(cat),
+    catPullStream: pullify.source(cat),
     get: require('../files-regular/get')(send),
     getReadableStream: require('../files-regular/get-readable-stream')(send),
     getPullStream: require('../files-regular/get-pull-stream')(send),
