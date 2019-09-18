@@ -30,10 +30,8 @@
   <p>Try adding a new file:</p>
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
-    const { Buffer } = Ipfs
-
     async function addFile () {
-      const filesAdded = await node.add(Buffer.from('Hello world!'))
+      const filesAdded = await node.add('Hello world!')
       filesAdded.forEach((file) => console.log('successfully stored', file.hash))
     }
 

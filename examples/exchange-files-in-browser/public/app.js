@@ -44,9 +44,6 @@ let info
 async function start () {
   if (!node) {
     const options = {
-      pubsub: {
-        enabled: true
-      },
       repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
