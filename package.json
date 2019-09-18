@@ -200,7 +200,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.114.0",
     "ipfs-interop": "~0.1.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#chore/new-http-client",
+    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#chore/new-http-client",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",

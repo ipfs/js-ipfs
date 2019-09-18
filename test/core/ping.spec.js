@@ -36,7 +36,6 @@ const spawnNode = ({ dht = false, type = 'js' }) => {
   return factory.spawn({
     args,
     config,
-    initOptions: { bits: 512 },
     preload: { enabled: false }
   })
 }
