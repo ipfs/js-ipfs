@@ -95,7 +95,7 @@
     - [ ] Twitter
     - [ ] IRC
 - [ ] **Stage 4 - Release**
-  - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [this script](https://gist.github.com/alanshaw/5a2d9465c5a05b201d949551bdb1fcc3).
+  - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [the js-ipfs-contributors module](https://www.npmjs.com/package/js-ipfs-contributors).
   - [ ] Publish to npm:
     ```sh
     # Re-install dependencies using lockfile (will automatically remove your node_modules folder)
