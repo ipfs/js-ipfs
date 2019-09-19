@@ -11,7 +11,9 @@ const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
 module.exports = function (self) {
-  return function (ipfsPath, options = {}) {
+  return function (ipfsPath, options) {
+    options = options || {}
+
     if (options.maxDepth === 0) {
       return pull.empty()
     }

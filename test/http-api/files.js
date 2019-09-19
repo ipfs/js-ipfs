@@ -12,7 +12,10 @@ const {
   FILE_TYPES
 } = require('ipfs-mfs')
 const path = require('path')
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
+})
 
 describe('.files', () => {
   let ipfs = null

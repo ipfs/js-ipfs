@@ -1,86 +1,72 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
 const RepoErrors = require('ipfs-repo').errors
 
 // Boot an IPFS node depending on the options set
-module.exports = (self) => {
+module.exports = async (self) => {
   self.log('booting')
   const options = self._options
   const doInit = options.init
   const doStart = options.start
 
-  // Do the actual boot sequence
-  waterfall([
-    // Checks if a repo exists, and if so opens it
-    // Will return callback with a bool indicating the existence
-    // of the repo
-    // TODO vmx 2019-08-05: THIS WON'T WORK IN THE BROWSER due to transpiling, this needs a proper fix. This is just a hack to keep things moving
-    async () => {
-      // nothing to do
-      if (!self._repo.closed) {
-        return true
-      }
-
-      try {
-        const res = await self._repo.open()
-      } catch (err) {
-        if (isRepoUninitializedError(err)) return false
-        if (err) throw err
-      }
-
+  // Checks if a repo exists, and if so opens it
+  // Will return callback with a bool indicating the existence
+  // of the repo
+  async function repoOpened () {
+    // nothing to do
+    if (!self._repo.closed) {
       return true
-    },
-    (repoOpened, cb) => {
-      // Init with existing initialized, opened, repo
-      if (repoOpened) {
-        return self.init({ repo: self._repo }, (err) => {
-          if (err) return cb(Object.assign(err, { emitted: true }))
-          cb()
-        })
-      }
-
-      if (doInit) {
-        const initOptions = Object.assign(
-          { bits: 2048, pass: self._options.pass },
-          typeof options.init === 'object' ? options.init : {}
-        )
-        return self.init(initOptions, (err) => {
-          if (err) return cb(Object.assign(err, { emitted: true }))
-          cb()
-        })
-      }
-
-      cb()
-    },
-    (cb) => {
-      // No problem, we don't have to start the node
-      if (!doStart) {
-        return cb()
-      }
-
-      self.start((err) => {
-        if (err) return cb(Object.assign(err, { emitted: true }))
-        cb()
-      })
     }
-  ], (err) => {
-    if (err) {
-      if (!err.emitted) {
-        self.emit('error', err)
+
+    try {
+      await self._repo.open()
+    } catch (err) {
+      if (isRepoUninitializedError(err)) {
+        return false
       }
-      return
+
+      if (err) {
+        throw err
+      }
     }
+
+    return true
+  }
+
+  // Do the actual boot sequence
+  try {
+    // Init with existing initialized, opened, repo
+    if (await repoOpened()) {
+      try {
+        await self.init({ repo: self._repo })
+      } catch (err) {
+        throw Object.assign(err, { emitted: true })
+      }
+    } else if (doInit) {
+      const defaultInitOptions = {
+        bits: 2048,
+        pass: self._options.pass
+      }
+
+      const initOptions = Object.assign(defaultInitOptions, typeof options.init === 'object' ? options.init : {})
+
+      await self.init(initOptions)
+    }
+
+    if (doStart) {
+      await self.start()
+    }
+
     self.log('booted')
     self.emit('ready')
-  })
+  } catch (err) {
+    if (!err.emitted) {
+      self.emit('error', err)
+    }
+  }
 }
 
 function isRepoUninitializedError (err) {
-  if (!err) {
-    return false
-  }
-
   // If the error is that no repo exists,
   // which happens when the version file is not found
   // we just want to signal that no repo exist, not

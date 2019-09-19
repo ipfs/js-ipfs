@@ -17,7 +17,7 @@ const {
   DAGNode
 } = require('ipld-dag-pb')
 const CID = require('cids')
-
+const callbackify = require('callbackify')
 const IPFS = require('../../src/core')
 const createPinSet = require('../../src/core/components/pin/pin-set')
 const createTempRepo = require('../utils/create-repo-nodejs')
@@ -87,7 +87,14 @@ describe('pinSet', function () {
       preload: { enabled: false }
     })
     ipfs.on('ready', () => {
-      pinSet = createPinSet(ipfs.dag)
+      const ps = createPinSet(ipfs.dag)
+      pinSet = {
+        storeSet: callbackify(ps.storeSet.bind(ps)),
+        loadSet: callbackify(ps.loadSet.bind(ps)),
+        hasDescendant: callbackify(ps.hasDescendant.bind(ps)),
+        walkItems: callbackify(ps.walkItems.bind(ps)),
+        getInternalCids: callbackify(ps.getInternalCids.bind(ps))
+      }
       done()
     })
   })
@@ -140,7 +147,7 @@ describe('pinSet', function () {
             const hashes = loaded.map(l => new CID(l).toBaseEncodedString())
 
             // just check the first node, assume all are children if successful
-            pinSet.hasDescendant(result.node, hashes[0], (err, has) => {
+            pinSet.hasDescendant(result.cid, hashes[0], (err, has) => {
               expect(err).to.not.exist()
               expect(has).to.eql(true)
               done()

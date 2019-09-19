@@ -1,21 +1,15 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-
+const callbackify = require('callbackify')
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 
 module.exports = function swarm (self) {
   return {
-    peers: promisify((opts, callback) => {
-      if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
-      }
-
+    peers: callbackify.variadic(async (opts) => { // eslint-disable-line require-await
       opts = opts || {}
 
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        throw new Error(OFFLINE_ERROR)
       }
 
       const verbose = opts.v || opts.verbose
@@ -40,44 +34,46 @@ module.exports = function swarm (self) {
         peers.push(tupple)
       })
 
-      callback(null, peers)
+      return peers
     }),
 
     // all the addrs we know
-    addrs: promisify((callback) => {
+    addrs: callbackify(async () => { // eslint-disable-line require-await
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        throw new Error(OFFLINE_ERROR)
       }
 
       const peers = Object.values(self._peerInfoBook.getAll())
 
-      callback(null, peers)
+      return peers
     }),
 
-    localAddrs: promisify((callback) => {
+    localAddrs: callbackify(async () => { // eslint-disable-line require-await
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        throw new Error(OFFLINE_ERROR)
       }
 
-      callback(null, self.libp2p.peerInfo.multiaddrs.toArray())
+      return self.libp2p.peerInfo.multiaddrs.toArray()
     }),
 
-    connect: promisify((maddr, callback) => {
+    connect: callbackify(async (maddr) => { // eslint-disable-line require-await
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        throw new Error(OFFLINE_ERROR)
       }
 
-      self.libp2p.dial(maddr, callback)
+      return self.libp2p.dial(maddr)
     }),
 
-    disconnect: promisify((maddr, callback) => {
+    disconnect: callbackify(async (maddr) => { // eslint-disable-line require-await
       if (!self.isOnline()) {
-        return callback(new Error(OFFLINE_ERROR))
+        throw new Error(OFFLINE_ERROR)
       }
 
-      self.libp2p.hangUp(maddr, callback)
+      return self.libp2p.hangUp(maddr)
     }),
 
-    filters: promisify((callback) => callback(new Error('Not implemented')))
+    filters: callbackify(async () => { // eslint-disable-line require-await
+      throw new Error('Not implemented')
+    })
   }
 }

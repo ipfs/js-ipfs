@@ -23,14 +23,20 @@ class MutexEmitter extends Mutex {
     this.emitter = new EventEmitter()
   }
 
-  readLock (lockedFn, cb) {
-    this.emitter.emit('readLock request')
-    return super.readLock(lockedFn, cb)
+  readLock () {
+    setTimeout(() => {
+      this.emitter.emit('readLock request')
+    }, 100)
+
+    return super.readLock()
   }
 
-  writeLock (lockedFn, cb) {
-    this.emitter.emit('writeLock request')
-    return super.writeLock(lockedFn, cb)
+  writeLock () {
+    setTimeout(() => {
+      this.emitter.emit('writeLock request')
+    }, 100)
+
+    return super.writeLock()
   }
 }
 
@@ -55,7 +61,11 @@ describe('gc', function () {
   let lockEmitter
 
   before(async function () {
-    const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
+    const factory = IPFSFactory.create({
+      type: 'proc',
+      exec: IPFS,
+      IpfsClient: require('ipfs-http-client')
+    })
     const config = { Bootstrap: [] }
 
     if (env.isNode) {

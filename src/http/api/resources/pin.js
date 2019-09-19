@@ -28,7 +28,7 @@ function parseArgs (request, h) {
 exports.ls = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -73,7 +73,7 @@ exports.ls = {
 exports.add = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -102,7 +102,7 @@ exports.add = {
 exports.rm = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

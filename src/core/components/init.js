@@ -3,6 +3,7 @@
 const peerId = require('peer-id')
 const mergeOptions = require('merge-options')
 const callbackify = require('callbackify')
+const promisify = require('promisify-es6')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
 const {
@@ -16,20 +17,20 @@ const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
 const addDefaultAssets = require('./init-assets')
 
-async function createPeerId (self, opts) {
+function createPeerId (self, opts) {
   if (opts.privateKey) {
     self.log('using user-supplied private-key')
     if (typeof opts.privateKey === 'object') {
       return opts.privateKey
     } else {
-      return peerId.createFromPrivKey(Buffer.from(opts.privateKey, 'base64'))
+      return promisify(peerId.createFromPrivKey)(Buffer.from(opts.privateKey, 'base64'))
     }
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
     opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
     self.log('generating peer id: %s bits', opts.bits)
 
-    return await peerId.create({ bits: opts.bits })
+    return promisify(peerId.create)({ bits: opts.bits })
   }
 }
 
@@ -53,7 +54,6 @@ async function createRepo (self, opts) {
   opts.log = opts.log || function () {}
 
   const config = mergeOptions(defaultConfig(), self._options.config)
-  let privateKey
 
   // Verify repo does not exist yet
   const exists = await self._repo.exists()
@@ -62,7 +62,7 @@ async function createRepo (self, opts) {
     throw Error('repo already exists')
   }
 
-  let peerId = await createPeerId(self, opts)
+  const peerId = await createPeerId(self, opts)
 
   self.log('identity generated')
 
@@ -70,7 +70,7 @@ async function createRepo (self, opts) {
     PeerID: peerId.toB58String(),
     PrivKey: peerId.privKey.bytes.toString('base64')
   }
-  privateKey = peerId.privKey
+  const privateKey = peerId.privKey
 
   if (opts.pass) {
     config.Keychain = Keychain.generateOptions()
@@ -100,7 +100,6 @@ async function createRepo (self, opts) {
 
   // add empty unixfs dir object (go-ipfs assumes this exists)
   return addRepoAssets(self, privateKey, opts)
-
 }
 
 async function addRepoAssets (self, privateKey, opts) {
@@ -123,7 +122,6 @@ async function addRepoAssets (self, privateKey, opts) {
 
   if (typeof addDefaultAssets === 'function') {
     self.log('Adding default assets')
-
     // addDefaultAssets is undefined on browsers.
     // See package.json browser config
     return addDefaultAssets(self, opts.log)
@@ -134,19 +132,13 @@ module.exports = function init (self) {
   return callbackify(async (opts) => {
     opts = opts || {}
 
-    try {
-      await createRepo(self, opts)
-      self.log('Created repo')
-      await self.preStart()
+    await createRepo(self, opts)
+    self.log('Created repo')
 
-      self.log('Done pre-start')
+    await self.preStart()
+    self.log('Done pre-start')
 
-      self.state.initialized()
-      self.emit('init')
-    } catch(err) {
-      self.emit('error', err)
-
-      throw err
-    }
+    self.state.initialized()
+    self.emit('init')
   })
 }

@@ -3,7 +3,6 @@
 const execa = require('execa')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-const expect = chai.expect
 chai.use(dirtyChai)
 const path = require('path')
 const _ = require('lodash')
@@ -73,24 +72,16 @@ module.exports = (repoPath, opts) => {
    */
   ipfs.fail = function ipfsFail () {
     let args = Array.from(arguments)
-    let caught = false
+
     if (args.length === 1) {
       args = args[0].split(' ')
     }
 
     return exec(args)
-      .catch(err => {
-        caught = true
-        expect(err).to.exist()
-
+      .then(() => {
+        throw new Error(`jsipfs expected to fail during command: jsipfs ${args.join(' ')}`)
+      }, (err) => {
         return err
-      })
-      .then((res) => {
-        if (!caught) {
-          throw new Error(`jsipfs expected to fail during command: jsipfs ${args.join(' ')}`)
-        }
-
-        return res
       })
   }
 

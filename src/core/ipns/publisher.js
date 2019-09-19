@@ -3,7 +3,7 @@
 const PeerId = require('peer-id')
 const { Key } = require('interface-datastore')
 const errcode = require('err-code')
-
+const promisify = require('promisify-es6')
 const debug = require('debug')
 const log = debug('ipfs:ipns:publisher')
 log.error = debug('ipfs:ipns:publisher:error')
@@ -25,7 +25,7 @@ class IpnsPublisher {
       throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
     }
 
-    const peerId = await PeerId.createFromPrivKey(privKey.bytes)
+    const peerId = await promisify(PeerId.createFromPrivKey)(privKey.bytes)
     const record = await this._updateOrCreateRecord(privKey, value, lifetime, peerId)
 
     return this._putRecordToRouting(record, peerId)
@@ -39,7 +39,6 @@ class IpnsPublisher {
   async _putRecordToRouting (record, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
-
       log.error(errMsg)
 
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
@@ -96,7 +95,6 @@ class IpnsPublisher {
   async _publishPublicKey (key, publicKey) {
     if ((!Key.isKey(key))) {
       const errMsg = 'datastore key does not have a valid format'
-
       log.error(errMsg)
 
       throw errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY')
@@ -104,7 +102,6 @@ class IpnsPublisher {
 
     if (!publicKey || !publicKey.bytes) {
       const errMsg = 'one or more of the provided parameters are not defined'
-
       log.error(errMsg)
 
       throw errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER')
@@ -182,7 +179,6 @@ class IpnsPublisher {
   async _updateOrCreateRecord (privKey, value, validity, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
-
       log.error(errMsg)
 
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
@@ -220,7 +216,7 @@ class IpnsPublisher {
     } catch (err) {
       const errMsg = `ipns record for ${value} could not be created`
 
-      log.error(errMsg)
+      log.error(err)
       throw errcode(new Error(errMsg), 'ERR_CREATING_IPNS_RECORD')
     }
 

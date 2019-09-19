@@ -1,16 +1,11 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const CID = require('cids')
-const each = require('async/each')
-const nextTick = require('async/nextTick')
 const { every, forEach } = require('p-iteration')
-const callbackify = require('callbackify')
-
 const errcode = require('err-code')
-
 const debug = require('debug')
 const log = debug('ipfs:dht')
 log.error = debug('ipfs:dht:error')
@@ -26,12 +21,7 @@ module.exports = (self) => {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    get: promisify((key, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    get: callbackify.variadic(async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
       if (!Buffer.isBuffer(key)) {
@@ -40,11 +30,11 @@ module.exports = (self) => {
         } catch (err) {
           log.error(err)
 
-          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          throw errcode(err, 'ERR_INVALID_CID')
         }
       }
 
-      self.libp2p.dht.get(key, options, callback)
+      return self.libp2p.dht.get(key, options)
     }),
 
     /**
@@ -59,18 +49,18 @@ module.exports = (self) => {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    put: promisify((key, value, callback) => {
+    put: callbackify(async (key, value) => { // eslint-disable-line require-await
       if (!Buffer.isBuffer(key)) {
         try {
           key = (new CID(key)).buffer
         } catch (err) {
           log.error(err)
 
-          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          throw errcode(err, 'ERR_INVALID_CID')
         }
       }
 
-      self.libp2p.dht.put(key, value, callback)
+      return self.libp2p.dht.put(key, value)
     }),
 
     /**
@@ -83,12 +73,7 @@ module.exports = (self) => {
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findProvs: promisify((key, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    findProvs: callbackify.variadic(async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
       if (typeof key === 'string') {
@@ -97,11 +82,11 @@ module.exports = (self) => {
         } catch (err) {
           log.error(err)
 
-          return nextTick(() => callback(errcode(err, 'ERR_INVALID_CID')))
+          throw errcode(err, 'ERR_INVALID_CID')
         }
       }
 
-      self.libp2p.contentRouting.findProviders(key, options, callback)
+      return self.libp2p.contentRouting.findProviders(key, options)
     }),
 
     /**
@@ -111,12 +96,12 @@ module.exports = (self) => {
      * @param {function(Error, PeerInfo)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findPeer: promisify((peer, callback) => {
+    findPeer: callbackify(async (peer) => { // eslint-disable-line require-await
       if (typeof peer === 'string') {
         peer = PeerId.createFromB58String(peer)
       }
 
-      self.libp2p.peerRouting.findPeer(peer, callback)
+      return self.libp2p.peerRouting.findPeer(peer)
     }),
 
     /**
@@ -128,19 +113,15 @@ module.exports = (self) => {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    provide: callbackify(async (keys, options) => {
+    provide: callbackify.variadic(async (keys, options) => {
+      options = options || {}
+
       if (!Array.isArray(keys)) {
         keys = [keys]
       }
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      options = options || {}
 
       // ensure blocks are actually local
-      const has = await every(keys, async (key) => {
+      const has = await every(keys, (key) => {
         return self._repo.blocks.has(key)
       })
 
@@ -155,9 +136,7 @@ module.exports = (self) => {
         // TODO: Implement recursive providing
         throw errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET')
       } else {
-        forEach(keys, (cid) => {
-            self.libp2p.contentRouting.provide(cid)
-        })
+        await forEach(keys, (cid) => self.libp2p.contentRouting.provide(cid))
       }
     }),
 
@@ -168,25 +147,27 @@ module.exports = (self) => {
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<Array<PeerInfo>>|void}
      */
-    query: promisify((peerId, callback) => {
+    query: callbackify(async (peerId) => {
       if (typeof peerId === 'string') {
         try {
           peerId = PeerId.createFromB58String(peerId)
         } catch (err) {
           log.error(err)
-          return callback(err)
+
+          throw err
         }
       }
 
-      // TODO expose this method in peerRouting
-      self.libp2p._dht.getClosestPeers(peerId.toBytes(), (err, peerIds) => {
-        if (err) {
-          log.error(err)
-          return callback(err)
-        }
+      try {
+        // TODO expose this method in peerRouting
+        const peerIds = await self.libp2p._dht.getClosestPeers(peerId.toBytes())
 
-        callback(null, peerIds.map((id) => new PeerInfo(id)))
-      })
+        return peerIds.map((id) => new PeerInfo(id))
+      } catch (err) {
+        log.error(err)
+
+        throw err
+      }
     })
   }
 }

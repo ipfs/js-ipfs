@@ -29,47 +29,58 @@ class IpnsPubsubDatastore {
    * @param {function(Error)} callback
    * @returns {void}
    */
-  put (key, value, callback) {
-    this._pubsubDs.put(key, value, callback)
+  async put (key, value) { // eslint-disable-line require-await
+    return this._pubsubDs.put(key, value)
   }
 
   /**
    * Get a value from the pubsub datastore indexed by the received key properly encoded.
-   * Moreover, the identifier topic is subscribed and the pubsub datastore records will be
+   * Also, the identifier topic is subscribed to and the pubsub datastore records will be
    * updated once new publishes occur.
    * @param {Buffer} key identifier of the value to be obtained.
    * @param {function(Error, Buffer)} callback
    * @returns {void}
    */
-  get (key, callback) {
-    this._pubsubDs.get(key, (err, res) => {
-      // Add topic subscribed
-      const ns = key.slice(0, ipns.namespaceLength)
+  async get (key) {
+    let res
+    let err
 
-      if (ns.toString() === ipns.namespace) {
-        const stringifiedTopic = key.toString()
-        const id = toB58String(key.slice(ipns.namespaceLength))
+    try {
+      res = await this._pubsubDs.get(key)
+    } catch (e) {
+      err = e
+    }
 
-        this._subscriptions[stringifiedTopic] = id
+    // Add topic subscribed
+    const ns = key.slice(0, ipns.namespaceLength)
 
-        log(`subscribed pubsub ${stringifiedTopic}: ${id}`)
-      }
+    if (ns.toString() === ipns.namespace) {
+      const stringifiedTopic = toB58String(key)
+      const id = toB58String(key.slice(ipns.namespaceLength))
 
-      // If no data was obtained, after storing the subscription, return the error.
-      if (err) {
-        return callback(err)
-      }
+      this._subscriptions[stringifiedTopic] = id
 
-      callback(null, res)
-    })
+      log(`subscribed to pubsub topic ${stringifiedTopic}, id ${id}`)
+    }
+
+    // If no data was obtained, after storing the subscription, return the error.
+    if (err) {
+      throw err
+    }
+
+    return res
   }
 
   // Modify subscription key to have a proper encoding
-  _handleSubscriptionKey (key, callback) {
+  _handleSubscriptionKey (key) {
+    if (Buffer.isBuffer(key)) {
+      key = toB58String(key)
+    }
+
     const subscriber = this._subscriptions[key]
 
     if (!subscriber) {
-      return callback(errcode(new Error(`key ${key} does not correspond to a subscription`), 'ERR_INVALID_KEY'))
+      throw errcode(new Error(`key ${key} does not correspond to a subscription`), 'ERR_INVALID_KEY')
     }
 
     let keys
@@ -77,21 +88,21 @@ class IpnsPubsubDatastore {
       keys = ipns.getIdKeys(fromB58String(subscriber))
     } catch (err) {
       log.error(err)
-      return callback(err)
+      throw err
     }
 
-    callback(null, keys.routingKey.toBuffer())
+    return keys.routingKey.toBuffer()
   }
 
   /**
    * Get pubsub subscriptions related to ipns.
    * @param {function(Error, Object)} callback
-   * @returns {void}
+   * @returns {Array<Object>}
    */
-  getSubscriptions (callback) {
+  getSubscriptions () {
     const subscriptions = Object.values(this._subscriptions).filter(Boolean)
 
-    return callback(null, subscriptions.map((sub) => `${ipns.namespace}${sub}`))
+    return subscriptions.map((sub) => `${ipns.namespace}${sub}`)
   }
 
   /**
@@ -100,9 +111,9 @@ class IpnsPubsubDatastore {
    * @param {function(Error, Object)} callback
    * @returns {void}
    */
-  cancel (name, callback) {
+  async cancel (name) { // eslint-disable-line require-await
     if (typeof name !== 'string') {
-      return callback(errcode(new Error('invalid subscription name'), 'ERR_INVALID_SUBSCRIPTION_NAME'))
+      throw errcode(new Error('invalid subscription name'), 'ERR_INVALID_SUBSCRIPTION_NAME')
     }
 
     // Trim /ipns/ prefix from the name
@@ -114,26 +125,22 @@ class IpnsPubsubDatastore {
 
     // Not found topic
     if (!stringifiedTopic) {
-      return callback(null, {
+      return {
         canceled: false
-      })
+      }
     }
 
     // Unsubscribe topic
-    try {
-      const bufTopic = Buffer.from(stringifiedTopic)
+    const bufTopic = Buffer.from(stringifiedTopic)
 
-      this._pubsubDs.unsubscribe(bufTopic)
-    } catch (err) {
-      return callback(err)
-    }
+    this._pubsubDs.unsubscribe(bufTopic)
 
     this._subscriptions[stringifiedTopic] = undefined
     log(`unsubscribed pubsub ${stringifiedTopic}: ${name}`)
 
-    callback(null, {
+    return {
       canceled: true
-    })
+    }
   }
 }
 

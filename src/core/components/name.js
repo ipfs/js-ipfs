@@ -1,15 +1,14 @@
 'use strict'
 
 const debug = require('debug')
-const promisify = require('promisify-es6')
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
+const callbackify = require('callbackify')
 const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
 const mergeOptions = require('merge-options')
 const mh = require('multihashes')
 const isDomain = require('is-domain-name')
+const promisify = require('promisify-es6')
 
 const log = debug('ipfs:name')
 log.error = debug('ipfs:name:error')
@@ -18,36 +17,32 @@ const namePubsub = require('./name-pubsub')
 const utils = require('../utils')
 const path = require('../ipns/path')
 
-const keyLookup = (ipfsNode, kname, callback) => {
+const keyLookup = async (ipfsNode, kname) => {
   if (kname === 'self') {
-    return callback(null, ipfsNode._peerInfo.id.privKey)
+    return ipfsNode._peerInfo.id.privKey
   }
 
-  const pass = ipfsNode._options.pass
+  try {
+    const pass = ipfsNode._options.pass
+    const pem = await ipfsNode._keychain.exportKey(kname, pass)
+    const privateKey = await promisify(crypto.keys.import.bind(crypto.keys))(pem, pass)
 
-  waterfall([
-    (cb) => ipfsNode._keychain.exportKey(kname, pass, cb),
-    (pem, cb) => crypto.keys.import(pem, pass, cb)
-  ], (err, privateKey) => {
-    if (err) {
-      log.error(err)
-      return callback(errcode(err, 'ERR_CANNOT_GET_KEY'))
-    }
+    return privateKey
+  } catch (err) {
+    log.error(err)
 
-    return callback(null, privateKey)
-  })
+    throw errcode(err, 'ERR_CANNOT_GET_KEY')
+  }
 }
 
-const appendRemainder = (cb, remainder) => {
-  return (err, result) => {
-    if (err) {
-      return cb(err)
-    }
-    if (remainder.length) {
-      return cb(null, result + '/' + remainder.join('/'))
-    }
-    return cb(null, result)
+const appendRemainder = async (result, remainder) => {
+  result = await result
+
+  if (remainder.length) {
+    return result + '/' + remainder.join('/')
   }
+
+  return result
 }
 
 /**
@@ -81,19 +76,15 @@ module.exports = function name (self) {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    publish: promisify((value, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    publish: callbackify.variadic(async (value, options) => {
       options = options || {}
+
       const resolve = !(options.resolve === false)
       const lifetime = options.lifetime || '24h'
       const key = options.key || 'self'
 
       if (!self.isOnline()) {
-        return callback(errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR'))
+        throw errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR')
       }
 
       // TODO: params related logic should be in the core implementation
@@ -103,7 +94,8 @@ module.exports = function name (self) {
         value = utils.normalizePath(value)
       } catch (err) {
         log.error(err)
-        return callback(err)
+
+        throw err
       }
 
       let pubLifetime
@@ -114,24 +106,19 @@ module.exports = function name (self) {
         pubLifetime = pubLifetime.toFixed(6)
       } catch (err) {
         log.error(err)
-        return callback(err)
+
+        throw err
       }
 
       // TODO: ttl human for cache
-
-      parallel([
-        (cb) => keyLookup(self, key, cb),
+      const results = await Promise.all([
         // verify if the path exists, if not, an error will stop the execution
-        (cb) => resolve.toString() === 'true' ? path.resolvePath(self, value, cb) : cb()
-      ], (err, results) => {
-        if (err) {
-          log.error(err)
-          return callback(err)
-        }
+        keyLookup(self, key),
+        resolve.toString() === 'true' ? path.resolvePath(self, value) : Promise.resolve()
+      ])
 
-        // Start publishing process
-        self._ipns.publish(results[0], value, pubLifetime, callback)
-      })
+      // Start publishing process
+      return self._ipns.publish(results[0], value, pubLifetime)
     }),
 
     /**
@@ -144,22 +131,17 @@ module.exports = function name (self) {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    resolve: promisify((name, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    resolve: callbackify.variadic(async (name, options) => { // eslint-disable-line require-await
       options = mergeOptions({
         nocache: false,
         recursive: true
-      }, options)
+      }, options || {})
 
       const offline = self._options.offline
 
       // TODO: params related logic should be in the core implementation
       if (offline && options.nocache) {
-        return callback(errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE'))
+        throw errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE')
       }
 
       // Set node id as name for being resolved, if it is not received
@@ -177,20 +159,20 @@ module.exports = function name (self) {
       } catch (err) {
         // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
         if (isDomain(hash)) {
-          return self.dns(hash, options, appendRemainder(callback, remainder))
+          return appendRemainder(self.dns(hash, options), remainder)
         }
 
         log.error(err)
-        return callback(errcode(new Error('Invalid IPNS name'), 'ERR_IPNS_INVALID_NAME'))
+        throw errcode(new Error('Invalid IPNS name'), 'ERR_IPNS_INVALID_NAME')
       }
 
       // multihash is valid lets resolve with IPNS
       // IPNS resolve needs a online daemon
       if (!self.isOnline() && !offline) {
-        return callback(errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR'))
+        throw errcode(new Error(utils.OFFLINE_ERROR), 'OFFLINE_ERROR')
       }
 
-      self._ipns.resolve(`/${namespace}/${hash}`, options, appendRemainder(callback, remainder))
+      return appendRemainder(self._ipns.resolve(`/${namespace}/${hash}`, options), remainder)
     }),
     pubsub: namePubsub(self)
   }

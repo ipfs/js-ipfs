@@ -6,6 +6,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
+const delay = require('delay')
 const parallel = require('async/parallel')
 const pull = require('pull-stream')
 const pullThrough = require('pull-stream/throughs/through')
@@ -14,38 +15,56 @@ const pullCollect = require('pull-stream/sinks/collect')
 const pullValues = require('pull-stream/sources/values')
 const GCLock = require('../../src/core/components/pin/gc-lock')
 
-const cbTakeLock = (type, lock, out, id, duration) => {
-  return (cb) => lock[type + 'Lock']((lockCb) => {
-    out.push(`${type} ${id} start`)
-    setTimeout(() => {
-      out.push(`${type} ${id} end`)
-      lockCb()
-    }, duration)
-  }, cb)
+const promiseTakeLock = (type, lock, out, id, duration) => {
+  return (cb) => {
+    lock[type + 'Lock']()
+      .then(async (release) => {
+        try {
+          out.push(`${type} ${id} start`)
+
+          await delay(duration)
+
+          out.push(`${type} ${id} end`)
+        } finally {
+          release()
+        }
+      })
+      .then(() => cb())
+  }
 }
-const cbReadLock = (lock, out, id, duration) => {
-  return cbTakeLock('read', lock, out, id, duration)
+const promiseReadLock = (lock, out, id, duration) => {
+  return promiseTakeLock('read', lock, out, id, duration)
 }
-const cbWriteLock = (lock, out, id, duration) => {
-  return cbTakeLock('write', lock, out, id, duration)
+const promiseWriteLock = (lock, out, id, duration) => {
+  return promiseTakeLock('write', lock, out, id, duration)
 }
-const cbTakeLockError = (type, lock, out, errs, id, duration) => {
-  return (cb) => lock[type + 'Lock']((lockCb) => {
-    out.push(`${type} ${id} start`)
-    setTimeout(() => {
-      out.push(`${type} ${id} error`)
-      lockCb(new Error('err'))
-    }, duration)
-  }, (err) => {
-    errs.push(err)
-    cb()
-  })
+const promiseTakeLockError = (type, lock, out, errs, id, duration) => {
+  return (cb) => {
+    lock[type + 'Lock']()
+      .then(async (release) => {
+        try {
+          out.push(`${type} ${id} start`)
+
+          await delay(duration)
+
+          out.push(`${type} ${id} error`)
+
+          const err = new Error('err')
+          errs.push(err)
+
+          throw err
+        } finally {
+          release()
+        }
+      })
+      .catch(() => cb())
+  }
 }
-const cbReadLockError = (lock, out, errs, id, duration) => {
-  return cbTakeLockError('read', lock, out, errs, id, duration)
+const promiseReadLockError = (lock, out, errs, id, duration) => {
+  return promiseTakeLockError('read', lock, out, errs, id, duration)
 }
-const cbWriteLockError = (lock, out, errs, id, duration) => {
-  return cbTakeLockError('write', lock, out, errs, id, duration)
+const promiseWriteLockError = (lock, out, errs, id, duration) => {
+  return promiseTakeLockError('write', lock, out, errs, id, duration)
 }
 
 const pullTakeLock = (type, lock, out, id, duration) => {
@@ -285,11 +304,11 @@ const runTests = (suiteName, { readLock, writeLock, readLockError, writeLockErro
 }
 
 describe('gc-lock', function () {
-  runTests('cb style lock', {
-    readLock: cbReadLock,
-    writeLock: cbWriteLock,
-    readLockError: cbReadLockError,
-    writeLockError: cbWriteLockError
+  runTests('promise style lock', {
+    readLock: promiseReadLock,
+    writeLock: promiseWriteLock,
+    readLockError: promiseReadLockError,
+    writeLockError: promiseWriteLockError
   })
 
   runTests('pull stream style lock', {

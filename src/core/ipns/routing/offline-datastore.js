@@ -3,7 +3,6 @@
 const { Key } = require('interface-datastore')
 const { Record } = require('libp2p-record')
 const { encodeBase32 } = require('./utils')
-const callbackify = require('callbackify')
 
 const errcode = require('err-code')
 const debug = require('debug')
@@ -24,30 +23,28 @@ class OfflineDatastore {
    * @param {function(Error)} callback
    * @returns {void}
    */
-  put (key, value, callback) {
-    return callbackify((key, value) => {
-      if (!Buffer.isBuffer(key)) {
-        throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
-      }
+  async put (key, value) { // eslint-disable-line require-await
+    if (!Buffer.isBuffer(key)) {
+      throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
+    }
 
-      if (!Buffer.isBuffer(value)) {
-        throw errcode(new Error('Offline datastore value must be a buffer'), 'ERR_INVALID_VALUE')
-      }
+    if (!Buffer.isBuffer(value)) {
+      throw errcode(new Error('Offline datastore value must be a buffer'), 'ERR_INVALID_VALUE')
+    }
 
-      let routingKey
+    let routingKey
 
-      try {
-        routingKey = this._routingKey(key)
-      } catch (err) {
-        log.error(err)
-        throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
-      }
+    try {
+      routingKey = this._routingKey(key)
+    } catch (err) {
+      log.error(err)
+      throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
+    }
 
-      // Marshal to libp2p record as the DHT does
-      const record = new Record(key, value)
+    // Marshal to libp2p record as the DHT does
+    const record = new Record(key, value)
 
-      return this._repo.datastore.put(routingKey, record.serialize())
-    })(key, value, callback)
+    return this._repo.datastore.put(routingKey, record.serialize())
   }
 
   /**
@@ -56,34 +53,32 @@ class OfflineDatastore {
    * @param {function(Error, Buffer)} callback
    * @returns {void}
    */
-  get (key, callback) {
-    return callbackify(async (key) => {
-      if (!Buffer.isBuffer(key)) {
-        throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
-      }
+  async get (key) {
+    if (!Buffer.isBuffer(key)) {
+      throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
+    }
 
-      let routingKey
+    let routingKey
 
-      try {
-        routingKey = this._routingKey(key)
-      } catch (err) {
-        log.error(err)
-        throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
-      }
+    try {
+      routingKey = this._routingKey(key)
+    } catch (err) {
+      log.error(err)
+      throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
+    }
 
-      const res = await this._repo.datastore.get(routingKey)
+    const res = await this._repo.datastore.get(routingKey)
 
-      // Unmarshal libp2p record as the DHT does
-      let record
-      try {
-        record = Record.deserialize(res)
-      } catch (err) {
-        log.error(err)
-        throw (err)
-      }
+    // Unmarshal libp2p record as the DHT does
+    let record
+    try {
+      record = Record.deserialize(res)
+    } catch (err) {
+      log.error(err)
+      throw (err)
+    }
 
-      return record.value
-    })(key, callback)
+    return record.value
   }
 
   // encode key properly - base32(/ipns/{cid})

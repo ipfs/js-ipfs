@@ -6,7 +6,9 @@ const noop = () => {}
 
 // Wrap mortice to present a callback interface
 class Mutex {
-  constructor (repoOwner, options = {}) {
+  constructor (repoOwner, options) {
+    options = options || {}
+
     this.mutex = mortice(options.morticeId, {
       singleProcess: repoOwner
     })
@@ -15,33 +17,11 @@ class Mutex {
     this.lockId = 0
   }
 
-  readLock (lockedFn, cb) {
-    if (lockedFn && cb) {
-      this._lock('readLock').then(release => {
-        lockedFn((err, res) => {
-          release()
-
-          cb(err, res)
-        })
-      }, cb)
-      return
-    }
-
+  readLock () {
     return this._lock('readLock')
   }
 
-  writeLock (lockedFn, cb) {
-    if (lockedFn && cb) {
-      this._lock('writeLock').then(release => {
-        lockedFn((err, res) => {
-          release()
-
-          cb(err, res)
-        })
-      }, cb)
-      return
-    }
-
+  writeLock () {
     return this._lock('writeLock')
   }
 

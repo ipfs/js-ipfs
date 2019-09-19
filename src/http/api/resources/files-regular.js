@@ -156,7 +156,7 @@ exports.add = {
     query: Joi.object()
       .keys({
         'cid-version': Joi.number().integer().min(0).max(1).default(0),
-        'cid-base': Joi.string().valid(multibase.names),
+        'cid-base': Joi.string().valid(...multibase.names),
         'raw-leaves': Joi.boolean(),
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
@@ -264,7 +264,7 @@ exports.add = {
 exports.ls = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

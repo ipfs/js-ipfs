@@ -30,7 +30,7 @@ exports.parseKey = (request, h) => {
 exports.new = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -68,7 +68,7 @@ exports.new = {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -115,7 +115,7 @@ exports.get = {
 exports.put = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -197,7 +197,7 @@ exports.put = {
 exports.stat = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -245,7 +245,7 @@ exports.data = {
 exports.links = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -313,7 +313,7 @@ exports.parseKeyAndData = async (request, h) => {
 exports.patchAppendData = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -355,7 +355,7 @@ exports.patchAppendData = {
 exports.patchSetData = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -393,7 +393,7 @@ exports.patchSetData = {
 exports.patchAddLink = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -464,7 +464,7 @@ exports.patchAddLink = {
 exports.patchRmLink = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

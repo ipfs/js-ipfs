@@ -1,14 +1,13 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const repoVersion = require('ipfs-repo').repoVersion
 const callbackify = require('callbackify')
 
 module.exports = function repo (self) {
   return {
-    init: (bits, empty, callback) => {
+    init: callbackify(async (bits, empty) => {
       // 1. check if repo already exists
-    },
+    }),
 
     /**
      * If the repo has been initialized, report the current version.
@@ -41,23 +40,18 @@ module.exports = function repo (self) {
 
     gc: require('./pin/gc')(self),
 
-    stat: promisify((options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
+    stat: callbackify.variadic(async (options) => {
+      options = options || {}
+
+      const stats = await self._repo.stat(options)
+
+      return {
+        numObjects: stats.numObjects,
+        repoSize: stats.repoSize,
+        repoPath: stats.repoPath,
+        version: stats.version.toString(),
+        storageMax: stats.storageMax
       }
-
-      self._repo.stat(options, (err, stats) => {
-        if (err) return callback(err)
-
-        callback(null, {
-          numObjects: stats.numObjects,
-          repoSize: stats.repoSize,
-          repoPath: stats.repoPath,
-          version: stats.version.toString(),
-          storageMax: stats.storageMax
-        })
-      })
     }),
 
     path: () => self._repo.path

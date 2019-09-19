@@ -1,14 +1,20 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const setImmediate = require('async/setImmediate')
-const errCode = require('err-code')
-
-const errPubsubDisabled = () => {
-  return errCode(new Error('pubsub experiment is not enabled'), 'ERR_PUBSUB_DISABLED')
-}
+const callbackify = require('callbackify')
+const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const errcode = require('err-code')
 
 module.exports = function pubsub (self) {
+  function checkOnlineAndEnabled () {
+    if (!self.isOnline()) {
+      throw errcode(new Error(OFFLINE_ERROR), 'ERR_OFFLINE')
+    }
+
+    if (!self.libp2p.pubsub) {
+      throw errcode(new Error('pubsub is not enabled'), 'ERR_PUBSUB_DISABLED')
+    }
+  }
+
   return {
     subscribe: (topic, handler, options, callback) => {
       if (typeof options === 'function') {
@@ -16,58 +22,60 @@ module.exports = function pubsub (self) {
         options = {}
       }
 
-      if (!self.libp2p.pubsub) {
-        return callback
-          ? setImmediate(() => callback(errPubsubDisabled()))
-          : Promise.reject(errPubsubDisabled())
+      if (typeof callback === 'function') {
+        try {
+          checkOnlineAndEnabled()
+        } catch (err) {
+          return callback(err)
+        }
+
+        self.libp2p.pubsub.subscribe(topic, handler, options, callback)
+        return
       }
 
-      if (!callback) {
-        return self.libp2p.pubsub.subscribe(topic, handler, options)
-      }
+      checkOnlineAndEnabled()
 
-      self.libp2p.pubsub.subscribe(topic, handler, options, callback)
+      return self.libp2p.pubsub.subscribe(topic, handler, options)
     },
 
     unsubscribe: (topic, handler, callback) => {
-      if (!self.libp2p.pubsub) {
-        return callback
-          ? setImmediate(() => callback(errPubsubDisabled()))
-          : Promise.reject(errPubsubDisabled())
+      if (typeof callback === 'function') {
+        try {
+          checkOnlineAndEnabled()
+        } catch (err) {
+          return callback(err)
+        }
+
+        self.libp2p.pubsub.unsubscribe(topic, handler, callback)
+        return
       }
 
-      if (!callback) {
-        return self.libp2p.pubsub.unsubscribe(topic, handler)
-      }
+      checkOnlineAndEnabled()
 
-      self.libp2p.pubsub.unsubscribe(topic, handler, callback)
+      return self.libp2p.pubsub.unsubscribe(topic, handler)
     },
 
-    publish: promisify((topic, data, callback) => {
-      if (!self.libp2p.pubsub) {
-        return setImmediate(() => callback(errPubsubDisabled()))
-      }
-      self.libp2p.pubsub.publish(topic, data, callback)
+    publish: callbackify(async (topic, data) => { // eslint-disable-line require-await
+      checkOnlineAndEnabled()
+
+      await self.libp2p.pubsub.publish(topic, data)
     }),
 
-    ls: promisify((callback) => {
-      if (!self.libp2p.pubsub) {
-        return setImmediate(() => callback(errPubsubDisabled()))
-      }
-      self.libp2p.pubsub.ls(callback)
+    ls: callbackify(async () => { // eslint-disable-line require-await
+      checkOnlineAndEnabled()
+
+      return self.libp2p.pubsub.ls()
     }),
 
-    peers: promisify((topic, callback) => {
-      if (!self.libp2p.pubsub) {
-        return setImmediate(() => callback(errPubsubDisabled()))
-      }
-      self.libp2p.pubsub.peers(topic, callback)
+    peers: callbackify(async (topic) => { // eslint-disable-line require-await
+      checkOnlineAndEnabled()
+
+      return self.libp2p.pubsub.peers(topic)
     }),
 
     setMaxListeners (n) {
-      if (!self.libp2p.pubsub) {
-        throw errPubsubDisabled()
-      }
+      checkOnlineAndEnabled()
+
       self.libp2p.pubsub.setMaxListeners(n)
     }
   }

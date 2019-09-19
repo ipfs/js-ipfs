@@ -1,7 +1,5 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const map = require('async/map')
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 
@@ -73,67 +71,58 @@ const normalizePath = (pathStr) => {
  *  - Arrays of the above
  *
  * @param  {IPFS}               objectAPI The IPFS object api
- * @param  {Described above}    ipfsPaths A single or collection of ipfs-paths
- * @param  {Function<err, res>} callback res is Array<Buffer(hash)>
- *                              if no callback is passed, returns a Promise
- * @return {Promise|void}
+ * @param  {?}    ipfsPaths A single or collection of ipfs-paths
+ * @return {Promise<Array<CID>>}
  */
-const resolvePath = promisify(function (objectAPI, ipfsPaths, callback) {
+const resolvePath = async function (objectAPI, ipfsPaths) {
   if (!Array.isArray(ipfsPaths)) {
     ipfsPaths = [ipfsPaths]
   }
 
-  map(ipfsPaths, (path, cb) => {
+  const cids = []
+
+  for (const path of ipfsPaths) {
     if (typeof path !== 'string') {
-      let cid
+      cids.push(new CID(path))
 
-      try {
-        cid = new CID(path)
-      } catch (err) {
-        return cb(err)
-      }
-
-      return cb(null, cid.buffer)
+      continue
     }
 
-    let parsedPath
-    try {
-      parsedPath = exports.parseIpfsPath(path)
-    } catch (err) {
-      return cb(err)
+    const parsedPath = exports.parseIpfsPath(path)
+    let hash = new CID(parsedPath.hash)
+    let links = parsedPath.links
+
+    if (!links.length) {
+      cids.push(hash)
+
+      continue
     }
-
-    const rootHash = new CID(parsedPath.hash)
-    const rootLinks = parsedPath.links
-
-    if (!rootLinks.length) {
-      return cb(null, rootHash.buffer)
-    }
-
-    objectAPI.get(rootHash, follow.bind(null, rootHash, rootLinks))
 
     // recursively follow named links to the target node
-    function follow (cid, links, err, obj) {
-      if (err) {
-        return cb(err)
-      }
+    while (true) {
+      const obj = await objectAPI.get(hash)
 
       if (!links.length) {
         // done tracing, obj is the target node
-        return cb(null, cid.buffer)
+        cids.push(hash)
+
+        break
       }
 
       const linkName = links[0]
       const nextObj = obj.Links.find(link => link.Name === linkName)
 
       if (!nextObj) {
-        return cb(new Error(`no link named "${linkName}" under ${cid}`))
+        throw new Error(`no link named "${linkName}" under ${hash}`)
       }
 
-      objectAPI.get(nextObj.Hash, follow.bind(null, nextObj.Hash, links.slice(1)))
+      hash = nextObj.Hash
+      links = links.slice(1)
     }
-  }, callback)
-})
+  }
+
+  return cids
+}
 
 exports.normalizePath = normalizePath
 exports.parseIpfsPath = parseIpfsPath
