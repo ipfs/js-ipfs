@@ -32,7 +32,7 @@ async function verifyNormalisation (input) {
   expect(input.length).to.equal(1)
 
   if (!input[0].content[Symbol.asyncIterator] && !input[0].content[Symbol.iterator]) {
-    chai.assert.fail(`Content should have been an iterable or an async iterable`)
+    chai.assert.fail('Content should have been an iterable or an async iterable')
   }
 
   expect(await all(input[0].content)).to.deep.equal([BUFFER])

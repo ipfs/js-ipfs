@@ -37,7 +37,7 @@ module.exports = async function * globSource (paths, options) {
   for await (const path of paths) {
     if (typeof path !== 'string') {
       throw errCode(
-        new Error(`Path must be a string`),
+        new Error('Path must be a string'),
         'ERR_INVALID_PATH',
         { path }
       )

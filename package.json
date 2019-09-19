@@ -13,11 +13,11 @@
   ],
   "repository": "github:ipfs/js-ipfs-utils",
   "scripts": {
-    "test": "aegir test && npm run test:electron && npm run test:electron-renderer",
+    "test": "aegir test",
     "test:browser": "aegir test -t browser",
     "test:node": "aegir test -t node",
-    "test:electron": "electron-mocha 'test/**/*.spec.js'",
-    "test:electron-renderer": "electron-mocha --renderer 'test/**/*.spec.js'",
+    "test:electron": "aegir test -t electron-main",
+    "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir lint",
     "release": "aegir release --docs",
     "release-minor": "aegir release --type minor --docs",
@@ -39,13 +39,11 @@
     "readable-stream": "^3.4.0"
   },
   "devDependencies": {
-    "aegir": "^20.0.0",
+    "aegir": "^20.3.0",
     "async-iterator-all": "^1.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
-    "electron": "^6.0.6",
-    "electron-mocha": "^8.0.3",
     "pull-stream": "^3.6.13",
     "readable-stream-2": "npm:readable-stream@^2.0.0"
   },
