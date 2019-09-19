@@ -2,7 +2,7 @@
 
 const { HTTPError } = require('ky-universal')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
-const { isNode, isElectron } = require('ipfs-utils/src/env')
+const { isNode, isElectronMain } = require('ipfs-utils/src/env')
 
 function isJsonResponse (res) {
   return (res.headers.get('Content-Type') || '').startsWith('application/json')
@@ -18,7 +18,7 @@ module.exports = async function errorHandler (input, options, response) {
     //
     // If the body in the clone is not consumed or destroyed the highwater mark
     // will be reached (for large payloads) and stop the real body from flowing.
-    if (isNode || isElectron) response.body.destroy()
+    if (isNode || isElectronMain) response.body.destroy()
     return
   }
 
