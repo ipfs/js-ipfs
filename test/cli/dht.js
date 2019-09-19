@@ -10,7 +10,10 @@ chai.use(dirtyChai)
 const parallel = require('async/parallel')
 const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
+const df = DaemonFactory.create({
+  type: 'js',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const ipfsExec = require('../utils/ipfs-exec')
 

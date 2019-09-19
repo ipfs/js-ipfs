@@ -1,9 +1,6 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
-const setImmediate = require('async/setImmediate')
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
@@ -29,18 +26,18 @@ function normalizeMultihash (multihash, enc) {
   }
 }
 
-function parseBuffer (buf, encoding, callback) {
+function parseBuffer (buf, encoding) {
   switch (encoding) {
     case 'json':
-      return parseJSONBuffer(buf, callback)
+      return parseJSONBuffer(buf)
     case 'protobuf':
-      return parseProtoBuffer(buf, callback)
+      return parseProtoBuffer(buf)
     default:
-      callback(new Error(`unkown encoding: ${encoding}`))
+      throw new Error(`unkown encoding: ${encoding}`)
   }
 }
 
-function parseJSONBuffer (buf, callback) {
+function parseJSONBuffer (buf) {
   let data
   let links
 
@@ -56,24 +53,14 @@ function parseJSONBuffer (buf, callback) {
     })
     data = Buffer.from(parsed.Data)
   } catch (err) {
-    return callback(new Error('failed to parse JSON: ' + err))
+    throw new Error('failed to parse JSON: ' + err)
   }
 
-  try {
-    callback(null, new DAGNode(data, links))
-  } catch (err) {
-    callback(err)
-  }
+  return new DAGNode(data, links)
 }
 
-function parseProtoBuffer (buf, callback) {
-  let obj
-  try {
-    obj = dagPB.util.deserialize(buf)
-  } catch (err) {
-    return callback(err)
-  }
-  callback(null, obj)
+function parseProtoBuffer (buf) {
+  return dagPB.util.deserialize(buf)
 }
 
 function findLinks (node, links = []) {
@@ -108,100 +95,61 @@ function findLinks (node, links = []) {
 }
 
 module.exports = function object (self) {
-  function editAndSave (edit) {
-    return (multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
+  async function editAndSave (multihash, edit, options) {
+    options = options || {}
 
-      options = options || {}
+    const node = await self.object.get(multihash, options)
 
-      waterfall([
-        (cb) => {
-          self.object.get(multihash, options, cb)
-        },
-        (node, cb) => {
-          // edit applies the edit func passed to
-          // editAndSave
-          edit(node, (err, node) => {
-            if (err) {
-              return cb(err)
-            }
+    // edit applies the edit func passed to
+    // editAndSave
+    const cid = await self._ipld.put(edit(node), multicodec.DAG_PB, {
+      cidVersion: 0,
+      hashAlg: multicodec.SHA2_256
+    })
 
-            self._ipld.put(node, multicodec.DAG_PB, {
-              cidVersion: 0,
-              hashAlg: multicodec.SHA2_256
-            }).then(
-              (cid) => {
-                if (options.preload !== false) {
-                  self._preload(cid)
-                }
-
-                cb(null, cid)
-              },
-              (error) => cb(error)
-            )
-          })
-        }
-      ], callback)
+    if (options.preload !== false) {
+      self._preload(cid)
     }
+
+    return cid
   }
 
   return {
-    new: promisify((template, options, callback) => {
-      if (typeof template === 'function') {
-        callback = template
-        template = undefined
-        options = {}
-      }
-
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    new: callbackify.variadic(async (template, options) => {
       options = options || {}
+
+      // allow options in the template position
+      if (template && typeof template !== 'string') {
+        options = template
+        template = null
+      }
 
       let data
 
       if (template) {
-        if (template !== 'unixfs-dir') {
-          return setImmediate(() => callback(new Error('unknown template')))
+        if (template === 'unixfs-dir') {
+          data = (new Unixfs('directory')).marshal()
+        } else {
+          throw new Error('unknown template')
         }
-        data = (new Unixfs('directory')).marshal()
       } else {
         data = Buffer.alloc(0)
       }
 
-      let node
+      const node = new DAGNode(data)
 
-      try {
-        node = new DAGNode(data)
-      } catch (err) {
-        return callback(err)
-      }
-
-      self._ipld.put(node, multicodec.DAG_PB, {
+      const cid = await self._ipld.put(node, multicodec.DAG_PB, {
         cidVersion: 0,
         hashAlg: multicodec.SHA2_256
-      }).then(
-        (cid) => {
-          if (options.preload !== false) {
-            self._preload(cid)
-          }
+      })
 
-          callback(null, cid)
-        },
-        (error) => callback(error)
-      )
-    }),
-    put: promisify((obj, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
+      if (options.preload !== false) {
+        self._preload(cid)
       }
 
+      return cid
+    }),
+    put: callbackify.variadic(async (obj, options) => {
       options = options || {}
 
       const encoding = options.enc
@@ -209,63 +157,38 @@ module.exports = function object (self) {
 
       if (Buffer.isBuffer(obj)) {
         if (encoding) {
-          parseBuffer(obj, encoding, (err, _node) => {
-            if (err) {
-              return callback(err)
-            }
-            node = _node
-            next()
-          })
+          node = await parseBuffer(obj, encoding)
         } else {
-          try {
-            node = new DAGNode(obj)
-          } catch (err) {
-            return callback(err)
-          }
-
-          next()
+          node = new DAGNode(obj)
         }
       } else if (DAGNode.isDAGNode(obj)) {
         // already a dag node
         node = obj
-        next()
       } else if (typeof obj === 'object') {
-        try {
-          node = new DAGNode(obj.Data, obj.Links)
-        } catch (err) {
-          return callback(err)
-        }
-
-        next()
+        node = new DAGNode(obj.Data, obj.Links)
       } else {
-        return callback(new Error('obj not recognized'))
+        throw new Error('obj not recognized')
       }
 
-      function next () {
-        self._gcLock.readLock((cb) => {
-          self._ipld.put(node, multicodec.DAG_PB, {
-            cidVersion: 0,
-            hashAlg: multicodec.SHA2_256
-          }).then(
-            (cid) => {
-              if (options.preload !== false) {
-                self._preload(cid)
-              }
+      const release = await self._gcLock.readLock()
 
-              cb(null, cid)
-            },
-            cb
-          )
-        }, callback)
+      try {
+        const cid = await self._ipld.put(node, multicodec.DAG_PB, {
+          cidVersion: 0,
+          hashAlg: multicodec.SHA2_256
+        })
+
+        if (options.preload !== false) {
+          self._preload(cid)
+        }
+
+        return cid
+      } finally {
+        release()
       }
     }),
 
-    get: promisify((multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    get: callbackify.variadic(async (multihash, options) => { // eslint-disable-line require-await
       options = options || {}
 
       let mh, cid
@@ -273,13 +196,13 @@ module.exports = function object (self) {
       try {
         mh = normalizeMultihash(multihash, options.enc)
       } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_MULTIHASH')))
+        throw errCode(err, 'ERR_INVALID_MULTIHASH')
       }
 
       try {
         cid = new CID(mh)
       } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        throw errCode(err, 'ERR_INVALID_CID')
       }
 
       if (options.cidVersion === 1) {
@@ -290,149 +213,90 @@ module.exports = function object (self) {
         self._preload(cid)
       }
 
-      self._ipld.get(cid).then(
-        (node) => callback(null, node),
-        (error) => callback(error)
-      )
+      return self._ipld.get(cid)
     }),
 
-    data: promisify((multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      self.object.get(multihash, options, (err, node) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(null, node.Data)
-      })
-    }),
-
-    links: promisify((multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      const cid = new CID(multihash)
-
-      self.dag.get(cid, options, (err, result) => {
-        if (err) {
-          return callback(err)
-        }
-
-        if (cid.codec === 'raw') {
-          return callback(null, [])
-        }
-
-        if (cid.codec === 'dag-pb') {
-          return callback(null, result.value.Links)
-        }
-
-        if (cid.codec === 'dag-cbor') {
-          const links = findLinks(result)
-
-          return callback(null, links)
-        }
-
-        callback(new Error(`Cannot resolve links from codec ${cid.codec}`))
-      })
-    }),
-
-    stat: promisify((multihash, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    data: callbackify.variadic(async (multihash, options) => {
       options = options || {}
 
-      waterfall([
-        (cb) => self.object.get(multihash, options, cb),
-        (node, cb) => {
-          cb(null, {
-            node,
-            serialized: dagPB.util.serialize(node)
-          })
-        },
-        ({ node, serialized }, cb) => {
-          parallel({
-            serialized: (next) => next(null, serialized),
-            cid: (next) => dagPB.util.cid(serialized, {
-              cidVersion: 0
-            }).then((cid) => next(null, cid), next),
-            node: (next) => next(null, node)
-          }, cb)
-        }
-      ], (err, result) => {
-        if (err) {
-          return callback(err)
-        }
+      const node = await self.object.get(multihash, options)
 
-        const blockSize = result.serialized.length
-        const linkLength = result.node.Links.reduce((a, l) => a + l.Tsize, 0)
-
-        callback(null, {
-          Hash: result.cid.toBaseEncodedString(),
-          NumLinks: result.node.Links.length,
-          BlockSize: blockSize,
-          LinksSize: blockSize - result.node.Data.length,
-          DataSize: result.node.Data.length,
-          CumulativeSize: blockSize + linkLength
-        })
-      })
+      return node.Data
     }),
 
-    patch: promisify({
-      addLink (multihash, link, options, callback) {
-        editAndSave((node, cb) => {
+    links: callbackify.variadic(async (multihash, options) => {
+      options = options || {}
+
+      const cid = new CID(multihash)
+      const result = await self.dag.get(cid, options)
+
+      if (cid.codec === 'raw') {
+        return []
+      }
+
+      if (cid.codec === 'dag-pb') {
+        return result.value.Links
+      }
+
+      if (cid.codec === 'dag-cbor') {
+        return findLinks(result)
+      }
+
+      throw new Error(`Cannot resolve links from codec ${cid.codec}`)
+    }),
+
+    stat: callbackify.variadic(async (multihash, options) => {
+      options = options || {}
+
+      const node = await self.object.get(multihash, options)
+      const serialized = dagPB.util.serialize(node)
+      const cid = await dagPB.util.cid(serialized, {
+        cidVersion: 0
+      })
+
+      const blockSize = serialized.length
+      const linkLength = node.Links.reduce((a, l) => a + l.Tsize, 0)
+
+      return {
+        Hash: cid.toBaseEncodedString(),
+        NumLinks: node.Links.length,
+        BlockSize: blockSize,
+        LinksSize: blockSize - node.Data.length,
+        DataSize: node.Data.length,
+        CumulativeSize: blockSize + linkLength
+      }
+    }),
+
+    patch: {
+      addLink: callbackify.variadic(async (multihash, link, options) => { // eslint-disable-line require-await
+        return editAndSave(multihash, (node) => {
           node.addLink(link)
-          cb(null, node)
-        })(multihash, options, callback)
-      },
 
-      rmLink (multihash, linkRef, options, callback) {
-        editAndSave((node, cb) => {
-          linkRef = linkRef.Name || linkRef.name
+          return node
+        }, options)
+      }),
 
-          try {
-            node.rmLink(linkRef)
-          } catch (err) {
-            return cb(err)
-          }
+      rmLink: callbackify.variadic(async (multihash, linkRef, options) => { // eslint-disable-line require-await
+        return editAndSave(multihash, (node) => {
+          node.rmLink(linkRef.Name || linkRef.name)
 
-          cb(null, node)
-        })(multihash, options, callback)
-      },
+          return node
+        }, options)
+      }),
 
-      appendData (multihash, data, options, callback) {
-        editAndSave((node, cb) => {
+      appendData: callbackify.variadic(async (multihash, data, options) => { // eslint-disable-line require-await
+        return editAndSave(multihash, (node) => {
           const newData = Buffer.concat([node.Data, data])
 
-          try {
-            node = new DAGNode(newData, node.Links)
-          } catch (err) {
-            return cb(err)
-          }
+          return new DAGNode(newData, node.Links)
+        }, options)
+      }),
 
-          cb(null, node)
-        })(multihash, options, callback)
-      },
-
-      setData (multihash, data, options, callback) {
-        editAndSave((node, cb) => {
-          try {
-            node = new DAGNode(data, node.Links)
-          } catch (err) {
-            return cb(err)
-          }
-
-          cb(null, node)
-        })(multihash, options, callback)
-      }
-    })
+      setData: callbackify.variadic(async (multihash, data, options) => { // eslint-disable-line require-await
+        return editAndSave(multihash, (node) => {
+          return new DAGNode(data, node.Links)
+        }, options)
+      })
+    }
   }
 }

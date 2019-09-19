@@ -33,8 +33,7 @@ function createFactory (options) {
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
-  const callbackifiedSpawn = callbackify.variadic(
-    ipfsFactory.spawn.bind(ipfsFactory))
+  const callbackifiedSpawn = callbackify.variadic(ipfsFactory.spawn.bind(ipfsFactory))
 
   return function createCommon () {
     const nodes = []

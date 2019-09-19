@@ -55,7 +55,7 @@ exports.getIPFS = (argv, callback) => {
 
   const cleanup = callbackify(async () => {
     if (node && node._repo && !node._repo.closed) {
-      return node._repo.close()
+      await node._repo.close()
     }
   })
 

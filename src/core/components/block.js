@@ -3,61 +3,40 @@
 const Block = require('ipfs-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const waterfall = require('async/waterfall')
-const setImmediate = require('async/setImmediate')
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const errCode = require('err-code')
 
 module.exports = function block (self) {
   return {
-    get: promisify((cid, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    get: callbackify.variadic(async (cid, options) => { // eslint-disable-line require-await
       options = options || {}
 
       try {
         cid = cleanCid(cid)
       } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        throw errCode(err, 'ERR_INVALID_CID')
       }
 
       if (options.preload !== false) {
         self._preload(cid)
       }
 
-      self._blockService.get(cid, callback)
+      return self._blockService.get(cid)
     }),
-    put: promisify((block, options, callback) => {
-      callback = callback || function noop () {}
-
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    put: callbackify.variadic(async (block, options) => {
       options = options || {}
 
       if (Array.isArray(block)) {
-        return callback(new Error('Array is not supported'))
+        throw new Error('Array is not supported')
       }
 
-      waterfall([
-        (cb) => {
-          if (Block.isBlock(block)) {
-            return cb(null, block)
-          }
-
-          if (options.cid && CID.isCID(options.cid)) {
-            return cb(null, new Block(block, options.cid))
-          }
-
+      if (!Block.isBlock(block)) {
+        if (options.cid && CID.isCID(options.cid)) {
+          block = new Block(block, options.cid)
+        } else {
           const mhtype = options.mhtype || 'sha2-256'
           const format = options.format || 'dag-pb'
           let cidVersion
-          // const mhlen = options.mhlen || 0
 
           if (options.version == null) {
             // Pick appropriate CID version
@@ -66,74 +45,63 @@ module.exports = function block (self) {
             cidVersion = options.version
           }
 
-          multihashing(block, mhtype, (err, multihash) => {
-            if (err) {
-              return cb(err)
-            }
+          const multihash = await multihashing(block, mhtype)
+          const cid = new CID(cidVersion, format, multihash)
 
-            let cid
-            try {
-              cid = new CID(cidVersion, format, multihash)
-            } catch (err) {
-              return cb(err)
-            }
+          block = new Block(block, cid)
+        }
+      }
 
-            cb(null, new Block(block, cid))
-          })
-        },
-        (block, cb) => self._gcLock.readLock((_cb) => {
-          self._blockService.put(block, (err) => {
-            if (err) {
-              return _cb(err)
-            }
+      const release = await self._gcLock.readLock()
 
-            if (options.preload !== false) {
-              self._preload(block.cid)
-            }
+      try {
+        await self._blockService.put(block)
 
-            _cb(null, block)
-          })
-        }, cb)
-      ], callback)
+        if (options.preload !== false) {
+          self._preload(block.cid)
+        }
+
+        return block
+      } finally {
+        release()
+      }
     }),
-    rm: promisify((cid, callback) => {
+    rm: callbackify(async (cid) => {
       try {
         cid = cleanCid(cid)
       } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        throw errCode(err, 'ERR_INVALID_CID')
       }
 
       // We need to take a write lock here to ensure that adding and removing
       // blocks are exclusive operations
-      self._gcLock.writeLock((cb) => self._blockService.delete(cid, cb), callback)
-    }),
-    stat: promisify((cid, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
+      const release = await self._gcLock.writeLock()
 
+      try {
+        await self._blockService.delete(cid)
+      } finally {
+        release()
+      }
+    }),
+    stat: callbackify.variadic(async (cid, options) => {
       options = options || {}
 
       try {
         cid = cleanCid(cid)
       } catch (err) {
-        return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+        throw errCode(err, 'ERR_INVALID_CID')
       }
 
       if (options.preload !== false) {
         self._preload(cid)
       }
 
-      self._blockService.get(cid, (err, block) => {
-        if (err) {
-          return callback(err)
-        }
-        callback(null, {
-          key: cid.toString(),
-          size: block.data.length
-        })
-      })
+      const block = await self._blockService.get(cid)
+
+      return {
+        key: cid.toString(),
+        size: block.data.length
+      }
     })
   }
 }

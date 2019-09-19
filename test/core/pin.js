@@ -9,6 +9,9 @@ chai.use(dirtyChai)
 
 const fs = require('fs')
 
+const {
+  DAGNode
+} = require('ipld-dag-pb')
 const CID = require('cids')
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
@@ -51,7 +54,7 @@ describe('pin', function () {
       type = pinTypes.all
     }
 
-    return pin._isPinnedWithType(hash, type)
+    return pin.pinManager.isPinnedWithType(hash, type)
       .then(result => {
         expect(result.pinned).to.eql(pinned)
         if (type === pinTypes.indirect) {
@@ -108,13 +111,13 @@ describe('pin', function () {
 
     it('when node is pinned', function () {
       return pin.add(pins.solarWiki)
-        .then(() => pin._isPinnedWithType(pins.solarWiki, pinTypes.all))
+        .then(() => pin.pinManager.isPinnedWithType(pins.solarWiki, pinTypes.all))
         .then(pinned => expect(pinned.pinned).to.eql(true))
     })
 
     it('when node is not in datastore', function () {
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return pin._isPinnedWithType(falseHash, pinTypes.all)
+      return pin.pinManager.isPinnedWithType(falseHash, pinTypes.all)
         .then(pinned => {
           expect(pinned.pinned).to.eql(false)
           expect(pinned.reason).to.eql(undefined)
@@ -127,7 +130,7 @@ describe('pin', function () {
     })
 
     it('when pinned recursively', function () {
-      return pin._isPinnedWithType(pins.root, pinTypes.recursive)
+      return pin.pinManager.isPinnedWithType(pins.root, pinTypes.recursive)
         .then(result => {
           expect(result.pinned).to.eql(true)
           expect(result.reason).to.eql(pinTypes.recursive)
@@ -135,7 +138,7 @@ describe('pin', function () {
     })
 
     it('when pinned indirectly', function () {
-      return pin._isPinnedWithType(pins.mercuryWiki, pinTypes.indirect)
+      return pin.pinManager.isPinnedWithType(pins.mercuryWiki, pinTypes.indirect)
         .then(result => {
           expect(result.pinned).to.eql(true)
           expect(result.reason.toBaseEncodedString()).to.eql(pins.root)
@@ -145,7 +148,7 @@ describe('pin', function () {
     it('when pinned directly', function () {
       return pin.add(pins.mercuryDir, { recursive: false })
         .then(() => {
-          return pin._isPinnedWithType(pins.mercuryDir, pinTypes.direct)
+          return pin.pinManager.isPinnedWithType(pins.mercuryDir, pinTypes.direct)
             .then(result => {
               expect(result.pinned).to.eql(true)
               expect(result.reason).to.eql(pinTypes.direct)
@@ -155,7 +158,7 @@ describe('pin', function () {
 
     it('when not pinned', function () {
       return clearPins()
-        .then(() => pin._isPinnedWithType(pins.mercuryDir, pinTypes.direct))
+        .then(() => pin.pinManager.isPinnedWithType(pins.mercuryDir, pinTypes.direct))
         .then(pin => expect(pin.pinned).to.eql(false))
     })
   })
@@ -435,9 +438,71 @@ describe('pin', function () {
           return clearPins()
             .then(() => pin.add(pins.mercuryWiki))
         })
-        .then(() => pin._load())
+        .then(() => pin.pinManager.load())
         .then(() => pin.ls())
         .then(ls => expect(ls.length).to.eql(1))
+    })
+  })
+
+  describe('non-dag-pb nodes', function () {
+    it('pins dag-cbor', async () => {
+      const cid = await ipfs.dag.put({}, {
+        format: 'dag-cbor',
+        hashAlg: 'sha2-256'
+      })
+
+      await pin.add(cid)
+
+      const pins = await pin.ls()
+
+      expect(pins).to.deep.include({
+        type: 'recursive',
+        hash: cid.toString()
+      })
+    })
+
+    it('pins raw', async () => {
+      const cid = await ipfs.dag.put(Buffer.alloc(0), {
+        format: 'raw',
+        hashAlg: 'sha2-256'
+      })
+
+      await pin.add(cid)
+
+      const pins = await pin.ls()
+
+      expect(pins).to.deep.include({
+        type: 'recursive',
+        hash: cid.toString()
+      })
+    })
+
+    it('pins dag-cbor with dag-pb child', async () => {
+      const child = await ipfs.dag.put(new DAGNode(Buffer.alloc(0)), {
+        format: 'dag-pb',
+        hashAlg: 'sha2-256'
+      })
+      const parent = await ipfs.dag.put({
+        child
+      }, {
+        format: 'dag-cbor',
+        hashAlg: 'sha2-256'
+      })
+
+      await pin.add(parent, {
+        recursive: true
+      })
+
+      const pins = await pin.ls()
+
+      expect(pins).to.deep.include({
+        hash: parent.toString(),
+        type: 'recursive'
+      })
+      expect(pins).to.deep.include({
+        hash: child.toString(),
+        type: 'indirect'
+      })
     })
   })
 })

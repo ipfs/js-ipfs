@@ -8,7 +8,9 @@ const clean = require('../utils/clean')
 const os = require('os')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create()
+const df = DaemonFactory.create({
+  IpfsClient: require('ipfs-http-client')
+})
 const path = require('path')
 
 function off (tests) {
@@ -23,12 +25,13 @@ function off (tests) {
       repoPath = os.tmpdir() + '/ipfs-' + hat()
       thing.ipfs = ipfsExec(repoPath)
       thing.ipfs.repoPath = repoPath
+
       return thing.ipfs('init')
     })
 
-    after(function () {
+    after(async function () {
       this.timeout(20 * 1000)
-      return clean(repoPath)
+      await clean(repoPath)
     })
 
     tests(thing)

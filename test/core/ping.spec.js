@@ -12,11 +12,13 @@ const path = require('path')
 const expect = chai.expect
 chai.use(dirtyChai)
 const df = DaemonFactory.create({
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`)
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
 })
 const dfProc = DaemonFactory.create({
   exec: require('../../'),
-  type: 'proc'
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
 })
 
 const config = {

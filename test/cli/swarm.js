@@ -16,7 +16,10 @@ const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
+const df = DaemonFactory.create({
+  type: 'js',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const config = {
   Bootstrap: [],

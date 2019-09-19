@@ -102,7 +102,7 @@ class IPFS extends EventEmitter {
     //   - for booting up a node
     this.init = components.init(this)
     this.preStart = components.preStart(this)
-    //debugger
+    // debugger
     this.start = components.start(this)
     this.stop = components.stop(this)
     this.shutdown = this.stop

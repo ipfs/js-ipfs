@@ -19,13 +19,14 @@ const CID = require('cids')
 const path = require('path')
 const IPFSFactory = require('ipfsd-ctl')
 const callbackify = require('callbackify')
+const IPFSHTTPClient = require('ipfs-http-client')
 
 const IPFS = require('../../src/core')
 
 function makeBlock (callback) {
   const d = Buffer.from(`IPFS is awesome ${hat()}`)
 
-  multihashing(d, 'sha2-256', (err, multihash) => {
+  callbackify(multihashing)(d, 'sha2-256', null, (err, multihash) => {
     if (err) {
       return callback(err)
     }
@@ -83,11 +84,13 @@ function addNode (fDaemon, inProcNode, callback) {
   }, (err, ipfsd) => {
     expect(err).to.not.exist()
     nodes.push(ipfsd)
-    connectNodes(ipfsd.api, inProcNode, (err) => callback(err, ipfsd.api))
+    connectNodes(ipfsd.api, inProcNode, (err) => {
+      callback(err, ipfsd.api)
+    })
   })
 }
 
-describe.only('bitswap', function () {
+describe('bitswap', function () {
   this.timeout(80 * 1000)
 
   let inProcNode // Node spawned inside this process
@@ -95,8 +98,14 @@ describe.only('bitswap', function () {
   let fInProc
 
   before(function () {
-    fDaemon = IPFSFactory.create({ type: 'js' })
-    fInProc = IPFSFactory.create({ type: 'proc' })
+    fDaemon = IPFSFactory.create({
+      type: 'js',
+      IpfsClient: require('ipfs-http-client')
+    })
+    fInProc = IPFSFactory.create({
+      type: 'proc',
+      IpfsClient: require('ipfs-http-client')
+    })
   })
 
   beforeEach(async function () {
@@ -124,8 +133,11 @@ describe.only('bitswap', function () {
 
     const ipfsd = await fInProc.spawn({
       exec: IPFS,
+      IPFSClient: IPFSHTTPClient,
       config: config,
-      initOptions: { bits: 512 }
+      initOptions: { bits: 512 },
+      start: true,
+      init: true
     })
     nodes.push(ipfsd)
     inProcNode = ipfsd.api
@@ -133,7 +145,9 @@ describe.only('bitswap', function () {
 
   afterEach(async function () {
     this.timeout(80 * 1000)
-    await Promise.all(nodes.map((node) => node.stop()))
+    await Promise.all(
+      nodes.map((node) => node.stop())
+    )
     nodes = []
   })
 

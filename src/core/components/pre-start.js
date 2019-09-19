@@ -3,12 +3,11 @@
 const peerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const multiaddr = require('multiaddr')
-const waterfall = require('async/waterfall')
 const Keychain = require('libp2p-keychain')
 const mergeOptions = require('merge-options')
 const NoKeychain = require('./no-keychain')
-const promisify = require('promisify-es6')
 const callbackify = require('callbackify')
+const promisify = require('promisify-es6')
 
 /*
  * Load stuff from Repo into memory
@@ -45,16 +44,15 @@ module.exports = function preStart (self) {
     }
 
     const privKey = config.Identity.PrivKey
-    // TODO vmx 2019-08-06: upgrade to promise based version of peer-id (>= 0.13)
     const id = await promisify(peerId.createFromPrivKey)(privKey)
 
     // Import the private key as 'self', if needed.
     if (pass) {
       try {
-        await promisify(self._keychain.findKeyByName)('self')
+        await self._keychain.findKeyByName('self')
       } catch (err) {
         self.log('Creating "self" key')
-        await promisify(self._keychain.importPeer)('self', id)
+        await self._keychain.importPeer('self', id)
       }
     }
 
@@ -72,6 +70,6 @@ module.exports = function preStart (self) {
       })
     }
 
-    await self.pin._load()
+    await self.pin.pinManager.load()
   })
 }

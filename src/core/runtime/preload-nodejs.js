@@ -9,7 +9,7 @@ const setImmediate = require('async/setImmediate')
 const log = debug('ipfs:preload')
 log.error = debug('ipfs:preload:error')
 
-module.exports = function preload (url, callback) {
+module.exports = function preload (url, callback = () => {}) {
   log(url)
 
   try {
