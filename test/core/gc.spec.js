@@ -35,6 +35,7 @@ class MutexEmitter extends Mutex {
 }
 
 describe('gc', function () {
+  this.timeout(40 * 1000)
   const fixtures = [{
     path: 'test/my/path1',
     content: Buffer.from('path1')
@@ -54,8 +55,6 @@ describe('gc', function () {
   let lockEmitter
 
   before(async function () {
-    this.timeout(40 * 1000)
-
     const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
     const config = { Bootstrap: [] }
 

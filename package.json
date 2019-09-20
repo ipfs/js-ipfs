@@ -96,7 +96,7 @@
     "ipfs-bitswap": "~0.25.1",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.15.2",
-    "ipfs-http-client": "^36.1.0",
+    "ipfs-http-client": "^37.0.2",
     "ipfs-http-response": "~0.3.1",
     "ipfs-mfs": "^0.12.2",
     "ipfs-multipart": "^0.2.0",
@@ -187,7 +187,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^20.2.0",
+    "aegir": "^20.3.1",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "clear-module": "^4.0.0",
@@ -200,7 +200,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "~0.114.0",
     "ipfs-interop": "~0.1.0",
-    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#chore/new-http-client",
+    "ipfsd-ctl": "^0.47.2",
     "libp2p-websocket-star": "~0.10.2",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
