@@ -1,3 +1,13 @@
+<a name="37.0.2"></a>
+## [37.0.2](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.1...v37.0.2) (2019-09-20)
+
+
+### Bug Fixes
+
+* only do the big file workaround in node and electron main ([077c997](https://github.com/ipfs/js-ipfs-http-client/commit/077c997))
+
+
+
 <a name="37.0.1"></a>
 ## [37.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.0...v37.0.1) (2019-09-17)
 
