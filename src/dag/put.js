@@ -42,7 +42,7 @@ module.exports = (createCommon, options) => {
       const someData = Buffer.from('some data')
 
       try {
-        pbNode = DAGNode.create(someData)
+        pbNode = new DAGNode(someData)
       } catch (err) {
         return done(err)
       }

@@ -100,7 +100,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            node = DAGNode.create(Buffer.from(hat()))
+            node = new DAGNode(Buffer.from(hat()))
           } catch (err) {
             return cb(err)
           }
@@ -109,7 +109,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            serialized = dagPB.util.serialize(node)
+            serialized = node.serialize()
           } catch (err) {
             return cb(err)
           }
@@ -146,7 +146,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should put a Protobuf DAGNode', (done) => {
-      const dNode = DAGNode.create(Buffer.from(hat()))
+      const dNode = new DAGNode(Buffer.from(hat()))
 
       ipfs.object.put(dNode, (err, cid) => {
         expect(err).to.not.exist()
@@ -175,7 +175,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            node1a = DAGNode.create(Buffer.from(hat()))
+            node1a = new DAGNode(Buffer.from(hat()))
           } catch (err) {
             return cb(err)
           }
@@ -184,7 +184,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node2 = DAGNode.create(Buffer.from(hat()))
+            node2 = new DAGNode(Buffer.from(hat()))
           } catch (err) {
             return cb(err)
           }
@@ -195,11 +195,9 @@ module.exports = (createCommon, options) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link)
-              .then(node => {
-                node1b = node
-                cb()
-              }, cb)
+            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+
+            cb()
           })
         },
         (cb) => {
