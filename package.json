@@ -94,7 +94,7 @@
     "hashlru": "^2.3.0",
     "human-to-milliseconds": "^2.0.0",
     "interface-datastore": "~0.6.0",
-    "ipfs-bitswap": "~0.25.1",
+    "ipfs-bitswap": "~0.26.0",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.15.2",
     "ipfs-http-client": "^35.1.0",
