@@ -93,5 +93,47 @@ jobs:
       script:
         - npx aegir update-last-successful-build
 
+    - stage: test
+      name: interop
+      script:
+        - npm run test:interop
+
+    - stage: test
+      if: branch =~ /^\release\/.*$/
+      name: ipfs-companion
+      script:
+        - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
+
+    - stage: test
+      if: branch =~ /^\release\/.*$/
+      name: npm-on-ipfs
+      script:
+        - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
+
+    - stage: test
+      if: branch =~ /^\release\/.*$/
+      name: ipfs-pubsub-room
+      script:
+        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
+
+    - stage: test
+      if: branch =~ /^\release\/.*$/
+      name: peer-base
+      script:
+        - npm run test:external -- peer-base https://github.com/peer-base/peer-base.git
+
+    - stage: test
+      if: branch =~ /^\release\/.*$/
+      name: service-worker-gateway
+      script:
+        - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
+
+    - stage: tag
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: update-last-successful-build
+      script:
+        - npx aegir update-last-successful-build
+
 notifications:
   email: false

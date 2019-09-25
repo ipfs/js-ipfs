@@ -27,38 +27,6 @@
     - [ ] interop
     - [ ] sharness
 - [ ] **Stage 1 - Internal Testing**
-  - [ ] Publish a release candidate to npm
-    ```sh
-    # All succesful builds of master update the `build/last-successful branch which contains a npm-shrinkwrap.json.
-    # This command checks that branch out, installs it's dependencies using `npm ci`, creates a release branch
-    # (e.g. v0.34.x), updates the minor prerelease version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
-    npx aegir publish-rc
-
-    # Later we may wish to update the rc.  It's assumed you've already cherry-picked/otherwise merged the new commits
-    # into the release branch on github (e.g. not locally) and CI has passed.  This command pulls the latest release
-    # branch, installs it's dependencies `npm ci`, increments the prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1)
-    # and publishes it to npm
-    npx aegir update-rc v0.34.x
-    ```
-  - Network Testing:
-    - test lab things - TBD
-  - Infrastructure Testing:
-    - TBD
-  - [ ] IPFS Application Testing - Run the tests of the following applications:
-    - [ ] [webui](https://github.com/ipfs-shipyard/ipfs-webui)
-    - [ ] [ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)
-    - [ ] [ipfs-companion](https://github.com/ipfs-shipyard/ipfs-companion)
-    - [ ] [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs)
-    - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
-    - [ ] [peer-base](https://github.com/peer-base/peer-base)
-    - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
-- [ ] **Stage 2 - Community Dev Testing**
-  - [ ] Reach out to the IPFS _early testers_ listed in [doc/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
-  - [ ] Reach out on IRC for additional early testers.
-  - [ ] Run tests available in the following repos with the latest RC:
-    - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
-    - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
-- [ ] **Stage 3 - Community Prod Testing**
   - [ ] Documentation
     - [ ] Ensure that [README.md](https://github.com/ipfs/js-ipfs/tree/master/README.md) is up to date
       - [ ] Install section
@@ -67,6 +35,7 @@
     - [ ] Ensure that all the examples run without problems:
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-add-readable-stream
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-browserify
+      - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-create-react-app
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-mfs
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-parceljs
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/browser-readablestream
@@ -83,23 +52,65 @@
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/run-in-electron
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/running-multiple-nodes
       - [ ] https://github.com/ipfs/js-ipfs/tree/master/examples/traverse-ipld-graphs
-    - [ ] Update [js.ipfs.io](https://js.ipfs.io) examples to use the latest js-ipfs
+  - [ ] Publish a release candidate to npm
+    ```sh
+    # All succesful builds of master update the `build/last-successful branch which contains a npm-shrinkwrap.json.
+    # This command checks that branch out, installs it's dependencies using `npm ci`, creates a release branch
+    # (e.g. v0.34.x), updates the minor prerelease version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
+    npx aegir publish-rc
+
+    # Later we may wish to update the rc.  First cherry-picked/otherwise merged the new commits into the release 
+    # branch on github (e.g. not locally) and wait for CI to pass.  First update the lockfiles used by ci (n.b. one 
+    # day this will be done by our ci tools):
+    npx aegir update-release-branch-lockfiles v0.34.x
+
+    # Then update the rc publisehd on npm.  This command pulls the specified release branch, installs it's dependencies
+    # `npm ci`, increments the prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it to npm
+    npx aegir update-rc v0.34.x
+    ```
+  - Network Testing:
+    - test lab things - TBD
+  - Infrastructure Testing:
+    - TBD
+  - [ ] IPFS Application Testing - Run the tests of the following applications:
+    - [ ] [webui](https://github.com/ipfs-shipyard/ipfs-webui)
+    - [ ] [ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)
+    - [ ] [ipfs-companion](https://github.com/ipfs-shipyard/ipfs-companion)
+    - [ ] [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs)
+    - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
+    - [ ] [peer-base](https://github.com/peer-base/peer-base)
+    - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
+  - [ ] Run tests available in the following repos with the latest RC:
+    - [ ] [ipfs-log](https://github.com/orbitdb/ipfs-log)
+    - [ ] [orbit-db](https://github.com/orbitdb/orbit-db)
+  - [ ] **Stage 2 - Community Dev Testing**
+  - [ ] Reach out to the IPFS _early testers_ listed in [doc/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
+  - [ ] Reach out on IRC for additional early testers.
+
+- [ ] **Stage 3 - Community Prod Testing**
+      - [ ] Update [js.ipfs.io](https://js.ipfs.io) examples to use the latest js-ipfs
   - [ ] Invite the IPFS [_early testers_](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) to deploy the release to part of their production infrastructure.
   - [ ] Invite the wider community (link to the release issue):
     - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
     - [ ] Twitter
     - [ ] IRC
 - [ ] **Stage 4 - Release**
-  - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [this script](https://gist.github.com/alanshaw/5a2d9465c5a05b201d949551bdb1fcc3).
+  - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [the js-ipfs-contributors module](https://www.npmjs.com/package/js-ipfs-contributors).
   - [ ] Publish to npm:
     ```sh
-    # Clean out node_modules and re-install dependencies
-    # (Ensures you have the latest versions for the browser build)
-    rm -rf node_modules package-lock.json
-    npm install
+    # Re-install dependencies using lockfile (will automatically remove your node_modules folder)
+    # (Ensures the versions used for the browser build are the same that have been verified by CI)
+    npm ci
 
     # lint, build, test, tag, publish
     npm run release-minor
+
+    # reintegrate release branch into master
+    git rm npm-shrinkwrap.json yarn.lock
+    git commit -m 'chore: removed lock files'
+    git checkout master
+    git merge v0.34.x
+    git push
     ```
   - [ ] Publish a blog post to [github.com/ipfs/blog](https://github.com/ipfs/blog) (at minimum, a c&p of this release issue with all the highlights, API changes and thank yous)
   - [ ] Broadcasting (link to blog post)
