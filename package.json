@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "37.0.2",
+  "version": "37.0.3",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -206,6 +206,7 @@
     "leekt216 <leekt216@gmail.com>",
     "nginnever <ginneversource@gmail.com>",
     "noah the goodra <peterpan0413@live.com>",
+    "phillmac <phillmac@users.noreply.github.com>",
     "priecint <tp-dev@seznam.cz>",
     "samuli <samuli@nugg.ad>",
     "shunkin <hiyoko.san.ipod@gmail.com>",
