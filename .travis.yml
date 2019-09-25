@@ -88,11 +88,6 @@ jobs:
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
 
     - stage: test
-      name: interop
-      script:
-        - npm run test:interop
-
-    - stage: test
       if: branch =~ /^\release\/.*$/
       name: ipfs-companion
       script:
