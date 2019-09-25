@@ -80,7 +80,7 @@ module.exports = {
       print('Daemon is ready')
 
       const cleanup = async () => {
-        print(`Received interrupt signal, shutting down...`)
+        print('Received interrupt signal, shutting down...')
         await daemon.stop()
         process.exit(0)
       }

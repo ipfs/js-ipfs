@@ -108,7 +108,7 @@ class IpnsResolver {
         ipnsEntry = ipns.unmarshal(record)
       } catch (err) {
         log.error(err)
-        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_RECORD_RECEIVED'))
+        return callback(errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_RECORD_RECEIVED'))
       }
 
       // if the record has a public key validate it
@@ -131,7 +131,7 @@ class IpnsResolver {
           peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
         } catch (err) {
           log.error(err)
-          return callback(errcode(new Error(`found public key record that we couldn't convert to a value`), 'ERR_INVALID_PUB_KEY_RECEIVED'))
+          return callback(errcode(new Error('found public key record that we couldn\'t convert to a value'), 'ERR_INVALID_PUB_KEY_RECEIVED'))
         }
 
         this._validateRecord(peerId, ipnsEntry, callback)

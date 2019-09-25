@@ -57,7 +57,7 @@ module.exports = {
         })
       } catch (err) {
         if (err.code === 'EACCES') {
-          err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
+          err.message = 'EACCES: permission denied, stat $IPFS_PATH/version'
         }
         throw err
       }

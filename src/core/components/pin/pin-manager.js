@@ -274,7 +274,7 @@ class PinManager {
     this.repo.datastore.get(PIN_DS_KEY, (err, mh) => {
       if (err) {
         if (err.code === 'ERR_NOT_FOUND') {
-          this.log(`No pinned blocks`)
+          this.log('No pinned blocks')
           return callback(null, [])
         }
         return callback(new Error(`Could not get pin sets root from datastore: ${err.message}`))

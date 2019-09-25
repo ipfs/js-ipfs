@@ -44,7 +44,7 @@ module.exports = (http) => {
       it('fails on invalid args', async () => {
         const res = await api.inject({
           method: 'POST',
-          url: `/api/v0/pin/rm?arg=invalid`
+          url: '/api/v0/pin/rm?arg=invalid'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -135,7 +135,7 @@ module.exports = (http) => {
       it('fails on invalid args', async () => {
         const res = await api.inject({
           method: 'POST',
-          url: `/api/v0/pin/add?arg=invalid`
+          url: '/api/v0/pin/add?arg=invalid'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -220,7 +220,7 @@ module.exports = (http) => {
       it('fails on invalid args', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/pin/ls?arg=invalid`
+          url: '/api/v0/pin/ls?arg=invalid'
         })
 
         expect(res.statusCode).to.equal(400)
@@ -251,7 +251,7 @@ module.exports = (http) => {
       it('finds pins of type', async () => {
         const res = await api.inject({
           method: 'GET',
-          url: `/api/v0/pin/ls?type=recursive`
+          url: '/api/v0/pin/ls?type=recursive'
         })
 
         expect(res.statusCode).to.equal(200)
@@ -275,7 +275,7 @@ module.exports = (http) => {
 
         res = await api.inject({
           method: 'POST',
-          url: `/api/v0/pin/ls?cid-base=base64`
+          url: '/api/v0/pin/ls?cid-base=base64'
         })
 
         expect(res.statusCode).to.equal(200)
@@ -300,7 +300,7 @@ module.exports = (http) => {
 
         res = await api.inject({
           method: 'POST',
-          url: `/api/v0/pin/ls?cid-base=invalid`
+          url: '/api/v0/pin/ls?cid-base=invalid'
         })
 
         expect(res.statusCode).to.equal(400)

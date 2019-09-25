@@ -70,7 +70,7 @@ function addNode (fDaemon, inProcNode, callback) {
     initOptions: { bits: 512 },
     config: {
       Addresses: {
-        Swarm: [`/ip4/127.0.0.1/tcp/0/ws`]
+        Swarm: ['/ip4/127.0.0.1/tcp/0/ws']
       },
       Discovery: {
         MDNS: {

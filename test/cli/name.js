@@ -31,7 +31,7 @@ describe('name', () => {
     // Force the next require to not use require cache
     clearModule('../../src/cli/commands/name/resolve.js')
 
-    await cli.parse(`name resolve test`)
+    await cli.parse('name resolve test')
     sinon.assert.calledWith(resolveFake, 'test', { nocache: false, recursive: true })
   })
 
@@ -47,7 +47,7 @@ describe('name', () => {
     // Force the next require to not use require cache
     clearModule('../../src/cli/commands/name/publish.js')
 
-    await cli.parse(`name publish test --silent`)
+    await cli.parse('name publish test --silent')
     sinon.assert.calledWith(printSpy, 'Published to name: value')
     sinon.assert.calledWith(publishFake, 'test', {
       resolve: true,
