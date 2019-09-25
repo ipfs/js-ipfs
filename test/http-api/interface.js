@@ -4,7 +4,6 @@
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 const path = require('path')
-const callbackify = require('callbackify')
 
 describe('interface-ipfs-core over ipfs-http-client tests', () => {
   const defaultCommonFactory = CommonFactory.create({
@@ -144,48 +143,5 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.stats(defaultCommonFactory)
 
-  tests.swarm(CommonFactory.create({
-    createSetup ({ ipfsFactory, nodes }) {
-      const callbackifiedSpawn = callbackify.variadic(
-        ipfsFactory.spawn.bind(ipfsFactory))
-      return callback => {
-        callback(null, {
-          spawnNode (repoPath, config, cb) {
-            if (typeof repoPath === 'function') {
-              cb = repoPath
-              repoPath = undefined
-            }
-
-            if (typeof config === 'function') {
-              cb = config
-              config = undefined
-            }
-
-            config = config || {
-              Bootstrap: [],
-              Discovery: {
-                MDNS: {
-                  Enabled: false
-                },
-                webRTCStar: {
-                  Enabled: false
-                }
-              }
-            }
-
-            const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
-
-            callbackifiedSpawn(spawnOptions, (err, _ipfsd) => {
-              if (err) {
-                return cb(err)
-              }
-
-              nodes.push(_ipfsd)
-              cb(null, _ipfsd.api)
-            })
-          }
-        })
-      }
-    }
-  }))
+  tests.swarm(CommonFactory.createAsync())
 })

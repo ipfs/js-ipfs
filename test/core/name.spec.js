@@ -39,11 +39,11 @@ const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, re
 
 describe('name', function () {
   describe('republisher', function () {
+    this.timeout(40 * 1000)
     let node
     let ipfsd
 
     before(async function () {
-      this.timeout(40 * 1000)
       ipfsd = await df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`, '--offline'],
