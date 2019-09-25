@@ -23,7 +23,7 @@ jobs:
     - stage: check
       script:
         - npx aegir build --bundlesize
-        - npx aegir dep-check
+        - npx aegir dependency-check
         - npm run lint
 
     - stage: test
