@@ -80,7 +80,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            node1a = DAGNode.create(Buffer.from('Some data 1'))
+            node1a = new DAGNode(Buffer.from('Some data 1'))
           } catch (err) {
             return cb(err)
           }
@@ -89,7 +89,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node2 = DAGNode.create(Buffer.from('Some data 2'))
+            node2 = new DAGNode(Buffer.from('Some data 2'))
           } catch (err) {
             return cb(err)
           }
@@ -100,22 +100,19 @@ module.exports = (createCommon, options) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link)
-              .then(node => {
-                node1b = node
+            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
 
-                return dagPB.util.cid(dagPB.util.serialize(node1b))
-              })
-              .then(cid => {
-                node1bCid = cid
-
-                cb()
-              })
-              .catch(cb)
+            cb()
           })
         },
         (cb) => {
-          ipfs.object.put(node1b, cb)
+          ipfs.object.put(node1b, (err, cid) => {
+            expect(err).to.not.exist()
+
+            node1bCid = cid
+
+            cb()
+          })
         },
         (cb) => {
           ipfs.object.links(node1bCid, (err, links) => {

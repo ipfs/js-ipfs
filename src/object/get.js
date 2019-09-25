@@ -67,7 +67,7 @@ module.exports = (createCommon, options) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node.Data === 'string') {
-              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
+              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
             }
 
             node2 = node
@@ -96,7 +96,7 @@ module.exports = (createCommon, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node2.Data === 'string') {
-        node2 = DAGNode.create(Buffer.from(node2.Data), node2.Links, node2.size)
+        node2 = new DAGNode(Buffer.from(node2.Data), node2.Links, node2.size)
       }
 
       expect(node1.Data).to.deep.equal(node2.Data)
@@ -133,7 +133,7 @@ module.exports = (createCommon, options) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node.Data === 'string') {
-              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
+              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
             }
 
             node2 = node
@@ -161,7 +161,7 @@ module.exports = (createCommon, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node2.Data === 'string') {
-        node2 = DAGNode.create(Buffer.from(node2.Data), node2.Links, node2.size)
+        node2 = new DAGNode(Buffer.from(node2.Data), node2.Links, node2.size)
       }
 
       expect(node1.Data).to.deep.equal(node2.Data)
@@ -178,7 +178,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            node1a = DAGNode.create(Buffer.from('Some data 1'))
+            node1a = new DAGNode(Buffer.from('Some data 1'))
           } catch (err) {
             return cb(err)
           }
@@ -187,7 +187,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node2 = DAGNode.create(Buffer.from('Some data 2'))
+            node2 = new DAGNode(Buffer.from('Some data 2'))
           } catch (err) {
             return cb(err)
           }
@@ -196,13 +196,13 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           asDAGLink(node2, 'some-link', (err, link) => {
-            expect(err).to.not.exist()
+            if (err) {
+              return cb(err)
+            }
 
-            DAGNode.addLink(node1a, link)
-              .then(node => {
-                node1b = node
-                cb()
-              }, cb)
+            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+
+            cb()
           })
         },
         (cb) => {
@@ -219,7 +219,7 @@ module.exports = (createCommon, options) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node.Data === 'string') {
-              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
+              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
             }
 
             node1c = node
@@ -262,7 +262,7 @@ module.exports = (createCommon, options) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node.Data === 'string') {
-              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
+              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
             }
             node1b = node
             cb()
@@ -305,7 +305,7 @@ module.exports = (createCommon, options) => {
             // because js-ipfs-api can't infer if the
             // returned Data is Buffer or String
             if (typeof node.Data === 'string') {
-              node = DAGNode.create(Buffer.from(node.Data), node.Links, node.size)
+              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
             }
             node1b = node
             cb()

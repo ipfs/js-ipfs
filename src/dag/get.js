@@ -49,7 +49,7 @@ module.exports = (createCommon, options) => {
           const someData = Buffer.from('some other data')
 
           try {
-            pbNode = DAGNode.create(someData)
+            pbNode = new DAGNode(someData)
           } catch (err) {
             return cb(err)
           }
@@ -62,7 +62,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            nodePb = DAGNode.create(Buffer.from('I am inside a Protobuf'))
+            nodePb = new DAGNode(Buffer.from('I am inside a Protobuf'))
           } catch (err) {
             return cb(err)
           }
@@ -70,7 +70,7 @@ module.exports = (createCommon, options) => {
           cb()
         },
         (cb) => {
-          dagPB.util.cid(dagPB.util.serialize(nodePb))
+          dagPB.util.cid(nodePb.serialize())
             .then(cid => {
               cidPb = cid
               cb()
@@ -139,7 +139,7 @@ module.exports = (createCommon, options) => {
 
         const node = result.value
 
-        dagPB.util.cid(dagPB.util.serialize(node))
+        dagPB.util.cid(node.serialize())
           .then(cid => {
             expect(cid).to.eql(cidPb)
             done()
@@ -232,7 +232,7 @@ module.exports = (createCommon, options) => {
     it('should get a node added as CIDv0 with a CIDv1', done => {
       const input = Buffer.from(`TEST${Date.now()}`)
 
-      const node = dagPB.DAGNode.create(input)
+      const node = new DAGNode(input)
 
       ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' }, (err, cid) => {
         expect(err).to.not.exist()

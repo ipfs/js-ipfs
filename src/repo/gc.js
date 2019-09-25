@@ -184,7 +184,7 @@ module.exports = (createCommon, options) => {
       await ipfs.pin.rm(dataHash)
 
       // Create a link to the data from an object
-      const obj = await DAGNode.create(Buffer.from('fruit'), [{
+      const obj = await new DAGNode(Buffer.from('fruit'), [{
         Name: 'p',
         Hash: dataHash,
         TSize: addRes[0].size

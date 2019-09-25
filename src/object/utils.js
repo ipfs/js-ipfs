@@ -1,23 +1,22 @@
 'use strict'
 
 const { promisify } = require('es6-promisify')
+const callbackify = require('callbackify')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 
-const calculateCid = promisify((node, cb) => {
-  dagPB.util.cid(dagPB.util.serialize(node), {
+const calculateCid = callbackify((node) => {
+  return dagPB.util.cid(node.serialize(), {
     cidVersion: 0
   })
-    .then(cid => cb(null, cid), cb)
 })
 
 const createDAGNode = promisify((data, links, cb) => {
-  cb(null, DAGNode.create(data, links))
+  cb(null, new DAGNode(data, links))
 })
 
 const addLinkToDAGNode = promisify((parent, link, cb) => {
-  DAGNode.addLink(parent, link)
-    .then(node => cb(null, node), cb)
+  cb(null, new DAGNode(parent.Data, parent.Links.concat(link)))
 })
 
 const asDAGLink = promisify((node, name, cb) => {
