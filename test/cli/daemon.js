@@ -283,8 +283,11 @@ describe('daemon', () => {
     }
   })
 
-  it('should init by default if not already', async function () {
+  it('should init by default', async function () {
     this.timeout(100 * 1000)
+
+    expect(fs.existsSync(repoPath)).to.be.false()
+
     const daemon = ipfs('daemon')
     let stdout = ''
 
@@ -302,6 +305,8 @@ describe('daemon', () => {
     } catch (err) {
       expect(err.killed).to.be.true()
     }
+
+    expect(fs.existsSync(repoPath)).to.be.true()
   })
 
   it('should init with custom config', async function () {
