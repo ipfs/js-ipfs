@@ -37,7 +37,7 @@ describe('.dag', function () {
 
   it('should be able to put and get a DAG node with format dag-pb', async () => {
     const data = Buffer.from('some data')
-    const node = DAGNode.create(data)
+    const node = new DAGNode(data)
 
     let cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' })
     cid = cid.toV0()

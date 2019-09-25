@@ -1,6 +1,5 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
 const dagCBOR = require('ipld-dag-cbor')
 const promisify = require('promisify-es6')
 const CID = require('cids')
@@ -56,7 +55,7 @@ module.exports = (send) => {
       if (options.format === 'dag-cbor') {
         serialized = dagCBOR.util.serialize(dagNode)
       } else if (options.format === 'dag-pb') {
-        serialized = dagPB.util.serialize(dagNode)
+        serialized = dagNode.serialize()
       } else {
         // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
         serialized = dagNode

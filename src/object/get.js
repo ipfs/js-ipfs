@@ -48,7 +48,7 @@ module.exports = (send) => {
       }
 
       const links = result.Links.map(l => new DAGLink(l.Name, l.Size, l.Hash))
-      const node = DAGNode.create(Buffer.from(result.Data, 'base64'), links)
+      const node = new DAGNode(Buffer.from(result.Data, 'base64'), links)
 
       cache.set(cidB58Str, node)
       callback(null, node)
