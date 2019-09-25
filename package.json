@@ -109,7 +109,7 @@
     "cross-env": "^6.0.0",
     "dirty-chai": "^2.0.1",
     "go-ipfs-dep": "^0.4.22",
-    "interface-ipfs-core": "ipfs/interface-js-ipfs-core#update-dag-pb",
+    "interface-ipfs-core": "^0.115.0",
     "ipfsd-ctl": "^0.47.1",
     "nock": "^11.3.2",
     "stream-equal": "^1.1.1"
