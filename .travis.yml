@@ -122,6 +122,8 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: update-last-successful-build
       script:
+        - git config --global user.email "travis@travis-ci.org"
+        - git config --global user.name "Travis CI"
         - npx aegir update-last-successful-build
 
 notifications:
