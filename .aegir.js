@@ -10,7 +10,7 @@ const preloadNode = MockPreloadNode.createNode()
 const echoServer = EchoServer.createServer()
 
 module.exports = {
-  bundlesize: { maxSize: '683kB' },
+  bundlesize: { maxSize: '685kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main'],
