@@ -8,7 +8,7 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const delay = require('delay')
-const waitFor = require('../utils/wait-for').promises
+const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')
 
 const createMockFilesStat = (cids = []) => {

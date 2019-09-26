@@ -57,50 +57,47 @@ describe('bootstrap', () => runOnAndOff((thing) => {
     '/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
   ]
 
-  it('add default', function () {
+  it('add default', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs('bootstrap add --default').then((out) => {
-      expect(out).to.equal(defaultList.join('\n') + '\n')
-    })
+    const out = await ipfs('bootstrap add --default')
+    expect(out).to.equal(defaultList.join('\n') + '\n')
   })
 
-  it('list the bootstrap nodes', function () {
+  it('list the bootstrap nodes', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs('bootstrap list').then((out) => {
-      expect(out).to.equal(defaultList.join('\n') + '\n')
-    })
+    const out = await ipfs('bootstrap list')
+    expect(out).to.equal(defaultList.join('\n') + '\n')
   })
 
-  it('add another bootstrap node', function () {
+  it('add another bootstrap node', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
-      return ipfs('bootstrap list')
-    }).then((out) => expect(out).to.equal(updatedList.join('\n') + '\n'))
+    const out = await ipfs('bootstrap add /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
+    expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
+
+    const out2 = await ipfs('bootstrap list')
+    expect(out2).to.equal(updatedList.join('\n') + '\n')
   })
 
-  it('rm a bootstrap node', function () {
+  it('rm a bootstrap node', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD').then((out) => {
-      expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
-      return ipfs('bootstrap list')
-    }).then((out) => {
-      expect(out).to.equal(defaultList.join('\n') + '\n')
-    })
+    const out = await ipfs('bootstrap rm /ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
+    expect(out).to.equal('/ip4/111.111.111.111/tcp/1001/ipfs/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD\n')
+
+    const out2 = await ipfs('bootstrap list')
+    expect(out2).to.equal(defaultList.join('\n') + '\n')
   })
 
-  it('rm all bootstrap nodes', function () {
+  it('rm all bootstrap nodes', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs('bootstrap rm --all').then((out) => {
-      expect(out).to.equal('')
-      return ipfs('bootstrap list')
-    }).then((out) => {
-      expect(out).to.equal('')
-    })
+    const out = await ipfs('bootstrap rm --all')
+    expect(out).to.equal('')
+
+    const out2 = await ipfs('bootstrap list')
+    expect(out2).to.equal('')
   })
 }))

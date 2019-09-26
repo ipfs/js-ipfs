@@ -57,10 +57,9 @@ describe('ping', function () {
     await ipfsdA.api.swarm.connect(bMultiaddr)
   })
 
-  before((done) => {
+  before(() => {
     this.timeout(60 * 1000)
     cli = ipfsExec(ipfsdA.repoPath)
-    done()
   })
 
   after(() => {
@@ -74,7 +73,7 @@ describe('ping', function () {
     }
   })
 
-  it('ping host', (done) => {
+  it('ping host', async () => {
     this.timeout(60 * 1000)
     const ping = cli(`ping ${ipfsdBId}`)
     const result = []
@@ -83,22 +82,17 @@ describe('ping', function () {
       result.push(...packets)
     })
 
-    ping.stdout.on('end', () => {
-      expect(result).to.have.lengthOf(12)
-      expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-      for (let i = 1; i < 11; i++) {
-        expect(result[i]).to.match(/^Pong received: time=\d+ ms$/)
-      }
-      expect(result[11]).to.match(/^Average latency: \d+(.\d+)?ms$/)
-      done()
-    })
+    await ping
 
-    ping.catch((err) => {
-      expect(err).to.not.exist()
-    })
+    expect(result).to.have.lengthOf(12)
+    expect(result[0]).to.equal(`PING ${ipfsdBId}`)
+    for (let i = 1; i < 11; i++) {
+      expect(result[i]).to.match(/^Pong received: time=\d+ ms$/)
+    }
+    expect(result[11]).to.match(/^Average latency: \d+(.\d+)?ms$/)
   })
 
-  it('ping host with --n option', (done) => {
+  it('ping host with --n option', async () => {
     this.timeout(60 * 1000)
     const ping = cli(`ping --n 1 ${ipfsdBId}`)
     const result = []
@@ -107,20 +101,15 @@ describe('ping', function () {
       result.push(...packets)
     })
 
-    ping.stdout.on('end', () => {
-      expect(result).to.have.lengthOf(3)
-      expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-      expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
-      expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
-      done()
-    })
+    await ping
 
-    ping.catch((err) => {
-      expect(err).to.not.exist()
-    })
+    expect(result).to.have.lengthOf(3)
+    expect(result[0]).to.equal(`PING ${ipfsdBId}`)
+    expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
+    expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
   })
 
-  it('ping host with --count option', (done) => {
+  it('ping host with --count option', async () => {
     this.timeout(60 * 1000)
     const ping = cli(`ping --count 1 ${ipfsdBId}`)
     const result = []
@@ -129,16 +118,11 @@ describe('ping', function () {
       result.push(...packets)
     })
 
-    ping.stdout.on('end', () => {
-      expect(result).to.have.lengthOf(3)
-      expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-      expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
-      expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
-      done()
-    })
+    await ping
 
-    ping.catch((err) => {
-      expect(err).to.not.exist()
-    })
+    expect(result).to.have.lengthOf(3)
+    expect(result[0]).to.equal(`PING ${ipfsdBId}`)
+    expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
+    expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
   })
 })

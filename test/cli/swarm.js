@@ -68,42 +68,36 @@ describe('swarm', () => {
 
     after(() => Promise.all(nodes.map((node) => node.stop())))
 
-    it('connect', () => {
-      return ipfsA('swarm', 'connect', bMultiaddr).then((out) => {
-        expect(out).to.eql(`connect ${bMultiaddr} success\n`)
-      })
+    it('connect', async () => {
+      const out = await ipfsA('swarm', 'connect', bMultiaddr)
+      expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
 
-    it('peers', () => {
-      return ipfsA('swarm peers').then((out) => {
-        expect(out).to.eql(bMultiaddr + '\n')
-      })
+    it('peers', async () => {
+      const out = await ipfsA('swarm peers')
+      expect(out).to.eql(bMultiaddr + '\n')
     })
 
-    it('addrs', () => {
-      return ipfsA('swarm addrs').then((out) => {
-        expect(out).to.have.length.above(1)
-      })
+    it('addrs', async () => {
+      const out = await ipfsA('swarm addrs')
+      expect(out).to.have.length.above(1)
     })
 
-    it('addrs local', () => {
-      return ipfsA('swarm addrs local').then((out) => {
-        expect(out).to.have.length.above(1)
-      })
+    it('addrs local', async () => {
+      const out = await ipfsA('swarm addrs local')
+      expect(out).to.have.length.above(1)
     })
 
-    it('disconnect', () => {
-      return ipfsA('swarm', 'disconnect', bMultiaddr).then((out) => {
-        expect(out).to.eql(
-          `disconnect ${bMultiaddr} success\n`
-        )
-      })
+    it('disconnect', async () => {
+      const out = await ipfsA('swarm', 'disconnect', bMultiaddr)
+      expect(out).to.eql(
+        `disconnect ${bMultiaddr} success\n`
+      )
     })
 
-    it('`peers` should not throw after `disconnect`', () => {
-      return ipfsA('swarm peers').then((out) => {
-        expect(out).to.be.empty()
-      })
+    it('`peers` should not throw after `disconnect`', async () => {
+      const out = await ipfsA('swarm peers')
+      expect(out).to.be.empty()
     })
   })
 

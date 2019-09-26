@@ -12,9 +12,8 @@ describe('repo', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('get the repo version', () => {
-    return ipfs('repo version').then((out) => {
-      expect(out).to.eql(`${repoVersion}\n`)
-    })
+  it('get the repo version', async () => {
+    const out = await ipfs('repo version')
+    expect(out).to.eql(`${repoVersion}\n`)
   })
 }))

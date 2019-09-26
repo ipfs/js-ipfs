@@ -15,55 +15,45 @@ describe('version', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('get the version', () =>
-    ipfs('version').then(out =>
-      expect(out).to.eql(
-        `js-ipfs version: ${pkgversion}\n`
-      )
-    )
-  )
-
-  it('handles --number', () =>
-    ipfs('version --number').then(out =>
-      expect(out).to.eql(`${pkgversion}\n`)
-    )
-  )
-
-  it('handles --commit', () =>
-    ipfs('version --commit').then(out =>
-      expect(out).to.eql(`js-ipfs version: ${pkgversion}-\n`)
-    )
-  )
-
-  describe('handles --all', function () {
-    it('prints js-ipfs version', () =>
-      ipfs('version --all').then(out => {
-        expect(out).to.include(`js-ipfs version: ${pkgversion}`)
-      })
-    )
-
-    it('prints repo version', () =>
-      ipfs('version --all').then(out => {
-        expect(out).to.include(`Repo version: ${repoVersion}`)
-      })
-    )
-
-    it('prints arch/platform', () =>
-      ipfs('version --all').then(out => {
-        expect(out).to.include(`System version: ${os.arch()}/${os.platform()}`)
-      })
-    )
-
-    it('prints Node.js version', () =>
-      ipfs('version --all').then(out => {
-        expect(out).to.include(`Node.js version: ${process.version}`)
-      })
-    )
+  it('get the version', async () => {
+    const out = await ipfs('version')
+    expect(out).to.eql(`js-ipfs version: ${pkgversion}\n`)
   })
 
-  it('handles --repo', () =>
-    ipfs('version --repo').then(out =>
-      expect(out).to.eql(`${repoVersion}\n`)
-    )
-  )
+  it('handles --number', async () => {
+    const out = await ipfs('version --number')
+    expect(out).to.eql(`${pkgversion}\n`)
+  })
+
+  it('handles --commit', async () => {
+    const out = await ipfs('version --commit')
+    expect(out).to.eql(`js-ipfs version: ${pkgversion}-\n`)
+  })
+
+  describe('handles --all', function () {
+    it('prints js-ipfs version', async () => {
+      const out = await ipfs('version --all')
+      expect(out).to.include(`js-ipfs version: ${pkgversion}`)
+    })
+
+    it('prints repo version', async () => {
+      const out = await ipfs('version --all')
+      expect(out).to.include(`Repo version: ${repoVersion}`)
+    })
+
+    it('prints arch/platform', async () => {
+      const out = await ipfs('version --all')
+      expect(out).to.include(`System version: ${os.arch()}/${os.platform()}`)
+    })
+
+    it('prints Node.js version', async () => {
+      const out = await ipfs('version --all')
+      expect(out).to.include(`Node.js version: ${process.version}`)
+    })
+  })
+
+  it('handles --repo', async () => {
+    const out = await ipfs('version --repo')
+    expect(out).to.eql(`${repoVersion}\n`)
+  })
 }))
