@@ -33,48 +33,43 @@ describe('init', function () {
 
   afterEach(() => clean(repoPath))
 
-  it('basic', function () {
-    return ipfs('init').then((out) => {
-      expect(repoDirSync('blocks')).to.have.length.above(2)
-      expect(repoExistsSync('config')).to.equal(true)
-      expect(repoExistsSync('version')).to.equal(true)
+  it('basic', async function () {
+    const out = await ipfs('init')
+    expect(repoDirSync('blocks')).to.have.length.above(2)
+    expect(repoExistsSync('config')).to.equal(true)
+    expect(repoExistsSync('version')).to.equal(true)
 
-      // Test that the following was written when init-ing the repo
-      // jsipfs cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
-      const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
-      return ipfs(command)
-    }).then((out) => expect(out).to.equal(readme))
+    // Test that the following was written when init-ing the repo
+    // jsipfs cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
+    const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
+    const out2 = await ipfs(command)
+    expect(out2).to.equal(readme)
   })
 
-  it('bits', function () {
-    return ipfs('init --bits 1024').then(() => {
-      expect(repoDirSync('blocks')).to.have.length.above(2)
-      expect(repoExistsSync('config')).to.equal(true)
-      expect(repoExistsSync('version')).to.equal(true)
-    })
+  it('bits', async function () {
+    await ipfs('init --bits 1024')
+    expect(repoDirSync('blocks')).to.have.length.above(2)
+    expect(repoExistsSync('config')).to.equal(true)
+    expect(repoExistsSync('version')).to.equal(true)
   })
 
-  it('empty', function () {
-    return ipfs('init --bits 1024 --empty-repo true').then(() => {
-      expect(repoDirSync('blocks')).to.have.length(2)
-      expect(repoExistsSync('config')).to.equal(true)
-      expect(repoExistsSync('version')).to.equal(true)
-    })
+  it('empty', async function () {
+    await ipfs('init --bits 1024 --empty-repo true')
+    expect(repoDirSync('blocks')).to.have.length(2)
+    expect(repoExistsSync('config')).to.equal(true)
+    expect(repoExistsSync('version')).to.equal(true)
   })
 
-  it('should present ipfs path help when option help is received', function (done) {
-    ipfs('init --help').then((res) => {
-      expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
-      done()
-    })
+  it('should present ipfs path help when option help is received', async function () {
+    const res = await ipfs('init --help')
+    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
   })
 
-  it('default config argument', () => {
+  it('default config argument', async () => {
     const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
-    return ipfs(`init ${configPath}`).then((res) => {
-      const configRaw = fs.readFileSync(path.join(repoPath, 'config')).toString()
-      const config = JSON.parse(configRaw)
-      expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/9999')
-    })
+    await ipfs(`init ${configPath}`)
+    const configRaw = fs.readFileSync(path.join(repoPath, 'config')).toString()
+    const config = JSON.parse(configRaw)
+    expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/9999')
   })
 })

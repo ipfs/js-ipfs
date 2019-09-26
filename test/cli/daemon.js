@@ -13,17 +13,11 @@ const tempWrite = require('temp-write')
 const pkg = require('../../package.json')
 
 const skipOnWindows = isWindows() ? it.skip : it
-const daemonReady = (daemon, cb) => {
-  let r = null
-  const p = new Promise((resolve, reject) => {
-    daemon.stdout.on('data', async (data) => {
+const daemonReady = (daemon) => {
+  return new Promise((resolve, reject) => {
+    daemon.stdout.on('data', (data) => {
       if (data.toString().includes('Daemon is ready')) {
-        try {
-          r = await cb()
-        } catch (err) {
-          reject(err)
-        }
-        daemon.cancel()
+        resolve()
       }
     })
     daemon.stderr.on('data', (data) => {
@@ -33,16 +27,7 @@ const daemonReady = (daemon, cb) => {
         reject(new Error('Daemon didn\'t start ' + data.toString('utf8')))
       }
     })
-    daemon.then(() => resolve(r)).catch(err => {
-      if (r && err.killed) {
-        return resolve(r)
-      }
-
-      reject(err)
-    })
   })
-
-  return p
 }
 const checkLock = (repo) => {
   // skip on windows
@@ -320,7 +305,8 @@ describe('daemon', () => {
     const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
     const daemon = ipfs(`daemon --init-config ${configPath}`)
 
-    const r = await daemonReady(daemon, () => ipfs('config \'Addresses.API\''))
-    expect(r).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
+    await daemonReady(daemon)
+    const out = await ipfs('config \'Addresses.API\'')
+    expect(out).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
   })
 })

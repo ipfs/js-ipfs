@@ -16,7 +16,9 @@ const path = require('path')
 function off (tests) {
   describe('daemon off (directly to core)', function () {
     this.timeout(60 * 1000)
-    const thing = {}
+    const thing = {
+      off: true
+    }
     let repoPath
 
     before(function () {
@@ -41,7 +43,9 @@ function off (tests) {
 function on (tests) {
   describe('daemon on (through http-api)', function () {
     this.timeout(60 * 1000)
-    const thing = {}
+    const thing = {
+      on: true
+    }
 
     let ipfsd
     before(async function () {

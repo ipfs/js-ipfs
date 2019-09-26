@@ -12,14 +12,13 @@ describe('refs-local', () => runOnAndOff((thing) => {
     return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
   })
 
-  it('prints CID of all blocks', function () {
+  it('prints CID of all blocks', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs('refs-local')
-      .then((out) => {
-        const lines = out.split('\n')
-        expect(lines.includes('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN')).to.eql(true)
-        expect(lines.includes('QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU')).to.eql(true)
-      })
+    const out = await ipfs('refs-local')
+    const lines = out.split('\n')
+
+    expect(lines.includes('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN')).to.eql(true)
+    expect(lines.includes('QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU')).to.eql(true)
   })
 }))

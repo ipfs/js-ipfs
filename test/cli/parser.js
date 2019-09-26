@@ -15,31 +15,15 @@ describe('yargs cli parser', () => {
     cli = new YargsPromise(parser)
   })
 
-  it('should handle --silent flag correctly', (done) => {
-    cli
-      .parse('serve --silent src/init-files/init-docs/readme')
-      .then(({ error, argv }) => {
-        expect(error).to.not.exist()
-        expect(argv).to.include({ silent: true, pass: '' })
-        expect(argv.getIpfs.instance).to.exist()
-        done()
-      })
-      .catch(({ error }) => {
-        done(error)
-      })
+  it('should handle --silent flag correctly', async () => {
+    const { error, argv } = await cli.parse('serve --silent src/init-files/init-docs/readme')
+    expect(error).to.not.exist()
+    expect(argv).to.include({ silent: true, pass: '' })
   })
 
-  it('should handle --pass flag correctly', (done) => {
-    cli
-      .parse('serve --pass password')
-      .then(({ error, argv }) => {
-        expect(error).to.not.exist()
-        expect(argv).to.include({ silent: true, pass: '' })
-        expect(argv.getIpfs.instance).to.exist()
-        done()
-      })
-      .catch(({ error }) => {
-        done(error)
-      })
+  it('should handle --pass flag correctly', async () => {
+    const { error, argv } = await cli.parse('serve --pass password')
+    expect(error).to.not.exist()
+    expect(argv).to.include({ silent: false, pass: 'password' })
   })
 })

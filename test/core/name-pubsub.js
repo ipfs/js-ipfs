@@ -10,15 +10,13 @@ chai.use(dirtyChai)
 
 const base64url = require('base64url')
 const { fromB58String } = require('multihashes')
-const retry = require('async/retry')
-const series = require('async/series')
-const callbackify = require('callbackify')
 const peerId = require('peer-id')
 const isNode = require('detect-node')
 const ipns = require('ipns')
 const IPFS = require('../../src')
 const waitFor = require('../utils/wait-for')
-const delay = require('interface-ipfs-core/src/utils/delay')
+const delay = require('delay')
+const promisify = require('promisify-es6')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
@@ -81,7 +79,7 @@ describe('name-pubsub', function () {
 
   after(() => Promise.all(nodes.map((node) => node.stop())))
 
-  it('should publish and then resolve correctly', function (done) {
+  it('should publish and then resolve correctly', async function () {
     this.timeout(80 * 1000)
 
     let subscribed = false
@@ -90,51 +88,40 @@ describe('name-pubsub', function () {
       subscribed = true
     }
 
-    const alreadySubscribed = (cb) => {
-      return cb(null, subscribed === true)
+    const alreadySubscribed = () => {
+      return subscribed === true
     }
 
     // Wait until a peer subscribes a topic
-    const waitForPeerToSubscribe = (node, topic, callback) => {
-      retry({
-        times: 5,
-        interval: 2000
-      }, (next) => {
-        node.pubsub.peers(topic, (error, res) => {
-          if (error) {
-            return next(error)
-          }
+    const waitForPeerToSubscribe = async (node, topic) => {
+      for (let i = 0; i < 5; i++) {
+        const res = await node.pubsub.peers(topic)
 
-          if (!res || !res.length) {
-            return next(new Error(`Could not find subscription for topic ${topic}`))
-          }
+        if (res && res.length) {
+          return
+        }
 
-          return next(null, res)
-        })
-      }, callback)
+        await delay(2000)
+      }
+
+      throw new Error(`Could not find subscription for topic ${topic}`)
     }
 
     const keys = ipns.getIdKeys(fromB58String(idA.id))
     const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
 
-    nodeB.name.resolve(idA.id, (err) => {
-      expect(err).to.exist()
+    await nodeB.name.resolve(idA.id)
+      .then(() => expect.fail('should not have been able to resolve idA.id'), (err) => expect(err).to.exist())
 
-      series([
-        (cb) => waitForPeerToSubscribe(nodeA, topic, cb),
-        (cb) => nodeB.pubsub.subscribe(topic, checkMessage, cb),
-        (cb) => nodeA.name.publish(ipfsRef, { resolve: false }, cb),
-        (cb) => waitFor((callback) => alreadySubscribed(callback), cb),
-        (cb) => setTimeout(() => cb(), 1000), // guarantee record is written
-        (cb) => nodeB.name.resolve(idA.id, cb)
-      ], (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
+    await waitForPeerToSubscribe(nodeA, topic)
+    await nodeB.pubsub.subscribe(topic, checkMessage)
+    await nodeA.name.publish(ipfsRef, { resolve: false })
+    await waitFor(alreadySubscribed)
+    await delay(1000) // guarantee record is written
 
-        expect(res[5]).to.equal(ipfsRef)
-        done()
-      })
-    })
+    const res = await nodeB.name.resolve(idA.id)
+
+    expect(res).to.equal(ipfsRef)
   })
 
   it('should self resolve, publish and then resolve correctly', async function () {
@@ -164,7 +151,7 @@ describe('name-pubsub', function () {
     expect(resolveA).to.be.eq(`/ipfs/${path}`)
   })
 
-  it('should handle event on publish correctly', function (done) {
+  it('should handle event on publish correctly', async function () {
     this.timeout(80 * 1000)
 
     const testAccountName = 'test-account'
@@ -179,45 +166,32 @@ describe('name-pubsub', function () {
       publishedMessageDataValue = publishedMessageData.value.toString('utf8')
     }
 
-    const alreadySubscribed = (cb) => {
-      return cb(null, publishedMessage !== null)
+    const alreadySubscribed = () => {
+      return publishedMessage !== null
     }
 
     // Create account for publish
-    nodeA.key.gen(testAccountName, {
+    const testAccount = await nodeA.key.gen(testAccountName, {
       type: 'rsa',
       size: 2048
-    }, (err, testAccount) => {
-      expect(err).to.not.exist()
-
-      const keys = ipns.getIdKeys(fromB58String(testAccount.id))
-      const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
-
-      series([
-        (cb) => nodeB.pubsub.subscribe(topic, checkMessage, cb),
-        (cb) => nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName }, cb),
-        (cb) => waitFor((callback) => alreadySubscribed(callback), cb),
-        (cb) => peerId.createFromPubKey(publishedMessage.key, cb),
-        (cb) => peerId.createFromPubKey(publishedMessageData.pubKey, cb)
-      ], (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-
-        const messageKey = res[3]
-        const pubKeyPeerId = res[4]
-
-        expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
-        expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
-        expect(publishedMessage.from).to.equal(idA.id)
-        expect(messageKey.toB58String()).to.equal(idA.id)
-        expect(publishedMessageDataValue).to.equal(ipfsRef)
-
-        // Verify the signature
-        callbackify(ipns.validate.bind(ipns))(pubKeyPeerId._pubKey, publishedMessageData, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
     })
+
+    const keys = ipns.getIdKeys(fromB58String(testAccount.id))
+    const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
+
+    await nodeB.pubsub.subscribe(topic, checkMessage)
+    await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
+    await waitFor(alreadySubscribed)
+    const messageKey = await promisify(peerId.createFromPubKey)(publishedMessage.key)
+    const pubKeyPeerId = await promisify(peerId.createFromPubKey)(publishedMessageData.pubKey)
+
+    expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
+    expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
+    expect(publishedMessage.from).to.equal(idA.id)
+    expect(messageKey.toB58String()).to.equal(idA.id)
+    expect(publishedMessageDataValue).to.equal(ipfsRef)
+
+    // Verify the signature
+    await ipns.validate(pubKeyPeerId._pubKey, publishedMessageData)
   })
 })
