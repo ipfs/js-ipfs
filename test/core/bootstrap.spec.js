@@ -10,7 +10,10 @@ const isNode = require('detect-node')
 const IPFS = require('../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create({
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
+})
 
 describe('bootstrap', () => {
   if (!isNode) {

@@ -12,7 +12,7 @@ module.exports = {
     query: Joi.object().keys({
       recursive: Joi.boolean().default(true),
       arg: Joi.string().required(),
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
   async handler (request, h) {

@@ -6,7 +6,6 @@ const multihashing = require('multihashing-async')
 const Block = require('ipfs-block')
 const CID = require('cids')
 const fs = require('fs').promises
-const { promisify } = require('util')
 
 async function main () {
   const ipfs = await createNode()
@@ -28,7 +27,7 @@ async function main () {
 
   await Promise.all(gitObjects.map(async gitObjectsPath => {
     const data = await fs.readFile(gitObjectsPath)
-    const multihash = await promisify(multihashing)(data, 'sha1')
+    const multihash = await multihashing(data, 'sha1')
 
     const cid = new CID(1, 'git-raw', multihash)
     console.log(cid.toString())

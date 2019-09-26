@@ -13,7 +13,11 @@ const crypto = require('crypto')
 const IPFS = require('../../src')
 
 const DaemonFactory = require('ipfsd-ctl')
-const procDf = DaemonFactory.create({ type: 'proc', exec: IPFS })
+const procDf = DaemonFactory.create({
+  type: 'proc',
+  exec: IPFS,
+  IpfsClient: require('ipfs-http-client')
+})
 
 const baseConf = {
   Bootstrap: [],

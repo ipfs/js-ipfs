@@ -80,8 +80,8 @@ const encodeBufferKeys = (obj, encoding) => {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      'data-encoding': Joi.string().valid(['text', 'base64', 'hex']).default('text'),
-      'cid-base': Joi.string().valid(multibase.names)
+      'data-encoding': Joi.string().valid('text', 'base64', 'hex').default('text'),
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -132,8 +132,8 @@ exports.put = {
       format: Joi.string().default('cbor'),
       'input-enc': Joi.string().default('json'),
       pin: Joi.boolean(),
-      hash: Joi.string().valid(Object.keys(mh.names)).default('sha2-256'),
-      'cid-base': Joi.string().valid(multibase.names)
+      hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -229,7 +229,7 @@ exports.put = {
 exports.resolve = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

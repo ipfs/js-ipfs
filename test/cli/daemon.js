@@ -26,7 +26,13 @@ const daemonReady = (daemon, cb) => {
         daemon.cancel()
       }
     })
-    daemon.stderr.on('data', () => reject(new Error('Daemon didnt start')))
+    daemon.stderr.on('data', (data) => {
+      const line = data.toString('utf8')
+
+      if (!line.includes('ExperimentalWarning')) {
+        reject(new Error('Daemon didn\'t start ' + data.toString('utf8')))
+      }
+    })
     daemon.then(() => resolve(r)).catch(err => {
       if (r && err.killed) {
         return resolve(r)

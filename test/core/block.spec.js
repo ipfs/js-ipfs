@@ -15,9 +15,10 @@ describe('block', () => {
   let ipfsd, ipfs
 
   before(async function () {
-    this.timeout(20 * 1000)
-
-    const factory = IPFSFactory.create({ type: 'proc' })
+    const factory = IPFSFactory.create({
+      type: 'proc',
+      IpfsClient: require('ipfs-http-client')
+    })
 
     ipfsd = await factory.spawn({
       exec: IPFS,

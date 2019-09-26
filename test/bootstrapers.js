@@ -16,7 +16,11 @@ describe('Check that a js-ipfs node can indeed contact the bootstrappers', () =>
   before(async () => {
     this.timeout(30 * 1000)
 
-    const factory = IPFSFactory.create({ type: 'proc', exec: IPFS })
+    const factory = IPFSFactory.create({
+      type: 'proc',
+      exec: IPFS,
+      IpfsClient: require('ipfs-http-client')
+    })
 
     ipfsd = await factory.spawn({
       config: {

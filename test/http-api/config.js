@@ -17,7 +17,10 @@ const fs = require('fs')
 const path = require('path')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
+})
 
 skipOnWindows('config endpoint', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
