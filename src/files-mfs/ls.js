@@ -91,5 +91,29 @@ module.exports = (createCommon, options) => {
         })
       })
     })
+
+    it('should list an empty directory', async () => {
+      const testDir = `/test-${hat()}`
+      await ipfs.files.mkdir(testDir)
+      const contents = await ipfs.files.ls(testDir)
+
+      expect(contents).to.be.an('array').and.to.be.empty()
+    })
+
+    it('should list an file directly', async () => {
+      const fileName = `single-file-${hat()}.txt`
+      const filePath = `/${fileName}`
+      await ipfs.files.write(filePath, Buffer.from('Hello world'), {
+        create: true
+      })
+      const contents = await ipfs.files.ls(filePath)
+
+      expect(contents).to.be.an('array').and.have.lengthOf(1).and.to.deep.equal([{
+        hash: '',
+        name: fileName,
+        size: 0,
+        type: 0
+      }])
+    })
   })
 }

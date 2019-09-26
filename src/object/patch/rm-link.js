@@ -121,5 +121,32 @@ module.exports = (createCommon, options) => {
       expect(withoutChildCid).to.not.deep.equal(parentCid)
       expect(withoutChildCid).to.deep.equal(nodeCid)
     })
+
+    it('returns error for request without arguments', () => {
+      return ipfs.object.patch.rmLink(null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request only one invalid argument', () => {
+      return ipfs.object.patch.rmLink('invalid', null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with invalid first argument', () => {
+      const root = ''
+      const link = 'foo'
+
+      return ipfs.object.patch.rmLink(root, link)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }

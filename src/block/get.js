@@ -107,5 +107,13 @@ module.exports = (createCommon, options) => {
         })
       })
     })
+
+    it('should return an error for an invalid CID', () => {
+      return ipfs.block.get('invalid')
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }
