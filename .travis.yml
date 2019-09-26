@@ -88,31 +88,31 @@ jobs:
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
 
     - stage: test
-      if: branch =~ /^\release\/.*$/
+      if: branch =~ /^release\/.*$/
       name: ipfs-companion
       script:
         - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
 
     - stage: test
-      if: branch =~ /^\release\/.*$/
+      if: branch =~ /^release\/.*$/
       name: npm-on-ipfs
       script:
         - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
 
     - stage: test
-      if: branch =~ /^\release\/.*$/
+      if: branch =~ /^release\/.*$/
       name: ipfs-pubsub-room
       script:
         - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
 
     - stage: test
-      if: branch =~ /^\release\/.*$/
+      if: branch =~ /^release\/.*$/
       name: peer-base
       script:
         - npm run test:external -- peer-base https://github.com/peer-base/peer-base.git
 
     - stage: test
-      if: branch =~ /^\release\/.*$/
+      if: branch =~ /^release\/.*$/
       name: service-worker-gateway
       script:
         - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
