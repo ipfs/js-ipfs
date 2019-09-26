@@ -4,6 +4,11 @@ language: node_js
 # cache: npm
 cache: false
 
+branches:
+  only:
+  - master
+  - /^release\/.*$/
+
 stages:
   - check
   - test
