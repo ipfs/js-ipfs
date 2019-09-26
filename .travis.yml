@@ -124,6 +124,7 @@ jobs:
       script:
         - git config --global user.email "travis@travis-ci.org"
         - git config --global user.name "Travis CI"
+        - git remote set-url origin https://$TRAVIS_GITHUB_USER:$TRAVIS_GITHUB_TOKEN@github.com/ipfs/js-ipfs.git
         - npx aegir update-last-successful-build
 
 notifications:
