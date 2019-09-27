@@ -10,6 +10,9 @@ const { default: Queue } = require('p-queue')
 // https://github.com/ipfs/js-ipfs-mfs/pull/58
 const { MFS_ROOT_KEY } = require('ipfs-mfs/src/core/utils/constants')
 
+const { Errors } = require('interface-datastore')
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
 
@@ -71,7 +74,7 @@ async function createMarkedSet (ipfs) {
       .then(mh => getDescendants(ipfs, new CID(mh)))
       .then(addPins)
       .catch(err => {
-        if (err.code === 'ERR_NOT_FOUND') {
+        if (err.code === ERR_NOT_FOUND) {
           log('No blocks in MFS')
           return []
         }

@@ -13,6 +13,9 @@ const { cidToString } = require('../../../utils/cid')
 
 const createPinSet = require('./pin-set')
 
+const { Errors } = require('interface-datastore')
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
 // arbitrary limit to the number of concurrent dag operations
 const WALK_DAG_CONCURRENCY_LIMIT = 300
 const IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT = 300
@@ -241,7 +244,7 @@ class PinManager {
     try {
       mh = await this.repo.datastore.get(PIN_DS_KEY)
     } catch (err) {
-      if (err.code === 'ERR_NOT_FOUND') {
+      if (err.code === ERR_NOT_FOUND) {
         this.log('No pinned blocks')
 
         return []
