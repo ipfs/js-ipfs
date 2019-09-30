@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function store () {
     const toStore = document.getElementById('source').value
 
-    const res = await node.add(Buffer.from(toStore))
+    const res = await node.add(toStore)
 
     res.forEach((file) => {
       if (file && file.hash) {

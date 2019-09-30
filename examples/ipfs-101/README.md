@@ -57,7 +57,7 @@ async function main () {
 
   const filesAdded = await node.add({
     path: 'hello.txt',
-    content: Buffer.from('Hello World 101')
+    content: 'Hello World 101'
   })
 
   console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
@@ -91,7 +91,7 @@ async function main () {
 
   const filesAdded = await node.add({
     path: 'hello.txt',
-    content: Buffer.from('Hello World 101')
+    content: 'Hello World 101'
   })
 
   console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)

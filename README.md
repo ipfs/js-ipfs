@@ -48,6 +48,9 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Table of Contents
 
+- [Tech Lead](#tech-lead)
+- [Lead Maintainer](#lead-maintainer)
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
   - [npm](#npm)
   - [Use in Node.js](#use-in-nodejs)
@@ -56,30 +59,58 @@ We've come a long way, but this project is still in Alpha, lots of development i
 - [Usage](#usage)
   - [IPFS CLI](#ipfs-cli)
   - [IPFS Daemon](#ipfs-daemon)
-  - [IPFS Module (use IPFS as a module in Node.js or in the Browser)](#ipfs-module)
+  - [IPFS Module](#ipfs-module)
   - [Tutorials and Examples](#tutorials-and-examples)
-  - [API Docs](#api)
-    - [Constructor](#ipfs-constructor)
+  - [API](#api)
+    - [IPFS Constructor](#ipfs-constructor)
+      - [`options.repo`](#optionsrepo)
+      - [`options.init`](#optionsinit)
+      - [`options.start`](#optionsstart)
+      - [`options.pass`](#optionspass)
+      - [`options.silent`](#optionssilent)
+      - [`options.relay`](#optionsrelay)
+      - [`options.preload`](#optionspreload)
+      - [`options.EXPERIMENTAL`](#optionsexperimental)
+      - [`options.config`](#optionsconfig)
+        - [Configuring Delegate Routers](#configuring-delegate-routers)
+      - [`options.ipld`](#optionsipld)
+      - [`options.libp2p`](#optionslibp2p)
+      - [`options.connectionManager`](#optionsconnectionmanager)
     - [Events](#events)
-    - [ready](#nodeready)
-    - [start](#nodestart)
-    - [stop](#nodestop)
+    - [`node.ready`](#nodeready)
+    - [`node.start()`](#nodestart)
+    - [`node.stop()`](#nodestop)
     - [Core API](#core-api)
-      - [Files](#files)
-      - [Graph](#graph)
-      - [Name](#name)
-      - [Crypto and Key Management](#crypto-and-key-management)
-      - [Network](#network)
-      - [Node Management](#node-management)
+    - [Files](#files)
+    - [Graph](#graph)
+    - [Block](#block)
+    - [Name](#name)
+    - [Crypto and Key Management](#crypto-and-key-management)
+    - [Network](#network)
+    - [Node Management](#node-management)
     - [Static types and utils](#static-types-and-utils)
 - [FAQ](#faq)
+    - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
+    - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
+    - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
+    - [Is there a more stable alternative to webrtc-star that offers a similar functionality?](#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality)
+    - [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
+    - [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
+    - [Have more questions?](#have-more-questions)
 - [Running js-ipfs with Docker](#running-js-ipfs-with-docker)
 - [Packages](#packages)
 - [Development](#development)
   - [Clone and install dependencies](#clone-and-install-dependencies)
-  - [Run Tests](#run-tests)
+  - [Run tests](#run-tests)
+  - [Run interop tests](#run-interop-tests)
+  - [Run benchmark tests](#run-benchmark-tests)
   - [Lint](#lint)
   - [Build a dist version](#build-a-dist-version)
+  - [Runtime Support](#runtime-support)
+  - [Code Architecture and folder Structure](#code-architecture-and-folder-structure)
+      - [Source code](#source-code)
+  - [Monitoring](#monitoring)
+  - [IPFS Architecture](#ipfs-architecture)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
@@ -827,7 +858,7 @@ The core API is grouped into several areas:
   - `ipfs.repo.init`
   - [`ipfs.repo.stat([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repostat)
   - [`ipfs.repo.version()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/REPO.md#repoversion)
-  - `ipfs.repo.gc([options])` (not implemented yet)
+  - [`ipfs.repo.gc([options])`](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/REPO.md#repogc)
 
 - [stats](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md)
   - [`ipfs.stats.bitswap()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbitswap)
@@ -1125,7 +1156,14 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 
 ### Run interop tests
 
-Run the interop tests with https://github.com/ipfs/interop
+
+```sh
+# run the interop tests with the default go-IPFS
+> npm run test:interop
+
+# run the interop tests with a different go-IPFS
+> IPFS_EXEC_GO=/path/to/ipfs npm run test:interop
+```
 
 ### Run benchmark tests
 

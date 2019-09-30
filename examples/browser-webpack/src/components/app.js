@@ -30,7 +30,7 @@ class App extends React.Component {
 
     this.setState({ id, agentVersion, protocolVersion })
 
-    const [{ hash }] = await node.add(Buffer.from(stringToUse))
+    const [{ hash }] = await node.add(stringToUse)
     this.setState({ addedFileHash: hash })
 
     const data = await node.cat(hash)
