@@ -5,7 +5,7 @@ const debug = require('debug')('ipfs:cli:init')
 const { ipfsPathHelp } = require('../utils')
 
 module.exports = {
-  command: 'init [config] [options]',
+  command: 'init [default-config] [options]',
   describe: 'Initialize a local IPFS node\n\n' +
     'If you are going to run IPFS in a server environment, you may want to ' +
     'initialize it using the \'server\' profile.\n\n' +
@@ -13,7 +13,7 @@ module.exports = {
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
-      .positional('config', {
+      .positional('default-config', {
         describe: 'Node config, this should be a path to a file or JSON and will be merged with the default config. See https://github.com/ipfs/js-ipfs#optionsconfig',
         type: 'string'
       })

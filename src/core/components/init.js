@@ -56,7 +56,7 @@ async function createRepo (self, opts) {
 
   const config = mergeOptions(defaultConfig(), self._options.config)
 
-  applyProfile(config, opts)
+  applyProfile(self, config, opts)
 
   // Verify repo does not exist yet
   const exists = await self._repo.exists()
@@ -132,7 +132,7 @@ async function addRepoAssets (self, privateKey, opts) {
 }
 
 // Apply profiles (eg "server,lowpower") to config
-function applyProfile (config, opts) {
+function applyProfile (self, config, opts) {
   if (opts.profile) {
     const profileNames = opts.profile.split(',')
 
