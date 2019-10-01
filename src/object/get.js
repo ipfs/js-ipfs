@@ -336,5 +336,21 @@ module.exports = (createCommon, options) => {
           expect(meta.fileSize()).to.equal(data.length)
         })
     })
+
+    it('should error for request without argument', () => {
+      return ipfs.object.get(null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with invalid argument', () => {
+      return ipfs.object.get('invalid', { enc: 'base58' })
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }

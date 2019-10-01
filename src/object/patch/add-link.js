@@ -163,5 +163,21 @@ module.exports = (createCommon, options) => {
 
       expect(newParentCid).to.eql(nodeFromObjectPatchCid)
     })
+
+    it('returns error for request without arguments', () => {
+      return ipfs.object.patch.addLink(null, null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with only one invalid argument', () => {
+      return ipfs.object.patch.addLink('invalid', null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }

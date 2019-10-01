@@ -214,5 +214,21 @@ module.exports = (createCommon, options) => {
         })
       })
     })
+
+    it('returns error for request without argument', () => {
+      return ipfs.object.stat(null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with invalid argument', () => {
+      return ipfs.object.stat('invalid', { enc: 'base58' })
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }

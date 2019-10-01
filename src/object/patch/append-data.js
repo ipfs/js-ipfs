@@ -59,5 +59,23 @@ module.exports = (createCommon, options) => {
 
       expect(nodeCid).to.not.deep.equal(patchedNodeCid)
     })
+
+    it('returns error for request without key & data', () => {
+      return ipfs.object.patch.appendData(null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request without data', () => {
+      const filePath = 'test/fixtures/test-data/badnode.json'
+
+      return ipfs.object.patch.appendData(null, filePath)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }
