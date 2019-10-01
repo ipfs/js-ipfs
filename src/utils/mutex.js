@@ -6,7 +6,9 @@ const noop = () => {}
 
 // Wrap mortice to present a callback interface
 class Mutex {
-  constructor (repoOwner, options = {}) {
+  constructor (repoOwner, options) {
+    options = options || {}
+
     this.mutex = mortice(options.morticeId, {
       singleProcess: repoOwner
     })
@@ -15,46 +17,35 @@ class Mutex {
     this.lockId = 0
   }
 
-  readLock (lockedFn, cb) {
-    return this._lock('readLock', lockedFn, cb)
+  readLock () {
+    return this._lock('readLock')
   }
 
-  writeLock (lockedFn, cb) {
-    return this._lock('writeLock', lockedFn, cb)
+  writeLock () {
+    return this._lock('writeLock')
   }
 
   /**
   * Request a read or write lock
   *
   * @param {String} type The type of lock: readLock / writeLock
-  * @param {function(releaseLock)} lockedFn A function that runs the locked piece of code and calls releaseLock when it completes
-  * @param {function(err, res)} [cb] A function that is called when the locked function completes
-  * @returns {void}
+  * @returns {Promise}
   */
-  _lock (type, lockedFn, cb = noop) {
-    assert(typeof lockedFn === 'function', `first argument to Mutex.${type}() must be a function`)
-    assert(typeof cb === 'function', `second argument to Mutex.${type}() must be a callback function`)
+  async _lock (type) {
+    assert(typeof type === 'string', `first argument to Mutex.${type}() must be a string, got ${typeof type}`)
 
     const lockId = this.lockId++
     this.log(`[${lockId}] ${type} requested`)
 
-    // mortice presents a promise based API, so we need to give it a function
-    // that returns a Promise.
-    // The function is invoked when mortice gives permission to run the locked
-    // piece of code
-    const locked = () => new Promise((resolve, reject) => {
-      this.log(`[${lockId}] ${type} started`)
-      lockedFn((err, res) => {
-        this.log(`[${lockId}] ${type} released`)
-        err ? reject(err) : resolve(res)
-      })
-    })
+    // Get a Promise for the lock, wrap it for logging
+    const release = await this.mutex[type]()
 
-    // Get a Promise for the lock
-    const lock = this.mutex[type](locked)
+    this.log(`[${lockId}] ${type} started`)
 
-    // When the locked piece of code is complete, the Promise resolves
-    return lock.then(res => cb(null, res), cb)
+    return () => {
+      this.log(`[${lockId}] ${type} released`)
+      release()
+    }
   }
 }
 

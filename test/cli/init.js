@@ -8,9 +8,10 @@ const clean = require('../utils/clean')
 const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
+const tempWrite = require('temp-write')
 
 describe('init', function () {
-  this.timeout(40 * 1000)
+  this.timeout(100 * 1000)
 
   let repoPath
   let ipfs
@@ -38,8 +39,6 @@ describe('init', function () {
   afterEach(() => clean(repoPath))
 
   it('basic', function () {
-    this.timeout(40 * 1000)
-
     return ipfs('init').then((out) => {
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -53,8 +52,6 @@ describe('init', function () {
   })
 
   it('bits', function () {
-    this.timeout(40 * 1000)
-
     return ipfs('init --bits 1024').then(() => {
       expect(repoDirSync('blocks')).to.have.length.above(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -63,8 +60,6 @@ describe('init', function () {
   })
 
   it('empty', function () {
-    this.timeout(40 * 1000)
-
     return ipfs('init --bits 1024 --empty-repo true').then(() => {
       expect(repoDirSync('blocks')).to.have.length(2)
       expect(repoExistsSync('config')).to.equal(true)
@@ -98,11 +93,18 @@ describe('init', function () {
   })
 
   it('should present ipfs path help when option help is received', function (done) {
-    this.timeout(100 * 1000)
-
     ipfs('init --help').then((res) => {
       expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
       done()
+    })
+  })
+
+  it('default config argument', () => {
+    const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
+    return ipfs(`init ${configPath}`).then((res) => {
+      const configRaw = fs.readFileSync(path.join(repoPath, 'config')).toString()
+      const config = JSON.parse(configRaw)
+      expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/9999')
     })
   })
 })

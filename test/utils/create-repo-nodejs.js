@@ -5,20 +5,24 @@ const clean = require('./clean')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
-const series = require('async/series')
+const callbackify = require('callbackify')
 
 function createTempRepo (repoPath) {
   repoPath = repoPath || path.join(os.tmpdir(), '/ipfs-test-' + hat())
 
   const repo = new IPFSRepo(repoPath)
 
-  repo.teardown = (done) => {
-    series([
-      // ignore err, might have been closed already
-      (cb) => repo.close(() => cb()),
-      (cb) => clean(repoPath).then(cb, cb)
-    ], done)
-  }
+  repo.teardown = callbackify(async () => {
+    try {
+      await repo.close()
+    } catch (err) {
+      if (!err.message.includes('already closed')) {
+        throw err
+      }
+    }
+
+    await clean(repoPath)
+  })
 
   return repo
 }

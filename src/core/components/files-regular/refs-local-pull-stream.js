@@ -2,23 +2,15 @@
 
 const CID = require('cids')
 const base32 = require('base32.js')
-const pull = require('pull-stream')
-const pullDefer = require('pull-defer')
+const itToPull = require('async-iterator-to-pull-stream')
 
 module.exports = function (self) {
   return () => {
-    const deferred = pullDefer.source()
-
-    self._repo.blocks.query({ keysOnly: true }, (err, blocks) => {
-      if (err) {
-        return deferred.resolve(pull.error(err))
+    return itToPull((async function * () {
+      for await (const result of self._repo.blocks.query({ keysOnly: true })) {
+        yield dsKeyToRef(result.key)
       }
-
-      const refs = blocks.map(b => dsKeyToRef(b.key))
-      deferred.resolve(pull.values(refs))
-    })
-
-    return deferred
+    })())
   }
 }
 

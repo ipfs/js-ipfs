@@ -16,7 +16,10 @@ describe('files', function () {
   let ipfsd, ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({ type: 'proc' })
+    const factory = IPFSFactory.create({
+      type: 'proc',
+      IpfsClient: require('ipfs-http-client')
+    })
 
     ipfsd = await factory.spawn({
       exec: IPFS,
@@ -72,36 +75,29 @@ describe('files', function () {
   })
 
   describe('add', () => {
-    it('should not error when passed null options', (done) => {
-      ipfs.add(Buffer.from(hat()), null, (err) => {
-        expect(err).to.not.exist()
-        done()
-      })
+    it('should not error when passed null options', async () => {
+      await ipfs.add(Buffer.from(hat()), null)
     })
 
-    it('should add a file with a v1 CID', (done) => {
-      ipfs.add(Buffer.from([0, 1, 2]), {
+    it('should add a file with a v1 CID', async () => {
+      const files = await ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1
-      }, (err, files) => {
-        expect(err).to.not.exist()
-        expect(files.length).to.equal(1)
-        expect(files[0].hash).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-        expect(files[0].size).to.equal(3)
-        done()
       })
+
+      expect(files.length).to.equal(1)
+      expect(files[0].hash).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
+      expect(files[0].size).to.equal(3)
     })
 
-    it('should add a file with a v1 CID and not raw leaves', (done) => {
-      ipfs.add(Buffer.from([0, 1, 2]), {
+    it('should add a file with a v1 CID and not raw leaves', async () => {
+      const files = await ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1,
         rawLeaves: false
-      }, (err, files) => {
-        expect(err).to.not.exist()
-        expect(files.length).to.equal(1)
-        expect(files[0].hash).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
-        expect(files[0].size).to.equal(11)
-        done()
       })
+
+      expect(files.length).to.equal(1)
+      expect(files[0].hash).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
+      expect(files[0].size).to.equal(11)
     })
   })
 })

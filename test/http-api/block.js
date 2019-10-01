@@ -10,7 +10,10 @@ const multihash = require('multihashes')
 const waterfall = require('async/waterfall')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
+})
 
 describe('block endpoint', () => {
   let ipfs = null

@@ -1,13 +1,11 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const base32 = require('base32.js')
-const parallel = require('async/parallel')
-const mapLimit = require('async/mapLimit')
-const expErr = require('explain-error')
+const callbackify = require('callbackify')
 const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:gc')
+const { default: Queue } = require('p-queue')
 // TODO: Use exported key from root when upgraded to ipfs-mfs@>=13
 // https://github.com/ipfs/js-ipfs-mfs/pull/58
 const { MFS_ROOT_KEY } = require('ipfs-mfs/src/core/utils/constants')
@@ -17,135 +15,129 @@ const BLOCK_RM_CONCURRENCY = 256
 
 // Perform mark and sweep garbage collection
 module.exports = function gc (self) {
-  return promisify((callback) => {
+  return callbackify(async () => {
     const start = Date.now()
     log('Creating set of marked blocks')
 
-    self._gcLock.writeLock((lockCb) => {
-      parallel([
+    const release = await self._gcLock.writeLock()
+
+    try {
+      const [
+        blockKeys, markedSet
+      ] = await Promise.all([
         // Get all blocks keys from the blockstore
-        (cb) => self._repo.blocks.query({ keysOnly: true }, cb),
+        self._repo.blocks.query({ keysOnly: true }),
+
         // Mark all blocks that are being used
-        (cb) => createMarkedSet(self, cb)
-      ], (err, [blockKeys, markedSet]) => {
-        if (err) {
-          log('GC failed to fetch all block keys and created marked set', err)
-          return lockCb(err)
-        }
+        createMarkedSet(self)
+      ])
 
-        // Delete blocks that are not being used
-        deleteUnmarkedBlocks(self, markedSet, blockKeys, (err, res) => {
-          log(`Complete (${Date.now() - start}ms)`)
+      // Delete blocks that are not being used
+      const res = await deleteUnmarkedBlocks(self, markedSet, blockKeys)
 
-          if (err) {
-            log('GC failed to delete unmarked blocks', err)
-            return lockCb(err)
-          }
-          lockCb(null, res)
-        })
-      })
-    }, callback)
+      log(`Complete (${Date.now() - start}ms)`)
+
+      return res
+    } finally {
+      release()
+    }
   })
 }
 
 // Get Set of CIDs of blocks to keep
-function createMarkedSet (ipfs, callback) {
-  parallel([
+async function createMarkedSet (ipfs) {
+  const output = new Set()
+
+  const addPins = pins => {
+    log(`Found ${pins.length} pinned blocks`)
+
+    pins.forEach(pin => {
+      output.add(cidToString(new CID(pin), { base: 'base32' }))
+    })
+  }
+
+  await Promise.all([
     // All pins, direct and indirect
-    (cb) => ipfs.pin.ls((err, pins) => {
-      if (err) {
-        return cb(expErr(err, 'Could not list pinned blocks'))
-      }
-      log(`Found ${pins.length} pinned blocks`)
-      const cids = pins.map(p => new CID(p.hash))
-      // log('  ' + cids.join('\n  '))
-      cb(null, cids)
-    }),
+    ipfs.pin.ls()
+      .then(pins => pins.map(pin => pin.hash))
+      .then(addPins),
 
     // Blocks used internally by the pinner
-    (cb) => ipfs.pin._getInternalBlocks((err, cids) => {
-      if (err) {
-        return cb(expErr(err, 'Could not list pinner internal blocks'))
-      }
-      log(`Found ${cids.length} pinner internal blocks`)
-      // log('  ' + cids.join('\n  '))
-      cb(null, cids)
-    }),
+    ipfs.pin.pinManager.getInternalBlocks()
+      .then(addPins),
 
     // The MFS root and all its descendants
-    (cb) => ipfs._repo.root.get(MFS_ROOT_KEY, (err, mh) => {
-      if (err) {
+    ipfs._repo.root.get(MFS_ROOT_KEY)
+      .then(mh => getDescendants(ipfs, new CID(mh)))
+      .then(addPins)
+      .catch(err => {
         if (err.code === 'ERR_NOT_FOUND') {
-          log(`No blocks in MFS`)
-          return cb(null, [])
+          log('No blocks in MFS')
+          return []
         }
-        return cb(expErr(err, 'Could not get MFS root from datastore'))
-      }
 
-      getDescendants(ipfs, new CID(mh), cb)
-    })
-  ], (err, res) => {
-    if (err) {
-      return callback(err)
-    }
+        throw err
+      })
+  ])
 
-    const cids = [].concat(...res).map(cid => cidToString(cid, { base: 'base32' }))
-    return callback(null, new Set(cids))
-  })
+  return output
 }
 
 // Recursively get descendants of the given CID
-function getDescendants (ipfs, cid, callback) {
-  ipfs.refs(cid, { recursive: true }, (err, refs) => {
-    if (err) {
-      return callback(expErr(err, 'Could not get MFS root descendants from store'))
-    }
-    const cids = [cid, ...refs.map(r => new CID(r.ref))]
-    log(`Found ${cids.length} MFS blocks`)
-    // log('  ' + cids.join('\n  '))
-    callback(null, cids)
-  })
+async function getDescendants (ipfs, cid) {
+  const refs = await ipfs.refs(cid, { recursive: true })
+  const cids = [cid, ...refs.map(r => new CID(r.ref))]
+  log(`Found ${cids.length} MFS blocks`)
+  // log('  ' + cids.join('\n  '))
+
+  return cids
 }
 
 // Delete all blocks that are not marked as in use
-function deleteUnmarkedBlocks (ipfs, markedSet, blockKeys, callback) {
+async function deleteUnmarkedBlocks (ipfs, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
   // The blockKeys variable has the form [ { key: Key() }, { key: Key() }, ... ]
   const unreferenced = []
-  const res = []
-  let errCount = 0
-  for (const { key: k } of blockKeys) {
+  const result = []
+
+  const queue = new Queue({
+    concurrency: BLOCK_RM_CONCURRENCY
+  })
+
+  for await (const { key: k } of blockKeys) {
     try {
       const cid = dsKeyToCid(k)
       const b32 = cid.toV1().toString('base32')
       if (!markedSet.has(b32)) {
         unreferenced.push(cid)
+
+        queue.add(async () => {
+          const res = {
+            cid
+          }
+
+          try {
+            await ipfs._repo.blocks.delete(cid)
+          } catch (err) {
+            res.err = new Error(`Could not delete block with CID ${cid}: ${err.message}`)
+          }
+
+          result.push(res)
+        })
       }
     } catch (err) {
-      errCount++
       const msg = `Could not convert block with key '${k}' to CID`
       log(msg, err)
-      res.push({ err: new Error(msg + `: ${err.message}`) })
+      result.push({ err: new Error(msg + `: ${err.message}`) })
     }
   }
 
-  const msg = `Marked set has ${markedSet.size} unique blocks. Blockstore has ${blockKeys.length} blocks. ` +
-    `Deleting ${unreferenced.length} blocks.` + (errCount ? ` (${errCount} errors)` : '')
-  log(msg)
-  // log('  ' + unreferenced.join('\n  '))
+  await queue.onIdle()
 
-  mapLimit(unreferenced, BLOCK_RM_CONCURRENCY, (cid, cb) => {
-    // Delete blocks from blockstore
-    ipfs._repo.blocks.delete(cid, (err) => {
-      const res = {
-        cid,
-        err: err && new Error(`Could not delete block with CID ${cid}: ${err.message}`)
-      }
-      cb(null, res)
-    })
-  }, (_, delRes) => {
-    callback(null, res.concat(delRes))
-  })
+  log(`Marked set has ${markedSet.size} unique blocks. Blockstore has ${blockKeys.length} blocks. ` +
+  `Deleted ${unreferenced.length} blocks.`)
+
+  return result
 }
 
 // TODO: Use exported utility when upgrade to ipfs-repo@>=0.27.1

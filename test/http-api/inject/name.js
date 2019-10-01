@@ -44,7 +44,7 @@ module.exports = (http) => {
 
       res = await api.inject({
         method: 'GET',
-        url: `/api/v0/name/resolve`
+        url: '/api/v0/name/resolve'
       })
 
       expect(res).to.exist()

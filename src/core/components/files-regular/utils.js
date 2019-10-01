@@ -101,7 +101,9 @@ const parseChunkSize = (str, name) => {
   return size
 }
 
-const mapFile = (options = {}) => {
+const mapFile = (options) => {
+  options = options || {}
+
   return (file) => {
     let size = 0
     let type = 'dir'

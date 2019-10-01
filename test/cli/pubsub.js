@@ -39,12 +39,14 @@ describe('pubsub', function () {
   before(async function () {
     this.timeout(60 * 1000)
 
-    const df = DaemonFactory.create({ type: 'proc' })
+    const df = DaemonFactory.create({
+      type: 'proc',
+      IpfsClient: require('ipfs-http-client')
+    })
     ipfsdA = await df.spawn({
       exec: IPFS,
       initOptions: { bits: 512 },
-      config,
-      args: ['--enable-pubsub']
+      config
     })
     node = ipfsdA.api
   })
@@ -56,10 +58,12 @@ describe('pubsub', function () {
   })
 
   before(async () => {
-    const df = DaemonFactory.create({ type: 'js' })
+    const df = DaemonFactory.create({
+      type: 'js',
+      IpfsClient: require('ipfs-http-client')
+    })
     ipfsdB = await df.spawn({
       initOptions: { bits: 512 },
-      args: ['--enable-pubsub'],
       exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
       config
     })

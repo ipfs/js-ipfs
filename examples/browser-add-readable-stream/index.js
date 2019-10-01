@@ -3,8 +3,6 @@
 /* global Ipfs */
 /* eslint-env browser */
 
-const { Buffer } = Ipfs
-
 const main = async () => {
   const repoPath = `ipfs-${Math.random()}`
   const ipfs = await Ipfs.create({ repo: repoPath })
@@ -29,14 +27,14 @@ const createFiles = (directory) => {
   return [{
     path: `${directory}/file1.txt`,
 
-    // content could be a stream, a url etc
-    content: Buffer.from('one', 'utf8')
+    // content could be a stream, a url, a Buffer, a File etc
+    content: 'one'
   }, {
     path: `${directory}/file2.txt`,
-    content: Buffer.from('two', 'utf8')
+    content: 'two'
   }, {
     path: `${directory}/file3.txt`,
-    content: Buffer.from('three', 'utf8')
+    content: 'three'
   }]
 }
 

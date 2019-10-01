@@ -3,6 +3,7 @@
 const Multiaddr = require('multiaddr')
 const mafmt = require('mafmt')
 const { struct, superstruct } = require('superstruct')
+const { isTest } = require('ipfs-utils/src/env')
 
 const { optional, union } = struct
 const s = superstruct({
@@ -20,7 +21,7 @@ const s = superstruct({
 
       return true
     },
-    'multiaddr-ipfs': v => mafmt.IPFS.matches(v) ? true : `multiaddr IPFS invalid`
+    'multiaddr-ipfs': v => mafmt.IPFS.matches(v) ? true : 'multiaddr IPFS invalid'
   }
 })
 
@@ -31,10 +32,7 @@ const configSchema = s({
     enabled: 'boolean?',
     addresses: optional(s(['multiaddr'])),
     interval: 'number?'
-  }, { enabled: true, interval: 30 * 1000 }),
-  pubsub: optional(s({
-    enabled: 'boolean?'
-  })),
+  }, { enabled: !isTest, interval: 30 * 1000 }),
   init: optional(union(['boolean', s({
     bits: 'number?',
     emptyRepo: 'boolean?',
@@ -72,7 +70,8 @@ const configSchema = s({
     })),
     Bootstrap: optional(s(['multiaddr-ipfs'])),
     Pubsub: optional(s({
-      Router: 'string?'
+      Router: 'string?',
+      Enabled: 'boolean?'
     })),
     Swarm: optional(s({
       ConnMgr: optional(s({

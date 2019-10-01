@@ -1,19 +1,13 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const pull = require('pull-stream')
-const globSource = require('../../utils/files/glob-source')
+const callbackify = require('callbackify')
+const globSource = require('ipfs-utils/src/files/glob-source')
+const all = require('async-iterator-all')
 
 module.exports = self => {
-  return promisify((...args) => {
-    const callback = args.pop()
+  return callbackify.variadic(async (...args) => { // eslint-disable-line require-await
     const options = typeof args[args.length - 1] === 'string' ? {} : args.pop()
-    const paths = args
 
-    pull(
-      globSource(...paths, options),
-      self.addPullStream(options),
-      pull.collect(callback)
-    )
+    return all(self._addAsyncIterator(globSource(...args, options), options))
   })
 }

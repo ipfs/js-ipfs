@@ -2,46 +2,45 @@
 
 // See https://github.com/ipfs/specs/tree/master/keystore
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
 module.exports = function key (self) {
   return {
-    gen: promisify((name, opts, callback) => {
+    gen: callbackify.variadic(async (name, opts) => { // eslint-disable-line require-await
       opts = opts || {}
-      self._keychain.createKey(name, opts.type, opts.size, callback)
+
+      return self._keychain.createKey(name, opts.type, opts.size)
     }),
 
-    info: promisify((name, callback) => {
-      self._keychain.findKeyByName(name, callback)
+    info: callbackify(async (name) => { // eslint-disable-line require-await
+      return self._keychain.findKeyByName(name)
     }),
 
-    list: promisify((callback) => {
-      self._keychain.listKeys(callback)
+    list: callbackify(async () => { // eslint-disable-line require-await
+      return self._keychain.listKeys()
     }),
 
-    rm: promisify((name, callback) => {
-      self._keychain.removeKey(name, callback)
+    rm: callbackify(async (name) => { // eslint-disable-line require-await
+      return self._keychain.removeKey(name)
     }),
 
-    rename: promisify((oldName, newName, callback) => {
-      self._keychain.renameKey(oldName, newName, (err, key) => {
-        if (err) return callback(err)
-        const result = {
-          was: oldName,
-          now: key.name,
-          id: key.id,
-          overwrite: false
-        }
-        callback(null, result)
-      })
+    rename: callbackify(async (oldName, newName) => {
+      const key = await self._keychain.renameKey(oldName, newName)
+
+      return {
+        was: oldName,
+        now: key.name,
+        id: key.id,
+        overwrite: false
+      }
     }),
 
-    import: promisify((name, pem, password, callback) => {
-      self._keychain.importKey(name, pem, password, callback)
+    import: callbackify(async (name, pem, password) => { // eslint-disable-line require-await
+      return self._keychain.importKey(name, pem, password)
     }),
 
-    export: promisify((name, password, callback) => {
-      self._keychain.exportKey(name, password, callback)
+    export: callbackify(async (name, password) => { // eslint-disable-line require-await
+      return self._keychain.exportKey(name, password)
     })
   }
 }

@@ -133,60 +133,50 @@ describe('utils', () => {
 
     after(done => repo.teardown(done))
 
-    it('handles base58 hash format', (done) => {
-      utils.resolvePath(node.object, rootHash, (err, hashes) => {
-        expect(err).to.not.exist()
-        expect(hashes.length).to.equal(1)
-        expect(hashes[0]).to.deep.equal(rootMultihash)
-        done()
-      })
+    it('handles base58 hash format', async () => {
+      const hashes = await utils.resolvePath(node.object, rootHash)
+
+      expect(hashes.length).to.equal(1)
+      expect(hashes[0].buffer).to.deep.equal(rootMultihash)
     })
 
-    it('handles multihash format', (done) => {
-      utils.resolvePath(node.object, aboutMultihash, (err, hashes) => {
-        expect(err).to.not.exist()
-        expect(hashes.length).to.equal(1)
-        expect(hashes[0]).to.deep.equal(aboutMultihash)
-        done()
-      })
+    it('handles multihash format', async () => {
+      const hashes = await utils.resolvePath(node.object, aboutMultihash)
+
+      expect(hashes.length).to.equal(1)
+      expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
     })
 
-    it('handles ipfs paths format', function (done) {
+    it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      utils.resolvePath(node.object, aboutPath, (err, hashes) => {
-        expect(err).to.not.exist()
-        expect(hashes.length).to.equal(1)
-        expect(hashes[0]).to.deep.equal(aboutMultihash)
-        done()
-      })
+      const hashes = await utils.resolvePath(node.object, aboutPath)
+
+      expect(hashes.length).to.equal(1)
+      expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
     })
 
-    it('handles an array', (done) => {
+    it('handles an array', async () => {
       const paths = [rootHash, rootPath, rootMultihash]
-      utils.resolvePath(node.object, paths, (err, hashes) => {
-        expect(err).to.not.exist()
-        expect(hashes.length).to.equal(3)
-        expect(hashes[0]).to.deep.equal(rootMultihash)
-        expect(hashes[1]).to.deep.equal(rootMultihash)
-        expect(hashes[2]).to.deep.equal(rootMultihash)
-        done()
-      })
+      const hashes = await utils.resolvePath(node.object, paths)
+
+      expect(hashes.length).to.equal(3)
+      expect(hashes[0].buffer).to.deep.equal(rootMultihash)
+      expect(hashes[1].buffer).to.deep.equal(rootMultihash)
+      expect(hashes[2].buffer).to.deep.equal(rootMultihash)
     })
 
-    it('should error on invalid hashes', function (done) {
-      utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd', err => {
-        expect(err).to.exist()
-        done()
-      })
+    it('should error on invalid hashes', () => {
+      return utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd')
+        .then(() => expect.fail('should have errored'), (err) => expect(err).to.exist())
     })
 
-    it(`should error when a link doesn't exist`, function (done) {
-      utils.resolvePath(node.object, `${aboutPath}/fusion`, err => {
-        expect(err.message).to.include(
-          `no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q`
-        )
-        done()
-      })
+    it('should error when a link doesn\'t exist', () => {
+      return utils.resolvePath(node.object, `${aboutPath}/fusion`)
+        .then(() => expect.fail('should have errored'), (err) => {
+          expect(err.message).to.include(
+            'no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
+          )
+        })
     })
   })
 })

@@ -1,27 +1,20 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const CID = require('cids')
-const pull = require('pull-stream')
-const iterToPull = require('async-iterator-to-pull-stream')
-const setImmediate = require('async/setImmediate')
+const all = require('async-iterator-all')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 
 module.exports = function dag (self) {
   return {
-    put: promisify((dagNode, options, callback) => {
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
+    put: callbackify.variadic(async (dagNode, options) => {
       options = options || {}
 
       if (options.cid && (options.format || options.hashAlg)) {
-        return callback(new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.'))
+        throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
       } else if (((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
-        return callback(new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.'))
+        throw new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.')
       }
 
       const optionDefaults = {
@@ -51,39 +44,26 @@ module.exports = function dag (self) {
         }
       }
 
-      self._ipld.put(dagNode, options.format, {
+      const cid = await self._ipld.put(dagNode, options.format, {
         hashAlg: options.hashAlg,
         cidVersion: options.version
-      }).then(
-        (cid) => {
-          if (options.preload !== false) {
-            self._preload(cid)
-          }
-          return callback(null, cid)
-        },
-        (error) => callback(error)
-      )
+      })
+
+      if (options.preload !== false) {
+        self._preload(cid)
+      }
+
+      return cid
     }),
 
-    get: promisify((cid, path, options, callback) => {
-      if (typeof path === 'function') {
-        callback = path
+    get: callbackify.variadic(async (cid, path, options) => {
+      options = options || {}
+
+      // Allow options in path position
+      if (path !== undefined && typeof path !== 'string') {
+        options = path
         path = undefined
       }
-
-      if (typeof options === 'function') {
-        callback = options
-
-        // Allow options in path position
-        if (typeof path !== 'string') {
-          options = path
-          path = undefined
-        } else {
-          options = {}
-        }
-      }
-
-      options = options || {}
 
       if (typeof cid === 'string') {
         const split = cid.split('/')
@@ -91,7 +71,7 @@ module.exports = function dag (self) {
         try {
           cid = new CID(split[0])
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          throw errCode(err, 'ERR_INVALID_CID')
         }
 
         split.shift()
@@ -105,7 +85,7 @@ module.exports = function dag (self) {
         try {
           cid = new CID(cid)
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          throw errCode(err, 'ERR_INVALID_CID')
         }
       }
 
@@ -114,43 +94,35 @@ module.exports = function dag (self) {
       }
 
       if (path == null || path === '/') {
-        self._ipld.get(cid).then(
-          (value) => {
-            callback(null, {
-              value,
-              remainderPath: ''
-            })
-          },
-          (error) => callback(error)
-        )
+        const value = await self._ipld.get(cid)
+
+        return {
+          value,
+          remainderPath: ''
+        }
       } else {
-        const result = self._ipld.resolve(cid, path)
-        const promisedValue = options.localResolve ? result.first() : result.last()
-        promisedValue.then(
-          (value) => callback(null, value),
-          (error) => callback(error)
-        )
+        let result
+
+        for await (const entry of self._ipld.resolve(cid, path)) {
+          if (options.localResolve) {
+            return entry
+          }
+
+          result = entry
+        }
+
+        return result
       }
     }),
 
-    tree: promisify((cid, path, options, callback) => {
-      if (typeof path === 'object') {
-        callback = options
+    tree: callbackify.variadic(async (cid, path, options) => { // eslint-disable-line require-await
+      options = options || {}
+
+      // Allow options in path position
+      if (path !== undefined && typeof path !== 'string') {
         options = path
         path = undefined
       }
-
-      if (typeof path === 'function') {
-        callback = path
-        path = undefined
-      }
-
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
-      }
-
-      options = options || {}
 
       if (typeof cid === 'string') {
         const split = cid.split('/')
@@ -158,7 +130,7 @@ module.exports = function dag (self) {
         try {
           cid = new CID(split[0])
         } catch (err) {
-          return setImmediate(() => callback(errCode(err, 'ERR_INVALID_CID')))
+          throw errCode(err, 'ERR_INVALID_CID')
         }
 
         split.shift()
@@ -174,10 +146,7 @@ module.exports = function dag (self) {
         self._preload(cid)
       }
 
-      pull(
-        iterToPull(self._ipld.tree(cid, path, options)),
-        pull.collect(callback)
-      )
+      return all(self._ipld.tree(cid, path, options))
     })
   }
 }

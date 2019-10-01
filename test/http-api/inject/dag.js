@@ -2,6 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const hat = require('hat')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
@@ -56,7 +57,7 @@ module.exports = (http) => {
       })
 
       it('returns value', async () => {
-        const node = DAGNode.create(Buffer.from([]), [])
+        const node = new DAGNode(Buffer.from([]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -73,7 +74,7 @@ module.exports = (http) => {
       })
 
       it('uses text encoding for data by default', async () => {
-        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
+        const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -91,7 +92,7 @@ module.exports = (http) => {
       })
 
       it('overrides data encoding', async () => {
-        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
+        const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -126,7 +127,7 @@ module.exports = (http) => {
       })
 
       it('returns value with a path as part of the cid for dag-pb nodes', async () => {
-        const node = DAGNode.create(Buffer.from([0, 1, 2, 3]), [])
+        const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
         const cid = await http.api._ipfs.dag.put(node, {
           format: 'dag-pb',
           hashAlg: 'sha2-256'
@@ -260,7 +261,7 @@ module.exports = (http) => {
       it('pins a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: Math.random()
+          disambiguator: hat()
         }
 
         const res = await api.inject({
@@ -280,7 +281,7 @@ module.exports = (http) => {
       it('does not pin a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: Math.random()
+          disambiguator: hat()
         }
 
         const res = await api.inject({

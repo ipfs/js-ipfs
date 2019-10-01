@@ -2,6 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
+const hat = require('hat')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const DaemonFactory = require('ipfsd-ctl')
@@ -11,7 +12,10 @@ const {
   FILE_TYPES
 } = require('ipfs-mfs')
 const path = require('path')
-const df = DaemonFactory.create({ exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) })
+const df = DaemonFactory.create({
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
+})
 
 describe('.files', () => {
   let ipfs = null
@@ -34,7 +38,7 @@ describe('.files', () => {
 
   describe('.add', function () {
     it('performs a speculative add, --only-hash', () => {
-      const content = String(Math.random())
+      const content = hat()
 
       return ipfs.add(Buffer.from(content), { onlyHash: true })
         .then(files => {
@@ -60,7 +64,7 @@ describe('.files', () => {
     })
 
     it('lists files', () => {
-      const fileName = `single-file-${Math.random()}.txt`
+      const fileName = `single-file-${hat()}.txt`
 
       return ipfs.files.write(`/${fileName}`, Buffer.from('Hello world'), {
         create: true
@@ -73,8 +77,8 @@ describe('.files', () => {
     })
 
     it('lists files in directories', () => {
-      const dirName = `dir-${Math.random()}`
-      const fileName = `file-in-dir-${Math.random()}.txt`
+      const dirName = `dir-${hat()}`
+      const fileName = `file-in-dir-${hat()}.txt`
 
       return ipfs.files.write(`/${dirName}/${fileName}`, Buffer.from('Hello world'), {
         create: true,
@@ -90,14 +94,14 @@ describe('.files', () => {
 
   describe('.cp', function () {
     it('copies a file', () => {
-      const source = `source-file-${Math.random()}.txt`
-      const destination = `destination-file-${Math.random()}.txt`
+      const source = `source-file-${hat()}.txt`
+      const destination = `destination-file-${hat()}.txt`
 
       return ipfs.files.write(`/${source}`, Buffer.from('Hello world'), {
         create: true
       })
         .then(() => ipfs.files.cp(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -116,12 +120,12 @@ describe('.files', () => {
     })
 
     it('copies a directory', () => {
-      const source = `source-dir-${Math.random()}`
-      const destination = `destination-dir-${Math.random()}`
+      const source = `source-dir-${hat()}`
+      const destination = `destination-dir-${hat()}`
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.cp(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -140,14 +144,14 @@ describe('.files', () => {
     })
 
     it('copies a file with array args', () => {
-      const source = `source-file-${Math.random()}.txt`
-      const destination = `destination-file-${Math.random()}.txt`
+      const source = `source-file-${hat()}.txt`
+      const destination = `destination-file-${hat()}.txt`
 
       return ipfs.files.write(`/${source}`, Buffer.from('Hello world'), {
         create: true
       })
         .then(() => ipfs.files.cp([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -166,12 +170,12 @@ describe('.files', () => {
     })
 
     it('copies a directory with array args', () => {
-      const source = `source-dir-${Math.random()}`
-      const destination = `destination-dir-${Math.random()}`
+      const source = `source-dir-${hat()}`
+      const destination = `destination-dir-${hat()}`
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.cp([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -192,10 +196,10 @@ describe('.files', () => {
 
   describe('.mkdir', function () {
     it('makes a directory', () => {
-      const directory = `directory-${Math.random()}`
+      const directory = `directory-${hat()}`
 
       return ipfs.files.mkdir(`/${directory}`)
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -210,14 +214,14 @@ describe('.files', () => {
 
   describe('.mv', function () {
     it('moves a file', () => {
-      const source = `source-file-${Math.random()}.txt`
-      const destination = `destination-file-${Math.random()}.txt`
+      const source = `source-file-${hat()}.txt`
+      const destination = `destination-file-${hat()}.txt`
 
       return ipfs.files.write(`/${source}`, Buffer.from('Hello world'), {
         create: true
       })
         .then(() => ipfs.files.mv(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const sourceFile = files
             .filter(file => file.name === source)
@@ -234,12 +238,12 @@ describe('.files', () => {
     })
 
     it('moves a directory', () => {
-      const source = `source-dir-${Math.random()}`
-      const destination = `destination-dir-${Math.random()}`
+      const source = `source-dir-${hat()}`
+      const destination = `destination-dir-${hat()}`
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.mv(`/${source}`, `/${destination}`))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -258,14 +262,14 @@ describe('.files', () => {
     })
 
     it('moves a file with array args', () => {
-      const source = `source-file-${Math.random()}.txt`
-      const destination = `destination-file-${Math.random()}.txt`
+      const source = `source-file-${hat()}.txt`
+      const destination = `destination-file-${hat()}.txt`
 
       return ipfs.files.write(`/${source}`, Buffer.from('Hello world'), {
         create: true
       })
         .then(() => ipfs.files.mv([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const sourceFile = files
             .filter(file => file.name === source)
@@ -282,12 +286,12 @@ describe('.files', () => {
     })
 
     it('moves a directory with array args', () => {
-      const source = `source-dir-${Math.random()}`
-      const destination = `destination-dir-${Math.random()}`
+      const source = `source-dir-${hat()}`
+      const destination = `destination-dir-${hat()}`
 
       return ipfs.files.mkdir(`/${source}`)
         .then(() => ipfs.files.mv([`/${source}`, `/${destination}`]))
-        .then(() => ipfs.files.ls(`/`, {
+        .then(() => ipfs.files.ls('/', {
           long: true
         }))
         .then(files => {
@@ -308,7 +312,7 @@ describe('.files', () => {
 
   describe('.read', function () {
     it('reads a file', () => {
-      const fileName = `single-file-${Math.random()}.txt`
+      const fileName = `single-file-${hat()}.txt`
       const content = Buffer.from('Hello world')
 
       return ipfs.files.write(`/${fileName}`, content, {
@@ -323,13 +327,13 @@ describe('.files', () => {
 
   describe('.rm', function () {
     it('removes a file', () => {
-      const fileName = `single-file-${Math.random()}.txt`
+      const fileName = `single-file-${hat()}.txt`
 
       return ipfs.files.write(`/${fileName}`, Buffer.from('Hello world'), {
         create: true
       })
         .then(() => ipfs.files.rm(`/${fileName}`))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const file = files
             .filter(file => file.name === fileName)
@@ -340,8 +344,8 @@ describe('.files', () => {
     })
 
     it('removes a directory', () => {
-      const dirName = `dir-${Math.random()}`
-      const fileName = `file-in-dir-${Math.random()}.txt`
+      const dirName = `dir-${hat()}`
+      const fileName = `file-in-dir-${hat()}.txt`
 
       return ipfs.files.write(`/${dirName}/${fileName}`, Buffer.from('Hello world'), {
         create: true,
@@ -350,7 +354,7 @@ describe('.files', () => {
         .then(() => ipfs.files.rm(`/${dirName}`, {
           recursive: true
         }))
-        .then(() => ipfs.files.ls(`/`))
+        .then(() => ipfs.files.ls('/'))
         .then(files => {
           const dir = files
             .filter(file => file.name === dirName)
@@ -363,7 +367,7 @@ describe('.files', () => {
 
   describe('.stat', function () {
     it('stats a file', () => {
-      const fileName = `single-file-${Math.random()}.txt`
+      const fileName = `single-file-${hat()}.txt`
 
       return ipfs.files.write(`/${fileName}`, Buffer.from('Hello world'), {
         create: true
@@ -384,7 +388,7 @@ describe('.files', () => {
     })
 
     it('stats a directory', () => {
-      const dirName = `dir-${Math.random()}`
+      const dirName = `dir-${hat()}`
 
       return ipfs.files.mkdir(`/${dirName}`)
         .then(() => ipfs.files.stat(`/${dirName}`))

@@ -1,43 +1,31 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 const defaultConfig = require('../runtime/config-nodejs.js')()
 
 module.exports = function config (self) {
   return {
-    get: promisify((key, callback) => {
-      if (typeof key === 'function') {
-        callback = key
-        key = undefined
-      }
-
-      return self._repo.config.get(key, callback)
-    }),
-    set: promisify((key, value, callback) => {
-      self._repo.config.set(key, value, callback)
-    }),
-    replace: promisify((config, callback) => {
-      self._repo.config.set(config, callback)
-    }),
-    profile: promisify(applyProfile)
+    get: callbackify.variadic(self._repo.config.get),
+    set: callbackify(self._repo.config.set),
+    replace: callbackify.variadic(self._repo.config.set),
+    profile: callbackify.variadic(applyProfile)
   }
 
-  async function applyProfile (profileName, opts, callback) {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
+  async function applyProfile (profileName, opts) {
+    opts = opts || {}
     const { dryRun } = opts
 
     const profile = profiles.find(p => p.name === profileName)
+
     if (!profile) {
-      return callback(new Error(`No profile with name '${profileName}' exists`))
+      throw new Error(`No profile with name '${profileName}' exists`)
     }
 
     try {
       const oldCfg = await self.config.get()
       const newCfg = JSON.parse(JSON.stringify(oldCfg)) // clone
       profile.transform(newCfg)
+
       if (!dryRun) {
         await self.config.replace(newCfg)
       }
@@ -46,9 +34,9 @@ module.exports = function config (self) {
       delete oldCfg.Identity.PrivKey
       delete newCfg.Identity.PrivKey
 
-      callback(null, { oldCfg, newCfg })
+      return { oldCfg, newCfg }
     } catch (err) {
-      callback(new Error(`Could not apply profile '${profileName}' to config: ${err.message}`))
+      throw new Error(`Could not apply profile '${profileName}' to config: ${err.message}`)
     }
   }
 }
@@ -82,8 +70,6 @@ const profiles = [{
   name: 'default-networking',
   description: 'Restores default network settings - inverse of "test" profile.',
   transform: (config) => {
-    console.log('applying default-networking')
-    console.log('setting to', defaultConfig.Addresses)
     config.Addresses.API = defaultConfig.Addresses.API
     config.Addresses.Gateway = defaultConfig.Addresses.Gateway
     config.Addresses.Swarm = defaultConfig.Addresses.Swarm

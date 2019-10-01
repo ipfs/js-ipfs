@@ -15,7 +15,6 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 const debug = require('debug')
 const mergeOptions = require('merge-options')
-const get = require('dlv')
 const EventEmitter = require('events')
 
 const config = require('./config')
@@ -28,6 +27,7 @@ const defaultRepo = require('./runtime/repo-nodejs')
 const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
+const { isTest } = require('ipfs-utils/src/env')
 
 /**
  * @typedef { import("./ipns/index") } IPNS
@@ -47,11 +47,8 @@ class IPFS extends EventEmitter {
       init: true,
       start: true,
       EXPERIMENTAL: {},
-      pubsub: {
-        enabled: false
-      },
       preload: {
-        enabled: true,
+        enabled: !isTest, // preload by default, unless in test env
         addresses: [
           '/dnsaddr/node0.preload.ipfs.io/https',
           '/dnsaddr/node1.preload.ipfs.io/https'
@@ -135,16 +132,7 @@ class IPFS extends EventEmitter {
     this.stats = components.stats(this)
     this.resolve = components.resolve(this)
 
-    if (this._options.pubsub.enabled) {
-      this.log('pubsub is enabled')
-    }
     if (this._options.EXPERIMENTAL.ipnsPubsub) {
-      // if (!this._options.pubsub.enabled) {
-      if (!get(this._options, 'pubsub.enabled', false)) {
-        this.log('pubsub is enabled to use EXPERIMENTAL IPNS pubsub')
-        this._options.pubsub.enabled = true
-      }
-
       this.log('EXPERIMENTAL IPNS pubsub is enabled')
     }
     if (this._options.EXPERIMENTAL.sharding) {

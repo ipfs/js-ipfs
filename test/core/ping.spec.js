@@ -12,11 +12,13 @@ const path = require('path')
 const expect = chai.expect
 chai.use(dirtyChai)
 const df = DaemonFactory.create({
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`)
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+  IpfsClient: require('ipfs-http-client')
 })
 const dfProc = DaemonFactory.create({
   exec: require('../../'),
-  type: 'proc'
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
 })
 
 const config = {
@@ -36,7 +38,6 @@ const spawnNode = ({ dht = false, type = 'js' }) => {
   return factory.spawn({
     args,
     config,
-    initOptions: { bits: 512 },
     preload: { enabled: false }
   })
 }

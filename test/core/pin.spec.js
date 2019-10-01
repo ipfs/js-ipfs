@@ -15,7 +15,10 @@ describe('pin', function () {
   let ipfsd, ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({ type: 'proc' })
+    const factory = IPFSFactory.create({
+      type: 'proc',
+      IpfsClient: require('ipfs-http-client')
+    })
 
     ipfsd = await factory.spawn({
       exec: IPFS,

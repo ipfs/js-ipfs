@@ -11,6 +11,7 @@ const debug = require('debug')
 const {
   cidToString
 } = require('../../../utils/cid')
+const all = require('async-iterator-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
 
@@ -79,8 +80,8 @@ const encodeBufferKeys = (obj, encoding) => {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      'data-encoding': Joi.string().valid(['text', 'base64', 'hex']).default('text'),
-      'cid-base': Joi.string().valid(multibase.names)
+      'data-encoding': Joi.string().valid('text', 'base64', 'hex').default('text'),
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -131,8 +132,8 @@ exports.put = {
       format: Joi.string().default('cbor'),
       'input-enc': Joi.string().default('json'),
       pin: Joi.boolean(),
-      hash: Joi.string().valid(Object.keys(mh.names)).default('sha2-256'),
-      'cid-base': Joi.string().valid(multibase.names)
+      hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -149,17 +150,19 @@ exports.put = {
       throw Boom.badRequest("File argument 'object data' is required")
     }
 
-    const fileStream = await new Promise((resolve, reject) => {
-      multipart.reqParser(request.payload)
-        .on('file', (name, stream) => resolve(stream))
-        .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
-    })
+    let data
 
-    const data = await new Promise((resolve, reject) => {
-      fileStream
-        .on('data', data => resolve(data))
-        .on('end', () => reject(Boom.badRequest("File argument 'object data' is required")))
-    })
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
+
+      data = Buffer.concat(await all(part.content))
+    }
+
+    if (!data) {
+      throw Boom.badRequest("File argument 'object data' is required")
+    }
 
     let format = request.query.format
 
@@ -226,7 +229,7 @@ exports.put = {
 exports.resolve = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

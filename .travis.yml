@@ -4,10 +4,15 @@ language: node_js
 # cache: npm
 cache: false
 
+branches:
+  only:
+  - master
+  - /^release\/.*$/
+
 stages:
   - check
   - test
-  - cov
+  - tag
 
 node_js:
   - '10'
@@ -18,8 +23,21 @@ os:
   - osx
   - windows
 
+env:
+  # This stops Windows builds from hanging
+  # https://travis-ci.community/t/timeout-after-build-finished-and-succeeded/1336
+  - YARN_GPG=no
+
+addons:
+  apt:
+    packages:
+      # Fixes error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
+      # https://github.com/electron/electron/issues/1518
+      - libgconf-2-4
+
 script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
-after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+after_success:
+  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
   include:
@@ -34,26 +52,92 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npx aegir test -t browser
-        - npx aegir test -t webworker
+        - npx aegir test -t browser -t webworker
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npx aegir test -t browser -- --browsers FirefoxHeadless
-        - npx aegir test -t webworker -- --browsers FirefoxHeadless
+        - npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
+      os: osx
       script:
-        - xvfb-run npx aegir test -t electron-main -- --bail --timeout 10000
+        - npx aegir test -t electron-main --bail --timeout 10000
 
     - stage: test
       name: electron-renderer
+      os: osx
       script:
-        - xvfb-run npx aegir test -t electron-renderer -- --bail --timeout 10000
+        - npx aegir test -t electron-renderer --bail --timeout 10000
+
+    - stage: test
+      name: interop node
+      script:
+        - cd node_modules/ipfs-interop
+        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t node --bail
+
+    - stage: test
+      name: interop browser
+      script:
+        - cd node_modules/ipfs-interop
+        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t browser --bail
+
+    - stage: test
+      name: interop electron-main
+      os: osx
+      script:
+        - cd node_modules/ipfs-interop
+        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
+
+    - stage: test
+      name: interop electron-renderer
+      os: osx
+      script:
+        - cd node_modules/ipfs-interop
+        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: ipfs-companion
+      script:
+        - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: npm-on-ipfs
+      script:
+        - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: ipfs-pubsub-room
+      script:
+        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: peer-base
+      script:
+        - npm run test:external -- peer-base https://github.com/peer-base/peer-base.git
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: service-worker-gateway
+      script:
+        - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
+
+    - stage: tag
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: update-last-successful-build
+      script:
+        - git config --global user.email "travis@travis-ci.org"
+        - git config --global user.name "Travis CI"
+        - git remote set-url origin https://$TRAVIS_GITHUB_USER:$TRAVIS_GITHUB_TOKEN@github.com/ipfs/js-ipfs.git
+        - npx aegir update-last-successful-build
 
 notifications:
   email: false

@@ -1,18 +1,20 @@
 'use strict'
 
+const fs = require('fs')
+const debug = require('debug')('ipfs:cli:init')
 const { ipfsPathHelp } = require('../utils')
 
 module.exports = {
   command: 'init [config] [options]',
   describe: 'Initialize a local IPFS node\n\n' +
     'If you are going to run IPFS in a server environment, you may want to ' +
-    `initialize it using the 'server' profile.\n\n` +
+    'initialize it using the \'server\' profile.\n\n' +
     'For the list of available profiles run `jsipfs config profile ls`',
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
       .positional('config', {
-        describe: 'Node config, this should be JSON and will be merged with the default config. See https://github.com/ipfs/js-ipfs#optionsconfig',
+        describe: 'Node config, this should be a path to a file or JSON and will be merged with the default config. See https://github.com/ipfs/js-ipfs#optionsconfig',
         type: 'string'
       })
       .option('bits', {
@@ -34,13 +36,25 @@ module.exports = {
       .option('profile', {
         alias: 'p',
         type: 'string',
-        describe: `Apply profile settings to config. Multiple profiles can be separated by ','`
+        describe: 'Apply profile settings to config. Multiple profiles can be separated by \',\''
       })
   },
 
   handler (argv) {
     argv.resolve((async () => {
       const path = argv.getRepoPath()
+
+      let config = {}
+      // read and parse config file
+      if (argv.defaultConfig) {
+        try {
+          const raw = fs.readFileSync(argv.defaultConfig)
+          config = JSON.parse(raw)
+        } catch (error) {
+          debug(error)
+          throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
+        }
+      }
 
       argv.print(`initializing ipfs node at ${path}`)
 
@@ -52,7 +66,7 @@ module.exports = {
         repo: new Repo(path),
         init: false,
         start: false,
-        config: argv.config || {}
+        config
       })
 
       try {
@@ -66,7 +80,7 @@ module.exports = {
         })
       } catch (err) {
         if (err.code === 'EACCES') {
-          err.message = `EACCES: permission denied, stat $IPFS_PATH/version`
+          err.message = 'EACCES: permission denied, stat $IPFS_PATH/version'
         }
         throw err
       }

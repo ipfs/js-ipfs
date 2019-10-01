@@ -2,7 +2,7 @@
 
 const debug = require('debug')
 const errcode = require('err-code')
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
 const IpnsPubsubDatastore = require('../ipns/routing/pubsub-datastore')
 
@@ -46,10 +46,10 @@ module.exports = function namePubsub (self) {
      *
      * @returns {Promise|void}
      */
-    state: promisify((callback) => {
-      callback(null, {
+    state: callbackify(async () => { // eslint-disable-line require-await
+      return {
         enabled: isNamePubsubEnabled(self)
-      })
+      }
     }),
     /**
      * Cancel a name subscription.
@@ -58,15 +58,10 @@ module.exports = function namePubsub (self) {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    cancel: promisify((name, callback) => {
-      let pubsub
-      try {
-        pubsub = getPubsubRouting(self)
-      } catch (err) {
-        return callback(err)
-      }
+    cancel: callbackify(async (name) => { // eslint-disable-line require-await
+      const pubsub = getPubsubRouting(self)
 
-      pubsub.cancel(name, callback)
+      return pubsub.cancel(name)
     }),
     /**
      * Show current name subscriptions.
@@ -74,15 +69,10 @@ module.exports = function namePubsub (self) {
      * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    subs: promisify((callback) => {
-      let pubsub
-      try {
-        pubsub = getPubsubRouting(self)
-      } catch (err) {
-        return callback(err)
-      }
+    subs: callbackify(async () => { // eslint-disable-line require-await
+      const pubsub = getPubsubRouting(self)
 
-      pubsub.getSubscriptions(callback)
+      return pubsub.getSubscriptions()
     })
   }
 }

@@ -10,8 +10,8 @@ module.exports = {
   builder: {},
 
   handler (argv) {
-    argv.resolve((async () => {
-      return profiles.map(p => p.name + ':\n  ' + p.description).join('\n')
-    })())
+    argv.resolve(
+      profiles.map(p => p.name + ':\n  ' + p.description).join('\n')
+    )
   }
 }

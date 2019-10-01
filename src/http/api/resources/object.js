@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
+const all = require('async-iterator-all')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 const Joi = require('@hapi/joi')
@@ -29,7 +30,7 @@ exports.parseKey = (request, h) => {
 exports.new = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -67,7 +68,7 @@ exports.new = {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -114,7 +115,7 @@ exports.get = {
 exports.put = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -126,18 +127,19 @@ exports.put = {
     }
 
     const enc = request.query.inputenc
+    let data
 
-    const fileStream = await new Promise((resolve, reject) => {
-      multipart.reqParser(request.payload)
-        .on('file', (name, stream) => resolve(stream))
-        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-    })
+    for await (const part of multipart(request)) {
+      if (part.type !== 'file') {
+        continue
+      }
 
-    const data = await new Promise((resolve, reject) => {
-      fileStream
-        .on('data', data => resolve(data))
-        .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-    })
+      data = Buffer.concat(await all(part.content))
+    }
+
+    if (!data) {
+      throw Boom.badRequest("File argument 'data' is required")
+    }
 
     if (enc === 'protobuf') {
       try {
@@ -155,7 +157,7 @@ exports.put = {
     }
 
     try {
-      return { node: DAGNode.create(nodeJson.Data, nodeJson.Links) }
+      return { node: new DAGNode(nodeJson.Data, nodeJson.Links) }
     } catch (err) {
       throw Boom.badRequest('Failed to create DAG node: ' + err)
     }
@@ -195,7 +197,7 @@ exports.put = {
 exports.stat = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -243,7 +245,7 @@ exports.data = {
 exports.links = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -291,25 +293,27 @@ exports.parseKeyAndData = async (request, h) => {
     throw Boom.badRequest('invalid ipfs ref path')
   }
 
-  const fileStream = await new Promise((resolve, reject) => {
-    multipart.reqParser(request.payload)
-      .on('file', (fileName, fileStream) => resolve(fileStream))
-      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-  })
+  let data
 
-  const fileData = await new Promise((resolve, reject) => {
-    fileStream
-      .on('data', data => resolve(data))
-      .on('end', () => reject(Boom.badRequest("File argument 'data' is required")))
-  })
+  for await (const part of multipart(request)) {
+    if (part.type !== 'file') {
+      continue
+    }
 
-  return { data: fileData, key: cid }
+    data = Buffer.concat(await all(part.content))
+  }
+
+  if (!data) {
+    throw Boom.badRequest("File argument 'data' is required")
+  }
+
+  return { data, key: cid }
 }
 
 exports.patchAppendData = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -351,7 +355,7 @@ exports.patchAppendData = {
 exports.patchSetData = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -389,7 +393,7 @@ exports.patchSetData = {
 exports.patchAddLink = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
@@ -460,7 +464,7 @@ exports.patchAddLink = {
 exports.patchRmLink = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 

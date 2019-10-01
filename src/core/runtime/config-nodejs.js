@@ -41,7 +41,8 @@ module.exports = () => ({
     '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
   ],
   Pubsub: {
-    Router: 'gossipsub'
+    Router: 'gossipsub',
+    Enabled: true
   },
   Swarm: {
     ConnMgr: {

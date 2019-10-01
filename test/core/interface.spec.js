@@ -4,7 +4,6 @@
 const tests = require('interface-ipfs-core')
 const CommonFactory = require('../utils/interface-common-factory')
 const isNode = require('detect-node')
-const callbackify = require('callbackify')
 
 describe('interface-ipfs-core tests', function () {
   this.timeout(20 * 1000)
@@ -64,9 +63,6 @@ describe('interface-ipfs-core tests', function () {
     }, {
       name: 'addFromFs',
       reason: 'Not designed to run in the browser'
-    }, {
-      name: 'addFromURL',
-      reason: 'Not designed to run in the browser'
     }]
   })
 
@@ -92,19 +88,11 @@ describe('interface-ipfs-core tests', function () {
 
   tests.miscellaneous(CommonFactory.create({
     // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb()
-  }), {
-    skip: [
-      {
-        name: 'should resolve an IPNS DNS link',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      },
-      {
-        name: 'should resolve IPNS link recursively',
-        reason: 'TODO: IPNS resolve not yet implemented https://github.com/ipfs/js-ipfs/issues/1918'
-      }
-    ]
-  })
+    createTeardown: () => cb => cb(),
+    spawnOptions: {
+      args: ['--pass ipfs-is-awesome-software', '--offline']
+    }
+  }))
 
   tests.name(CommonFactory.create({
     spawnOptions: {
@@ -149,7 +137,6 @@ describe('interface-ipfs-core tests', function () {
 
   tests.pubsub(CommonFactory.create({
     spawnOptions: {
-      args: ['--enable-pubsub'],
       initOptions: { bits: 512 }
     }
   }), {
@@ -162,48 +149,5 @@ describe('interface-ipfs-core tests', function () {
 
   tests.stats(defaultCommonFactory)
 
-  tests.swarm(CommonFactory.create({
-    createSetup ({ ipfsFactory, nodes }) {
-      const callbackifiedSpawn = callbackify.variadic(
-        ipfsFactory.spawn.bind(ipfsFactory))
-      return callback => {
-        callback(null, {
-          spawnNode (repoPath, config, cb) {
-            if (typeof repoPath === 'function') {
-              cb = repoPath
-              repoPath = undefined
-            }
-
-            if (typeof config === 'function') {
-              cb = config
-              config = null
-            }
-
-            config = config || {
-              Bootstrap: [],
-              Discovery: {
-                MDNS: {
-                  Enabled: false
-                },
-                webRTCStar: {
-                  Enabled: false
-                }
-              }
-            }
-
-            const spawnOptions = { repoPath, config, initOptions: { bits: 512 } }
-
-            callbackifiedSpawn(spawnOptions, (err, _ipfsd) => {
-              if (err) {
-                return cb(err)
-              }
-
-              nodes.push(_ipfsd)
-              cb(null, _ipfsd.api)
-            })
-          }
-        })
-      }
-    }
-  }), { skip: !isNode })
+  tests.swarm(CommonFactory.createAsync(), { skip: !isNode })
 })

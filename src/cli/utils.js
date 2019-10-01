@@ -10,6 +10,7 @@ log.error = debug('cli:error')
 const Progress = require('progress')
 const byteman = require('byteman')
 const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
@@ -49,17 +50,12 @@ exports.getIPFS = (argv, callback) => {
     repo: exports.getRepoPath(),
     init: false,
     start: false,
-    pass: argv.pass,
-    pubsub: {
-      enabled: true
-    }
+    pass: argv.pass
   })
 
-  const cleanup = promisify((cb) => {
+  const cleanup = callbackify(async () => {
     if (node && node._repo && !node._repo.closed) {
-      node._repo.close((err) => cb(err))
-    } else {
-      cb()
+      await node._repo.close()
     }
   })
 

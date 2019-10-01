@@ -7,16 +7,18 @@ const Mutex = require('../../../utils/mutex')
 const log = require('debug')('ipfs:gc:lock')
 
 class GCLock {
-  constructor (repoOwner, options = {}) {
+  constructor (repoOwner, options) {
+    options = options || {}
+
     this.mutex = new Mutex(repoOwner, { ...options, log })
   }
 
-  readLock (lockedFn, cb) {
-    return this.mutex.readLock(lockedFn, cb)
+  readLock () {
+    return this.mutex.readLock()
   }
 
-  writeLock (lockedFn, cb) {
-    return this.mutex.writeLock(lockedFn, cb)
+  writeLock () {
+    return this.mutex.writeLock()
   }
 
   pullReadLock (lockedPullFn) {
@@ -58,13 +60,14 @@ class PullLocker {
       }
 
       // Request the lock
-      this.mutex[this.type]((releaseLock) => {
-        // The lock has been granted, so run the locked piece of code
-        cb(null, i)
+      this.mutex[this.type]()
+        .then(release => {
+          // Save the release function to be called when the stream completes
+          this.releaseLock = release
 
-        // Save the release function to be called when the stream completes
-        this.releaseLock = releaseLock
-      })
+          // The lock has been granted, so run the locked piece of code
+          cb(null, i)
+        }, cb)
     })
   }
 

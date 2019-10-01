@@ -16,7 +16,10 @@ const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
+const df = DaemonFactory.create({
+  type: 'js',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const config = {
   Bootstrap: [],
@@ -128,8 +131,8 @@ describe('swarm', () => {
           promise.then(({ data }) => {
             expect(data).to.eql([
               `${peerInfo.id.toB58String()} (2)`,
-              `\t/ip4/127.0.0.1/tcp/4001`,
-              `\t/ip4/127.0.0.1/tcp/4001/ws`
+              '\t/ip4/127.0.0.1/tcp/4001',
+              '\t/ip4/127.0.0.1/tcp/4001/ws'
             ].join('\n'))
             done()
           })
