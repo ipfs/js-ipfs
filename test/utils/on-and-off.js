@@ -12,6 +12,7 @@ const df = DaemonFactory.create({
   IpfsClient: require('ipfs-http-client')
 })
 const path = require('path')
+const origLocale = process.env.LC_ALL
 
 function off (tests) {
   describe('daemon off (directly to core)', function () {
@@ -20,6 +21,7 @@ function off (tests) {
     let repoPath
 
     before(function () {
+      setLocaleToEnglish()
       this.timeout(60 * 1000)
 
       repoPath = os.tmpdir() + '/ipfs-' + hat()
@@ -30,6 +32,7 @@ function off (tests) {
     })
 
     after(async function () {
+      resetLocaleToSystem()
       this.timeout(20 * 1000)
       await clean(repoPath)
     })
@@ -45,6 +48,8 @@ function on (tests) {
 
     let ipfsd
     before(async function () {
+      setLocaleToEnglish()
+
       // CI takes longer to instantiate the daemon,
       // so we need to increase the timeout for the
       // before step
@@ -61,6 +66,7 @@ function on (tests) {
     })
 
     after(function () {
+      resetLocaleToSystem()
       if (ipfsd) {
         this.timeout(15 * 1000)
         return ipfsd.stop()
@@ -68,6 +74,46 @@ function on (tests) {
     })
 
     tests(thing)
+  })
+}
+
+function setLocaleToEnglish () {
+  Object.assign(process.env, {
+    LANG: 'en_US.UTF-8',
+    LANGUAGE: 'en_US.UTF-8',
+    LC_CTYPE: 'en_US.UTF-8',
+    LC_NUMERIC: 'en_US.UTF-8',
+    LC_TIME: 'en_US.UTF-8',
+    LC_COLLATE: 'en_US.UTF-8',
+    LC_MONETARY: 'en_US.UTF-8',
+    LC_MESSAGES: 'en_US.UTF-8',
+    LC_PAPER: 'en_US.UTF-8',
+    LC_NAME: 'en_US.UTF-8',
+    LC_ADDRESS: 'en_US.UTF-8',
+    LC_TELEPHONE: 'en_US.UTF-8',
+    LC_MEASUREMENT: 'en_US.UTF-8',
+    LC_IDENTIFICATION: 'en_US.UTF-8',
+    LC_ALL: 'en_US.UTF-8'
+  })
+}
+
+function resetLocaleToSystem () {
+  Object.assign(process.env, {
+    LANG: origLocale,
+    LANGUAGE: origLocale,
+    LC_CTYPE: origLocale,
+    LC_NUMERIC: origLocale,
+    LC_TIME: origLocale,
+    LC_COLLATE: origLocale,
+    LC_MONETARY: origLocale,
+    LC_MESSAGES: origLocale,
+    LC_PAPER: origLocale,
+    LC_NAME: origLocale,
+    LC_ADDRESS: origLocale,
+    LC_TELEPHONE: origLocale,
+    LC_MEASUREMENT: origLocale,
+    LC_IDENTIFICATION: origLocale,
+    LC_ALL: origLocale
   })
 }
 
