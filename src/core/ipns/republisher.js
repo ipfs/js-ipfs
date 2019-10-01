@@ -4,10 +4,9 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
+const promisify = require('promisify-es6')
 
 const debug = require('debug')
-const each = require('async/each')
-const waterfall = require('async/waterfall')
 const log = debug('ipfs:ipns:republisher')
 log.error = debug('ipfs:ipns:republisher:error')
 
@@ -34,144 +33,147 @@ class IpnsRepublisher {
 
     // TODO: this handler should be isolated in another module
     const republishHandle = {
-      _onCancel: null,
+      _task: null,
+      _inflightTask: null,
       _timeoutId: null,
-      runPeriodically: (fn, period) => {
-        republishHandle._timeoutId = setTimeout(() => {
+      runPeriodically: (period) => {
+        republishHandle._timeoutId = setTimeout(async () => {
           republishHandle._timeoutId = null
 
-          fn((nextPeriod) => {
-            // Was republish cancelled while fn was being called?
-            if (republishHandle._onCancel) {
-              return republishHandle._onCancel()
-            }
+          try {
+            republishHandle._inflightTask = republishHandle._task()
+            await republishHandle._inflightTask
+
             // Schedule next
-            republishHandle.runPeriodically(fn, nextPeriod || period)
-          })
-        }, period)
+            if (republishHandle._task) {
+              republishHandle.runPeriodically(period)
+            }
+          } catch (err) {
+            log.error(err)
+          }
+        }, period())
       },
-      cancel: (cb) => {
-        // Not currently running a republish, can callback immediately
-        if (republishHandle._timeoutId) {
-          clearTimeout(republishHandle._timeoutId)
-          return cb()
-        }
-        // Wait for republish to finish then call callback
-        republishHandle._onCancel = cb
+      cancel: async () => {
+        // do not run again
+        clearTimeout(republishHandle._timeoutId)
+        republishHandle._task = null
+
+        // wait for the currently in flight task to complete
+        await republishHandle._inflightTask
       }
     }
 
     const { privKey } = this._peerInfo.id
     const { pass } = this._options
+    let firstRun = true
 
-    republishHandle.runPeriodically((done) => {
-      this._republishEntries(privKey, pass, () => done(defaultBroadcastInterval))
-    }, minute)
+    republishHandle._task = async () => {
+      await this._republishEntries(privKey, pass)
+
+      return defaultBroadcastInterval
+    }
+    republishHandle.runPeriodically(() => {
+      if (firstRun) {
+        firstRun = false
+
+        return minute
+      }
+
+      return defaultBroadcastInterval
+    })
 
     this._republishHandle = republishHandle
   }
 
-  stop (callback) {
+  async stop () {
     const republishHandle = this._republishHandle
 
     if (!republishHandle) {
-      return callback(errcode(new Error('republisher is not running'), 'ERR_REPUBLISH_NOT_RUNNING'))
+      throw errcode(new Error('republisher is not running'), 'ERR_REPUBLISH_NOT_RUNNING')
     }
 
     this._republishHandle = null
-    republishHandle.cancel(callback)
+
+    await republishHandle.cancel()
   }
 
-  _republishEntries (privateKey, pass, callback) {
+  async _republishEntries (privateKey, pass) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
-    this._republishEntry(privateKey, (err) => {
-      if (err) {
-        const errMsg = 'cannot republish entry for the node\'s private key'
+    try {
+      await this._republishEntry(privateKey)
+    } catch (err) {
+      const errMsg = 'cannot republish entry for the node\'s private key'
 
-        log.error(errMsg)
+      log.error(errMsg)
+      return
+    }
+
+    // keychain needs pass to get the cryptographic keys
+    if (pass) {
+      try {
+        const keys = await this._keychain.listKeys()
+
+        for (const key in keys) {
+          const pem = await this._keychain.exportKey(key.name, pass)
+          const privKey = await crypto.keys.import(pem, pass)
+
+          await this._republishEntry(privKey)
+        }
+      } catch (err) {
+        log.error(err)
+      }
+    }
+  }
+
+  async _republishEntry (privateKey) {
+    if (!privateKey || !privateKey.bytes) {
+      throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
+    }
+
+    try {
+      const peerId = await promisify(PeerId.createFromPrivKey)(privateKey.bytes)
+      const value = await this._getPreviousValue(peerId)
+      await this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime)
+    } catch (err) {
+      if (err.code === 'ERR_NO_ENTRY_FOUND') {
         return
       }
 
-      // keychain needs pass to get the cryptographic keys
-      if (pass) {
-        this._keychain.listKeys((err, list) => {
-          if (err) {
-            log.error(err)
-            return
-          }
-
-          each(list, (key, cb) => {
-            waterfall([
-              (cb) => this._keychain.exportKey(key.name, pass, cb),
-              (pem, cb) => crypto.keys.import(pem, pass, cb)
-            ], (err, privKey) => {
-              if (err) {
-                log.error(err)
-                return
-              }
-
-              this._republishEntry(privKey, cb)
-            })
-          }, (err) => {
-            if (err) {
-              log.error(err)
-            }
-            callback(null)
-          })
-        })
-      } else {
-        callback(null)
-      }
-    })
-  }
-
-  _republishEntry (privateKey, callback) {
-    if (!privateKey || !privateKey.bytes) {
-      return callback(errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY'))
+      throw err
     }
-
-    waterfall([
-      (cb) => PeerId.createFromPrivKey(privateKey.bytes, cb),
-      (peerId, cb) => this._getPreviousValue(peerId, cb)
-    ], (err, value) => {
-      if (err) {
-        return callback(err.code === 'ERR_NO_ENTRY_FOUND' ? null : err)
-      }
-
-      this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime, callback)
-    })
   }
 
-  _getPreviousValue (peerId, callback) {
+  async _getPreviousValue (peerId) {
     if (!(PeerId.isPeerId(peerId))) {
-      return callback(errcode(new Error('invalid peer ID'), 'ERR_INVALID_PEER_ID'))
+      throw errcode(new Error('invalid peer ID'), 'ERR_INVALID_PEER_ID')
     }
 
-    this._datastore.get(ipns.getLocalKey(peerId.id), (err, dsVal) => {
-      // error handling
-      // no need to republish
-      if (err && err.notFound) {
-        return callback(errcode(new Error(`no previous entry for record with id: ${peerId.id}`), 'ERR_NO_ENTRY_FOUND'))
-      } else if (err) {
-        return callback(err)
-      }
+    try {
+      const dsVal = await this._datastore.get(ipns.getLocalKey(peerId.id))
 
       if (!Buffer.isBuffer(dsVal)) {
-        return callback(errcode(new Error("found ipns record that we couldn't process"), 'ERR_INVALID_IPNS_RECORD'))
+        throw errcode(new Error("found ipns record that we couldn't process"), 'ERR_INVALID_IPNS_RECORD')
       }
 
       // unmarshal data
-      let record
       try {
-        record = ipns.unmarshal(dsVal)
+        const record = ipns.unmarshal(dsVal)
+
+        return record.value
       } catch (err) {
         log.error(err)
-        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_IPNS_RECORD'))
+        throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_IPNS_RECORD')
+      }
+    } catch (err) {
+      // error handling
+      // no need to republish
+      if (err && err.notFound) {
+        throw errcode(new Error(`no previous entry for record with id: ${peerId.id}`), 'ERR_NO_ENTRY_FOUND')
       }
 
-      callback(null, record.value)
-    })
+      throw err
+    }
   }
 }
 

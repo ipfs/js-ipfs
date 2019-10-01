@@ -40,7 +40,9 @@ module.exports = (ipfs) => {
    * @param {ResolveOptions} [opts={}]
    * @returns {Promise<string>}
    */
-  const resolve = async (name, opts = {}) => {
+  const resolve = async (name, opts) => {
+    opts = opts || {}
+
     if (!isIpfs.path(name)) {
       throw new Error('invalid argument ' + name)
     }
@@ -72,11 +74,12 @@ module.exports = (ipfs) => {
     return `/ipfs/${cidToString(value, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`
   }
 
-  return (name, opts = {}, cb) => {
+  return (name, opts, cb) => {
     if (typeof opts === 'function') {
       cb = opts
       opts = {}
     }
+    opts = opts || {}
     return nodeify(resolve(name, opts), cb)
   }
 }

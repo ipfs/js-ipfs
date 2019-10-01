@@ -11,7 +11,10 @@ const pull = require('pull-stream')
 const IPFS = require('../../src/core')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create({
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
+})
 
 describe('files directory (sharding tests)', () => {
   function createTestFiles () {

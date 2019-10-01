@@ -6,7 +6,6 @@ const multihashing = require('multihashing-async')
 const Block = require('ipfs-block')
 const CID = require('cids')
 const fs = require('fs').promises
-const { promisify } = require('util')
 
 async function main () {
   const ipfs = await createNode()
@@ -20,7 +19,7 @@ async function main () {
 
   for (const ethBlockPath of ethBlocks) {
     const data = await fs.readFile(ethBlockPath)
-    const multihash = await promisify(multihashing)(data, 'keccak-256')
+    const multihash = await multihashing(data, 'keccak-256')
 
     const cid = new CID(1, 'eth-block', multihash)
     // console.log(cid.toBaseEncodedString())

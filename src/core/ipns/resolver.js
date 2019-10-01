@@ -16,14 +16,11 @@ class IpnsResolver {
     this._routing = routing
   }
 
-  resolve (name, options, callback) {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
+  async resolve (name, options) {
+    options = options || {}
 
     if (typeof name !== 'string') {
-      return callback(errcode(new Error('invalid name'), 'ERR_INVALID_NAME'))
+      throw errcode(new Error('invalid name'), 'ERR_INVALID_NAME')
     }
 
     options = options || {}
@@ -32,7 +29,7 @@ class IpnsResolver {
     const nameSegments = name.split('/')
 
     if (nameSegments.length !== 3 || nameSegments[0] !== '') {
-      return callback(errcode(new Error('invalid name'), 'ERR_INVALID_NAME'))
+      throw errcode(new Error('invalid name'), 'ERR_INVALID_NAME')
     }
 
     const key = nameSegments[2]
@@ -44,117 +41,101 @@ class IpnsResolver {
       depth = defaultMaximumRecursiveDepth
     }
 
-    this.resolver(key, depth, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
+    const res = await this.resolver(key, depth)
 
-      log(`${name} was locally resolved correctly`)
-      callback(null, res)
-    })
+    log(`${name} was locally resolved correctly`)
+    return res
   }
 
   // Recursive resolver according to the specified depth
-  resolver (name, depth, callback) {
+  async resolver (name, depth) {
     // Exceeded recursive maximum depth
     if (depth === 0) {
       const errMsg = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
-
       log.error(errMsg)
-      return callback(errcode(new Error(errMsg), 'ERR_RESOLVE_RECURSION_LIMIT'))
+
+      throw errcode(new Error(errMsg), 'ERR_RESOLVE_RECURSION_LIMIT')
     }
 
-    this._resolveName(name, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
+    const res = await this._resolveName(name)
+    const nameSegments = res.split('/')
 
-      const nameSegments = res.split('/')
+    // If obtained a ipfs cid or recursive option is disabled
+    if (nameSegments[1] === 'ipfs' || !depth) {
+      return res
+    }
 
-      // If obtained a ipfs cid or recursive option is disabled
-      if (nameSegments[1] === 'ipfs' || !depth) {
-        return callback(null, res)
-      }
-
-      // continue recursively until depth equals 0
-      this.resolver(nameSegments[2], depth - 1, callback)
-    })
+    // continue recursively until depth equals 0
+    return this.resolver(nameSegments[2], depth - 1)
   }
 
   // resolve ipns entries from the provided routing
-  _resolveName (name, callback) {
-    let peerId
+  async _resolveName (name) {
+    const peerId = PeerId.createFromB58String(name)
+    const { routingKey } = ipns.getIdKeys(peerId.toBytes())
+    let record
 
     try {
-      peerId = PeerId.createFromB58String(name)
+      record = await this._routing.get(routingKey.toBuffer())
     } catch (err) {
-      return callback(err)
+      log.error(err)
+
+      if (err.code === 'ERR_NOT_FOUND') {
+        throw errcode(new Error(`record requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
+      }
+
+      throw errcode(new Error(`unexpected error getting the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
     }
 
-    const { routingKey, routingPubKey } = ipns.getIdKeys(peerId.toBytes())
+    // IPNS entry
+    let ipnsEntry
+    try {
+      ipnsEntry = ipns.unmarshal(record)
+    } catch (err) {
+      log.error(err)
 
-    this._routing.get(routingKey.toBuffer(), (err, record) => {
-      if (err) {
-        log.error(err)
-        if (err.code !== 'ERR_NOT_FOUND') {
-          return callback(errcode(new Error(`unexpected error getting the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD'))
-        }
-        return callback(errcode(new Error(`record requested was not found for ${name} (${routingKey}) in the network`), 'ERR_NO_RECORD_FOUND'))
+      throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_RECORD_RECEIVED')
+    }
+
+    // if the record has a public key validate it
+    if (ipnsEntry.pubKey) {
+      return this._validateRecord(peerId, ipnsEntry)
+    }
+
+    // Otherwise, try to get the public key from routing
+    let pubKey
+    try {
+      pubKey = await this._routing.get(routingKey.toBuffer())
+    } catch (err) {
+      log.error(err)
+
+      if (err.code === 'ERR_NOT_FOUND') {
+        throw errcode(new Error(`public key requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
       }
 
-      // IPNS entry
-      let ipnsEntry
-      try {
-        ipnsEntry = ipns.unmarshal(record)
-      } catch (err) {
-        log.error(err)
-        return callback(errcode(new Error(`found ipns record that we couldn't convert to a value`), 'ERR_INVALID_RECORD_RECEIVED'))
-      }
+      throw errcode(new Error(`unexpected error getting the public key for the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY')
+    }
 
-      // if the record has a public key validate it
-      if (ipnsEntry.pubKey) {
-        return this._validateRecord(peerId, ipnsEntry, callback)
-      }
+    try {
+      // Insert it into the peer id, in order to be validated by IPNS validator
+      peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
+    } catch (err) {
+      log.error(err)
 
-      // Otherwise, try to get the public key from routing
-      this._routing.get(routingKey.toBuffer(), (err, pubKey) => {
-        if (err) {
-          log.error(err)
-          if (err.code !== 'ERR_NOT_FOUND') {
-            return callback(errcode(new Error(`unexpected error getting the public key for the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY'))
-          }
-          return callback(errcode(new Error(`public key requested was not found for ${name} (${routingPubKey}) in the network`), 'ERR_NO_RECORD_FOUND'))
-        }
+      throw errcode(new Error('found public key record that we couldn\'t convert to a value'), 'ERR_INVALID_PUB_KEY_RECEIVED')
+    }
 
-        try {
-          // Insert it into the peer id, in order to be validated by IPNS validator
-          peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
-        } catch (err) {
-          log.error(err)
-          return callback(errcode(new Error(`found public key record that we couldn't convert to a value`), 'ERR_INVALID_PUB_KEY_RECEIVED'))
-        }
-
-        this._validateRecord(peerId, ipnsEntry, callback)
-      })
-    })
+    return this._validateRecord(peerId, ipnsEntry)
   }
 
   // validate a resolved record
-  _validateRecord (peerId, ipnsEntry, callback) {
-    ipns.extractPublicKey(peerId, ipnsEntry, (err, pubKey) => {
-      if (err) {
-        return callback(err)
-      }
+  async _validateRecord (peerId, ipnsEntry) {
+    const pubKey = await ipns.extractPublicKey(peerId, ipnsEntry)
 
-      // IPNS entry validation
-      ipns.validate(pubKey, ipnsEntry, (err) => {
-        if (err) {
-          return callback(err)
-        }
+    // IPNS entry validation
+    await ipns.validate(pubKey, ipnsEntry)
 
-        callback(null, ipnsEntry.value.toString())
-      })
-    })
+    return ipnsEntry.value.toString()
   }
 }
 

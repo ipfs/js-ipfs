@@ -1,7 +1,9 @@
 'use strict'
 const mergeOptions = require('merge-options')
 
-module.exports = (blockService, options = {}) => {
+module.exports = (blockService, options) => {
+  options = options || {}
+
   return mergeOptions.call(
     // ensure we have the defaults formats even if the user overrides `formats: []`
     { concatArrays: true },

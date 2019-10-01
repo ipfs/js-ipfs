@@ -21,7 +21,7 @@ const s = superstruct({
 
       return true
     },
-    'multiaddr-ipfs': v => mafmt.IPFS.matches(v) ? true : `multiaddr IPFS invalid`
+    'multiaddr-ipfs': v => mafmt.IPFS.matches(v) ? true : 'multiaddr IPFS invalid'
   }
 })
 

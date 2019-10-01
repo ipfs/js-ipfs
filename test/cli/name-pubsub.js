@@ -11,7 +11,10 @@ const parallel = require('async/parallel')
 const ipfsExec = require('../utils/ipfs-exec')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'js' })
+const df = DaemonFactory.create({
+  type: 'js',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const spawnDaemon = () => df.spawn({
   exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
@@ -97,16 +100,14 @@ describe('name-pubsub', () => {
       it('should subscribe on name resolve', function () {
         this.timeout(80 * 1000)
 
-        return ipfsB(`name resolve ${nodeAId.id}`)
-          .catch((err) => {
-            expect(err).to.exist() // Not available (subscribed)
-
+        return ipfsB.fail(`name resolve ${nodeAId.id}`)
+          .then((err) => {
+            expect(err.all).to.include('was not found')
             return ipfsB('pubsub ls')
           })
           .then((res) => {
             expect(res).to.exist()
             expect(res).to.have.string('/record/') // have a record ipns subscribtion
-
             return ipfsB('name pubsub subs')
           })
           .then((res) => {

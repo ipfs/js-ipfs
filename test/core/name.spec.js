@@ -20,7 +20,10 @@ const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
 const { Key } = require('interface-datastore')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create({
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -39,11 +42,11 @@ const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, re
 
 describe('name', function () {
   describe('republisher', function () {
+    this.timeout(40 * 1000)
     let node
     let ipfsd
 
     before(async function () {
-      this.timeout(40 * 1000)
       ipfsd = await df.spawn({
         exec: IPFS,
         args: [`--pass ${hat()}`, '--offline'],
@@ -210,137 +213,128 @@ describe('name', function () {
       }
     })
 
-    it('should error to publish if does not receive private key', function (done) {
-      node._ipns.publisher.publish(null, ipfsRef, (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_PRIVATE_KEY')
-        done()
-      })
+    it('should error to publish if does not receive private key', function () {
+      return node._ipns.publisher.publish(null, ipfsRef)
+        .then(() => expect.fail('should have thrown when private key was missing'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_INVALID_PRIVATE_KEY')
+        })
     })
 
-    it('should error to publish if an invalid private key is received', function (done) {
-      node._ipns.publisher.publish({ bytes: 'not that valid' }, ipfsRef, (err) => {
-        expect(err).to.exist()
-        done()
-      })
+    it('should error to publish if an invalid private key is received', function () {
+      return node._ipns.publisher.publish({ bytes: 'not that valid' }, ipfsRef)
+        .then(() => expect.fail('should have thrown when private key was invalid'), (err) => {
+          expect(err).to.exist()
+        })
     })
 
-    it('should error to publish if _updateOrCreateRecord fails', function (done) {
+    it('should error to publish if _updateOrCreateRecord fails', function () {
       const stub = sinon.stub(node._ipns.publisher, '_updateOrCreateRecord').callsArgWith(4, 'error')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err) => {
-        expect(err).to.exist()
+      return node.name.publish(ipfsRef, { resolve: false })
+        .then(() => expect.fail('should have thrown when _updateOrCreateRecord fails'), (err) => {
+          expect(err).to.exist()
 
-        stub.restore()
-        done()
-      })
+          stub.restore()
+        })
     })
 
-    it('should error to publish if _putRecordToRouting receives an invalid peer id', function (done) {
-      node._ipns.publisher._putRecordToRouting(undefined, undefined, (err) => {
-        expect(err).to.exist()
-        done()
-      })
+    it('should error to publish if _putRecordToRouting receives an invalid peer id', function () {
+      return node._ipns.publisher._putRecordToRouting(undefined, undefined)
+        .then(() => expect.fail('should have thrown if peer id was invalid'), (err) => {
+          expect(err).to.exist()
+        })
     })
 
-    it('should error to publish if receives an invalid datastore key', function (done) {
+    it('should error to publish if receives an invalid datastore key', function () {
       const stub = sinon.stub(Key, 'isKey').returns(false)
 
-      node.name.publish(ipfsRef, { resolve: false }, (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_DATASTORE_KEY')
+      return node.name.publish(ipfsRef, { resolve: false })
+        .then(() => expect.fail('should have thrown if datastore key was invalid'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_INVALID_DATASTORE_KEY')
 
-        stub.restore()
-        done()
-      })
+          stub.restore()
+        })
     })
 
-    it('should error to publish if we receive a unexpected error getting from datastore', function (done) {
+    it('should error to publish if we receive a unexpected error getting from datastore', function () {
       const stub = sinon.stub(node._ipns.publisher._datastore, 'get').callsArgWith(1, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_DETERMINING_PUBLISHED_RECORD')
+      return node.name.publish(ipfsRef, { resolve: false })
+        .then(() => expect.fail('should have thrown if an unexpected error was received when getting from the datastore'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_DETERMINING_PUBLISHED_RECORD')
 
-        stub.restore()
-        done()
-      })
+          stub.restore()
+        })
     })
 
-    it('should error to publish if we receive a unexpected error putting to datastore', function (done) {
+    it('should error to publish if we receive a unexpected error putting to datastore', function () {
       const stub = sinon.stub(node._ipns.publisher._datastore, 'put').callsArgWith(2, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_STORING_IN_DATASTORE')
+      return node.name.publish(ipfsRef, { resolve: false })
+        .then(() => expect.fail('should have thrown if an unexpected error was received when putting to the datastore'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_STORING_IN_DATASTORE')
 
-        stub.restore()
-        done()
-      })
+          stub.restore()
+        })
     })
 
-    it('should error to resolve if the received name is not a string', function (done) {
-      node._ipns.resolver.resolve(false, (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_NAME')
-        done()
-      })
+    it('should error to resolve if the received name is not a string', function () {
+      return node._ipns.resolver.resolve(false)
+        .then(() => expect.fail('should have thrown if the received name is not a string'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_INVALID_NAME')
+        })
     })
 
-    it('should error to resolve if receives an invalid ipns path', function (done) {
-      node._ipns.resolver.resolve('ipns/<cid>', (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_NAME')
-        done()
-      })
+    it('should error to resolve if receives an invalid ipns path', function () {
+      return node._ipns.resolver.resolve('ipns/<cid>')
+        .then(() => expect.fail('should have thrown if the IPNS path was invalid'), (err) => {
+          expect(err).to.exist()
+          expect(err.code).to.equal('ERR_INVALID_NAME')
+        })
     })
 
-    it('should publish and then fail to resolve if receive error getting from datastore', function (done) {
+    it('should publish and then fail to resolve if receive error getting from datastore', async function () {
       const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, 'error-unexpected')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
+      await node.name.publish(ipfsRef, { resolve: false })
 
-        node.name.resolve(nodeId, { nocache: true }, (err) => {
+      return node.name.resolve(nodeId, { nocache: true })
+        .then(() => expect.fail('should have thrown when an invalid response was received from the datastore'), (err) => {
           expect(err).to.exist()
           expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
-          done()
         })
-      })
     })
 
-    it('should publish and then fail to resolve if does not find the record', function (done) {
+    it('should publish and then fail to resolve if does not find the record', async function () {
       const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, { code: 'ERR_NOT_FOUND' })
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
+      await node.name.publish(ipfsRef, { resolve: false })
 
-        node.name.resolve(nodeId, { nocache: true }, (err) => {
+      return node.name.resolve(nodeId, { nocache: true })
+        .then(() => expect.fail('should have thrown when failing to find the record after publish'), (err) => {
           expect(err).to.exist()
-          expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
+          expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
-          done()
         })
-      })
     })
 
-    it('should publish and then fail to resolve if does not receive a buffer', function (done) {
+    it('should publish and then fail to resolve if does not receive a buffer', async function () {
       const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, undefined, 'data')
 
-      node.name.publish(ipfsRef, { resolve: false }, (err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
+      await node.name.publish(ipfsRef, { resolve: false })
 
-        node.name.resolve(nodeId, { nocache: true }, (err) => {
+      return node.name.resolve(nodeId, { nocache: true })
+        .then(() => expect.fail('should have thrown if a buffer was not recieved'), (err) => {
           expect(err).to.exist()
-          expect(err.code).to.equal('ERR_INVALID_RECORD_RECEIVED')
+          expect(err.code).to.equal('ERR_UNEXPECTED_ERROR_GETTING_RECORD')
           stub.restore()
-          done()
         })
-      })
     })
   })
 
@@ -384,34 +378,22 @@ describe('name', function () {
       }
     })
 
-    it('should resolve an ipfs path correctly', function (done) {
-      node.add(fixture, (err, res) => {
-        expect(err).to.not.exist()
+    it('should resolve an ipfs path correctly', async function () {
+      const res = await node.add(fixture)
 
-        node.name.publish(`/ipfs/${res[0].hash}`, (err) => {
-          expect(err).to.not.exist()
+      await node.name.publish(`/ipfs/${res[0].hash}`)
 
-          ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`, (err, value) => {
-            expect(err).to.not.exist()
-            expect(value).to.exist()
-            done()
-          })
-        })
-      })
+      const value = await ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`)
+
+      expect(value).to.exist()
     })
 
-    it('should resolve an ipns path correctly', function (done) {
-      node.add(fixture, (err, res) => {
-        expect(err).to.not.exist()
-        node.name.publish(`/ipfs/${res[0].hash}`, (err) => {
-          expect(err).to.not.exist()
-          ipnsPath.resolvePath(node, `/ipns/${nodeId}`, (err, value) => {
-            expect(err).to.not.exist()
-            expect(value).to.exist()
-            done()
-          })
-        })
-      })
+    it('should resolve an ipns path correctly', async function () {
+      const res = await node.add(fixture)
+      await node.name.publish(`/ipfs/${res[0].hash}`)
+      const value = await ipnsPath.resolvePath(node, `/ipns/${nodeId}`)
+
+      expect(value).to.exist()
     })
   })
 

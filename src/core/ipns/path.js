@@ -8,22 +8,16 @@ log.error = debug('ipfs:ipns:path:error')
 
 // resolves the given path by parsing out protocol-specific entries
 // (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
-const resolvePath = (ipfsNode, name, callback) => {
+const resolvePath = (ipfsNode, name) => {
   // ipns path
   if (isIPFS.ipnsPath(name)) {
     log(`resolve ipns path ${name}`)
 
-    return ipfsNode._ipns.resolve(name, callback)
+    return ipfsNode._ipns.resolve(name)
   }
 
   // ipfs path
-  ipfsNode.dag.get(name.substring('/ipfs/'.length), (err, value) => {
-    if (err) {
-      return callback(err)
-    }
-
-    return callback(null, value)
-  })
+  return ipfsNode.dag.get(name.substring('/ipfs/'.length))
 }
 
 module.exports = {

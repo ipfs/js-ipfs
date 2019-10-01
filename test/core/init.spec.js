@@ -34,48 +34,32 @@ describe('init', () => {
 
   afterEach((done) => repo.teardown(done))
 
-  it('basic', (done) => {
-    ipfs.init({ bits: 512, pass: hat() }, (err) => {
-      expect(err).to.not.exist()
+  it('basic', async () => {
+    await ipfs.init({ bits: 512, pass: hat() })
 
-      repo.exists((err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.equal(true)
+    const res = await repo.exists()
+    expect(res).to.equal(true)
 
-        repo.config.get((err, config) => {
-          expect(err).to.not.exist()
-          expect(config.Identity).to.exist()
-          expect(config.Keychain).to.exist()
-          done()
-        })
-      })
-    })
+    const config = await repo.config.get()
+
+    expect(config.Identity).to.exist()
+    expect(config.Keychain).to.exist()
   })
 
-  it('set # of bits in key', function (done) {
+  it('set # of bits in key', async function () {
     this.timeout(40 * 1000)
 
-    ipfs.init({ bits: 1024, pass: hat() }, (err) => {
-      expect(err).to.not.exist()
+    await ipfs.init({ bits: 1024, pass: hat() })
 
-      repo.config.get((err, config) => {
-        expect(err).to.not.exist()
-        expect(config.Identity.PrivKey.length).is.above(256)
-        done()
-      })
-    })
+    const config = await repo.config.get()
+    expect(config.Identity.PrivKey.length).is.above(256)
   })
 
-  it('pregenerated key is being used', (done) => {
-    ipfs.init({ privateKey }, (err) => {
-      expect(err).to.not.exist()
+  it('pregenerated key is being used', async () => {
+    await ipfs.init({ privateKey })
 
-      repo.config.get((err, config) => {
-        expect(err).to.not.exist()
-        expect(config.Identity.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
-        done()
-      })
-    })
+    const config = await repo.config.get()
+    expect(config.Identity.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
   it('init docs are written', (done) => {

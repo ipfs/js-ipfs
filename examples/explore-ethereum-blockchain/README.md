@@ -22,16 +22,16 @@ We've some ethereum blocks available at [eth-stuffs](./eth-stuffs) folder, you c
 
 ```sh
 > ./load-eth-stuffs.sh
-z43AaGEvwdfzjrCZ3Sq7DKxdDHrwoaPQDtqF4jfdkNEVTiqGVFW
-z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA
-z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj
-z45oqTS2AQ9SgyVa31LRGZgfibtdoPvP2miMNaXbDLLgD9MdAAr
-z45oqTS8wZaNGU2eepKHRbXvmV93cKQbiL241RB3bRtMYZP8hNm
-z45oqTS8wZaNGU2eepKHRbXvmV93cKQbiL241RB3bRtMYZP8hNm
-z45oqTS4E1GeJujnKVJG3xSVnS64A8mMCWhKSkCWACNCeD95mtQ
-z45oqTS4MnurEeEaanvFieeJDNHH3jGNk9NJEiyrwXwYQSWfxUB
-z45oqTRwExySeMeivsU1Y9UdzWDp2mx71TtQhmTGzRaXCcsNujj
-z45oqTRzb9a5xyvx5RbfSXH1K5jibyZ4AxnXyYReuLw7KU5veYw
+bagiacgzah24drzou2jlkixpblbgbg6nxfrasoklzttzoht5hixhxz3rlncyq
+bagiacgzanm7fiqpp7zcfehhd7apxpo4stdxx7wxn7eqrsgolj76t22dintgq
+bagiacgzau7z2cpinv6u3rnsa73ssc46cpongn7zh6ztjwo7hh7ao42cj4lha
+baglacgzaoc2jzhhxe6psrvq4ixlykpky2a23e3ltnhqpjrji3uyg6rnulxpq
+baglacgza2vwiqlrqgkz5jdpkzmkqznntozcnnoycn4swddtxi7njcjsmfpda
+baglacgza2vwiqlrqgkz5jdpkzmkqznntozcnnoycn4swddtxi7njcjsmfpda
+baglacgzar5mhc23wfjccxfkpf23kbufqqjsqg4t7btaocaraycwlxbaerq2q
+baglacgzasflr3hpssk5fpdheemyogi4df2zatql5z3pp7izau7d37ryijgca
+baglacgzae6kz4xubhfygknh7yqk2fbk4xztmnvwkwm36knjwukmyfepjveda
+baglacgzalfkeokwk7nvwenmr2k3e3f6khvch2bw54nhr25vjmjy2lshmx5mas
 ```
 
 ## Explore these blocks using the DAG API
@@ -41,7 +41,7 @@ NOTE: Currently your js-ipfs daemon must NOT be running for the following exampl
 Some examples
 
 ```sh
-> jsipfs dag get z43AaGEvwdfzjrCZ3Sq7DKxdDHrwoaPQDtqF4jfdkNEVTiqGVFW/
-> jsipfs dag get z43AaGEvwdfzjrCZ3Sq7DKxdDHrwoaPQDtqF4jfdkNEVTiqGVFW/parentHash
+> jsipfs dag get bagiacgzah24drzou2jlkixpblbgbg6nxfrasoklzttzoht5hixhxz3rlncyq/
+> jsipfs dag get bagiacgzah24drzou2jlkixpblbgbg6nxfrasoklzttzoht5hixhxz3rlncyq/parentHash
 ...
 ```

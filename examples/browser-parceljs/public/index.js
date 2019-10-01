@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const filesAdded = await node.add({
     path: 'hello-parcel.txt',
-    content: Buffer.from('Hello from parcel.js bundled ipfs example')
+    content: 'Hello from parcel.js bundled ipfs example'
   })
 
   log(`This page deployed ${filesAdded[0].path} to IPFS and its hash is ${filesAdded[0].hash}`)

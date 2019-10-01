@@ -11,7 +11,7 @@ module.exports = {
     argv.resolve((async () => {
       const path = argv.key
       // `ipfs file ls` is deprecated. See https://ipfs.io/docs/commands/#ipfs-file-ls
-      argv.print(`This functionality is deprecated, and will be removed in future versions. If possible, please use 'ipfs ls' instead.`)
+      argv.print('This functionality is deprecated, and will be removed in future versions. If possible, please use \'ipfs ls\' instead.')
 
       const ipfs = await argv.getIpfs()
       let links = await ipfs.ls(path)

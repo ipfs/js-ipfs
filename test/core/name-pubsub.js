@@ -12,7 +12,7 @@ const base64url = require('base64url')
 const { fromB58String } = require('multihashes')
 const retry = require('async/retry')
 const series = require('async/series')
-
+const callbackify = require('callbackify')
 const peerId = require('peer-id')
 const isNode = require('detect-node')
 const ipns = require('ipns')
@@ -21,7 +21,10 @@ const waitFor = require('../utils/wait-for')
 const delay = require('interface-ipfs-core/src/utils/delay')
 
 const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({ type: 'proc' })
+const df = DaemonFactory.create({
+  type: 'proc',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
@@ -103,7 +106,7 @@ describe('name-pubsub', function () {
           }
 
           if (!res || !res.length) {
-            return next(new Error('Could not find subscription'))
+            return next(new Error(`Could not find subscription for topic ${topic}`))
           }
 
           return next(null, res)
@@ -204,14 +207,13 @@ describe('name-pubsub', function () {
         const pubKeyPeerId = res[4]
 
         expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
-
         expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
         expect(publishedMessage.from).to.equal(idA.id)
         expect(messageKey.toB58String()).to.equal(idA.id)
         expect(publishedMessageDataValue).to.equal(ipfsRef)
 
         // Verify the signature
-        ipns.validate(pubKeyPeerId._pubKey, publishedMessageData, (err) => {
+        callbackify(ipns.validate.bind(ipns))(pubKeyPeerId._pubKey, publishedMessageData, (err) => {
           expect(err).to.not.exist()
           done()
         })

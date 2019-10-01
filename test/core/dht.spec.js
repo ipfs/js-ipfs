@@ -20,7 +20,10 @@ describe.skip('dht', () => {
     before(async function () {
       this.timeout(30 * 1000)
 
-      const factory = IPFSFactory.create({ type: 'proc' })
+      const factory = IPFSFactory.create({
+        type: 'proc',
+        IpfsClient: require('ipfs-http-client')
+      })
 
       ipfsd = await factory.spawn({
         exec: IPFS,

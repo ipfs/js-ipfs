@@ -55,7 +55,7 @@ module.exports = (http) => {
     it('/add/default', async () => {
       const res = await api.inject({
         method: 'GET',
-        url: `/api/v0/bootstrap/add/default`
+        url: '/api/v0/bootstrap/add/default'
       })
 
       expect(res.statusCode).to.be.eql(200)
@@ -79,7 +79,7 @@ module.exports = (http) => {
     it('/rm/all', async () => {
       const res = await api.inject({
         method: 'GET',
-        url: `/api/v0/bootstrap/rm/all`
+        url: '/api/v0/bootstrap/rm/all'
       })
 
       expect(res.statusCode).to.be.eql(200)

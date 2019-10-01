@@ -2,7 +2,7 @@
 
 // dns-nodejs gets replaced by dns-browser when webpacked/browserified
 const dns = require('../runtime/dns-nodejs')
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
 
 function fqdnFixups (domain) {
   // Allow resolution of .eth names via .eth.link
@@ -14,19 +14,15 @@ function fqdnFixups (domain) {
 }
 
 module.exports = () => {
-  return promisify((domain, opts, callback) => {
-    if (typeof domain !== 'string') {
-      return callback(new Error('Invalid arguments, domain must be a string'))
-    }
-
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
-
+  return callbackify.variadic(async (domain, opts) => { // eslint-disable-line require-await
     opts = opts || {}
+
+    if (typeof domain !== 'string') {
+      throw new Error('Invalid arguments, domain must be a string')
+    }
+
     domain = fqdnFixups(domain)
 
-    dns(domain, opts, callback)
+    return dns(domain, opts)
   })
 }

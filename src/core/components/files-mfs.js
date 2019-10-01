@@ -18,7 +18,9 @@ const { cidToString } = require('../../utils/cid')
  * @typedef { import("pull-stream") } PullStream
  */
 
-const mapLsFile = (options = {}) => {
+const mapLsFile = (options) => {
+  options = options || {}
+
   const long = options.long || options.l
 
   return (file) => {

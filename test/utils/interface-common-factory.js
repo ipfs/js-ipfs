@@ -33,8 +33,7 @@ function createFactory (options) {
   }
 
   const ipfsFactory = IPFSFactory.create(options.factoryOptions)
-  const callbackifiedSpawn = callbackify.variadic(
-    ipfsFactory.spawn.bind(ipfsFactory))
+  const callbackifiedSpawn = callbackify.variadic(ipfsFactory.spawn.bind(ipfsFactory))
 
   return function createCommon () {
     const nodes = []
@@ -69,4 +68,60 @@ function createFactory (options) {
   }
 }
 
-exports.create = createFactory
+function createAsync (createFactoryOptions = {}, createSpawnOptions = {}) {
+  return () => {
+    const nodes = []
+    const setup = async (factoryOptions = {}, spawnOptions = {}) => {
+      factoryOptions = mergeOptions(
+        {
+          type: 'proc',
+          exec: IPFS
+        },
+        factoryOptions,
+        createFactoryOptions
+      )
+      // When not an in proc daemon use the http-client js-ipfs depends on, not the one from ipfsd-ctl
+      if (factoryOptions.type !== 'proc') {
+        factoryOptions.IpfsClient = factoryOptions.IpfsClient || ipfsClient
+      }
+
+      const ipfsFactory = IPFSFactory.create(factoryOptions)
+      const node = await ipfsFactory.spawn(mergeOptions(
+        {
+          config: {
+            Bootstrap: [],
+            Discovery: {
+              MDNS: {
+                Enabled: false
+              },
+              webRTCStar: {
+                Enabled: false
+              }
+            }
+          },
+          preload: { enabled: false }
+        },
+        spawnOptions,
+        createSpawnOptions
+      ))
+      nodes.push(node)
+
+      const id = await node.api.id()
+      node.api.peerId = id
+
+      return node.api
+    }
+
+    const teardown = () => {
+      return Promise.all(nodes.map(n => n.stop()))
+    }
+    return {
+      setup,
+      teardown
+    }
+  }
+}
+module.exports = {
+  createAsync,
+  create: createFactory
+}

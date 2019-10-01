@@ -10,7 +10,10 @@ const path = require('path')
 const parallel = require('async/parallel')
 
 const IPFSFactory = require('ipfsd-ctl')
-const f = IPFSFactory.create({ type: 'js' })
+const f = IPFSFactory.create({
+  type: 'js',
+  IpfsClient: require('ipfs-http-client')
+})
 
 const config = {
   Bootstrap: [],
