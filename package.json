@@ -141,7 +141,7 @@
     "libp2p-record": "~0.7.0",
     "libp2p-secio": "~0.11.0",
     "libp2p-tcp": "^0.13.0",
-    "libp2p-webrtc-star": "~0.16.0",
+    "libp2p-webrtc-star": "~0.17.0",
     "libp2p-websocket-star-multi": "~0.4.3",
     "libp2p-websockets": "~0.12.3",
     "lodash": "^4.17.15",
