@@ -6,6 +6,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const path = require('path')
+const { profiles } = require('../../../src/core/components/config')
 
 module.exports = (http) => {
   describe('/config', () => {
@@ -13,10 +14,12 @@ module.exports = (http) => {
     const originalConfigPath = path.join(__dirname, '../../fixtures/go-ipfs-repo/config')
 
     let updatedConfig
+    let originalConfig
     let api
 
     before(() => {
       updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
+      originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
       api = http.api._httpApi._apiServers[0]
     })
 
@@ -187,6 +190,48 @@ module.exports = (http) => {
 
         expect(res.statusCode).to.equal(200)
         expect(updatedConfig()).to.deep.equal(expectedConfig)
+      })
+    })
+
+    describe('/config/profile/apply', () => {
+      it('returns 400 if no config profile is provided', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply'
+        })
+
+        expect(res.statusCode).to.equal(400)
+      })
+
+      it('returns 500 if the config profile is invalid', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply?arg=derp'
+        })
+
+        expect(res.statusCode).to.equal(500)
+      })
+
+      it('does not apply config profile with dry-run argument', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply?arg=lowpower&dry-run=true'
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(updatedConfig()).to.deep.equal(originalConfig)
+      })
+
+      it('applies config profile', async () => {
+        const profile = 'lowpower'
+
+        const res = await api.inject({
+          method: 'POST',
+          url: `/api/v0/config/profile/apply?arg=${profile}`
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(updatedConfig()).to.deep.equal(profiles[profile].transform(originalConfig))
       })
     })
   })
