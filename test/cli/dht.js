@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const parallel = require('async/parallel')
 const path = require('path')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
@@ -56,91 +55,66 @@ describe.skip('dht', () => {
   })
 
   // get ids
-  before(function (done) {
+  before(async function () {
     this.timeout(80 * 1000)
-    parallel([
-      (cb) => nodes[0].api.id((err, res) => {
-        expect(err).to.not.exist()
 
-        idA = res.id
-        cb()
-      }),
-      (cb) => nodes[1].api.id((err, res) => {
-        expect(err).to.not.exist()
+    const res = await Promise.all([
+      nodes[0].api.id(),
+      nodes[1].api.id()
+    ])
 
-        multiaddrB = res.addresses[0]
-        idB = res.id
-        cb()
-      })
-    ], done)
+    idA = res[0].id
+    idB = res[1].id
+    multiaddrB = res[1].addresses[0]
   })
 
   // connect daemons
-  before(function (done) {
+  before(function () {
     this.timeout(80 * 1000)
 
-    nodes[0].api.swarm.connect(multiaddrB, done)
+    return nodes[0].api.swarm.connect(multiaddrB)
   })
 
   after(() => Promise.all(nodes.map((node) => node.stop())))
 
-  it('should be able to put a value to the dht and get it afterwards', function () {
+  it('should be able to put a value to the dht and get it afterwards', async function () {
     this.timeout(60 * 1000)
 
     const key = 'testkey'
     const value = 'testvalue'
 
-    return ipfsA(`dht put ${key} ${value}`)
-      .then((res) => {
-        expect(res).to.exist()
+    const res = await ipfsA(`dht put ${key} ${value}`)
+    expect(res).to.exist()
 
-        return ipfsB(`dht get ${key}`)
-      })
-      .then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.string(value)
-      })
+    const res2 = await ipfsB(`dht get ${key}`)
+    expect(res2).to.have.string(value)
   })
 
-  it('should be able to provide data and to be present in the findproviders', function () {
+  it('should be able to provide data and to be present in the findproviders', async function () {
     this.timeout(60 * 1000)
-    let cidAdded
 
-    return ipfsA('add src/init-files/init-docs/readme')
-      .then((res) => {
-        expect(res).to.exist()
-        cidAdded = res.split(' ')[1]
+    const res = await ipfsA('add src/init-files/init-docs/readme')
+    expect(res).to.exist()
+    const cidAdded = res.split(' ')[1]
 
-        return ipfsA(`dht provide ${cidAdded}`)
-      })
-      .then((res) => {
-        expect(res).to.exist()
+    const res2 = await ipfsA(`dht provide ${cidAdded}`)
+    expect(res2).to.exist()
 
-        return ipfsB(`dht findprovs ${cidAdded}`)
-      })
-      .then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.string(idA)
-      })
+    const res3 = await ipfsB(`dht findprovs ${cidAdded}`)
+    expect(res3).to.have.string(idA)
   })
 
-  it('findpeer', function () {
+  it('findpeer', async function () {
     this.timeout(60 * 1000)
 
-    return ipfsA(`dht findpeer ${idB}`)
-      .then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.string(multiaddrB)
-      })
+    const res = await ipfsA(`dht findpeer ${idB}`)
+    expect(res).to.have.string(multiaddrB)
   })
 
-  it('query', function () {
+  it('query', async function () {
     this.timeout(60 * 1000)
 
-    return ipfsA(`dht query ${idB}`)
-      .then((res) => {
-        expect(res).to.exist()
-        expect(res).to.have.string(idB)
-      })
+    const res = await ipfsA(`dht query ${idB}`)
+    expect(res).to.have.string(idB)
   })
 })

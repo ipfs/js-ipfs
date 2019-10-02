@@ -204,7 +204,7 @@
     "execa": "^2.0.4",
     "form-data": "^2.5.1",
     "hat": "0.0.3",
-    "interface-ipfs-core": "^0.115.0",
+    "interface-ipfs-core": "^0.115.1",
     "ipfs-interop": "~0.1.0",
     "ipfsd-ctl": "^0.47.2",
     "libp2p-websocket-star": "~0.10.2",

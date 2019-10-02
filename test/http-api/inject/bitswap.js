@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 const CID = require('cids')
-const waitFor = require('../../utils/wait-for').promises
+const waitFor = require('../../utils/wait-for')
 
 module.exports = (http) => {
   describe('/bitswap', () => {

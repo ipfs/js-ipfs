@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const path = require('path')
-const parallel = require('async/parallel')
 const ipfsExec = require('../utils/ipfs-exec')
 
 const DaemonFactory = require('ipfsd-ctl')
@@ -58,95 +57,61 @@ describe('name-pubsub', () => {
     })
 
     // Get node ids
-    before(function (done) {
-      parallel([
-        (cb) => {
-          ipfsA('id').then((res) => {
-            nodeAId = JSON.parse(res)
-            cb()
-          })
-        },
-        (cb) => {
-          ipfsB('id').then((res) => {
-            const id = JSON.parse(res)
+    before(async function () {
+      const res = await Promise.all([
+        ipfsA('id'),
+        ipfsB('id')
+      ])
 
-            nodeBId = id
-            bMultiaddr = id.addresses[0]
-            cb()
-          })
-        }
-      ], done)
+      nodeAId = JSON.parse(res[0])
+      nodeBId = JSON.parse(res[1])
+      bMultiaddr = nodeBId.addresses[0]
     })
 
     // Connect
-    before(function () {
-      return ipfsA('swarm', 'connect', bMultiaddr)
-        .then((out) => {
-          expect(out).to.eql(`connect ${bMultiaddr} success\n`)
-        })
+    before(async function () {
+      const out = await ipfsA('swarm', 'connect', bMultiaddr)
+      expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
 
     after(() => Promise.all(nodes.map((node) => node.stop())))
 
     describe('pubsub commands', () => {
-      it('should get enabled state of pubsub', function () {
-        return ipfsA('name pubsub state')
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string('enabled') // enabled
-          })
+      it('should get enabled state of pubsub', async function () {
+        const res = await ipfsA('name pubsub state')
+        expect(res).to.have.string('enabled') // enabled
       })
 
-      it('should subscribe on name resolve', function () {
+      it('should subscribe on name resolve', async function () {
         this.timeout(80 * 1000)
 
-        return ipfsB.fail(`name resolve ${nodeAId.id}`)
-          .then((err) => {
-            expect(err.all).to.include('was not found')
-            return ipfsB('pubsub ls')
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string('/record/') // have a record ipns subscribtion
-            return ipfsB('name pubsub subs')
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
-          })
+        const err = await ipfsB.fail(`name resolve ${nodeAId.id}`)
+        expect(err.all).to.include('was not found')
+
+        const ls = await ipfsB('pubsub ls')
+        expect(ls).to.have.string('/record/') // have a record ipns subscribtion
+
+        const subs = await ipfsB('name pubsub subs')
+        expect(subs).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
       })
 
-      it('should be able to cancel subscriptions', function () {
+      it('should be able to cancel subscriptions', async function () {
         this.timeout(80 * 1000)
 
-        return ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string('no subscription') // tried to cancel a not yet subscribed id
+        const res = await ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
+        expect(res).to.have.string('no subscription') // tried to cancel a not yet subscribed id
 
-            return ipfsA(`name resolve ${nodeBId.id}`)
-          })
-          .catch((err) => {
-            expect(err).to.exist() // Not available (subscribed now)
+        const err = await ipfsA.fail(`name resolve ${nodeBId.id}`)
+        expect(err).to.exist() // Not available (subscribed now)
 
-            return ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.have.string('canceled') // canceled now
+        const cancel = await ipfsA(`name pubsub cancel /ipns/${nodeBId.id}`)
+        expect(cancel).to.have.string('canceled') // canceled now
 
-            return ipfsA('pubsub ls')
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.not.have.string('/ipns/') // ipns subscribtion not available
+        const ls = await ipfsA('pubsub ls')
+        expect(ls).to.not.have.string('/ipns/') // ipns subscribtion not available
 
-            return ipfsA('name pubsub subs')
-          })
-          .then((res) => {
-            expect(res).to.exist()
-            expect(res).to.not.have.string(`/ipns/${nodeBId.id}`) // ipns subscribtion not available
-          })
+        const subs = await ipfsA('name pubsub subs')
+        expect(subs).to.not.have.string(`/ipns/${nodeBId.id}`) // ipns subscribtion not available
       })
     })
   })
@@ -175,28 +140,19 @@ describe('name-pubsub', () => {
       }
     })
 
-    it('should get disabled state of pubsub', function () {
-      return ipfsA('name pubsub state')
-        .then((res) => {
-          expect(res).to.exist()
-          expect(res).to.have.string('disabled')
-        })
+    it('should get disabled state of pubsub', async function () {
+      const res = await ipfsA('name pubsub state')
+      expect(res).to.have.string('disabled')
     })
 
-    it('should get error getting the available subscriptions', function () {
-      return ipfsA('name pubsub subs')
-        .catch((err) => {
-          expect(err).to.exist() // error as it is disabled
-          expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
-        })
+    it('should get error getting the available subscriptions', async function () {
+      const err = await ipfsA.fail('name pubsub subs')
+      expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
     })
 
-    it('should get error canceling a subscription', function () {
-      return ipfsA('name pubsub cancel /ipns/QmSWxaPcGgf4TDnFEBDWz2JnbHywF14phmY9hNcAeBEK5v')
-        .catch((err) => {
-          expect(err).to.exist() // error as it is disabled
-          expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
-        })
+    it('should get error canceling a subscription', async function () {
+      const err = await ipfsA.fail('name pubsub cancel /ipns/QmSWxaPcGgf4TDnFEBDWz2JnbHywF14phmY9hNcAeBEK5v')
+      expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
     })
   })
 })
