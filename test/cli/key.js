@@ -15,39 +15,31 @@ describe('key', () => runOnAndOff.off((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('gen', function () {
+  it('gen', async function () {
     this.timeout(40 * 1000)
 
-    return ipfs(`${pass} key gen ${name} --type rsa --size 2048`)
-      .then((out) => {
-        expect(out).to.include(name)
-      })
+    const out = await ipfs(`${pass} key gen ${name} --type rsa --size 2048`)
+    expect(out).to.include(name)
   })
 
-  it('list', function () {
+  it('list', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs(`${pass} key list`)
-      .then((out) => {
-        expect(out).to.include(name)
-      })
+    const out = await ipfs(`${pass} key list`)
+    expect(out).to.include(name)
   })
 
-  it('rename', function () {
+  it('rename', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs(`${pass} key rename ${name} ${newName}`)
-      .then((out) => {
-        expect(out).to.include(newName)
-      })
+    const out = await ipfs(`${pass} key rename ${name} ${newName}`)
+    expect(out).to.include(newName)
   })
 
-  it('rm', function () {
+  it('rm', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs(`${pass} key rm ${newName}`)
-      .then((out) => {
-        expect(out).to.include(newName)
-      })
+    const out = await ipfs(`${pass} key rm ${newName}`)
+    expect(out).to.include(newName)
   })
 }))

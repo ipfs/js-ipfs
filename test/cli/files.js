@@ -12,6 +12,7 @@ const CID = require('cids')
 const mh = require('multihashes')
 const runOnAndOff = require('../utils/on-and-off')
 const clean = require('../utils/clean')
+const delay = require('delay')
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -123,73 +124,55 @@ describe('files', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('add with progress', function () {
+  it('add with progress', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add -p src/init-files/init-docs/readme')
-      .then((out) => {
-        expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-      })
+    const out = await ipfs('add -p src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  it('add', function () {
+  it('add', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme')
-      .then((out) => {
-        expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-      })
+    const out = await ipfs('add src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  it('add multiple', function () {
+  it('add multiple', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add', 'src/init-files/init-docs/readme', 'test/fixtures/odd-name-[v0]/odd name [v1]/hello', '--wrap-with-directory')
-      .then((out) => {
-        expect(out)
-          .to.include('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-        expect(out)
-          .to.include('added QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o hello\n')
-      })
+    const out = await ipfs('add', 'src/init-files/init-docs/readme', 'test/fixtures/odd-name-[v0]/odd name [v1]/hello', '--wrap-with-directory')
+    expect(out)
+      .to.include('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
+    expect(out)
+      .to.include('added QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o hello\n')
   })
 
-  it('add alias', function () {
+  it('add alias', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme')
-      .then((out) => {
-        expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-      })
+    const out = await ipfs('add src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  it('add recursively test', function () {
+  it('add recursively test', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
-      .then((out) => {
-        // glob module does not return stable matches
-        recursiveGetDirResults.forEach(line => { // eslint-disable-line max-nested-callbacks
-          expect(out).to.include(line)
-        })
-      })
+    const out = await ipfs('add -r test/fixtures/test-data/recursive-get-dir')
+    expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
-  it('add directory with trailing slash test', function () {
+  it('add directory with trailing slash test', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add -r test/fixtures/test-data/recursive-get-dir/')
-      .then((out) => {
-        // glob module does not return stable matches
-        recursiveGetDirResults.forEach(line => { // eslint-disable-line max-nested-callbacks
-          expect(out).to.include(line)
-        })
-      })
+    const out = await ipfs('add -r test/fixtures/test-data/recursive-get-dir/')
+    expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
-  it('add directory with odd name', function () {
+  it('add directory with odd name', async function () {
     this.timeout(30 * 1000)
     const expected = [
       'added QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o odd-name-[v0]/odd name [v1]/hello',
@@ -197,308 +180,258 @@ describe('files', () => runOnAndOff((thing) => {
       'added QmXJGoo27bg7ExNAtr9vRcivxDwcfHtkxatGno9HrUdR16 odd-name-[v0]'
     ]
 
-    return ipfs('add -r test/fixtures/odd-name-[v0]')
-      .then((out) => {
-        expect(out).to.eql(expected.join('\n') + '\n')
-      })
+    const out = await ipfs('add -r test/fixtures/odd-name-[v0]')
+    expect(out).to.eql(expected.join('\n') + '\n')
   })
 
-  it('add and wrap with a directory', function () {
+  it('add and wrap with a directory', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add -w src/init-files/init-docs/readme').then((out) => {
-      expect(out).to.be.eql([
-        'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
-        'added QmapdaVPjHXdcswef82FnGQUauMNpk9xYFkLDZKgAxhMwq'
-      ].join('\n') + '\n')
-    })
+    const out = await ipfs('add -w src/init-files/init-docs/readme')
+    expect(out).to.be.eql([
+      'added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme',
+      'added QmapdaVPjHXdcswef82FnGQUauMNpk9xYFkLDZKgAxhMwq'
+    ].join('\n') + '\n')
   })
 
-  it('add with cid-version=0', function () {
+  it('add with cid-version=0', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add src/init-files/init-docs/readme --cid-version=0').then((out) => {
-      expect(out)
-        .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-    })
+    const out = await ipfs('add src/init-files/init-docs/readme --cid-version=0')
+    expect(out)
+      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  it('add with cid-version=1 < default max chunk size', function () {
+  it('add with cid-version=1 < default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafkreie3abdlmy7dtxddm4vkbhd2x2yax5scf4m35eyxf3ywj2uwkjbhgi less-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1')
+    expect(out)
+      .to.eql('added bafkreie3abdlmy7dtxddm4vkbhd2x2yax5scf4m35eyxf3ywj2uwkjbhgi less-than-default-max-chunk-size\n')
   })
 
-  it('add with cid-version=1 > default max chunk size', function () {
+  it('add with cid-version=1 > default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafybeiebjiahgamnil3r3os2hqorjualrgx6hpqh5zuqbhjmt7tyjqqttm greater-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1')
+    expect(out)
+      .to.eql('added bafybeiebjiahgamnil3r3os2hqorjualrgx6hpqh5zuqbhjmt7tyjqqttm greater-than-default-max-chunk-size\n')
   })
 
-  it('add with cid-version=1 and raw-leaves=false < default max chunk size', function () {
+  it('add with cid-version=1 and raw-leaves=false < default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=false')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafybeiaoh5okvpnuhndsz4kgdhulnkm566rz7w7il6r2zm6wxu5f5uqlsu less-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=false')
+    expect(out)
+      .to.eql('added bafybeiaoh5okvpnuhndsz4kgdhulnkm566rz7w7il6r2zm6wxu5f5uqlsu less-than-default-max-chunk-size\n')
   })
 
-  it('add with cid-version=1 and raw-leaves=false > default max chunk size', function () {
+  it('add with cid-version=1 and raw-leaves=false > default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=false')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafybeiajpcrr2qglyeq3biilzt25ty6kpjs7huy2lfxopqfke6riaaxnim greater-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=false')
+    expect(out)
+      .to.eql('added bafybeiajpcrr2qglyeq3biilzt25ty6kpjs7huy2lfxopqfke6riaaxnim greater-than-default-max-chunk-size\n')
   })
 
-  it('add with cid-version=1 and raw-leaves=true < default max chunk size', function () {
+  it('add with cid-version=1 and raw-leaves=true < default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafkreie3abdlmy7dtxddm4vkbhd2x2yax5scf4m35eyxf3ywj2uwkjbhgi less-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/less-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
+    expect(out)
+      .to.eql('added bafkreie3abdlmy7dtxddm4vkbhd2x2yax5scf4m35eyxf3ywj2uwkjbhgi less-than-default-max-chunk-size\n')
   })
 
-  it('add with cid-version=1 and raw-leaves=true > default max chunk size', function () {
+  it('add with cid-version=1 and raw-leaves=true > default max chunk size', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
-      .then((out) => {
-        expect(out)
-          .to.eql('added bafybeiebjiahgamnil3r3os2hqorjualrgx6hpqh5zuqbhjmt7tyjqqttm greater-than-default-max-chunk-size\n')
-      })
+    const out = await ipfs('add test/fixtures/greater-than-default-max-chunk-size --cid-version=1 --raw-leaves=true')
+    expect(out)
+      .to.eql('added bafybeiebjiahgamnil3r3os2hqorjualrgx6hpqh5zuqbhjmt7tyjqqttm greater-than-default-max-chunk-size\n')
   })
 
-  it('add from pipe', () => {
+  it('add from pipe', async () => {
     const proc = ipfs('add')
     proc.stdin.write(Buffer.from('hello\n'))
     proc.stdin.end()
-    return proc
-      .then(out => {
-        expect(out)
-          .to.eql('added QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN\n')
-      })
+
+    const out = await proc
+    expect(out)
+      .to.eql('added QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN\n')
   })
 
-  it('add --quiet', function () {
+  it('add --quiet', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add -q src/init-files/init-docs/readme')
-      .then((out) => {
-        expect(out)
-          .to.eql('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
-      })
+    const out = await ipfs('add -q src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
   })
 
-  it('add --quieter', function () {
+  it('add --quieter', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add -Q -w test/fixtures/test-data/hello')
-      .then((out) => {
-        expect(out)
-          .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
-      })
+    const out = await ipfs('add -Q -w test/fixtures/test-data/hello')
+    expect(out)
+      .to.eql('QmYRMUVULBfj7WrdPESnwnyZmtayN6Sdrwh1nKcQ9QgQeZ\n')
   })
 
-  it('add --silent', function () {
+  it('add --silent', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add --silent src/init-files/init-docs/readme')
-      .then((out) => {
-        expect(out)
-          .to.eql('')
-      })
+    const out = await ipfs('add --silent src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('')
   })
 
-  it('add --only-hash outputs correct hash', function () {
-    return ipfs('add --only-hash src/init-files/init-docs/readme')
-      .then(out =>
-        expect(out)
-          .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
-      )
+  it('add --only-hash outputs correct hash', async function () {
+    const out = await ipfs('add --only-hash src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  it('add --only-hash does not add a file to the datastore', function () {
+  it('add --only-hash does not add a file to the datastore', async function () {
     this.timeout(30 * 1000)
     this.slow(10 * 1000)
     const content = hat()
     const filepath = path.join(os.tmpdir(), `${content}.txt`)
     fs.writeFileSync(filepath, content)
 
-    return ipfs(`add --only-hash ${filepath}`)
-      .then(out => {
-        const hash = out.split(' ')[1]
+    const out = await ipfs(`add --only-hash ${filepath}`)
+    const hash = out.split(' ')[1]
 
-        // 'jsipfs object get <hash>' should timeout with the daemon on
-        // and should fail fast with the daemon off
-        return Promise.race([
-          ipfs.fail(`object get ${hash}`),
-          new Promise((resolve, reject) => setTimeout(resolve, 4000))
-        ])
-          .then(() => clean(filepath))
-      })
+    // 'jsipfs object get <hash>' should timeout with the daemon on
+    // and should fail fast with the daemon off
+    await Promise.race([
+      ipfs.fail(`object get ${hash}`),
+      delay(4000)
+    ])
+    await clean(filepath)
   })
 
-  it('add pins by default', function () {
+  it('add pins by default', async function () {
     this.timeout(10 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = hat()
     fs.writeFileSync(filePath, content)
 
-    return ipfs(`add -Q ${filePath}`)
-      .then(out => {
-        const hash = out.trim()
-        return ipfs(`pin ls ${hash}`)
-          .then(ls => expect(ls).to.include(hash))
-      })
-      .then(() => clean(filePath))
+    const out = await ipfs(`add -Q ${filePath}`)
+    const hash = out.trim()
+    const ls = await ipfs(`pin ls ${hash}`)
+    expect(ls).to.include(hash)
+
+    await clean(filePath)
   })
 
-  it('add does not pin with --pin=false', function () {
+  it('add does not pin with --pin=false', async function () {
     this.timeout(20 * 1000)
     const filePath = path.join(os.tmpdir(), hat())
     const content = hat()
     fs.writeFileSync(filePath, content)
 
-    return ipfs(`add -Q --pin=false ${filePath}`)
-      .then(out => ipfs.fail(`pin ls ${out.trim()}`))
-      .then(() => clean(filePath))
+    const out = await ipfs(`add -Q --pin=false ${filePath}`)
+    await ipfs.fail(`pin ls ${out.trim()}`)
+
+    await clean(filePath)
   })
 
   HASH_ALGS.forEach((name) => {
-    it(`add with hash=${name} and raw-leaves=false`, function () {
+    it(`add with hash=${name} and raw-leaves=false`, async function () {
       this.timeout(30 * 1000)
 
-      return ipfs(`add src/init-files/init-docs/readme --hash=${name} --raw-leaves=false`)
-        .then((out) => {
-          const hash = out.split(' ')[1]
-          const cid = new CID(hash)
-          expect(mh.decode(cid.multihash).name).to.equal(name)
-        })
+      const out = await ipfs(`add src/init-files/init-docs/readme --hash=${name} --raw-leaves=false`)
+      const hash = out.split(' ')[1]
+      const cid = new CID(hash)
+      expect(mh.decode(cid.multihash).name).to.equal(name)
     })
   })
 
-  it('should add and print CID encoded in specified base', function () {
+  it('should add and print CID encoded in specified base', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('add test/fixtures/test-data/hello --cid-base=base64')
-      .then((out) => {
-        expect(out).to.eql('added mAXASIEbUSBS5xa8UHDqqt8BdxehE6tX5HxKFiwIeukV2i0wO hello\n')
-      })
+    const out = await ipfs('add test/fixtures/test-data/hello --cid-base=base64')
+    expect(out).to.eql('added mAXASIEbUSBS5xa8UHDqqt8BdxehE6tX5HxKFiwIeukV2i0wO hello\n')
   })
 
-  it('cat', function () {
+  it('cat', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out).to.eql(readme)
-      })
+    const out = await ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    expect(out).to.eql(readme)
   })
 
-  it('cat alias', function () {
+  it('cat alias', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out).to.eql(readme)
-      })
+    const out = await ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    expect(out).to.eql(readme)
   })
 
-  it('cat part of a file using `count`', function () {
+  it('cat part of a file using `count`', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5')
-      .then((out) => {
-        expect(out).to.eql(readme.substring(21, 26))
-      })
+    const out = await ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5')
+    expect(out).to.eql(readme.substring(21, 26))
   })
 
-  it('cat part of a file using `length`', function () {
+  it('cat part of a file using `length`', async function () {
     this.timeout(30 * 1000)
 
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5')
-      .then((out) => {
-        expect(out).to.eql(readme.substring(21, 26))
-      })
+    const out = await ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5')
+    expect(out).to.eql(readme.substring(21, 26))
   })
 
-  it('cat non-existent file', () => {
-    return ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
-      .then(() => expect.fail(0, 1, 'Should have thrown an error'))
-      .catch((err) => {
-        expect(err).to.exist()
-      })
+  it('cat non-existent file', async () => {
+    const err = await ipfs.fail('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy')
+    expect(err).to.exist()
   })
 
-  it('get', function () {
+  it('get', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+    const out = await ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    expect(out)
+      .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
-        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString()).to.eql(readme)
+    expect(fs.readFileSync(file).toString()).to.eql(readme)
 
-        rimraf(file)
-      })
+    rimraf(file)
   })
 
-  it('get alias', function () {
+  it('get alias', async function () {
     this.timeout(20 * 1000)
 
-    return ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-      .then((out) => {
-        expect(out)
-          .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
+    const out = await ipfs('get QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    expect(out)
+      .to.eql('Saving file(s) QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB\n')
 
-        const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const file = path.join(process.cwd(), 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-        expect(fs.readFileSync(file).toString()).to.eql(readme)
+    expect(fs.readFileSync(file).toString()).to.eql(readme)
 
-        rimraf(file)
-      })
+    rimraf(file)
   })
 
-  it('get recursively', function () {
+  it('get recursively', async function () {
     this.timeout(20 * 1000)
 
     const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
     rimraf(outDir)
 
-    return ipfs('get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
-      .then((out) => {
-        expect(out).to.eql(
-          'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
-        )
+    const out = await ipfs('get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    expect(out).to.eql(
+      'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
+    )
 
-        const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
-        const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
+    const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
+    const compareResult = compareDir(outDir, expectedDir, {
+      compareContent: true,
+      compareSize: true
+    })
 
-        const compareResult = compareDir(outDir, expectedDir, {
-          compareContent: true,
-          compareSize: true
-        })
-
-        expect(compareResult.differences).to.equal(0)
-        rimraf(outDir)
-      })
+    expect(compareResult.differences).to.equal(0)
+    rimraf(outDir)
   })
 }))

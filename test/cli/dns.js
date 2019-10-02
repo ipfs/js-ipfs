@@ -13,49 +13,44 @@ describe('dns', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('recursively resolve ipfs.io dns', function () {
+  it('recursively resolve ipfs.io dns', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('dns ipfs.io').then((res) => {
-      expect(res.substr(0, 6)).to.eql('/ipfs/')
-      const resultingDomainOrCid = res.split('/')[2].trim()
-      expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
-    })
+    const res = await ipfs('dns ipfs.io')
+    expect(res.substr(0, 6)).to.eql('/ipfs/')
+    const resultingDomainOrCid = res.split('/')[2].trim()
+    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
   })
 
-  it('recursively resolve _dnslink.ipfs.io dns', function () {
+  it('recursively resolve _dnslink.ipfs.io dns', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('dns _dnslink.ipfs.io').then((res) => {
-      expect(res.substr(0, 6)).to.eql('/ipfs/')
-      const resultingDomainOrCid = res.split('/')[2].trim()
-      expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
-    })
+    const res = await ipfs('dns _dnslink.ipfs.io')
+    expect(res.substr(0, 6)).to.eql('/ipfs/')
+    const resultingDomainOrCid = res.split('/')[2].trim()
+    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
   })
 
-  it('non-recursive resolve ipfs.io', function () {
+  it('non-recursive resolve ipfs.io', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('dns --recursive false ipfs.io').then((res) => {
-      expect(res.substr(0, 6)).to.eql('/ipns/')
-      const resultingDomainOrCid = res.split('/')[2].trim()
-      expect(isIPFS.cid(resultingDomainOrCid)).to.eql(false)
-    })
+    const res = await ipfs('dns --recursive false ipfs.io')
+    expect(res.substr(0, 6)).to.eql('/ipns/')
+    const resultingDomainOrCid = res.split('/')[2].trim()
+    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(false)
   })
 
-  it('resolve subdomain docs.ipfs.io dns', function () {
+  it('resolve subdomain docs.ipfs.io dns', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('dns docs.ipfs.io').then(res => {
-      expect(res.substr(0, 6)).to.eql('/ipfs/')
-    })
+    const res = await ipfs('dns docs.ipfs.io')
+    expect(res.substr(0, 6)).to.eql('/ipfs/')
   })
 
-  it('resolve subdomain _dnslink.docs.ipfs.io dns', function () {
+  it('resolve subdomain _dnslink.docs.ipfs.io dns', async function () {
     this.timeout(60 * 1000)
 
-    return ipfs('dns _dnslink.docs.ipfs.io').then(res => {
-      expect(res.substr(0, 6)).to.eql('/ipfs/')
-    })
+    const res = await ipfs('dns _dnslink.docs.ipfs.io')
+    expect(res.substr(0, 6)).to.eql('/ipfs/')
   })
 }))
