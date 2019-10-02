@@ -90,7 +90,7 @@ describe('init', function () {
     }
   })
 
-  it('should present ipfs path help when option help is received', async function ()  {
+  it('should present ipfs path help when option help is received', async function () {
     const res = await ipfs('init --help')
 
     expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
