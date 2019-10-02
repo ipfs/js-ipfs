@@ -179,7 +179,7 @@ exports.profile = {
       throw Boom.badRequest("Argument 'profile' is required")
     }
 
-    if (!profiles.find(p => p.name === request.query.arg)) {
+    if (!profiles[request.query.arg]) {
       throw Boom.badRequest("Argument 'profile' is not a valid profile name")
     }
 
