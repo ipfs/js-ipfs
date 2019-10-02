@@ -133,17 +133,15 @@ async function addRepoAssets (self, privateKey, opts) {
 
 // Apply profiles (eg "server,lowpower") to config
 function applyProfile (self, config, opts) {
-  if (opts.profile) {
-    const profileNames = opts.profile.split(',')
-
-    for (const profileName of profileNames) {
-      const profile = profiles.find(p => p.name === profileName)
+  if (opts.profiles) {
+    for (const name of opts.profiles) {
+      const profile = profiles[name]
 
       if (!profile) {
-        throw new Error(`Could not find profile with name '${profileName}'`)
+        throw new Error(`Could not find profile with name '${name}'`)
       }
 
-      self.log(`applying profile ${profileName}`)
+      self.log(`applying profile ${name}`)
       profile.transform(config)
     }
   }

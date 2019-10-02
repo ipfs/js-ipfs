@@ -36,7 +36,10 @@ module.exports = {
       .option('profile', {
         alias: 'p',
         type: 'string',
-        describe: 'Apply profile settings to config. Multiple profiles can be separated by \',\''
+        describe: 'Apply profile settings to config. Multiple profiles can be separated by \',\'',
+        coerce: (value) => {
+          return (value || '').split(',')
+        }
       })
   },
 
@@ -74,7 +77,7 @@ module.exports = {
           bits: argv.bits,
           privateKey: argv.privateKey,
           emptyRepo: argv.emptyRepo,
-          profile: argv.profile,
+          profiles: argv.profile,
           pass: argv.pass,
           log: argv.print
         })
