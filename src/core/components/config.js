@@ -63,6 +63,27 @@ const profiles = {
       return config
     }
   },
+  lowpower: {
+    description: 'Reduces daemon overhead on the system - recommended for low power systems.',
+    transform: (config) => {
+      config.Swarm = config.Swarm || {}
+      config.Swarm.ConnMgr = config.Swarm.ConnMgr || {}
+      config.Swarm.ConnMgr.LowWater = 20
+      config.Swarm.ConnMgr.HighWater = 40
+
+      return config
+    }
+  },
+  'default-power': {
+    description: 'Inverse of "lowpower" profile.',
+    transform: (config) => {
+      const defaultConfig = getDefaultConfig()
+
+      config.Swarm = defaultConfig.Swarm
+
+      return config
+    }
+  },
   test: {
     description: 'Reduces external interference of IPFS daemon - for running the daemon in test environments.',
     transform: (config) => {
@@ -89,27 +110,6 @@ const profiles = {
       config.Bootstrap = defaultConfig.Bootstrap
       config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
       config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
-
-      return config
-    }
-  },
-  lowpower: {
-    description: 'Reduces daemon overhead on the system - recommended for low power systems.',
-    transform: (config) => {
-      config.Swarm = config.Swarm || {}
-      config.Swarm.ConnMgr = config.Swarm.ConnMgr || {}
-      config.Swarm.ConnMgr.LowWater = 20
-      config.Swarm.ConnMgr.HighWater = 40
-
-      return config
-    }
-  },
-  'default-power': {
-    description: 'Inverse of "lowpower" profile.',
-    transform: (config) => {
-      const defaultConfig = getDefaultConfig()
-
-      config.Swarm = defaultConfig.Swarm
 
       return config
     }

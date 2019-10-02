@@ -128,5 +128,14 @@ describe('config', () => runOnAndOff((thing) => {
       const out = await ipfs('config profile apply server')
       expect(out).not.includes('PrivKey')
     })
+
+    it('lists available config profiles', async () => {
+      const out = await ipfs('config profile ls')
+
+      Object.keys(profiles => profile => {
+        expect(out).includes(profiles[profile].name)
+        expect(out).includes(profiles[profile].description)
+      })
+    })
   })
 }))

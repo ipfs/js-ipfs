@@ -11,7 +11,9 @@ module.exports = {
 
   handler (argv) {
     argv.resolve(
-      profiles.map(p => p.name + ':\n  ' + p.description).join('\n')
+      Object.keys(profiles)
+        .map(profile => `${profile}:\n ${profiles[profile].description}`)
+        .join('\n')
     )
   }
 }
