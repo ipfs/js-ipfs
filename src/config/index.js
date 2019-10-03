@@ -5,7 +5,7 @@ const tests = {
   get: require('./get'),
   set: require('./set'),
   replace: require('./replace'),
-  profile: require('./profile')
+  profiles: require('./profiles')
 }
 
 module.exports = createSuite(tests)

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const waterfall = require('async/waterfall')
 
 module.exports = (createCommon, options) => {
@@ -9,7 +9,7 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.config.profile', function () {
+  describe('.config.profiles.apply', function () {
     this.timeout(30 * 1000)
     let ipfs
 
@@ -30,30 +30,10 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should output changes but not save them for dry run', (done) => {
-      let config
-      waterfall([
-        (cb) => ipfs.config.get(cb),
-        (_config, cb) => {
-          config = _config
-          ipfs.config.profile('lowpower', { dryRun: true }, cb)
-        },
-        (diff, cb) => {
-          expect(diff.oldCfg.Swarm.ConnMgr.LowWater).to.not.equal(diff.newCfg.Swarm.ConnMgr.LowWater)
-          ipfs.config.get(cb)
-        },
-        (newConfig, cb) => {
-          expect(newConfig.Swarm.ConnMgr.LowWater).to.equal(config.Swarm.ConnMgr.LowWater)
-          cb()
-        }
-      ], done)
-    })
-
-    it('should set a config profile', (done) => {
+    it('should apply a config profile', (done) => {
       let diff
       waterfall([
-        (cb) => ipfs.config.get(cb),
-        (config, cb) => ipfs.config.profile('lowpower', cb),
+        (cb) => ipfs.config.profiles.apply('lowpower', cb),
         (_diff, cb) => {
           diff = _diff
           expect(diff.oldCfg.Swarm.ConnMgr.LowWater).to.not.equal(diff.newCfg.Swarm.ConnMgr.LowWater)
