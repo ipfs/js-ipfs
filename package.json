@@ -105,10 +105,7 @@
   "devDependencies": {
     "aegir": "^20.3.1",
     "browser-process-platform": "~0.1.1",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
     "cross-env": "^6.0.0",
-    "dirty-chai": "^2.0.1",
     "go-ipfs-dep": "^0.4.22",
     "interface-ipfs-core": "ipfs/interface-js-ipfs-core#add-listing-config-profiles",
     "ipfsd-ctl": "^0.47.1",

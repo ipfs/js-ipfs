@@ -1,12 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const platform = require('browser-process-platform')
-
 const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
