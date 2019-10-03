@@ -1,11 +1,10 @@
 'use strict'
 
 const kyDefault = require('ky-universal').default
-const configure = require('./lib/configure')
 const toIterable = require('./lib/stream-to-iterable')
 
-module.exports = configure(({ ky }) => {
-  const add = require('./add')({ ky })
+module.exports = (config) => {
+  const add = require('./add')(config)
 
   return (url, options) => (async function * () {
     options = options || {}
@@ -19,4 +18,4 @@ module.exports = configure(({ ky }) => {
 
     yield * add(input, options)
   })()
-})
+}
