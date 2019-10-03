@@ -3,7 +3,7 @@
 'use strict'
 
 const os = require('os')
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const repoVersion = require('ipfs-repo').repoVersion
 const pkgversion = require('../../package.json').version
 const runOnAndOff = require('../utils/on-and-off')

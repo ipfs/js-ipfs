@@ -2,11 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const IPFSFactory = require('ipfsd-ctl')
 const pEvent = require('p-event')
 const env = require('ipfs-utils/src/env')

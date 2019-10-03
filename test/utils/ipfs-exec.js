@@ -1,9 +1,7 @@
 'use strict'
 
 const execa = require('execa')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const _ = require('lodash')
 

@@ -2,11 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
 const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')

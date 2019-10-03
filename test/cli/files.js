@@ -3,7 +3,7 @@
 
 const fs = require('fs')
 const os = require('os')
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const hat = require('hat')
 const compareDir = require('dir-compare').compareSync

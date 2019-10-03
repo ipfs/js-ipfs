@@ -3,11 +3,7 @@
 'use strict'
 
 const hat = require('hat')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const base64url = require('base64url')
 const { fromB58String } = require('multihashes')
 const peerId = require('peer-id')

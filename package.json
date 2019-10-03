@@ -196,12 +196,10 @@
   "devDependencies": {
     "aegir": "^20.3.1",
     "base64url": "^3.0.1",
-    "chai": "^4.2.0",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
     "dir-compare": "^1.7.3",
-    "dirty-chai": "^2.0.1",
     "execa": "^2.0.4",
     "form-data": "^2.5.1",
     "hat": "0.0.3",

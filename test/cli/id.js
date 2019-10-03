@@ -2,12 +2,9 @@
 'use strict'
 
 const sinon = require('sinon')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const YargsPromise = require('yargs-promise')
 const clearModule = require('clear-module')
-chai.use(dirtyChai)
 
 describe('id', () => {
   let cli
