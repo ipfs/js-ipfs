@@ -27,7 +27,7 @@ module.exports = (send) => {
       if (err) {
         return callback(err)
       }
-      callback(null, { oldCfg: response.OldCfg, newCfg: response.NewCfg })
+      callback(null, { old: response.OldCfg, new: response.NewCfg })
     })
   })
 }

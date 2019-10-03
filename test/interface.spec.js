@@ -48,6 +48,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'replace',
         reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-http-client/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
+      },
+      {
+        name: 'should list config profiles',
+        reason: 'TODO: Not implemented in go-ipfs'
       }
     ]
   })

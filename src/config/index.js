@@ -1,14 +1,13 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
-
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
+module.exports = (send, config) => {
   return {
     get: require('./get')(send),
     set: require('./set')(send),
     replace: require('./replace')(send),
-    profile: require('./profile')(send)
+    profiles: {
+      apply: require('./profiles/apply')(send),
+      list: require('./profiles/list')(config)
+    }
   }
 }
