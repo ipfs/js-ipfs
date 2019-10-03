@@ -126,7 +126,7 @@
     "it-to-stream": "^0.1.1",
     "just-safe-set": "^2.1.0",
     "kind-of": "^6.0.2",
-    "ky": "^0.14.0",
+    "ky": "^0.15.0",
     "ky-universal": "~0.3.0",
     "libp2p": "^0.26.2",
     "libp2p-bootstrap": "~0.9.3",
