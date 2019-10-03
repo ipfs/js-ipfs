@@ -2,7 +2,6 @@
 'use strict'
 
 const fs = require('fs')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
 const Daemon = require('../../src/cli/daemon')
 const promisify = require('promisify-es6')

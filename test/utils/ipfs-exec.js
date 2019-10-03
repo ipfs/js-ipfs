@@ -1,7 +1,6 @@
 'use strict'
 
 const execa = require('execa')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const _ = require('lodash')
 
