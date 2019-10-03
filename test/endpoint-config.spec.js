@@ -2,12 +2,8 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const isNode = require('detect-node')
-
 const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
