@@ -11,6 +11,7 @@ const IPFSFactory = require('ipfsd-ctl')
 const pEvent = require('p-event')
 const env = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
+const { Errors } = require('interface-datastore')
 
 // We need to detect when a readLock or writeLock is requested for the tests
 // so we override the Mutex class to emit an event
@@ -195,7 +196,7 @@ describe('gc', function () {
       try {
         await rm2
       } catch (err) {
-        expect(err.code).eql('ERR_DB_DELETE_FAILED')
+        expect(err.code).eql(Errors.dbDeleteFailedError().code)
       }
 
       // Confirm second block has been removed

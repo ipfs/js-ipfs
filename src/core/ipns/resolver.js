@@ -9,6 +9,9 @@ const debug = require('debug')
 const log = debug('ipfs:ipns:resolver')
 log.error = debug('ipfs:ipns:resolver:error')
 
+const { Errors } = require('interface-datastore')
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
 const defaultMaximumRecursiveDepth = 32
 
 class IpnsResolver {
@@ -80,7 +83,7 @@ class IpnsResolver {
     } catch (err) {
       log.error(err)
 
-      if (err.code === 'ERR_NOT_FOUND') {
+      if (err.code === ERR_NOT_FOUND) {
         throw errcode(new Error(`record requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
       }
 
@@ -109,7 +112,7 @@ class IpnsResolver {
     } catch (err) {
       log.error(err)
 
-      if (err.code === 'ERR_NOT_FOUND') {
+      if (err.code === ERR_NOT_FOUND) {
         throw errcode(new Error(`public key requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
       }
 

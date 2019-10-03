@@ -10,6 +10,9 @@ const { DAGNode } = require('ipld-dag-pb')
 const { normalizePath } = require('./utils')
 const { Format } = require('./refs')
 
+const { Errors } = require('interface-datastore')
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
 module.exports = function (self) {
   return function (ipfsPath, options) {
     options = options || {}
@@ -126,7 +129,7 @@ function objectStream (ipfs, rootCid, maxDepth, isUnique) {
     // Get this object's links
     getLinks(ipfs, node.cid, (err, links) => {
       if (err) {
-        if (err.code === 'ERR_NOT_FOUND') {
+        if (err.code === ERR_NOT_FOUND) {
           err.message = `Could not find object with CID: ${node.cid}`
         }
         return deferred.resolve(pull.error(err))

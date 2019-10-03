@@ -1,7 +1,7 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const { Key } = require('interface-datastore')
+const { Key, Errors } = require('interface-datastore')
 const errcode = require('err-code')
 const promisify = require('promisify-es6')
 const debug = require('debug')
@@ -10,6 +10,7 @@ log.error = debug('ipfs:ipns:publisher:error')
 
 const ipns = require('ipns')
 
+const ERR_NOT_FOUND = Errors.notFoundError().code
 const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
@@ -142,7 +143,7 @@ class IpnsPublisher {
       // unmarshal data
       return this._unmarshalData(dsVal)
     } catch (err) {
-      if (err.code !== 'ERR_NOT_FOUND') {
+      if (err.code !== ERR_NOT_FOUND) {
         const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
         log.error(errMsg)
 
@@ -193,7 +194,7 @@ class IpnsPublisher {
     try {
       record = await this._getPublished(peerId, getPublishedOptions)
     } catch (err) {
-      if (err.code !== 'ERR_NOT_FOUND') {
+      if (err.code !== ERR_NOT_FOUND) {
         const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id}`
         log.error(errMsg)
 
