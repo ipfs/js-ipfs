@@ -17,9 +17,19 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
-      const diff = await ipfs.config.profile(argv.profile, { dryRun: argv.dryRun })
-      const delta = JSONDiff.diff(diff.oldCfg, diff.newCfg)
-      return JSONDiff.formatters.console.format(delta, diff.oldCfg)
+      const diff = await ipfs.config.profiles.apply(argv.profile, { dryRun: argv.dryRun })
+      const delta = JSONDiff.diff(diff.old, diff.new)
+      const res = JSONDiff.formatters.console.format(delta, diff.old)
+
+      if (res) {
+        argv.print(res)
+
+        if (ipfs.send) {
+          argv.print('\nThe IPFS daemon is running in the background, you may need to restart it for changes to take effect.')
+        }
+      } else {
+        argv.print(`IPFS config already contains the settings from the '${argv.profile}' profile`)
+      }
     })())
   }
 }

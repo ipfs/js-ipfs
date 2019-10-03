@@ -1,7 +1,5 @@
 'use strict'
 
-const { profiles } = require('../../../../core/components/config')
-
 module.exports = {
   command: 'ls',
 
@@ -11,9 +9,13 @@ module.exports = {
 
   handler (argv) {
     argv.resolve(
-      Object.keys(profiles)
-        .map(profile => `${profile}:\n ${profiles[profile].description}`)
-        .join('\n')
+      (async () => {
+        const ipfs = await argv.getIpfs()
+
+        for (const profile of await ipfs.config.profiles.list()) {
+          argv.print(`${profile.name}:\n ${profile.description}`)
+        }
+      })()
     )
   }
 }

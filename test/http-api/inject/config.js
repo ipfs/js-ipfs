@@ -14,12 +14,10 @@ module.exports = (http) => {
     const originalConfigPath = path.join(__dirname, '../../fixtures/go-ipfs-repo/config')
 
     let updatedConfig
-    let originalConfig
     let api
 
     before(() => {
       updatedConfig = () => JSON.parse(fs.readFileSync(configPath, 'utf8'))
-      originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
       api = http.api._httpApi._apiServers[0]
     })
 
@@ -194,6 +192,12 @@ module.exports = (http) => {
     })
 
     describe('/config/profile/apply', () => {
+      let originalConfig
+
+      beforeEach(() => {
+        originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+      })
+
       it('returns 400 if no config profile is provided', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -203,13 +207,13 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(400)
       })
 
-      it('returns 500 if the config profile is invalid', async () => {
+      it('returns 400 if the config profile is invalid', async () => {
         const res = await api.inject({
           method: 'POST',
           url: '/api/v0/config/profile/apply?arg=derp'
         })
 
-        expect(res.statusCode).to.equal(500)
+        expect(res.statusCode).to.equal(400)
       })
 
       it('does not apply config profile with dry-run argument', async () => {
@@ -222,16 +226,36 @@ module.exports = (http) => {
         expect(updatedConfig()).to.deep.equal(originalConfig)
       })
 
-      it('applies config profile', async () => {
-        const profile = 'lowpower'
+      Object.keys(profiles).forEach(profile => {
+        it(`applies config profile ${profile}`, async () => {
+          const res = await api.inject({
+            method: 'POST',
+            url: `/api/v0/config/profile/apply?arg=${profile}`
+          })
 
+          expect(res.statusCode).to.equal(200)
+          expect(updatedConfig()).to.deep.equal(profiles[profile].transform(originalConfig))
+        })
+      })
+    })
+
+    describe('/config/profile/list', () => {
+      it('lists available profiles', async () => {
         const res = await api.inject({
           method: 'POST',
-          url: `/api/v0/config/profile/apply?arg=${profile}`
+          url: '/api/v0/config/profile/list'
         })
 
         expect(res.statusCode).to.equal(200)
-        expect(updatedConfig()).to.deep.equal(profiles[profile].transform(originalConfig))
+
+        const listed = JSON.parse(res.payload)
+
+        Object.keys(profiles).forEach(name => {
+          const profile = listed.find(profile => profile.Name === name)
+
+          expect(profile).to.be.ok()
+          expect(profile.Description).to.equal(profiles[name].description)
+        })
       })
     })
   })

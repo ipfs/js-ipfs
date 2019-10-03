@@ -9,7 +9,10 @@ module.exports = function config (self) {
     get: callbackify.variadic(self._repo.config.get),
     set: callbackify(self._repo.config.set),
     replace: callbackify.variadic(self._repo.config.set),
-    profile: callbackify.variadic(applyProfile)
+    profiles: {
+      apply: callbackify.variadic(applyProfile),
+      list: callbackify.variadic(listProfiles)
+    }
   }
 
   async function applyProfile (profileName, opts) {
@@ -35,13 +38,20 @@ module.exports = function config (self) {
       delete oldCfg.Identity.PrivKey
       delete newCfg.Identity.PrivKey
 
-      return { oldCfg, newCfg }
+      return { old: oldCfg, new: newCfg }
     } catch (err) {
       log(err)
 
       throw new Error(`Could not apply profile '${profileName}' to config: ${err.message}`)
     }
   }
+}
+
+async function listProfiles (options) { // eslint-disable-line require-await
+  return Object.keys(profiles).map(name => ({
+    name,
+    description: profiles[name].description
+  }))
 }
 
 const profiles = {
