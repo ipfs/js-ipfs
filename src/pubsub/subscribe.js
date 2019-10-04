@@ -9,9 +9,10 @@ const configure = require('../lib/configure')
 const toIterable = require('../lib/stream-to-iterable')
 const SubscriptionTracker = require('./subscription-tracker')
 
-module.exports = configure(({ ky }) => {
+module.exports = configure((config) => {
+  const ky = config.ky
   const subsTracker = SubscriptionTracker.singleton()
-  const publish = require('./publish')({ ky })
+  const publish = require('./publish')(config)
 
   return async (topic, handler, options) => {
     options = options || {}

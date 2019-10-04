@@ -1,3 +1,13 @@
+<a name="38.0.1"></a>
+## [38.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.0...v38.0.1) (2019-10-04)
+
+
+### Bug Fixes
+
+* pull in preconfigured chai from interface tests ([6a7eb8a](https://github.com/ipfs/js-ipfs-http-client/commit/6a7eb8a))
+
+
+
 <a name="38.0.0"></a>
 # [38.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.3...v38.0.0) (2019-09-25)
 
