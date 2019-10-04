@@ -3,6 +3,7 @@
 
 const series = require('async/series')
 const hat = require('hat')
+const { fixtures } = require('../files-regular/utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -90,6 +91,14 @@ module.exports = (createCommon, options) => {
           done()
         })
       })
+    })
+
+    it('should ls from outside of mfs', async () => {
+      const testFileName = hat()
+      const res = await ipfs.add({ path: `/test/${testFileName}`, content: fixtures.smallFile.data })
+      const listing = await ipfs.files.ls('/ipfs/' + res[res.length - 1])
+      expect(listing).to.have.length(1)
+      expect(listing[0].name).to.equal(testFileName)
     })
 
     it('should list an empty directory', async () => {

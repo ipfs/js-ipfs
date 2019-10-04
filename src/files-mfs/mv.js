@@ -3,6 +3,7 @@
 
 const series = require('async/series')
 const hat = require('hat')
+const { fixtures } = require('../files-regular/utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
@@ -75,6 +76,14 @@ module.exports = (createCommon, options) => {
           done()
         })
       })
+    })
+
+    it('should move from outside of mfs', async () => {
+      const [hash] = ipfs.add(fixtures.smallFile.data)
+      const testFilePath = `/${hat()}`
+      await ipfs.files.mv(`/ipfs/${hash}`, testFilePath)
+      const testFileData = await ipfs.files.read(testFilePath)
+      expect(testFileData).to.eql(fixtures.smallFile.data)
     })
   })
 }
