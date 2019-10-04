@@ -34,17 +34,27 @@
 
 ## Table of Contents
 
+- [Lead Maintainer](#lead-maintainer)
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
-  - [In a web browser through Browserify](#in-a-web-browser-through-browserify)
-  - [In a web browser from CDN](#in-a-web-browser-from-cdn)
+  - [In a web browser](#in-a-web-browser)
   - [CORS](#cors)
+  - [Custom Headers](#custom-headers)
 - [Usage](#usage)
-  - [API Docs](#api)
-  - [Callbacks and promises](#callbacks-and-promises)
+  - [API](#api)
+    - [Files](#files)
+    - [Graph](#graph)
+    - [Network](#network)
+    - [Node Management](#node-management)
+    - [Instance utils](#instance-utils)
+    - [Static types and utils](#static-types-and-utils)
+- [Development](#development)
+  - [Testing](#testing)
 - [Contribute](#contribute)
+- [Historical context](#historical-context)
 - [License](#license)
 
 ## Install
@@ -313,6 +323,8 @@ const ipfs = ipfsClient({
   - [`ipfs.config.get([key], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/CONFIG.md#configget)
   - [`ipfs.config.replace(config, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/CONFIG.md#configreplace)
   - [`ipfs.config.set(key, value, [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/CONFIG.md#configset)
+  - [`ipfs.config.profiles.list([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/CONFIG.md#configprofileslist)
+  - [`ipfs.config.profiles.apply(name, [options], [callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/CONFIG.md#configprofilesapply)
 
 - [stats](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/STATS.md)
   - [`ipfs.stats.bitswap([callback])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/STATS.md#statsbitswap)
