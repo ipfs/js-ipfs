@@ -12,7 +12,7 @@ const ipnsPath = require('../../src/core/ipns/path')
 const ipnsRouting = require('../../src/core/ipns/routing/config')
 const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
-const { Key } = require('interface-datastore')
+const { Key, Errors } = require('interface-datastore')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
@@ -307,7 +307,7 @@ describe('name', function () {
     })
 
     it('should publish and then fail to resolve if does not find the record', async function () {
-      const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, { code: 'ERR_NOT_FOUND' })
+      const stub = sinon.stub(node._ipns.resolver._routing, 'get').callsArgWith(1, { code: Errors.notFoundError().code })
 
       await node.name.publish(ipfsRef, { resolve: false })
 

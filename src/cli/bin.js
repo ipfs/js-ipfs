@@ -49,7 +49,7 @@ cli
     }
   })
   .catch(({ error, argv }) => {
-    getIpfs = argv.getIpfs
+    getIpfs = argv && argv.getIpfs
     if (error.message) {
       print(error.message)
       debug(error)
