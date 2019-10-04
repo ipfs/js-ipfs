@@ -3,6 +3,8 @@
 * [config.get](#configget)
 * [config.set](#configset)
 * [config.replace](#configreplace)
+* [config.profiles.list](#configprofileslist)
+* [config.profiles.apply](#configprofilesapply)
 
 #### `config.get`
 
@@ -82,6 +84,63 @@ ipfs.config.replace(newConfig, (err) => {
   // config has been replaced
 })
 ```
+
+A great source of [examples][] can be found in the tests for this API.
+
+#### `config.profiles.list`
+
+> List available config profiles
+
+##### `ipfs.config.profiles.list([options], [callback])`
+
+`options` is a object.
+`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful.
+
+If no callback is passed, a [promise][] is returned
+
+**Example:**
+
+```JavaScript
+ipfs.config.profiles.list(newConfig, (err, profiles) => {
+  if (err) {
+    throw err
+  }
+
+  profiles.forEach(profile => {
+    console.info(profile.name, profile.description)
+  })
+})
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+#### `config.profiles.apply`
+
+> Apply a config profile
+
+##### `ipfs.config.profiles.apply(name, [options], [callback])`
+
+`name` is a string. Call `config.profiles.list()` for a list of valid profile names.
+`options` an object that might contain the following values:
+  - `dryRun` is a boolean which if true does not apply the profile
+`callback` must follow the `function (err, result) {}` signature, where `err` is an error if the operation was not successful.
+
+If no callback is passed, a [promise][] is returned
+
+**Example:**
+
+```JavaScript
+ipfs.config.profiles.apply('lowpower', (err, diff) => {
+  if (err) {
+    throw err
+  }
+
+  console.info(diff.old)
+  console.info(diff.new)
+})
+```
+
+Note that you will need to restart your node for config changes to take effect.
 
 A great source of [examples][] can be found in the tests for this API.
 
