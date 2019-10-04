@@ -74,7 +74,7 @@ module.exports = (createCommon, options) => {
 
     it('should set a boolean', async () => {
       const value = true
-      const key = 'Datastore.Path'
+      const key = 'Discovery.MDNS.Enabled'
 
       await ipfs.config.set(key, value)
       expect(await ipfs.config.get(key)).to.equal(value)
@@ -82,7 +82,7 @@ module.exports = (createCommon, options) => {
 
     it('should set the other boolean', async () => {
       const value = false
-      const key = 'Datastore.Path'
+      const key = 'Discovery.MDNS.Enabled'
 
       await ipfs.config.set(key, value)
       expect(await ipfs.config.get(key)).to.equal(value)
