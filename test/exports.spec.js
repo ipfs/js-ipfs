@@ -9,10 +9,7 @@ const multicodec = require('multicodec')
 const multihash = require('multihashes')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 
 const IpfsHttpClient = require('../')
 

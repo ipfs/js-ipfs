@@ -3,12 +3,7 @@
 
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const chaiAsPromised = require('chai-as-promised')
-const expect = chai.expect
-chai.use(dirtyChai)
-chai.use(chaiAsPromised)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const loadFixture = require('aegir/fixtures')
 
 const ipfsClient = require('../src')

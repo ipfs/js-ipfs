@@ -1,14 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const nock = require('nock')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const chaiAsPromised = require('chai-as-promised')
-const expect = chai.expect
-chai.use(dirtyChai)
-chai.use(chaiAsPromised)
-
 const ipfsClient = require('../../src')
 
 describe('.swarm.peers', function () {

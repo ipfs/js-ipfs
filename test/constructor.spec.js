@@ -2,11 +2,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const f = require('./utils/factory')
 const ipfsClient = require('../src/index.js')
 

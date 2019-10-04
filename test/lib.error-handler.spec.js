@@ -1,11 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { HTTPError } = require('ky-universal')
-const expect = chai.expect
-chai.use(dirtyChai)
 const throwsAsync = require('./utils/throws-async')
 const errorHandler = require('../src/lib/error-handler')
 
