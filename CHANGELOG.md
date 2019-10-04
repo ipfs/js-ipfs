@@ -1,3 +1,18 @@
+# [0.117.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.116.0...v0.117.0) (2019-10-04)
+
+
+### Documentation
+
+* add dry-run config test and change new/old for original/updated ([e206aa7](https://github.com/ipfs/interface-ipfs-core/commit/e206aa7))
+
+
+### BREAKING CHANGES
+
+* `ipfs.config.profiles.apply` now returns `original`/`updated` keys
+in the diff because using `new` stops us from destructuring in js.
+
+
+
 # [0.116.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.3...v0.116.0) (2019-10-04)
 
 
