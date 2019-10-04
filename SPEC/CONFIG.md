@@ -101,7 +101,7 @@ If no callback is passed, a [promise][] is returned
 **Example:**
 
 ```JavaScript
-ipfs.config.profiles.list(newConfig, (err, profiles) => {
+ipfs.config.profiles.list((err, profiles) => {
   if (err) {
     throw err
   }
@@ -135,8 +135,8 @@ ipfs.config.profiles.apply('lowpower', (err, diff) => {
     throw err
   }
 
-  console.info(diff.old)
-  console.info(diff.new)
+  console.info(diff.original)
+  console.info(diff.updated)
 })
 ```
 

@@ -36,11 +36,32 @@ module.exports = (createCommon, options) => {
         (cb) => ipfs.config.profiles.apply('lowpower', cb),
         (_diff, cb) => {
           diff = _diff
-          expect(diff.old.Swarm.ConnMgr.LowWater).to.not.equal(diff.new.Swarm.ConnMgr.LowWater)
+          expect(diff.original.Swarm.ConnMgr.LowWater).to.not.equal(diff.updated.Swarm.ConnMgr.LowWater)
           ipfs.config.get(cb)
         },
         (newConfig, cb) => {
-          expect(newConfig.Swarm.ConnMgr.LowWater).to.equal(diff.new.Swarm.ConnMgr.LowWater)
+          expect(newConfig.Swarm.ConnMgr.LowWater).to.equal(diff.updated.Swarm.ConnMgr.LowWater)
+          cb()
+        }
+      ], done)
+    })
+
+    it('should not apply a config profile in dry-run mode', (done) => {
+      let originalConfig
+      waterfall([
+        (cb) => ipfs.config.get(cb),
+        (config, cb) => {
+          originalConfig = config
+          cb()
+        },
+        (cb) => ipfs.config.profiles.apply('server', { dryRun: true }, cb),
+        (diff, cb) => {
+          expect(diff.original).to.deep.equal(originalConfig)
+          expect(diff.updated).to.not.deep.equal(originalConfig)
+          ipfs.config.get(cb)
+        },
+        (updatedConfig, cb) => {
+          expect(updatedConfig).to.deep.equal(originalConfig)
           cb()
         }
       ], done)
