@@ -1,41 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const callbackify = require('callbackify')
+const configure = require('../../lib/configure')
 
-const toObject = function (res, callback) {
-  if (Buffer.isBuffer(res)) {
-    callback(null, JSON.parse(res.toString()))
-  } else {
-    callback(null, res)
-  }
-}
+module.exports = configure(({ ky }) => {
+  return callbackify.variadic(async (profile, options) => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((profile, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
-
-    opts = normalizeOpts(opts)
-
-    send.andTransform({
-      path: 'config/profile/apply',
-      args: profile,
-      qs: opts
-    }, toObject, (err, response) => {
-      if (err) {
-        return callback(err)
+    const res = await ky.post('config/profile/apply', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: {
+        arg: profile,
+        // can only pass strings or numbers as values https://github.com/sindresorhus/ky/issues/182
+        'dry-run': options.dryRun ? 'true' : 'false'
       }
-      callback(null, { old: response.OldCfg, new: response.NewCfg })
     })
-  })
-}
 
-function normalizeOpts (opts) {
-  opts = opts || {}
-  if (typeof opts.dryRun !== 'undefined') {
-    opts['dry-run'] = opts.dryRun
-  }
-  return opts
-}
+    const parsed = await res.json()
+
+    return {
+      original: parsed.OldCfg, updated: parsed.NewCfg
+    }
+  })
+})

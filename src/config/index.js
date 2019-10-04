@@ -6,7 +6,7 @@ module.exports = (send, config) => {
     set: require('./set')(send),
     replace: require('./replace')(send),
     profiles: {
-      apply: require('./profiles/apply')(send),
+      apply: require('./profiles/apply')(config),
       list: require('./profiles/list')(config)
     }
   }
