@@ -1,3 +1,34 @@
+<a name="38.1.0"></a>
+# [38.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.1...v38.1.0) (2019-10-04)
+
+
+### Bug Fixes
+
+* get correct remote node config ([5b53e22](https://github.com/ipfs/js-ipfs-http-client/commit/5b53e22))
+* pull in preconfigured chai from interface tests ([93765c1](https://github.com/ipfs/js-ipfs-http-client/commit/93765c1))
+
+
+### Features
+
+* add methods for listing config profiles ([1c3d92a](https://github.com/ipfs/js-ipfs-http-client/commit/1c3d92a))
+
+
+### BREAKING CHANGES
+
+* ```javascript
+Promise<{oldCfg, newCfg}> ipfs.config.profile(name, opts)
+
+// is now
+Promise<{old, new}> ipfs.config.profiles.apply(name, opts)
+```
+
+Possibly contentious;
+
+Adds `callbackify` as a dependency, see https://github.com/ipfs/js-ipfs/issues/2506
+for discussion.
+
+
+
 <a name="38.0.1"></a>
 ## [38.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.0...v38.0.1) (2019-10-04)
 
