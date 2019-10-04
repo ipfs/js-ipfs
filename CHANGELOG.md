@@ -1,3 +1,12 @@
+# [0.116.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.3...v0.116.0) (2019-10-04)
+
+
+### Features
+
+* add test for listing config profiles ([142a373](https://github.com/ipfs/interface-ipfs-core/commit/142a373))
+
+
+
 ## [0.115.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.2...v0.115.3) (2019-10-04)
 
 
