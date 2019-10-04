@@ -106,7 +106,7 @@ A great source of [examples][] can be found in the tests for this API.
 ##### `ipfs.pubsub.publish(topic, data, [callback])`
 
 - `topic: String`
-- `data: Buffer` - The message to send
+- `data: Buffer|String` - The message to send
 - `callback: (Error) => {}` - (Optional) Calls back with an error or nothing if the publish was successful.
 
 If no `callback` is passed, a promise is returned.

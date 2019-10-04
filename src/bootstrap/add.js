@@ -60,5 +60,18 @@ module.exports = (createCommon, options) => {
         done()
       })
     })
+
+    it('should prevent duplicate inserts of bootstrap peers', async () => {
+      await ipfs.bootstrap.rm(null, { all: true })
+
+      const added = await ipfs.bootstrap.add(validIp4)
+      expect(added).to.have.property('Peers').that.deep.equals([validIp4])
+
+      const addedAgain = await ipfs.bootstrap.add(validIp4)
+      expect(addedAgain).to.have.property('Peers').that.deep.equals([validIp4])
+
+      const list = await ipfs.bootstrap.list()
+      expect(list).to.have.property('Peers').that.deep.equals([validIp4])
+    })
   })
 }

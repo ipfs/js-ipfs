@@ -2,13 +2,13 @@
 /* eslint max-nested-callbacks: ["error", 6] */
 'use strict'
 
-const series = require('async/series')
-const parallel = require('async/parallel')
-const timesSeries = require('async/timesSeries')
+const pushable = require('it-pushable')
+const { collect } = require('streaming-iterables')
 const { spawnNodesWithId } = require('../utils/spawn')
-const { waitForPeers, makeCheck, getTopic } = require('./utils')
+const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { connect } = require('../utils/swarm')
+const delay = require('../utils/delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -20,6 +20,8 @@ module.exports = (createCommon, options) => {
 
     let ipfs1
     let ipfs2
+    let topic
+    let subscribedTopics = []
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -40,171 +42,115 @@ module.exports = (createCommon, options) => {
       })
     })
 
+    beforeEach(() => {
+      topic = getTopic()
+      subscribedTopics = [topic]
+    })
+
+    afterEach(async () => {
+      const nodes = [ipfs1, ipfs2]
+      for (let i = 0; i < subscribedTopics.length; i++) {
+        const topic = subscribedTopics[i]
+        await Promise.all(nodes.map(ipfs => ipfs.pubsub.unsubscribe(topic)))
+      }
+      subscribedTopics = []
+      await delay(100)
+    })
+
     after((done) => common.teardown(done))
 
     describe('single node', () => {
-      it('should subscribe to one topic', (done) => {
-        const check = makeCheck(2, done)
-        const topic = getTopic()
+      it('should subscribe to one topic', async () => {
+        const msgStream = pushable()
 
-        const handler = (msg) => {
-          expect(msg.data.toString()).to.equal('hi')
-          expect(msg).to.have.property('seqno')
-          expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg.topicIDs[0]).to.eq(topic)
-          expect(msg).to.have.property('from', ipfs1.peerId.id)
-
-          ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
-            expect(err).to.not.exist()
-
-            ipfs1.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist()
-              expect(topics).to.be.empty()
-              check()
-            })
-          })
-        }
-
-        ipfs1.pubsub.subscribe(topic, handler, (err) => {
-          expect(err).to.not.exist()
-          ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
+        await ipfs1.pubsub.subscribe(topic, msg => {
+          msgStream.push(msg)
+          msgStream.end()
         })
-      })
 
-      it('should subscribe to one topic (promised)', (done) => {
-        const check = makeCheck(2, done)
-        const topic = getTopic()
+        await ipfs1.pubsub.publish(topic, Buffer.from('hi'))
 
-        const handler = (msg) => {
+        for await (const msg of msgStream) {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
           expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
-
-          ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
-            expect(err).to.not.exist()
-
-            ipfs1.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist()
-              expect(topics).to.be.empty()
-              check()
-            })
-          })
+          break
         }
-
-        ipfs1.pubsub
-          .subscribe(topic, handler)
-          .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi'), check))
-          .catch((err) => expect(err).to.not.exist())
       })
 
-      it('should subscribe to one topic with options', (done) => {
-        const check = makeCheck(2, done)
-        const topic = getTopic()
+      it('should subscribe to one topic with options', async () => {
+        const msgStream = pushable()
 
-        const handler = (msg) => {
+        await ipfs1.pubsub.subscribe(topic, msg => {
+          msgStream.push(msg)
+          msgStream.end()
+        }, {})
+
+        await ipfs1.pubsub.publish(topic, Buffer.from('hi'))
+
+        for await (const msg of msgStream) {
           expect(msg.data.toString()).to.equal('hi')
           expect(msg).to.have.property('seqno')
           expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
           expect(msg.topicIDs[0]).to.eq(topic)
           expect(msg).to.have.property('from', ipfs1.peerId.id)
-
-          ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
-            expect(err).to.not.exist()
-
-            ipfs1.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist()
-              expect(topics).to.be.empty()
-              check()
-            })
-          })
         }
-
-        ipfs1.pubsub.subscribe(topic, handler, {}, (err) => {
-          expect(err).to.not.exist()
-          ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
-        })
       })
 
-      it('should subscribe to one topic with options (promised)', (done) => {
-        const check = makeCheck(2, done)
-        const topic = getTopic()
+      it('should subscribe to topic multiple times with different handlers', async () => {
+        const msgStream1 = pushable()
+        const msgStream2 = pushable()
 
-        const handler = (msg) => {
-          expect(msg.data.toString()).to.equal('hi')
-          expect(msg).to.have.property('seqno')
-          expect(Buffer.isBuffer(msg.seqno)).to.eql(true)
-          expect(msg.topicIDs[0]).to.eq(topic)
-          expect(msg).to.have.property('from', ipfs1.peerId.id)
-
-          ipfs1.pubsub.unsubscribe(topic, handler, (err) => {
-            expect(err).to.not.exist()
-
-            ipfs1.pubsub.ls((err, topics) => {
-              expect(err).to.not.exist()
-              expect(topics).to.be.empty()
-              check()
-            })
-          })
+        const handler1 = msg => {
+          msgStream1.push(msg)
+          msgStream1.end()
+        }
+        const handler2 = msg => {
+          msgStream2.push(msg)
+          msgStream2.end()
         }
 
-        ipfs1.pubsub
-          .subscribe(topic, handler, {})
-          .then(() => ipfs1.pubsub.publish(topic, Buffer.from('hi'), check))
-          .catch((err) => expect(err).to.not.exist())
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, handler1),
+          ipfs1.pubsub.subscribe(topic, handler2)
+        ])
+
+        await ipfs1.pubsub.publish(topic, Buffer.from('hello'))
+
+        const [handler1Msg] = await collect(msgStream1)
+        expect(handler1Msg.data.toString()).to.eql('hello')
+
+        const [handler2Msg] = await collect(msgStream2)
+        expect(handler2Msg.data.toString()).to.eql('hello')
+
+        await ipfs1.pubsub.unsubscribe(topic, handler1)
+        await delay(100)
+
+        // Still subscribed as there is one listener left
+        expect(await ipfs1.pubsub.ls()).to.eql([topic])
+
+        await ipfs1.pubsub.unsubscribe(topic, handler2)
+        await delay(100)
+
+        // Now all listeners are gone no subscription anymore
+        expect(await ipfs1.pubsub.ls()).to.eql([])
       })
 
-      it('should subscribe to topic multiple times with different handlers', (done) => {
-        const topic = getTopic()
+      it('should allow discover option to be passed', async () => {
+        const msgStream = pushable()
 
-        const check = makeCheck(3, done)
-        const handler1 = (msg) => {
-          expect(msg.data.toString()).to.eql('hello')
+        await ipfs1.pubsub.subscribe(topic, msg => {
+          msgStream.push(msg)
+          msgStream.end()
+        }, { discover: true })
 
-          series([
-            (cb) => ipfs1.pubsub.unsubscribe(topic, handler1, cb),
-            (cb) => ipfs1.pubsub.ls(cb),
-            (cb) => ipfs1.pubsub.unsubscribe(topic, handler2, cb),
-            (cb) => ipfs1.pubsub.ls(cb)
-          ], (err, res) => {
-            expect(err).to.not.exist()
+        await ipfs1.pubsub.publish(topic, Buffer.from('hi'))
 
-            // Still subscribed as there is one listener left
-            expect(res[1]).to.eql([topic])
-            // Now all listeners are gone no subscription anymore
-            expect(res[3]).to.eql([])
-            check()
-          })
-        }
-
-        const handler2 = (msg) => {
-          expect(msg.data.toString()).to.eql('hello')
-          check()
-        }
-
-        series([
-          (cb) => ipfs1.pubsub.subscribe(topic, handler1, cb),
-          (cb) => ipfs1.pubsub.subscribe(topic, handler2, cb)
-        ], (err) => {
-          expect(err).to.not.exist()
-          ipfs1.pubsub.publish(topic, Buffer.from('hello'), check)
-        })
-      })
-
-      it('should allow discover option to be passed', (done) => {
-        const check = makeCheck(2, done)
-        const topic = getTopic()
-
-        const handler = (msg) => {
+        for await (const msg of msgStream) {
           expect(msg.data.toString()).to.eql('hi')
-          ipfs1.pubsub.unsubscribe(topic, handler, check)
         }
-
-        ipfs1.pubsub.subscribe(topic, handler, { discover: true }, (err) => {
-          expect(err).to.not.exist()
-          ipfs1.pubsub.publish(topic, Buffer.from('hi'), check)
-        })
       })
     })
 
@@ -222,171 +168,151 @@ module.exports = (createCommon, options) => {
         connect(ipfs1, ipfs2Addr, done)
       })
 
-      let topic
-      let sub1
-      let sub2
-
-      beforeEach(() => {
-        topic = getTopic()
-      })
-
-      afterEach((done) => {
-        parallel([
-          (cb) => ipfs1.pubsub.unsubscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.unsubscribe(topic, sub2, cb)
-        ], done)
-      })
-
-      it('should receive messages from a different node', (done) => {
-        const check = makeCheck(3, done)
+      it('should receive messages from a different node', async () => {
         const expectedString = 'hello from the other side'
 
-        sub1 = (msg) => {
-          expect(msg.data.toString()).to.be.eql(expectedString)
-          expect(msg.from).to.eql(ipfs2.peerId.id)
-          check()
+        const msgStream1 = pushable()
+        const msgStream2 = pushable()
+
+        const sub1 = msg => {
+          msgStream1.push(msg)
+          msgStream1.end()
+        }
+        const sub2 = msg => {
+          msgStream2.push(msg)
+          msgStream2.end()
         }
 
-        sub2 = (msg) => {
-          expect(msg.data.toString()).to.be.eql(expectedString)
-          expect(msg.from).to.eql(ipfs2.peerId.id)
-          check()
-        }
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, sub1),
+          ipfs2.pubsub.subscribe(topic, sub2)
+        ])
 
-        series([
-          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
-        ], (err) => {
-          expect(err).to.not.exist()
+        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
 
-          ipfs2.pubsub.publish(topic, Buffer.from(expectedString), check)
-        })
+        await ipfs2.pubsub.publish(topic, Buffer.from(expectedString))
+
+        const [sub1Msg] = await collect(msgStream1)
+        expect(sub1Msg.data.toString()).to.be.eql(expectedString)
+        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+
+        const [sub2Msg] = await collect(msgStream2)
+        expect(sub2Msg.data.toString()).to.be.eql(expectedString)
+        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
       })
 
-      it('should round trip a non-utf8 binary buffer', (done) => {
-        const check = makeCheck(3, done)
+      it('should round trip a non-utf8 binary buffer', async () => {
         const expectedHex = 'a36161636179656162830103056164a16466666666f4'
         const buffer = Buffer.from(expectedHex, 'hex')
 
-        sub1 = (msg) => {
-          try {
-            expect(msg.data.toString('hex')).to.be.eql(expectedHex)
-            expect(msg.from).to.eql(ipfs2.peerId.id)
-            check()
-          } catch (err) {
-            check(err)
-          }
+        const msgStream1 = pushable()
+        const msgStream2 = pushable()
+
+        const sub1 = msg => {
+          msgStream1.push(msg)
+          msgStream1.end()
+        }
+        const sub2 = msg => {
+          msgStream2.push(msg)
+          msgStream2.end()
         }
 
-        sub2 = (msg) => {
-          try {
-            expect(msg.data.toString('hex')).to.eql(expectedHex)
-            expect(msg.from).to.eql(ipfs2.peerId.id)
-            check()
-          } catch (err) {
-            check(err)
-          }
-        }
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, sub1),
+          ipfs2.pubsub.subscribe(topic, sub2)
+        ])
 
-        series([
-          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
-        ], (err) => {
-          expect(err).to.not.exist()
+        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
 
-          ipfs2.pubsub.publish(topic, buffer, check)
-        })
+        await ipfs2.pubsub.publish(topic, buffer)
+
+        const [sub1Msg] = await collect(msgStream1)
+        expect(sub1Msg.data.toString('hex')).to.be.eql(expectedHex)
+        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+
+        const [sub2Msg] = await collect(msgStream2)
+        expect(sub2Msg.data.toString('hex')).to.be.eql(expectedHex)
+        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
       })
 
-      it('should receive multiple messages', (done) => {
-        const inbox1 = []
-        const inbox2 = []
+      it('should receive multiple messages', async () => {
         const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
 
-        const check = makeCheck(outbox.length * 3, (err) => {
-          expect(inbox1.sort()).to.eql(outbox.sort())
-          expect(inbox2.sort()).to.eql(outbox.sort())
+        const msgStream1 = pushable()
+        const msgStream2 = pushable()
 
-          done(err)
-        })
-
-        sub1 = (msg) => {
-          inbox1.push(msg.data.toString())
-          expect(msg.from).to.eql(ipfs2.peerId.id)
-          check()
+        const sub1 = msg => {
+          msgStream1.push(msg)
+          sub1.called++
+          if (sub1.called === outbox.length) msgStream1.end()
         }
+        sub1.called = 0
 
-        sub2 = (msg) => {
-          inbox2.push(msg.data.toString())
-          expect(msg.from).to.be.eql(ipfs2.peerId.id)
-          check()
+        const sub2 = msg => {
+          msgStream2.push(msg)
+          sub2.called++
+          if (sub2.called === outbox.length) msgStream2.end()
         }
+        sub2.called = 0
 
-        series([
-          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          (cb) => waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000, cb)
-        ], (err) => {
-          expect(err).to.not.exist()
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, sub1),
+          ipfs2.pubsub.subscribe(topic, sub2)
+        ])
 
-          outbox.forEach((msg) => {
-            ipfs2.pubsub.publish(topic, Buffer.from(msg), check)
-          })
-        })
+        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+
+        outbox.forEach(msg => ipfs2.pubsub.publish(topic, Buffer.from(msg)))
+
+        const sub1Msgs = await collect(msgStream1)
+        sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
+        const inbox1 = sub1Msgs.map(msg => msg.data.toString())
+        expect(inbox1.sort()).to.eql(outbox.sort())
+
+        const sub2Msgs = await collect(msgStream2)
+        sub2Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
+        const inbox2 = sub2Msgs.map(msg => msg.data.toString())
+        expect(inbox2.sort()).to.eql(outbox.sort())
       })
 
-      it('send/receive 100 messages', function (done) {
+      it('should send/receive 100 messages', async function () {
         this.timeout(2 * 60 * 1000)
 
         const msgBase = 'msg - '
         const count = 100
-        let receivedCount = 0
-        let startTime
-        let counter = 0
+        const msgStream = pushable()
 
-        sub1 = (msg) => {
-          // go-ipfs can't send messages in order when there are
-          // only two nodes in the same machine ¯\_(ツ)_/¯
-          // https://github.com/ipfs/js-ipfs-api/pull/493#issuecomment-289499943
-          // const expectedMsg = msgBase + receivedCount
-          // const receivedMsg = msg.data.toString()
-          // expect(receivedMsg).to.eql(expectedMsg)
+        const sub = msg => {
+          msgStream.push(msg)
+          sub.called++
+          if (sub.called === count) msgStream.end()
+        }
+        sub.called = 0
 
-          receivedCount++
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, sub),
+          ipfs2.pubsub.subscribe(topic, () => {})
+        ])
 
-          if (receivedCount >= count) {
-            const duration = new Date().getTime() - startTime
-            const opsPerSec = Math.floor(count / (duration / 1000))
+        await waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000)
 
-            // eslint-disable-next-line
-            console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s`)
+        const startTime = new Date().getTime()
 
-            check()
-          }
+        for (let i = 0; i < count; i++) {
+          const msgData = Buffer.from(msgBase + i)
+          await ipfs2.pubsub.publish(topic, msgData)
         }
 
-        sub2 = (msg) => {}
+        const msgs = await collect(msgStream)
+        const duration = new Date().getTime() - startTime
+        const opsPerSec = Math.floor(count / (duration / 1000))
 
-        function check () {
-          if (++counter === 2) {
-            done()
-          }
-        }
+        // eslint-disable-next-line
+        console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s`)
 
-        series([
-          (cb) => ipfs1.pubsub.subscribe(topic, sub1, cb),
-          (cb) => ipfs2.pubsub.subscribe(topic, sub2, cb),
-          (cb) => waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000, cb)
-        ], (err) => {
-          expect(err).to.not.exist()
-          startTime = new Date().getTime()
-
-          timesSeries(count, (sendCount, cb) => {
-            const msgData = Buffer.from(msgBase + sendCount)
-            ipfs2.pubsub.publish(topic, msgData, cb)
-          }, check)
+        msgs.forEach(msg => {
+          expect(msg.from).to.eql(ipfs2.peerId.id)
+          expect(msg.data.toString().startsWith(msgBase)).to.be.true()
         })
       })
     })

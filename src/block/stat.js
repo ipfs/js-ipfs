@@ -43,5 +43,21 @@ module.exports = (createCommon, options) => {
         done()
       })
     })
+
+    it('should return error for missing argument', () => {
+      return ipfs.block.stat(null)
+        .then(
+          () => expect.fail('should have thrown for missing parameter'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('should return error for invalid argument', () => {
+      return ipfs.block.stat('invalid')
+        .then(
+          () => expect.fail('should have thrown for invalid parameter'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
   })
 }

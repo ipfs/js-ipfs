@@ -60,7 +60,10 @@ module.exports = (createCommon, options) => {
     })
 
     it('should allow multiple CIDs to be passed', (done) => {
-      ipfs.add([Buffer.from('t0'), Buffer.from('t1')], (err, res) => {
+      ipfs.add([
+        { content: Buffer.from('t0') },
+        { content: Buffer.from('t1') }
+      ], (err, res) => {
         if (err) return done(err)
 
         ipfs.dht.provide([

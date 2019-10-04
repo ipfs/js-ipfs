@@ -15,7 +15,8 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.resolve', () => {
+  describe('.resolve', function () {
+    this.timeout(60 * 1000)
     let ipfs
     let nodeId
 

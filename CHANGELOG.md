@@ -1,3 +1,103 @@
+# [0.116.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.3...v0.116.0) (2019-10-04)
+
+
+### Features
+
+* add test for listing config profiles ([142a373](https://github.com/ipfs/interface-ipfs-core/commit/142a373))
+
+
+
+## [0.115.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.2...v0.115.3) (2019-10-04)
+
+
+
+## [0.115.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.1...v0.115.2) (2019-10-04)
+
+
+### Bug Fixes
+
+* configure chai for use by other modules ([77c8be9](https://github.com/ipfs/interface-ipfs-core/commit/77c8be9))
+* make invalid url actually invalid ([30a84fb](https://github.com/ipfs/interface-ipfs-core/commit/30a84fb))
+* test setting boolean configs keys on boolean fields ([d937fc1](https://github.com/ipfs/interface-ipfs-core/commit/d937fc1))
+
+
+
+<a name="0.115.1"></a>
+## [0.115.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.0...v0.115.1) (2019-10-01)
+
+
+
+<a name="0.115.0"></a>
+# [0.115.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.114.0...v0.115.0) (2019-09-25)
+
+
+
+<a name="0.114.0"></a>
+# [0.114.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.113.1...v0.114.0) (2019-09-16)
+
+
+### Bug Fixes
+
+* change swarm test ([00341f9](https://github.com/ipfs/interface-ipfs-core/commit/00341f9))
+* new setup ([b724e65](https://github.com/ipfs/interface-ipfs-core/commit/b724e65))
+
+
+
+<a name="0.113.1"></a>
+## [0.113.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.113.0...v0.113.1) (2019-09-13)
+
+
+### Bug Fixes
+
+* make pubsub unsubscribe tests work in electron renderer ([eedfe3d](https://github.com/ipfs/interface-ipfs-core/commit/eedfe3d))
+
+
+
+<a name="0.113.0"></a>
+# [0.113.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.112.0...v0.113.0) (2019-09-05)
+
+
+### Bug Fixes
+
+* **package:** update ipfs-utils to version 0.1.0 ([#521](https://github.com/ipfs/interface-ipfs-core/issues/521)) ([56caa89](https://github.com/ipfs/interface-ipfs-core/commit/56caa89))
+
+
+
+<a name="0.112.0"></a>
+# [0.112.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.1...v0.112.0) (2019-09-03)
+
+
+### Bug Fixes
+
+* supported add inputs ([#519](https://github.com/ipfs/interface-ipfs-core/issues/519)) ([ddc4fe7](https://github.com/ipfs/interface-ipfs-core/commit/ddc4fe7))
+
+
+
+<a name="0.111.1"></a>
+## [0.111.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.111.0...v0.111.1) (2019-08-30)
+
+
+### Bug Fixes
+
+* change `cp` and `mv` tests to the current spec ([#515](https://github.com/ipfs/interface-ipfs-core/issues/515)) ([b107e57](https://github.com/ipfs/interface-ipfs-core/commit/b107e57))
+
+
+
+<a name="0.111.0"></a>
+# [0.111.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.110.0...v0.111.0) (2019-08-28)
+
+
+
+<a name="0.110.0"></a>
+# [0.110.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.109.1...v0.110.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* reduce the number of concurrent requests in browser ([#505](https://github.com/ipfs/interface-ipfs-core/issues/505)) ([7596634](https://github.com/ipfs/interface-ipfs-core/commit/7596634))
+
+
+
 <a name="0.109.1"></a>
 ## [0.109.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.109.0...v0.109.1) (2019-08-06)
 

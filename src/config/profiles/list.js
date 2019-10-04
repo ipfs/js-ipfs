@@ -1,18 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Readable } = require('readable-stream')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { fixtures } = require('./utils')
+const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const waterfall = require('async/waterfall')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.addFromStream', function () {
-    this.timeout(40 * 1000)
-
+  describe('.config.profiles.list', function () {
+    this.timeout(30 * 1000)
     let ipfs
 
     before(function (done) {
@@ -32,20 +30,21 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should add from a stream', (done) => {
-      const stream = new Readable({
-        read () {
-          this.push(fixtures.bigFile.data)
-          this.push(null)
-        }
-      })
+    it('should list config profiles', (done) => {
+      waterfall([
+        (cb) => ipfs.config.profiles.list(cb),
+        (profiles, cb) => {
+          expect(profiles).to.be.an('array')
+          expect(profiles).not.to.be.empty()
 
-      ipfs.addFromStream(stream, (err, result) => {
-        expect(err).to.not.exist()
-        expect(result.length).to.equal(1)
-        expect(result[0].hash).to.equal(fixtures.bigFile.cid)
-        done()
-      })
+          profiles.forEach(profile => {
+            expect(profile.name).to.be.a('string')
+            expect(profile.description).to.be.a('string')
+          })
+
+          cb()
+        }
+      ], done)
     })
   })
 }

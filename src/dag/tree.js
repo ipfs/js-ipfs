@@ -4,6 +4,7 @@
 const series = require('async/series')
 const eachSeries = require('async/eachSeries')
 const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -43,7 +44,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            nodePb = dagPB.DAGNode.create(Buffer.from('I am inside a Protobuf'))
+            nodePb = new DAGNode(Buffer.from('I am inside a Protobuf'))
           } catch (err) {
             return cb(err)
           }
@@ -51,7 +52,7 @@ module.exports = (createCommon, options) => {
           cb()
         },
         (cb) => {
-          dagPB.util.cid(dagPB.util.serialize(nodePb))
+          dagPB.util.cid(nodePb.serialize())
             .then(cid => {
               cidPb = cid
               cb()

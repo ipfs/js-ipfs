@@ -8,7 +8,8 @@ const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const {
   calculateCid,
   createDAGNode,
-  addLinkToDAGNode
+  addLinkToDAGNode,
+  asDAGLink
 } = require('../utils')
 
 module.exports = (createCommon, options) => {
@@ -44,7 +45,6 @@ module.exports = (createCommon, options) => {
       let node1a
       let node1b
       let node2
-      let node2Cid
 
       const obj = {
         Data: Buffer.from('patch test object'),
@@ -61,7 +61,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node1a = DAGNode.create(obj.Data, obj.Links)
+            node1a = new DAGNode(obj.Data, obj.Links)
           } catch (err) {
             return cb(err)
           }
@@ -70,7 +70,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node2 = DAGNode.create(Buffer.from('some other node'))
+            node2 = new DAGNode(Buffer.from('some other node'))
           } catch (err) {
             return cb(err)
           }
@@ -82,29 +82,27 @@ module.exports = (createCommon, options) => {
           // timeout. Reason: it needs the node to get its size
           ipfs.object.put(node2, (err, cid) => {
             expect(err).to.not.exist()
-            node2Cid = cid
+
             cb()
           })
         },
         (cb) => {
-          DAGNode.addLink(node1a, {
-            name: 'link-to-node',
-            size: node2.toJSON().size,
-            cid: node2Cid
+          asDAGLink(node2, 'link-to-node', (err, link) => {
+            expect(err).to.not.exist()
+
+            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+
+            cb()
           })
-            .then(node => {
-              node1b = node
+        },
+        (cb) => {
+          ipfs.object.put(node1b, (err, cid) => {
+            expect(err).to.not.exist()
 
-              return dagPB.util.cid(dagPB.util.serialize(node), {
-                cidVersion: 0
-              })
-            })
-            .then(cid => {
-              node1bCid = cid
+            node1bCid = cid
 
-              cb()
-            })
-            .catch(cb)
+            cb()
+          })
         },
         (cb) => {
           ipfs.object.patch.addLink(testNodeCid, node1b.Links[0], (err, cid) => {
@@ -164,6 +162,22 @@ module.exports = (createCommon, options) => {
       const nodeFromObjectPatchCid = await ipfs.object.patch.addLink(parentCid, newParent.Links[0])
 
       expect(newParentCid).to.eql(nodeFromObjectPatchCid)
+    })
+
+    it('returns error for request without arguments', () => {
+      return ipfs.object.patch.addLink(null, null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with only one invalid argument', () => {
+      return ipfs.object.patch.addLink('invalid', null, null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
     })
   })
 }

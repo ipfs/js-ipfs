@@ -115,7 +115,7 @@ module.exports = (createCommon, options) => {
       series([
         (cb) => {
           try {
-            node1a = DAGNode.create(Buffer.from('Some data 1'))
+            node1a = new DAGNode(Buffer.from('Some data 1'))
           } catch (err) {
             return cb(err)
           }
@@ -124,7 +124,7 @@ module.exports = (createCommon, options) => {
         },
         (cb) => {
           try {
-            node2 = DAGNode.create(Buffer.from('Some data 2'))
+            node2 = new DAGNode(Buffer.from('Some data 2'))
           } catch (err) {
             return cb(err)
           }
@@ -135,11 +135,9 @@ module.exports = (createCommon, options) => {
           asDAGLink(node2, 'some-link', (err, link) => {
             expect(err).to.not.exist()
 
-            DAGNode.addLink(node1a, link)
-              .then(node => {
-                node1b = node
-                cb()
-              }, cb)
+            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+
+            cb()
           })
         },
         (cb) => {
@@ -215,6 +213,22 @@ module.exports = (createCommon, options) => {
           done()
         })
       })
+    })
+
+    it('returns error for request without argument', () => {
+      return ipfs.object.stat(null)
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
+    })
+
+    it('returns error for request with invalid argument', () => {
+      return ipfs.object.stat('invalid', { enc: 'base58' })
+        .then(
+          () => expect.fail('should have returned an error for invalid argument'),
+          (err) => expect(err).to.be.an.instanceof(Error)
+        )
     })
   })
 }

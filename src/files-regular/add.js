@@ -4,7 +4,6 @@
 const { fixtures } = require('./utils')
 const Readable = require('readable-stream').Readable
 const pull = require('pull-stream')
-const path = require('path')
 const expectTimeout = require('../utils/expect-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
@@ -154,31 +153,34 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    it('should not be able to add by path', (done) => {
-      const validPath = path.join(process.cwd() + '/package.json')
+    it('should add a string', (done) => {
+      const data = 'a string'
+      const expectedCid = 'QmQFRCwEpwQZ5aQMqCsCaFbdjNLLHoyZYDjr92v1F7HeqX'
 
-      ipfs.add(validPath, (err, res) => {
-        expect(err).to.exist()
+      ipfs.add(data, (err, filesAdded) => {
+        expect(err).to.not.exist()
+
+        expect(filesAdded).to.be.length(1)
+        const { path, size, hash } = filesAdded[0]
+        expect(path).to.equal(expectedCid)
+        expect(size).to.equal(16)
+        expect(hash).to.equal(expectedCid)
         done()
       })
     })
 
-    it('should not be able to add a string', (done) => {
-      const data = `TEST${Date.now()}`
+    it('should add a TypedArray', (done) => {
+      const data = Uint8Array.from([1, 3, 8])
+      const expectedCid = 'QmRyUEkVCuHC8eKNNJS9BDM9jqorUvnQJK1DM81hfngFqd'
 
-      ipfs.add(data, (err) => {
-        expect(err).to.exist()
-        expect(err.message).to.contain('Input not supported')
-        done()
-      })
-    })
+      ipfs.add(data, (err, filesAdded) => {
+        expect(err).to.not.exist()
 
-    it('should not be able to add a non-Buffer TypedArray', (done) => {
-      const data = Uint8Array.from([Date.now()])
-
-      ipfs.add(data, (err) => {
-        expect(err).to.exist()
-        expect(err.message).to.contain('Input not supported')
+        expect(filesAdded).to.be.length(1)
+        const { path, size, hash } = filesAdded[0]
+        expect(path).to.equal(expectedCid)
+        expect(size).to.equal(11)
+        expect(hash).to.equal(expectedCid)
         done()
       })
     })
@@ -353,7 +355,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should fail when passed invalid input', (done) => {
-      const nonValid = 'sfdasfasfs'
+      const nonValid = 138
 
       ipfs.add(nonValid, (err, result) => {
         expect(err).to.exist()
