@@ -3,11 +3,7 @@
 'use strict'
 
 const hat = require('hat')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')
 

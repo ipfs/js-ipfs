@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOnAndOff = require('../utils/on-and-off')
 
 describe('bootstrap', () => runOnAndOff((thing) => {

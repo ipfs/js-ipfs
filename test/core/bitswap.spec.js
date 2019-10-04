@@ -3,10 +3,7 @@
 'use strict'
 
 const hat = require('hat')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const _ = require('lodash')
 const series = require('async/series')
 const waterfall = require('async/waterfall')

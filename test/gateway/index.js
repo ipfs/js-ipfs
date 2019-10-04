@@ -2,10 +2,7 @@
 /* eslint dot-notation: 0, dot-notation: 0, quote-props: 0 */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Daemon = require('../../src/cli/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
