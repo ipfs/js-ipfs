@@ -1,3 +1,14 @@
+## [0.115.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.1...v0.115.2) (2019-10-04)
+
+
+### Bug Fixes
+
+* configure chai for use by other modules ([77c8be9](https://github.com/ipfs/interface-ipfs-core/commit/77c8be9))
+* make invalid url actually invalid ([30a84fb](https://github.com/ipfs/interface-ipfs-core/commit/30a84fb))
+* test setting boolean configs keys on boolean fields ([d937fc1](https://github.com/ipfs/interface-ipfs-core/commit/d937fc1))
+
+
+
 <a name="0.115.1"></a>
 ## [0.115.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.115.0...v0.115.1) (2019-10-01)
 
