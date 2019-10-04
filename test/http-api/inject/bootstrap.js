@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const qs = require('qs')
 const defaultList = require('../../../src/core/runtime/config-nodejs.js')().Bootstrap
 

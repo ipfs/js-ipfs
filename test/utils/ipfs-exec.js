@@ -1,9 +1,6 @@
 'use strict'
 
 const execa = require('execa')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
 const path = require('path')
 const _ = require('lodash')
 

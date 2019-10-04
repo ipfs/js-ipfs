@@ -2,9 +2,6 @@
 'use strict'
 
 const fs = require('fs')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
 const hat = require('hat')
 const Daemon = require('../../src/cli/daemon')
 const promisify = require('promisify-es6')

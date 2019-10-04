@@ -2,7 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const CID = require('cids')
 const waitFor = require('../../utils/wait-for')
 

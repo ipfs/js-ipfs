@@ -3,7 +3,7 @@
 'use strict'
 
 const hat = require('hat')
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOnAndOff = require('../utils/on-and-off')
 const UnixFs = require('ipfs-unixfs')
 const path = require('path')

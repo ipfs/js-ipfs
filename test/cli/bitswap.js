@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOn = require('../utils/on-and-off').on
 const PeerId = require('peer-id')
 const CID = require('cids')

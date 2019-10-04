@@ -5,10 +5,7 @@
 const hat = require('hat')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const pull = require('pull-stream')
 const CID = require('cids')
 

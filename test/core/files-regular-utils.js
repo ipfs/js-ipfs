@@ -2,10 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const utils = require('../../src/core/components/files-regular/utils')
 
 describe('files-regular/utils', () => {
