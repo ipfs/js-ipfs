@@ -1,34 +1,18 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const pull = require('pull-stream')
+const callbackify = require('callbackify')
+const all = require('async-iterator-all')
 
 module.exports = function (self) {
-  return promisify((ipfsPath, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
-    options = options || {}
-
-    pull(
-      self.getPullStream(ipfsPath, options),
-      pull.asyncMap((file, cb) => {
+  return callbackify.variadic(async function get (ipfsPath, options) { // eslint-disable-line require-await
+    return all(async function * () {
+      for await (const file of self._getAsyncIterator(ipfsPath, options)) {
         if (file.content) {
-          pull(
-            file.content,
-            pull.collect((err, buffers) => {
-              if (err) { return cb(err) }
-              file.content = Buffer.concat(buffers)
-              cb(null, file)
-            })
-          )
-        } else {
-          cb(null, file)
+          file.content = Buffer.concat(await all(file.content()))
         }
-      }),
-      pull.collect(callback)
-    )
+
+        yield file
+      }
+    }())
   })
 }

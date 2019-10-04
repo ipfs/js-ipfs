@@ -1,7 +1,11 @@
 'use strict'
 
-const toStream = require('pull-stream-to-stream')
+const toStream = require('it-to-stream')
 
 module.exports = function (self) {
-  return (ipfsPath, options) => toStream.source(self.catPullStream(ipfsPath, options))
+  return function catReadableStream (ipfsPath, options) {
+    return toStream.readable(self._catAsyncIterator(ipfsPath, options), {
+      objectMode: true
+    })
+  }
 }
