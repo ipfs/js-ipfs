@@ -41,6 +41,7 @@
     "bs58": "^4.0.1",
     "callbackify": "^1.1.0",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "cids": "~0.7.1",
     "concat-stream": "^2.0.0",
     "delay": "^4.3.0",
