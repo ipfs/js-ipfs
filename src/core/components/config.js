@@ -38,7 +38,7 @@ module.exports = function config (self) {
       delete oldCfg.Identity.PrivKey
       delete newCfg.Identity.PrivKey
 
-      return { old: oldCfg, new: newCfg }
+      return { original: oldCfg, updated: newCfg }
     } catch (err) {
       log(err)
 

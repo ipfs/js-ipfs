@@ -166,7 +166,7 @@ exports.replace = {
   }
 }
 
-exports.profile = {
+exports.profiles = {
   apply: {
     validate: {
       query: Joi.object().keys({
@@ -195,7 +195,7 @@ exports.profile = {
       try {
         const diff = await ipfs.config.profiles.apply(profile, { dryRun })
 
-        return h.response({ OldCfg: diff.old, NewCfg: diff.new })
+        return h.response({ OldCfg: diff.original, NewCfg: diff.updated })
       } catch (err) {
         throw Boom.boomify(err, { message: 'Failed to apply profile' })
       }

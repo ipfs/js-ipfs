@@ -18,8 +18,8 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const diff = await ipfs.config.profiles.apply(argv.profile, { dryRun: argv.dryRun })
-      const delta = JSONDiff.diff(diff.old, diff.new)
-      const res = JSONDiff.formatters.console.format(delta, diff.old)
+      const delta = JSONDiff.diff(diff.original, diff.updated)
+      const res = JSONDiff.formatters.console.format(delta, diff.original)
 
       if (res) {
         argv.print(res)
