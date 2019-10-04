@@ -120,7 +120,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should not add from an invalid url', (done) => {
-      ipfs.addFromURL('http://invalid', (err, result) => {
+      ipfs.addFromURL('123http://invalid', (err, result) => {
         expect(err).to.exist()
         expect(result).to.not.exist()
         done()
