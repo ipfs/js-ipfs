@@ -62,9 +62,7 @@ module.exports = (createCommon, options) => {
     })
 
     it('should prevent duplicate inserts of bootstrap peers', async () => {
-      const removed = await ipfs.bootstrap.rm(null, { all: true })
-      expect(removed).to.have.property('Peers').that.is.an('array')
-      expect(removed.Peers).to.have.lengthOf(0)
+      await ipfs.bootstrap.rm(null, { all: true })
 
       const added = await ipfs.bootstrap.add(validIp4)
       expect(added).to.have.property('Peers').that.deep.equals([validIp4])
