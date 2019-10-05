@@ -72,7 +72,7 @@ describe('block', () => runOnAndOff((thing) => {
     ].join('\n') + '\n')
   })
 
-  it.skip('rm', async function () {
+  it('rm', async function () {
     this.timeout(40 * 1000)
 
     const out = await ipfs('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')

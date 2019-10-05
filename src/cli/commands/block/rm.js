@@ -1,22 +1,41 @@
 'use strict'
 
 module.exports = {
-  command: 'rm <key>',
+  command: 'rm <hash...>',
 
-  describe: 'Remove a raw IPFS block',
+  describe: 'Remove IPFS block(s)',
 
-  builder: {},
+  builder: {
+    force: {
+      alias: 'f',
+      describe: 'Ignore nonexistent blocks',
+      type: 'boolean',
+      default: false
+    },
+    quiet: {
+      alias: 'q',
+      describe: 'Write minimal output',
+      type: 'boolean',
+      default: false
+    }
+  },
 
-  handler ({ getIpfs, print, isDaemonOn, key, resolve }) {
+  handler ({ getIpfs, print, hash, resolve }) {
     resolve((async () => {
-      if (isDaemonOn()) {
-        // TODO implement this once `js-ipfs-http-client` supports it
-        throw new Error('rm block with daemon running is not yet implemented')
+      const ipfs = await getIpfs()
+      let errored = false
+
+      for await (const result of ipfs.block._rmAsyncIterator(hash)) {
+        if (result.error) {
+          errored = true
+        }
+
+        print(result.error || 'removed ' + result.hash)
       }
 
-      const ipfs = await getIpfs()
-      await ipfs.block.rm(key)
-      print('removed ' + key)
+      if (errored) {
+        print('Error: some blocks not removed')
+      }
     })())
   }
 }

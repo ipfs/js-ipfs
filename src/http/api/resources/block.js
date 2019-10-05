@@ -8,6 +8,7 @@ const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const all = require('async-iterator-all')
+const { PassThrough } = require('readable-stream')
 const log = debug('ipfs:http-api:block')
 log.error = debug('ipfs:http-api:block:error')
 
@@ -102,20 +103,61 @@ exports.put = {
 }
 
 exports.rm = {
-  // uses common parseKey method that returns a `key`
-  parseArgs: exports.parseKey,
+  validate: {
+    query: Joi.object().keys({
+      arg: Joi.array().items(Joi.string()).single().required(),
+      force: Joi.boolean().default(false),
+      quiet: Joi.boolean().default(false)
+    }).unknown()
+  },
+
+  parseArgs: (request, h) => {
+    let { arg } = request.query
+    arg = arg.map(thing => new CID(thing))
+
+    return {
+      ...request.query,
+      arg
+    }
+  },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler (request, h) {
-    const { key } = request.pre.args
+  handler (request, h) {
+    const { arg, force, quiet } = request.pre.args
+    const output = new PassThrough()
 
-    try {
-      await request.server.app.ipfs.block.rm(key)
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to delete block' })
-    }
+    Promise.resolve()
+      .then(async () => {
+        try {
+          for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
+            force,
+            quiet
+          })) {
+            output.write(JSON.stringify({
+              Hash: result.hash,
+              Error: result.error
+            }) + '\n')
+          }
+        } catch (err) {
+          throw Boom.boomify(err, { message: 'Failed to delete block' })
+        }
+      })
+      .catch(err => {
+        request.raw.res.addTrailers({
+          'X-Stream-Error': JSON.stringify({
+            Message: err.message,
+            Code: 0
+          })
+        })
+      })
+      .then(() => {
+        output.end()
+      })
 
-    return h.response()
+    return h.response(output)
+      .header('x-chunked-output', '1')
+      .header('content-type', 'application/json')
+      .header('Trailer', 'X-Stream-Error')
   }
 }
 

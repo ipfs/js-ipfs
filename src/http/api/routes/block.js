@@ -31,10 +31,11 @@ module.exports = [
   {
     method: '*',
     path: '/api/v0/block/rm',
-    config: {
+    options: {
       pre: [
         { method: resources.block.rm.parseArgs, assign: 'args' }
-      ]
+      ],
+      validate: resources.block.rm.validate
     },
     handler: resources.block.rm.handler
   },
