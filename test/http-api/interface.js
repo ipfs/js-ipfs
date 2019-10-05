@@ -12,26 +12,16 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.bitswap(defaultCommonFactory)
 
-  tests.block(defaultCommonFactory)
+  tests.block(defaultCommonFactory, {
+    skip: [{
+      name: 'rm',
+      reason: 'Not implemented'
+    }]
+  })
 
   tests.bootstrap(defaultCommonFactory)
 
-  tests.config(defaultCommonFactory, {
-    skip: [
-      {
-        name: 'should set a number',
-        reason: 'Failing - needs to be fixed'
-      },
-      {
-        name: 'should output changes but not save them for dry run',
-        reason: 'TODO unskip when https://github.com/ipfs/js-ipfs/pull/2165 is merged'
-      },
-      {
-        name: 'should set a config profile',
-        reason: 'TODO unskip when https://github.com/ipfs/js-ipfs/pull/2165 is merged'
-      }
-    ]
-  })
+  tests.config(defaultCommonFactory)
 
   tests.dag(defaultCommonFactory, {
     skip: [{
