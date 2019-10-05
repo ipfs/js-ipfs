@@ -95,10 +95,12 @@ module.exports = (createCommon, options) => {
 
     it('should ls from outside of mfs', async () => {
       const testFileName = hat()
-      const res = await ipfs.add({ path: `/test/${testFileName}`, content: fixtures.smallFile.data })
-      const listing = await ipfs.files.ls('/ipfs/' + res[res.length - 1])
+      const [{
+        hash
+      }] = await ipfs.add({ path: `/test/${testFileName}`, content: fixtures.smallFile.data })
+      const listing = await ipfs.files.ls('/ipfs/' + hash)
       expect(listing).to.have.length(1)
-      expect(listing[0].name).to.equal(testFileName)
+      expect(listing[0].name).to.equal(hash)
     })
 
     it('should list an empty directory', async () => {

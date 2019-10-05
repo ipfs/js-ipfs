@@ -77,7 +77,9 @@ module.exports = (createCommon, options) => {
     })
 
     it('should copy from outside of mfs', async () => {
-      const [hash] = ipfs.add(fixtures.smallFile.data)
+      const [{
+        hash
+      }] = await ipfs.add(fixtures.smallFile.data)
       const testFilePath = `/${hat()}`
       await ipfs.files.cp(`/ipfs/${hash}`, testFilePath)
       const testFileData = await ipfs.files.read(testFilePath)

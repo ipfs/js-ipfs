@@ -61,7 +61,9 @@ module.exports = (createCommon, options) => {
     })
 
     it('should read from outside of mfs', async () => {
-      const [hash] = ipfs.add(fixtures.smallFile.data)
+      const [{
+        hash
+      }] = await ipfs.add(fixtures.smallFile.data)
       const testFileData = await ipfs.files.read(`/ipfs/${hash}`)
       expect(testFileData).to.eql(fixtures.smallFile.data)
     })

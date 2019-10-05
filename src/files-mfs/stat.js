@@ -132,21 +132,18 @@ module.exports = (createCommon, options) => {
       })
     })
 
-    it('should stat outside of mfs', function (done) {
-      ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid, (err, stat) => {
-        expect(err).to.not.exist()
-        expect(stat).to.include({
-          type: 'file',
-          blocks: 0,
-          size: 12,
-          hash: fixtures.smallFile.cid,
-          cumulativeSize: 20,
-          withLocality: false
-        })
-        expect(stat.local).to.be.undefined()
-        expect(stat.sizeLocal).to.be.undefined()
-        done()
+    it('should stat outside of mfs', async () => {
+      const stat = await ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid)
+      expect(stat).to.include({
+        type: 'file',
+        blocks: 0,
+        size: 12,
+        hash: fixtures.smallFile.cid,
+        cumulativeSize: 20,
+        withLocality: false
       })
+      expect(stat.local).to.be.undefined()
+      expect(stat.sizeLocal).to.be.undefined()
     })
   })
 }
