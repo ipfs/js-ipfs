@@ -13,7 +13,7 @@ module.exports = function block (self) {
     options = options || {}
 
     if (!Array.isArray(cids)) {
-      cids = []
+      cids = [cids]
     }
 
     // We need to take a write lock here to ensure that adding and removing
