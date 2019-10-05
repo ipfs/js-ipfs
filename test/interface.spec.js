@@ -52,6 +52,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should list config profiles',
         reason: 'TODO: Not implemented in go-ipfs'
+      },
+      {
+        name: 'should strip private key from diff output',
+        reason: 'TODO: Not implemented in go-ipfs'
       }
     ]
   })
@@ -131,6 +135,14 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should ls directory with long option',
         reason: 'TODO unskip when go-ipfs supports --long https://github.com/ipfs/go-ipfs/pull/6528'
+      },
+      {
+        name: 'should read from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should ls from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
       }
     ]
   })
