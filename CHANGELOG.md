@@ -1,3 +1,7 @@
+## [0.117.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.117.1...v0.117.2) (2019-10-05)
+
+
+
 ## [0.117.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.117.0...v0.117.1) (2019-10-05)
 
 
