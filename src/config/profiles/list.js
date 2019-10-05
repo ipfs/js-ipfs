@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const waterfall = require('async/waterfall')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -30,21 +29,16 @@ module.exports = (createCommon, options) => {
 
     after((done) => common.teardown(done))
 
-    it('should list config profiles', (done) => {
-      waterfall([
-        (cb) => ipfs.config.profiles.list(cb),
-        (profiles, cb) => {
-          expect(profiles).to.be.an('array')
-          expect(profiles).not.to.be.empty()
+    it('should list config profiles', async () => {
+      const profiles = await ipfs.config.profiles.list()
 
-          profiles.forEach(profile => {
-            expect(profile.name).to.be.a('string')
-            expect(profile.description).to.be.a('string')
-          })
+      expect(profiles).to.be.an('array')
+      expect(profiles).not.to.be.empty()
 
-          cb()
-        }
-      ], done)
+      profiles.forEach(profile => {
+        expect(profile.name).to.be.a('string')
+        expect(profile.description).to.be.a('string')
+      })
     })
   })
 }
