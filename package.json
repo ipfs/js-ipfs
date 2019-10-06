@@ -99,7 +99,7 @@
     "ipfs-bitswap": "^0.26.0",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.16.0",
-    "js-ipfs-http-client": "ipfs/js-ipfs-http-client#f6e648262e51b3f1b54770efa2d170dc7088e982",
+    "js-ipfs-http-client": "^38.2.0",
     "ipfs-http-response": "~0.3.1",
     "ipfs-mfs": "^0.13.0",
     "ipfs-multipart": "^0.2.0",
