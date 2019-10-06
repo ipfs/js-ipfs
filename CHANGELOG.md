@@ -1,3 +1,13 @@
+<a name="38.2.0"></a>
+# [38.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.1.0...v38.2.0) (2019-10-06)
+
+
+### Features
+
+* adds ipfs.block.rm method ([#1123](https://github.com/ipfs/js-ipfs-http-client/issues/1123)) ([2f0eff7](https://github.com/ipfs/js-ipfs-http-client/commit/2f0eff7))
+
+
+
 <a name="38.1.0"></a>
 # [38.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.1...v38.1.0) (2019-10-04)
 
