@@ -16,6 +16,7 @@ const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 
 const addDefaultAssets = require('./init-assets')
+const { profiles } = require('./config')
 
 function createPeerId (self, opts) {
   if (opts.privateKey) {
@@ -54,6 +55,8 @@ async function createRepo (self, opts) {
   opts.log = opts.log || function () {}
 
   const config = mergeOptions(defaultConfig(), self._options.config)
+
+  applyProfile(self, config, opts)
 
   // Verify repo does not exist yet
   const exists = await self._repo.exists()
@@ -128,8 +131,24 @@ async function addRepoAssets (self, privateKey, opts) {
   }
 }
 
+// Apply profiles (eg "server,lowpower") to config
+function applyProfile (self, config, opts) {
+  if (opts.profiles) {
+    for (const name of opts.profiles) {
+      const profile = profiles[name]
+
+      if (!profile) {
+        throw new Error(`Could not find profile with name '${name}'`)
+      }
+
+      self.log(`applying profile ${name}`)
+      profile.transform(config)
+    }
+  }
+}
+
 module.exports = function init (self) {
-  return callbackify(async (opts) => {
+  return callbackify.variadic(async (opts) => {
     opts = opts || {}
 
     await createRepo(self, opts)

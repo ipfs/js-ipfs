@@ -3,7 +3,6 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
 
 module.exports = (http) => {

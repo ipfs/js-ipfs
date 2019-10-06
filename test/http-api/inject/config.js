@@ -6,6 +6,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const path = require('path')
+const { profiles } = require('../../../src/core/components/config')
 
 module.exports = (http) => {
   describe('/config', () => {
@@ -187,6 +188,74 @@ module.exports = (http) => {
 
         expect(res.statusCode).to.equal(200)
         expect(updatedConfig()).to.deep.equal(expectedConfig)
+      })
+    })
+
+    describe('/config/profile/apply', () => {
+      let originalConfig
+
+      beforeEach(() => {
+        originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+      })
+
+      it('returns 400 if no config profile is provided', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply'
+        })
+
+        expect(res.statusCode).to.equal(400)
+      })
+
+      it('returns 400 if the config profile is invalid', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply?arg=derp'
+        })
+
+        expect(res.statusCode).to.equal(400)
+      })
+
+      it('does not apply config profile with dry-run argument', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/apply?arg=lowpower&dry-run=true'
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(updatedConfig()).to.deep.equal(originalConfig)
+      })
+
+      Object.keys(profiles).forEach(profile => {
+        it(`applies config profile ${profile}`, async () => {
+          const res = await api.inject({
+            method: 'POST',
+            url: `/api/v0/config/profile/apply?arg=${profile}`
+          })
+
+          expect(res.statusCode).to.equal(200)
+          expect(updatedConfig()).to.deep.equal(profiles[profile].transform(originalConfig))
+        })
+      })
+    })
+
+    describe('/config/profile/list', () => {
+      it('lists available profiles', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/profile/list'
+        })
+
+        expect(res.statusCode).to.equal(200)
+
+        const listed = JSON.parse(res.payload)
+
+        Object.keys(profiles).forEach(name => {
+          const profile = listed.find(profile => profile.Name === name)
+
+          expect(profile).to.be.ok()
+          expect(profile.Description).to.equal(profiles[name].description)
+        })
       })
     })
   })

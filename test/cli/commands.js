@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOnAndOff = require('../utils/on-and-off')
 
-const commandCount = 95
+const commandCount = 98
 describe('commands', () => runOnAndOff((thing) => {
   let ipfs
 

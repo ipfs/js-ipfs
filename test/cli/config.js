@@ -5,6 +5,8 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
 const path = require('path')
 const runOnAndOff = require('../utils/on-and-off')
+const defaultConfig = require('../../src/core/runtime/config-nodejs')()
+const { profiles } = require('../../src/core/components/config')
 
 describe('config', () => runOnAndOff((thing) => {
   let ipfs
@@ -84,6 +86,53 @@ describe('config', () => runOnAndOff((thing) => {
 
     after(() => {
       restoreConfig()
+    })
+  })
+
+  describe('profile', function () {
+    this.timeout(40 * 1000)
+
+    let originalConfig
+
+    beforeEach(() => {
+      restoreConfig()
+      originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+    })
+
+    after(() => {
+      restoreConfig()
+    })
+
+    Object.keys(profiles).forEach(profile => {
+      it(`applies profile '${profile}'`, async () => {
+        await ipfs(`config profile apply ${profile}`)
+
+        expect(updatedConfig()).to.deep.equal(profiles[profile].transform(originalConfig))
+      })
+    })
+
+    it('--dry-run causes no change', async () => {
+      await ipfs('config profile apply --dry-run=true server')
+      const after = updatedConfig()
+      expect(after.Discovery.MDNS.Enabled).to.equal(defaultConfig.Discovery.MDNS.Enabled)
+
+      await ipfs('config profile apply --dry-run=false server')
+      const updated = updatedConfig()
+      expect(updated.Discovery.MDNS.Enabled).to.equal(false)
+    })
+
+    it('Private key does not appear in output', async () => {
+      const out = await ipfs('config profile apply server')
+      expect(out).not.includes('PrivKey')
+    })
+
+    it('lists available config profiles', async () => {
+      const out = await ipfs('config profile ls')
+
+      Object.keys(profiles => profile => {
+        expect(out).includes(profiles[profile].name)
+        expect(out).includes(profiles[profile].description)
+      })
     })
   })
 }))

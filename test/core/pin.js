@@ -4,7 +4,6 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
-
 const {
   DAGNode
 } = require('ipld-dag-pb')

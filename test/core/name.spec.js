@@ -5,10 +5,8 @@
 const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-
 const parallel = require('async/parallel')
 const series = require('async/series')
-
 const IPFS = require('../../src')
 const ipnsPath = require('../../src/core/ipns/path')
 const ipnsRouting = require('../../src/core/ipns/routing/config')

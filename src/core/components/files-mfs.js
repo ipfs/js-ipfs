@@ -46,7 +46,7 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
 
     if (paths.length) {
       const options = args[args.length - 1]
-      if (options.preload !== false) {
+      if (options && options.preload !== false) {
         paths.forEach(path => ipfs._preload(path))
       }
     }
