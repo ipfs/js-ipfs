@@ -113,7 +113,12 @@ exports.rm = {
 
   parseArgs: (request, h) => {
     let { arg } = request.query
-    arg = arg.map(thing => new CID(thing))
+
+    try {
+      arg = arg.map(thing => new CID(thing))
+    } catch (err) {
+      throw Boom.badRequest('Not a valid hash')
+    }
 
     return {
       ...request.query,
