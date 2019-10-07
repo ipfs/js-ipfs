@@ -41,6 +41,7 @@ function getFullPath (ipfs, ipfsPath, options) {
   const path = normalizePath(ipfsPath)
   const pathComponents = path.split('/')
   const cid = pathComponents[0]
+
   if (!isIpfs.cid(cid)) {
     throw new Error(`Error resolving path '${path}': '${cid}' is not a valid CID`)
   }
@@ -89,43 +90,33 @@ function formatLink (srcCid, dstCid, linkName, format) {
 }
 
 // Do a depth first search of the DAG, starting from the given root cid
-async function * objectStream (ipfs, rootCid, maxDepth, isUnique) {
-  const uniques = new Set()
+async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
+  const seen = new Set()
 
-  async function * traverseLevel (obj) {
-    const { node, depth } = obj
+  async function * traverseLevel (parent, depth) {
+    const nextLevelDepth = depth + 1
 
     // Check the depth
-    const nextLevelDepth = depth + 1
     if (nextLevelDepth > maxDepth) {
       return
     }
 
-    // If unique option is enabled, check if the CID has been seen before.
-    // Note we need to do this here rather than before adding to the stream
-    // so that the unique check happens in the order that items are examined
-    // in the DAG.
-    if (isUnique) {
-      if (uniques.has(node.cid.toString())) {
-        // Mark this object as a duplicate so we can filter it out later
-        obj.isDuplicate = true
-        return
-      }
-      uniques.add(node.cid.toString())
-    }
-
     // Get this object's links
     try {
-      // Add to the stream each link, parent and the new depth
-      for (const link of await getLinks(ipfs, node.cid)) {
-        const child = {
-          parent: node,
+      // Look at each link, parent and the new depth
+      for (const link of await getLinks(ipfs, parent.cid)) {
+
+        yield {
+          parent: parent,
           node: link,
-          depth: nextLevelDepth
+          isDuplicate: uniqueOnly && seen.has(link.cid.toString())
         }
 
-        yield child
-        yield * await traverseLevel(child)
+        if (uniqueOnly) {
+          seen.add(link.cid.toString())
+        }
+
+        yield * await traverseLevel(link, nextLevelDepth)
       }
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
@@ -136,7 +127,7 @@ async function * objectStream (ipfs, rootCid, maxDepth, isUnique) {
     }
   }
 
-  yield * await traverseLevel({ node: { cid: rootCid }, depth: 0 })
+  yield * await traverseLevel({ cid: rootCid }, 0)
 }
 
 // Fetch a node from IPLD then get all its links
