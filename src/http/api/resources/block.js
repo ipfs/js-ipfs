@@ -8,7 +8,7 @@ const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const all = require('async-iterator-all')
-const { PassThrough } = require('readable-stream')
+const streamResponse = require('../../utils/stream-response')
 const log = debug('ipfs:http-api:block')
 log.error = debug('ipfs:http-api:block:error')
 
@@ -129,40 +129,22 @@ exports.rm = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler (request, h) {
     const { arg, force, quiet } = request.pre.args
-    const output = new PassThrough()
 
-    Promise.resolve()
-      .then(async () => {
-        try {
-          for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
-            force,
-            quiet
-          })) {
-            output.write(JSON.stringify({
-              Hash: result.hash,
-              Error: result.error
-            }) + '\n')
-          }
-        } catch (err) {
-          throw Boom.boomify(err, { message: 'Failed to delete block' })
+    return streamResponse(request, h, async (output) => {
+      try {
+        for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
+          force,
+          quiet
+        })) {
+          output.write(JSON.stringify({
+            Hash: result.hash,
+            Error: result.error
+          }) + '\n')
         }
-      })
-      .catch(err => {
-        request.raw.res.addTrailers({
-          'X-Stream-Error': JSON.stringify({
-            Message: err.message,
-            Code: 0
-          })
-        })
-      })
-      .then(() => {
-        output.end()
-      })
-
-    return h.response(output)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
+      } catch (err) {
+        throw Boom.boomify(err, { message: 'Failed to delete block' })
+      }
+    })
   }
 }
 
