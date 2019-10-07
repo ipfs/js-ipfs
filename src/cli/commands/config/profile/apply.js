@@ -24,7 +24,7 @@ module.exports = {
       if (res) {
         argv.print(res)
 
-        if (ipfs.send) {
+        if (argv.isDaemonOn()) {
           argv.print('\nThe IPFS daemon is running in the background, you may need to restart it for changes to take effect.')
         }
       } else {
