@@ -49,6 +49,7 @@ describe('files', function () {
       const invalidPath = null
       const stream = ipfs.getReadableStream(invalidPath)
 
+      stream.on('data', () => {})
       stream.on('error', (err) => {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_PATH')
