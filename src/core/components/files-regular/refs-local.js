@@ -4,9 +4,16 @@ const promisify = require('promisify-es6')
 const pull = require('pull-stream')
 
 module.exports = function (self) {
-  return promisify((callback) => {
+  return promisify((options, callback) => {
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    options = options || {}
+
     pull(
-      self.refs.localPullStream(),
+      self.refs.localPullStream(options),
       pull.collect((err, values) => {
         if (err) {
           return callback(err)

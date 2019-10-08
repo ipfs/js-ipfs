@@ -18,7 +18,7 @@ describe('refs-local', () => runOnAndOff((thing) => {
     const out = await ipfs('refs-local')
     const lines = out.split('\n')
 
-    expect(lines.includes('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN')).to.eql(true)
-    expect(lines.includes('QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU')).to.eql(true)
+    expect(lines.includes('bafkreicjl7v3vyyv4zlryihez5xhunqmriry6styhil7z5lhd3r4prnz6y')).to.eql(true)
+    expect(lines.includes('bafkreidj5bovvm25wszvajfshj7m7m2efpswcs6dsz7giz52ovlquxc4o4')).to.eql(true)
   })
 }))

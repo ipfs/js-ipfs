@@ -5,12 +5,22 @@ module.exports = {
 
   describe: 'List all local references.',
 
-  handler ({ getIpfs, print, resolve }) {
+  builder (yargs) {
+    return yargs
+      .option('multihash', {
+        desc: 'Shows base32 encoded multihashes instead of reconstructed CIDs',
+        type: 'boolean',
+        default: false
+      })
+      .epilog('CIDs are reconstructed therefore they might differ from those under which the blocks were originally stored.')
+  },
+
+  handler ({ getIpfs, print, resolve, multihash }) {
     resolve((async () => {
       const ipfs = await getIpfs()
 
       return new Promise((resolve, reject) => {
-        const stream = ipfs.refs.localReadableStream()
+        const stream = ipfs.refs.localReadableStream({ multihash })
 
         stream.on('error', reject)
         stream.on('end', resolve)

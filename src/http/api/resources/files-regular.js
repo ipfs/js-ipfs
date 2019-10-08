@@ -37,7 +37,7 @@ exports.parseKey = (request, h) => {
   const { arg } = request.query
 
   if (!arg) {
-    throw Boom.badRequest("Argument 'key' is required")
+    throw Boom.badRequest('Argument \'key\' is required')
   }
 
   const isArray = Array.isArray(arg)
@@ -235,7 +235,7 @@ exports.add = {
     )
       .then(() => {
         if (!filesParsed) {
-          throw new Error("File argument 'data' is required.")
+          throw new Error('File argument \'data\' is required.')
         }
       })
       .catch(err => {
@@ -342,10 +342,19 @@ exports.refs = {
 }
 
 exports.refs.local = {
+  validate: {
+    query: Joi.object().keys({
+      multihash: Joi.boolean().default(false),
+    }).unknown()
+  },
+
   // main route handler
   handler (request, h) {
     const { ipfs } = request.server.app
-    const source = ipfs.refs.localPullStream()
+
+    const multihash = request.query.multihash
+
+    const source = ipfs.refs.localPullStream({ multihash })
     return sendRefsReplyStream(request, h, 'local refs', source)
   }
 }
