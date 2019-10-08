@@ -8,10 +8,8 @@ log.error = debug('ipfs:http-api:files:error')
 const pull = require('pull-stream')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
-const abortable = require('pull-abortable')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
-const ndjson = require('pull-ndjson')
 const { PassThrough } = require('readable-stream')
 const multibase = require('multibase')
 const isIpfs = require('is-ipfs')
@@ -378,18 +376,18 @@ function streamResponse (request, h, fn) {
   const errorTrailer = 'X-Stream-Error'
 
   Promise.resolve()
-      .then(() => fn(output))
-      .catch(err => {
-        request.raw.res.addTrailers({
-          [errorTrailer]: JSON.stringify({
-            Message: err.message,
-            Code: 0
-          })
+    .then(() => fn(output))
+    .catch(err => {
+      request.raw.res.addTrailers({
+        [errorTrailer]: JSON.stringify({
+          Message: err.message,
+          Code: 0
         })
       })
-      .finally(() => {
-        output.end()
-      })
+    })
+    .finally(() => {
+      output.end()
+    })
 
   return h.response(output)
     .header('x-chunked-output', '1')

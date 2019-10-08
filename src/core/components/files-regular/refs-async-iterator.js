@@ -105,7 +105,6 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
     try {
       // Look at each link, parent and the new depth
       for (const link of await getLinks(ipfs, parent.cid)) {
-
         yield {
           parent: parent,
           node: link,
@@ -120,7 +119,7 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
       }
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
-        err.message = `Could not find object with CID: ${node.cid}`
+        err.message = `Could not find object with CID: ${parent.cid}`
       }
 
       throw err
