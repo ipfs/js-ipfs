@@ -1,3 +1,29 @@
+<a name="0.39.0-rc.0"></a>
+# [0.39.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0...v0.39.0-rc.0) (2019-10-08)
+
+
+### Bug Fixes
+
+* limit concurrent HTTP requests in browser ([#2304](https://github.com/ipfs/js-ipfs/issues/2304)) ([cf38aea](https://github.com/ipfs/js-ipfs/commit/cf38aea))
+* only try to get ipfs if argv is present ([#2504](https://github.com/ipfs/js-ipfs/issues/2504)) ([1281b9f](https://github.com/ipfs/js-ipfs/commit/1281b9f))
+* pull in preconfigured chai from interface tests ([#2510](https://github.com/ipfs/js-ipfs/issues/2510)) ([8c01259](https://github.com/ipfs/js-ipfs/commit/8c01259))
+
+
+### Features
+
+* Add config profile endpoint and CLI ([#2165](https://github.com/ipfs/js-ipfs/issues/2165)) ([7314f0d](https://github.com/ipfs/js-ipfs/commit/7314f0d))
+* allow daemon to init and start in a single cmd ([#2428](https://github.com/ipfs/js-ipfs/issues/2428)) ([16d5e7b](https://github.com/ipfs/js-ipfs/commit/16d5e7b))
+* support block.rm over http api ([#2514](https://github.com/ipfs/js-ipfs/issues/2514)) ([c9be79e](https://github.com/ipfs/js-ipfs/commit/c9be79e))
+* web ui 2.5.3 ([4f398fc](https://github.com/ipfs/js-ipfs/commit/4f398fc))
+* web ui 2.5.4 ([#2478](https://github.com/ipfs/js-ipfs/issues/2478)) ([bff402c](https://github.com/ipfs/js-ipfs/commit/bff402c))
+
+
+### Reverts
+
+* e ([55c4446](https://github.com/ipfs/js-ipfs/commit/55c4446))
+
+
+
 <a name="0.38.0"></a>
 # [0.38.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.6...v0.38.0) (2019-09-30)
 
