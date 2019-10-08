@@ -26,7 +26,7 @@ module.exports = [
     method: '*',
     path: '/webui',
     handler (request, h) {
-      return h.redirect('/ipfs/QmeSXt32frzhvewLKwA1dePTSjkTfGVwTh55ZcsJxrCSnk')
+      return h.redirect('/ipns/webui.ipfs.io')
     }
   }
 ]
