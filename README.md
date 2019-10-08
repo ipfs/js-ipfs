@@ -782,6 +782,7 @@ The core API is grouped into several areas:
 - [block](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md)
   - [`ipfs.block.get(cid, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockget)
   - [`ipfs.block.put(block, cid)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockput)
+  - [`ipfs.block.rm(cid)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockrm)
   - [`ipfs.block.stat(cid)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BLOCK.md#blockstat)
 - [bitswap](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/BITSWAP.md)
   - [`ipfs.bitswap.wantlist([peerId])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/BITSWAP.md#bitswapwantlist)
@@ -873,6 +874,8 @@ The core API is grouped into several areas:
   - [`ipfs.config.get([key])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configget)
   - [`ipfs.config.set(key, value)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configset)
   - [`ipfs.config.replace(config)`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configreplace)
+  - [`ipfs.config.profiles.list()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configprofileslist)
+  - [`ipfs.config.profiles.apply(name, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md#configprofilesapply)
 
 #### Static types and utils
 
