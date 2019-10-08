@@ -12,12 +12,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.bitswap(defaultCommonFactory, { skip: !isNode })
 
-  tests.block(defaultCommonFactory, {
-    skip: [{
-      name: 'rm',
-      reason: 'Not implemented'
-    }]
-  })
+  tests.block(defaultCommonFactory)
 
   tests.bootstrap(defaultCommonFactory)
 

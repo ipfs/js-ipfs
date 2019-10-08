@@ -72,10 +72,36 @@ describe('block', () => runOnAndOff((thing) => {
     ].join('\n') + '\n')
   })
 
-  it.skip('rm', async function () {
+  it('rm', async function () {
     this.timeout(40 * 1000)
+
+    await ipfs('block put test/fixtures/test-data/hello')
 
     const out = await ipfs('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     expect(out).to.eql('removed QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp\n')
+  })
+
+  it('rm quietly', async function () {
+    this.timeout(40 * 1000)
+
+    await ipfs('block put test/fixtures/test-data/hello')
+
+    const out = await ipfs('block rm --quiet QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+    expect(out).to.eql('')
+  })
+
+  it('rm force', async function () {
+    this.timeout(40 * 1000)
+
+    const out = await ipfs('block rm --force QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
+    expect(out).to.eql('removed QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh\n')
+  })
+
+  it('fails to remove non-existent block', async function () {
+    this.timeout(40 * 1000)
+
+    const out = await ipfs.fail('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
+    expect(out.stdout).to.include('block not found')
+    expect(out.stdout).to.include('some blocks not removed')
   })
 }))

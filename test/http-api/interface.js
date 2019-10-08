@@ -12,12 +12,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.bitswap(defaultCommonFactory)
 
-  tests.block(defaultCommonFactory, {
-    skip: [{
-      name: 'rm',
-      reason: 'Not implemented'
-    }]
-  })
+  tests.block(defaultCommonFactory)
 
   tests.bootstrap(defaultCommonFactory)
 
