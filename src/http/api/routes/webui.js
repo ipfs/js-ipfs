@@ -1,32 +1,21 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
-const resources = require('../../gateway/resources')
+const multiaddr = require('multiaddr')
 
 module.exports = [
   {
     method: '*',
-    path: '/ipfs/{path*}',
-    options: {
-      handler: resources.gateway.handler,
-      validate: {
-        params: {
-          path: Joi.string().required()
-        }
-      },
-      response: {
-        ranges: false // disable built-in support, handler does it manually
-      },
-      ext: {
-        onPostHandler: { method: resources.gateway.afterHandler }
-      }
-    }
-  },
-  {
-    method: '*',
     path: '/webui',
-    handler (request, h) {
-      return h.redirect('/ipns/webui.ipfs.io')
+    async handler (request, h) {
+      const { ipfs } = request.server.app
+      const gateway = await ipfs.config.get('Addresses.Gateway')
+      const addr = multiaddr(gateway)
+      const {
+        port,
+        address
+      } = addr.nodeAddress()
+
+      return h.redirect(`http://${address}:${port}/ipns/webui.ipfs.io`)
     }
   }
 ]
