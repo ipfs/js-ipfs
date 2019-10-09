@@ -78,26 +78,26 @@ jobs:
         - npx aegir test -t electron-renderer --bail --timeout 10000
 
     - stage: test
-      name: interop node
+      name: interop - node
       script:
         - cd node_modules/ipfs-interop
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t node --bail
 
     - stage: test
-      name: interop browser
+      name: interop - browser
       script:
         - cd node_modules/ipfs-interop
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t browser --bail
 
     - stage: test
-      name: interop electron-main
+      name: interop - electron-main
       os: osx
       script:
         - cd node_modules/ipfs-interop
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
 
     - stage: test
-      name: interop electron-renderer
+      name: interop - electron-renderer
       os: osx
       script:
         - cd node_modules/ipfs-interop
@@ -105,31 +105,31 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: ipfs-companion
+      name: external - ipfs-companion
       script:
         - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: npm-on-ipfs
+      name: external - npm-on-ipfs
       script:
         - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: ipfs-pubsub-room
+      name: external - ipfs-pubsub-room
       script:
         - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: peer-base
+      name: external - peer-base
       script:
         - npm run test:external -- peer-base https://github.com/peer-base/peer-base.git
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: service-worker-gateway
+      name: external - service-worker-gateway
       script:
         - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
 

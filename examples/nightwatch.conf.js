@@ -1,5 +1,9 @@
 'use strict'
 
+process.on('unhandledPromiseRejection', (err) => {
+  throw err
+})
+
 // config used to test examples
 module.exports = {
   src_folders: ['tests'],
