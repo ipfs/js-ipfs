@@ -6,7 +6,9 @@ const execa = require('execa')
 const dir = path.join(__dirname, process.argv[2])
 
 testExample(dir)
-  .then(() => {}, (err) => { throw err })
+  .then(() => {}, (err) => {
+    process.exit(err.exitCode || 1)
+  })
 
 async function testExample (dir) {
   await installDeps(dir)
@@ -78,11 +80,7 @@ async function runBrowserTest (dir) {
   })
 
   try {
-    const result = await proc
-
-    if (result.stderr.includes('FAILED')) {
-      throw new Error('Tests failed')
-    }
+    await proc
   } finally {
     stopServer()
   }
