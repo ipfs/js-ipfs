@@ -27,7 +27,7 @@ module.exports = {
         if (r.err) {
           streamErrors && print(r.err.message, true, true)
         } else {
-          print((quiet ? '' : 'removed ') + r.cid)
+          print((quiet ? '' : 'removed ') + r.multihash)
         }
       }
     })())

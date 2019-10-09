@@ -18,7 +18,7 @@ exports.gc = {
     const response = filtered.map(r => {
       return {
         Err: r.err && r.err.message,
-        Key: !r.err && { '/': r.cid.toString() }
+        Key: !r.err && r.multihash
       }
     })
     return h.response(response)

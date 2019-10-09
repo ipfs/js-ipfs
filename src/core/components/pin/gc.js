@@ -3,7 +3,6 @@
 const CID = require('cids')
 const base32 = require('base32.js')
 const callbackify = require('callbackify')
-const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:gc')
 const { default: Queue } = require('p-queue')
 // TODO: Use exported key from root when upgraded to ipfs-mfs@>=13
@@ -47,7 +46,7 @@ module.exports = function gc (self) {
   })
 }
 
-// Get Set of CIDs of blocks to keep
+// Get Set of multihashes of blocks to keep
 async function createMarkedSet (ipfs) {
   const output = new Set()
 
@@ -55,7 +54,8 @@ async function createMarkedSet (ipfs) {
     log(`Found ${pins.length} pinned blocks`)
 
     pins.forEach(pin => {
-      output.add(cidToString(new CID(pin), { base: 'base32' }))
+      const cid = new CID(pin)
+      output.add(base32.encode(cid.multihash))
     })
   }
 
@@ -91,7 +91,6 @@ async function getDescendants (ipfs, cid) {
   const refs = await ipfs.refs(cid, { recursive: true })
   const cids = [cid, ...refs.map(r => new CID(r.ref))]
   log(`Found ${cids.length} MFS blocks`)
-  // log('  ' + cids.join('\n  '))
 
   return cids
 }
@@ -100,54 +99,37 @@ async function getDescendants (ipfs, cid) {
 async function deleteUnmarkedBlocks (ipfs, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
   // The blockKeys variable has the form [ { key: Key() }, { key: Key() }, ... ]
-  const unreferenced = []
   const result = []
+  let blockCounter = 0
 
   const queue = new Queue({
     concurrency: BLOCK_RM_CONCURRENCY
   })
 
   for await (const { key: k } of blockKeys) {
-    try {
-      const cid = dsKeyToCid(k)
-      const b32 = cid.toV1().toString('base32')
-      if (!markedSet.has(b32)) {
-        unreferenced.push(cid)
+    blockCounter++
+    const multihashString = k.toString().substr(1)
+    if (!markedSet.has(multihashString)) {
+      queue.add(async () => {
+        const res = {
+          multihash: multihashString
+        }
 
-        queue.add(async () => {
-          const res = {
-            cid
-          }
+        try {
+          await ipfs._repo.blocks.delete(base32.decode(multihashString))
+        } catch (err) {
+          res.err = new Error(`Could not delete block with multihash ${multihashString}: ${err.message}`)
+        }
 
-          try {
-            await ipfs._repo.blocks.delete(cid)
-          } catch (err) {
-            res.err = new Error(`Could not delete block with CID ${cid}: ${err.message}`)
-          }
-
-          result.push(res)
-        })
-      }
-    } catch (err) {
-      const msg = `Could not convert block with key '${k}' to CID`
-      log(msg, err)
-      result.push({ err: new Error(msg + `: ${err.message}`) })
+        result.push(res)
+      })
     }
   }
 
   await queue.onIdle()
 
-  log(`Marked set has ${markedSet.size} unique blocks. Blockstore has ${blockKeys.length} blocks. ` +
-  `Deleted ${unreferenced.length} blocks.`)
+  log(`Marked set has ${markedSet.size} unique blocks. Blockstore has ${blockCounter} blocks. ` +
+    `Deleted ${result.filter(res => res.err === undefined).length} blocks.`)
 
   return result
-}
-
-// TODO: Use exported utility when upgrade to ipfs-repo@>=0.27.1
-// https://github.com/ipfs/js-ipfs-repo/pull/206
-function dsKeyToCid (key) {
-  // Block key is of the form /<base32 encoded string>
-  const decoder = new base32.Decoder()
-  const buff = decoder.write(key.toString().slice(1)).finalize()
-  return new CID(Buffer.from(buff))
 }

@@ -7,6 +7,8 @@ const IPFSFactory = require('ipfsd-ctl')
 const pEvent = require('p-event')
 const env = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
+const CID = require('cids')
+const base32 = require('base32.js')
 const { Errors } = require('interface-datastore')
 
 // We need to detect when a readLock or writeLock is requested for the tests
@@ -90,17 +92,17 @@ describe('gc', function () {
     name: 'add',
     add1: () => ipfs.add(fixtures[0], { pin: false }),
     add2: () => ipfs.add(fixtures[1], { pin: false }),
-    resToCid: (res) => res[0].hash
+    resToMultihash: (res) => base32.encode(new CID(res[0].hash).multihash)
   }, {
     name: 'object put',
     add1: () => ipfs.object.put({ Data: 'obj put 1', Links: [] }),
     add2: () => ipfs.object.put({ Data: 'obj put 2', Links: [] }),
-    resToCid: (res) => res.toString()
+    resToMultihash: (res) => base32.encode(res.multihash)
   }, {
     name: 'block put',
     add1: () => ipfs.block.put(Buffer.from('block put 1'), null),
     add2: () => ipfs.block.put(Buffer.from('block put 2'), null),
-    resToCid: (res) => res.cid.toString()
+    resToMultihash: (res) => base32.encode(res.cid.multihash)
   }]
 
   describe('locks', function () {
@@ -122,9 +124,9 @@ describe('gc', function () {
         await gcStarted
         const add2 = test.add2()
 
-        const deleted = (await gc).map(i => i.cid.toString())
-        const add1Res = test.resToCid(await add1)
-        const add2Res = test.resToCid(await add2)
+        const deleted = (await gc).map(i => i.multihash)
+        const add1Res = test.resToMultihash(await add1)
+        const add2Res = test.resToMultihash(await add2)
 
         // Should have garbage collected blocks from first add, because GC should
         // have waited for first add to finish
@@ -152,9 +154,9 @@ describe('gc', function () {
       await gcStarted
       const add2 = ipfs.add(fixtures[3], { pin: true })
 
-      const deleted = (await gc).map(i => i.cid.toString())
-      const add1Res = (await add1)[0].hash
-      const add2Res = (await add2)[0].hash
+      const deleted = (await gc).map(i => i.multihash)
+      const add1Res = base32.encode(new CID((await add1)[0].hash).multihash)
+      const add2Res = base32.encode(new CID((await add2)[0].hash).multihash)
 
       // Should not have garbage collected blocks from first add, because GC should
       // have waited for first add + pin to finish (protected by pin)
@@ -168,7 +170,9 @@ describe('gc', function () {
     it('garbage collection should wait for pending block rm to finish', async () => {
       // Add two blocks so that we can remove them
       const cid1 = (await ipfs.block.put(Buffer.from('block to rm 1'), null)).cid
+      const cid1Multihash = base32.encode(cid1.multihash)
       const cid2 = (await ipfs.block.put(Buffer.from('block to rm 2'), null)).cid
+      const cid2Multihash = base32.encode(cid2.multihash)
 
       // Remove first block from IPFS
       // Note: block rm will take a write lock
@@ -185,33 +189,34 @@ describe('gc', function () {
       await gcStarted
       const rm2 = ipfs.block.rm(cid2)
 
-      const deleted = (await gc).map(i => i.cid.toString())
-      await rm1
-
-      // Second rm should fail because GC has already removed that block
-      try {
-        await rm2
-      } catch (err) {
-        expect(err.code).eql(Errors.dbDeleteFailedError().code)
-      }
+      const deleted = (await gc).map(i => i.multihash)
+      const rm1Out = await rm1
+      expect(rm1Out[0]).to.not.have.property('error')
 
       // Confirm second block has been removed
-      const localRefs = (await ipfs.refs.local()).map(r => r.ref)
-      expect(localRefs).not.includes(cid2.toString())
+      const localMultihashes = (await ipfs.refs.local()).map(r => base32.encode(new CID(r.ref).multihash))
+      expect(localMultihashes).not.includes(cid2Multihash)
+
+      // Second rm should fail because GC has already removed that block
+      expect((await rm2)[0])
+        .to.have.property('error')
+        .that.has.property('code').that.equal(Errors.dbDeleteFailedError().code)
 
       // Should not have garbage collected block from first block put, because
       // GC should have waited for first rm (removing first block put) to finish
-      expect(deleted).not.includes(cid1.toString())
+      expect(deleted).not.includes(cid1Multihash)
 
       // Should have garbage collected block from second block put, because GC
       // should have completed before second rm (removing second block put)
-      expect(deleted).includes(cid2.toString())
+      expect(deleted).includes(cid2Multihash)
     })
 
     it('garbage collection should wait for pending pin add to finish', async () => {
       // Add two blocks so that we can pin them
-      const cid1 = (await ipfs.block.put(Buffer.from('block to pin add 1'), null)).cid
-      const cid2 = (await ipfs.block.put(Buffer.from('block to pin add 2'), null)).cid
+      const cid1 = (await ipfs.block.put(Buffer.from('block to test pin add 1'), null)).cid
+      const cid2 = (await ipfs.block.put(Buffer.from('block to test pin add 2'), null)).cid
+      const cid1Multihash = base32.encode(cid1.multihash)
+      const cid2Multihash = base32.encode(cid2.multihash)
 
       // Pin first block
       // Note: pin add will take a read lock
@@ -221,7 +226,7 @@ describe('gc', function () {
       // Once pin lock has been requested, start GC
       await pinLockRequested
       const gc = ipfs.repo.gc()
-      const deleted = (await gc).map(i => i.cid.toString())
+      const deleted = (await gc).map(i => i.multihash)
       await pin1
 
       // TODO: Adding pin for removed block never returns, which means the lock
@@ -229,22 +234,24 @@ describe('gc', function () {
       // const pin2 = ipfs.pin.add(cid2)
 
       // Confirm second second block has been removed
-      const localRefs = (await ipfs.refs.local()).map(r => r.ref)
-      expect(localRefs).not.includes(cid2.toString())
+      const localMultihashes = (await ipfs.refs.local()).map(r => base32.encode(new CID(r.ref).multihash))
+      expect(localMultihashes).not.includes(cid2Multihash)
 
       // Should not have garbage collected block from first block put, because
       // GC should have waited for pin (protecting first block put) to finish
-      expect(deleted).not.includes(cid1.toString())
+      expect(deleted).not.includes(cid1Multihash)
 
       // Should have garbage collected block from second block put, because GC
       // should have completed before second pin
-      expect(deleted).includes(cid2.toString())
+      expect(deleted).includes(cid2Multihash)
     })
 
     it('garbage collection should wait for pending pin rm to finish', async () => {
       // Add two blocks so that we can pin them
       const cid1 = (await ipfs.block.put(Buffer.from('block to pin rm 1'), null)).cid
       const cid2 = (await ipfs.block.put(Buffer.from('block to pin rm 2'), null)).cid
+      const cid1Multihash = base32.encode(cid1.multihash)
+      const cid2Multihash = base32.encode(cid2.multihash)
 
       // Pin blocks
       await ipfs.pin.add(cid1)
@@ -265,17 +272,17 @@ describe('gc', function () {
       await gcStarted
       const pinRm2 = ipfs.pin.rm(cid2)
 
-      const deleted = (await gc).map(i => i.cid.toString())
+      const deleted = (await gc).map(i => i.multihash)
       await pinRm1
       await pinRm2
 
       // Should have garbage collected block from first block put, because
       // GC should have waited for pin rm (unpinning first block put) to finish
-      expect(deleted).includes(cid1.toString())
+      expect(deleted).includes(cid1Multihash)
 
       // Should not have garbage collected block from second block put, because
       // GC should have completed before second block was unpinned
-      expect(deleted).not.includes(cid2.toString())
+      expect(deleted).not.includes(cid2Multihash)
     })
   })
 })
