@@ -191,6 +191,14 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
+      name: example - browser-video-streaming
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-video-streaming
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
       name: example - browser-vue
       script:
         - cd examples
