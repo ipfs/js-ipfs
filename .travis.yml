@@ -135,7 +135,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-add-readable-stream
+      name: example - browser-add-readable-stream
       script:
         - cd examples
         - npm install
@@ -143,7 +143,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-browserify
+      name: example - browser-browserify
       script:
         - cd examples
         - npm install
@@ -151,7 +151,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-create-react-app
+      name: example - browser-create-react-app
       script:
         - cd examples
         - npm install
@@ -159,7 +159,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-mfs
+      name: example - browser-mfs
       script:
         - cd examples
         - npm install
@@ -167,7 +167,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-parceljs
+      name: example - browser-parceljs
       script:
         - cd examples
         - npm install
@@ -175,7 +175,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-readablestream
+      name: example - browser-readablestream
       script:
         - cd examples
         - npm install
@@ -183,7 +183,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-script-tag
+      name: example - browser-script-tag
       script:
         - cd examples
         - npm install
@@ -191,7 +191,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-vue
+      name: example - browser-vue
       script:
         - cd examples
         - npm install
@@ -199,7 +199,7 @@ jobs:
 
     - stage: test
       if: branch =~ /^release\/.*$/
-      name: examples - browser-webpack
+      name: example - browser-webpack
       script:
         - cd examples
         - npm install

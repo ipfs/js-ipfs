@@ -78,7 +78,11 @@ async function runBrowserTest (dir) {
   })
 
   try {
-    await proc
+    const result = await proc
+
+    if (result.stderr.includes('FAILED')) {
+      throw new Error('Tests failed')
+    }
   } finally {
     stopServer()
   }
