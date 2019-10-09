@@ -141,13 +141,28 @@ async function startServer (dir) {
     }
   }
 
+  // running a bare index.html file
   const files = [
     path.join(dir, 'index.html')
   ]
 
   for (const f of files) {
     if (fs.existsSync(f)) {
-      console.info('Found', f)
+      console.info('Found bare file', f)
+
+      console.info('Building IPFS')
+      const proc = execa.command('npm run build', {
+        cwd: path.resolve(dir, '../../'),
+        env: {
+          ...process.env,
+          CI: true // needed for some "clever" build tools
+        }
+      })
+      proc.all.on('data', (data) => {
+        process.stdout.write(data)
+      })
+
+      await proc
 
       return Promise.resolve({
         serverUrl: `file://${f}`,
