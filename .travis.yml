@@ -34,6 +34,10 @@ addons:
       # Fixes error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
       # https://github.com/electron/electron/issues/1518
       - libgconf-2-4
+      # Ensure chrome is the latest version
+      # https://stackoverflow.com/questions/57903415/travis-ci-chrome-62-instead-of-77
+      - dpkg
+  chrome: stable
 
 script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success:
