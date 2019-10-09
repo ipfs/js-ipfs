@@ -129,6 +129,78 @@ jobs:
       script:
         - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
 
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-add-readable-stream
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-add-readable-stream
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-browserify
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-browserify
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-create-react-app
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-create-react-app
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-mfs
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-mfs
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-parceljs
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-parceljs
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-readablestream
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-readablestream
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-script-tag
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-script-tag
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-vue
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-vue
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: examples - browser-webpack
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- browser-webpack
+
     - stage: tag
       # only run on changes to master
       if: branch = master AND type = push AND fork = false

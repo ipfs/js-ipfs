@@ -5,12 +5,11 @@ const WebpackDevServer = require('webpack-dev-server')
 const config = require('./webpack.config')
 
 const wds = new WebpackDevServer(webpack(config), {
-  publicPath: config.output.publicPath,
   hot: true,
   historyApiFallback: true
 })
 
-wds.listen(3000, 'localhost', (err, result) => {
+wds.listen(3000, 'localhost', (err) => {
   if (err) {
     throw err
   }
