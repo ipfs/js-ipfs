@@ -1,5 +1,9 @@
 'use strict'
 
+const { ephemeralPort } = require('./utils')
+
+const WEBRIVER_PORT = ephemeralPort()
+
 // config used to test examples
 module.exports = {
   src_folders: ['tests'],
@@ -7,7 +11,10 @@ module.exports = {
   webdriver: {
     start_process: true,
     server_path: 'node_modules/.bin/chromedriver',
-    port: 9515
+    port: WEBRIVER_PORT,
+    cli_args: [
+      `--port=${WEBRIVER_PORT}`
+    ]
   },
 
   test_settings: {

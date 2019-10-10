@@ -72,4 +72,4 @@ Your `test.js` file should contain a [Nightwatch](https://www.npmjs.com/package/
 
 ### Node
 
-...
+Your `test.js` file should export an async function that sets up your test, runs any assertions, tears down anything set up and throws an error if the test fails.

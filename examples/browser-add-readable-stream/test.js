@@ -5,7 +5,9 @@ module.exports = {
     browser
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
       .waitForElementVisible('#output')
-      .assert.containsText('#output', 'directory/ QmVgJePRxp1vhRxDcJWdmuFGfUB5S5RYTtG1NR3bQM4BBn')
-      .end()
+
+    browser.expect.element('#outpu').text.text.to.contain('directory/ QmVgJePRxp1vhRxDcJWdmuFGfUB5S5RYTtG1NR3bQM4BBn').before(30000)
+
+    browser.end()
   }
 }

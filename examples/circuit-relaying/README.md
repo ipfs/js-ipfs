@@ -16,10 +16,10 @@ Here is a simple diagram depicting how a typical circuit-relay connection might 
 +---------------------+         |          |         +---------------------+
 |       Node A        |---------> FIREWALL <---------|        Node B       |
 +----------^----------+         |          |         +----------^----------+
-           |                                                    |           
-           |               +---------------------+              |           
-           +--------------->   Circuit Relay     <--------------+           
-                           +---------------------+                          
+           |                                                    |
+           |               +---------------------+              |
+           +--------------->   Circuit Relay     <--------------+
+                           +---------------------+
 ```
 
 `Node A` tries to connect to `Node B` but, UH-OH! There is a firewall in between that's preventing it from happening. If both `Node A` and `Node B` know about a relay, they can use it to establish the connection.

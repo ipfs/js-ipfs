@@ -12,8 +12,10 @@ module.exports = {
       .pause(1000)
       .click('#store')
       .waitForElementVisible('#output')
-      .assert.containsText('#hash', 'QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX')
-      .assert.containsText('#content', 'hello')
-      .end()
+
+    browser.expect.element('#hash').text.to.contain('QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX').before(30000)
+    browser.expect.element('#content').text.to.contain('hello').before(30000)
+
+    browser.end()
   }
 }

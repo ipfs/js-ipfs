@@ -213,6 +213,30 @@ jobs:
         - npm install
         - npm run test -- browser-webpack
 
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - circuit-relaying
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- circuit-relaying
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - custom-ipfs-repo
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- custom-ipfs-repo
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - custom-libp2p
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- custom-libp2p
+
     - stage: tag
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
