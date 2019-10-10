@@ -7,6 +7,8 @@ const execa = require('execa')
 const delay = require('delay')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
+  type: 'js',
+  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
   IpfsClient: require('ipfs-http-client')
 })
 const {
@@ -35,8 +37,6 @@ async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
 
 async function runTest () {
   const ipfsd = await df.spawn({
-    type: 'js',
-    exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
     initOptions: { bits: 512 },
     config: {
       Addresses: {

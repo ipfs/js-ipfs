@@ -130,7 +130,7 @@ We'll need to install and bundle the dependencies to run the app. Let's do it:
 ```sh
 > npm install
 ...
-> npm run bundle
+> npm run build
 ...
 > npm start
 ```

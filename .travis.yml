@@ -237,6 +237,22 @@ jobs:
         - npm install
         - npm run test -- custom-libp2p
 
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - exchange-files-in-browser
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- exchange-files-in-browser
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - explore-ethereum-blockchain
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- explore-ethereum-blockchain
+
     - stage: tag
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
