@@ -284,6 +284,18 @@ Example:
 const node = await IPFS.create({ repo: '/var/ipfs/data' })
 ```
 
+##### `options.repoAutoMigrate`
+
+| Type | Default |
+|------|---------|
+| boolean | `true` |
+
+`js-ipfs` comes bundled with tool that automatically migrate the version of your IPFS repository when new version is available.
+
+**For tools that build on top of `js-ipfs` and run mainly in the browser environment, be aware that disabling automatic
+migrations leaves the user with no way to run the migrations because there is no CLI in the browser. In such
+a case, you should provide a way to trigger migrations manually.**
+
 ##### `options.init`
 
 | Type | Default |
