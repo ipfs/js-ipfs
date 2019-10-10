@@ -60,7 +60,7 @@ All browser examples should either be a whole webapp or a simple demo.
 
 #### Webapp
 
-Webapps must have a `package.json` that contains a `build` script.  This script should place all assets in a folder named `dist` including an `index.html` file.  During testing this will have a web server run over it using `http-server`.
+Webapps must have a `package.json` that contains either a `build` or a `bundle` script.  This script should place all assets in a folder named `dist`, `build` or `public` including an `index.html` file.  During testing this will have a web server run over it using `http-server`.
 
 #### Simple demo
 

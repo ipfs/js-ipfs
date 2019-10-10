@@ -2,9 +2,9 @@
   "name": "exchange-files-browser",
   "version": "0.0.0",
   "scripts": {
-    "build": "browserify public/app.js > public/bundle.js",
+    "bundle": "browserify public/app.js > public/bundle.js",
     "start": "http-server -c-1 -p 12345 public",
-    "dev": "npm run build && npm run start"
+    "dev": "npm run bundle && npm run start"
   },
   "license": "MIT",
   "devDependencies": {

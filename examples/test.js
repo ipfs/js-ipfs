@@ -47,12 +47,21 @@ async function installDeps (dir) {
 }
 
 async function build (dir) {
-  if (!fs.existsSync(path.join(dir, 'package.json'))) {
+  const pkgJson = path.join(dir, 'package.json')
+
+  if (!fs.existsSync(pkgJson)) {
     console.info('Nothing to build in', dir)
     return
   }
 
-  const proc = execa.command('npm run build', {
+  const pkg = require(pkgJson)
+  let build = 'build'
+
+  if (pkg.scripts.bundle) {
+    build = 'bundle'
+  }
+
+  const proc = execa('npm', ['run', build], {
     cwd: dir
   })
   proc.all.on('data', (data) => {
