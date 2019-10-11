@@ -8,7 +8,7 @@
     "ipfs-css": "^0.13.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "react-scripts": "3.1.1",
+    "react-scripts": "^3.2.0",
     "tachyons": "^4.11.1"
   },
   "scripts": {

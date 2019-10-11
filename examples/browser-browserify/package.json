@@ -11,10 +11,13 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "ipfs": "file:../../",
     "browserify": "^16.2.3",
     "concat-stream": "^2.0.0",
-    "http-server": "~0.11.1"
+    "http-server": "~0.11.1",
+    "ipfs": "file:../../"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "browser": {
+    "ipfs": "ipfs/dist"
+  }
 }

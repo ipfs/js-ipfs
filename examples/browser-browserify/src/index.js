@@ -9,22 +9,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function store () {
     const toStore = document.getElementById('source').value
+    const result = await node.add(toStore)
 
-    const res = await node.add(toStore)
-
-    res.forEach((file) => {
+    for (const file of result) {
       if (file && file.hash) {
         console.log('successfully stored', file.hash)
-        display(file.hash)
+
+        await display(file.hash)
       }
-    })
+    }
   }
 
   async function display (hash) {
-    // buffer: true results in the returned result being a buffer rather than a stream
     const data = await node.cat(hash)
+
     document.getElementById('hash').innerText = hash
     document.getElementById('content').innerText = data
+    document.getElementById('output').setAttribute('style', 'display: block')
   }
 
   document.getElementById('store').onclick = store

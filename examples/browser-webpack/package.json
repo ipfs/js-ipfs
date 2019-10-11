@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Bundle js-ipfs with WebPack",
   "scripts": {
+    "build": "webpack",
     "start": "node server.js"
   },
   "license": "MIT",
@@ -12,6 +13,7 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-hot-loader": "^4.8.8",

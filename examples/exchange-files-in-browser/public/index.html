@@ -44,7 +44,18 @@
 
       <div class="columns">
         <div id="peers" class="box disabled">
-          <h2>Peers</h2>
+          <h2>Workspace Peers</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Connected Peers</th>
+              </tr>
+            </thead>
+            <tbody id="workspace-peers"></tbody>
+          </table>
+
+          <h2>Network Peers</h2>
 
           <div class="input-button">
             <input id="multiaddr-input" type="text" placeholder="Multiaddr" disabled />
@@ -57,7 +68,7 @@
                 <th>Connected Peers</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="connected-peers"></tbody>
           </table>
         </div>
 

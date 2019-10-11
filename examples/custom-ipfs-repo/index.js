@@ -1,5 +1,7 @@
 'use strict'
 
+const log = require('why-is-node-running')
+
 const IPFS = require('ipfs')
 const Repo = require('ipfs-repo')
 const fsLock = require('ipfs-repo/src/lock')
@@ -64,7 +66,13 @@ const customRepositoryOptions = {
 async function main () {
   // Initialize our IPFS node with the custom repo options
   const node = await IPFS.create({
-    repo: new Repo('/tmp/custom-repo/.ipfs', customRepositoryOptions)
+    repo: new Repo('/tmp/custom-repo/.ipfs', customRepositoryOptions),
+
+    // This just means we dont try to connect to the network which isn't necessary
+    // to demonstrate custom repos
+    config: {
+      Bootstrap: []
+    }
   })
 
   // Test the new repo by adding and fetching some data

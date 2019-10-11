@@ -49,3 +49,27 @@ In this section, you will find explanations to different pieces of IPFS Architec
 - Storing and Retrieving blocks (soon™)
 - IPLD (InterPlanetary Linked-Data) (soon™)
 - IPFS Networking - Managing your swarm, libp2p and more (soon™)
+
+## Adding new examples
+
+All examples should include a `test.js` file.  The implementation will differ depending on if your example is intended to run under node or the browser.
+
+### Browser `test.js`
+
+All browser examples should either be a whole webapp or a simple demo (e.g. just `index.html` and `index.js` files).
+
+#### Webapp
+
+Webapps must have a `package.json` that contains either a `build` or a `bundle` script.  This script should place all assets in a folder named `dist`, `build` or `public` including an `index.html` file.  During testing this will have a web server run over it using `http-server`.
+
+#### Simple demo
+
+Simple demos must have an `index.html` file in the root of the demo folder.  This file will be loaded in a browser and tested via a `file://` URL.
+
+#### Browser `test.js`
+
+Your `test.js` file should contain a [Nightwatch](https://www.npmjs.com/package/nightwatch) scenario that will be executed.  The URL to example will be present in the `IPFS_EXAMPLE_TEST_URL` environmental variable when the test is run.
+
+### Node
+
+Your `test.js` file should export an async function that sets up your test, runs any assertions, tears down anything set up and throws an error if the test fails.
