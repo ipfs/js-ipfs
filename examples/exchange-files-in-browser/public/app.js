@@ -10,7 +10,8 @@ const $nodeAddresses = document.querySelector('.node-addresses')
 const $logs = document.querySelector('#logs')
 // Peers
 const $peers = document.querySelector('#peers')
-const $peersList = $peers.querySelector('tbody')
+const $peersList = $peers.querySelector('#connected-peers')
+const $workspacePeersList = $peers.querySelector('#workspace-peers')
 const $multiaddrInput = document.querySelector('#multiaddr-input')
 const $connectButton = document.querySelector('#peer-btn')
 // Files
@@ -68,6 +69,15 @@ async function start () {
         await refreshPeerList()
       } catch (err) {
         err.message = `Failed to refresh the peer list: ${err.message}`
+        onError(err)
+      }
+    }, 1000)
+
+    setInterval(async () => {
+      try {
+        await refreshWorkspacePeerList()
+      } catch (err) {
+        err.message = `Failed to refresh the workspace peer list: ${err.message}`
         onError(err)
       }
     }, 1000)
@@ -274,6 +284,17 @@ async function refreshPeerList () {
     }).join('')
 
   $peersList.innerHTML = peersAsHtml
+}
+
+async function refreshWorkspacePeerList () {
+  const peers = await node.pubsub.peers(workspace)
+
+  const peersAsHtml = peers.reverse()
+    .map((addr) => {
+      return `<tr><td>${addr}</td></tr>`
+    }).join('')
+
+  $workspacePeersList.innerHTML = peersAsHtml
 }
 
 /* ===========================================================================

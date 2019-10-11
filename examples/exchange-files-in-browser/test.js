@@ -1,7 +1,10 @@
 'use strict'
 
+const fs = require('fs-extra')
 const path = require('path')
+const os = require('os')
 const execa = require('execa')
+const delay = require('delay')
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
   type: 'js',
@@ -13,17 +16,13 @@ const {
 } = require('../utils')
 const pkg = require('./package.json')
 
-async function testUI (url, relay, cid, workspaceName, addFile) {
+async function testUI (env) {
   const proc = execa('nightwatch', [ path.join(__dirname, 'test.js') ], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,
-      CI: true,
-      IPFS_EXAMPLE_TEST_URL: url,
-      IPFS_RELAY_ADDRESS: relay,
-      IPFS_CID: cid,
-      IPFS_WORKSPACE_NAME: workspaceName,
-      IPFS_ADD_FILE: addFile
+      ...env,
+      CI: true
     }
   })
   proc.all.on('data', (data) => {
@@ -61,10 +60,27 @@ async function runTest () {
     }
 
     let workspaceName = `test-${Date.now()}`
+    const peerA = path.join(os.tmpdir(), `test-${Date.now()}-a.txt`)
+    const peerB = path.join(os.tmpdir(), `test-${Date.now()}-b.txt`)
 
     await Promise.all([
-      testUI(server1.url, id.addresses[0], cid, workspaceName, true),
-      testUI(server2.url, id.addresses[0], cid, workspaceName)
+      testUI({
+        IPFS_EXAMPLE_TEST_URL: server1.url,
+        IPFS_RELAY_ADDRESS: id.addresses[0],
+        IPFS_CID: cid,
+        IPFS_WORKSPACE_NAME: workspaceName,
+        IPFS_ADD_FILE: true,
+        IPFS_LOCAL_PEER_ID_FILE: peerA,
+        IPFS_REMOTE_PEER_ID_FILE: peerB
+      }),
+      testUI({
+        IPFS_EXAMPLE_TEST_URL: server1.url,
+        IPFS_RELAY_ADDRESS: id.addresses[0],
+        IPFS_CID: cid,
+        IPFS_WORKSPACE_NAME: workspaceName,
+        IPFS_LOCAL_PEER_ID_FILE: peerB,
+        IPFS_REMOTE_PEER_ID_FILE: peerA
+      })
     ])
   } finally {
     await ipfsd.stop()
@@ -76,16 +92,27 @@ async function runTest () {
 module.exports = runTest
 
 module.exports[pkg.name] = function (browser) {
+  let localPeerId = null
+  let remotePeerId = null
+
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)
     .waitForElementVisible('.node-addresses li pre')
     .pause(1000)
+
+  console.info('dialling relay', process.env.IPFS_RELAY_ADDRESS)
+
+  browser
     .clearValue('#multiaddr-input')
     .setValue('#multiaddr-input', process.env.IPFS_RELAY_ADDRESS)
     .pause(1000)
     .click('#peer-btn')
 
-  browser.expect.element('#peers').text.to.contain(process.env.IPFS_RELAY_ADDRESS)
+  const relayPeerId = process.env.IPFS_RELAY_ADDRESS.split('/').pop()
+
+  browser.expect.element('#connected-peers').text.to.contain(relayPeerId)
+
+  console.info('joining workspace', process.env.IPFS_WORKSPACE_NAME)
 
   browser
     .clearValue('#workspace-input')
@@ -93,18 +120,46 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click('#workspace-btn')
 
-  browser.expect.element('#logs').text.to.contain(`Subscribed to workspace #${process.env.IPFS_WORKSPACE_NAME}`)
+  // exchange peer info
+  browser.getText('.node-id', (result) => {
+    localPeerId = result.value.trim()
+    console.info('got local peer id', localPeerId)
+  })
+    .perform(async (browser, done) => {
+      console.info('writing local peer id')
+      await fs.writeFile(process.env.IPFS_LOCAL_PEER_ID_FILE, localPeerId)
+
+      console.info('reading remote peer id')
+      for (let i = 0; i < 100; i++) {
+        try {
+          remotePeerId = await fs.readFile(process.env.IPFS_REMOTE_PEER_ID_FILE, {
+            encoding: 'utf8'
+          })
+
+          console.info('got remote peer id', remotePeerId)
+          done()
+
+          break
+        } catch (err) {
+
+        }
+
+        await delay(1000)
+      }
+
+      console.info('waiting for remote peer', remotePeerId, 'to join workspace')
+      browser.expect.element('#workspace-peers').text.to.contain(remotePeerId)
+
+      await delay(1000)
+    })
 
   // only one browser should add the file to the workspace
   if (process.env.IPFS_ADD_FILE) {
-    // add the file from the server
     browser
       .clearValue('#cid-input')
       .setValue('#cid-input', process.env.IPFS_CID)
       .pause(1000)
       .click('#fetch-btn')
-
-    browser.expect.element('#logs').text.to.contain(`The ${process.env.IPFS_CID} file was added.`)
   }
 
   // but should both see the added file
