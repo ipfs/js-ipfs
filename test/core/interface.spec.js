@@ -2,46 +2,38 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const CommonFactory = require('../utils/interface-common-factory')
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
+const merge = require('merge-options')
+const ctl = require('ipfsd-ctl')
+const IPFS = require('../../src')
 
 describe('interface-ipfs-core tests', function () {
-  this.timeout(20 * 1000)
-
-  const defaultCommonFactory = CommonFactory.createAsync()
-
-  tests.bitswap(defaultCommonFactory, { skip: !isNode })
-
-  tests.block(defaultCommonFactory)
-
-  tests.bootstrap(defaultCommonFactory)
-
-  tests.config(defaultCommonFactory)
-
-  tests.dag(defaultCommonFactory)
-
-  tests.dht(CommonFactory.createAsync({
-    spawnOptions: {
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      initOptions: { bits: 512 }
+  const commonOptions = {
+    factoryOptions: {
+      type: 'proc',
+      exec: IPFS,
+      IpfsClient: require('ipfs-http-client')
     }
-  }), {
+  }
+  const commonFactory = ctl.createTestsInterface(commonOptions)
+
+  tests.bitswap(commonFactory, { skip: !isNode })
+
+  tests.block(commonFactory)
+
+  tests.bootstrap(commonFactory)
+
+  tests.config(commonFactory)
+
+  tests.dag(commonFactory)
+
+  tests.dht(commonFactory, {
     skip: {
       reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 
-  tests.filesRegular(defaultCommonFactory, {
+  tests.filesRegular(commonFactory, {
     skip: isNode ? null : [{
       name: 'addFromStream',
       reason: 'Not designed to run in the browser'
@@ -51,57 +43,33 @@ describe('interface-ipfs-core tests', function () {
     }]
   })
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(commonFactory)
 
-  tests.key(CommonFactory.createAsync({
+  tests.key(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      }
+      args: ['--pass ipfs-is-awesome-software']
     }
-  }))
+  })))
 
-  tests.miscellaneous(CommonFactory.createAsync({
+  tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
-  }))
+  })))
 
-  tests.name(CommonFactory.createAsync({
+  tests.name(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
-  }))
+  })))
 
-  tests.namePubsub(CommonFactory.createAsync({
+  tests.namePubsub(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      }
+      args: ['--enable-namesys-pubsub']
     }
-  }))
+  })))
 
-  tests.object(defaultCommonFactory, {
+  tests.object(commonFactory, {
     skip: [
       {
         name: 'should respect timeout option',
@@ -110,27 +78,23 @@ describe('interface-ipfs-core tests', function () {
     ]
   })
 
-  tests.pin(defaultCommonFactory)
+  tests.pin(commonFactory)
 
-  tests.ping(defaultCommonFactory, {
+  tests.ping(commonFactory, {
     skip: isNode ? null : {
       reason: 'FIXME: ping implementation requires DHT'
     }
   })
 
-  tests.pubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 }
-    }
-  }), {
+  tests.pubsub(commonFactory, {
     skip: isNode ? null : {
       reason: 'FIXME: disabled because no swarm addresses'
     }
   })
 
-  tests.repo(defaultCommonFactory)
+  tests.repo(commonFactory)
 
-  tests.stats(defaultCommonFactory)
+  tests.stats(commonFactory)
 
-  tests.swarm(defaultCommonFactory, { skip: !isNode })
+  tests.swarm(commonFactory, { skip: !isNode })
 })
