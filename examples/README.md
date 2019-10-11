@@ -56,7 +56,7 @@ All examples should include a `test.js` file.  The implementation will differ de
 
 ### Browser `test.js`
 
-All browser examples should either be a whole webapp or a simple demo.
+All browser examples should either be a whole webapp or a simple demo (e.g. just `index.html` and `index.js` files).
 
 #### Webapp
 
