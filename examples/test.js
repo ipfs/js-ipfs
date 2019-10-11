@@ -36,6 +36,11 @@ async function installDeps (dir) {
     return
   }
 
+  if (fs.existsSync(path.join(dir, 'node_modules'))) {
+    console.info('Dependencies already installed in', dir)
+    return
+  }
+
   const proc = execa.command('npm install', {
     cwd: dir
   })
@@ -55,10 +60,19 @@ async function build (dir) {
   }
 
   const pkg = require(pkgJson)
-  let build = 'build'
+  let build
 
   if (pkg.scripts.bundle) {
     build = 'bundle'
+  }
+
+  if (pkg.scripts.build) {
+    build = 'build'
+  }
+
+  if (!build) {
+    console.info('No "build" or "bundle" script in', pkgJson)
+    return
   }
 
   const proc = execa('npm', ['run', build], {

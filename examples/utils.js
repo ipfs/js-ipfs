@@ -3,6 +3,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const execa = require('execa')
+const which = require('which')
 
 async function startServer (dir) {
   async function serveFrom (path) {
@@ -64,19 +65,21 @@ async function startServer (dir) {
     if (fs.existsSync(f)) {
       console.info('Found bare file', f)
 
-      console.info('Building IPFS')
-      const proc = execa.command('npm run build', {
-        cwd: path.resolve(dir, '../../'),
-        env: {
-          ...process.env,
-          CI: true // needed for some "clever" build tools
-        }
-      })
-      proc.all.on('data', (data) => {
-        process.stdout.write(data)
-      })
+      if (!fs.existsSync(path.resolve(dir, '../../dist'))) {
+        console.info('Building IPFS')
+        const proc = execa.command('npm run build', {
+          cwd: path.resolve(dir, '../../'),
+          env: {
+            ...process.env,
+            CI: true // needed for some "clever" build tools
+          }
+        })
+        proc.all.on('data', (data) => {
+          process.stdout.write(data)
+        })
 
-      await proc
+        await proc
+      }
 
       return Promise.resolve({
         url: `file://${f}`,
@@ -92,7 +95,60 @@ function ephemeralPort (min = 49152, max = 65535) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
+async function isExecutable (command) {
+  try {
+    await fs.access(command, fs.constants.X_OK)
+
+    return true
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return isExecutable(await which(command))
+    }
+
+    if (err.code === 'EACCES') {
+      return false
+    }
+
+    throw err
+  }
+}
+
+async function waitForOutput (expectedOutput, command, args = [], opts = {}) {
+  if (!await isExecutable(command)) {
+    args.unshift(command)
+    command = 'node'
+  }
+
+  const proc = execa(command, args, opts)
+  let output = ''
+  let time = 30000
+
+  let timeout = setTimeout(() => {
+    throw new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}" after ${time/1000}s`)
+  }, time)
+
+  proc.all.on('data', (data) => {
+    process.stdout.write(data)
+
+    output += data.toString('utf8')
+
+    if (output.includes(expectedOutput)) {
+      clearTimeout(timeout)
+      proc.kill()
+    }
+  })
+
+  try {
+    await proc
+  } catch (err) {
+    if (!err.killed) {
+      throw err
+    }
+  }
+}
+
 module.exports = {
   startServer,
-  ephemeralPort
+  ephemeralPort,
+  waitForOutput
 }

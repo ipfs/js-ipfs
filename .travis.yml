@@ -253,6 +253,30 @@ jobs:
         - npm install
         - npm run test -- explore-ethereum-blockchain
 
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - ipfs-101
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- ipfs-101
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - running-multiple-nodes
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- running-multiple-nodes
+
+    - stage: test
+      if: branch =~ /^release\/.*$/
+      name: example - traverse-ipld-graphs
+      script:
+        - cd examples
+        - npm install
+        - npm run test -- traverse-ipld-graphs
+
     - stage: tag
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
