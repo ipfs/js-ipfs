@@ -8,7 +8,7 @@ module.exports = {
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
       .waitForElementVisible('.ipfs-info')
 
-    browser.expect.element('.ipfs-info h1').text.to.contain('Connected to IPFS').before(30000)
+    browser.expect.element('.ipfs-info h1').text.to.contain('Connected to IPFS')
 
     browser.end()
   }

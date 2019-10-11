@@ -92,7 +92,7 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click('#connect')
 
-  browser.expect.element('#peers-addrs').text.to.contain(process.env.IPFS_RELAY_ADDRESS).before(30000)
+  browser.expect.element('#peers-addrs').text.to.contain(process.env.IPFS_RELAY_ADDRESS)
 
   // exchange peer info
   browser.getText('#addrs', (result) => {
@@ -129,7 +129,7 @@ module.exports[pkg.name] = function (browser) {
         .pause(1000)
         .click('#connect')
 
-      browser.expect.element('#peers-addrs').text.to.contain(remotePeerId).before(30000)
+      browser.expect.element('#peers-addrs').text.to.contain(remotePeerId)
 
       browser
         .clearValue('#message')
@@ -137,8 +137,8 @@ module.exports[pkg.name] = function (browser) {
         .pause(1000)
         .click('#send')
 
-      browser.expect.element('#msgs').text.to.contain(`${remotePeerId.substr(-4)}: hello`).before(30000)
-      browser.expect.element('#msgs').text.to.contain(`${localPeerId.substr(-4)}: hello`).before(30000)
+      browser.expect.element('#msgs').text.to.contain(`${remotePeerId.substr(-4)}: hello`)
+      browser.expect.element('#msgs').text.to.contain(`${localPeerId.substr(-4)}: hello`)
     })
 
   browser.end()

@@ -9,7 +9,7 @@ module.exports = {
       .waitForElementNotVisible('#modal-screen')
       .waitForElementVisible('#log')
 
-    browser.expect.element('#log').text.to.contain('IPFS: Drop some files into this window to get started').before(30000)
+    browser.expect.element('#log').text.to.contain('IPFS: Drop some files into this window to get started')
 
     browser.waitForElementVisible('#button-mkdir')
       .click('#button-mkdir')
@@ -18,7 +18,7 @@ module.exports = {
       .setValue('#form-mkdir-path', '/folder')
       .click('#button-form-mkdir-submit')
 
-    browser.expect.element('#files').text.to.contain('folder/').before(30000)
+    browser.expect.element('#files').text.to.contain('folder/')
 
     browser.click('#button-cp')
       .waitForElementVisible('#form-cp-path')
@@ -28,7 +28,7 @@ module.exports = {
       .setValue('#form-cp-dest', '/folder-copy')
       .click('#button-form-cp-submit')
 
-    browser.expect.element('#files').text.to.contain('folder-copy/').before(30000)
+    browser.expect.element('#files').text.to.contain('folder-copy/')
 
     browser.click('#button-mv')
       .waitForElementVisible('#form-mv-path')
@@ -38,8 +38,8 @@ module.exports = {
       .setValue('#form-mv-dest', '/folder-other')
       .click('#button-form-mv-submit')
 
-    browser.expect.element('#files').text.to.not.contain('folder/').before(30000)
-    browser.expect.element('#files').text.to.contain('folder-other/').before(30000)
+    browser.expect.element('#files').text.to.not.contain('folder/')
+    browser.expect.element('#files').text.to.contain('folder-other/')
 
     browser.end()
   }

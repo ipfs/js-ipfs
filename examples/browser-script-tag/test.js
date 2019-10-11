@@ -21,7 +21,7 @@ module.exports = {
         }
       })
 
-    browser.expect.element('#status').text.to.contain('Node status: online').before(30000)
+    browser.expect.element('#status').text.to.contain('Node status: online')
 
     browser.end()
   }

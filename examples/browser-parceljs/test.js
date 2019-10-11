@@ -8,7 +8,7 @@ module.exports = {
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
       .waitForElementVisible('#output')
 
-    browser.expect.element('#output').text.to.contain('The contents of the file was: Hello from parcel.js bundled ipfs example').before(30000)
+    browser.expect.element('#output').text.to.contain('The contents of the file was: Hello from parcel.js bundled ipfs example')
 
     browser.end()
   }

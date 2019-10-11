@@ -85,7 +85,7 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click('#peer-btn')
 
-  browser.expect.element('#peers').text.to.contain(process.env.IPFS_RELAY_ADDRESS).before(30000)
+  browser.expect.element('#peers').text.to.contain(process.env.IPFS_RELAY_ADDRESS)
 
   browser
     .clearValue('#workspace-input')
@@ -93,7 +93,7 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click('#workspace-btn')
 
-  browser.expect.element('#logs').text.to.contain(`Subscribed to workspace #${process.env.IPFS_WORKSPACE_NAME}`).before(30000)
+  browser.expect.element('#logs').text.to.contain(`Subscribed to workspace #${process.env.IPFS_WORKSPACE_NAME}`)
 
   // only one browser should add the file to the workspace
   if (process.env.IPFS_ADD_FILE) {
@@ -104,11 +104,11 @@ module.exports[pkg.name] = function (browser) {
       .pause(1000)
       .click('#fetch-btn')
 
-    browser.expect.element('#logs').text.to.contain(`The ${process.env.IPFS_CID} file was added.`).before(30000)
+    browser.expect.element('#logs').text.to.contain(`The ${process.env.IPFS_CID} file was added.`)
   }
 
   // but should both see the added file
-  browser.expect.element('#file-history').text.to.contain(process.env.IPFS_CID).before(30000)
+  browser.expect.element('#file-history').text.to.contain(process.env.IPFS_CID)
 
   browser.end()
 }

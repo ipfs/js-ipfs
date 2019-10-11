@@ -13,8 +13,8 @@ module.exports = {
       .click('#store')
       .waitForElementVisible('#output')
 
-    browser.expect.element('#hash').text.to.contain('QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX').before(30000)
-    browser.expect.element('#content').text.to.contain('hello').before(30000)
+    browser.expect.element('#hash').text.to.contain('QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX')
+    browser.expect.element('#content').text.to.contain('hello')
 
     browser.end()
   }

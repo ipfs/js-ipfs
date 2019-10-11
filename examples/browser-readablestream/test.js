@@ -8,7 +8,7 @@ module.exports = {
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
       .waitForElementVisible('#output')
 
-    browser.expect.element('#output').text.to.contain('IPFS: Then press the "Go!" button to start playing a video').before(30000)
+    browser.expect.element('#output').text.to.contain('IPFS: Then press the "Go!" button to start playing a video')
 
     browser.executeAsync(async function (done) {
       const container = document.querySelector('#container')
@@ -244,7 +244,7 @@ module.exports = {
       done()
     })
 
-    browser.expect.element('#output').text.to.contain('IPFS: Added ').before(30000)
+    browser.expect.element('#output').text.to.contain('IPFS: Added ')
 
     browser.click('#gobutton')
       .executeAsync(function (done) {
