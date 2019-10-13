@@ -128,11 +128,10 @@ describe('name-pubsub', function () {
     const resolvesEmpty = await nodeB.name.resolve(idB.id)
     expect(resolvesEmpty).to.be.eq(emptyDirCid)
 
-    try {
-      await nodeA.name.resolve(idB.id)
-    } catch (error) {
-      expect(error).to.exist()
-    }
+    await nodeA.name.resolve(idB.id).then(
+      () => expect.fail('should have thrown'),
+      (err) => expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
+    )
 
     const publish = await nodeB.name.publish(path)
     expect(publish).to.be.eql({

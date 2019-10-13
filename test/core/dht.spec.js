@@ -74,16 +74,11 @@ describe.skip('dht', () => {
     })
 
     describe('put', () => {
-      it('should callback with error for DHT not available', async () => {
-        let res
-        try {
-          res = await ipfs.dht.put(Buffer.from('a'), Buffer.from('b'))
-        } catch (err) {
-          expect(err).to.exist()
-          expect(err.code).to.equal('ERR_DHT_DISABLED')
-        }
-
-        expect(res).to.not.exist()
+      it('should error when DHT not available', async () => {
+        await ipfs.dht.put(Buffer.from('a'), Buffer.from('b')).then(
+          () => expect.fail('Should have thrown'),
+          (err) => expect(err.code).to.equal('ERR_DHT_DISABLED')
+        )
       })
     })
   })

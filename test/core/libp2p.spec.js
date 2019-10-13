@@ -316,7 +316,7 @@ describe('libp2p customization', function () {
       })
     })
 
-    it('select floodsub as pubsub router if node', (done) => {
+    it('select floodsub as pubsub router if node', async () => {
       const ipfs = {
         _repo: {
           datastore
@@ -334,21 +334,18 @@ describe('libp2p customization', function () {
         }
       }
 
-      try {
-        _libp2p = libp2pComponent(ipfs, customConfig)
-      } catch (err) {
-        if (!isNode) {
-          expect(err).to.exist()
-          expect(err.code).to.eql('ERR_NOT_SUPPORTED')
-          done()
-        }
+      if (!isNode) {
+        await libp2pComponent(ipfs, customConfig).then(
+          () => expect.fail('Should have thrown'),
+          (err) => expect(err.code).to.eql('ERR_NOT_SUPPORTED')
+        )
       }
 
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._modules.pubsub).to.eql(require('libp2p-floodsub'))
-        done()
-      })
+      _libp2p = libp2pComponent(ipfs, customConfig)
+
+      await _libp2p.start()
+
+      expect(_libp2p._modules.pubsub).to.eql(require('libp2p-floodsub'))
     })
   })
 })

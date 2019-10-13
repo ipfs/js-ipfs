@@ -171,20 +171,18 @@ describe('create node', function () {
 
     expect(ipfs.isOnline()).to.be.false()
 
-    try {
-      await ipfs.ready
-    } catch (err) {
-      expect(ipfs.isOnline()).to.be.false()
+    await ipfs.ready.then(
+      () => expect.fail('Should have thrown'),
+      (err) => expect(err.message).to.contain('Expected modulus bit count >= 512')
+    )
 
-      // After the error has occurred, it should still reject
-      try {
-        await ipfs.ready
-      } catch (_) {
-        return
-      }
-    }
+    expect(ipfs.isOnline()).to.be.false()
 
-    throw new Error('ready promise did not reject')
+    // After the error has occurred, it should still reject
+    await ipfs.ready.then(
+      () => expect.fail('Should have thrown'),
+      (err) => expect(err.message).to.contain('Expected modulus bit count >= 512')
+    )
   })
 
   it('should create a ready node with IPFS.create', async () => {

@@ -83,11 +83,10 @@ describe('init', function () {
   it('profile non-existent', async function () {
     this.timeout(40 * 1000)
 
-    try {
-      await ipfs('init --profile doesnt-exist')
-    } catch (err) {
-      expect(err.stdout).includes('Could not find profile')
-    }
+    await ipfs('init --profile doesnt-exist').then(
+      () => expect.fail('Should have thrown'),
+      (err) => expect(err.stdout).includes('Could not find profile')
+    )
   })
 
   it('should present ipfs path help when option help is received', async function () {

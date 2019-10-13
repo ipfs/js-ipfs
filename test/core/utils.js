@@ -53,11 +53,7 @@ describe('utils', () => {
     })
 
     it('normalize path with no ipfs path, nor ipns path nor cid should throw an exception', function () {
-      try {
-        utils.normalizePath(`/${rootHash}/`)
-      } catch (err) {
-        expect(err).to.exist()
-      }
+      expect(() => utils.normalizePath(`/${rootHash}/`)).to.throw()
     })
 
     it('normalize path should return an ipfs path, when an ipfs path is provided', function () {
