@@ -26,7 +26,7 @@ exports.rename = async (request, h) => {
   const key = await ipfs.key.rename(oldName, newName)
   return h.response({
     Was: key.was,
-    Now: key.name,
+    Now: key.now,
     Id: key.id,
     Overwrite: key.overwrite
   })
