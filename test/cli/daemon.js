@@ -215,9 +215,14 @@ describe('daemon', () => {
       daemon.kill()
     }, 5 * 1000)
 
-    const output = await daemon
+    await daemon.then(
+      () => expect.fail('Did not kill process'),
+      (err) => {
+        expect(err.killed).to.be.true()
 
-    expect(output).to.be.empty()
+        expect(err.stdout).to.be.empty()
+      }
+    )
   })
 
   it('should present ipfs path help when option help is received', async function () {
