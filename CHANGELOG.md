@@ -1,3 +1,20 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.3.1...v0.4.0) (2019-10-14)
+
+
+### Chores
+
+* convert to async await syntax ([#28](https://github.com/ipfs/js-ipfs-http-response/issues/28)) ([a22900a](https://github.com/ipfs/js-ipfs-http-response/commit/a22900a))
+
+
+### BREAKING CHANGES
+
+* All places in the API that used callbacks are now replaced with async/await
+
+Co-authored-by: PedroMiguelSS <pedro.santos@moxy.studio>
+
+
+
 <a name="0.3.1"></a>
 ## [0.3.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.1) (2019-06-06)
 
