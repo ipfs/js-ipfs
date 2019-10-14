@@ -36,7 +36,7 @@ describe('name-pubsub', function () {
 
   const createNode = () => df.spawn({
     exec: IPFS,
-    args: [`--pass ${hat()}`, '--enable-namesys-pubsub'],
+    args: ['--pass', hat(), '--enable-namesys-pubsub'],
     config: {
       Bootstrap: [],
       Discovery: {

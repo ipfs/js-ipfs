@@ -53,19 +53,19 @@ describe('interface-ipfs-core tests', function () {
 
   tests.key(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software']
+      args: ['--pass', 'ipfs-is-awesome-software']
     }
   })))
 
   tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
+      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
     }
   })))
 
   tests.name(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
+      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
     }
   })))
 

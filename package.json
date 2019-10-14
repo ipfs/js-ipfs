@@ -206,7 +206,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "ipfs/interface-js-ipfs-core#feat/interface-tests",
     "ipfs-interop": "^0.1.1",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#feat/interface-tests",
+    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#feat/interface-tests",
     "libp2p-websocket-star": "~0.10.2",
     "lodash": "^4.17.15",
     "ncp": "^2.0.0",
