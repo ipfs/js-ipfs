@@ -212,7 +212,7 @@ describe('daemon', () => {
     const daemon = ipfs('daemon --silent')
 
     setTimeout(() => {
-      daemon.kill()
+      daemon.kill('SIGKILL')
     }, 5 * 1000)
 
     await daemon.then(
