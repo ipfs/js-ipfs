@@ -1,11 +1,9 @@
 'use strict'
 
+const pTryEach = require('p-try-each')
 const mh = require('multihashes')
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const debug = require('debug')
-const tryEach = require('async/tryEach')
-const waterfall = require('async/waterfall')
 const log = debug('jsipfs:http:response:resolver')
 log.error = debug('jsipfs:http:response:resolver:error')
 const dirView = require('./dir-view')
@@ -16,74 +14,61 @@ const INDEX_HTML_FILES = [
   'index.shtml'
 ]
 
-const findIndexFile = (ipfs, path, callback) => {
-  return tryEach(INDEX_HTML_FILES.map(file => {
-    return (cb) => {
-      waterfall([
-        (cb) => ipfs.files.stat(`${path}/${file}`, cb),
-        (stats, cb) => cb(null, {
-          name: file,
-          cid: new CID(stats.hash)
-        })
-      ], cb)
+const findIndexFile = (ipfs, path) => {
+  return pTryEach(INDEX_HTML_FILES.map(file => {
+    return async () => {
+      const stats = await ipfs.files.stat(`${path}/${file}`)
+
+      return {
+        name: file,
+        cid: new CID(stats.hash)
+      }
     }
-  }), callback)
+  }))
 }
 
-const directory = promisify((ipfs, path, cid, callback) => {
+const directory = async (ipfs, path, cid) => {
   // Test if it is a Website
-  findIndexFile(ipfs, path, (err, res) => {
-    if (err) {
-      if (err.message.includes('does not exist')) {
-        // not a website, just show a directory listing
-        return ipfs.dag.get(cid, (err, result) => {
-          if (err) {
-            return callback(err)
-          }
+  try {
+    const res = await findIndexFile(ipfs, path)
 
-          return callback(null, dirView.render(path, result.value.Links))
-        })
-      }
+    return [{ Name: res.name }]
+  } catch (err) {
+    if (err.message.includes('does not exist')) {
+      // not a website, just show a directory listing
+      const result = await ipfs.dag.get(cid)
 
-      return callback(err)
+      return dirView.render(path, result.value.Links)
     }
 
-    callback(err, [{
-      Name: res.name
-    }])
-  })
-})
+    throw err
+  }
+}
 
-const cid = promisify((ipfs, path, callback) => {
-  ipfs.files.stat(path, (err, stats) => {
-    if (err) {
-      return callback(err)
-    }
+const cid = async (ipfs, path) => {
+  const stats = await ipfs.files.stat(path)
 
-    const cid = new CID(stats.hash)
+  const cid = new CID(stats.hash)
 
-    if (stats.type.includes('directory')) {
-      const err = new Error('This dag node is a directory')
-      err.cid = cid
-      err.fileName = stats.name
-      err.dagDirType = stats.type
+  if (stats.type.includes('directory')) {
+    const err = new Error('This dag node is a directory')
+    err.cid = cid
+    err.fileName = stats.name
+    err.dagDirType = stats.type
 
-      return callback(err)
-    }
+    throw err
+  }
 
-    callback(err, {
-      cid
-    })
-  })
-})
+  return { cid }
+}
 
-const multihash = promisify((ipfs, path, callback) => {
+const multihash = async (ipfs, path) => {
   // deprecated, use 'cid' instead
   // (left for backward-compatibility)
-  cid(ipfs, path)
-    .then((result) => { callback(null, { multihash: mh.toB58String(result.cid.multihash) }) })
-    .catch((err) => { callback(err) })
-})
+  const result = await cid(ipfs, path)
+
+  return { multihash: mh.toB58String(result.cid.multihash) }
+}
 
 module.exports = {
   directory: directory,

@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
   "dependencies": {
-    "async": "^2.6.1",
     "cids": "~0.7.1",
     "debug": "^4.1.1",
     "file-type": "^8.0.0",
@@ -40,8 +39,8 @@
     "ipfs-unixfs": "~0.1.16",
     "mime-types": "^2.1.21",
     "multihashes": "~0.4.14",
-    "promisify-es6": "^1.0.3",
-    "stream-to-blob": "^1.0.1"
+    "p-try-each": "^1.0.1",
+    "stream-to-blob": "^2.0.0"
   },
   "devDependencies": {
     "aegir": "^18.0.3",
