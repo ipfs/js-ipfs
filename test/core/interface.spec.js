@@ -17,7 +17,13 @@ describe('interface-ipfs-core tests', function () {
   }
   const commonFactory = ctl.createTestsInterface(commonOptions)
 
-  tests.bitswap(commonFactory, { skip: !isNode })
+  tests.bitswap(commonFactory, {
+    skip: !isNode ? true : [
+      {
+        name: 'should get the wantlist by peer ID for a diffreent node'
+      }
+    ]
+  })
 
   tests.block(commonFactory)
 
