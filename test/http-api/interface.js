@@ -2,23 +2,30 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const CommonFactory = require('../utils/interface-common-factory')
 const path = require('path')
+const merge = require('merge-options')
+const ctl = require('ipfsd-ctl')
 
-describe('interface-ipfs-core over ipfs-http-client tests', () => {
-  const defaultCommonFactory = CommonFactory.createAsync({
-    factoryOptions: { exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) }
-  })
+describe('interface-ipfs-core over ipfs-http-client tests', function () {
+  this.timeout(20000)
+  const commonOptions = {
+    factoryOptions: {
+      type: 'js',
+      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
+      IpfsClient: require('ipfs-http-client')
+    }
+  }
+  const commonFactory = ctl.createTestsInterface(commonOptions)
 
-  tests.bitswap(defaultCommonFactory)
+  tests.bitswap(commonFactory)
 
-  tests.block(defaultCommonFactory)
+  tests.block(commonFactory)
 
-  tests.bootstrap(defaultCommonFactory)
+  tests.bootstrap(commonFactory)
 
-  tests.config(defaultCommonFactory)
+  tests.config(commonFactory)
 
-  tests.dag(defaultCommonFactory, {
+  tests.dag(commonFactory, {
     skip: [{
       name: 'should get only a CID, due to resolving locally only',
       reason: 'Local resolve option is not implemented yet'
@@ -28,82 +35,42 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }]
   })
 
-  tests.dht(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      preload: { enabled: false }
-    }
-  }), {
+  tests.dht(commonFactory, {
     skip: {
       reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 
-  tests.filesRegular(defaultCommonFactory)
+  tests.filesRegular(commonFactory)
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(commonFactory)
 
-  tests.key(CommonFactory.createAsync({
+  tests.key(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      preload: { enabled: false }
+      args: ['--pass', 'ipfs-is-awesome-software'],
+      initOptions: { bits: 512 }
     }
-  }))
+  })))
 
-  tests.miscellaneous(CommonFactory.createAsync({
+  tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
+      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
     }
-  }))
+  })))
 
-  tests.name(CommonFactory.createAsync({
+  tests.name(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
+      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
     }
-  }))
+  })))
 
-  tests.namePubsub(CommonFactory.createAsync({
+  tests.namePubsub(ctl.createTestsInterface(merge(commonOptions, {
     spawnOptions: {
-      args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      }
+      args: ['--enable-namesys-pubsub']
     }
-  }))
+  })))
 
-  tests.object(defaultCommonFactory, {
+  tests.object(commonFactory, {
     skip: [
       {
         name: 'should respect timeout option',
@@ -112,19 +79,15 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     ]
   })
 
-  tests.pin(defaultCommonFactory)
+  tests.pin(commonFactory)
 
-  tests.ping(defaultCommonFactory)
+  tests.ping(commonFactory)
 
-  tests.pubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 }
-    }
-  }))
+  tests.pubsub(commonFactory)
 
-  tests.repo(defaultCommonFactory)
+  tests.repo(commonFactory)
 
-  tests.stats(defaultCommonFactory)
+  tests.stats(commonFactory)
 
-  tests.swarm(CommonFactory.createAsync())
+  tests.swarm(commonFactory)
 })
