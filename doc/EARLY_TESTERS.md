@@ -25,6 +25,7 @@ We will ask early testers to participate at two points in the process:
 - [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs) - install your dependencies via the distributed web!
 - [orbit-db](https://github.com/orbitdb/orbit-db) - Peer-to-Peer Databases for the Decentralized Web
 - [ipfs-log](https://github.com/orbitdb/ipfs-log) - Append-only log CRDT on IPFS
+- [Sidetree DID Protocol](https://github.com/decentralized-identity/sidetree) - Decentralized Identifier Layer-2 network protocol
 
 ## How to sign up?
 

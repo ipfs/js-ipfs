@@ -2,6 +2,7 @@
 
 var path = require('path')
 var webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   devtool: 'eval',
@@ -12,11 +13,17 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: 'static/bundle.js',
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin([{
+      from: 'index.html'
+    }, {
+      from: 'img',
+      to: 'static/img'
+    }])
   ],
   module: {
     rules: [
