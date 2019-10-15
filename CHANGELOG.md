@@ -1,3 +1,8 @@
+<a name="39.0.0"></a>
+# [39.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.2.0...v39.0.0) (2019-10-15)
+
+
+
 <a name="38.2.0"></a>
 # [38.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.1.0...v38.2.0) (2019-10-06)
 
