@@ -336,13 +336,9 @@ exports.refs = {
       maxDepth: request.query['max-depth']
     }
 
-    if (options.edges && options.format && options.format !== Format.default) {
-      throw new Error('Cannot set edges to true and also specify format')
-    }
-
     // have to do this here otherwise the validation error appears in the stream tail and
     // this doesn't work in browsers: https://github.com/ipfs/js-ipfs/issues/2519
-    if (edges && format !== Format.default) {
+    if (options.edges && options.format !== Format.default) {
       throw Boom.badRequest('Cannot set edges to true and also specify format')
     }
 
