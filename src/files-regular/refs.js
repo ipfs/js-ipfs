@@ -1,75 +1,63 @@
 'use strict'
 
-const IsIpfs = require('is-ipfs')
-const promisify = require('promisify-es6')
-const streamToValueWithTransformer = require('../utils/stream-to-value-with-transformer')
-const moduleConfig = require('../utils/module-config')
+const configure = require('../lib/configure')
 const cleanCID = require('../utils/clean-cid')
+const IsIpfs = require('is-ipfs')
+const ndjson = require('iterable-ndjson')
+const toIterable = require('../lib/stream-to-iterable')
+const toCamel = require('../lib/object-to-camel')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = configure(({ ky }) => {
+  return async function * refs (args, options) {
+    options = options || {}
 
-  const refs = promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
-    opts = module.exports.normalizeOpts(opts)
+    const searchParams = new URLSearchParams()
 
-    try {
-      args = module.exports.checkArgs(args)
-    } catch (err) {
-      return callback(err)
+    if (options.format !== undefined) {
+      searchParams.set('format', options.format)
     }
 
-    const transform = (res, cb) => {
-      cb(null, res.map(r => ({ ref: r.Ref, err: r.Err })))
+    if (options.edges !== undefined) {
+      searchParams.set('edges', options.edges)
     }
 
-    const request = {
-      args,
-      path: 'refs',
-      qs: opts
+    if (options.unique !== undefined) {
+      searchParams.set('unique', options.unique)
     }
-    send(request, (err, result) => {
-      if (err) {
-        return callback(err)
+
+    if (options.recursive !== undefined) {
+      searchParams.set('recursive', options.recursive)
+    }
+
+    if (options.maxDepth !== undefined) {
+      searchParams.set('max-depth', options.maxDepth)
+    }
+
+    if (!Array.isArray(args)) {
+      args = [args]
+    }
+
+    for (let arg of args) {
+      try {
+        arg = cleanCID(arg)
+      } catch (err) {
+        if (!IsIpfs.ipfsPath(arg)) {
+          throw err
+        }
       }
 
-      streamToValueWithTransformer(result, transform, callback)
+      searchParams.append('arg', arg.toString())
+    }
+
+    const res = await ky.get('refs', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
     })
-  })
 
-  refs.local = require('./refs-local')(arg)
-  refs.localReadableStream = require('./refs-local-readable-stream')(arg)
-  refs.localPullStream = require('./refs-local-pull-stream')(arg)
-
-  return refs
-}
-
-module.exports.checkArgs = (args) => {
-  const isArray = Array.isArray(args)
-  args = isArray ? args : [args]
-
-  const res = []
-  for (let arg of args) {
-    try {
-      arg = cleanCID(arg)
-    } catch (err) {
-      if (!IsIpfs.ipfsPath(arg)) {
-        throw err
-      }
+    for await (const file of ndjson(toIterable(res.body))) {
+      yield toCamel(file)
     }
-    res.push(arg)
   }
-
-  return isArray ? res : res[0]
-}
-
-module.exports.normalizeOpts = (opts) => {
-  opts = opts || {}
-  if (typeof opts.maxDepth === 'number') {
-    opts['max-depth'] = opts.maxDepth
-  }
-  return opts
-}
+})

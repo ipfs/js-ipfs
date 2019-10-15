@@ -1,64 +1,72 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const IsIpfs = require('is-ipfs')
-const moduleConfig = require('../utils/module-config')
 const cleanCID = require('../utils/clean-cid')
+const configure = require('../lib/configure')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return async function * ls (path, options) {
+    options = options || {}
 
     try {
-      args = cleanCID(args)
+      path = cleanCID(path)
     } catch (err) {
-      if (!IsIpfs.ipfsPath(args)) {
-        return callback(err)
+      if (!IsIpfs.ipfsPath(path)) {
+        throw err
       }
     }
 
-    send({
-      path: 'ls',
-      args: args,
-      qs: opts
-    }, (err, results) => {
-      if (err) {
-        return callback(err)
-      }
+    const searchParams = new URLSearchParams()
+    searchParams.set('arg', path.toString())
 
-      let result = results.Objects
-      if (!result) {
-        return callback(new Error('expected .Objects in results'))
-      }
+    if (options.long !== undefined) {
+      searchParams.set('long', options.long)
+    }
 
-      result = result[0]
-      if (!result) {
-        return callback(new Error('expected one array in results.Objects'))
-      }
+    if (options.unsorted !== undefined) {
+      searchParams.set('unsorted', options.unsorted)
+    }
 
-      result = result.Links
-      if (!Array.isArray(result)) {
-        return callback(new Error('expected one array in results.Objects[0].Links'))
-      }
+    if (options.recursive !== undefined) {
+      searchParams.set('recursive', options.recursive)
+    }
 
-      result = result.map((link) => ({
+    const res = await ky.get('ls', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    })
+
+    let result = await res.json()
+
+    result = result.Objects
+    if (!result) {
+      throw new Error('expected .Objects in results')
+    }
+
+    result = result[0]
+    if (!result) {
+      throw new Error('expected one array in results.Objects')
+    }
+
+    result = result.Links
+    if (!Array.isArray(result)) {
+      throw new Error('expected one array in results.Objects[0].Links')
+    }
+
+    for (const link of result) {
+      yield {
         name: link.Name,
-        path: args + '/' + link.Name,
+        path: path + '/' + link.Name,
         size: link.Size,
         hash: link.Hash,
         type: typeOf(link),
         depth: link.Depth || 1
-      }))
-
-      callback(null, result)
-    })
-  })
-}
+      }
+    }
+  }
+})
 
 function typeOf (link) {
   switch (link.Type) {

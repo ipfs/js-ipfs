@@ -59,7 +59,7 @@ describe('.get (specific go-ipfs features)', function () {
   it('err with out of range compression level', async () => {
     await expect(ipfs.get(smallFile.cid, {
       compress: true,
-      'compression-level': 10
+      compressionLevel: 10
     })).to.be.rejectedWith('compression level must be between 1 and 9')
   })
 
@@ -83,18 +83,11 @@ describe('.get (specific go-ipfs features)', function () {
 
   it('get path containing "+"s', async () => {
     const cid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
-    let count = 0
     const files = await ipfs.get(cid)
 
-    files.forEach((file) => {
-      if (file.path !== cid) {
-        count++
-        expect(file.path).to.contain('+')
-
-        if (count === 2) {
-          // done()
-        }
-      }
-    })
+    expect(files).to.be.an('array').with.lengthOf(3)
+    expect(files[0]).to.have.property('path', cid)
+    expect(files[1]).to.have.property('path', `${cid}/c++files`)
+    expect(files[2]).to.have.property('path', `${cid}/c++files/ti,c64x+mega++mod-pic.txt`)
   })
 })

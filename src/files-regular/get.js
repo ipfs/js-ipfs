@@ -1,52 +1,48 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
+const tarStreamToObjects = require('../utils/tar-stream-to-objects')
+const IsIpfs = require('is-ipfs')
 const cleanCID = require('../utils/clean-cid')
-const TarStreamToObjects = require('../utils/tar-stream-to-objects')
-const concat = require('concat-stream')
-const through = require('through2')
-const v = require('is-ipfs')
 
-module.exports = (send) => {
-  return promisify((path, opts, callback) => {
-    if (typeof opts === 'function' && !callback) {
-      callback = opts
-      opts = {}
-    }
-
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' && typeof callback === 'function') {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return async function * get (path, options) {
+    options = options || {}
 
     try {
       path = cleanCID(path)
     } catch (err) {
-      if (!v.ipfsPath(path)) {
-        return callback(err)
+      if (!IsIpfs.ipfsPath(path)) {
+        throw err
       }
     }
 
-    const request = { path: 'get', args: path, qs: opts }
+    const searchParams = new URLSearchParams()
+    searchParams.set('arg', path.toString())
 
-    // Convert the response stream to TarStream objects
-    send.andTransform(request, TarStreamToObjects, (err, stream) => {
-      if (err) { return callback(err) }
+    if (options.compress !== undefined) {
+      searchParams.set('compress', options.compress)
+    }
 
-      const files = []
+    if (options.compressionLevel !== undefined) {
+      searchParams.set('compression-level', options.compressionLevel)
+    }
 
-      stream.pipe(through.obj((file, enc, next) => {
-        if (file.content) {
-          file.content.pipe(concat((content) => {
-            files.push({ path: file.path, content: content })
-          }))
-        } else {
-          files.push(file)
-        }
-        next()
-      }, () => callback(null, files)))
+    if (options.offset) {
+      searchParams.set('offset', options.offset)
+    }
+
+    if (options.length) {
+      searchParams.set('length', options.length)
+    }
+
+    const res = await ky.get('get', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
     })
-  })
-}
+
+    yield * tarStreamToObjects(res.body)
+  }
+})
