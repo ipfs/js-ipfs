@@ -158,17 +158,15 @@ describe('utils', () => {
     })
 
     it('should error on invalid hashes', () => {
-      return utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd')
-        .then(() => expect.fail('should have errored'), (err) => expect(err).to.exist())
+      return expect(utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd'))
+        .to.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
-      return utils.resolvePath(node.object, `${aboutPath}/fusion`)
-        .then(() => expect.fail('should have errored'), (err) => {
-          expect(err.message).to.include(
-            'no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
-          )
-        })
+      return expect(utils.resolvePath(node.object, `${aboutPath}/fusion`))
+        .to.be.rejected()
+        .and.eventually.have.property('message')
+        .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })
 })

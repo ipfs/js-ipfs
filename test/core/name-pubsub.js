@@ -106,8 +106,9 @@ describe('name-pubsub', function () {
     const keys = ipns.getIdKeys(fromB58String(idA.id))
     const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
 
-    await nodeB.name.resolve(idA.id)
-      .then(() => expect.fail('should not have been able to resolve idA.id'), (err) => expect(err).to.exist())
+    await expect(nodeB.name.resolve(idA.id))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
 
     await waitForPeerToSubscribe(nodeA, topic)
     await nodeB.pubsub.subscribe(topic, checkMessage)
@@ -128,10 +129,9 @@ describe('name-pubsub', function () {
     const resolvesEmpty = await nodeB.name.resolve(idB.id)
     expect(resolvesEmpty).to.be.eq(emptyDirCid)
 
-    await nodeA.name.resolve(idB.id).then(
-      () => expect.fail('should have thrown'),
-      (err) => expect(err.code).to.equal('ERR_NO_RECORD_FOUND')
-    )
+    await expect(nodeA.name.resolve(idB.id))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
 
     const publish = await nodeB.name.publish(path)
     expect(publish).to.be.eql({

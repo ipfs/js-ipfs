@@ -51,10 +51,9 @@ describe('pubsub disabled', () => {
     const topic = hat()
     const handler = () => { throw new Error('unexpected message') }
 
-    await ipfs.pubsub.subscribe(topic, handler).then(
-      () => expect.fail('should have thrown'),
-      (err) => expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    )
+    await expect(ipfs.pubsub.subscribe(topic, handler))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
   })
 
   it('should not allow unsubscribe if disabled', done => {
@@ -71,10 +70,9 @@ describe('pubsub disabled', () => {
     const topic = hat()
     const handler = () => { throw new Error('unexpected message') }
 
-    await ipfs.pubsub.unsubscribe(topic, handler).then(
-      () => expect.fail('should have thrown'),
-      (err) => expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    )
+    await expect(ipfs.pubsub.unsubscribe(topic, handler))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
   })
 
   it('should not allow publish if disabled', done => {
@@ -91,10 +89,9 @@ describe('pubsub disabled', () => {
     const topic = hat()
     const msg = Buffer.from(hat())
 
-    await ipfs.pubsub.publish(topic, msg).then(
-      () => expect.fail('should have thrown'),
-      (err) => expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    )
+    await expect(ipfs.pubsub.publish(topic, msg))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
   })
 
   it('should not allow ls if disabled', done => {
@@ -106,10 +103,9 @@ describe('pubsub disabled', () => {
   })
 
   it('should not allow ls if disabled (promised)', async () => {
-    await ipfs.pubsub.ls().then(
-      () => {},
-      (err) => expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    )
+    await expect(ipfs.pubsub.ls())
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
   })
 
   it('should not allow peers if disabled', done => {
@@ -124,10 +120,9 @@ describe('pubsub disabled', () => {
   it('should not allow peers if disabled (promised)', async () => {
     const topic = hat()
 
-    await ipfs.pubsub.peers(topic).then(
-      () => expect.fail('should have thrown'),
-      (err) => expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    )
+    await expect(ipfs.pubsub.peers(topic))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
   })
 
   it('should not allow setMaxListeners if disabled', () => {
