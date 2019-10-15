@@ -55,7 +55,6 @@ little above.
 JS IPFS Best Practices
 ----------------------
 
-- Run in fedrated model.
 - Configure nodes for using webrtc or websocket-star.
 - Run independant instance as default one are under high load and YMMV.
 - Make sure content you are implementing is cached in go-ipfs
