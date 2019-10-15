@@ -46,9 +46,8 @@ JS IPFS Restriction in Web Browser
   and relay servers, delegating peer/content routing and preload servers for content
   discoverablilty hard and erroneous even with swarm peers.
 
-- Unable in opening TCP connections even if one sets up delegating routing the
-issue will persist for connecting most of peers in the swarm as described a
-little above.
+- If the browser lacks TCP, you can set up delegating routing. The issue might still
+  persist for connecting most of peers in the swarm as described above.
 
 - Connection with websocket ports should be adhering with [secure contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) limitations.
 
