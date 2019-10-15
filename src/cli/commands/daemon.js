@@ -79,10 +79,10 @@ module.exports = {
       try {
         await daemon.start()
         daemon._httpApi._apiServers.forEach(apiServer => {
-          print(`API listening on ${apiServer.info.ma.toString()}`)
+          print(`API listening on ${apiServer.info.ma}`)
         })
         daemon._httpApi._gatewayServers.forEach(gatewayServer => {
-          print(`Gateway (read only) listening on ${gatewayServer.info.ma.toString()}`)
+          print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
         })
         daemon._httpApi._apiServers.forEach(apiServer => {
           print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
