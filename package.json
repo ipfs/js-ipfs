@@ -173,7 +173,7 @@
     "pull-defer": "~0.2.3",
     "pull-file": "^1.1.0",
     "pull-mplex": "~0.1.1",
-    "pull-ndjson": "~0.1.1",
+    "pull-ndjson": "^0.2.0",
     "pull-pushable": "^2.2.0",
     "pull-sort": "^1.0.1",
     "pull-stream": "^3.6.14",

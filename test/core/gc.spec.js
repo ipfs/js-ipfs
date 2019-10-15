@@ -7,7 +7,6 @@ const IPFSFactory = require('ipfsd-ctl')
 const pEvent = require('p-event')
 const env = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
-const { Errors } = require('interface-datastore')
 
 // We need to detect when a readLock or writeLock is requested for the tests
 // so we override the Mutex class to emit an event
@@ -189,11 +188,11 @@ describe('gc', function () {
       await rm1
 
       // Second rm should fail because GC has already removed that block
-      try {
-        await rm2
-      } catch (err) {
-        expect(err.code).eql(Errors.dbDeleteFailedError().code)
-      }
+      const results = await rm2
+      const result = results
+        .filter(result => result.hash === cid2.toString())
+        .pop()
+      expect(result).to.have.property('error').that.contains('block not found')
 
       // Confirm second block has been removed
       const localRefs = (await ipfs.refs.local()).map(r => r.ref)

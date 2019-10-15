@@ -33,7 +33,11 @@ module.exports = function pubsub (self) {
         return
       }
 
-      checkOnlineAndEnabled()
+      try {
+        checkOnlineAndEnabled()
+      } catch (err) {
+        return Promise.reject(err)
+      }
 
       return self.libp2p.pubsub.subscribe(topic, handler, options)
     },
@@ -50,7 +54,11 @@ module.exports = function pubsub (self) {
         return
       }
 
-      checkOnlineAndEnabled()
+      try {
+        checkOnlineAndEnabled()
+      } catch (err) {
+        return Promise.reject(err)
+      }
 
       return self.libp2p.pubsub.unsubscribe(topic, handler)
     },

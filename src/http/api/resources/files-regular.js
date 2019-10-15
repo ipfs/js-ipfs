@@ -336,6 +336,12 @@ exports.refs = {
     const unique = request.query.unique
     const maxDepth = request.query['max-depth']
 
+    // have to do this here otherwise the validation error appears in the stream tail and
+    // this doesn't work in browsers: https://github.com/ipfs/js-ipfs/issues/2519
+    if (edges && format !== Format.default) {
+      throw Boom.badRequest('Cannot set edges to true and also specify format')
+    }
+
     const source = ipfs.refsPullStream(key, { recursive, format, edges, unique, maxDepth })
     return sendRefsReplyStream(request, h, `refs for ${key}`, source)
   }
