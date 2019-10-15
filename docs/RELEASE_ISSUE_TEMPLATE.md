@@ -47,19 +47,23 @@
       - [ ] Packages Listing
   - [ ] Publish a release candidate to npm
     ```sh
-    # All succesful builds of master update the `build/last-successful branch which contains a npm-shrinkwrap.json.
-    # This command checks that branch out, installs it's dependencies using `npm ci`, creates a release branch
-    # (e.g. v0.34.x), updates the minor prerelease version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
+    # All succesful builds of master update the `build/last-successful branch which
+    # contains a npm-shrinkwrap.json.
+    # This command checks that branch out, installs it's dependencies using `npm ci`,
+    # creates a release branch (e.g. release/v0.34.x), updates the minor prerelease
+    # version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
     npx aegir publish-rc
 
-    # Later we may wish to update the rc.  First cherry-picked/otherwise merged the new commits into the release 
-    # branch on github (e.g. not locally) and wait for CI to pass.  First update the lockfiles used by ci (n.b. one 
-    # day this will be done by our ci tools):
-    npx aegir update-release-branch-lockfiles v0.34.x
+    # Later we may wish to update the rc.  First cherry-picked/otherwise merged the
+    # new commits into the release  branch on github (e.g. not locally) and wait
+    # for CI to pass.  First update the lockfiles used by ci (n.b. one  day this
+    # will be done by our ci tools):
+    npx aegir update-release-branch-lockfiles release/v0.34.x
 
-    # Then update the rc publisehd on npm.  This command pulls the specified release branch, installs it's dependencies
-    # `npm ci`, increments the prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it to npm
-    npx aegir update-rc v0.34.x
+    # Then update the rc publisehd on npm.  This command pulls the specified release
+    # branch, installs it's dependencies `npm ci`, increments the prerelease version
+    # (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it to npm
+    npx aegir update-rc release/v0.34.x
     ```
   - Network Testing:
     - test lab things - TBD
@@ -79,8 +83,11 @@
   - [ ] Take a snapshot of everyone that has contributed to this release (including its direct dependencies in IPFS, libp2p, IPLD and multiformats) using [the js-ipfs-contributors module](https://www.npmjs.com/package/js-ipfs-contributors).
   - [ ] Publish to npm:
     ```sh
-    # Re-install dependencies using lockfile (will automatically remove your node_modules folder)
-    # (Ensures the versions used for the browser build are the same that have been verified by CI)
+    git checkout release/v0.34.x
+
+    # Re-install dependencies using lockfile (will automatically remove your
+    # node_modules folder) (Ensures the versions used for the browser build are the
+    # same that have been verified by CI)
     npm ci
 
     # lint, build, test, tag, publish
@@ -90,7 +97,7 @@
     git rm npm-shrinkwrap.json yarn.lock
     git commit -m 'chore: removed lock files'
     git checkout master
-    git merge v0.34.x
+    git merge release/v0.34.x
     git push
     ```
   - [ ] Publish a blog post to [github.com/ipfs/blog](https://github.com/ipfs/blog) (at minimum, a c&p of this release issue with all the highlights, API changes and thank yous)
