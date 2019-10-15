@@ -39,7 +39,7 @@ node.once('ready', () => {
 JS IPFS Restriction in Web Browser
 ------------------------------------------
 
-- DHT in js-ipfs is not by default.
+- DHT in js-ipfs is not enabled by default.
 
   In browser a JS IPFS node is more restricted because of the same origin policy
   that decrease the discover/connect with peers, external peers without rendezvous
