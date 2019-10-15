@@ -59,7 +59,7 @@ JS IPFS Best Practices
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
   - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
-    configuring [delgated routing](https://github.com/ipfs/js-ipfs#configuring-delegate-routers).
+    configuring [delegated routing](https://github.com/ipfs/js-ipfs#configuring-delegate-routers).
     Here you will be using go-ipfs's API + nginx.
 
 JS IPFS Examples
