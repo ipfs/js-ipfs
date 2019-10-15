@@ -8,6 +8,7 @@ logs
 *.log
 # npm pack
 *.tgz
+**/tests_output
 
 coverage
 
