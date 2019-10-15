@@ -171,20 +171,14 @@ describe('create node', function () {
 
     expect(ipfs.isOnline()).to.be.false()
 
-    try {
-      await ipfs.ready
-    } catch (err) {
-      expect(ipfs.isOnline()).to.be.false()
+    await expect(ipfs.ready)
+      .to.eventually.be.rejected()
 
-      // After the error has occurred, it should still reject
-      try {
-        await ipfs.ready
-      } catch (_) {
-        return
-      }
-    }
+    expect(ipfs.isOnline()).to.be.false()
 
-    throw new Error('ready promise did not reject')
+    // After the error has occurred, it should still reject
+    await expect(ipfs.ready)
+      .to.eventually.be.rejected()
   })
 
   it('should create a ready node with IPFS.create', async () => {

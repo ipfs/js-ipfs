@@ -104,14 +104,12 @@ describe('daemon', () => {
       }
     })
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
-
-      expect(stdout).to.include('Daemon is ready')
-    }
+    await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true
+      })
+      .and.to.have.property('stdout').that.includes('Daemon is ready')
   })
 
   it('should allow bind to multiple addresses for API and Gateway', async function () {
@@ -142,15 +140,14 @@ describe('daemon', () => {
       }
     })
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
+    const err = await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true
+      })
 
-      apiAddrs.forEach(addr => expect(err.stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
-      gatewayAddrs.forEach(addr => expect(err.stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
-    }
+    apiAddrs.forEach(addr => expect(err.stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
+    gatewayAddrs.forEach(addr => expect(err.stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
   })
 
   it('should allow no bind addresses for API and Gateway', async function () {
@@ -171,15 +168,12 @@ describe('daemon', () => {
       }
     })
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
-
-      expect(err.stdout).to.not.include('API listening on')
-      expect(err.stdout).to.not.include('Gateway (read only) listening on')
-    }
+    await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true
+      })
+      .and.have.property('stdout').that.does.not.include(/(API|Gateway \(read only\)) listening on/g)
   })
 
   skipOnWindows('should handle SIGINT gracefully', async function () {
@@ -211,32 +205,17 @@ describe('daemon', () => {
     await ipfs('init')
 
     const daemon = ipfs('daemon --silent')
-    const stop = async (err) => {
-      daemon.kill()
 
-      if (err) {
-        throw err
-      }
+    setTimeout(() => {
+      daemon.kill('SIGKILL')
+    }, 5 * 1000)
 
-      try {
-        await daemon
-      } catch (err) {
-        if (!err.killed) {
-          throw err
-        }
-      }
-    }
-
-    return new Promise((resolve, reject) => {
-      daemon.stdout.on('data', (data) => {
-        reject(new Error('Output was received ' + data.toString('utf8')))
+    await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true,
+        stdout: ''
       })
-
-      setTimeout(() => {
-        resolve()
-      }, 5 * 1000)
-    })
-      .then(stop, stop)
   })
 
   it('should present ipfs path help when option help is received', async function () {
@@ -262,16 +241,15 @@ describe('daemon', () => {
       }
     })
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
+    const err = await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true
+      })
 
-      expect(err.stdout).to.include(`js-ipfs version: ${pkg.version}`)
-      expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
-      expect(err.stdout).to.include(`Node.js version: ${process.versions.node}`)
-    }
+    expect(err.stdout).to.include(`js-ipfs version: ${pkg.version}`)
+    expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
+    expect(err.stdout).to.include(`Node.js version: ${process.versions.node}`)
   })
 
   it('should init by default', async function () {
@@ -290,12 +268,11 @@ describe('daemon', () => {
       }
     })
 
-    try {
-      await daemon
-      throw new Error('Did not kill process')
-    } catch (err) {
-      expect(err.killed).to.be.true()
-    }
+    await expect(daemon)
+      .to.eventually.be.rejected()
+      .and.to.include({
+        killed: true
+      })
 
     expect(fs.existsSync(repoPath)).to.be.true()
   })
