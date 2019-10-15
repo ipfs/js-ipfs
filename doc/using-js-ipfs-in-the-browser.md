@@ -45,7 +45,7 @@ JS IPFS Restriction in Web Browser
   and relay servers, delegating peer/content routing and preload servers for content
   discoverablilty hard and erroneous even with swarm peers.
 
-- Unable in opening TCP connections even if one sets up delegating routing the 
+- Unable in opening TCP connections even if one sets up delegating routing the
 issue will persist for connecting most of peers in the swarm as described a
 little above.
 
@@ -59,7 +59,7 @@ JS IPFS Best Practices
 - Run independant instance as default one are under high load and YMMV.
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
-  - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or 
+  - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
     configuring [delgated routing](https://github.com/ipfs/js-ipfs#configuring-delegate-routers).
     Here you will be using go-ipfs's API + nginx.
 
