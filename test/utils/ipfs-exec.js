@@ -38,7 +38,6 @@ module.exports = (repoPath, opts) => {
       // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
-
       return res.stdout
     })
 
