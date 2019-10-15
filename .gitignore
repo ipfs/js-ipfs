@@ -2,7 +2,6 @@
 **/*.log
 test/repo-tests*
 **/bundle.js
-docs
 # Logs
 logs
 *.log
