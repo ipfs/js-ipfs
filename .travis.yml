@@ -115,13 +115,13 @@ jobs:
       if: branch =~ /^release\/.*$/
       name: ipfs-pubsub-room
       script:
-        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
+        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git --branch upgrade-to-latest-js-ipfs-rc
 
     - stage: test
       if: branch =~ /^release\/.*$/
       name: peer-base
       script:
-        - npm run test:external -- peer-base https://github.com/peer-base/peer-base.git
+        - npm run test:external -- peer-base https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc
 
     - stage: test
       if: branch =~ /^release\/.*$/

@@ -194,7 +194,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^20.3.1",
+    "aegir": "^20.4.1",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
