@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 JS IPFS Restriction in Web Browser
 ------------------------------------------
 
-- DHT in js-ipfs is not enabled by default.
+- DHT in js-ipfs is not available yet.
 
   This means js-ipfs running in the browser is limited to Web APIs available on a web page.
   There is no raw TCP sockets nor low level UDP, only WebRTC and Websockets.
@@ -53,7 +53,7 @@ JS IPFS Best Practices
 ----------------------
 
 - Configure nodes for using webrtc or websocket-star.
-- Run independant instance as de
+- Run your own instance of `*-star` signaling service. The default ones are under high load and YMMV.
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
   - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
