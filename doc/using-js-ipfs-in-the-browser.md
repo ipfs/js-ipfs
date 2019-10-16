@@ -9,7 +9,7 @@ boosting the speed with reducing the errors you face often because of limitation
 js-ipfs.
 
 There are a few additional components required for running JS IPFS in the browser. These
-are webrtc and websocket-star which will make it easier for implemented JS IPFS
+are webrtc and websocket transports which enables connectivity for implementing JS IPFS
 in the browser and boost the speed and reduce the errors.
 
 You can find the information present for enabling webRTC support for js-ipfs in
