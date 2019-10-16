@@ -24,16 +24,14 @@ Getting Data From IPFS
 Using Javascript in the browser
 
 ```js
-const node = new IPFS()
-
-node.once('ready', () => {
-  node.pipe('QmPChd2hVbrJ6bfo3WBcTW4iZnpHm8TEzWkLHmLpXhF68A', (err, data) => {
-    if (err) return console.error(err)
-
-    // convert Buffer back to string
-    console.log(data.toString())
-  })
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const node = await Ipfs.create()
+  const data = await node.cat('QmPChd2hVbrJ6bfo3WBcTW4iZnpHm8TEzWkLHmLpXhF68A')
+  console.log(`ipfs.cat result:`, data.toString())
 })
+</script>
 ```
 
 JS IPFS Restriction in Web Browser
