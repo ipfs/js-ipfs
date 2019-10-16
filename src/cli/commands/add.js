@@ -113,7 +113,7 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const options = {
-        strategy: argv.trickle ? 'trickle' : 'balanced',
+        trickle: argv.trickle,
         shardSplitThreshold: argv.enableShardingExperiment
           ? argv.shardSplitThreshold
           : Infinity,

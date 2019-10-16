@@ -21,6 +21,7 @@ module.exports = function (self) {
         ? 1000
         : Infinity
     }, options, {
+      strategy: 'balanced',
       chunker: chunkerOptions.chunker,
       chunkerOptions: chunkerOptions.chunkerOptions
     })
@@ -28,6 +29,11 @@ module.exports = function (self) {
     // CID v0 is for multihashes encoded with sha2-256
     if (opts.hashAlg && opts.cidVersion !== 1) {
       opts.cidVersion = 1
+    }
+
+    if (opts.trickle) {
+      opts.strategy = 'trickle'
+      delete opts.trickle
     }
 
     let total = 0
