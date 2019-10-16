@@ -2,7 +2,7 @@ Using JS IPFS in The Browser
 ----------------------------
 
 JS IPFS is the implementation of IPFS protocol in JavaScript. It can run on any
-evergreen browser, inside a service or web worker, as a web extention and in Node.js.
+evergreen browser, inside a service or web worker, browser extensions, Electron and in Node.js.
 
 The documentation details more information about running JS IPFS in the browser and
 boosting the speed with reducing the errors you face often because of limitation of
@@ -39,7 +39,7 @@ node.once('ready', () => {
 JS IPFS Restriction in Web Browser
 ------------------------------------------
 
-- DHT in js-ipfs is not by default.
+- DHT in js-ipfs is not enabled by default.
 
   In browser a JS IPFS node is more restricted because of the same origin policy
   that decrease the discover/connect with peers, external peers without rendezvous
@@ -59,7 +59,7 @@ JS IPFS Best Practices
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
   - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
-    configuring [delgated routing](https://github.com/ipfs/js-ipfs#configuring-delegate-routers).
+    configuring [delegated routing](https://github.com/ipfs/js-ipfs#configuring-delegate-routers).
     Here you will be using go-ipfs's API + nginx.
 
 JS IPFS Examples
