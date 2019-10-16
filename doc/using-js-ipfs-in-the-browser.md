@@ -39,10 +39,10 @@ JS IPFS Restriction in Web Browser
 
 - DHT in js-ipfs is not enabled by default.
 
-  In browser a JS IPFS node is more restricted because of the same origin policy
-  that decrease the discover/connect with peers, external peers without rendezvous
-  and relay servers, delegating peer/content routing and preload servers for content
-  discoverablilty hard and erroneous even with swarm peers.
+  This means js-ipfs running in the browser is limited to Web APIs available on a web page.
+  There is no raw TCP sockets nor low level UDP, only WebRTC and Websockets.
+  Discovery and connectivity to other peers is achieved with a mix of rendezvous and
+  relay servers, delegated peer/content routing and preload servers.
 
 - If the browser lacks TCP, you can set up delegating routing. The issue might still
   persist for connecting most of peers in the swarm as described above.
@@ -53,7 +53,7 @@ JS IPFS Best Practices
 ----------------------
 
 - Configure nodes for using webrtc or websocket-star.
-- Run independant instance as default one are under high load and YMMV.
+- Run independant instance as de
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
   - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
