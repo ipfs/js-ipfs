@@ -40,7 +40,7 @@ describe('ls', () => runOnAndOff((thing) => {
 
   it('adds a header, -v', async function () {
     this.timeout(20 * 1000)
-    const out = await ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z -v')
+    const out = await ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/ -v')
     expect(out).to.eql(
       'Hash                                           Size Name\n' +
       'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +

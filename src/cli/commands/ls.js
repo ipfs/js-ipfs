@@ -48,11 +48,7 @@ module.exports = {
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
-      let pathParts = key.split('/')
-
-      if (key.startsWith('/ipfs/')) {
-        pathParts = pathParts.slice(2)
-      }
+      let pathParts = key.replace(/\/ipfs\/|\/$/g, '').split('/')
 
       links.forEach(link => {
         const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
