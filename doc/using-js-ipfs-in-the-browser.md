@@ -53,7 +53,7 @@ JS IPFS Best Practices
 ----------------------
 
 - Configure nodes for using webrtc or websocket-star.
-- Run independant instance as default one are under high load and YMMV.
+- Run your own instance of `*-star` signaling service. The default ones are under high load and YMMV.
 - Make sure content you are implementing is cached in go-ipfs
   - manually `pin` or preload CIDs of interest with `refs -r` beforehand.
   - preload content on the fly using [preload](https://github.com/ipfs/js-ipfs#optionspreload) or
