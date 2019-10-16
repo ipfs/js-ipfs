@@ -21,7 +21,8 @@ module.exports = (repoPath, opts) => {
   const config = Object.assign({}, {
     stripFinalNewline: false,
     env: env,
-    timeout: 60 * 1000
+    timeout: 60 * 1000,
+    all: true
   }, opts)
   const exec = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, config)
   const execRaw = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, Object.assign({}, config, {
@@ -46,6 +47,7 @@ module.exports = (repoPath, opts) => {
     res.stdin = cp.stdin
     res.stdout = cp.stdout
     res.stderr = cp.stderr
+    res.all = cp.all
 
     return res
   }
