@@ -14,7 +14,7 @@ in the browser and boost the speed and reduce the errors.
 
 You can find the information present for enabling webRTC support for js-ipfs in
 the browser [here](https://github.com/ipfs/js-ipfs#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser) and a different one is
-implementing with webrtc-star, you can find information [here](https://github.com/ipfs/js-ipfs#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality).
+providing signaling and transport over websockets, you can find information [here](https://github.com/ipfs/js-ipfs#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality).
 
 You can find information about running IPFS in the broswer [here](https://github.com/ipfs/js-ipfs#table-of-contents).
 
