@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 JS IPFS Restriction in Web Browser
 ------------------------------------------
 
-- DHT in js-ipfs is not enabled by default.
+- DHT in js-ipfs is not available yet.
 
   In browser a JS IPFS node is more restricted because of the same origin policy
   that decrease the discover/connect with peers, external peers without rendezvous
