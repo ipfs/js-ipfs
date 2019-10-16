@@ -2,7 +2,7 @@ Using JS IPFS in The Browser
 ----------------------------
 
 JS IPFS is the implementation of IPFS protocol in JavaScript. It can run on any
-evergreen browser, inside a service or web worker, as a web extention and in Node.js.
+evergreen browser, inside a service or web worker, browser extensions, Electron and in Node.js.
 
 The documentation details more information about running JS IPFS in the browser and
 boosting the speed with reducing the errors you face often because of limitation of
