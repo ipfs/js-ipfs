@@ -219,7 +219,7 @@ exports.add = {
           wrapWithDirectory: request.query['wrap-with-directory'],
           pin: request.query.pin,
           chunker: request.query.chunker,
-          strategy: request.query.trickle ? 'trickle' : 'balanced',
+          trickle: request.query.trickle,
           preload: request.query.preload
         })
       },
