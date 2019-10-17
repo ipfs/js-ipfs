@@ -204,7 +204,7 @@
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "hat": "0.0.3",
-    "interface-ipfs-core": "ipfs/interface-js-ipfs-core#feat/interface-tests",
+    "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#feat/interface-tests",
     "ipfs-interop": "^0.1.1",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#feat/interface-tests",
     "libp2p-websocket-star": "~0.10.2",

@@ -20,7 +20,8 @@ describe('interface-ipfs-core tests', function () {
   tests.bitswap(commonFactory, {
     skip: !isNode ? true : [
       {
-        name: 'should get the wantlist by peer ID for a diffreent node'
+        name: 'should get the wantlist by peer ID for a diffreent node',
+        reason: 'TODO: find the reason'
       }
     ]
   })
