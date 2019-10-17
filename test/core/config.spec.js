@@ -209,4 +209,15 @@ describe('config', () => {
 
     cfgs.forEach(cfg => expect(() => config.validate(cfg)).to.throw())
   })
+
+  it('should validate valid profiles', () => {
+    expect(
+      () => config.validate({ init: { profiles: ['test'] } })
+    ).to.not.throw()
+  })
+  it('should validate invalid profiles', () => {
+    expect(
+      () => config.validate({ init: { profiles: 'test' } })
+    ).to.throw()
+  })
 })

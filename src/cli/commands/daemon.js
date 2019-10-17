@@ -19,6 +19,13 @@ module.exports = {
         type: 'string',
         desc: 'Path to existing configuration file to be loaded during --init.'
       })
+      .option('init-profile', {
+        type: 'string',
+        desc: 'Configuration profiles to apply for --init. See ipfs init --help for more.',
+        coerce: (value) => {
+          return (value || '').split(',')
+        }
+      })
       .option('enable-sharding-experiment', {
         type: 'boolean',
         default: false
@@ -73,7 +80,8 @@ module.exports = {
           ipnsPubsub: argv.enableNamesysPubsub,
           dht: argv.enableDhtExperiment,
           sharding: argv.enableShardingExperiment
-        }
+        },
+        init: argv.initProfile ? { profiles: argv.initProfile } : true
       })
 
       try {

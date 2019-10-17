@@ -85,4 +85,19 @@ describe('init', () => {
       })
     })
   })
+
+  it('profiles apply one', async () => {
+    await ipfs.init({ profiles: ['test'] })
+
+    const config = await repo.config.get()
+    expect(config.Bootstrap).to.be.empty()
+  })
+
+  it('profiles apply multiple', async () => {
+    await ipfs.init({ profiles: ['test', 'local-discovery'] })
+
+    const config = await repo.config.get()
+    expect(config.Bootstrap).to.be.empty()
+    expect(config.Discovery.MDNS.Enabled).to.be.true()
+  })
 })
