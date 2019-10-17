@@ -200,7 +200,7 @@
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
     "dir-compare": "^1.7.3",
-    "execa": "^2.0.4",
+    "execa": "^3.2.0",
     "form-data": "^2.5.1",
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.117.2",
