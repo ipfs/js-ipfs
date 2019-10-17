@@ -10,7 +10,7 @@ const PinTypes = PinManager.PinTypes
 
 module.exports = (self) => {
   const dag = self.dag
-  const pinManager = new PinManager(self._repo, dag)
+  const pinManager = self._pinManager || new PinManager(self._repo, dag)
 
   const pin = {
     add: callbackify.variadic(async (paths, options) => {

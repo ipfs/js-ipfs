@@ -16,6 +16,7 @@
   "main": "src/core/index.js",
   "browser": {
     "./src/core/components/init-assets.js": false,
+    "./src/core/runtime/init-assets-nodejs.js": "./src/core/runtime/init-assets-browser.js",
     "./src/core/runtime/add-from-fs-nodejs.js": "./src/core/runtime/add-from-fs-browser.js",
     "./src/core/runtime/config-nodejs.js": "./src/core/runtime/config-browser.js",
     "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",

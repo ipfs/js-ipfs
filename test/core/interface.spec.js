@@ -51,6 +51,13 @@ describe('interface-ipfs-core tests', function () {
     }]
   })
 
+  tests.filesRegular.ipfsx(CommonFactory.create({
+    spawnOptions: {
+      initOptions: { bits: 512, profile: 'test' },
+      EXPERIMENTAL: { ipfsx: true }
+    }
+  }))
+
   tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.createAsync({

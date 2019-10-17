@@ -28,14 +28,13 @@ const preload = require('./preload')
 const mfsPreload = require('./mfs-preload')
 const ipldOptions = require('./runtime/ipld-nodejs')
 const { isTest } = require('ipfs-utils/src/env')
+const ipfsx = require('./ipfsx')
 
 /**
  * @typedef { import("./ipns/index") } IPNS
  */
 
 /**
- *
- *
  * @class IPFS
  * @extends {EventEmitter}
  */
@@ -86,7 +85,7 @@ class IPFS extends EventEmitter {
     this._bitswap = undefined
     this._blockService = new BlockService(this._repo)
     this._ipld = new Ipld(ipldOptions(this._blockService, this._options.ipld, this.log))
-    this._preload = preload(this)
+    this._preload = preload(this._options.preload)
     this._mfsPreload = mfsPreload(this)
     /** @type {IPNS} */
     this._ipns = undefined
@@ -177,5 +176,8 @@ module.exports.createNode = (options) => {
 }
 
 module.exports.create = (options) => {
+  if (options && options.EXPERIMENTAL && options.EXPERIMENTAL.ipfsx) {
+    return ipfsx(options)
+  }
   return new IPFS(options).ready
 }
