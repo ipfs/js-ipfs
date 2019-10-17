@@ -117,7 +117,7 @@ const mapFile = (options) => {
       hash: cidToString(file.cid, { base: options.cidBase }),
       path: file.path,
       name: file.name,
-      depth: file.path.split('/').length,
+      depth: file.path.split('/').length - 1,
       size,
       type
     }

@@ -40,7 +40,7 @@ describe('ls', () => runOnAndOff((thing) => {
 
   it('adds a header, -v', async function () {
     this.timeout(20 * 1000)
-    const out = await ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/ -v')
+    const out = await ipfs('ls /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z -v')
     expect(out).to.eql(
       'Hash                                           Size Name\n' +
       'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
@@ -96,6 +96,19 @@ describe('ls', () => runOnAndOff((thing) => {
       'mAXASIGCpScP8zpa0CqUgyVCR/Cm0Co8pnULGe3seXSsOnJsJ -    datastore/\n' +
       'mAXASIF58POI3+TbHb69iXpD3dRqfXusEj1mHMwPCFenM6HWZ -    init-docs/\n' +
       'mAXASICiW5ai+KiU60glImEMMkiHaNSOAivpXspriIhJO8iHI 2    version\n'
+    )
+  })
+
+
+  it('prints added files', async function () {
+    this.timeout(20 * 1000)
+    const out = await ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    expect(out).to.eql(
+      'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
+      'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n' +
+      'QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv -    datastore/\n' +
+      'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU -    init-docs/\n' +
+      'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV 2    version\n'
     )
   })
 }))

@@ -38,19 +38,14 @@ module.exports = function (self) {
           if (recursive) {
             return d.resolve(pull(
               toPullStream.source(exporter.recursive(file.cid, self._ipld, options)),
-              filter(child => file.cid.toBaseEncodedString() !== child.cid.toBaseEncodedString()),
+              filter(child => file.cid.toString() !== child.cid.toString()),
               map(mapFile(options))
             ))
           }
 
           return d.resolve(pull(
             toPullStream.source(file.content()),
-            map(mapFile(options)),
-            map((file) => {
-              file.depth--
-
-              return file
-            })
+            map(mapFile(options))
           ))
         }
 
