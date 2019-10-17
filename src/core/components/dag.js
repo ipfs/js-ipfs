@@ -88,22 +88,34 @@ module.exports = function dag (self) {
         }
       }
 
-      const cid = await self._ipld.put(dagNode, options.format, {
-        hashAlg: options.hashAlg,
-        cidVersion: options.version
-      })
+      let release
 
-      if (options.preload !== false) {
-        self._preload(cid)
+      if (options.pin) {
+        release = await self._gcLock.readLock()
       }
 
-      if (pin) {
-        await ipfs.pin.add(cid, {
-          lock: true
+      try {
+        const cid = await self._ipld.put(dagNode, options.format, {
+          hashAlg: options.hashAlg,
+          cidVersion: options.version
         })
-      }
 
-      return cid
+        if (options.pin) {
+          await self.pin.add(cid, {
+            lock: false
+          })
+        }
+
+        if (options.preload !== false) {
+          self._preload(cid)
+        }
+
+        return cid
+      } finally {
+        if (release) {
+          release()
+        }
+      }
     }),
 
     get: callbackify.variadic(async (cid, path, options) => {
