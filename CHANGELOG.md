@@ -1,3 +1,16 @@
+<a name="0.39.0-rc.2"></a>
+# [0.39.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.1...v0.39.0-rc.2) (2019-10-17)
+
+
+### Bug Fixes
+
+* add profiles docs, support in validation and tests ([#2545](https://github.com/ipfs/js-ipfs/issues/2545)) ([e081e16](https://github.com/ipfs/js-ipfs/commit/e081e16))
+* choose import strategy in ipfs.add ([#2541](https://github.com/ipfs/js-ipfs/issues/2541)) ([e2e6701](https://github.com/ipfs/js-ipfs/commit/e2e6701))
+* fix ls crash ([#2546](https://github.com/ipfs/js-ipfs/issues/2546)) ([83eb99b](https://github.com/ipfs/js-ipfs/commit/83eb99b)), closes [ipfs/js-ipfs-unixfs-exporter#24](https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24)
+* make init options look like go-ipfs ([#2544](https://github.com/ipfs/js-ipfs/issues/2544)) ([d4d6dfe](https://github.com/ipfs/js-ipfs/commit/d4d6dfe))
+
+
+
 <a name="0.39.0-rc.1"></a>
 # [0.39.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.0...v0.39.0-rc.1) (2019-10-15)
 
