@@ -3,6 +3,7 @@
 
 const expect = require('chai').expect
 const runOnAndOff = require('../utils/on-and-off')
+const delay = require('delay')
 
 describe('ls', () => runOnAndOff((thing) => {
   let ipfs
