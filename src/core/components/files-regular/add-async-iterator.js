@@ -33,8 +33,9 @@ module.exports = function (self) {
 
     if (opts.trickle) {
       opts.strategy = 'trickle'
-      delete opts.trickle
     }
+
+    delete opts.trickle
 
     let total = 0
 
