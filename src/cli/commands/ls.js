@@ -48,6 +48,14 @@ module.exports = {
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
 
+      // replace multiple slashes
+      key = key.replace(/\/(\/+)/g, '/')
+
+      // strip trailing flash
+      if (key.endsWith('/')) {
+        key = key.replace(/(\/+)$/, '')
+      }
+
       let pathParts = key.split('/')
 
       if (key.startsWith('/ipfs/')) {
@@ -56,7 +64,10 @@ module.exports = {
 
       links.forEach(link => {
         const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
-        const padding = link.depth - pathParts.length
+
+        // todo: fix this by resolving https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24
+        const padding = Math.max(link.depth - pathParts.length, 0)
+
         print(
           rightpad(link.hash, multihashWidth + 1) +
           rightpad(link.size || '-', sizeWidth + 1) +
