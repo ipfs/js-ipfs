@@ -76,16 +76,10 @@ describe('ls', () => runOnAndOff((thing) => {
   })
 
   it('prints nothing for non-existant hashes', async function () {
-    if (thing.on) {
-      // If the daemon is on, ls should search until it hits a timeout
-      await Promise.race([
-        ipfs('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2'),
-        delay(4000)
-      ])
-    } else {
-      // If the daemon is off, ls should fail
-      await ipfs.fail('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2')
-    }
+    await Promise.race([
+      ipfs.fail('ls QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2'),
+      delay(4000)
+    ])
   })
 
   it('adds a header, -v', function () {
