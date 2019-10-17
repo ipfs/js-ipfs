@@ -97,6 +97,12 @@ module.exports = function dag (self) {
         self._preload(cid)
       }
 
+      if (pin) {
+        await ipfs.pin.add(cid, {
+          lock: true
+        })
+      }
+
       return cid
     }),
 

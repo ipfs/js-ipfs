@@ -114,12 +114,9 @@ module.exports = {
         hashAlg,
         version: cidVersion,
         onlyHash,
-        preload
+        preload,
+        pin
       })
-
-      if (pin) {
-        await ipfs.pin.add(cid)
-      }
 
       print(cidToString(cid, { base: cidBase }))
     })())
