@@ -286,4 +286,13 @@ describe('daemon', () => {
     const out = await ipfs('config \'Addresses.API\'')
     expect(out).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
   })
+
+  it('should init with profiles', async function () {
+    this.timeout(100 * 1000)
+    const daemon = ipfs('daemon --init-profile test')
+
+    await daemonReady(daemon)
+    const out = await ipfs('config Bootstrap')
+    expect(out).to.be.eq('[]\n')
+  })
 })

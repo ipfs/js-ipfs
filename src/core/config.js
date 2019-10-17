@@ -37,7 +37,8 @@ const configSchema = s({
     bits: 'number?',
     emptyRepo: 'boolean?',
     privateKey: optional(s('object|string')), // object should be a custom type for PeerId using 'kind-of'
-    pass: 'string?'
+    pass: 'string?',
+    profiles: 'array?'
   })])),
   start: 'boolean?',
   offline: 'boolean?',

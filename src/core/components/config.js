@@ -56,7 +56,7 @@ async function listProfiles (options) { // eslint-disable-line require-await
 
 const profiles = {
   server: {
-    description: 'Disables local host discovery - recommended when running IPFS on machines with public IPv4 addresses.',
+    description: 'Recommended for nodes with public IPv4 address (servers, VPSes, etc.), disables host and content discovery in local networks.',
     transform: (config) => {
       config.Discovery.MDNS.Enabled = false
       config.Discovery.webRTCStar.Enabled = false
@@ -65,7 +65,7 @@ const profiles = {
     }
   },
   'local-discovery': {
-    description: 'Enables local host discovery - inverse of "server" profile.',
+    description: 'Sets default values to fields affected by `server` profile, enables discovery in local networks.',
     transform: (config) => {
       config.Discovery.MDNS.Enabled = true
       config.Discovery.webRTCStar.Enabled = true
@@ -73,8 +73,38 @@ const profiles = {
       return config
     }
   },
+  test: {
+    description: 'Reduces external interference, useful for running ipfs in test environments. Note that with these settings node won\'t be able to talk to the rest of the network without manual bootstrap.',
+    transform: (config) => {
+      const defaultConfig = getDefaultConfig()
+
+      config.Addresses.API = defaultConfig.Addresses.API ? '/ip4/127.0.0.1/tcp/0' : ''
+      config.Addresses.Gateway = defaultConfig.Addresses.Gateway ? '/ip4/127.0.0.1/tcp/0' : ''
+      config.Addresses.Swarm = defaultConfig.Addresses.Swarm.length ? ['/ip4/127.0.0.1/tcp/0'] : []
+      config.Bootstrap = []
+      config.Discovery.MDNS.Enabled = false
+      config.Discovery.webRTCStar.Enabled = false
+
+      return config
+    }
+  },
+  'default-networking': {
+    description: 'Restores default network settings. Inverse profile of the `test` profile.',
+    transform: (config) => {
+      const defaultConfig = getDefaultConfig()
+
+      config.Addresses.API = defaultConfig.Addresses.API
+      config.Addresses.Gateway = defaultConfig.Addresses.Gateway
+      config.Addresses.Swarm = defaultConfig.Addresses.Swarm
+      config.Bootstrap = defaultConfig.Bootstrap
+      config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
+      config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
+
+      return config
+    }
+  },
   lowpower: {
-    description: 'Reduces daemon overhead on the system - recommended for low power systems.',
+    description: 'Reduces daemon overhead on the system. May affect node functionality,performance of content discovery and data fetching may be degraded. Recommended for low power systems.',
     transform: (config) => {
       config.Swarm = config.Swarm || {}
       config.Swarm.ConnMgr = config.Swarm.ConnMgr || {}
@@ -93,37 +123,8 @@ const profiles = {
 
       return config
     }
-  },
-  test: {
-    description: 'Reduces external interference of IPFS daemon - for running the daemon in test environments.',
-    transform: (config) => {
-      const defaultConfig = getDefaultConfig()
-
-      config.Addresses.API = defaultConfig.Addresses.API ? '/ip4/127.0.0.1/tcp/0' : ''
-      config.Addresses.Gateway = defaultConfig.Addresses.Gateway ? '/ip4/127.0.0.1/tcp/0' : ''
-      config.Addresses.Swarm = defaultConfig.Addresses.Swarm.length ? ['/ip4/127.0.0.1/tcp/0'] : []
-      config.Bootstrap = []
-      config.Discovery.MDNS.Enabled = false
-      config.Discovery.webRTCStar.Enabled = false
-
-      return config
-    }
-  },
-  'default-networking': {
-    description: 'Restores default network settings - inverse of "test" profile.',
-    transform: (config) => {
-      const defaultConfig = getDefaultConfig()
-
-      config.Addresses.API = defaultConfig.Addresses.API
-      config.Addresses.Gateway = defaultConfig.Addresses.Gateway
-      config.Addresses.Swarm = defaultConfig.Addresses.Swarm
-      config.Bootstrap = defaultConfig.Bootstrap
-      config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
-      config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
-
-      return config
-    }
   }
+
 }
 
 module.exports.profiles = profiles

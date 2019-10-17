@@ -307,6 +307,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
     })
     ```
 - `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
+- `profiles` (Array) Apply profile settings to config.
 
 ##### `options.start`
 
