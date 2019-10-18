@@ -125,12 +125,11 @@ A great source of [examples][] can be found in the tests for this API.
 - force (boolean): Ignores nonexistent blocks.
 - quiet (boolean): write minimal output
 
-`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful and `result` is an object, containing hash and error strings.
+`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful and `result` is a list of objects, containing hash and (potentially) error strings.
+
+If an error string is present for a given object in `result`, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
 
 If no `callback` is passed, a promise is returned.
-
-NOTE: If the specified block is pinned it won't be removed and no error
-will be returned
 
 **Example:**
 
@@ -139,7 +138,7 @@ ipfs.block.rm(cid, function (err, result) {
   if (err) {
     throw err
   }
-  console.log(result.hash)
+  console.log(result[0].hash)
 })
 ```
 
