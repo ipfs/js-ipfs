@@ -1,3 +1,15 @@
+<a name="0.38.1"></a>
+## [0.38.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0...v0.38.1) (2019-10-18)
+
+
+### Bug Fixes
+
+* choose import strategy in ipfs.add ([#2541](https://github.com/ipfs/js-ipfs/issues/2541)) ([b35845e](https://github.com/ipfs/js-ipfs/commit/b35845e))
+* fix failing test ([b8dd999](https://github.com/ipfs/js-ipfs/commit/b8dd999))
+* fix ls crash ([#2546](https://github.com/ipfs/js-ipfs/issues/2546)) ([e9b9737](https://github.com/ipfs/js-ipfs/commit/e9b9737)), closes [ipfs/js-ipfs-unixfs-exporter#24](https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24)
+
+
+
 <a name="0.38.0"></a>
 # [0.38.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.6...v0.38.0) (2019-09-30)
 
