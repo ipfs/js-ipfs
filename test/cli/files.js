@@ -143,7 +143,7 @@ describe('files', () => runOnAndOff((thing) => {
   it('add multiple', async function () {
     this.timeout(30 * 1000)
 
-    const out = await ipfs('add', 'src/init-files/init-docs/readme', 'test/fixtures/odd-name-[v0]/odd name [v1]/hello', '--wrap-with-directory')
+    const out = await ipfs('add src/init-files/init-docs/readme test/fixtures/odd-name-[v0]/odd\\ name\\ [v1]/hello --wrap-with-directory')
     expect(out)
       .to.include('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
     expect(out)

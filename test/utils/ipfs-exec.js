@@ -23,22 +23,33 @@ module.exports = (repoPath, opts) => {
     env: env,
     timeout: 60 * 1000
   }, opts)
-  const exec = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, config)
-  const execRaw = (args) => execa(path.resolve(`${__dirname}/../../src/cli/bin.js`), args, Object.assign({}, config, {
-    encoding: null
-  }))
+  const exec = (args, options) => {
+    const opts = Object.assign({}, config, options)
 
-  const execute = (exec, args) => {
-    if (args.length === 1) {
-      args = args[0].split(' ')
-    }
+    return execa.command(`${path.resolve(`${__dirname}/../../src/cli/bin.js`)} ${args}`, opts)
+  }
+  const execRaw = (args, options) => {
+    const opts = Object.assign({}, config, options, {
+      encoding: null
+    })
 
-    const cp = exec(args)
+    return execa.command(`${path.resolve(`${__dirname}/../../src/cli/bin.js`)} ${args}`, opts)
+  }
+
+  const execute = (exec, args, options) => {
+    const cp = exec(args, options)
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
       return res.stdout
+    }, (err) => {
+      if (process.env.DEBUG) {
+        // print the error output if we are debugging
+        console.error(err.stderr) // eslint-disable-line no-console
+      }
+
+      throw err
     })
 
     res.cancel = cp.cancel.bind(cp)
@@ -50,30 +61,26 @@ module.exports = (repoPath, opts) => {
     return res
   }
 
-  function ipfs () {
-    return execute(exec, Array.from(arguments))
+  function ipfs (command, options) {
+    return execute(exec, command, options)
   }
 
   // Will return buffers instead of strings
-  ipfs.raw = function () {
-    return execute(execRaw, Array.from(arguments))
+  ipfs.raw = function (command, options) {
+    return execute(execRaw, command, options)
   }
 
   /**
    * Expect the command passed as @param arguments to fail.
+   * @param {String} command String command to run, e.g. `'pin ls'`
+   * @param {Object} options Options to pass to `execa`
    * @return {Promise} Resolves if the command passed as @param arguments fails,
    *                    rejects if it was successful.
    */
-  ipfs.fail = function ipfsFail () {
-    let args = Array.from(arguments)
-
-    if (args.length === 1) {
-      args = args[0].split(' ')
-    }
-
-    return exec(args)
+  ipfs.fail = function ipfsFail (command, options) {
+    return ipfs(command, options)
       .then(() => {
-        throw new Error(`jsipfs expected to fail during command: jsipfs ${args.join(' ')}`)
+        throw new Error(`jsipfs expected to fail during command: jsipfs ${command}`)
       }, (err) => {
         return err
       })

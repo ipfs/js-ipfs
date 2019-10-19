@@ -66,7 +66,7 @@ describe('swarm', () => {
     after(() => Promise.all(nodes.map((node) => node.stop())))
 
     it('connect', async () => {
-      const out = await ipfsA('swarm', 'connect', bMultiaddr)
+      const out = await ipfsA(`swarm connect ${bMultiaddr}`)
       expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
 
@@ -86,7 +86,7 @@ describe('swarm', () => {
     })
 
     it('disconnect', async () => {
-      const out = await ipfsA('swarm', 'disconnect', bMultiaddr)
+      const out = await ipfsA(`swarm disconnect ${bMultiaddr}`)
       expect(out).to.eql(
         `disconnect ${bMultiaddr} success\n`
       )
