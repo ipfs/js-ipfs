@@ -9,7 +9,7 @@ const echoServer = EchoServer.createServer()
 const echoServerStart = promisify(echoServer.start)
 const echoServerStop = promisify(echoServer.stop)
 module.exports = {
-  bundlesize: { maxSize: '245kB' },
+  bundlesize: { maxSize: '246kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main']
