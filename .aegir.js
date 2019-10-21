@@ -4,9 +4,11 @@ const IPFSFactory = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 
+const promisify = require('promisify-es6')
+
 const ipfsdServer = IPFSFactory.createServer()
-const preloadNode = MockPreloadNode.createNode()
-const echoServer = EchoServer.createServer()
+const preloadNode = promisify(MockPreloadNode.createNode())
+const echoServer = promisify(EchoServer.createServer())
 
 module.exports = {
   bundlesize: { maxSize: '652kB' },
@@ -27,26 +29,27 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => Promise.all([
-        preloadNode.start(),
-        echoServer.start()
-      ]),
-      post: () => Promise.all([
-        preloadNode.stop(),
-        echoServer.stop()
-      ])
+      pre: async () => {
+        await preloadNode.start(),
+        await echoServer.start()
+      },
+      post: async () => {
+        await preloadNode.stop(),
+        await echoServer.stop()
+
+      }
     },
     browser: {
-      pre: () => Promise.all([
-        ipfsdServer.start(),
-        preloadNode.start(),
-        echoServer.start()
-      ]),
-      post: () => Promise.all([
-        ipfsdServer.stop(),
-        preloadNode.stop(),
-        echoServer.stop()
-      ])
+      pre: async () => {
+          await ipfsdServer.start()
+          await preloadNode.start()
+          await echoServer.start()
+      },
+      post: async () => {
+          await ipfsdServer.stop()
+          await preloadNode.stop()
+          await echoServer.stop()
+      }
     }
   }
 }
