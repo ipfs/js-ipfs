@@ -28,8 +28,8 @@
     - [ ] ~~sharness~~ (Does not run `js-ipfs`)
     - [ ] all the examples run without problems
     - [ ] IPFS application testing
-      - [ ] ~~[webui](https://github.com/ipfs-shipyard/ipfs-webui)~~ (Does not depend on `js-ifps` or `js-ipfs-http-client`)
-      - [ ] ~~[ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)~~ (Does not depend on `js-ifps` or `js-ipfs-http-client`)
+      - [ ] ~~[webui](https://github.com/ipfs-shipyard/ipfs-webui)~~ (Does not depend on `js-ipfs` or `js-ipfs-http-client`)
+      - [ ] ~~[ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)~~ (Does not depend on `js-ipfs` or `js-ipfs-http-client`)
       - [ ] [ipfs-companion](https://github.com/ipfs-shipyard/ipfs-companion)
       - [ ] [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs)
       - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
