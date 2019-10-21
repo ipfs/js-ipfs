@@ -2,18 +2,26 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const path = require('path')
 const merge = require('merge-options')
 const ctl = require('ipfsd-ctl')
+const IPFS = require('../../src')
+
+/** @ignore @typedef { import("ipfsd-ctl").FactoryOptions } FactoryOptions */
 
 describe('interface-ipfs-core over ipfs-http-client tests', function () {
   this.timeout(20000)
+  /** @type FactoryOptions */
   const commonOptions = {
-    factoryOptions: {
-      type: 'js',
-      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-      IpfsClient: require('ipfs-http-client')
-    }
+    type: 'js',
+    ipfsApi: {
+      path: require.resolve('../../src'),
+      ref: IPFS
+    },
+    ipfsHttp: {
+      path: require.resolve('ipfs-http-client'),
+      ref: require('ipfs-http-client')
+    },
+    ipfsBin: './src/cli/bin.js'
   }
   const commonFactory = ctl.createTestsInterface(commonOptions)
 
@@ -46,27 +54,29 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
   tests.filesMFS(commonFactory)
 
   tests.key(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software'],
-      initOptions: { bits: 512 }
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
     }
   })))
 
   tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
     }
   })))
 
   tests.name(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software',
+      offline: true
     }
   })))
 
   tests.namePubsub(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--enable-namesys-pubsub']
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        ipnsPubsub: true
+      }
     }
   })))
 

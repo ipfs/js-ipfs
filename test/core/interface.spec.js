@@ -7,18 +7,26 @@ const merge = require('merge-options')
 const ctl = require('ipfsd-ctl')
 const IPFS = require('../../src')
 
+/** @ignore @typedef { import("ipfsd-ctl").FactoryOptions } FactoryOptions */
+
 describe('interface-ipfs-core tests', function () {
+  /** @type FactoryOptions */
   const commonOptions = {
-    factoryOptions: {
-      type: 'proc',
-      exec: IPFS,
-      IpfsClient: require('ipfs-http-client')
-    }
+    type: 'proc',
+    ipfsApi: {
+      path: require.resolve('../../src'),
+      ref: IPFS
+    },
+    ipfsHttp: {
+      path: require.resolve('ipfs-http-client'),
+      ref: require('ipfs-http-client')
+    },
+    ipfsBin: './src/cli/bin.js'
   }
   const commonFactory = ctl.createTestsInterface(commonOptions)
 
   tests.bitswap(commonFactory, {
-    skip: !isNode ? true : [
+    skip: [
       {
         name: 'should get the wantlist by peer ID for a diffreent node',
         reason: 'TODO: find the reason'
@@ -53,26 +61,29 @@ describe('interface-ipfs-core tests', function () {
   tests.filesMFS(commonFactory)
 
   tests.key(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software']
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
     }
   })))
 
   tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
     }
   })))
 
   tests.name(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--pass', 'ipfs-is-awesome-software', '--offline']
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software',
+      offline: true
     }
   })))
 
   tests.namePubsub(ctl.createTestsInterface(merge(commonOptions, {
-    spawnOptions: {
-      args: ['--enable-namesys-pubsub']
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        ipnsPubsub: true
+      }
     }
   })))
 
@@ -87,21 +98,13 @@ describe('interface-ipfs-core tests', function () {
 
   tests.pin(commonFactory)
 
-  tests.ping(commonFactory, {
-    skip: isNode ? null : {
-      reason: 'FIXME: ping implementation requires DHT'
-    }
-  })
+  tests.ping(commonFactory)
 
-  tests.pubsub(commonFactory, {
-    skip: isNode ? null : {
-      reason: 'FIXME: disabled because no swarm addresses'
-    }
-  })
+  tests.pubsub(commonFactory)
 
   tests.repo(commonFactory)
 
   tests.stats(commonFactory)
 
-  tests.swarm(commonFactory, { skip: !isNode })
+  tests.swarm(commonFactory)
 })
