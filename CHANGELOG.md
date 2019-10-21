@@ -1,3 +1,14 @@
+<a name="39.0.1"></a>
+## [39.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.0...v39.0.1) (2019-10-21)
+
+
+### Bug Fixes
+
+* expose preload argument ([#1129](https://github.com/ipfs/js-ipfs-http-client/issues/1129)) ([c82b031](https://github.com/ipfs/js-ipfs-http-client/commit/c82b031))
+* increase default timeout and respect value passed to `ky.extend` ([#1130](https://github.com/ipfs/js-ipfs-http-client/issues/1130)) ([25b6043](https://github.com/ipfs/js-ipfs-http-client/commit/25b6043))
+
+
+
 <a name="39.0.0"></a>
 # [39.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.2.0...v39.0.0) (2019-10-15)
 
