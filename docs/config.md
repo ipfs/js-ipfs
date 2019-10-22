@@ -2,6 +2,44 @@
 
 The js-ipfs config file is a JSON document located in the root directory of the js-ipfs repository.
 
+#### Profiles
+
+Configuration profiles allow to tweak configuration quickly. Profiles can be
+applied with `--profile` flag to `ipfs init` or with the `ipfs config profile
+apply` command. When a profile is applied a backup of the configuration file
+will be created in `$IPFS_PATH`.
+
+Available profiles:
+
+- `server`
+
+  Recommended for nodes with public IPv4 address (servers, VPSes, etc.),
+  disables host and content discovery in local networks.
+
+- `local-discovery`
+
+  Sets default values to fields affected by `server` profile, enables
+  discovery in local networks.
+
+- `test`
+
+  Reduces external interference, useful for running ipfs in test environments.
+  Note that with these settings node won't be able to talk to the rest of the
+  network without manual bootstrap.
+
+- `default-networking`
+
+  Restores default network settings. Inverse profile of the `test` profile.
+
+- `lowpower`
+
+  Reduces daemon overhead on the system. May affect node functionality,
+  performance of content discovery and data fetching may be degraded.
+
+- `default-power`
+
+  Inverse of "lowpower" profile.
+
 ## Table of Contents
 
 - [`Addresses`](#addresses)
@@ -121,18 +159,18 @@ Options for Multicast DNS peer discovery:
 - `Enabled`
 
     A boolean value for whether or not MDNS should be active.
-    
+
     Default: `true`
 
 -  `Interval`
 
 	  A number of seconds to wait between discovery checks.
-    
+
     Default: `10`
 
 ### `webRTCStar`
 
-WebRTCStar is a discovery mechanism prvided by a signalling-star that allows peer-to-peer communications in the browser.  
+WebRTCStar is a discovery mechanism prvided by a signalling-star that allows peer-to-peer communications in the browser.
 
 Options for webRTCstar peer discovery:
 

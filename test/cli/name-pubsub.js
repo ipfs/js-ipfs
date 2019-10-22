@@ -67,7 +67,7 @@ describe('name-pubsub', () => {
 
     // Connect
     before(async function () {
-      const out = await ipfsA('swarm', 'connect', bMultiaddr)
+      const out = await ipfsA(`swarm connect ${bMultiaddr}`)
       expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
 

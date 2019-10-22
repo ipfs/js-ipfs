@@ -6,6 +6,50 @@ const all = require('async-iterator-all')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 
+function parseArgs (cid, path, options) {
+  options = options || {}
+
+  // Allow options in path position
+  if (path !== undefined && typeof path !== 'string') {
+    options = path
+    path = undefined
+  }
+
+  if (typeof cid === 'string') {
+    if (cid.startsWith('/ipfs/')) {
+      cid = cid.substring(6)
+    }
+
+    const split = cid.split('/')
+
+    try {
+      cid = new CID(split[0])
+    } catch (err) {
+      throw errCode(err, 'ERR_INVALID_CID')
+    }
+
+    split.shift()
+
+    if (split.length > 0) {
+      path = split.join('/')
+    } else {
+      path = path || '/'
+    }
+  } else if (Buffer.isBuffer(cid)) {
+    try {
+      cid = new CID(cid)
+    } catch (err) {
+      throw errCode(err, 'ERR_INVALID_CID')
+    }
+  }
+
+  return [
+    cid,
+    path,
+    options
+  ]
+}
+
 module.exports = function dag (self) {
   return {
     put: callbackify.variadic(async (dagNode, options) => {
@@ -44,50 +88,38 @@ module.exports = function dag (self) {
         }
       }
 
-      const cid = await self._ipld.put(dagNode, options.format, {
-        hashAlg: options.hashAlg,
-        cidVersion: options.version
-      })
+      let release
 
-      if (options.preload !== false) {
-        self._preload(cid)
+      if (options.pin) {
+        release = await self._gcLock.readLock()
       }
 
-      return cid
+      try {
+        const cid = await self._ipld.put(dagNode, options.format, {
+          hashAlg: options.hashAlg,
+          cidVersion: options.version
+        })
+
+        if (options.pin) {
+          await self.pin.add(cid, {
+            lock: false
+          })
+        }
+
+        if (options.preload !== false) {
+          self._preload(cid)
+        }
+
+        return cid
+      } finally {
+        if (release) {
+          release()
+        }
+      }
     }),
 
     get: callbackify.variadic(async (cid, path, options) => {
-      options = options || {}
-
-      // Allow options in path position
-      if (path !== undefined && typeof path !== 'string') {
-        options = path
-        path = undefined
-      }
-
-      if (typeof cid === 'string') {
-        const split = cid.split('/')
-
-        try {
-          cid = new CID(split[0])
-        } catch (err) {
-          throw errCode(err, 'ERR_INVALID_CID')
-        }
-
-        split.shift()
-
-        if (split.length > 0) {
-          path = split.join('/')
-        } else {
-          path = path || '/'
-        }
-      } else if (Buffer.isBuffer(cid)) {
-        try {
-          cid = new CID(cid)
-        } catch (err) {
-          throw errCode(err, 'ERR_INVALID_CID')
-        }
-      }
+      [cid, path, options] = parseArgs(cid, path, options)
 
       if (options.preload !== false) {
         self._preload(cid)
@@ -116,37 +148,23 @@ module.exports = function dag (self) {
     }),
 
     tree: callbackify.variadic(async (cid, path, options) => { // eslint-disable-line require-await
-      options = options || {}
-
-      // Allow options in path position
-      if (path !== undefined && typeof path !== 'string') {
-        options = path
-        path = undefined
-      }
-
-      if (typeof cid === 'string') {
-        const split = cid.split('/')
-
-        try {
-          cid = new CID(split[0])
-        } catch (err) {
-          throw errCode(err, 'ERR_INVALID_CID')
-        }
-
-        split.shift()
-
-        if (split.length > 0) {
-          path = split.join('/')
-        } else {
-          path = undefined
-        }
-      }
+      [cid, path, options] = parseArgs(cid, path, options)
 
       if (options.preload !== false) {
         self._preload(cid)
       }
 
       return all(self._ipld.tree(cid, path, options))
+    }),
+
+    resolve: callbackify.variadic(async (cid, path, options) => { // eslint-disable-line require-await
+      [cid, path, options] = parseArgs(cid, path, options)
+
+      if (options.preload !== false) {
+        self._preload(cid)
+      }
+
+      return all(self._ipld.resolve(cid, path))
     })
   }
 }

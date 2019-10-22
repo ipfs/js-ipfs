@@ -23,12 +23,12 @@ module.exports = {
         default: '2048',
         describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)'
       })
-      .option('emptyRepo', {
+      .option('empty-repo', {
         alias: 'e',
         type: 'boolean',
         describe: "Don't add and pin help files to the local storage"
       })
-      .option('privateKey', {
+      .option('private-key', {
         alias: 'k',
         type: 'string',
         describe: 'Pre-generated private key to use for the repo'

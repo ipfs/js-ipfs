@@ -307,6 +307,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
     })
     ```
 - `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
+- `profiles` (Array) Apply profile settings to config.
 
 ##### `options.start`
 
@@ -373,7 +374,7 @@ Enable and configure experimental features.
 |------|---------|
 | object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
 
-Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file doc](doc/config.md).
+Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](docs/config.md).
 
 ###### Configuring Delegate Routers
 

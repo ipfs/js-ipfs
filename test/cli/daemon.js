@@ -27,6 +27,10 @@ const daemonReady = (daemon) => {
         reject(new Error('Daemon didn\'t start ' + data.toString('utf8')))
       }
     })
+
+    daemon.catch(err => {
+      reject(err)
+    })
   })
 }
 const checkLock = (repo) => {
@@ -126,8 +130,8 @@ describe('daemon', () => {
     ]
 
     await ipfs('init')
-    await ipfs('config', 'Addresses.API', JSON.stringify(apiAddrs), '--json')
-    await ipfs('config', 'Addresses.Gateway', JSON.stringify(gatewayAddrs), '--json')
+    await ipfs(`config Addresses.API ${JSON.stringify(apiAddrs)} --json`)
+    await ipfs(`config Addresses.Gateway ${JSON.stringify(gatewayAddrs)} --json`)
 
     const daemon = ipfs('daemon')
     let stdout = ''
@@ -154,8 +158,8 @@ describe('daemon', () => {
     this.timeout(100 * 1000)
 
     await ipfs('init')
-    await ipfs('config', 'Addresses.API', '[]', '--json')
-    await ipfs('config', 'Addresses.Gateway', '[]', '--json')
+    await ipfs('config Addresses.API [] --json')
+    await ipfs('config Addresses.Gateway [] --json')
 
     const daemon = ipfs('daemon')
     let stdout = ''
@@ -285,5 +289,14 @@ describe('daemon', () => {
     await daemonReady(daemon)
     const out = await ipfs('config \'Addresses.API\'')
     expect(out).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
+  })
+
+  it('should init with profiles', async function () {
+    this.timeout(100 * 1000)
+    const daemon = ipfs('daemon --init-profile test')
+
+    await daemonReady(daemon)
+    const out = await ipfs('config Bootstrap')
+    expect(out).to.be.eq('[]\n')
   })
 })

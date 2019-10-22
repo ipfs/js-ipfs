@@ -60,7 +60,7 @@
     "release-major": "aegir release --type major -t node -t browser"
   },
   "dependencies": {
-    "@hapi/ammo": "^3.1.1",
+    "@hapi/ammo": "^4.0.0",
     "@hapi/boom": "^7.4.3",
     "@hapi/hapi": "^18.3.2",
     "@hapi/joi": "^15.0.0",
@@ -101,7 +101,7 @@
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.16.0",
     "ipfs-http-client": "^39.0.0",
-    "ipfs-http-response": "~0.3.1",
+    "ipfs-http-response": "~0.4.0",
     "ipfs-mfs": "^0.13.0",
     "ipfs-multipart": "^0.2.0",
     "ipfs-repo": "^0.28.0",

@@ -41,9 +41,7 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(200)
       })
 
-      // TODO: unskip when we can retrieve data from the repo with a different
-      // version CID then it was added with.
-      it.skip('should add data and return a base64 encoded CID', async () => {
+      it('should add data and return a base64 encoded CID', async () => {
         const form = new FormData()
         form.append('data', Buffer.from('TEST' + Date.now()))
         const headers = form.getHeaders()
