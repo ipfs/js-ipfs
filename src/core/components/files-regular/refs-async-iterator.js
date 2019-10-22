@@ -90,7 +90,7 @@ function formatLink (srcCid, dstCid, linkName, format) {
 }
 
 // Do a depth first search of the DAG, starting from the given root cid
-async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
+async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
   const seen = new Set()
 
   async function * traverseLevel (parent, depth) {
