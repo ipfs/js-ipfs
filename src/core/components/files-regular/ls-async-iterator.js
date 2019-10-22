@@ -19,7 +19,7 @@ module.exports = function (self) {
     const file = await exporter(ipfsPath, self._ipld, options)
 
     if (!file.unixfs) {
-      throw errCode(new Error('dag node was not a UnixFS node'), 'ENOTUNIXFS')
+      throw errCode(new Error('dag node was not a UnixFS node'), 'ERR_NOT_UNIXFS')
     }
 
     if (file.unixfs.type === 'file') {
@@ -49,6 +49,6 @@ module.exports = function (self) {
       return
     }
 
-    throw errCode(new Error(`Unknown UnixFS type ${file.unixfs.type}`), 'EUNKNOWNUNIXFSTYPE')
+    throw errCode(new Error(`Unknown UnixFS type ${file.unixfs.type}`), 'ERR_UNKNOWN_UNIXFS_TYPE')
   }
 }

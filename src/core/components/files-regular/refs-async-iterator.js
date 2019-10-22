@@ -115,7 +115,7 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
           seen.add(link.cid.toString())
         }
 
-        yield * await traverseLevel(link, nextLevelDepth)
+        yield * traverseLevel(link, nextLevelDepth)
       }
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
@@ -126,7 +126,7 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) {
     }
   }
 
-  yield * await traverseLevel({ cid: rootCid }, 0)
+  yield * traverseLevel({ cid: rootCid }, 0)
 }
 
 // Fetch a node from IPLD then get all its links
