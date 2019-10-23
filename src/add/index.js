@@ -28,7 +28,7 @@ module.exports = configure(({ ky }) => {
     if (options.silent) searchParams.set('silent', options.silent)
     if (options.trickle != null) searchParams.set('trickle', options.trickle)
     if (options.wrapWithDirectory != null) searchParams.set('wrap-with-directory', options.wrapWithDirectory)
-    if (options.preload !== null) searchParams.set('preload', options.preload)
+    if (options.preload != null) searchParams.set('preload', options.preload)
 
     const res = await ky.post('add', {
       timeout: options.timeout,
