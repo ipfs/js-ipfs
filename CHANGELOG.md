@@ -1,3 +1,13 @@
+<a name="39.0.2"></a>
+## [39.0.2](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.1...v39.0.2) (2019-10-23)
+
+
+### Bug Fixes
+
+* use non-strict equivalence for options.preload ([#1134](https://github.com/ipfs/js-ipfs-http-client/issues/1134)) ([432e1e8](https://github.com/ipfs/js-ipfs-http-client/commit/432e1e8))
+
+
+
 <a name="39.0.1"></a>
 ## [39.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.0...v39.0.1) (2019-10-21)
 
