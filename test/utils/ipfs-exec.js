@@ -21,7 +21,8 @@ module.exports = (repoPath, opts) => {
   const config = Object.assign({}, {
     stripFinalNewline: false,
     env: env,
-    timeout: 60 * 1000
+    timeout: 60 * 1000,
+    all: true
   }, opts)
   const exec = (args, options) => {
     const opts = Object.assign({}, config, options)
@@ -57,6 +58,7 @@ module.exports = (repoPath, opts) => {
     res.stdin = cp.stdin
     res.stdout = cp.stdout
     res.stderr = cp.stderr
+    res.all = cp.all
 
     return res
   }

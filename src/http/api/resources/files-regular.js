@@ -8,10 +8,8 @@ log.error = debug('ipfs:http-api:files:error')
 const pull = require('pull-stream')
 const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
-const abortable = require('pull-abortable')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
-const ndjson = require('pull-ndjson')
 const { PassThrough } = require('readable-stream')
 const multibase = require('multibase')
 const isIpfs = require('is-ipfs')
@@ -330,20 +328,30 @@ exports.refs = {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
 
-    const recursive = request.query.recursive
-    const format = request.query.format
-    const edges = request.query.edges
-    const unique = request.query.unique
-    const maxDepth = request.query['max-depth']
+    const options = {
+      recursive: request.query.recursive,
+      format: request.query.format,
+      edges: request.query.edges,
+      unique: request.query.unique,
+      maxDepth: request.query['max-depth']
+    }
 
     // have to do this here otherwise the validation error appears in the stream tail and
     // this doesn't work in browsers: https://github.com/ipfs/js-ipfs/issues/2519
-    if (edges && format !== Format.default) {
+    if (options.edges && options.format !== Format.default) {
       throw Boom.badRequest('Cannot set edges to true and also specify format')
     }
 
-    const source = ipfs.refsPullStream(key, { recursive, format, edges, unique, maxDepth })
-    return sendRefsReplyStream(request, h, `refs for ${key}`, source)
+    return streamResponse(request, h, async (output) => {
+      for await (const ref of ipfs._refsAsyncIterator(key, options)) {
+        output.write(
+          JSON.stringify({
+            Ref: ref.ref,
+            Err: ref.err
+          }) + '\n'
+        )
+      }
+    })
   }
 }
 
@@ -351,54 +359,40 @@ exports.refs.local = {
   // main route handler
   handler (request, h) {
     const { ipfs } = request.server.app
-    const source = ipfs.refs.localPullStream()
-    return sendRefsReplyStream(request, h, 'local refs', source)
+
+    return streamResponse(request, h, async (output) => {
+      for await (const ref of ipfs.refs._localAsyncIterator()) {
+        output.write(
+          JSON.stringify({
+            Ref: ref.ref,
+            Err: ref.err
+          }) + '\n'
+        )
+      }
+    })
   }
 }
 
-function sendRefsReplyStream (request, h, desc, source) {
-  const replyStream = pushable()
-  const aborter = abortable()
+function streamResponse (request, h, fn) {
+  const output = new PassThrough()
+  const errorTrailer = 'X-Stream-Error'
 
-  const stream = toStream.source(pull(
-    replyStream,
-    aborter,
-    ndjson.serialize()
-  ))
+  Promise.resolve()
+    .then(() => fn(output))
+    .catch(err => {
+      request.raw.res.addTrailers({
+        [errorTrailer]: JSON.stringify({
+          Message: err.message,
+          Code: 0
+        })
+      })
+    })
+    .finally(() => {
+      output.end()
+    })
 
-  // const stream = toStream.source(replyStream.source)
-  // hapi is not very clever and throws if no
-  // - _read method
-  // - _readableState object
-  // are there :(
-  if (!stream._read) {
-    stream._read = () => {}
-    stream._readableState = {}
-    stream.unpipe = () => {}
-  }
-
-  pull(
-    source,
-    pull.drain(
-      (ref) => replyStream.push({ Ref: ref.ref, Err: ref.err }),
-      (err) => {
-        if (err) {
-          request.raw.res.addTrailers({
-            'X-Stream-Error': JSON.stringify({
-              Message: `Failed to get ${desc}: ${err.message || ''}`,
-              Code: 0
-            })
-          })
-          return aborter.abort()
-        }
-
-        replyStream.end()
-      }
-    )
-  )
-
-  return h.response(stream)
+  return h.response(output)
     .header('x-chunked-output', '1')
     .header('content-type', 'application/json')
-    .header('Trailer', 'X-Stream-Error')
+    .header('Trailer', errorTrailer)
 }

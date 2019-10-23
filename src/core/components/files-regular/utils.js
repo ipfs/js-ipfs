@@ -3,7 +3,6 @@
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const { cidToString } = require('../../../utils/cid')
-const toPullStream = require('async-iterator-to-pull-stream')
 
 const normalizePath = (path) => {
   if (Buffer.isBuffer(path)) {
@@ -101,33 +100,31 @@ const parseChunkSize = (str, name) => {
   return size
 }
 
-const mapFile = (options) => {
+const mapFile = (file, options) => {
   options = options || {}
 
-  return (file) => {
-    let size = 0
-    let type = 'dir'
+  let size = 0
+  let type = 'dir'
 
-    if (file.unixfs && file.unixfs.type === 'file') {
-      size = file.unixfs.fileSize()
-      type = 'file'
-    }
-
-    const output = {
-      hash: cidToString(file.cid, { base: options.cidBase }),
-      path: file.path,
-      name: file.name,
-      depth: file.path.split('/').length,
-      size,
-      type
-    }
-
-    if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
-      output.content = toPullStream.source(file.content())
-    }
-
-    return output
+  if (file.unixfs && file.unixfs.type === 'file') {
+    size = file.unixfs.fileSize()
+    type = 'file'
   }
+
+  const output = {
+    hash: cidToString(file.cid, { base: options.cidBase }),
+    path: file.path,
+    name: file.name,
+    depth: file.path.split('/').length,
+    size,
+    type
+  }
+
+  if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
+    output.content = file.content
+  }
+
+  return output
 }
 
 module.exports = {

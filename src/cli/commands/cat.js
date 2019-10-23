@@ -22,14 +22,9 @@ module.exports = {
     resolve((async () => {
       const ipfs = await getIpfs()
 
-      return new Promise((resolve, reject) => {
-        const stream = ipfs.catReadableStream(ipfsPath, { offset, length })
-
-        stream.on('error', reject)
-        stream.on('end', resolve)
-
-        stream.pipe(process.stdout)
-      })
+      for await (const buf of ipfs._catAsyncIterator(ipfsPath, { offset, length })) {
+        process.stdout.write(buf)
+      }
     })())
   }
 }

@@ -1,24 +1,19 @@
 'use strict'
 
-const pull = require('pull-stream')
-const toStream = require('pull-stream-to-stream')
+const toStream = require('it-to-stream')
 
 module.exports = function (self) {
-  return (ipfsPath, options) => {
-    options = options || {}
+  return function getReadableStream (ipfsPath, options) {
+    return toStream.readable((async function * mapStreamFileContents () {
+      for await (const file of self._getAsyncIterator(ipfsPath, options)) {
+        if (file.content) {
+          file.content = toStream.readable(file.content())
+        }
 
-    return toStream.source(
-      pull(
-        self.getPullStream(ipfsPath, options),
-        pull.map((file) => {
-          if (file.content) {
-            file.content = toStream.source(file.content)
-            file.content.pause()
-          }
-
-          return file
-        })
-      )
-    )
+        yield file
+      }
+    })(), {
+      objectMode: true
+    })
   }
 }

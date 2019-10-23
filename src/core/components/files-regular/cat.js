@@ -1,21 +1,10 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const pull = require('pull-stream')
+const callbackify = require('callbackify')
+const all = require('async-iterator-all')
 
 module.exports = function (self) {
-  return promisify((ipfsPath, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
-    pull(
-      self.catPullStream(ipfsPath, options),
-      pull.collect((err, buffers) => {
-        if (err) { return callback(err) }
-        callback(null, Buffer.concat(buffers))
-      })
-    )
+  return callbackify.variadic(async function cat (ipfsPath, options) {
+    return Buffer.concat(await all(self._catAsyncIterator(ipfsPath, options)))
   })
 }

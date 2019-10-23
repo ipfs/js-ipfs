@@ -360,13 +360,6 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.eql(readme)
   })
 
-  it('cat alias', async function () {
-    this.timeout(20 * 1000)
-
-    const out = await ipfs('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    expect(out).to.eql(readme)
-  })
-
   it('cat part of a file using `count`', async function () {
     this.timeout(30 * 1000)
 
