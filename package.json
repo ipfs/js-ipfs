@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -195,7 +195,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^20.3.1",
+    "aegir": "^20.4.1",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
@@ -291,6 +291,7 @@
     "Maciej Krüger <mkg20001@gmail.com>",
     "Marcin Rataj <lidel@lidel.org>",
     "Marius Darila <marius.darila@gmail.com>",
+    "Mark Robert Henderson <henderson.mark@gmail.com>",
     "Mat Kelly <machawk1@gmail.com>",
     "Michelle Lee <michelle@protocol.ai>",
     "Mikeal Rogers <mikeal.rogers@gmail.com>",
@@ -324,9 +325,11 @@
     "Steven Allen <steven@stebalien.com>",
     "Terence Pae <terencepae@gmail.com>",
     "Teri Chadbourne <terichadbourne@users.noreply.github.com>",
+    "Travis CI <travis@travis-ci.org>",
     "Uroš Jurglič <jurglic@gmail.com>",
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Vasco Santos <vasco.santos@ua.pt>",
+    "Vincent Martin <vince@finalatomicbuster.net>",
     "Volker Mische <volker.mische@gmail.com>",
     "Xiao Liang <yxliang01@users.noreply.github.com>",
     "Yahya <ya7yaz@gmail.com>",
@@ -348,6 +351,7 @@
     "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>",
     "robbsolter <35879806+robbsolter@users.noreply.github.com>",
     "seungwon-kang <ksw3894@gmail.com>",
+    "swedneck <40505480+swedneck@users.noreply.github.com>",
     "tcme <hi@this-connect.me>",
     "victorbjelkholm <victorbjelkholm@gmail.com>",
     "Łukasz Magiera <magik6k@users.noreply.github.com>",
