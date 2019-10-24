@@ -55,9 +55,9 @@
     "benchmark:node:core": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:node:http": "echo \"Error: no benchmarks yet\" && exit 1",
     "benchmark:browser": "echo \"Error: no benchmarks yet\" && exit 1",
-    "release": "aegir release -t node -t browser",
-    "release-minor": "aegir release --type minor -t node -t browser",
-    "release-major": "aegir release --type major -t node -t browser"
+    "release": "aegir release -t node -t browser --no-docs",
+    "release-minor": "aegir release --type minor -t node -t browser --no-docs",
+    "release-major": "aegir release --type major -t node -t browser --no-docs"
   },
   "dependencies": {
     "@hapi/ammo": "^4.0.0",
