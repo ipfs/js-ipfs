@@ -1,6 +1,7 @@
 'use strict'
 const mergeOptions = require('merge-options')
 const multicodec = require('multicodec')
+const log = require('debug')('ipfs:ipld')
 
 // All known (non-default) IPLD formats
 const IpldFormats = {
@@ -32,7 +33,14 @@ const IpldFormats = {
     return require('ipld-git')
   },
   get [multicodec.ZCASH_BLOCK] () {
-    return require('ipld-zcash')
+    try {
+      // TODO: zcash is no longer installed by default by ipfs until
+      // https://github.com/ipld/js-ipld-zcash/issues/24 is resolved
+      return require('ipld-zcash')
+    } catch (err) {
+      log('failed to require ipld-zcash (`npm i ipld-zcash` in your project if you want this format to work)', err)
+      return null
+    }
   }
 }
 
