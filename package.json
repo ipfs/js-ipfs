@@ -116,7 +116,7 @@
     "ipld-ethereum": "^4.0.0",
     "ipld-git": "~0.5.0",
     "ipld-raw": "^4.0.0",
-    "ipld-zcash": "~0.3.0",
+    "ipld-zcash": "~0.4.0",
     "ipns": "^0.6.1",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "~0.6.1",
