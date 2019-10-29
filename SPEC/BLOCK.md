@@ -5,11 +5,14 @@
 * [block.rm](#blockrm)
 * [block.stat](#blockstat)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `block.get`
 
 > Get a raw IPFS block.
 
-##### `ipfs.block.get(cid, [options], [callback])`
+##### `ipfs.block.get(cid, [options])`
 
 `cid` is a [cid][cid] which can be passed as:
 
@@ -17,24 +20,17 @@
 - CID, a CID instance
 - String, the base58 encoded version of the multihash
 
-`callback` must follow `function (err, block) {}` signature, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Block>` | A [Block][block] type object, containing both the data and the hash of the block |
 
 **Example:**
 
 ```JavaScript
-ipfs.block.get(cid, function (err, block) {
-  if (err) {
-    throw err
-  }
-  block.key((err, key) => {
-    if (err) {
-      throw err
-    }
-    console.log(key, block.data)
-  })
-})
+const block = await ipfs.block.get(cid)
+console.log(block.data)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -43,7 +39,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Stores input as an IPFS block.
 
-##### `ipfs.block.put(block, [options], [callback])`
+##### `ipfs.block.put(block, [options])`
 
 Where `block` can be:
 
@@ -65,9 +61,11 @@ if no options are passed, it defaults to `{ format: 'dag-pb', mhtype: 'sha2-256'
 
 **Note:** If you pass a [`Block`][block] instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
 
-`callback` has the signature `function (err, block) {}`, where `err` is an error if the operation was not successful and `block` is a [Block][block] type object, containing both the data and the hash of the block.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Block>` | A [Block][block] type object, containing both the data and the hash of the block |
 
 **Example:**
 
@@ -75,34 +73,28 @@ If no `callback` is passed, a promise is returned.
 // Defaults
 const buf = new Buffer('a serialized object')
 
-ipfs.block.put(buf, (err, block) => {
-  if (err) { throw err }
-  // Block has been stored
+const block = await ipfs.block.put(buf)
 
-  console.log(block.data.toString())
-  // Logs:
-  // a serialized object
-  console.log(block.cid.toBaseEncodedString())
-  // Logs:
-  // the CID of the object
-})
+console.log(block.data.toString())
+// Logs:
+// a serialized object
+console.log(block.cid.toString())
+// Logs:
+// the CID of the object
 
 // With custom format and hashtype through CID
 const CID = require('cids')
 const buf = new Buffer('another serialized object')
 const cid = new CID(1, 'dag-pb', multihash)
 
-ipfs.block.put(blob, cid, (err, block) => {
-  if (err) { throw err }
-  // Block has been stored
+const block = await ipfs.block.put(blob, cid)
 
-  console.log(block.data.toString())
-  // Logs:
-  // a serialized object
-  console.log(block.cid.toBaseEncodedString())
-  // Logs:
-  // the CID of the object
-})
+console.log(block.data.toString())
+// Logs:
+// a serialized object
+console.log(block.cid.toString())
+// Logs:
+// the CID of the object
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -111,7 +103,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Remove one or more IPFS block(s).
 
-##### `ipfs.block.rm(cid, [options], [callback])`
+##### `ipfs.block.rm(cid, [options])`
 
 `cid` is a [cid][cid] which can be passed as:
 
@@ -125,21 +117,19 @@ A great source of [examples][] can be found in the tests for this API.
 - force (boolean): Ignores nonexistent blocks.
 - quiet (boolean): write minimal output
 
-`callback` must follow `function (err, result) {}` signature, where `err` is an error if the operation was not successful and `result` is a list of objects, containing hash and (potentially) error strings.
+**Returns**
 
-If an error string is present for a given object in `result`, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects containing hash and (potentially) error strings |
 
-If no `callback` is passed, a promise is returned.
+Note: If an error string is present for a given object in the returned array, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
 
 **Example:**
 
 ```JavaScript
-ipfs.block.rm(cid, function (err, result) {
-  if (err) {
-    throw err
-  }
-  console.log(result[0].hash)
-})
+const result = await ipfs.block.rm(cid)
+console.log(result[0].hash)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -148,7 +138,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Print information of a raw IPFS block.
 
-##### `ipfs.block.stat(cid, [callback])`
+##### `ipfs.block.stat(cid)`
 
 `cid` is a [cid][cid] which can be passed as:
 
@@ -156,7 +146,13 @@ A great source of [examples][] can be found in the tests for this API.
 - `String`, the toString version of the multihash (or of an encoded version)
 - CID, a CID instance
 
-`callback` must follow the signature `function (err, stats) {}`, where `err` is an error if the operation was not successful and `stats` is an object with the format:`
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object containing the block's info |
+
+the returned object has the following keys:
 
 ```JavaScript
 {
@@ -165,25 +161,19 @@ A great source of [examples][] can be found in the tests for this API.
 }
 ```
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
 const multihashStr = 'QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ'
 const cid = new CID(multihashStr)
 
-ipfs.block.stat(cid, (err, stats) => {
-  if (err) {
-    throw err
-  }
-  console.log(stats)
-  // Logs:
-  // {
-  //   key: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ,
-  /    size: 3739
-  // }
-})
+const stats = await ipfs.block.stat(cid)
+console.log(stats)
+// Logs:
+// {
+//   key: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ,
+//    size: 3739
+// }
 ```
 
 A great source of [examples][] can be found in the tests for this API.

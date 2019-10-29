@@ -8,25 +8,26 @@
 * [swarm.filters.add](#swarmfiltersadd) (not implemented yet)
 * [swarm.filters.rm](#swarmfiltersrm) (not implemented yet)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `swarm.addrs`
 
 > List of known addresses of each peer connected.
 
-##### `ipfs.swarm.addrs([callback])`
+##### `ipfs.swarm.addrs()`
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s |
 
 **Example:**
 
 ```JavaScript
-ipfs.swarm.addrs(function (err, peerInfos) {
-  if (err) {
-    throw err
-  }
-  console.log(peerInfos)
-})
+const peerInfos = await ipfs.swarm.addrs()
+console.log(peerInfos)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -35,23 +36,20 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Open a connection to a given address.
 
-##### `ipfs.swarm.connect(addr, [callback])`
+##### `ipfs.swarm.connect(addr)`
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.swarm.connect(addr, function (err) {
-  if (err) {
-    throw err
-  }
-  // if no err is present, connection is now open
-})
+await ipfs.swarm.connect(addr)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -60,18 +58,20 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Close a connection on a given address.
 
-##### `ipfs.swarm.disconnect(addr, [callback])`
+##### `ipfs.swarm.disconnect(addr)`
 
 Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.swarm.disconnect(addr, function (err) {})
+await ipfs.swarm.disconnect(addr)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -80,21 +80,19 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Local addresses this node is listening on.
 
-##### `ipfs.swarm.localAddrs([callback])`
+##### `ipfs.swarm.localAddrs()`
 
-`callback` must follow `function (err, multiAddrs) {}` signature, where `err` is an error if the operation was not successful. `multiAddrs` will be an array of [`MultiAddr`](https://github.com/multiformats/js-multiaddr).
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of [`MultiAddr`](https://github.com/multiformats/js-multiaddr) representing the local addresses the node is listening |
 
 **Example:**
 
 ```JavaScript
-ipfs.swarm.localAddrs(function (err, multiAddrs) {
-  if (err) {
-    throw err
-  }
-  console.log(multiAddrs)
-})
+const multiAddrs = await ipfs.swarm.localAddrs()
+console.log(multiAddrs)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -103,11 +101,17 @@ A great source of [examples][] can be found in the tests for this API.
 
 > List out the peers that we have connections with.
 
-##### `ipfs.swarm.peers([options], [callback])`
+##### `ipfs.swarm.peers([options])`
 
 If `options.verbose` is set to `true` additional information, such as `latency` is provided.
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` will be an array of the form
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array with the list of peers that the node have connections with |
+
+the returned array has the following form:
 
 - `addr: Multiaddr`
 - `peer: PeerId`
@@ -125,17 +129,11 @@ If an error occurs trying to create an individual `peerInfo` object, it will hav
 
 and all other properties may be undefined.
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
-ipfs.swarm.peers(function (err, peerInfos) {
-  if (err) {
-    throw err
-  }
-  console.log(peerInfos)
-})
+const peerInfos = await ipfs.swarm.peers()
+console.log(peerInfos)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -148,52 +146,58 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Display current multiaddr filters. Filters are a way to set up rules for the network connections established.
 
-##### `ipfs.swarm.filters([callback])`
+##### `ipfs.swarm.filters()`
 
-`callback` must follow `function (err, filters) {}` signature, where `err` is an error if the operation was not successful. `filters` is an array of multiaddrs that represent the filters being applied.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of multiaddrs that represent the filters being applied |
 
 Example:
 
 ```JavaScript
-ipfs.swarm.filters(function (err, filters) {})
+const filters = await ipfs.swarm.filters()
 ```
 
 #### `swarm.filters.add`
 
 > Add another filter.
 
-##### `ipfs.swarm.filters.add(filter, [callback])`
+##### `ipfs.swarm.filters.add(filter)`
 
 Where `filter` is of type [multiaddr]()
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 Example:
 
 ```JavaScript
-ipfs.swarm.filters.add(filter, function (err) {})
+await ipfs.swarm.filters.add(filter)
 ```
 
 #### `swarm.filters.rm`
 
 > Remove a filter
 
-##### `ipfs.swarm.filters.rm(filter, [callback])`
+##### `ipfs.swarm.filters.rm(filter)`
 
 Where `filter` is of type [multiaddr]()
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 Example:
 
 ```JavaScript
-ipfs.swarm.filters.rm(filter, function (err) {})
+await ipfs.swarm.filters.rm(filter)
 ```
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/swarm

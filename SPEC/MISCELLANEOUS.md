@@ -9,25 +9,26 @@
 * [pingReadableStream](#pingreadablestream)
 * [resolve](#resolve)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `id`
 
 > Returns the identity of the Peer
 
-##### `ipfs.id([callback])`
+##### `ipfs.id()`
 
-`callback` must follow `function (err, identity) {}` signature, where `err` is an error if the operation was not successful. `identity` is an object with the Peer identity.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object with the Peer identity |
 
 **Example:**
 
 ```JavaScript
-ipfs.id(function (err, identity) {
-  if (err) {
-    throw err
-  }
-  console.log(identity)
-})
+const identity = await ipfs.id()
+console.log(identity)
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/id.js) can be found in the tests for this API.
@@ -36,21 +37,19 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Returns the implementation version
 
-##### `ipfs.version([callback])`
+##### `ipfs.version()`
 
-`callback` must follow `function (err, version) {}` signature, where `err` is an error if the operation was not successful. `version` is an object with the version of the implementation, the commit and the Repo.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object with the version of the implementation, the commit and the Repo |
 
 **Example:**
 
 ```JavaScript
-ipfs.version((err, version) => {
-  if (err) {
-    throw err
-  }
-  console.log(version)
-})
+const version = await ipfs.version()
+console.log(version)
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/version.js) can be found in the tests for this API.
@@ -59,26 +58,24 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Resolve DNS links
 
-##### `ipfs.dns(domain, [options], [callback])`
+##### `ipfs.dns(domain, [options])`
 
 Where:
 
 - `options` is an optional object argument that might include the following properties:
     - `recursive` (boolean, default true): resolve until result is not a domain name
 
-- `callback` must follow `function (err, path) {}` signature, where `err` is an error if the operation was not successful. `path` is the IPFS path for that domain.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<String>` | A string representing the IPFS path for that domain |
 
 **Example:**
 
 ```JavaScript
-ipfs.dns('ipfs.io', (err, path) => {
-  if (err) {
-    throw err
-  }
-  console.log(path)
-})
+const path = await ipfs.dns('ipfs.io')
+console.log(path)
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/dns.js) can be found in the tests for this API.
@@ -87,19 +84,18 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Stops the IPFS node and in case of talking with an IPFS Daemon, it stops the process.
 
-##### `ipfs.stop([callback])`
+##### `ipfs.stop()`
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.stop((err) => {
-  if (err) {
-    throw err
-  }
-})
+await ipfs.stop()
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/stop.js) can be found in the tests for this API.
@@ -108,42 +104,42 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 
 > Send echo request packets to IPFS hosts
 
-##### `ipfs.ping(peerId, [options], [callback])`
+##### `ipfs.ping(peerId, [options])`
 
 Where:
 
 - `peerId` (string) ID of the peer to be pinged.
 - `options` is an optional object argument that might include the following properties:
     - `count` (integer, default 10): the number of ping messages to send
-- `callback` must follow `function (err, responses) {}` signature, where `err` is an error if the operation was not successful. `responses` is an Array of ping response objects of the form:
 
-    ```js
-    {
-      success: true,
-      time: 1234,
-      text: ''
-    }
-    ```
+**Returns**
 
-    Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of ping response objects |
 
-    If no `callback` is passed, a promise is returned.
+an array of objects is returned, each of the form:
+
+```js
+{
+  success: true,
+  time: 1234,
+  text: ''
+}
+```
+
+Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
 
 **Example:**
 
 ```JavaScript
-ipfs.ping('Qmhash', function (err, responses) {
-  if (err) {
-    throw err
+const responses = await ipfs.ping('Qmhash')
+responses.forEach((res) => {
+  if (res.time) {
+    console.log(`Pong received: time=${res.time} ms`)
+  } else {
+    console.log(res.text)
   }
-
-  responses.forEach((res) => {
-    if (res.time) {
-      console.log(`Pong received: time=${res.time} ms`)
-    } else {
-      console.log(res.text)
-    }
-  })
 })
 ```
 
@@ -153,7 +149,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 > Stream echo request packets to IPFS hosts
 
-##### `ipfs.pingPullStream(peerId, [options], [callback])`
+##### `ipfs.pingPullStream(peerId, [options])`
 
 Where:
 
@@ -161,7 +157,13 @@ Where:
 - `options` is an optional object argument that might include the following properties:
     - `count` (integer, default 10): the number of ping messages to send
 
-Returns a [`PullStream`][ps] of ping response objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [`PullStream`][ps] of ping response objects |
+
+example of the returned objects:
 
 ```js
 {
@@ -196,7 +198,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 > Stream echo request packets to IPFS hosts
 
-##### `ipfs.pingReadableStream(peerId, [options], [callback])`
+##### `ipfs.pingReadableStream(peerId, [options])`
 
 Where:
 
@@ -204,7 +206,13 @@ Where:
 - `options` is an optional object argument that might include the following properties:
     - `count` (integer, default 10): the number of ping messages to send
 
-Returns a [`ReadableStream`][rs] of ping response objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [`ReadableStream`][rs] of ping response objects |
+
+example of the returned objects:
 
 ```js
 {
@@ -238,7 +246,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/ma
 
 There are a number of mutable name protocols that can link among themselves and into IPNS. For example IPNS references can (currently) point at an IPFS object, and DNS links can point at other DNS links, IPNS entries, or IPFS objects. This command accepts any of these identifiers and resolves them to the referenced item.
 
-##### `ipfs.resolve(name, [options], [callback])`
+##### `ipfs.resolve(name, [options])`
 
 Where:
 
@@ -247,9 +255,11 @@ Where:
   - `recursive` (boolean, default false): Resolve until the result is an IPFS name
   - `cidBase` (string): Multibase codec name the CID in the resolved path will be encoded with
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` is a string, the resolved name.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<String>` | A string representing the resolved name |
 
 **Examples:**
 
@@ -258,12 +268,8 @@ Resolve the value of your identity:
 ```JavaScript
 const name = '/ipns/QmatmE9msSfkKxoffpHwNLNKgwZG8eT9Bud6YoPab52vpy'
 
-ipfs.resolve(name, (err, res) => {
-  if (err) {
-    throw err
-  }
-  console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
-})
+const res = await ipfs.resolve(name)
+console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
 ```
 
 Resolve the value of another name recursively:
@@ -278,12 +284,8 @@ const name = '/ipns/QmbCMUZw6JFeZ7Wp9jkzbye3Fzp2GGcPgC3nmeUjfVF87n'
 // ...which in turn resolves to:
 // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
 
-ipfs.resolve(name, { recursive: true }, (err, res) => {
-  if (err) {
-    throw err
-  }
-  console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
-})
+const res = await ipfs.resolve(name, { recursive: true })
+console.log(res) // /ipfs/Qmcqtw8FfrVSBaRmbWwHxt3AuySBhJLcvmFYi3Lbc4xnwj
 ```
 
 Resolve the value of an IPFS path:
@@ -291,12 +293,8 @@ Resolve the value of an IPFS path:
 ```JavaScript
 const name = '/ipfs/QmeZy1fGbwgVSrqbfh9fKQrAWgeyRnj7h8fsHS1oy3k99x/beep/boop'
 
-ipfs.resolve(name, (err, res) => {
-  if (err) {
-    throw err
-  }
-  console.log(res) // /ipfs/QmYRMjyvAiHKN9UTi8Bzt1HUspmSRD8T8DwxfSMzLgBon1
-})
+const res = await ipfs.resolve(name)
+console.log(res) // /ipfs/QmYRMjyvAiHKN9UTi8Bzt1HUspmSRD8T8DwxfSMzLgBon1
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/resolve.js) can be found in the tests for this API.

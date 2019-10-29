@@ -7,28 +7,32 @@
 * [dht.put](#dhtput)
 * [dht.query](#dhtquery)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `dht.findPeer`
 
 > Retrieve the Peer Info of a reachable node in the network.
 
-##### `ipfs.dht.findPeer(peerId, [callback])`
+##### `ipfs.dht.findPeer(peerId)`
 
 Where `peerId` is a IPFS/libp2p Id from [PeerId](https://github.com/libp2p/js-peer-id) type.
 
-`callback` must follow `function (err, peerInfo) {}` signature, where `err` is an error if the operation was not successful. `peerInfo` is an object of type `PeerInfo`.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<PeerInfo>` | An object type [`PeerInfo`](https://github.com/libp2p/js-peer-info) |
 
 **Example:**
 
 ```JavaScript
 var id = PeerId.create()
 
-ipfs.dht.findPeer(id, function (err, peerInfo) {
-  // peerInfo will contain the multiaddrs of that peer
-  const id = peerInfo.id
-  const addrs = peerInfo.multiaddrs
-})
+const peerInfo = await ipfs.dht.findPeer(id)
+// peerInfo will contain the multiaddrs of that peer
+const id = peerInfo.id
+const addrs = peerInfo.multiaddrs
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -37,7 +41,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Retrieve the providers for content that is addressed by an hash.
 
-##### `ipfs.dht.findProvs(hash, [options], [callback])`
+##### `ipfs.dht.findProvs(hash, [options])`
 
 Where `hash` is a multihash.
 
@@ -45,16 +49,26 @@ Where `hash` is a multihash.
   - `timeout` - a maximum timeout in milliseconds
   - `maxNumProviders` - a maximum number of providers to find
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of type `[PeerInfo]`. Each entry of this array is composed by the peerId, as well as an array with its adresses.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of type [`PeerInfo`](https://github.com/libp2p/js-peer-info) |
+
+each entry of the returned array is composed by the peerId, as well as an array with its adresses.
 
 **Example:**
 
 ```JavaScript
-ipfs.dht.findProvs(multihash, function (err, res) {})
+const provs = await ipfs.dht.findProvs(multihash)
+provs.forEach(prov => {
+  console.log(prov.id.toB58String())
+})
 
-ipfs.dht.findProvs(multihash, { timeout: 4000 }, function (err, res) {})
+const provs2 = await ipfs.dht.findProvs(multihash, { timeout: 4000 })
+provs2.forEach(prov => {
+  console.log(prov.id.toB58String())
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -63,18 +77,20 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Retrieve a value from DHT
 
-##### `ipfs.dht.get(key, [callback])`
+##### `ipfs.dht.get(key)`
 
 Where `key` is a Buffer.
 
-`callback` must follow `function (err, value) {}` signature, where `err` is an error if the operation was not successful. `value` is the value that was stored under that key.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Buffer>` | The value that was stored under that key |
 
 **Example:**
 
 ```JavaScript
-ipfs.dht.get(key, function (err, value) {})
+const value = await ipfs.dht.get(key)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -83,18 +99,20 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Announce to the network that you are providing given values.
 
-##### `ipfs.dht.provide(cid, [callback])`
+##### `ipfs.dht.provide(cid)`
 
 Where `cid` is a CID or array of CIDs.
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.dht.provide(cid, function (err) {})
+await ipfs.dht.provide(cid)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -103,18 +121,20 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Store a value on the DHT
 
-##### `ipfs.dht.put(key, value, [callback])`
+##### `ipfs.dht.put(key, value)`
 
 Where `key` is a Buffer and `value` is a Buffer.
 
-`callback` must follow `function (err) {}` signature, where `err` is an error if the operation was not successful.
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.dht.put(key, value, function (err) {})
+await ipfs.dht.put(key, value)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -123,20 +143,25 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Queries the network for the 'closest peers' to a given key. 'closest' is defined by the rules of the underlying Peer Routing mechanism.
 
-##### `ipfs.dht.query(peerId, [callback])`
+##### `ipfs.dht.query(peerId)`
 
 Where `peerId` is a IPFS/libp2p Id of type [PeerId](https://github.com/libp2p/js-peer-id).
 
-`callback` must follow `function (err, peerInfos) {}` signature, where `err` is an error if the operation was not successful. `peerInfos` is an array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info)
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects of type [PeerInfo](https://github.com/libp2p/js-peer-info) |
 
 **Example:**
 
 ```JavaScript
 const id = PeerId.create()
 
-ipfs.dht.query(id, function (err, peerInfos) {
+const peerInfos = await ipfs.dht.query(id)
+
+peerInfos.forEach(p => {
+  console.log(p.id.toB58String())
 })
 ```
 

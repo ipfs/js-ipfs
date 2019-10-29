@@ -11,29 +11,30 @@
 * [object.patch.appendData](#objectpatchappenddata)
 * [object.patch.setData](#objectpatchsetdata)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `object.new`
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
-##### `ipfs.object.new([template], [callback])`
+##### `ipfs.object.new([template])`
 
 `template` if defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][].
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | A [CID](https://github.com/ipfs/js-cid) instance |
 
 **Example:**
 
 ```JavaScript
-ipfs.object.new('unixfs-dir', (err, cid) => {
-  if (err) {
-    throw err
-  }
-  console.log(cid.toString())
-  // Logs:
-  // QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
-})
+const cid = await ipfs.object.new('unixfs-dir')
+console.log(cid.toString())
+// Logs:
+// QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -42,7 +43,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Store an MerkleDAG node.
 
-##### `ipfs.object.put(obj, [options], [callback])`
+##### `ipfs.object.put(obj, [options])`
 
 `obj` is the MerkleDAG Node to be stored. Can of type:
 
@@ -54,9 +55,11 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of the Buffer (json, yml, etc), if passed a Buffer.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][].
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | A [CID](https://github.com/ipfs/js-cid) instance |
 
 **Example:**
 
@@ -66,14 +69,10 @@ const obj = {
   Links: []
 }
 
-ipfs.object.put(obj, (err, cid) => {
-  if (err) {
-    throw err
-  }
-  console.log(cid.toString())
-  // Logs:
-  // QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
-})
+const cid = await ipfs.object.put(obj)
+console.log(cid.toString())
+// Logs:
+// QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -82,7 +81,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a MerkleDAG node
 
-##### `ipfs.object.get(multihash, [options], [callback])`
+##### `ipfs.object.get(multihash, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -93,23 +92,21 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, node) {}` signature, where `err` is an error if the operation was not successful and `node` is a MerkleDAG node of the type [DAGNode][]
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<DAGNode>` | A MerkleDAG node of the type [DAGNode][] |
 
 **Example:**
 
 ```JavaScript
 const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
-ipfs.object.get(multihash, (err, node) => {
-  if (err) {
-    throw err
-  }
-  console.log(node.data)
-  // Logs:
-  // some data
-})
+const node = await ipfs.object.get(multihash)
+console.log(node.data)
+// Logs:
+// some data
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -118,7 +115,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the Data field of an object
 
-##### `ipfs.object.data(multihash, [options], [callback])`
+##### `ipfs.object.data(multihash, [options])`
 `multihash` is a [multihash][] which can be passed as:
 
 - Buffer, the raw Buffer of the multihash (or of and encoded version)
@@ -128,23 +125,21 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, data) {}` signature, where `err` is an error if the operation was not successful and `data` is a Buffer with the data that the MerkleDAG node contained.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Buffer>` | A Buffer with the data that the MerkleDAG node contained |
 
 **Example:**
 
 ```JavaScript
 const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
-ipfs.object.data(multihash, (err, data) => {
-  if (err) {
-    throw err
-  }
-  console.log(data.toString())
-  // Logs:
-  // some data
-})
+const data = await ipfs.object.data(multihash)
+console.log(data.toString())
+// Logs:
+// some data
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -153,7 +148,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns the Links field of an object
 
-##### `ipfs.object.links(multihash, [options], [callback])`
+##### `ipfs.object.links(multihash, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -164,23 +159,21 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, links) {}` signature, where `err` is an error if the operation was not successful and `links` is an Array of [DAGLink](https://github.com/vijayee/js-ipfs-merkle-dag/blob/master/src/dag-node.js#L199-L203) objects.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An Array of [DAGLink](https://github.com/ipld/js-ipld-dag-pb/blob/master/src/dag-link/dagLink.js) objects |
 
 **Example:**
 
 ```JavaScript
 const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
-ipfs.object.links(multihash, (err, links) => {
-  if (err) {
-    throw err
-  }
-  console.log(links)
-  // Logs:
-  // []
-})
+const links = await ipfs.object.links(multihash)
+console.log(links)
+// Logs:
+// []
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -189,7 +182,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Returns stats about an Object
 
-##### `ipfs.object.stat(multihash, [options], [callback])`
+##### `ipfs.object.stat(multihash, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -200,7 +193,13 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `timeout`, A timeout to pass to the IPFS daemon so the request expires after a certain amount of time without any response. NOTE: not yet supported in JS IPFS.
 
-`callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful and `stats` is an Object with following format:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object representing the stats of the Object |
+
+the returned object has the following format:
 
 ```JavaScript
 {
@@ -213,28 +212,22 @@ A great source of [examples][] can be found in the tests for this API.
 }
 ```
 
-If no `callback` is passed, a [promise][] is returned.
-
 **Example:**
 
 ```JavaScript
 const multihash = 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD'
 
-ipfs.object.stat(multihash, {timeout: '10s'}, (err, stats) => {
-  if (err) {
-    throw err
-  }
-  console.log(stats)
-  // Logs:
-  // {
-  //   Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-  //   NumLinks: 0,
-  //   BlockSize: 10,
-  //   LinksSize: 2,
-  //   DataSize: 8,
-  //   CumulativeSize: 10
-  // }
-})
+const stats = await ipfs.object.stat(multihash, {timeout: '10s'})
+console.log(stats)
+// Logs:
+// {
+//   Hash: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
+//   NumLinks: 0,
+//   BlockSize: 10,
+//   LinksSize: 2,
+//   DataSize: 8,
+//   CumulativeSize: 10
+// }
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -247,7 +240,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Add a Link to an existing MerkleDAG Object
 
-###### `ipfs.object.patch.addLink(multihash, link, [options], [callback])`
+###### `ipfs.object.patch.addLink(multihash, link, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -276,22 +269,21 @@ const link = new DAGLink(name, size, multihash)
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | An instance of [CID][] representing the new DAG node that was created due to the operation |
+
 
 **Example:**
 
 ```JavaScript
-ipfs.object.patch.addLink(node, {
+// cid is CID of the DAG node created by adding a link
+const cid = await ipfs.object.patch.addLink(node, {
   name: 'some-link'
   size: 10
   cid: new CID('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
-}, (err, cid) => {
-  if (err) {
-    throw err
-  }
-  // cid is CID of the DAG node created by adding a link
 })
 ```
 
@@ -301,7 +293,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Remove a Link from an existing MerkleDAG Object
 
-###### `ipfs.object.patch.rmLink(multihash, link, [options], [callback])`
+###### `ipfs.object.patch.rmLink(multihash, link, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -312,9 +304,9 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `DAGLink`
 
-    ```js
-    const link = new DAGLink(name, size, multihash)
-    ```
+  ```js
+  const link = new DAGLink(name, size, multihash)
+  ```
 
 - Object containing a `name` property
 
@@ -328,13 +320,21 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | An instance of [CID][] representing the new DAG node that was created due to the operation |
 
 **Example:**
 
 ```JavaScript
+// cid is CID of the DAG node created by removing a link
+const cid = await ipfs.object.patch.rmLink(node, {
+  name: 'some-link'
+  size: 10
+  cid: new CID('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
+})
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -343,7 +343,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Append Data to the Data field of an existing node.
 
-###### `ipfs.object.patch.appendData(multihash, data, [options], [callback])`
+###### `ipfs.object.patch.appendData(multihash, data, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -356,18 +356,16 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | An instance of [CID][] representing the new DAG node that was created due to the operation |
 
 **Example:**
 
 ```JavaScript
-ipfs.object.patch.appendData(multihash, new Buffer('more data'), (err, node) => {
-  if (err) {
-    throw err
-  }
-})
+const cid = await ipfs.object.patch.appendData(multihash, new Buffer('more data'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -376,7 +374,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Reset the Data field of a MerkleDAG Node to new Data
 
-###### `ipfs.object.patch.setData(multihash, data, [options], [callback])`
+###### `ipfs.object.patch.setData(multihash, data, [options])`
 
 `multihash` is a [multihash][] which can be passed as:
 
@@ -389,18 +387,16 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `enc`, the encoding of multihash (base58, base64, etc), if any.
 
-`callback` must follow `function (err, cid) {}` signature, where `err` is an error if the operation was not successful and `cid` is an instance of [CID][] - the CID of the new DAG node that was created due to the operation.
+**Returns**
 
-If no `callback` is passed, a [promise][] is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID>` | An instance of [CID][] representing the new DAG node that was created due to the operation |
 
 **Example:**
 
 ```JavaScript
-ipfs.object.patch.setData(multihash, new Buffer('more data'), (err, cid) => {
-  if (err) {
-    throw err
-  }
-})
+const cid = await ipfs.object.patch.setData(multihash, new Buffer('more data'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -408,5 +404,4 @@ A great source of [examples][] can be found in the tests for this API.
 [CID]: https://github.com/multiformats/js-cid
 [DAGNode]: https://github.com/ipld/js-ipld-dag-pb
 [multihash]: http://github.com/multiformats/multihash
-[promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/object

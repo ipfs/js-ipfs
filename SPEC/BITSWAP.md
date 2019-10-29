@@ -3,40 +3,55 @@
 * [bitswap.wantlist](#bitswapwantlist)
 * [bitswap.stat](#bitswapstat)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 ### `bitswap.wantlist`
 
 > Returns the wantlist, optionally filtered by peer ID
 
-#### `ipfs.bitswap.wantlist([peerId], [callback])`
+#### `ipfs.bitswap.wantlist([peerId])`
 
-`callback` must follow `function (err, list) {}` signature, where `err` is an error if the operation was not successful. `list` is an Object containing the following keys:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object representing the wantlist |
+
+the returned object contains the following keys:
 
 - `Keys` An array of objects containing the following keys:
     - `/` A string multihash
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
-ipfs.bitswap.wantlist((err, list) => console.log(list))
-
+const list = await ipfs.bitswap.wantlist()
+console.log(list)
 // { Keys: [{ '/': 'QmHash' }] }
 
-ipfs.bitswap.wantlist(peerId, (err, list) => console.log(list))
-
+const list2 = await ipfs.bitswap.wantlist(peerId)
+console.log(list2)
 // { Keys: [{ '/': 'QmHash' }] }
 ```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `bitswap.stat`
 
 > Show diagnostic information on the bitswap agent.
 
-##### `ipfs.bitswap.stat([callback])`
+##### `ipfs.bitswap.stat()`
 
 Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 
-`callback` must follow `function (err, stats) {}` signature, where `err` is an error if the operation was not successful. `stats` is an Object containing the following keys:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object that contains information about the bitswap agent |
+
+the returned object contains the following keys:
 
 - `provideBufLen` is an integer.
 - `wantlist` (array of CIDs)
@@ -48,14 +63,13 @@ Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 - `dupBlksReceived` is a [BigNumber Int][1]
 - `dupDataReceived` is a [BigNumber Int][1]
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
-ipfs.bitswap.stat((err, stats) => console.log(stats))
-
-// { provideBufLen: 0,
+const stats = await ipfs.bitswap.stat()
+console.log(stats)
+// {
+//   provideBufLen: 0,
 //   wantlist: [ { '/': 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM' } ],
 //   peers:
 //    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
@@ -66,7 +80,11 @@ ipfs.bitswap.stat((err, stats) => console.log(stats))
 //   blocksSent: 0,
 //   dataSent: 0,
 //   dupBlksReceived: 0,
-//  dupDataReceived: 0 }
+//  dupDataReceived: 0
+// }
 ```
 
+A great source of [examples][] can be found in the tests for this API.
+
 [1]: https://github.com/MikeMcl/bignumber.js/
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/bitswap

@@ -71,20 +71,21 @@ Install `interface-ipfs-core` as one of the dependencies of your project and as 
 
 ```js
 const tests = require('interface-ipfs-core')
+const nodes = []
 
 // Create common setup and teardown
 const createCommon = () => ({
   // Do some setup common to all tests
-  setup (cb) {
-    // Must call back with an "IPFS factory", an object with a `spawnNode` method
-    cb(null, {
-      // Use ipfsd-ctl or other to spawn an IPFS node for testing
-      spawnNode (cb) { /* ... */ }
-    })
+  setup: async () => {
+    // Use ipfsd-ctl or other to spawn an IPFS node for testing
+    const node = await spawnNode()
+    nodes.push(node)
+
+    return node.api
   },
   // Dispose of nodes created by the IPFS factory and any other teardown
-  teardown (cb) {
-    cb()
+  teardown: () => {
+    return Promise.all(nodes.map(n => n.stop()))
   }
 })
 

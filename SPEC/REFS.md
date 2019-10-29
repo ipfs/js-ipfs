@@ -7,11 +7,14 @@
 * [refs.localReadableStream](#refslocalreadablestream)
 * [refs.localPullStream](#refslocalpullstream)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `refs`
 
 > Get links (references) from an object.
 
-##### `ipfs.refs(ipfsPath, [options], [callback])`
+##### `ipfs.refs(ipfsPath, [options])`
 
 `ipfsPath` can be of type:
 
@@ -31,36 +34,48 @@
   - `edges (false)`: output references in edge format: `"<src> -> <dst>"`
   - `maxDepth (1)`: only for recursive refs, limits fetch and listing to the given depth
 
-`callback` must follow `function (err, refs) {}` signature, where `err` is an error if the operation was not successful and `refs` is an array of `{ ref: "myref", err: "error msg" }`
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array representing the links (references) |
+
+example of the returned array:
+```js
+{
+  ref: "myref",
+  err: "error msg"
+}
+```
 
 **Example:**
 
 ```JavaScript
-ipfs.refs(ipfsPath, { recursive: true }, function (err, refs) {
-  if (err) {
-    throw err
-  }
+const refs = await ipfs.refs(ipfsPath, { recursive: true })
 
-  for (const ref of refs) {
-    if (ref.err) {
-      console.error(ref.err)
-    } else {
-      console.log(ref.ref)
-      // output: "QmHash"
-    }
+for (const ref of refs) {
+  if (ref.err) {
+    console.error(ref.err)
+  } else {
+    console.log(ref.ref)
+    // output: "QmHash"
   }
-})
+}
 ```
 
 #### `refsReadableStream`
 
 > Output references using a [Readable Stream][rs]
 
-##### `ipfs.refsReadableStream(ipfsPath, [options])` -> [Readable Stream][rs]
+##### `ipfs.refsReadableStream(ipfsPath, [options])`
 
 `options` is an optional object argument identical to the options for [ipfs.refs](#refs)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] representing the references |
 
 **Example:**
 
@@ -79,9 +94,15 @@ stream.on('data', function (ref) {
 
 > Output references using a [Pull Stream][ps].
 
-##### `ipfs.refsReadableStream(ipfsPath, [options])` -> [Pull Stream][ps]
+##### `ipfs.refsReadableStream(ipfsPath, [options])`
 
 `options` is an optional object argument identical to the options for [ipfs.refs](#refs)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][ps] representing the references |
 
 **Example:**
 
@@ -104,11 +125,21 @@ pull(
 
 > Output all local references (CIDs of all blocks in the blockstore)
 
-##### `ipfs.refs.local([callback])`
+##### `ipfs.refs.local()`
 
-`callback` must follow `function (err, refs) {}` signature, where `err` is an error if the operation was not successful and `refs` is an array of `{ ref: "myref", err: "error msg" }`
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array representing all the local references |
+
+example of the returned array:
+```js
+{
+  ref: "myref",
+  err: "error msg"
+}
+```
 
 **Example:**
 
@@ -133,7 +164,13 @@ ipfs.refs.local(function (err, refs) {
 
 > Output all local references using a [Readable Stream][rs]
 
-##### `ipfs.localReadableStream()` -> [Readable Stream][rs]
+##### `ipfs.localReadableStream()`
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] representing all the local references |
 
 **Example:**
 
@@ -152,7 +189,13 @@ stream.on('data', function (ref) {
 
 > Output all local references using a [Pull Stream][ps].
 
-##### `ipfs.refs.localReadableStream()` -> [Pull Stream][ps]
+##### `ipfs.refs.localReadableStream()`
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][ps] representing all the local references |
 
 **Example:**
 

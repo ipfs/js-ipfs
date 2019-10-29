@@ -10,31 +10,106 @@
 * [bootstrap.list](#bootstraplist)
 * [bootstrap.rm](#bootstraprm)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `bootstrap.add`
 
 > Add a peer address to the bootstrap list
 
-##### `ipfs.bootstrap.add(addr, [options], [callback])`
+##### `ipfs.bootstrap.add(addr, [options])`
 
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.default` if true, add the default peers to the list
-- `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of added addresses.
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object that contains an array with all the added addresses |
+
+example of the returned object:
+
+```JavaScript
+{
+  Peers: [address1, address2, ...]
+}
+```
+
+**Example:**
+
+```JavaScript
+const validIp4 = '/ip4/104....9z'
+
+const res = await ipfs.bootstrap.add(validIp4)
+console.log(res.Peers)
+// Logs:
+// ['/ip4/104....9z']
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `bootstrap.list`
 
 > List all peer addresses in the bootstrap list
 
-##### `ipfs.bootstrap.list([callback])``
+##### `ipfs.bootstrap.list()`
 
-- `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of addresses.
+**Returns**
 
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object that contains an array with all the bootstrap addresses |
+
+example of the returned object:
+
+```JavaScript
+{
+  Peers: [address1, address2, ...]
+}
+```
+
+**Example:**
+
+```JavaScript
+const res = await ipfs.bootstrap.list()
+console.log(res.Peers)
+// Logs:
+// [address1, address2, ...]
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `bootstrap.rm`
 
 > Remove a peer address from the bootstrap list
 
-##### `ipfs.bootstrap.rm(peer, [options], [callback])`
+##### `ipfs.bootstrap.rm(peer, [options])`
 
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.all` if true, remove all peers from the list
-- `callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res.Peers` is an array of removed addresses.
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object that contains an array with all the removed addresses |
+
+```JavaScript
+{
+  Peers: [address1, address2, ...]
+}
+```
+
+**Example:**
+
+```JavaScript
+const res = await ipfs.bootstrap.rm(null, { all: true })
+console.log(res.Peers)
+// Logs:
+// [address1, address2, ...]
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/bootstrap

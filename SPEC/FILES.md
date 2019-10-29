@@ -38,11 +38,14 @@ _Explore the Mutable File System through interactive coding challenges in our [P
   - [files.stat](#filesstat)
   - [files.write](#fileswrite)
 
+### ⚠️ Note
+Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
+
 #### `add`
 
 > Add files and data to IPFS.
 
-##### `ipfs.add(data, [options], [callback])`
+##### `ipfs.add(data, [options])`
 
 Where `data` may be:
 
@@ -53,8 +56,8 @@ Where `data` may be:
 - an array of objects, each of the form:
 ```JavaScript
 {
-  path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
+    path: '/tmp/myfile.txt', // The file path
+    content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
 }
 ```
 If no `content` is passed, then the path is treated as an empty directory
@@ -83,7 +86,13 @@ If no `content` is passed, then the path is treated as an empty directory
   [Trickle definition from go-ipfs documentation](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle).
 - wrapWithDirectory (boolean, default false): adds a wrapping node around the content.
 
-`callback` must follow `function (err, res) {}` signature, where `err` is an error if the operation was not successful. `res` will be an array of:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects describing the added data |
+
+an array of objects is returned, each of the form:
 
 ```JavaScript
 {
@@ -92,8 +101,6 @@ If no `content` is passed, then the path is treated as an empty directory
   size: 123
 }
 ```
-
-If no `callback` is passed, a promise is returned.
 
 **Example:**
 
@@ -236,7 +243,7 @@ pull(
 
 > Add files or entire directories from the FileSystem to IPFS
 
-##### `ipfs.addFromFs(path, [options], [callback])`
+##### `ipfs.addFromFs(path, [options])`
 
 Reads a file or folder from `path` on the filesystem and adds it to IPFS.
 
@@ -245,63 +252,88 @@ Options:
   - **ignore**: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
   - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
-```JavaScript
-ipfs.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']}, (err, result) => {
-  if (err) { throw err }
-  console.log(result)
-})
-```
+**Returns**
 
-`result` is an array of objects describing the files that were added, such as:
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects describing the files that were added |
+
+an array of objects is returned, each of the form:
 
 ```js
-[
-  {
-    path: 'test-folder',
-    hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
-    size: 2278
-  },
-  // ...
-]
+{
+  path: 'test-folder',
+  hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
+  size: 123
+}
+```
+
+**Example**
+
+```JavaScript
+const results = await ipfs.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']})
+console.log(results)
 ```
 
 #### `addFromURL`
 
 > Add a file from a URL to IPFS
 
-##### `ipfs.addFromURL(url, [callback])`
+##### `ipfs.addFromURL(url, [options])`
+
+`options` is an optional object that argument that might include the same keys of [`ipfs.add(data, [options])`](#add)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An object describing the added file |
+
+**Example**
 
 ```JavaScript
-ipfs.addFromURL('http://example.com/', (err, result) => {
-  if (err) {
-    throw err
-  }
-  console.log(result)
-})
+const result = await ipfs.addFromURL('http://example.com/')
+console.log('result')
 ```
 
 #### `addFromStream`
 
 > Add a file from a stream to IPFS
 
-##### `ipfs.addFromStream(stream, [callback])`
+##### `ipfs.addFromStream(stream, [options])`
 
 This is very similar to `ipfs.add({ path:'', content: stream })`. It is like the reverse of cat.
 
+`options` is an optional object that argument that might include the same keys of [`ipfs.add(data, [options])`](#add)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects describing the added data |
+
+an array of objects is returned, each of the form:
+
 ```JavaScript
-ipfs.addFromStream(<readable-stream>, (err, result) => {
-  if (err) {
-    throw err
-  }
-  console.log(result)
-})
+{
+  path: '/tmp/myfile.txt',
+  hash: 'QmHash', // base58 encoded multihash
+  size: 123
+}
+```
+
+**Example**
+
+```JavaScript
+const result = await ipfs.addFromStream(<readable-stream>)
+console.log(result)
 ```
 
 #### `cat`
 
 > Returns a file addressed by a valid IPFS Path.
 
-##### `ipfs.cat(ipfsPath, [options], [callback])`
+##### `ipfs.cat(ipfsPath, [options])`
 
 `ipfsPath` can be of type:
 
@@ -318,20 +350,17 @@ ipfs.addFromStream(<readable-stream>, (err, result) => {
   - `offset` is an optional byte offset to start the stream at
   - `length` is an optional number of bytes to read from the stream
 
-`callback` must follow `function (err, file) {}` signature, where `err` is an error if the operation was not successful and `file` is a [Buffer][b]
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Buffer>` | A [`Buffer`][b] with the contents of `path` |
 
 **Example:**
 
 ```JavaScript
-ipfs.cat(ipfsPath, function (err, file) {
-  if (err) {
-    throw err
-  }
-
-  console.log(file.toString('utf8'))
-})
+const file = await ipfs.cat(ipfsPath) {
+console.log(file.toString('utf8'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -357,8 +386,13 @@ A great source of [examples][] can be found in the tests for this API.
   - `offset` is an optional byte offset to start the stream at
   - `length` is an optional number of bytes to read from the stream
 
-Returns a [Readable Stream][rs] with the contents of the file.
+**Returns**
 
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] with the contents of the file |
+
+**Example**
 
 ```JavaScript
 const stream = ipfs.catReadableStream(ipfsPath)
@@ -387,7 +421,13 @@ A great source of [examples][] can be found in the tests for this API.
   - `offset` is an optional byte offset to start the stream at
   - `length` is an optional number of bytes to read from the stream
 
-Returns a [Pull Stream][ps] with the contents of the file.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][ps] with the contents of the file |
+
+**Example**
 
 ```JavaScript
 const stream = ipfs.catPullStream(ipfsPath)
@@ -401,7 +441,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
 
-##### `ipfs.get(ipfsPath, [callback])`
+##### `ipfs.get(ipfsPath)`
 
 ipfsPath can be of type:
 
@@ -413,7 +453,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-`callback` must follow `function (err, files) {}` signature, where `err` is an error if the operation was not successful. `files` is an array containing objects of the following form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects representing the files |
+
+an array of objects is returned, each of the form:
 
 ```js
 {
@@ -424,18 +470,15 @@ ipfsPath can be of type:
 
 Here, each `path` corresponds to the name of a file, and `content` is a regular Readable stream with the raw contents of that file.
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
 const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-ipfs.get(validCID, function (err, files) {
-  files.forEach((file) => {
-    console.log(file.path)
-    console.log(file.content.toString('utf8'))
-  })
+const files = await ipfs.get(validCID)
+files.forEach((file) => {
+  console.log(file.path)
+  console.log(file.content.toString('utf8'))
 })
 ```
 
@@ -457,7 +500,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
+
+the yielded objects are of the form:
 
 ```js
 {
@@ -503,7 +552,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-It returns a [Pull Stream][os] that will yield objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][ps] that will yield objects |
+
+the yielded objects are of the form:
 
 ```js
 {
@@ -540,7 +595,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Lists a directory from IPFS that is addressed by a valid IPFS Path.
 
-##### `ipfs.ls(ipfsPath, [callback])`
+##### `ipfs.ls(ipfsPath)`
 
 > **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
 
@@ -554,7 +609,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-`callback` must follow `function (err, files) {}` signature, where `err` is an error if the operation was not successful. `files` is an array containing objects of the following form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects representing the files |
+
+an array of objects is returned, each of the form:
 
 ```js
 {
@@ -567,17 +628,14 @@ ipfsPath can be of type:
 }
 ```
 
-If no `callback` is passed, a promise is returned.
-
 **Example:**
 
 ```JavaScript
 const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-ipfs.ls(validCID, function (err, files) {
-  files.forEach((file) => {
-    console.log(file.path)
-  })
+const files = await ipfs.ls(validCID)
+files.forEach((file) => {
+  console.log(file.path)
 })
 ```
 
@@ -601,7 +659,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
+
+the yielded objects are of the form:
 
 ```js
 {
@@ -648,7 +712,13 @@ ipfsPath can be of type:
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
 
-It returns a [Pull Stream][os] that will yield objects of the form:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][ps] that will yield objects |
+
+the yielded objects are of the form:
 
 ```js
 {
@@ -693,7 +763,7 @@ The Mutable File System (MFS) is a virtual file system on top of IPFS that expos
 
 > Copy files.
 
-##### `ipfs.files.cp(...from, to, [options], [callback])`
+##### `ipfs.files.cp(...from, to, [options])`
 
 Where:
 
@@ -707,7 +777,6 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -717,38 +786,30 @@ If `from` has a single value and `to` exists and is a file, `from` must be a fil
 
 If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
 // To copy a file
-ipfs.files.cp('/src-file', '/dst-file', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.cp('/src-file', '/dst-file')
 
 // To copy a directory
-ipfs.files.cp('/src-dir', '/dst-dir', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.cp('/src-dir', '/dst-dir')
 
 // To copy multiple files to a directory
-ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
 ```
 
 #### `files.mkdir`
 
 > Make a directory.
 
-##### `ipfs.files.mkdir(path, [options], [callback])`
+##### `ipfs.files.mkdir(path, [options])`
 
 Where:
 
@@ -758,25 +819,24 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk  (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.files.mkdir('/my/beautiful/directory', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.mkdir('/my/beautiful/directory')
 ```
 
 #### `files.stat`
 
 > Get file or directory status.
 
-##### `ipfs.files.stat(path, [options], [callback])`
+##### `ipfs.files.stat(path, [options])`
 
 Where:
 
@@ -789,25 +849,29 @@ Where:
   - `size` is a Boolean value to return only the size  (default: false)
   - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
-- `callback` is an optional function with the signature `function (error, stats) {}`, where `error` may be an Error that occurs if the operation is not successful and `stats` is an Object with the following keys:
 
-  - `hash` is a string with the hash
-  - `size` is an integer with the file size in Bytes
-  - `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
-  - `type` is a string that can be either `directory` or `file`
-  - `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
-  - `withLocality` is a boolean to indicate if locality information is present
-  - `local` is a boolean to indicate if the queried dag is fully present locally
-  - `sizeLocal` is an integer indicating the cumulative size of the data present locally
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object containing the file/directory status |
+
+the returned object has the following keys:
+
+- `hash` is a string with the hash
+- `size` is an integer with the file size in Bytes
+- `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
+- `type` is a string that can be either `directory` or `file`
+- `blocks` if `type` is `directory`, this is the number of files in the directory. If it is `file` it is the number of blocks that make up the file
+- `withLocality` is a boolean to indicate if locality information is present
+- `local` is a boolean to indicate if the queried dag is fully present locally
+- `sizeLocal` is an integer indicating the cumulative size of the data present locally
 
 **Example:**
 
 ```JavaScript
-ipfs.files.stat('/file.txt', (err, stats) => {
-  console.log(stats)
-})
+const stats = await ipfs.files.stat('/file.txt')
+console.log(stats)
 
 // {
 //   hash: 'QmXmJBmnYqXVuicUfn9uDCC8kxCEEzQpsAbeq1iJvLAmVs',
@@ -822,47 +886,38 @@ ipfs.files.stat('/file.txt', (err, stats) => {
 
 > Remove a file or directory.
 
-##### `ipfs.files.rm(...paths, [options], [callback])`
+##### `ipfs.files.rm(...paths, [options])`
 
 Where:
 
 - `paths` are one or more paths to remove
 - `options` is an optional Object that might contain the following keys:
   - `recursive` is a Boolean value to decide whether or not to remove directories recursively  (default: false)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
 // To remove a file
-ipfs.files.rm('/my/beautiful/file.txt', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.rm('/my/beautiful/file.txt')
 
 // To remove multiple files
-ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt')
 
 // To remove a directory
-ipfs.files.rm('/my/beautiful/directory', { recursive: true }, (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
 ```
 
 #### `files.read`
 
 > Read a file into a [`Buffer`][b].
 
-##### `ipfs.files.read(path, [options], [callback])`
+##### `ipfs.files.read(path, [options])`
 
 Where:
 
@@ -873,18 +928,20 @@ Where:
 - `options` is an optional Object that might contain the following keys:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
-- `callback` is an optional function with the signature `function (error, buffer) {}`, where `error` may be an Error that occurs if the operation is not successful and `buffer` is a [`Buffer`][b] with the contents of `path`
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Buffer>` | A [`Buffer`][b] with the contents of `path` |
 
 N.b. this method is likely to result in high memory usage, you should use [files.readReadableStream](#filesreadreadablestream) or [files.readPullStream](#filesreadpullstream) instead where possible.
 
 **Example:**
 
 ```JavaScript
-ipfs.files.read('/hello-world', (error, buf) => {
-  console.log(buf.toString('utf8'))
-})
+const buf = await ipfs.files.read('/hello-world')
+console.log(buf.toString('utf8'))
 
 // Hello, World!
 ```
@@ -905,7 +962,11 @@ Where:
   - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
 
-Returns a [`ReadableStream`][rs] with the contents of `path`.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] with the contents of `path` |
 
 **Example:**
 
@@ -932,7 +993,11 @@ Where:
   - `offset` is an Integer with the byte offset to begin reading from (default: 0)
   - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
 
-Returns a [`PullStream`][ps] with the contents of `path`.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [`PullStream`][ps] with the contents of `path` |
 
 **Example:**
 
@@ -950,7 +1015,7 @@ pull(
 
 > Write to a file.
 
-##### `ipfs.files.write(path, content, [options], [callback])`
+##### `ipfs.files.write(path, content, [options])`
 
 Where:
 
@@ -969,23 +1034,24 @@ Where:
   - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
   - `rawLeaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
   - `cidVersion`: the CID version to use when storing the data (storage keys are based on the CID, including its version) (integer, default 0)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.files.write('/hello-world', Buffer.from('Hello, world!'), (err) => {
-  console.log(err)
-})
+await ipfs.files.write('/hello-world', Buffer.from('Hello, world!'))
 ```
 
 #### `files.mv`
 
 > Move files.
 
-##### `ipfs.files.mv(...from, to, [options], [callback])`
+##### `ipfs.files.mv(...from, to, [options])`
 
 Where:
 
@@ -996,7 +1062,6 @@ Where:
   - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -1008,58 +1073,49 @@ If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS p
 
 All values of `from` will be removed after the operation is complete unless they are an IPFS path.
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.files.mv('/src-file', '/dst-file', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.mv('/src-file', '/dst-file')
 
-ipfs.files.mv('/src-dir', '/dst-dir', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.mv('/src-dir', '/dst-dir')
 
-ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
 ```
 
 #### `files.flush`
 
 > Flush a given path's data to the disk
 
-##### `ipfs.files.flush([...paths], [callback])`
+##### `ipfs.files.flush([...paths])`
 
 Where:
 
 - `paths` are optional string paths to flush (default: `/`)
-- `callback` is an optional function with the signature `function (error) {}`, where `error` may be an Error that occurs if the operation is not successful
 
-If no `callback` is passed, a promise is returned.
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If successfully copied. Otherwise an error will be thrown |
 
 **Example:**
 
 ```JavaScript
-ipfs.files.flush('/', (err) => {
-  if (err) {
-    console.error(err)
-  }
-})
+await ipfs.files.flush('/')
 ```
 
 #### `files.ls`
 
 > List directories in the local mutable namespace.
 
-##### `ipfs.files.ls([path], [options], [callback])`
+##### `ipfs.files.ls([path], [options])`
 
 Where:
 
@@ -1071,22 +1127,27 @@ Where:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
   - `sort` is a Boolean value. If true entries will be sorted by filename (default: false)
-- `callback` is an optional function with the signature `function (error, files) {}`, where `error` may be an Error that occurs if the operation is not successful and `files` is an array containing Objects that contain the following keys:
 
-  - `name` which is the file's name
-  - `type` which is the object's type (`directory` or `file`)
-  - `size` the size of the file in bytes
-  - `hash` the hash of the file
+**Returns**
 
-If no `callback` is passed, a promise is returned.
+| Type | Description |
+| -------- | -------- |
+| `Promise<Array>` | An array of objects representing the files |
+
+each object contains the following keys:
+
+- `name` which is the file's name
+- `type` which is the object's type (`directory` or `file`)
+- `size` the size of the file in bytes
+- `hash` the hash of the file
 
 **Example:**
 
 ```JavaScript
-ipfs.files.ls('/screenshots', function (err, files) {
-  files.forEach((file) => {
-    console.log(file.name)
-  })
+const files = await ipfs.files.ls('/screenshots')
+
+files.forEach((file) => {
+	console.log(file.name)
 })
 
 // 2018-01-22T18:08:46.775Z.png
@@ -1111,12 +1172,18 @@ Where:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 
-It returns a [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects containing the following keys:
+**Returns**
 
-  - `name` which is the file's name
-  - `type` which is the object's type (`directory` or `file`)
-  - `size` the size of the file in bytes
-  - `hash` the hash of the file
+| Type | Description |
+| -------- | -------- |
+| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
+
+the yielded objects contain the following keys:
+
+- `name` which is the file's name
+- `type` which is the object's type (`directory` or `file`)
+- `size` the size of the file in bytes
+- `hash` the hash of the file
 
 **Example:**
 
@@ -1147,7 +1214,13 @@ Where:
   - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
   - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 
-It returns a [Pull Stream][os] that will yield objects containing the following keys:
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `PullStream` | A [Pull Stream][os] that will yield objects |
+
+the yielded objects contain the following keys:
 
   - `name` which is the file's name
   - `type` which is the object's type (`directory` or `file`)
