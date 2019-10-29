@@ -149,7 +149,7 @@
     "lodash": "^4.17.15",
     "lodash.flatten": "^4.4.0",
     "mafmt": "^6.0.10",
-    "merge-options": "^1.0.1",
+    "merge-options": "^2.0.0",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
     "mortice": "^2.0.0",
