@@ -41,6 +41,7 @@ SHARNESS_LIB="lib/sharness/sharness.sh"
 
 # grab + output options
 test "$TEST_NO_FUSE" != 1 && test_set_prereq FUSE
+test "$CI" = true && test_set_prereq CI
 test "$TEST_EXPENSIVE" = 1 && test_set_prereq EXPENSIVE
 test "$TEST_NO_DOCKER" != 1 && type docker >/dev/null 2>&1 && test_set_prereq DOCKER
 
