@@ -71,6 +71,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
       - [`options.pass`](#optionspass)
       - [`options.silent`](#optionssilent)
       - [`options.relay`](#optionsrelay)
+      - [`options.offline`](#optionsoffline)
       - [`options.preload`](#optionspreload)
       - [`options.EXPERIMENTAL`](#optionsexperimental)
       - [`options.config`](#optionsconfig)
@@ -344,6 +345,14 @@ Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipf
 - `hop` (object)
     - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
     - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+
+##### `options.offline`
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+Run ipfs node offline. The node does not connect to the rest of the network but provides a local API.
 
 ##### `options.preload`
 
