@@ -168,12 +168,16 @@ A great source of [examples][] can be found in the tests for this API.
 **Example:**
 
 ```JavaScript
-const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
+const multihash = 'Qmc5XkteJdb337s7VwFBAGtiaoj2QCEzyxtNRy3iMudc3E'
 
 const links = await ipfs.object.links(multihash)
-console.log(links)
+const hashes = links.map((link) => link.Hash.toString())
+console.log(hashes)
 // Logs:
-// []
+// [
+//   'QmZbj5ruYneZb8FuR9wnLqJCpCXMQudhSdWhdhp5U1oPWJ',
+//   'QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R'
+// ]
 ```
 
 A great source of [examples][] can be found in the tests for this API.
