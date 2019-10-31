@@ -1003,21 +1003,23 @@ The code above assumes you are running a local `signaling server` on port `9090`
 
 #### Is there a more stable alternative to webrtc-star that offers a similar functionality?
 
-Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
+Yes, stardust! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
 
 ```JavaScript
 const node = await IPFS.create({
   config: {
     Addresses: {
       Swarm: [
-        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+        '/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust'
       ]
     }
   }
 })
 
-// your instance with websocket-star is ready
+// your instance with stardust is ready
 ```
+
+(You may need to install the stardust module as well, with `npm install libp2p-stardust`)
 
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 

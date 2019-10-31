@@ -144,7 +144,6 @@
     "libp2p-secio": "~0.11.0",
     "libp2p-tcp": "^0.13.0",
     "libp2p-webrtc-star": "~0.16.0",
-    "libp2p-websocket-star-multi": "~0.4.3",
     "libp2p-websockets": "~0.12.3",
     "lodash.flatten": "^4.4.0",
     "mafmt": "^6.0.10",
@@ -207,7 +206,7 @@
     "interface-ipfs-core": "^0.118.0",
     "ipfs-interop": "^0.1.1",
     "ipfsd-ctl": "^0.47.2",
-    "libp2p-websocket-star": "~0.10.2",
+    "libp2p-stardust": "~0.1.2",
     "lodash": "^4.17.15",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
@@ -359,3 +358,4 @@
     "Максим Ильин <negamaxi@gmail.com>"
   ]
 }
+

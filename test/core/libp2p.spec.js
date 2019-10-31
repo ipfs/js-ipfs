@@ -6,7 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const MemoryStore = require('interface-datastore').MemoryDatastore
 const PeerInfo = require('peer-info')
 const PeerBook = require('peer-book')
-const WebSocketStar = require('libp2p-websocket-star')
+const Stardust = require('libp2p-stardust')
 const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const KadDHT = require('libp2p-kad-dht')
@@ -71,14 +71,14 @@ describe('libp2p customization', function () {
         _print: console.log,
         _options: {
           libp2p: (opts) => {
-            const wsstar = new WebSocketStar({ id: opts.peerInfo.id })
+            const stardust = new Stardust({ id: opts.peerInfo.id })
 
             return new Libp2p({
               peerInfo: opts.peerInfo,
               peerBook: opts.peerBook,
               modules: {
                 transport: [
-                  wsstar
+                  stardust
                 ],
                 streamMuxer: [
                   Multiplex
@@ -87,7 +87,7 @@ describe('libp2p customization', function () {
                   SECIO
                 ],
                 peerDiscovery: [
-                  wsstar.discovery
+                  stardust.discovery
                 ],
                 dht: KadDHT
               }

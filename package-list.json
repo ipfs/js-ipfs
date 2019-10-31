@@ -49,8 +49,8 @@
     ["libp2p/js-libp2p-bootstrap", "libp2p-bootstrap"],
     ["libp2p/js-libp2p-secio", "libp2p-secio"],
     ["libp2p/js-libp2p-tcp", "libp2p-tcp"],
+    ["libp2p/js-libp2p-stardust", "libp2p-stardust"],
     ["libp2p/js-libp2p-webrtc-star", "libp2p-webrtc-star"],
-    ["libp2p/js-libp2p-websocket-star", "libp2p-websocket-star"],
     ["libp2p/js-libp2p-websockets", "libp2p-websockets"],
     ["libp2p/pull-mplex", "pull-mplex"],
 
