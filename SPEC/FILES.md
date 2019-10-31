@@ -786,6 +786,8 @@ If `from` has a single value and `to` exists and is a file, `from` must be a fil
 
 If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
 
+If `from` is an IPFS path and the content does not exist in your node's repo, only the root node of the source file with be retrieved from the network and linked to from the destination. The remainder of the file will be retrieved on demand.
+
 **Returns**
 
 | Type | Description |
@@ -1070,6 +1072,8 @@ If `from` has a single value and `to` exists and is a directory, `from` will be 
 If `from` has a single value and `to` exists and is a file, `from` must be a file and the contents of `to` will be replaced with the contents of `from` otherwise an error will be returned.
 
 If `from` is an IPFS path, and an MFS path exists with the same name, the IPFS path will be chosen.
+
+If `from` is an IPFS path and the content does not exist in your node's repo, only the root node of the source file with be retrieved from the network and linked to from the destination. The remainder of the file will be retrieved on demand.
 
 All values of `from` will be removed after the operation is complete unless they are an IPFS path.
 
