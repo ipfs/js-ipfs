@@ -133,7 +133,18 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       })
   }
 
-  const libp2pOptions = mergeOptions(libp2pDefaults, get(options, 'libp2p', {}))
+  const libp2pUserOptions = get(options, 'libp2p', {})
+
+  let libp2pOptions = libp2pDefaults
+
+  // allow user to specify overrideFunction, while at the same time allowing static arguments
+  if (libp2pUserOptions.overrideFunction && typeof libp2pUserOptions.overrideFunction === 'function') {
+    libp2pOptions = mergeOptions(libp2pOptions, libp2pUserOptions.overrideFunction({ datastore, peerInfo, peerBook, options, config }))
+    delete libp2pUserOptions.overrideFunction
+  }
+
+  libp2pOptions = mergeOptions(libp2pOptions, libp2pUserOptions)
+
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const Node = require('../runtime/libp2p-nodejs')

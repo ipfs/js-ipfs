@@ -537,6 +537,9 @@ The libp2p option allows you to build your libp2p node by configuration, or via 
 
 You can see the bundle in action in the [custom libp2p example](examples/custom-libp2p).
 
+- `overrideFunction` (object):
+    - A function that allows overriding parts of libp2p's config, using dynamic arguments, without fully replacing the bundle as a custom libp2p bundle would do
+    - It is called with the arguments `{ datastore, peerInfo, peerBook, options, config }`
 - `modules` (object):
     - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
     - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
