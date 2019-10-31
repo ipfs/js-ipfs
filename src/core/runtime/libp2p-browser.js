@@ -9,7 +9,6 @@ const KadDHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 const libp2p = require('libp2p')
 const mergeOptions = require('merge-options')
-const multiaddr = require('multiaddr')
 
 class Node extends libp2p {
   constructor (_options) {
@@ -26,8 +25,7 @@ class Node extends libp2p {
       modules: {
         transport: [
           WS,
-          wrtcstar,
-          wsstar
+          wrtcstar
         ],
         streamMuxer: [
           Multiplex

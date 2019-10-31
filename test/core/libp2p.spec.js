@@ -107,6 +107,31 @@ describe('libp2p customization', function () {
         done()
       })
     })
+
+    it('should allow for custom overrideFunction', (done) => {
+      const ipfs = {
+        _repo: {
+          datastore
+        },
+        _peerInfo: peerInfo,
+        _peerBook: peerBook,
+        // eslint-disable-next-line no-console
+        _print: console.log,
+        _options: {
+          libp2p: {
+            overrideFunction: require('stardust4ipfs')
+          }
+        }
+      }
+
+      _libp2p = libp2pComponent(ipfs, testConfig)
+
+      _libp2p.start((err) => {
+        expect(err).to.not.exist()
+        expect(_libp2p._transport).to.have.length(3)
+        done()
+      })
+    })
   })
 
   describe('options', () => {
@@ -149,13 +174,13 @@ describe('libp2p customization', function () {
             strictSigning: true
           }
         })
-        expect(_libp2p._transport).to.have.length(3)
+        expect(_libp2p._transport).to.have.length(2)
         done()
       })
     })
 
     it('should allow for overriding via options', (done) => {
-      const wsstar = new WebSocketStar({ id: peerInfo.id })
+      const wsstar = new Stardust({ id: peerInfo.id })
 
       const ipfs = {
         _repo: {
