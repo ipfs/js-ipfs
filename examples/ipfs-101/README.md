@@ -1,6 +1,6 @@
 # IPFS 101, spawn a node and add a file to the IPFS network
 
-> This tutorial is the sibling of the [go-ipfs "Using go-ipfs as a library" tutorial](https://github.com/ipfs/go-ipfs/blob/master/docs/examples/go-ipfs-as-a-library/README.md).
+> This tutorial is the sibling of the [go-ipfs "Using go-ipfs as a library" tutorial](https://github.com/ipfs/go-ipfs/tree/master/docs/examples/go-ipfs-as-a-library).
 
 In this tutorial, we go through spawning an IPFS node, adding a file and cat'ing the file multihash locally and through the gateway.
 
