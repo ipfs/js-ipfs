@@ -46,6 +46,9 @@ async function start () {
   if (!node) {
     const options = {
       repo: 'ipfs-' + Math.random(),
+      libp2p: {
+        overrideFunction: require('stardust4ipfs')
+      },
       config: {
         Addresses: {
           Swarm: ['/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust']
@@ -154,7 +157,7 @@ const publishHash = (hash) => {
 const sendFileList = () => Promise.all(FILES.map(publishHash))
 
 const updateProgress = (bytesLoaded) => {
-  let percent = 100 - ((bytesLoaded / fileSize) * 100)
+  const percent = 100 - ((bytesLoaded / fileSize) * 100)
 
   $progressBar.style.transform = `translateX(${-percent}%)`
 }
@@ -261,7 +264,7 @@ async function connectToPeer (event) {
 
   await node.swarm.connect(multiaddr)
 
-  onSuccess(`Successfully connected to peer.`)
+  onSuccess('Successfully connected to peer.')
   $multiaddrInput.value = ''
 }
 

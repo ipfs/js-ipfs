@@ -1010,6 +1010,9 @@ Yes, stardust! A WebSockets based transport that uses a Relay to route the messa
 
 ```JavaScript
 const node = await IPFS.create({
+  libp2p: {
+    overrideFunction: require('stardust4ipfs')
+  },
   config: {
     Addresses: {
       Swarm: [
@@ -1022,7 +1025,7 @@ const node = await IPFS.create({
 // your instance with stardust is ready
 ```
 
-(You may need to install the stardust module as well, with `npm install libp2p-stardust`)
+(You may need to install the stardust4ipfs module as well, with `npm install stardust4ipfs`)
 
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 

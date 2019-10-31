@@ -10,7 +10,6 @@ const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
 const libp2p = require('libp2p')
 const mergeOptions = require('merge-options')
-const multiaddr = require('multiaddr')
 
 class Node extends libp2p {
   constructor (_options) {
@@ -25,8 +24,7 @@ class Node extends libp2p {
       modules: {
         transport: [
           TCP,
-          WS,
-          wsstar
+          WS
         ],
         streamMuxer: [
           Multiplex
