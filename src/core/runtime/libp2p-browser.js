@@ -14,6 +14,9 @@ class Node extends libp2p {
   constructor (_options) {
     const wrtcstar = new WebRTCStar({ id: _options.peerInfo.id })
 
+    const { extend } = _options
+    delete _options.extend
+
     const defaults = {
       switch: {
         denyTTL: 2 * 60 * 1e3, // 2 minute base
@@ -63,7 +66,7 @@ class Node extends libp2p {
       }
     }
 
-    super(mergeOptions(defaults, _options))
+    super(mergeOptions.call({ concatArrays: extend }, defaults, _options))
   }
 }
 
