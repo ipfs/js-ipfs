@@ -104,7 +104,7 @@
     "through2": "^3.0.1"
   },
   "devDependencies": {
-    "aegir": "^20.3.1",
+    "aegir": "^20.4.1",
     "browser-process-platform": "~0.1.1",
     "cross-env": "^6.0.0",
     "go-ipfs-dep": "^0.4.22",
