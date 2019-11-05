@@ -51,16 +51,15 @@
 
 ### BREAKING CHANGES
 
-* ```javascript
-Promise<{oldCfg, newCfg}> ipfs.config.profile(name, opts)
+* Configuration profiles API has changed:
+    ```javascript
+    Promise<{oldCfg, newCfg}> ipfs.config.profile(name, opts)
 
-// is now
-Promise<{old, new}> ipfs.config.profiles.apply(name, opts)
-```
+    // is now
+    Promise<{old, new}> ipfs.config.profiles.apply(name, opts)
+    ```
 
-Possibly contentious;
-
-Adds `callbackify` as a dependency, see https://github.com/ipfs/js-ipfs/issues/2506
+* Possibly contentious; Adds `callbackify` as a dependency, see https://github.com/ipfs/js-ipfs/issues/2506
 for discussion.
 
 
@@ -138,7 +137,9 @@ for discussion.
 <a name="35.0.0"></a>
 # [35.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v34.0.0...v35.0.0) (2019-09-04)
 
+### BREAKING CHANGES
 
+Kebab case options (e.g. `wrap-with-directory`) are no longer supported in `ipfs.add`. Use camel case instead (e.g. `wrapWithDirectory`).
 
 <a name="34.0.0"></a>
 # [34.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.1...v34.0.0) (2019-08-29)
