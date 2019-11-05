@@ -1,5 +1,7 @@
 # IPFS 101, spawn a node and add a file to the IPFS network
 
+> This tutorial is the sibling of the [go-ipfs "Using go-ipfs as a library" tutorial](https://github.com/ipfs/go-ipfs/tree/master/docs/examples/go-ipfs-as-a-library).
+
 In this tutorial, we go through spawning an IPFS node, adding a file and cat'ing the file multihash locally and through the gateway.
 
 You can find a complete version of this tutorial in [1.js](./1.js). For this tutorial, you need to install `ipfs` using `npm install ipfs`.
