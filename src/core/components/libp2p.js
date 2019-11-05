@@ -8,20 +8,63 @@ const multiaddr = require('multiaddr')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
+const Libp2p = require('libp2p')
 
 module.exports = function libp2p (self, config) {
   const options = self._options || {}
   config = config || {}
 
   // Always create libp2p via a bundle function
-  const createBundle = typeof options.libp2p === 'function'
+  const createBundle = typeof options.libp2p !== 'undefined' ? (Array.isArray(options.libp2p) ? options.libp2p : [options.libp2p]) : []
+  createBundle.unshift(defaultBundle)
+
+  /* typeof options.libp2p === 'function'
     ? options.libp2p
-    : defaultBundle
+    : defaultBundle */
 
   const { datastore } = self._repo
   const peerInfo = self._peerInfo
   const peerBook = self._peerInfoBook
-  const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
+
+  const end = createBundle.length - 1
+  let libp2p
+  let libp2pOpts
+
+  options.libp2p = libp2pOpts = null
+
+  createBundle.forEach((fncOrObj, i) => {
+    if (typeof fncOrObj === 'function') {
+      const r = fncOrObj({ options, config, datastore, peerInfo, peerBook })
+      if (r instanceof Libp2p) {
+        if (i === end) {
+          libp2p = r
+        } else {
+          throw new Error('Using chained, but non-last function returned instance')
+        }
+      } else if (typeof r === 'object') {
+        if (r.extend) {
+          libp2pOpts = options.libp2p = mergeOptions.call({ concatArrays: true }, libp2pOpts, r) // extend
+        } else {
+          libp2pOpts = options.libp2p = r // override
+        }
+      } else if (typeof r === 'undefined') {
+        // ignore, go on
+      } else {
+        // maybe print a warning?
+      }
+    } else if (typeof fncOrObj === 'object') {
+      libp2pOpts = options.libp2p = mergeOptions.call({ concatArrays: fncOrObj.extend }, libp2pOpts, fncOrObj)
+    } else {
+      throw new TypeError('Option .libp2p has invalid type ' + typeof fncOrObj)
+    }
+  })
+
+  if (!libp2p) {
+    // Required inline to reduce startup time
+    // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
+    const Node = require('../runtime/libp2p-nodejs')
+    libp2p = new Node(libp2pOpts)
+  }
 
   libp2p.on('stop', () => {
     // Clear our addresses so we can start clean
@@ -133,27 +176,5 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       })
   }
 
-  const libp2pUserOptions = get(options, 'libp2p', {})
-  let libp2pExtend = get(options, 'libp2p.extend', false)
-
-  let libp2pOptions = libp2pDefaults
-
-  // allow user to specify overrideFunction, while at the same time allowing static arguments
-  if (libp2pUserOptions.overrideFunction && typeof libp2pUserOptions.overrideFunction === 'function') {
-    const override = libp2pUserOptions.overrideFunction({ datastore, peerInfo, peerBook, options, config })
-
-    if (override.extend != null) {
-      libp2pExtend = override.extend
-    }
-
-    libp2pOptions = mergeOptions.call({ concatArrays: libp2pExtend }, libp2pOptions, override)
-    delete libp2pUserOptions.overrideFunction
-  }
-
-  libp2pOptions = mergeOptions.call({ concatArrays: libp2pExtend }, libp2pOptions, libp2pUserOptions)
-
-  // Required inline to reduce startup time
-  // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
-  const Node = require('../runtime/libp2p-nodejs')
-  return new Node(libp2pOptions)
+  return libp2pDefaults
 }

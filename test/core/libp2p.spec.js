@@ -108,7 +108,7 @@ describe('libp2p customization', function () {
       })
     })
 
-    it('should allow for custom overrideFunction', (done) => {
+    it('should allow for custom bundle-chain', (done) => {
       const ipfs = {
         _repo: {
           datastore
@@ -118,9 +118,7 @@ describe('libp2p customization', function () {
         // eslint-disable-next-line no-console
         _print: console.log,
         _options: {
-          libp2p: {
-            overrideFunction: require('stardust4ipfs')
-          }
+          libp2p: [require('stardust4ipfs')]
         }
       }
 
