@@ -134,7 +134,7 @@ async function clientWorks (client) {
 function expectConfig (ipfs, { host, port, protocol, apiPath }) {
   const conf = ipfs.getEndpointConfig()
   expect(conf.host).to.be.oneOf([host, 'localhost', ''])
-  expect(conf.port).to.be.oneOf([port, '5001', 80])
+  expect(conf.port.toString()).to.be.oneOf([port, '5001', '80'])
   expect(conf.protocol).to.equal(protocol || 'http')
   expect(conf['api-path']).to.equal(apiPath || '/api/v0/')
 }
