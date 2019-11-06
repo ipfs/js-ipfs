@@ -13,6 +13,7 @@ const ipnsRouting = require('../../src/core/ipns/routing/config')
 const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
 const { Key, Errors } = require('interface-datastore')
+const CID = require('cids')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
@@ -369,6 +370,16 @@ describe('name', function () {
       const res = await node.add(fixture)
       await node.name.publish(`/ipfs/${res[0].hash}`)
       const value = await ipnsPath.resolvePath(node, `/ipns/${nodeId}`)
+
+      expect(value).to.exist()
+    })
+
+    it('should resolve an ipns path with PeerID as CIDv1 in Base32 correctly', async function () {
+      const res = await node.add(fixture)
+      await node.name.publish(`/ipfs/${res[0].hash}`)
+      let peerCid = new CID(nodeId)
+      if (peerCid.version === 0) peerCid = peerCid.toV1() // future-proofing
+      const value = await ipnsPath.resolvePath(node, `/ipns/${peerCid.toString('base32')}`)
 
       expect(value).to.exist()
     })

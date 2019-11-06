@@ -6,7 +6,7 @@ const human = require('human-to-milliseconds')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
 const mergeOptions = require('merge-options')
-const mh = require('multihashes')
+const CID = require('cids')
 const isDomain = require('is-domain-name')
 const promisify = require('promisify-es6')
 
@@ -155,7 +155,7 @@ module.exports = function name (self) {
 
       const [namespace, hash, ...remainder] = name.slice(1).split('/')
       try {
-        mh.fromB58String(hash)
+        new CID(hash) // eslint-disable-line no-new
       } catch (err) {
         // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
         if (isDomain(hash)) {
