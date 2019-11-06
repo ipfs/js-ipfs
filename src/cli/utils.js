@@ -47,6 +47,7 @@ exports.getIPFS = (argv, callback) => {
   const IPFS = require('../core')
   const node = new IPFS({
     silent: argv.silent,
+    repoAutoMigrate: argv.migrate,
     repo: exports.getRepoPath(),
     init: false,
     start: false,
@@ -60,7 +61,11 @@ exports.getIPFS = (argv, callback) => {
   })
 
   node.on('error', (err) => {
-    throw err
+    if (err.code === 'ERR_INVALID_REPO_VERSION') {
+      err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
+    }
+
+    callback(null, node, cleanup)
   })
 
   node.once('ready', () => {
