@@ -109,12 +109,9 @@ describe('swarm', () => {
     }
 
     describe('addrs', () => {
-      before((done) => {
-        PeerId.create({ bits: 512 }, (err, peerId) => {
-          if (err) return done(err)
-          peerInfo = new PeerInfo(peerId)
-          done()
-        })
+      before(async () => {
+        const peerId = await PeerId.create({ bits: 512 })
+        peerInfo = new PeerInfo(peerId)
       })
 
       it('should return addresses for all peers', (done) => {

@@ -21,7 +21,7 @@ module.exports = function bitswap (self) {
       let list
 
       if (peerId) {
-        peerId = PeerId.createFromB58String(peerId)
+        peerId = PeerId.createFromCID(peerId)
 
         list = self._bitswap.wantlistForPeer(peerId)
       } else {

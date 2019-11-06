@@ -7,7 +7,6 @@ const Keychain = require('libp2p-keychain')
 const mergeOptions = require('merge-options')
 const NoKeychain = require('./no-keychain')
 const callbackify = require('callbackify')
-const promisify = require('promisify-es6')
 
 /*
  * Load stuff from Repo into memory
@@ -44,7 +43,7 @@ module.exports = function preStart (self) {
     }
 
     const privKey = config.Identity.PrivKey
-    const id = await promisify(peerId.createFromPrivKey)(privKey)
+    const id = await peerId.createFromPrivKey(privKey)
 
     // Import the private key as 'self', if needed.
     if (pass) {

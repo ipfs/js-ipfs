@@ -163,7 +163,7 @@
     "p-iteration": "^1.1.8",
     "p-queue": "^6.1.0",
     "peer-book": "^0.9.1",
-    "peer-id": "^0.12.2",
+    "peer-id": "^0.13.4",
     "peer-info": "~0.15.1",
     "progress": "^2.0.1",
     "promise-nodeify": "^3.0.1",

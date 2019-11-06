@@ -49,7 +49,7 @@ function getPeer (libp2pNode, statusStream, peerIdStr, cb) {
   let peerId
 
   try {
-    peerId = PeerId.createFromB58String(peerIdStr)
+    peerId = PeerId.createFromCID(peerIdStr)
   } catch (err) {
     return cb(err)
   }

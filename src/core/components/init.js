@@ -3,7 +3,6 @@
 const peerId = require('peer-id')
 const mergeOptions = require('merge-options')
 const callbackify = require('callbackify')
-const promisify = require('promisify-es6')
 const defaultConfig = require('../runtime/config-nodejs.js')
 const Keychain = require('libp2p-keychain')
 const {
@@ -24,14 +23,14 @@ function createPeerId (self, opts) {
     if (typeof opts.privateKey === 'object') {
       return opts.privateKey
     } else {
-      return promisify(peerId.createFromPrivKey)(Buffer.from(opts.privateKey, 'base64'))
+      return peerId.createFromPrivKey(Buffer.from(opts.privateKey, 'base64'))
     }
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
     opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
     self.log('generating peer id: %s bits', opts.bits)
 
-    return promisify(peerId.create)({ bits: opts.bits })
+    return peerId.create({ bits: opts.bits })
   }
 }
 

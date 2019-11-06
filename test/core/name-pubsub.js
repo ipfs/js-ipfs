@@ -12,7 +12,6 @@ const ipns = require('ipns')
 const IPFS = require('../../src')
 const waitFor = require('../utils/wait-for')
 const delay = require('delay')
-const promisify = require('promisify-es6')
 
 const DaemonFactory = require('ipfsd-ctl')
 const df = DaemonFactory.create({
@@ -177,8 +176,8 @@ describe('name-pubsub', function () {
     await nodeB.pubsub.subscribe(topic, checkMessage)
     await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
     await waitFor(alreadySubscribed)
-    const messageKey = await promisify(peerId.createFromPubKey)(publishedMessage.key)
-    const pubKeyPeerId = await promisify(peerId.createFromPubKey)(publishedMessageData.pubKey)
+    const messageKey = await peerId.createFromPubKey(publishedMessage.key)
+    const pubKeyPeerId = await peerId.createFromPubKey(publishedMessageData.pubKey)
 
     expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
     expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
