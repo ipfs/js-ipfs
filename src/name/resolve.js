@@ -5,6 +5,7 @@
 const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('../utils/delay')
+const CID = require('cids')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -43,6 +44,20 @@ module.exports = (createCommon, options) => {
 
       return expect(await ipfs.name.resolve(`/ipns/${keyId}`))
         .to.eq(`/ipfs/${path}`)
+    })
+
+    it('should resolve a record from peerid as cidv1 in base32', async function () {
+      this.timeout(20 * 1000)
+      const [{ path }] = await ipfs.add(Buffer.from('should resolve a record from cidv1b32'))
+      const { id: peerId } = await ipfs.id()
+      await ipfs.name.publish(path, { 'allow-offline': true })
+
+      // Represent Peer ID as CIDv1 Base32
+      // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
+      const keyCid = new CID(peerId).toV1().toString('base32')
+      const resolvedPath = await ipfs.name.resolve(`/ipns/${keyCid}`)
+
+      return expect(resolvedPath).to.equal(`/ipfs/${path}`)
     })
 
     it('should resolve a record recursive === false', async () => {
