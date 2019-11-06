@@ -1,3 +1,13 @@
+<a name="0.118.0"></a>
+# [0.118.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.117.2...v0.118.0) (2019-11-06)
+
+
+### Features
+
+* test ipns resolve of peerid as cid ([#553](https://github.com/ipfs/interface-ipfs-core/issues/553)) ([9193957](https://github.com/ipfs/interface-ipfs-core/commit/9193957))
+
+
+
 ## [0.117.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.117.1...v0.117.2) (2019-10-05)
 
 
