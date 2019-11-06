@@ -119,7 +119,18 @@ module.exports = (self) => {
       if (!Array.isArray(keys)) {
         keys = [keys]
       }
-
+      for (var i in keys){
+        if (typeof keys[i] === 'string') {
+          try {
+            keys[i] = new CID(keys[i])
+          } catch (err) {
+            log.error(err)
+  
+            throw errcode(err, 'ERR_INVALID_CID')
+          }
+        }
+      }
+      
       // ensure blocks are actually local
       const has = await every(keys, (key) => {
         return self._repo.blocks.has(key)
