@@ -30,7 +30,7 @@ describe('.swarm.peers', function () {
   })
 
   it('handles a go-ipfs <= 0.4.4 peer response', async () => {
-    const response = { Strings: ['/ip4/73.109.217.59/tcp/49311/p2p/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm'] }
+    const response = { Strings: ['/ip4/73.109.217.59/tcp/49311/ipfs/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm'] }
 
     const scope = nock(apiUrl)
       .post('/api/v0/swarm/peers')
@@ -42,7 +42,7 @@ describe('.swarm.peers', function () {
     expect(res).to.be.a('array')
     expect(res.length).to.equal(1)
     expect(res[0].error).to.not.exist()
-    expect(res[0].addr.toString()).to.equal('/ip4/73.109.217.59/tcp/49311/p2p/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm')
+    expect(res[0].addr.toString()).to.equal('/ip4/73.109.217.59/tcp/49311/ipfs/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm')
     expect(res[0].peer.toB58String()).to.equal('QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm')
     expect(scope.isDone()).to.equal(true)
   })

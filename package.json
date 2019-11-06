@@ -82,7 +82,7 @@
     "ky-universal": "^0.3.0",
     "lru-cache": "^5.1.1",
     "merge-options": "^2.0.0",
-    "multiaddr": "^7.2.0",
+    "multiaddr": "^6.0.6",
     "multibase": "~0.6.0",
     "multicodec": "~0.5.1",
     "multihashes": "~0.4.14",
