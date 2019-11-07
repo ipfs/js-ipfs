@@ -20,7 +20,7 @@ const parser = yargs
     default: ''
   })
   .option('migrate', {
-    desc: 'Allows automatic migrations',
+    desc: 'Enable/disable automatic repo migrations',
     type: 'boolean',
     default: false
   })
