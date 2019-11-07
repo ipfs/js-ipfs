@@ -30,13 +30,13 @@ module.exports = {
     node: {
       pre: (cb) => {
         parallel([
-          (cb) => preloadNode.start(cb),
+          (cb) => preloadNode.start().then(cb, cb),
           (cb) => echoServer.start(cb)
         ], cb)
       },
       post: (cb) => {
         parallel([
-          (cb) => preloadNode.stop(cb),
+          (cb) => preloadNode.stop().then(cb, cb),
           (cb) => echoServer.stop(cb)
         ], cb)
       }
@@ -48,7 +48,7 @@ module.exports = {
             ipfsdServer.start()
             cb()
           },
-          (cb) => preloadNode.start(cb),
+          (cb) => preloadNode.start().then(cb, cb),
           (cb) => echoServer.start(cb)
         ], cb)
       },
@@ -58,7 +58,7 @@ module.exports = {
             ipfsdServer.stop()
             cb()
           },
-          (cb) => preloadNode.stop(cb),
+          (cb) => preloadNode.stop().then(cb, cb),
           (cb) => echoServer.stop(cb)
         ], cb)
       }

@@ -8,7 +8,8 @@ module.exports = async function addDefaultAssets (self, log) {
   const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
 
   const results = await self.addFromFs(initDocsPath, {
-    recursive: true
+    recursive: true,
+    preload: false
   })
 
   const dir = results.filter(file => file.path === 'init-docs').pop()

@@ -1,6 +1,7 @@
 'use strict'
 
 const delay = require('delay')
+const errCode = require('err-code')
 
 // Wait for async function `test` to resolve true or timeout after
 // options.timeout milliseconds.
@@ -14,7 +15,7 @@ module.exports = async function waitFor (test, options) {
     }
 
     if (Date.now() > start + options.timeout) {
-      throw new Error(`Timed out waiting for ${options.name}`)
+      throw errCode(new Error(`Timed out waiting for ${options.name}`), 'ERR_TIMEOUT')
     }
 
     await delay(options.interval)
