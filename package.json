@@ -108,7 +108,7 @@
     "browser-process-platform": "~0.1.1",
     "cross-env": "^6.0.0",
     "go-ipfs-dep": "^0.4.22",
-    "interface-ipfs-core": "^0.117.2",
+    "interface-ipfs-core": "^0.118.0",
     "ipfsd-ctl": "^0.47.1",
     "nock": "^11.4.0",
     "stream-equal": "^1.1.1"

@@ -176,7 +176,15 @@ describe('interface-ipfs-core tests', () => {
     spawnOptions: {
       args: ['--offline']
     }
-  }))
+  }), {
+    skip: [
+      // stop
+      {
+        name: 'should resolve a record from peerid as cidv1 in base32',
+        reason: 'TODO not implemented in go-ipfs yet: https://github.com/ipfs/go-ipfs/issues/5287'
+      }
+    ]
+  })
 
   // TODO: uncomment after https://github.com/ipfs/interface-ipfs-core/pull/361 being merged and a new release
   tests.namePubsub(CommonFactory.create({
