@@ -48,7 +48,7 @@ module.exports.createNode = () => {
     res.end()
   })
 
-  server.start = opts => new Promise(resolve => server.listen({ port: defaultPort, ...opts }, resolve))
+  server.start = (opts = {}) => new Promise(resolve => server.listen({ port: defaultPort, ...opts }, resolve))
   server.stop = () => new Promise(resolve => server.close(resolve))
 
   return server

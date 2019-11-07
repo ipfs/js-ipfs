@@ -4,6 +4,7 @@ const IPFSFactory = require('ipfsd-ctl')
 const parallel = require('async/parallel')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
+const callbackify = require('callbackify')
 
 const ipfsdServer = IPFSFactory.createServer()
 const preloadNode = MockPreloadNode.createNode()
@@ -30,13 +31,13 @@ module.exports = {
     node: {
       pre: (cb) => {
         parallel([
-          (cb) => preloadNode.start().then(cb, cb),
+          (cb) => callbackify(preloadNode.start)(cb),
           (cb) => echoServer.start(cb)
         ], cb)
       },
       post: (cb) => {
         parallel([
-          (cb) => preloadNode.stop().then(cb, cb),
+          (cb) => callbackify(preloadNode.stop)(cb),
           (cb) => echoServer.stop(cb)
         ], cb)
       }
@@ -48,7 +49,7 @@ module.exports = {
             ipfsdServer.start()
             cb()
           },
-          (cb) => preloadNode.start().then(cb, cb),
+          (cb) => callbackify(preloadNode.start)(cb),
           (cb) => echoServer.start(cb)
         ], cb)
       },
@@ -58,7 +59,7 @@ module.exports = {
             ipfsdServer.stop()
             cb()
           },
-          (cb) => preloadNode.stop().then(cb, cb),
+          (cb) => callbackify(preloadNode.stop)(cb),
           (cb) => echoServer.stop(cb)
         ], cb)
       }
