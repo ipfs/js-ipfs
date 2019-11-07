@@ -59,7 +59,7 @@
     "event-iterator": "^1.2.0",
     "explain-error": "^1.0.4",
     "flatmap": "0.0.3",
-    "form-data": "^2.5.1",
+    "form-data": "^3.0.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.3",
     "ipfs-block": "~0.8.1",
