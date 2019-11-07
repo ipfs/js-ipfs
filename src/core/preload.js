@@ -36,12 +36,12 @@ module.exports = self => {
       }
 
       const fallbackApiUris = shuffle(apiUris)
-      let controller
       let success = false
       const now = Date.now()
 
       for (const uri of fallbackApiUris) {
         if (stopped) throw new Error(`preload aborted for ${path}`)
+        let controller
 
         try {
           controller = new AbortController()
