@@ -16,4 +16,14 @@ describe('repo', () => runOnAndOff((thing) => {
     const out = await ipfs('repo version')
     expect(out).to.eql(`${repoVersion}\n`)
   })
+
+  it('get repo stats', async () => {
+    const stats = await ipfs('repo stat')
+    expect(stats).to.not.include('MB').and.not.include('GB')
+  })
+
+  it('get human readable repo stats', async () => {
+    const stats = await ipfs('repo stat --human')
+    expect(stats).to.include('MB').and.include('GB')
+  })
 }))
