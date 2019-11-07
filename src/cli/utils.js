@@ -65,7 +65,7 @@ exports.getIPFS = (argv, callback) => {
       err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
     }
 
-    callback(null, node, cleanup)
+    callback(err)
   })
 
   node.once('ready', () => {
