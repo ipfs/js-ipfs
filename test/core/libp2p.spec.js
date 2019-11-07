@@ -135,7 +135,6 @@ describe('libp2p customization', function () {
 
       _libp2p.start((err) => {
         expect(err).to.not.exist()
-        console.log(_libp2p._transport)
         expect(_libp2p._transport).to.have.length(1)
         expect(_libp2p._transport[0] instanceof DummyTransport).to.equal(true)
         done()
