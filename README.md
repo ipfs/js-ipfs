@@ -290,7 +290,7 @@ const node = await IPFS.create({ repo: '/var/ipfs/data' })
 |------|---------|
 | boolean | `true` |
 
-`js-ipfs` comes bundled with tool that automatically migrate the version of your IPFS repository when new version is available.
+`js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available.
 
 **For tools that build on top of `js-ipfs` and run mainly in the browser environment, be aware that disabling automatic
 migrations leaves the user with no way to run the migrations because there is no CLI in the browser. In such
