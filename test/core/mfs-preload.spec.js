@@ -15,11 +15,7 @@ const createMockFilesStat = (cids = []) => {
 }
 
 const createMockPreload = () => {
-  const preload = (cid, cb = () => {}) => {
-    preload.cids.push(cid)
-
-    cb()
-  }
+  const preload = cid => preload.cids.push(cid)
   preload.cids = []
   return preload
 }

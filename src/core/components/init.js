@@ -116,7 +116,8 @@ async function addRepoAssets (self, privateKey, opts) {
   const cid = await self.dag.put(node, {
     version: 0,
     format: multicodec.DAG_PB,
-    hashAlg: multicodec.SHA2_256
+    hashAlg: multicodec.SHA2_256,
+    preload: false
   })
 
   await self._ipns.initializeKeyspace(privateKey, cid.toBaseEncodedString())

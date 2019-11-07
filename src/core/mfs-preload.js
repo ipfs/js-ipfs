@@ -19,24 +19,20 @@ module.exports = (self) => {
   let rootCid
   let timeoutId
 
-  const preloadMfs = () => {
-    self.files.stat('/')
-      .then((stats) => {
-        if (rootCid !== stats.hash) {
-          log(`preloading updated MFS root ${rootCid} -> ${stats.hash}`)
+  const preloadMfs = async () => {
+    try {
+      const stats = await self.files.stat('/')
 
-          return self._preload(stats.hash, (err) => {
-            timeoutId = setTimeout(preloadMfs, options.interval)
-            if (err) return log.error(`failed to preload MFS root ${stats.hash}`, err)
-            rootCid = stats.hash
-          })
-        }
-
-        timeoutId = setTimeout(preloadMfs, options.interval)
-      }, (err) => {
-        timeoutId = setTimeout(preloadMfs, options.interval)
-        log.error('failed to stat MFS root for preload', err)
-      })
+      if (rootCid !== stats.hash) {
+        log(`preloading updated MFS root ${rootCid} -> ${stats.hash}`)
+        await self._preload(stats.hash)
+        rootCid = stats.hash
+      }
+    } catch (err) {
+      log.error('failed to preload MFS root', err)
+    } finally {
+      timeoutId = setTimeout(preloadMfs, options.interval)
+    }
   }
 
   return {
