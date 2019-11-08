@@ -73,6 +73,7 @@ module.exports = {
         config,
         silent: argv.silent,
         repo: process.env.IPFS_PATH,
+        repoAutoMigrate: argv.migrate,
         offline: argv.offline,
         pass: argv.pass,
         preload: { enabled: argv.enablePreload },
@@ -96,10 +97,8 @@ module.exports = {
           print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
         })
       } catch (err) {
-        if (err.code === 'ENOENT' && err.message.match(/uninitialized/i)) {
-          print('Error: no initialized ipfs repo found in ' + repoPath)
-          print('please run: jsipfs init')
-          process.exit(1)
+        if (err.code === 'ERR_REPO_NOT_INITIALIZED' || err.message.match(/uninitialized/i)) {
+          err.message = 'no initialized ipfs repo found in ' + repoPath + '\nplease run: jsipfs init'
         }
         throw err
       }

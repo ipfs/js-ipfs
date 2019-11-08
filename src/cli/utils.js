@@ -4,9 +4,7 @@ const fs = require('fs')
 const os = require('os')
 const multiaddr = require('multiaddr')
 const path = require('path')
-const debug = require('debug')
-const log = debug('cli')
-log.error = debug('cli:error')
+const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
 const byteman = require('byteman')
 const promisify = require('promisify-es6')
@@ -61,10 +59,6 @@ exports.getIPFS = (argv, callback) => {
   })
 
   node.on('error', (err) => {
-    if (err.code === 'ERR_INVALID_REPO_VERSION') {
-      err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
-    }
-
     callback(err)
   })
 
