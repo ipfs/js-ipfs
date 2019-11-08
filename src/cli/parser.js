@@ -19,6 +19,11 @@ const parser = yargs
     type: 'string',
     default: ''
   })
+  .option('migrate', {
+    desc: 'Enable/disable automatic repo migrations',
+    type: 'boolean',
+    default: false
+  })
   .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .fail((msg, err, yargs) => {

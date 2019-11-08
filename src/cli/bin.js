@@ -26,6 +26,7 @@ if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
 const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
 const debug = require('debug')('ipfs:cli')
+const { errors: { InvalidRepoVersionError } } = require('ipfs-repo')
 const parser = require('./parser')
 const commandAlias = require('./command-alias')
 const { print } = require('./utils')
@@ -50,6 +51,11 @@ cli
   })
   .catch(({ error, argv }) => {
     getIpfs = argv && argv.getIpfs
+
+    if (error.code === InvalidRepoVersionError.code) {
+      error.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
+    }
+
     if (error.message) {
       print(error.message)
       debug(error)
@@ -57,6 +63,7 @@ cli
       print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
       debug(error)
     }
+
     process.exit(1)
   })
   .finally(() => {

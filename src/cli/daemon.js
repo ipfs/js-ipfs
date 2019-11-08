@@ -54,17 +54,8 @@ class Daemon {
     }
 
     // start the daemon
-    const ipfsOpts = Object.assign({ }, { init: true, start: true, libp2p }, this._options)
-    const ipfs = new IPFS(ipfsOpts)
-
-    await new Promise((resolve, reject) => {
-      ipfs.once('error', err => {
-        this._log('error starting core', err)
-        err.code = 'ENOENT'
-        reject(err)
-      })
-      ipfs.once('start', resolve)
-    })
+    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p }, this._options)
+    const ipfs = await IPFS.create(ipfsOpts)
 
     this._ipfs = ipfs
 

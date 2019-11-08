@@ -4,9 +4,7 @@ const fs = require('fs')
 const os = require('os')
 const multiaddr = require('multiaddr')
 const path = require('path')
-const debug = require('debug')
-const log = debug('cli')
-log.error = debug('cli:error')
+const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
 const byteman = require('byteman')
 const promisify = require('promisify-es6')
@@ -47,6 +45,7 @@ exports.getIPFS = (argv, callback) => {
   const IPFS = require('../core')
   const node = new IPFS({
     silent: argv.silent,
+    repoAutoMigrate: argv.migrate,
     repo: exports.getRepoPath(),
     init: false,
     start: false,
@@ -60,7 +59,7 @@ exports.getIPFS = (argv, callback) => {
   })
 
   node.on('error', (err) => {
-    throw err
+    callback(err)
   })
 
   node.once('ready', () => {
