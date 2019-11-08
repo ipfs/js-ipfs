@@ -3,7 +3,8 @@
 function requireCommands (send, config) {
   const cmds = {
     ...require('../files-regular')(config),
-    getEndpointConfig: require('../get-endpoint-config')(config)
+    getEndpointConfig: require('../get-endpoint-config')(config),
+    bitswap: require('../bitswap')(config)
   }
 
   const subCmds = {
@@ -12,7 +13,6 @@ function requireCommands (send, config) {
 
     // Block
     block: require('../block'),
-    bitswap: require('../bitswap'),
 
     // Graph
     dag: require('../dag'),

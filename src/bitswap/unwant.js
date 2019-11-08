@@ -1,25 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((cid, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
+module.exports = configure(({ ky }) => {
+  return async (cid, options) => {
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+
+    if (typeof cid === 'string') {
+      searchParams.set('arg', cid)
+    } else {
+      searchParams.set('arg', new CID(cid).toString())
     }
 
-    try {
-      cid = new CID(cid)
-    } catch (err) {
-      return callback(err)
-    }
+    const res = await ky.get('bitswap/unwant', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
 
-    send({
-      path: 'bitswap/unwant',
-      args: cid.toBaseEncodedString(),
-      qs: opts
-    }, callback)
-  })
-}
+    return res
+  }
+})

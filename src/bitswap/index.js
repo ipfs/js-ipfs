@@ -1,13 +1,9 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return {
-    wantlist: require('./wantlist')(send),
-    stat: require('./stat')(send),
-    unwant: require('./unwant')(send)
-  }
-}
+module.exports = (config) => ({
+  wantlist: callbackify.variadic(require('./wantlist')(config)),
+  stat: callbackify.variadic(require('./stat')(config)),
+  unwant: callbackify.variadic(require('./unwant')(config))
+})
