@@ -17,7 +17,7 @@ const {
 const pkg = require('./package.json')
 
 async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
-  const proc = execa('nightwatch', [ path.join(__dirname, 'test.js') ], {
+  const proc = execa('nightwatch', [path.join(__dirname, 'test.js')], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,
@@ -26,7 +26,8 @@ async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
       IPFS_RELAY_ADDRESS: relay,
       IPFS_LOCAL_PEER_ID_FILE: localPeerIdFile,
       IPFS_REMOTE_PEER_ID_FILE: remotePeerIdFile
-    }
+    },
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -41,7 +42,7 @@ async function runTest () {
     config: {
       Addresses: {
         Swarm: [
-          `/ip4/127.0.0.1/tcp/0/ws`
+          '/ip4/127.0.0.1/tcp/0/ws'
         ]
       },
       Bootstrap: [],

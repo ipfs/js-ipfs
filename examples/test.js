@@ -76,7 +76,8 @@ async function build (dir) {
   }
 
   const proc = execa('npm', ['run', build], {
-    cwd: dir
+    cwd: dir,
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)

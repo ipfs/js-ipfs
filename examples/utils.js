@@ -11,7 +11,8 @@ async function startServer (dir) {
       let output = ''
 
       const proc = execa.command(`http-server ${path} -a 127.0.0.1`, {
-        cwd: __dirname
+        cwd: __dirname,
+        all: true
       })
       proc.all.on('data', (data) => {
         process.stdout.write(data)
