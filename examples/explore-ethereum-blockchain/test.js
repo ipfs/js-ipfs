@@ -20,7 +20,7 @@ async function runTest () {
     disposable: true
   })
 
-  let cids = []
+  const cids = []
 
   console.info('Importing eth-blocks')
   for (const file of await fs.readdir(path.join(__dirname, 'eth-stuffs'))) {

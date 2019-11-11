@@ -12,5 +12,8 @@
     "datastore-fs": "^0.9.1",
     "ipfs": "file:../../",
     "ipfs-repo": "^0.28.0"
+  },
+  "devDependencies": {
+    "execa": "^3.2.0"
   }
 }

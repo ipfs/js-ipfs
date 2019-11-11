@@ -17,13 +17,14 @@ const {
 const pkg = require('./package.json')
 
 async function testUI (env) {
-  const proc = execa('nightwatch', [ path.join(__dirname, 'test.js') ], {
+  const proc = execa('nightwatch', [path.join(__dirname, 'test.js')], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,
       ...env,
       CI: true
-    }
+    },
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -38,7 +39,7 @@ async function runTest () {
     config: {
       Addresses: {
         Swarm: [
-          `/ip4/127.0.0.1/tcp/0/ws`
+          '/ip4/127.0.0.1/tcp/0/ws'
         ]
       },
       Bootstrap: []
@@ -59,7 +60,7 @@ async function runTest () {
       throw new Error(`Could not find web socket address in ${id.addresses}`)
     }
 
-    let workspaceName = `test-${Date.now()}`
+    const workspaceName = `test-${Date.now()}`
     const peerA = path.join(os.tmpdir(), `test-${Date.now()}-a.txt`)
     const peerB = path.join(os.tmpdir(), `test-${Date.now()}-b.txt`)
 
@@ -161,6 +162,8 @@ module.exports[pkg.name] = function (browser) {
       .pause(1000)
       .click('#fetch-btn')
   }
+
+  browser.pause(1000)
 
   // but should both see the added file
   browser.expect.element('#file-history').text.to.contain(process.env.IPFS_CID)

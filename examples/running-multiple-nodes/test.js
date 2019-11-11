@@ -11,7 +11,7 @@ const {
   waitForOutput
 } = require('../utils')
 
-async function  testCli () {
+async function testCli () {
   await Promise.all([
     startCliNode(),
     startCliNode()

@@ -10,7 +10,7 @@
   "dependencies": {
     "chromedriver": "^77.0.0",
     "delay": "^4.1.0",
-    "execa": "^2.1.0",
+    "execa": "^3.2.0",
     "fs-extra": "^8.1.0",
     "http-server": "~0.11.1",
     "nightwatch": "^1.2.4",

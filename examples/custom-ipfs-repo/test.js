@@ -5,8 +5,9 @@ const execa = require('execa')
 const fs = require('fs')
 
 async function test () {
-  const proc = execa('node', [ path.join(__dirname, 'index.js') ], {
-    cwd: path.resolve(__dirname)
+  const proc = execa('node', [path.join(__dirname, 'index.js')], {
+    cwd: path.resolve(__dirname),
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)

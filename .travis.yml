@@ -104,55 +104,46 @@ jobs:
         - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - ipfs-companion
       script:
         - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - npm-on-ipfs
       script:
         - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - ipfs-pubsub-room
       script:
         - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git --branch upgrade-to-latest-js-ipfs-rc
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - peer-base
       script:
         - npm run test:external -- peer-base https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - service-worker-gateway
       script:
         - npm run test:external -- service-worker-gateway https://github.com/ipfs-shipyard/service-worker-gateway.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - orbit-db
       script:
         - npm run test:external -- orbit-db https://github.com/orbitdb/orbit-db.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - ipfs-log
       script:
         - npm run test:external -- ipfs-log https://github.com/orbitdb/ipfs-log.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: external - sidetree
       script:
         - npm run test:external -- sidetree https://github.com/decentralized-identity/sidetree.git
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-add-readable-stream
       script:
         - cd examples
@@ -160,7 +151,6 @@ jobs:
         - npm run test -- browser-add-readable-stream
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-browserify
       script:
         - cd examples
@@ -168,7 +158,6 @@ jobs:
         - npm run test -- browser-browserify
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-create-react-app
       script:
         - cd examples
@@ -176,7 +165,6 @@ jobs:
         - npm run test -- browser-create-react-app
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-mfs
       script:
         - cd examples
@@ -184,7 +172,6 @@ jobs:
         - npm run test -- browser-mfs
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-parceljs
       script:
         - cd examples
@@ -192,7 +179,6 @@ jobs:
         - npm run test -- browser-parceljs
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-readablestream
       script:
         - cd examples
@@ -200,7 +186,6 @@ jobs:
         - npm run test -- browser-readablestream
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-script-tag
       script:
         - cd examples
@@ -208,7 +193,6 @@ jobs:
         - npm run test -- browser-script-tag
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-video-streaming
       script:
         - cd examples
@@ -216,7 +200,6 @@ jobs:
         - npm run test -- browser-video-streaming
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-vue
       script:
         - cd examples
@@ -224,7 +207,6 @@ jobs:
         - npm run test -- browser-vue
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - browser-webpack
       script:
         - cd examples
@@ -232,7 +214,6 @@ jobs:
         - npm run test -- browser-webpack
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - circuit-relaying
       script:
         - cd examples
@@ -240,7 +221,6 @@ jobs:
         - npm run test -- circuit-relaying
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - custom-ipfs-repo
       script:
         - cd examples
@@ -248,7 +228,6 @@ jobs:
         - npm run test -- custom-ipfs-repo
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - custom-libp2p
       script:
         - cd examples
@@ -256,7 +235,6 @@ jobs:
         - npm run test -- custom-libp2p
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - exchange-files-in-browser
       script:
         - cd examples
@@ -264,7 +242,6 @@ jobs:
         - npm run test -- exchange-files-in-browser
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - explore-ethereum-blockchain
       script:
         - cd examples
@@ -272,7 +249,6 @@ jobs:
         - npm run test -- explore-ethereum-blockchain
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - ipfs-101
       script:
         - cd examples
@@ -280,7 +256,6 @@ jobs:
         - npm run test -- ipfs-101
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - running-multiple-nodes
       script:
         - cd examples
@@ -288,7 +263,6 @@ jobs:
         - npm run test -- running-multiple-nodes
 
     - stage: test
-      if: branch =~ /^release\/.*$/
       name: example - traverse-ipld-graphs
       script:
         - cd examples
