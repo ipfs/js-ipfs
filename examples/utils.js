@@ -73,7 +73,8 @@ async function startServer (dir) {
           env: {
             ...process.env,
             CI: true // needed for some "clever" build tools
-          }
+          },
+          all: true
         })
         proc.all.on('data', (data) => {
           process.stdout.write(data)
@@ -120,12 +121,12 @@ async function waitForOutput (expectedOutput, command, args = [], opts = {}) {
     command = 'node'
   }
 
-  const proc = execa(command, args, opts)
+  const proc = execa(command, args, { ...opts, all: true })
   let output = ''
-  let time = 120000
+  const time = 120000
 
-  let timeout = setTimeout(() => {
-    throw new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}" after ${time/1000}s`)
+  const timeout = setTimeout(() => {
+    throw new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}" after ${time / 1000}s`)
   }, time)
 
   proc.all.on('data', (data) => {

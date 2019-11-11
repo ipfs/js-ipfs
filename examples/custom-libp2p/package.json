@@ -19,5 +19,8 @@
     "libp2p-tcp": "~0.13.0",
     "libp2p-websocket-star": "~0.10.2",
     "pull-mplex": "~0.1.0"
+  },
+  "devDependencies": {
+    "execa": "^3.2.0"
   }
 }

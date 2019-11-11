@@ -16,8 +16,9 @@ const PeerBook = require('peer-book')
 async function test () {
   let output = ''
 
-  const proc = execa('node', [ path.join(__dirname, 'index.js') ], {
-    cwd: path.resolve(__dirname)
+  const proc = execa('node', [path.join(__dirname, 'index.js')], {
+    cwd: path.resolve(__dirname),
+    all: true
   })
   proc.all.on('data', async (data) => {
     process.stdout.write(data)
