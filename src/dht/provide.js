@@ -88,7 +88,18 @@ module.exports = (createCommon, options) => {
         })
       })
     })
+    it('should provide a CIDv1 string', (done) => {
+      ipfs.add(Buffer.from('test'), { cidVersion: 1 }, (err, res) => {
+        if (err) return done(err)
 
+        const cid = res[0].hash
+
+        ipfs.dht.provide(cid, (err) => {
+          expect(err).to.not.exist()
+          done()
+        })
+      })
+    })
     it('should error on non CID arg', (done) => {
       ipfs.dht.provide({}, (err) => {
         expect(err).to.exist()
