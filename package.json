@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.118.0",
+  "version": "0.119.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -134,6 +134,7 @@
     "klueq <43359723+klueq@users.noreply.github.com>",
     "kumavis <kumavis@users.noreply.github.com>",
     "nginnever <ginneversource@gmail.com>",
+    "reasv <7143787+reasv@users.noreply.github.com>",
     "ron litzenberger <ron.litzenberger@gmail.com>",
     "shunkin <hiyoko.san.ipod@gmail.com>",
     "tcme <hi@this-connect.me>",
