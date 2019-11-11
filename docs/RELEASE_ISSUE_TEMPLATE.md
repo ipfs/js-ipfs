@@ -47,29 +47,30 @@
       - [ ] Packages Listing
   - [ ] Publish a release candidate to npm
     ```sh
-    # All succesful builds of master update the `build/last-successful branch which
-    # contains a npm-shrinkwrap.json.
+    # All successful builds of master update the `build/last-successful` branch
+    # which contains an `npm-shrinkwrap.json`.
     # This command checks that branch out, installs it's dependencies using `npm ci`,
     # creates a release branch (e.g. release/v0.34.x), updates the minor prerelease
-    # version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm
+    # version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm.
     npx aegir publish-rc
 
-    # Later we may wish to update the rc.  First cherry-picked/otherwise merged the
-    # new commits into the release  branch on github (e.g. not locally) and wait
-    # for CI to pass.  First update the lockfiles used by ci (n.b. one  day this
-    # will be done by our ci tools):
+    # Later we may wish to update the rc. First cherry-pick/otherwise merge the
+    # new commits into the release branch on github (e.g. not locally) and wait
+    # for CI to pass. Then update the lockfiles used by CI (n.b. one day this
+    # will be done by our ci tools) with this command:
     npx aegir update-release-branch-lockfiles release/v0.34.x
 
-    # Then update the rc publisehd on npm.  This command pulls the specified release
-    # branch, installs it's dependencies `npm ci`, increments the prerelease version
-    # (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it to npm
+    # Then update the rc published on npm. This command pulls the specified
+    # release branch, installs it's dependencies `npm ci`, increments the  
+    # prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it
+    # to npm.
     npx aegir update-rc release/v0.34.x
     ```
   - Network Testing:
     - test lab things - TBD
   - Infrastructure Testing:
     - TBD
-  - [ ] **Stage 2 - Community Dev Testing**
+- [ ] **Stage 2 - Community Dev Testing**
   - [ ] Reach out to the IPFS _early testers_ listed in [doc/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
   - [ ] Reach out on IRC for additional early testers.
 - [ ] **Stage 3 - Community Prod Testing**
