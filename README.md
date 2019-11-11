@@ -220,7 +220,7 @@ Commands:
 
 ### IPFS Daemon
 
-The IPFS Daemon exposes the API defined in the [HTTP API spec`](https://docs.ipfs.io/reference/api/http/). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client).
+The IPFS Daemon exposes the API defined in the [HTTP API spec](https://docs.ipfs.io/reference/api/http/). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client).
 
 If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check out [ipfsd-ctl module](https://github.com/ipfs/js-ipfsd-ctl)
 
