@@ -163,6 +163,8 @@ module.exports[pkg.name] = function (browser) {
       .click('#fetch-btn')
   }
 
+  browser.pause(1000)
+
   // but should both see the added file
   browser.expect.element('#file-history').text.to.contain(process.env.IPFS_CID)
 
