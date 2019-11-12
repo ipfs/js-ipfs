@@ -3,10 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const dagCBOR = require('ipld-dag-cbor')
 const raw = require('ipld-raw')
-const promisify = require('promisify-es6')
-const CID = require('cids')
-const waterfall = require('async/waterfall')
-const block = require('../block')
+const configure = require('../lib/configure')
 
 const resolvers = {
   'dag-cbor': dagCBOR.resolver,
@@ -14,56 +11,31 @@ const resolvers = {
   raw: raw.resolver
 }
 
-module.exports = (send) => {
-  return promisify((cid, path, options, callback) => {
-    if (typeof path === 'function') {
-      callback = path
-      path = undefined
-    }
+module.exports = config => {
+  const getBlock = require('../block/get')(config)
+  const dagResolve = require('./resolve')(config)
 
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
-    options = options || {}
-    path = path || ''
-
-    if (CID.isCID(cid)) {
-      cid = cid.toBaseEncodedString()
-    }
-
-    waterfall([
-      cb => {
-        send({
-          path: 'dag/resolve',
-          args: cid + '/' + path,
-          qs: options
-        }, cb)
-      },
-      (resolved, cb) => {
-        block(send).get(new CID(resolved.Cid['/']), (err, ipfsBlock) => {
-          cb(err, ipfsBlock, resolved.RemPath)
-        })
-      },
-      (ipfsBlock, path, cb) => {
-        const dagResolver = resolvers[ipfsBlock.cid.codec]
-
-        if (!dagResolver) {
-          const error = new Error(`Missing IPLD format "${ipfsBlock.cid.codec}"`)
-          error.missingMulticodec = ipfsBlock.cid.codec
-          return cb(error)
-        }
-
-        let res
-        try {
-          res = dagResolver.resolve(ipfsBlock.data, path)
-        } catch (err) {
-          return cb(err)
-        }
-
-        cb(null, res)
+  return configure(({ ky }) => {
+    return async (cid, path, options) => {
+      if (typeof path === 'object') {
+        options = path
+        path = null
       }
-    ], callback)
-  })
+
+      options = options || {}
+
+      const resolved = await dagResolve(cid, path, options)
+      const block = await getBlock(resolved.cid, options)
+      const dagResolver = resolvers[block.cid.codec]
+
+      if (!dagResolver) {
+        throw Object.assign(
+          new Error(`Missing IPLD format "${block.cid.codec}"`),
+          { missingMulticodec: cid.codec }
+        )
+      }
+
+      return dagResolver.resolve(block.data, resolved.remPath)
+    }
+  })(config)
 }

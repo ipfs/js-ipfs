@@ -20,7 +20,8 @@
     "stream": "readable-stream",
     "ky-universal": "ky/umd",
     "./src/add/form-data.js": "./src/add/form-data.browser.js",
-    "./src/add-from-fs/index.js": "./src/add-from-fs/index.browser.js"
+    "./src/add-from-fs/index.js": "./src/add-from-fs/index.browser.js",
+    "./src/lib/buffer-to-form-data.js": "./src/lib/buffer-to-form-data.browser.js"
   },
   "repository": "github:ipfs/js-ipfs-http-client",
   "scripts": {

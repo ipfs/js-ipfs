@@ -1,17 +1,16 @@
 'use strict'
 
 const nodeify = require('promise-nodeify')
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
 const { collectify } = require('../lib/converters')
 
-module.exports = (arg, config) => {
-  const send = moduleConfig(arg)
+module.exports = config => {
   const rm = require('./rm-async-iterator')(config)
 
   return {
-    get: require('./get')(send),
-    stat: require('./stat')(send),
-    put: require('./put')(send),
+    get: callbackify.variadic(require('./get')(config)),
+    stat: callbackify.variadic(require('./stat')(config)),
+    put: callbackify.variadic(require('./put')(config)),
     rm: (input, options, callback) => {
       if (typeof options === 'function') {
         callback = options

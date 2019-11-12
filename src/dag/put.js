@@ -1,19 +1,13 @@
 'use strict'
 
 const dagCBOR = require('ipld-dag-cbor')
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const multihash = require('multihashes')
-const SendOneFile = require('../utils/send-one-file')
+const configure = require('../lib/configure')
+const toFormData = require('../lib/buffer-to-form-data')
 
-module.exports = (send) => {
-  const sendOneFile = SendOneFile(send, 'dag/put')
-
-  return promisify((dagNode, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-    }
-
+module.exports = configure(({ ky }) => {
+  return async (dagNode, options) => {
     options = options || {}
 
     if (options.hash) {
@@ -22,65 +16,53 @@ module.exports = (send) => {
     }
 
     if (options.cid && (options.format || options.hashAlg)) {
-      return callback(new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hash` options.'))
+      throw new Error('Failed to put DAG node. Provide either `cid` OR `format` and `hashAlg` options')
     } else if ((options.format && !options.hashAlg) || (!options.format && options.hashAlg)) {
-      return callback(new Error('Can\'t put dag node. Please provide `format` AND `hash` options.'))
+      throw new Error('Failed to put DAG node. Provide `format` AND `hashAlg` options')
     }
 
     if (options.cid) {
-      let cid
-
-      try {
-        cid = new CID(options.cid)
-      } catch (err) {
-        return callback(err)
+      const cid = new CID(options.cid)
+      options = {
+        ...options,
+        format: cid.codec,
+        hashAlg: multihash.decode(cid.multihash).name
       }
-
-      options.format = cid.codec
-      options.hashAlg = multihash.decode(cid.multihash).name
       delete options.cid
     }
 
-    const optionDefaults = {
+    options = {
       format: 'dag-cbor',
       hashAlg: 'sha2-256',
-      inputEnc: 'raw'
+      inputEnc: 'raw',
+      ...options
     }
-
-    options = Object.assign(optionDefaults, options)
 
     let serialized
 
-    try {
-      if (options.format === 'dag-cbor') {
-        serialized = dagCBOR.util.serialize(dagNode)
-      } else if (options.format === 'dag-pb') {
-        serialized = dagNode.serialize()
-      } else {
-        // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
-        serialized = dagNode
-      }
-    } catch (err) {
-      return callback(err)
+    if (options.format === 'dag-cbor') {
+      serialized = dagCBOR.util.serialize(dagNode)
+    } else if (options.format === 'dag-pb') {
+      serialized = dagNode.serialize()
+    } else {
+      // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
+      serialized = dagNode
     }
 
-    const sendOptions = {
-      qs: {
-        hash: options.hashAlg,
-        format: options.format,
-        'input-enc': options.inputEnc
-      }
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('format', options.format)
+    searchParams.set('hash', options.hashAlg)
+    searchParams.set('input-enc', options.inputEnc)
+    if (options.pin != null) searchParams.set('pin', options.pin)
 
-    sendOneFile(serialized, sendOptions, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-      if (result.Cid) {
-        return callback(null, new CID(result.Cid['/']))
-      } else {
-        return callback(result)
-      }
-    })
-  })
-}
+    const res = await ky.post('dag/put', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams,
+      body: toFormData(serialized)
+    }).json()
+
+    return new CID(res.Cid['/'])
+  }
+})

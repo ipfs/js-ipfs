@@ -89,7 +89,9 @@ function requireCommands (send, config) {
     refsPullStream: pullify.source(refs),
     _refsAsyncIterator: refs,
     getEndpointConfig: require('../get-endpoint-config')(config),
-    bitswap: require('../bitswap')(config)
+    bitswap: require('../bitswap')(config),
+    block: require('../block')(config),
+    dag: require('../dag')(config)
   }
 
   Object.assign(cmds.refs, {
@@ -103,11 +105,7 @@ function requireCommands (send, config) {
     // Files MFS (Mutable Filesystem)
     files: require('../files'),
 
-    // Block
-    block: require('../block'),
-
     // Graph
-    dag: require('../dag'),
     object: require('../object'),
     pin: require('../pin'),
 
