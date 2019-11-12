@@ -165,7 +165,7 @@ describe('submodules', () => {
   })
 
   it('files regular API', () => {
-    const filesRegular = require('../src/files-regular')(config)
+    const filesRegular = require('../src')(config)
 
     expect(filesRegular.add).to.be.a('function')
     expect(filesRegular.addReadableStream).to.be.a('function')
@@ -191,16 +191,16 @@ describe('submodules', () => {
   })
 
   it('files MFS API', () => {
-    const filesMFS = require('../src/files-mfs')(config)
+    const files = require('../src/files')(config)
 
-    expect(filesMFS.cp).to.be.a('function')
-    expect(filesMFS.ls).to.be.a('function')
-    expect(filesMFS.mkdir).to.be.a('function')
-    expect(filesMFS.stat).to.be.a('function')
-    expect(filesMFS.rm).to.be.a('function')
-    expect(filesMFS.read).to.be.a('function')
-    expect(filesMFS.write).to.be.a('function')
-    expect(filesMFS.mv).to.be.a('function')
+    expect(files.cp).to.be.a('function')
+    expect(files.ls).to.be.a('function')
+    expect(files.mkdir).to.be.a('function')
+    expect(files.stat).to.be.a('function')
+    expect(files.rm).to.be.a('function')
+    expect(files.read).to.be.a('function')
+    expect(files.write).to.be.a('function')
+    expect(files.mv).to.be.a('function')
   })
 
   it('commands', () => {

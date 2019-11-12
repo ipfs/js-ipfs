@@ -1,8 +1,8 @@
 'use strict'
 
 const IsIpfs = require('is-ipfs')
-const cleanCID = require('../utils/clean-cid')
-const configure = require('../lib/configure')
+const cleanCID = require('./utils/clean-cid')
+const configure = require('./lib/configure')
 
 module.exports = configure(({ ky }) => {
   return async function * ls (path, options) {

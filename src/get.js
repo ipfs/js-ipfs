@@ -1,9 +1,9 @@
 'use strict'
 
-const configure = require('../lib/configure')
-const tarStreamToObjects = require('../utils/tar-stream-to-objects')
+const configure = require('./lib/configure')
+const tarStreamToObjects = require('./utils/tar-stream-to-objects')
 const IsIpfs = require('is-ipfs')
-const cleanCID = require('../utils/clean-cid')
+const cleanCID = require('./utils/clean-cid')
 
 module.exports = configure(({ ky }) => {
   return async function * get (path, options) {
