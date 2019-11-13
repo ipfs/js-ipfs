@@ -4,7 +4,7 @@ const Libp2p = require('libp2p')
 const IPFS = require('ipfs')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
-const WebSocketStar = require('libp2p-websocket-star')
+const Stardust = require('libp2p-stardust')
 const Bootstrap = require('libp2p-bootstrap')
 const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
@@ -32,8 +32,8 @@ const libp2pBundle = (opts) => {
   const peerBook = opts.peerBook
   const bootstrapList = opts.config.Bootstrap
 
-  // Create our WebSocketStar transport and give it our PeerId, straight from the ipfs node
-  const wsstar = new WebSocketStar({
+  // Create our Stardust transport and give it our PeerId, straight from the ipfs node
+  const stardust = new Stardust({
     id: peerInfo.id
   })
 
@@ -50,7 +50,7 @@ const libp2pBundle = (opts) => {
     modules: {
       transport: [
         TCP,
-        wsstar
+        stardust
       ],
       streamMuxer: [
         MPLEX,
@@ -62,7 +62,7 @@ const libp2pBundle = (opts) => {
       peerDiscovery: [
         MulticastDNS,
         Bootstrap,
-        wsstar.discovery
+        stardust.discovery
       ],
       dht: KadDHT
     },

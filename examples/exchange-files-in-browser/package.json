@@ -9,7 +9,8 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^16.2.3",
-    "http-server": "~0.11.1"
+    "http-server": "~0.11.1",
+    "stardust4ipfs": "~0.1.3"
   },
   "dependencies": {
     "ipfs": "file:../../"
@@ -18,3 +19,4 @@
     "ipfs": "ipfs/dist"
   }
 }
+

@@ -17,7 +17,7 @@
     "libp2p-secio": "~0.11.1",
     "libp2p-spdy": "~0.13.3",
     "libp2p-tcp": "~0.13.0",
-    "libp2p-websocket-star": "~0.10.2",
+    "libp2p-stardust": "~0.1.2",
     "pull-mplex": "~0.1.0"
   }
 }
