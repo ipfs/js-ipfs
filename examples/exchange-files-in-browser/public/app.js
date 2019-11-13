@@ -46,9 +46,7 @@ async function start () {
   if (!node) {
     const options = {
       repo: 'ipfs-' + Math.random(),
-      libp2p: {
-        overrideFunction: require('stardust4ipfs')
-      },
+      libp2p: require('stardust4ipfs'),
       config: {
         Addresses: {
           Swarm: ['/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust']

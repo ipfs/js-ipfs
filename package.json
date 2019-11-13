@@ -212,7 +212,7 @@
     "qs": "^6.5.2",
     "rimraf": "^3.0.0",
     "sinon": "^7.4.2",
-    "stardust4ipfs": "^0.1.3",
+    "stardust4ipfs": "^0.2.0",
     "stream-to-promise": "^2.2.0",
     "temp-write": "^4.0.0"
   },

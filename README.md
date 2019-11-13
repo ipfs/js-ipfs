@@ -1007,9 +1007,7 @@ Yes, stardust! A WebSockets based transport that uses a Relay to route the messa
 
 ```JavaScript
 const node = await IPFS.create({
-  libp2p: {
-    overrideFunction: require('stardust4ipfs')
-  },
+  libp2p: require('stardust4ipfs'),
   config: {
     Addresses: {
       Swarm: [
