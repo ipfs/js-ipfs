@@ -19,12 +19,13 @@ describe('repo', () => runOnAndOff((thing) => {
 
   it('get repo stats', async () => {
     const stats = await ipfs('repo stat')
-    expect(stats).to.match(/^\s+repo\ssize:\s+\d+$/gm)
-    expect(stats).to.match(/^\s+maximum\sstorage:\s+\d+$/gm)
+    expect(stats).to.match(/^RepoSize:\s+\d+$/gm)
+    expect(stats).to.match(/^StorageMax:\s+\d+$/gm)
   })
 
   it('get human readable repo stats', async () => {
     const stats = await ipfs('repo stat --human')
-    expect(stats).to.include('MB').and.include('GB')
+
+    expect(stats).to.match(/\s.?B$/gm)
   })
 }))
