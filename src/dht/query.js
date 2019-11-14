@@ -1,41 +1,28 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const streamToValueWithTransformer = require('../utils/stream-to-value-with-transformer')
-
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
+const ndjson = require('iterable-ndjson')
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-module.exports = (send) => {
-  return promisify((peerId, opts, callback) => {
-    if (typeof opts === 'function' && !callback) {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return (peerId, options) => (async function * () {
+    options = options || {}
 
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' && typeof callback === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${peerId}`)
+    if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const handleResult = (res, callback) => {
-      const peerIds = res.map((r) => (new PeerInfo(PeerId.createFromB58String(r.ID))))
-
-      callback(null, peerIds)
-    }
-
-    send({
-      path: 'dht/query',
-      args: peerId,
-      qs: opts
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      streamToValueWithTransformer(result, handleResult, callback)
+    const res = await ky.get('dht/query', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
     })
-  })
-}
+
+    for await (const message of ndjson(toIterable(res.body))) {
+      yield new PeerInfo(PeerId.createFromB58String(message.ID))
+    }
+  })()
+})

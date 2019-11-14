@@ -93,7 +93,8 @@ function requireCommands (send, config) {
     block: require('../block')(config),
     bootstrap: require('../bootstrap')(config),
     config: require('../config')(config),
-    dag: require('../dag')(config)
+    dag: require('../dag')(config),
+    dht: require('../dht')(config)
   }
 
   Object.assign(cmds.refs, {
@@ -112,7 +113,6 @@ function requireCommands (send, config) {
     pin: require('../pin'),
 
     // Network
-    dht: require('../dht'),
     name: require('../name'),
     ping: require('../ping'),
     pingReadableStream: require('../ping-readable-stream'),

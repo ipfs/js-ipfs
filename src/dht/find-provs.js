@@ -6,35 +6,33 @@ const multiaddr = require('multiaddr')
 const ndjson = require('iterable-ndjson')
 const configure = require('../lib/configure')
 const toIterable = require('../lib/stream-to-iterable')
-const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
-  return (cids, options) => (async function * () {
-    cids = Array.isArray(cids) ? cids : [cids]
+  return (cid, options) => (async function * () {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
-    cids.forEach(cid => searchParams.append('arg', `${cid}`))
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
+    searchParams.set('arg', `${cid}`)
+    if (options.numProviders) searchParams.set('num-providers', options.numProviders)
     if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.get('dht/provide', {
+    const res = await ky.get('dht/findprovs', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
       searchParams
     })
 
-    for await (let message of ndjson(toIterable(res.body))) {
-      message = toCamel(message)
-      if (message.responses) {
-        message.responses = message.responses.map(({ ID, Addrs }) => {
+    for await (const message of ndjson(toIterable(res.body))) {
+      // 4 = Provider
+      // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L20
+      if (message.Type === 4 && message.Responses) {
+        for (const { ID, Addrs } of message.Responses) {
           const peerInfo = new PeerInfo(PeerId.createFromB58String(ID))
           if (Addrs) Addrs.forEach(a => peerInfo.multiaddrs.add(multiaddr(a)))
-          return peerInfo
-        })
+          yield peerInfo
+        }
       }
-      yield message
     }
   })()
 })

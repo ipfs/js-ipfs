@@ -1,48 +1,30 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const ndjson = require('iterable-ndjson')
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-module.exports = (send) => {
-  return promisify((key, opts, callback) => {
-    if (typeof opts === 'function' && !callback) {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return (key, options) => (async function * () {
+    options = options || {}
 
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' && typeof callback === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${key}`)
+    if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    function handleResult (done, err, res) {
-      if (err) {
-        return done(err)
-      }
-      if (!res) {
-        return done(new Error('empty response'))
-      }
-      if (res.length === 0) {
-        return done(new Error('no value returned for key'))
-      }
+    const res = await ky.get('dht/get', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    })
 
-      // Inconsistent return values in the browser vs node
-      if (Array.isArray(res)) {
-        res = res[0]
-      }
-
-      if (res.Type === 5) {
-        done(null, res.Extra)
-      } else {
-        done(new Error('key was not found (type 6)'))
+    for await (const message of ndjson(toIterable(res.body))) {
+      // 5 = Value
+      // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L21
+      if (message.Type === 5) {
+        yield message.Extra
       }
     }
-
-    send({
-      path: 'dht/get',
-      args: key,
-      qs: opts
-    }, handleResult.bind(null, callback))
-  })
-}
+  })()
+})
