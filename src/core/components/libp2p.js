@@ -13,15 +13,20 @@ module.exports = function libp2p (self, config) {
   const options = self._options || {}
   config = config || {}
 
-  // Always create libp2p via a bundle function
-  const createBundle = typeof options.libp2p === 'function'
-    ? options.libp2p
-    : defaultBundle
-
   const { datastore } = self._repo
   const peerInfo = self._peerInfo
   const peerBook = self._peerInfoBook
-  const libp2p = createBundle({ options, config, datastore, peerInfo, peerBook })
+
+  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerInfo, peerBook })
+  let libp2p
+
+  if (typeof options.libp2p === 'function') {
+    libp2p = options.libp2p({ libp2pOptions, options, config, datastore, peerInfo, peerBook })
+  } else {
+    // Required inline to reduce startup time
+    const Libp2p = require('libp2p')
+    libp2p = new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
+  }
 
   libp2p.on('stop', () => {
     // Clear our addresses so we can start clean
@@ -39,7 +44,7 @@ module.exports = function libp2p (self, config) {
   return libp2p
 }
 
-function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
+function getLibp2pOptions ({ options, config, datastore, peerInfo, peerBook }) {
   // Set up Delegate Routing based on the presence of Delegates in the config
   let contentRouting
   let peerRouting
@@ -80,7 +85,12 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
     peerBook,
     modules: {
       contentRouting,
-      peerRouting,
+      peerRouting
+    }
+  }
+
+  const libp2pOptions = {
+    modules: {
       pubsub: getPubsubRouter()
     },
     config: {
@@ -133,9 +143,14 @@ function defaultBundle ({ datastore, peerInfo, peerBook, options, config }) {
       })
   }
 
-  const libp2pOptions = mergeOptions(libp2pDefaults, get(options, 'libp2p', {}))
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
-  const Node = require('../runtime/libp2p-nodejs')
-  return new Node(libp2pOptions)
+  const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
+
+  // Merge defaults with Node.js/browser/other environments options and configuration
+  return mergeOptions(
+    libp2pDefaults,
+    getEnvLibp2pOptions({ options, config, datastore, peerInfo, peerBook }),
+    libp2pOptions
+  )
 }
