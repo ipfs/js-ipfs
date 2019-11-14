@@ -1,13 +1,10 @@
 'use strict'
 
-module.exports = (send, config) => {
-  return {
-    get: require('./get')(send),
-    set: require('./set')(send),
-    replace: require('./replace')(send),
-    profiles: {
-      apply: require('./profiles/apply')(config),
-      list: require('./profiles/list')(config)
-    }
-  }
-}
+const callbackify = require('callbackify')
+
+module.exports = config => ({
+  get: callbackify.variadic(require('./get')(config)),
+  set: callbackify.variadic(require('./set')(config)),
+  replace: callbackify.variadic(require('./replace')(config)),
+  profiles: require('./profiles')(config)
+})

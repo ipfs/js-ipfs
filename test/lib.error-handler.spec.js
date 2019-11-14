@@ -21,8 +21,9 @@ describe('lib/error-handler', () => {
 
     const err = await throwsAsync(errorHandler(null, null, res))
 
+    expect(err instanceof HTTPError).to.be.true()
     expect(err.message).to.eql('boom')
-    expect(err.status).to.eql(500)
+    expect(err.response.status).to.eql(500)
   })
 
   it('should gracefully fail on parse json', async () => {

@@ -35,9 +35,15 @@ module.exports = async function errorHandler (input, options, response) {
   } catch (err) {
     log('Failed to parse error response', err)
     // Failed to extract/parse error message from response
-    throw new HTTPError(response)
+    msg = err.message
   }
 
-  if (!msg) throw new HTTPError(response)
-  throw Object.assign(new Error(msg), { status: response.status })
+  const error = new HTTPError(response)
+
+  // If we managed to extract a message from the response, use it
+  if (msg) {
+    error.message = msg
+  }
+
+  throw error
 }

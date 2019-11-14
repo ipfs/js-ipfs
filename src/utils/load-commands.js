@@ -92,6 +92,7 @@ function requireCommands (send, config) {
     bitswap: require('../bitswap')(config),
     block: require('../block')(config),
     bootstrap: require('../bootstrap')(config),
+    config: require('../config')(config),
     dag: require('../dag')(config)
   }
 
@@ -122,7 +123,6 @@ function requireCommands (send, config) {
 
     // Miscellaneous
     commands: require('../commands'),
-    config: require('../config'),
     diag: require('../diag'),
     id: require('../id'),
     key: require('../key'),

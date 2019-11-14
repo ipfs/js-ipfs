@@ -1,39 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-const toObject = function (res, callback) {
-  if (Buffer.isBuffer(res)) {
-    callback(null, JSON.parse(res.toString()))
-  } else {
-    callback(null, res)
+module.exports = configure(({ ky }) => {
+  return async (key, options) => {
+    if (key && typeof key === 'object') {
+      options = key
+      key = null
+    }
+
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (key) searchParams.set('arg', key)
+
+    const url = key ? 'config' : 'config/show'
+    const data = await ky.get(url, {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return key ? data.Value : data
   }
-}
-
-module.exports = (send) => {
-  return promisify((key, callback) => {
-    if (typeof key === 'function') {
-      callback = key
-      key = undefined
-    }
-
-    if (!key) {
-      send.andTransform({
-        path: 'config/show',
-        buffer: true
-      }, toObject, callback)
-      return
-    }
-
-    send.andTransform({
-      path: 'config',
-      args: key,
-      buffer: true
-    }, toObject, (err, response) => {
-      if (err) {
-        return callback(err)
-      }
-      callback(null, response.Value)
-    })
-  })
-}
+})

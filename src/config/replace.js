@@ -1,25 +1,21 @@
 'use strict'
 
-const { Readable } = require('readable-stream')
-const promisify = require('promisify-es6')
-const SendOneFile = require('../utils/send-one-file')
+const { Buffer } = require('buffer')
+const configure = require('../lib/configure')
+const toFormData = require('../lib/buffer-to-form-data')
 
-function toStream (input) {
-  return new Readable({
-    read () {
-      this.push(input)
-      this.push(null)
-    }
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async (config, options) => {
+    options = options || {}
 
-module.exports = (send) => {
-  const sendOneFile = SendOneFile(send, 'config/replace')
-  return promisify((config, callback) => {
-    if (typeof config === 'object') {
-      config = toStream(Buffer.from(JSON.stringify(config)))
-    }
+    const res = await ky.post('config/replace', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams,
+      body: toFormData(Buffer.from(JSON.stringify(config)))
+    }).text()
 
-    sendOneFile(config, {}, callback)
-  })
-}
+    return res
+  }
+})

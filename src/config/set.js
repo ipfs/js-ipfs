@@ -1,35 +1,36 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
+const toCamel = require('../lib/object-to-camel')
 
-module.exports = (send) => {
-  return promisify((key, value, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return async (key, value, options) => {
+    options = options || {}
+
     if (typeof key !== 'string') {
-      return callback(new Error('Invalid key type'))
+      throw new Error('Invalid key type')
     }
 
-    if (value === undefined || Buffer.isBuffer(value)) {
-      return callback(new Error('Invalid value type'))
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
 
     if (typeof value === 'boolean') {
+      searchParams.set('bool', true)
       value = value.toString()
-      opts = { bool: true }
     } else if (typeof value !== 'string') {
+      searchParams.set('json', true)
       value = JSON.stringify(value)
-      opts = { json: true }
     }
 
-    send({
-      path: 'config',
-      args: [key, value],
-      qs: opts,
-      files: undefined,
-      buffer: true
-    }, callback)
-  })
-}
+    searchParams.set('arg', key)
+    searchParams.append('arg', value)
+
+    const res = await ky.post('config', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return toCamel(res)
+  }
+})

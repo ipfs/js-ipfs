@@ -81,7 +81,7 @@ describe('error handling', () => {
     server.listen(6001, () => {
       ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
         expect(err).to.exist()
-        expect(err.statusCode).to.equal(403)
+        expect(err.response.status).to.equal(403)
         expect(err.message).to.equal('ipfs method not allowed')
         server.close(done)
       })
@@ -105,9 +105,8 @@ describe('error handling', () => {
     server.listen(6001, () => {
       ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
         expect(err).to.exist()
-        expect(err.statusCode).to.equal(400)
+        expect(err.response.status).to.equal(400)
         expect(err.message).to.equal('client error')
-        expect(err.code).to.equal(1)
         server.close(done)
       })
     })
@@ -130,7 +129,7 @@ describe('error handling', () => {
     server.listen(6001, () => {
       ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
         expect(err).to.exist()
-        expect(err.message).to.include('Invalid JSON')
+        expect(err.message).to.include('Unexpected token M in JSON at position 2')
         server.close(done)
       })
     })
