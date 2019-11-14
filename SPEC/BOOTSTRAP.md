@@ -22,6 +22,8 @@ Although not listed in the documentation, all the following APIs that actually r
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.default` if true, add the default peers to the list
 
+Note: If passing the `default` option, `addr` is an optional parameter (may be `undefined`/`null`) and options may be passed as the first argument. i.e. `ipfs.bootstrap.add({ default: true })`
+
 **Returns**
 
 | Type | Description |
@@ -88,6 +90,8 @@ A great source of [examples][] can be found in the tests for this API.
 
 - `addr` is a [multiaddr](https://github.com/multiformats/js-multiaddr) to a peer node
 - `options.all` if true, remove all peers from the list
+
+Note: If passing the `all` option, `addr` is an optional parameter (may be `undefined`/`null`) and options may be passed as the first argument. i.e. `ipfs.bootstrap.rm({ all: true })`
 
 **Returns**
 
