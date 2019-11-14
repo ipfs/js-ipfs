@@ -1,16 +1,18 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
-    send({
-      path: 'bootstrap/list',
-      qs: opts
-    }, callback)
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async (options) => {
+    options = options || {}
+
+    const res = await ky.get('bootstrap/list', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).json()
+
+    return res
+  }
+})

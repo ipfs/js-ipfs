@@ -1,32 +1,28 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const Multiaddr = require('multiaddr')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((args, opts, callback) => {
-    if (typeof opts === 'function' &&
-      !callback) {
-      callback = opts
-      opts = {}
+module.exports = configure(({ ky }) => {
+  return async (addr, options) => {
+    if (addr && typeof addr === 'object' && !Multiaddr.isMultiaddr(addr)) {
+      options = addr
+      addr = null
     }
 
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' &&
-      typeof callback === 'function') {
-      callback = opts
-      opts = {}
-    }
+    options = options || {}
 
-    if (args && typeof args === 'object') {
-      opts = args
-      args = undefined
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (addr) searchParams.set('arg', `${addr}`)
+    if (options.all != null) searchParams.set('all', options.all)
 
-    send({
-      path: 'bootstrap/rm',
-      args: args,
-      qs: opts
-    }, callback)
-  })
-}
+    const res = await ky.post('bootstrap/rm', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return res
+  }
+})
