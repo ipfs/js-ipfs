@@ -16,12 +16,12 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await argv.getIpfs()
       const stats = await ipfs.repo.stat({ human: argv.human })
-      argv.print(`repo status
-  number of objects: ${stats.numObjects}
-  repo size: ${stats.repoSize}
-  repo path: ${stats.repoPath}
-  version: ${stats.version}
-  maximum storage: ${stats.storageMax}`)
+      argv.print(
+`NumObjects: ${stats.numObjects}
+RepoSize: ${stats.repoSize}
+StorageMax: ${stats.storageMax}
+RepoPath: ${stats.repoPath}
+Version: ${stats.version}`)
     })())
   }
 }
