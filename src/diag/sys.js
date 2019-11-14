@@ -1,17 +1,16 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return options => {
+    options = options || {}
 
-    send({
-      path: 'diag/sys',
-      qs: opts
-    }, callback)
-  })
-}
+    return ky.get('diag/sys', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).json()
+  }
+})

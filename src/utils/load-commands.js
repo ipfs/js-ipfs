@@ -94,7 +94,8 @@ function requireCommands (send, config) {
     bootstrap: require('../bootstrap')(config),
     config: require('../config')(config),
     dag: require('../dag')(config),
-    dht: require('../dht')(config)
+    dht: require('../dht')(config),
+    diag: require('../diag')(config)
   }
 
   Object.assign(cmds.refs, {
@@ -123,7 +124,6 @@ function requireCommands (send, config) {
 
     // Miscellaneous
     commands: require('../commands'),
-    diag: require('../diag'),
     id: require('../id'),
     key: require('../key'),
     log: require('../log'),

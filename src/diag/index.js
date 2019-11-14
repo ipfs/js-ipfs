@@ -1,13 +1,9 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return {
-    net: require('./net')(send),
-    sys: require('./sys')(send),
-    cmds: require('./cmds')(send)
-  }
-}
+module.exports = config => ({
+  net: callbackify.variadic(require('./net')(config)),
+  sys: callbackify.variadic(require('./sys')(config)),
+  cmds: callbackify.variadic(require('./cmds')(config))
+})
