@@ -8,6 +8,7 @@ module.exports = {
   builder: {
     human: {
       type: 'boolean',
+      alias: 'H',
       default: false
     }
   },
