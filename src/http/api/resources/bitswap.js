@@ -30,19 +30,23 @@ exports.wantlist = {
 exports.stat = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      human: Joi.boolean().default(false)
     }).unknown()
   },
 
   async handler (request, h) {
     const { ipfs } = request.server.app
     const cidBase = request.query['cid-base']
+    const human = request.query.human
 
-    const stats = await ipfs.bitswap.stat()
+    const stats = await ipfs.bitswap.stat({ human })
 
-    stats.wantlist = stats.wantlist.map(k => ({
-      '/': cidToString(k['/'], { base: cidBase, upgrade: false })
-    }))
+    if (!human) {
+      stats.wantlist = stats.wantlist.map(k => ({
+        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+      }))
+    }
 
     return h.response({
       ProvideBufLen: stats.provideBufLen,
