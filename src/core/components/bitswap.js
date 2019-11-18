@@ -1,6 +1,7 @@
 'use strict'
 
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const prettyBytes = require('pretty-bytes')
 const callbackify = require('callbackify')
 const Big = require('bignumber.js')
 const CID = require('cids')
@@ -31,23 +32,50 @@ module.exports = function bitswap (self) {
       return { Keys: formatWantlist(list) }
     }),
 
-    stat: callbackify(async () => { // eslint-disable-line require-await
+    stat: callbackify(async (options = {}) => { // eslint-disable-line require-await
       if (!self.isOnline()) {
         throw new Error(OFFLINE_ERROR)
       }
 
-      const snapshot = self._bitswap.stat().snapshot
+      const { human } = options
+      const {
+        providesBufferLength,
+        blocksReceived,
+        dupBlksReceived,
+        dupDataReceived,
+        dataReceived,
+        blocksSent,
+        dataSent
+      } = self._bitswap.stat().snapshot
 
       return {
-        provideBufLen: parseInt(snapshot.providesBufferLength.toString()),
-        blocksReceived: new Big(snapshot.blocksReceived),
-        wantlist: formatWantlist(self._bitswap.getWantlist()),
-        peers: self._bitswap.peers().map((id) => id.toB58String()),
-        dupBlksReceived: new Big(snapshot.dupBlksReceived),
-        dupDataReceived: new Big(snapshot.dupDataReceived),
-        dataReceived: new Big(snapshot.dataReceived),
-        blocksSent: new Big(snapshot.blocksSent),
-        dataSent: new Big(snapshot.dataSent)
+        provideBufLen: human
+          ? providesBufferLength.toNumber()
+          : providesBufferLength,
+        blocksReceived: human
+          ? blocksReceived.toNumber()
+          : blocksReceived,
+        wantlist: human
+          ? `[${Array.from(self._bitswap.getWantlist()).length} keys]`
+          : formatWantlist(self._bitswap.getWantlist()),
+        peers: human
+          ? `[${self._bitswap.peers().length}]`
+          : self._bitswap.peers().map((id) => id.toB58String()),
+        dupBlksReceived: human
+          ? dupBlksReceived.toNumber()
+          : dupBlksReceived,
+        dupDataReceived: human
+          ? prettyBytes(dupDataReceived.toNumber()).toUpperCase()
+          : dupDataReceived,
+        dataReceived: human
+          ? prettyBytes(dataReceived.toNumber()).toUpperCase()
+          : dataReceived,
+        blocksSent: human
+          ? blocksSent.toNumber()
+          : blocksSent,
+        dataSent: human
+          ? prettyBytes(dataSent.toNumber()).toUpperCase()
+          : dataSent
       }
     }),
 
