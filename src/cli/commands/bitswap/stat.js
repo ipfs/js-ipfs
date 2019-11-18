@@ -13,24 +13,35 @@ module.exports = {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
+    },
+    human: {
+      type: 'boolean',
+      default: false
     }
   },
 
-  handler ({ getIpfs, print, cidBase, resolve }) {
+  handler ({ getIpfs, print, cidBase, resolve, human }) {
     resolve((async () => {
       const ipfs = await getIpfs()
-      const stats = await ipfs.bitswap.stat()
-      stats.wantlist = stats.wantlist.map(k => cidToString(k['/'], { base: cidBase, upgrade: false }))
-      stats.peers = stats.peers || []
+      const stats = await ipfs.bitswap.stat({ human })
+
+      if (!human) {
+        const wantlist = stats.wantlist.map((elem) => cidToString(elem['/'], { base: cidBase, upgrade: false }))
+        stats.wantlist = `[${wantlist.length} keys]
+            ${wantlist.join('\n            ')}`
+        stats.peers = `[${stats.peers.length}]`
+      }
 
       print(`bitswap status
-  blocks received: ${stats.blocksReceived}
-  dup blocks received: ${stats.dupBlksReceived}
-  dup data received: ${stats.dupDataReceived}B
-  wantlist [${stats.wantlist.length} keys]
-    ${stats.wantlist.join('\n    ')}
-  partners [${stats.peers.length}]
-    ${stats.peers.join('\n    ')}`)
+        provides buffer: ${stats.provideBufLen}
+        blocks received: ${stats.blocksReceived}
+        blocks sent: ${stats.blocksSent}
+        data received: ${stats.dataReceived}
+        data sent: ${stats.dataSent}
+        dup blocks received: ${stats.dupBlksReceived}
+        dup data received: ${stats.dupDataReceived}
+        wantlist ${stats.wantlist}
+        partners ${stats.peers}`)
     })())
   }
 }
