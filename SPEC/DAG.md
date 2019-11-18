@@ -21,15 +21,10 @@ Although not listed in the documentation, all the following APIs that actually r
 
 - `dagNode` - a DAG node that follows one of the supported IPLD formats.
 - `options` - a object that might contain the following values:
-    - `format` - The IPLD format multicodec.
-    - `hashAlg` - The hash algorithm to be used over the serialized dagNode.
-  - or
-    - `cid` - the CID of the node passed.
-  - or
-  - if no `options` are given, `ipfs.dag.put()` uses the following defaults:
-    - `format: 'dag-cbor'`
-    - `hashAlg: 'sha2-256'`
-  - **Note** - You should only pass the CID or the format + hashAlg pair and not both
+    - `format` - The IPLD format multicodec (default `dag-cbor`).
+    - `hashAlg` - The hash algorithm to be used over the serialized DAG node (default `sha2-256`).
+    - `cid` - The CID of the node passed. **Note**: You should pass the CID or the `format` + `hashAlg` pair but _not both_.
+    - `pin` - Pin this node when adding (default `false`)
 
 **Returns**
 
