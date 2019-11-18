@@ -57,7 +57,6 @@
     "detect-node": "^2.0.4",
     "end-of-stream": "^1.4.1",
     "err-code": "^2.0.0",
-    "event-iterator": "^1.2.0",
     "explain-error": "^1.0.4",
     "flatmap": "0.0.3",
     "form-data": "^3.0.0",
@@ -74,6 +73,7 @@
     "iso-stream-http": "~0.1.2",
     "iso-url": "~0.4.6",
     "it-glob": "0.0.6",
+    "it-tar": "^1.1.0",
     "it-to-stream": "^0.1.1",
     "iterable-ndjson": "^1.1.0",
     "just-kebab-case": "^1.1.0",
@@ -101,7 +101,6 @@
     "qs": "^6.5.2",
     "readable-stream": "^3.1.1",
     "stream-to-pull-stream": "^1.7.2",
-    "tar-stream": "^2.0.1",
     "through2": "^3.0.1"
   },
   "devDependencies": {

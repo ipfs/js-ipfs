@@ -7,6 +7,8 @@ const { concatify, collectify, pullify, streamify } = require('../lib/converters
 const toPullStream = require('async-iterator-to-pull-stream')
 const pull = require('pull-stream/pull')
 const map = require('pull-stream/throughs/map')
+const toStream = require('it-to-stream')
+const BufferList = require('bl/BufferList')
 
 function requireCommands (send, config) {
   const add = require('../add')(config)
@@ -58,7 +60,7 @@ function requireCommands (send, config) {
 
       for await (const entry of get(path, options)) {
         if (entry.content) {
-          entry.content = Buffer.concat(await all(entry.content))
+          entry.content = new BufferList(await all(entry.content)).slice()
         }
 
         output.push(entry)
@@ -66,13 +68,29 @@ function requireCommands (send, config) {
 
       return output
     }),
-    getReadableStream: streamify.readable(get),
+    getReadableStream: streamify.readable((path, options) => (async function * () {
+      for await (const file of get(path, options)) {
+        if (file.content) {
+          const { content } = file
+          file.content = toStream((async function * () {
+            for await (const chunk of content) {
+              yield chunk.slice() // Convert bl to Buffer
+            }
+          })())
+        }
+
+        yield file
+      }
+    })()),
     getPullStream: (path, options) => {
       return pull(
         toPullStream(get(path, options)),
         map(file => {
           if (file.content) {
-            file.content = toPullStream(file.content)
+            file.content = pull(
+              toPullStream(file.content),
+              map(chunk => chunk.slice()) // Convert bl to Buffer
+            )
           }
 
           return file

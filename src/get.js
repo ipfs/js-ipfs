@@ -1,8 +1,9 @@
 'use strict'
 
 const configure = require('./lib/configure')
-const tarStreamToObjects = require('./utils/tar-stream-to-objects')
+const Tar = require('it-tar')
 const IsIpfs = require('is-ipfs')
+const toIterable = require('./lib/stream-to-iterable')
 const cleanCID = require('./utils/clean-cid')
 
 module.exports = configure(({ ky }) => {
@@ -43,6 +44,19 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    yield * tarStreamToObjects(res.body)
+    const extractor = Tar.extract()
+
+    for await (const { header, body } of extractor(toIterable(res.body))) {
+      if (header.type === 'directory') {
+        yield {
+          path: header.name
+        }
+      } else {
+        yield {
+          path: header.name,
+          content: body
+        }
+      }
+    }
   }
 })
