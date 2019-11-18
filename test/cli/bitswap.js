@@ -67,17 +67,36 @@ describe('bitswap', () => runOn((thing) => {
     this.timeout(20 * 1000)
 
     const out = await ipfs('bitswap stat')
-    expect(out).to.include([
-      'bitswap status',
-      '  blocks received: 0',
-      '  dup blocks received: 0',
-      '  dup data received: 0B',
-      // We sometimes pick up partners while the tests run and the order of
-      // wanted keys is not defined so our assertion ends here.
-      '  wantlist [2 keys]'
-    ].join('\n'))
+
+    expect(out).to.include('bitswap status')
+    expect(out).to.match(/provides buffer:\s\d+$/gm)
+    expect(out).to.match(/blocks received:\s\d+$/gm)
+    expect(out).to.match(/blocks sent:\s\d+$/gm)
+    expect(out).to.match(/data received:\s\d+$/gm)
+    expect(out).to.match(/data sent:\s\d+$/gm)
+    expect(out).to.match(/dup blocks received:\s\d+$/gm)
+    expect(out).to.match(/dup data received:\s\d+$/gm)
+    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/gm)
     expect(out).to.include(key0)
     expect(out).to.include(key1)
+    expect(out).to.match(/partners\s\[\d+\]$/gm)
+  })
+
+  it('human readable stats', async () => {
+    const out = await ipfs('bitswap stat --human')
+
+    expect(out).to.include('bitswap status')
+    expect(out).to.match(/provides buffer:\s\d+$/gm)
+    expect(out).to.match(/blocks received:\s\d+$/gm)
+    expect(out).to.match(/blocks sent:\s\d+$/gm)
+    expect(out).to.match(/data received:\s+[\d.]+\s[PTGMK]?B$/gm)
+    expect(out).to.match(/data sent:\s+[\d.]+\s[PTGMK]?B$/gm)
+    expect(out).to.match(/dup blocks received:\s\d+$/gm)
+    expect(out).to.match(/dup data received:\s+[\d.]+\s[PTGMK]?B$/gm)
+    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/gm)
+    expect(out).to.not.include(key0)
+    expect(out).to.not.include(key1)
+    expect(out).to.match(/partners\s\[\d+\]$/gm)
   })
 
   it('should get stats with wantlist CIDs encoded in specified base', async function () {
