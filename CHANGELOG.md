@@ -1,3 +1,13 @@
+<a name="0.120.0"></a>
+# [0.120.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.119.0...v0.120.0) (2019-11-19)
+
+
+### Bug Fixes
+
+* parents option and ls stream flow ([#558](https://github.com/ipfs/interface-ipfs-core/issues/558)) ([b9df5fb](https://github.com/ipfs/interface-ipfs-core/commit/b9df5fb))
+
+
+
 <a name="0.119.0"></a>
 # [0.119.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.118.0...v0.119.0) (2019-11-11)
 
