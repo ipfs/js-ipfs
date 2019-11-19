@@ -1,33 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((hash, opts, callback) => {
-    if (typeof hash === 'function') {
-      callback = hash
-      opts = null
-      hash = null
+module.exports = configure(({ ky }) => {
+  return async (path, options) => {
+    if (path && path.type) {
+      options = path
+      path = null
     }
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = null
-    }
-    if (hash && hash.type) {
-      opts = hash
-      hash = null
-    }
-    send({
-      path: 'pin/ls',
-      args: hash,
-      qs: opts
-    }, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
-      callback(null, Object.keys(res.Keys).map(hash => (
-        { hash, type: res.Keys[hash].Type }
-      )))
-    })
-  })
-}
+
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (path) searchParams.set('arg', `${path}`)
+    if (options.type) searchParams.set('type', options.type)
+
+    const { Keys } = await ky.get('pin/ls', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return Object.keys(Keys).map(hash => ({ hash, type: Keys[hash].Type }))
+  }
+})

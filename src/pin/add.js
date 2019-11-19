@@ -1,22 +1,22 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((hash, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = null
-    }
-    send({
-      path: 'pin/add',
-      args: hash,
-      qs: opts
-    }, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
-      callback(null, res.Pins.map((hash) => ({ hash: hash })))
-    })
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async (path, options) => {
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${path}`)
+    if (options.recursive != null) searchParams.set('recursive', options.recursive)
+
+    const res = await ky.post('pin/add', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return (res.Pins || []).map(hash => ({ hash }))
+  }
+})

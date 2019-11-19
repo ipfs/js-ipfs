@@ -113,7 +113,8 @@ function requireCommands (send, config) {
     config: require('../config')(config),
     dag: require('../dag')(config),
     dht: require('../dht')(config),
-    diag: require('../diag')(config)
+    diag: require('../diag')(config),
+    pin: require('../pin')(config)
   }
 
   Object.assign(cmds.refs, {
@@ -129,7 +130,6 @@ function requireCommands (send, config) {
 
     // Graph
     object: require('../object'),
-    pin: require('../pin'),
 
     // Network
     name: require('../name'),
