@@ -3,7 +3,6 @@
 const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
 const prettyBytes = require('pretty-bytes')
 const callbackify = require('callbackify')
-const Big = require('bignumber.js')
 const CID = require('cids')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
