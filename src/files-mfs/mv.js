@@ -32,7 +32,7 @@ module.exports = (createCommon, options) => {
 
     before((done) => {
       series([
-        (cb) => ipfs.files.mkdir('/test/lv1/lv2', { p: true }, cb),
+        (cb) => ipfs.files.mkdir('/test/lv1/lv2', { parents: true }, cb),
         (cb) => ipfs.files.write('/test/a', Buffer.from('Hello, world!'), { create: true }, cb)
       ], done)
     })
@@ -52,7 +52,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()
@@ -67,7 +67,7 @@ module.exports = (createCommon, options) => {
     it('should move dir, expect no error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, (err) => {
+      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true }, (err) => {
         expect(err).to.not.exist()
 
         ipfs.files.mv('/test/lv1/lv2', '/test/lv1/lv4', (err) => {

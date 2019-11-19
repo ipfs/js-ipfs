@@ -45,7 +45,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(testDir, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(testDir, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/c`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()
@@ -60,7 +60,7 @@ module.exports = (createCommon, options) => {
     it('should remove dir, expect no error', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, (err) => {
+      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true }, (err) => {
         expect(err).to.not.exist()
 
         ipfs.files.rm(`${testDir}/lv1/lv2`, { recursive: true }, (err) => {

@@ -52,7 +52,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()
@@ -75,7 +75,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()

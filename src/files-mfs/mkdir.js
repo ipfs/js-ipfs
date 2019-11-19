@@ -43,7 +43,7 @@ module.exports = (createCommon, options) => {
     it('should make directory and its parents', (done) => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { p: true }, (err) => {
+      ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true }, (err) => {
         expect(err).to.not.exist()
         done()
       })

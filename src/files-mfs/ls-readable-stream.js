@@ -36,6 +36,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       const stream = ipfs.files.lsReadableStream(`${testDir}/404`)
+      stream.on('data', () => {})
 
       stream.once('error', (err) => {
         expect(err).to.exist()
@@ -48,7 +49,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()
@@ -72,7 +73,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(`${testDir}/lv1`, { parents: true }, cb),
         (cb) => ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true }, cb)
       ], (err) => {
         expect(err).to.not.exist()

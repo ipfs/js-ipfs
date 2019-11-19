@@ -52,7 +52,7 @@ module.exports = (createCommon, options) => {
       const testDir = `/test-${hat()}`
 
       series([
-        (cb) => ipfs.files.mkdir(testDir, { p: true }, cb),
+        (cb) => ipfs.files.mkdir(testDir, { parents: true }, cb),
         (cb) => ipfs.files.flush(testDir, cb)
       ], (err) => {
         expect(err).to.not.exist()
