@@ -1,3 +1,13 @@
+<a name="0.121.0"></a>
+# [0.121.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.120.0...v0.121.0) (2019-11-19)
+
+
+### Bug Fixes
+
+* allow offline option casing ([#561](https://github.com/ipfs/interface-ipfs-core/issues/561)) ([f08b0fd](https://github.com/ipfs/interface-ipfs-core/commit/f08b0fd))
+
+
+
 <a name="0.120.0"></a>
 # [0.120.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.119.0...v0.120.0) (2019-11-19)
 
