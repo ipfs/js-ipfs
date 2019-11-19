@@ -106,8 +106,8 @@ module.exports = (createCommon, options) => {
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
-      await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name', resolve: false })
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name', resolve: false })
 
       return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: true }))
         .to.eq(`/ipfs/${path}`)

@@ -39,8 +39,8 @@ module.exports = (createCommon, options) => {
 
       const { id: keyId } = await ipfs.key.gen('key-name-default', { type: 'rsa', size: 2048 })
 
-      await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name-default' })
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-default' })
 
       return expect(await ipfs.name.resolve(`/ipns/${keyId}`))
         .to.eq(`/ipfs/${path}`)
@@ -50,7 +50,7 @@ module.exports = (createCommon, options) => {
       this.timeout(20 * 1000)
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
-      await ipfs.name.publish(path, { 'allow-offline': true })
+      await ipfs.name.publish(path, { allowOffline: true })
 
       // Represent Peer ID as CIDv1 Base32
       // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
@@ -62,7 +62,7 @@ module.exports = (createCommon, options) => {
 
     it('should resolve a record recursive === false', async () => {
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === false'))
-      await ipfs.name.publish(path, { 'allow-offline': true })
+      await ipfs.name.publish(path, { allowOffline: true })
       return expect(await ipfs.name.resolve(`/ipns/${nodeId}`, { recursive: false }))
         .to.eq(`/ipfs/${path}`)
     })
@@ -74,8 +74,8 @@ module.exports = (createCommon, options) => {
 
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
-      await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name' })
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name' })
 
       return expect(await ipfs.name.resolve(`/ipns/${keyId}`, { recursive: true }))
         .to.eq(`/ipfs/${path}`)
@@ -88,8 +88,8 @@ module.exports = (createCommon, options) => {
 
       const { id: keyId } = await ipfs.key.gen('key-name-remainder-default', { type: 'rsa', size: 2048 })
 
-      await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name-remainder-default' })
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-remainder-default' })
 
       return expect(await ipfs.name.resolve(`/ipns/${keyId}/remainder/file.txt`))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
@@ -97,7 +97,7 @@ module.exports = (createCommon, options) => {
 
     it('should resolve a record recursive === false with remainder', async () => {
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive = false with remainder'))
-      await ipfs.name.publish(path, { 'allow-offline': true })
+      await ipfs.name.publish(path, { allowOffline: true })
       return expect(await ipfs.name.resolve(`/ipns/${nodeId}/remainder/file.txt`, { recursive: false }))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
     })
@@ -109,8 +109,8 @@ module.exports = (createCommon, options) => {
 
       const { id: keyId } = await ipfs.key.gen('key-name-remainder', { type: 'rsa', size: 2048 })
 
-      await ipfs.name.publish(path, { 'allow-offline': true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { 'allow-offline': true, key: 'key-name-remainder' })
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-remainder' })
 
       return expect(await ipfs.name.resolve(`/ipns/${keyId}/remainder/file.txt`, { recursive: true }))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
@@ -120,7 +120,7 @@ module.exports = (createCommon, options) => {
       const publishOptions = {
         lifetime: '100ms',
         ttl: '10s',
-        'allow-offline': true
+        allowOffline: true
       }
 
       // we add new data instead of re-using fixture to make sure lifetime handling doesn't break

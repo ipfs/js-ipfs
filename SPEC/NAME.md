@@ -25,8 +25,11 @@ Although not listed in the documentation, all the following APIs that actually r
   lifetime: // string - Time duration of the record. Default: 24h
   ttl:      // string - Time duration this record should be cached
   key:      // string - Name of the key to be used. Default: 'self'
+  allowOffline: // bool - When offline, save the IPNS record to the the local datastore without broadcasting to the network instead of simply failing.
 }
 ```
+
+Note: `allowOffline` option is not yet implemented in js-ipfs. See tracking issue [ipfs/js-ipfs#1997](https://github.com/ipfs/js-ipfs/issues/1997).
 
 **Returns**
 
