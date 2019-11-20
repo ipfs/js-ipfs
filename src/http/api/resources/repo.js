@@ -17,7 +17,7 @@ exports.gc = {
     const filtered = res.filter(r => !r.err || streamErrors)
     const response = filtered.map(r => {
       return {
-        Err: r.err && r.err.message,
+        Error: r.err && r.err.message,
         Key: !r.err && { '/': r.cid.toString() }
       }
     })
