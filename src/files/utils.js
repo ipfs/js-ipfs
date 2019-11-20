@@ -1,25 +1,23 @@
 'use strict'
 
-module.exports = (args) => {
-  const callback = args.pop()
-  let opts = {}
+exports.findSources = (args) => {
+  let options = {}
   let sources = []
 
   if (!Array.isArray(args[args.length - 1]) && typeof args[args.length - 1] === 'object') {
-    opts = args.pop()
+    options = args.pop()
   }
 
   if (args.length === 1 && Array.isArray(args[0])) {
-    // support ipfs.file.cp([src, dest], opts, cb)
+    // support ipfs.files.cp([src, dest], opts)
     sources = args[0]
   } else {
-    // support ipfs.file.cp(src, dest, opts, cb) and ipfs.file.cp(src1, src2, dest, opts, cb)
+    // support ipfs.files.cp(src, dest, opts) and ipfs.files.cp(src1, src2, dest, opts)
     sources = args
   }
 
   return {
-    callback,
     sources,
-    opts
+    options
   }
 }

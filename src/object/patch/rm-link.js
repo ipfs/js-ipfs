@@ -2,23 +2,23 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const { DAGLink } = require('ipld-dag-pb')
-const configure = require('../lib/configure')
+const configure = require('../../lib/configure')
 
 module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
+  return async (cid, dLink, options) => {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
+    searchParams.append('arg', dLink.Name || dLink.name || null)
 
-    const res = await ky.get('object/links', {
+    const { Hash } = await ky.post('object/patch/rm-link', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
       searchParams
     }).json()
 
-    return (res.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
+    return new CID(Hash)
   }
 })

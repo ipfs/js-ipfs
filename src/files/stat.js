@@ -1,35 +1,32 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const mapKeys = require('just-map-keys')
-const kebabCase = require('just-kebab-case')
+const configure = require('../lib/configure')
+const toCamel = require('../lib/object-to-camel')
 
-const transform = function (data, callback) {
-  callback(null, {
-    type: data.Type,
-    blocks: data.Blocks,
-    size: data.Size,
-    hash: data.Hash,
-    cumulativeSize: data.CumulativeSize,
-    withLocality: data.WithLocality || false,
-    local: data.Local || undefined,
-    sizeLocal: data.SizeLocal || undefined
-  })
-}
-
-module.exports = (send) => {
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
+module.exports = configure(({ ky }) => {
+  return async (path, options) => {
+    if (typeof path !== 'string') {
+      options = path
+      path = '/'
     }
 
-    opts = mapKeys(opts, (v, k) => kebabCase(k))
+    options = options || {}
 
-    send.andTransform({
-      path: 'files/stat',
-      args: args,
-      qs: opts
-    }, transform, callback)
-  })
-}
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', path)
+    if (options.cidBase) searchParams.set('cid-base', options.cidBase)
+    if (options.hash != null) searchParams.set('hash', options.hash)
+    if (options.size != null) searchParams.set('size', options.size)
+    if (options.withLocal != null) searchParams.set('with-local', options.withLocal)
+
+    const res = await ky.post('files/stat', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    res.WithLocality = res.WithLocality || false
+    return toCamel(res)
+  }
+})

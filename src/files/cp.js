@@ -1,20 +1,25 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const findSources = require('../utils/find-sources')
+const CID = require('cids')
+const configure = require('../lib/configure')
+const { findSources } = require('./utils')
 
-module.exports = (send) => {
-  return promisify(function () {
-    const {
-      callback,
-      sources,
-      opts
-    } = findSources(Array.prototype.slice.call(arguments))
+module.exports = configure(({ ky }) => {
+  return (...args) => {
+    const { sources, options } = findSources(args)
 
-    send({
-      path: 'files/cp',
-      args: sources,
-      qs: opts
-    }, (error) => callback(error))
-  })
-}
+    const searchParams = new URLSearchParams(options.searchParams)
+    sources.forEach(src => searchParams.append('arg', CID.isCID(src) ? `/ipfs/${src}` : src))
+    if (options.format) searchParams.set('format', options.format)
+    if (options.flush != null) searchParams.set('flush', options.flush)
+    if (options.hashAlg) searchParams.set('hash', options.hashAlg)
+    if (options.parents != null) searchParams.set('parents', options.parents)
+
+    return ky.post('files/cp', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).text()
+  }
+})

@@ -1,42 +1,32 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const concatStream = require('concat-stream')
-const once = require('once')
-const SendFilesStream = require('../utils/send-files-stream')
+const configure = require('../lib/configure')
+const toFormData = require('../lib/buffer-to-form-data')
 
-module.exports = (send) => {
-  const sendFilesStream = SendFilesStream(send, 'files/write')
+module.exports = configure(({ ky }) => {
+  return async (path, input, options) => {
+    options = options || {}
 
-  return promisify((pathDst, _files, opts, _callback) => {
-    if (typeof opts === 'function' &&
-      !_callback) {
-      _callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', path)
+    searchParams.set('stream-channels', true)
+    if (options.cidVersion) searchParams.set('cid-version', options.cidVersion)
+    if (options.create != null) searchParams.set('create', options.create)
+    if (options.hashAlg) searchParams.set('hash', options.hashAlg)
+    if (options.length != null) searchParams.set('length', options.length)
+    if (options.offset != null) searchParams.set('offset', options.offset)
+    if (options.parents != null) searchParams.set('parents', options.parents)
+    if (options.rawLeaves != null) searchParams.set('raw-leaves', options.rawLeaves)
+    if (options.truncate != null) searchParams.set('truncate', options.truncate)
 
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' &&
-      typeof _callback === 'function') {
-      _callback = opts
-      opts = {}
-    }
+    const res = await ky.post('files/write', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams,
+      body: toFormData(input) // TODO: support inputs other than buffer as per spec
+    })
 
-    const files = [].concat(_files)
-    const callback = once(_callback)
-
-    const options = {
-      args: pathDst,
-      qs: opts
-    }
-
-    const stream = sendFilesStream({ qs: options })
-    const concat = concatStream((result) => callback(null, result))
-    stream.once('error', callback)
-    stream.pipe(concat)
-
-    files.forEach((file) => stream.write(file))
-    stream.end()
-  })
-}
+    return res.text()
+  }
+})

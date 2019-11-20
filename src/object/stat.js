@@ -1,28 +1,31 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const { Buffer } = require('buffer')
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((cid, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
-    if (!opts) {
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return async (cid, options) => {
+    options = options || {}
 
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
+
+    let res
     try {
-      cid = new CID(cid)
+      res = await ky.post('object/stat', {
+        timeout: options.timeout,
+        signal: options.signal,
+        headers: options.headers,
+        searchParams
+      }).json()
     } catch (err) {
-      return callback(err)
+      if (err.name === 'TimeoutError') {
+        err.message = `failed to get block for ${Buffer.isBuffer(cid) ? new CID(cid) : cid}: context deadline exceeded`
+      }
+      throw err
     }
 
-    send({
-      path: 'object/stat',
-      args: cid.toString(),
-      qs: opts
-    }, callback)
-  })
-}
+    return res
+  }
+})

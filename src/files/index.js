@@ -1,23 +1,25 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
+const { collectify, streamify, pullify, concatify } = require('../lib/converters')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = config => {
+  const ls = require('./ls')(config)
+  const read = require('./read')(config)
 
   return {
-    cp: require('./cp')(send),
-    mkdir: require('./mkdir')(send),
-    flush: require('./flush')(send),
-    stat: require('./stat')(send),
-    rm: require('./rm')(send),
-    ls: require('./ls')(send),
-    lsReadableStream: require('./ls-readable-stream')(send),
-    lsPullStream: require('./ls-pull-stream')(send),
-    read: require('./read')(send),
-    readReadableStream: require('./read-readable-stream')(send),
-    readPullStream: require('./read-pull-stream')(send),
-    write: require('./write')(send),
-    mv: require('./mv')(send)
+    cp: callbackify.variadic(require('./cp')(config)),
+    mkdir: callbackify.variadic(require('./mkdir')(config)),
+    flush: callbackify.variadic(require('./flush')(config)),
+    stat: callbackify.variadic(require('./stat')(config)),
+    rm: callbackify.variadic(require('./rm')(config)),
+    ls: callbackify.variadic(collectify(ls)),
+    lsReadableStream: streamify.readable(ls),
+    lsPullStream: pullify.source(ls),
+    read: callbackify.variadic(concatify(read)),
+    readReadableStream: streamify.readable(read),
+    readPullStream: pullify.source(read),
+    write: callbackify.variadic(require('./write')(config)),
+    mv: callbackify.variadic(require('./mv')(config))
   }
 }

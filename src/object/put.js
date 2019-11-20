@@ -1,26 +1,14 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
+const { Buffer } = require('buffer')
+const configure = require('../lib/configure')
+const toFormData = require('../lib/buffer-to-form-data')
 
-const SendOneFile = require('../utils/send-one-file')
-const once = require('once')
-
-module.exports = (send) => {
-  const sendOneFile = SendOneFile(send, 'object/put')
-
-  return promisify((obj, options, _callback) => {
-    if (typeof options === 'function') {
-      _callback = options
-      options = {}
-    }
-
-    const callback = once(_callback)
-
-    if (!options) {
-      options = {}
-    }
+module.exports = configure(({ ky }) => {
+  return async (obj, options) => {
+    options = options || {}
 
     let tmpObj = {
       Data: null,
@@ -47,7 +35,7 @@ module.exports = (send) => {
       tmpObj.Data = obj.Data.toString()
       tmpObj.Links = obj.Links
     } else {
-      return callback(new Error('obj not recognized'))
+      throw new Error('obj not recognized')
     }
 
     let buf
@@ -56,18 +44,20 @@ module.exports = (send) => {
     } else {
       buf = Buffer.from(JSON.stringify(tmpObj))
     }
-    const enc = options.enc || 'json'
 
-    const sendOptions = {
-      qs: { inputenc: enc }
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.enc) searchParams.set('inputenc', options.enc)
+    if (options.pin != null) searchParams.set('pin', options.pin)
+    if (options.quiet != null) searchParams.set('quiet', options.quiet)
 
-    sendOneFile(buf, sendOptions, (err, result) => {
-      if (err) {
-        return callback(err) // early
-      }
+    const { Hash } = await ky.post('object/put', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams,
+      body: toFormData(buf)
+    }).json()
 
-      callback(null, new CID(result.Hash))
-    })
-  })
-}
+    return new CID(Hash)
+  }
+})

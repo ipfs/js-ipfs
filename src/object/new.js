@@ -1,23 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((template, callback) => {
-    if (typeof template === 'function') {
-      callback = template
-      template = undefined
+module.exports = configure(({ ky }) => {
+  return async (template, options) => {
+    if (typeof template !== 'string') {
+      options = template
+      template = null
     }
-    send({
-      path: 'object/new',
-      args: template
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
 
-      callback(null, new CID(result.Hash))
-    })
-  })
-}
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (template) searchParams.set('arg', template)
+
+    const { Hash } = await ky.post('object/new', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return new CID(Hash)
+  }
+})

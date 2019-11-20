@@ -102,6 +102,7 @@ function requireCommands (send, config) {
     lsReadableStream: streamify.readable(ls),
     lsPullStream: pullify.source(ls),
     _lsAsyncIterator: ls,
+    object: require('../object')(config),
     refs: callbackify.variadic((path, options) => collectify(refs)(path, options)),
     refsReadableStream: streamify.readable(refs),
     refsPullStream: pullify.source(refs),
@@ -114,6 +115,7 @@ function requireCommands (send, config) {
     dag: require('../dag')(config),
     dht: require('../dht')(config),
     diag: require('../diag')(config),
+    files: require('../files')(config),
     pin: require('../pin')(config)
   }
 
@@ -125,12 +127,6 @@ function requireCommands (send, config) {
   })
 
   const subCmds = {
-    // Files MFS (Mutable Filesystem)
-    files: require('../files'),
-
-    // Graph
-    object: require('../object'),
-
     // Network
     name: require('../name'),
     ping: require('../ping'),

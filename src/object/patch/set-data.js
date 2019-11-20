@@ -2,23 +2,24 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const { DAGLink } = require('ipld-dag-pb')
-const configure = require('../lib/configure')
+const configure = require('../../lib/configure')
+const toFormData = require('../../lib/buffer-to-form-data')
 
 module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
+  return async (cid, data, options) => {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    const res = await ky.get('object/links', {
+    const { Hash } = await ky.post('object/patch/set-data', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
-      searchParams
+      searchParams,
+      body: toFormData(data)
     }).json()
 
-    return (res.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
+    return new CID(Hash)
   }
 })

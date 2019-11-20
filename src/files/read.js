@@ -1,19 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const streamToValue = require('../utils/stream-to-value')
+const { Buffer } = require('buffer')
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-module.exports = (send) => {
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
+module.exports = configure(({ ky }) => {
+  return async function * read (path, options) {
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.append('arg', `${path}`)
+    if (options.length != null) searchParams.set('length', options.length)
+    if (options.offset != null) searchParams.set('offset', options.offset)
+
+    const res = await ky.post('files/read', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    })
+
+    for await (const chunk of toIterable(res.body)) {
+      yield Buffer.from(chunk)
     }
-
-    send.andTransform({
-      path: 'files/read',
-      args: args,
-      qs: opts
-    }, streamToValue, callback)
-  })
-}
+  }
+})

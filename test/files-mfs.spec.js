@@ -376,9 +376,7 @@ describe('.files (the MFS API part)', function () {
       cumulativeSize: 70,
       blocks: 1,
       type: 'file',
-      withLocality: false,
-      local: undefined,
-      sizeLocal: undefined
+      withLocality: false
     })
   })
 

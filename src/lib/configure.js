@@ -6,6 +6,7 @@ const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { toUri } = require('./multiaddr')
 const errorHandler = require('./error-handler')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
+const parseDuration = require('parse-duration')
 
 // Set default configuration and call create function with them
 module.exports = create => config => {
@@ -27,7 +28,7 @@ module.exports = create => config => {
   // https://github.com/sindresorhus/ky/pull/153
   const defaults = {
     prefixUrl: config.apiAddr + config.apiPath,
-    timeout: config.timeout || 60000 * 20,
+    timeout: parseTimeout(config.timeout) || 60000 * 20,
     headers: config.headers,
     hooks: {
       afterResponse: [errorHandler]
@@ -72,6 +73,11 @@ function getDefaultApiAddr ({ protocol, host, port }) {
 // undefined values in the passed `options` object
 function wrap (fn, defaults) {
   return (input, options) => {
+    if (options.timeout) options.timeout = parseTimeout(options.timeout)
     return fn(input, mergeOptions(defaults, options))
   }
+}
+
+function parseTimeout (value) {
+  return typeof value === 'string' ? parseDuration(value) : value
 }

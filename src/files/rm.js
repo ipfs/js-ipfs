@@ -1,27 +1,21 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((path, opts, callback) => {
-    if (typeof opts === 'function' &&
-      !callback) {
-      callback = opts
-      opts = {}
-    }
+module.exports = configure(({ ky }) => {
+  return (path, options) => {
+    options = options || {}
 
-    // opts is the real callback --
-    // 'callback' is being injected by promisify
-    if (typeof opts === 'function' &&
-      typeof callback === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.append('arg', path)
+    if (options.recursive != null) searchParams.set('recursive', options.recursive)
+    if (options.force != null) searchParams.set('force', options.force)
 
-    send({
-      path: 'files/rm',
-      args: path,
-      qs: opts
-    }, (error) => callback(error))
-  })
-}
+    return ky.post('files/rm', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).text()
+  }
+})

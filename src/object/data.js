@@ -1,53 +1,26 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const streamToValue = require('../utils/stream-to-value')
+const { Buffer } = require('buffer')
 const CID = require('cids')
-const LRU = require('lru-cache')
-const lruOptions = {
-  max: 128
-}
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-const cache = new LRU(lruOptions)
+module.exports = configure(({ ky }) => {
+  return async function * (cid, options) {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((cid, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-    if (!options) {
-      options = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    let cidB58Str
-
-    try {
-      cid = new CID(cid)
-      cidB58Str = cid.toBaseEncodedString()
-    } catch (err) {
-      return callback(err)
-    }
-
-    const node = cache.get(cidB58Str)
-
-    if (node) {
-      return callback(null, node.data)
-    }
-
-    send({
-      path: 'object/data',
-      args: cidB58Str
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      if (typeof result.pipe === 'function') {
-        streamToValue(result, callback)
-      } else {
-        callback(null, result)
-      }
+    const res = await ky.get('object/data', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
     })
-  })
-}
+
+    for await (const chunk of toIterable(res.body)) {
+      yield Buffer.from(chunk)
+    }
+  }
+})

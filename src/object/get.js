@@ -1,57 +1,28 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const { DAGNode, DAGLink } = require('ipld-dag-pb')
+const { Buffer } = require('buffer')
 const CID = require('cids')
-const LRU = require('lru-cache')
-const lruOptions = {
-  max: 128
-}
+const { DAGNode, DAGLink } = require('ipld-dag-pb')
+const configure = require('../lib/configure')
 
-const cache = new LRU(lruOptions)
+module.exports = configure(({ ky }) => {
+  return async (cid, options) => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((cid, options, callback) => {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
+    searchParams.set('data-encoding', 'base64')
 
-    if (!options) {
-      options = {}
-    }
+    const res = await ky.get('object/get', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
 
-    let cidB58Str
-
-    try {
-      cid = new CID(cid)
-      cidB58Str = cid.toBaseEncodedString()
-    } catch (err) {
-      return callback(err)
-    }
-
-    const node = cache.get(cidB58Str)
-
-    if (node) {
-      return callback(null, node)
-    }
-
-    send({
-      path: 'object/get',
-      args: cidB58Str,
-      qs: {
-        'data-encoding': 'base64'
-      }
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      const links = result.Links.map(l => new DAGLink(l.Name, l.Size, l.Hash))
-      const node = new DAGNode(Buffer.from(result.Data, 'base64'), links)
-
-      cache.set(cidB58Str, node)
-      callback(null, node)
-    })
-  })
-}
+    return new DAGNode(
+      Buffer.from(res.Data, 'base64'),
+      (res.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
+    )
+  }
+})
