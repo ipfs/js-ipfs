@@ -3,6 +3,8 @@
 const multibase = require('multibase')
 const { rightpad } = require('../utils')
 const { cidToString } = require('../../utils/cid')
+const formatMode = require('ipfs-utils/src/files/format-mode')
+const formatMtime = require('ipfs-utils/src/files/format-mtime')
 
 module.exports = {
   command: 'ls <key>',
@@ -69,6 +71,8 @@ module.exports = {
         const padding = Math.max(link.depth - pathParts.length, 0)
 
         print(
+          rightpad(formatMode(link.mode, link.type === 'dir'), 11) +
+          rightpad(formatMtime(link.mtime), 30) +
           rightpad(link.hash, multihashWidth + 1) +
           rightpad(link.size || '-', sizeWidth + 1) +
           '  '.repeat(padding) + fileName

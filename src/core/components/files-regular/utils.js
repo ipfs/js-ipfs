@@ -115,7 +115,9 @@ const mapFile = (file, options) => {
     name: file.name,
     depth: file.path.split('/').length,
     size,
-    type
+    type,
+    mtime: file.unixfs.mtime,
+    mode: file.unixfs.mode
   }
 
   if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
