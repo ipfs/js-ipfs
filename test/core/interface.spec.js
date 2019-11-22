@@ -8,7 +8,7 @@ const isNode = require('detect-node')
 describe('interface-ipfs-core tests', function () {
   this.timeout(20 * 1000)
 
-  const defaultCommonFactory = CommonFactory.create()
+  const defaultCommonFactory = CommonFactory.createAsync()
 
   tests.bitswap(defaultCommonFactory, { skip: !isNode })
 
@@ -20,7 +20,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.dag(defaultCommonFactory)
 
-  tests.dht(CommonFactory.create({
+  tests.dht(CommonFactory.createAsync({
     spawnOptions: {
       config: {
         Bootstrap: [],
@@ -53,7 +53,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.filesMFS(defaultCommonFactory)
 
-  tests.key(CommonFactory.create({
+  tests.key(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
       initOptions: { bits: 512 },
@@ -71,21 +71,19 @@ describe('interface-ipfs-core tests', function () {
     }
   }))
 
-  tests.miscellaneous(CommonFactory.create({
-    // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb(),
+  tests.miscellaneous(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
   }))
 
-  tests.name(CommonFactory.create({
+  tests.name(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
   }))
 
-  tests.namePubsub(CommonFactory.create({
+  tests.namePubsub(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--enable-namesys-pubsub'],
       initOptions: { bits: 1024 },
@@ -120,7 +118,7 @@ describe('interface-ipfs-core tests', function () {
     }
   })
 
-  tests.pubsub(CommonFactory.create({
+  tests.pubsub(CommonFactory.createAsync({
     spawnOptions: {
       initOptions: { bits: 512 }
     }
@@ -134,5 +132,5 @@ describe('interface-ipfs-core tests', function () {
 
   tests.stats(defaultCommonFactory)
 
-  tests.swarm(CommonFactory.createAsync(), { skip: !isNode })
+  tests.swarm(defaultCommonFactory, { skip: !isNode })
 })

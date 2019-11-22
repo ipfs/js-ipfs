@@ -8,10 +8,15 @@ const callbackify = require('callbackify')
 const mergeOptions = require('merge-options')
 const IPFS = require('../../src')
 
+const DEFAULT_FACTORY_OPTIONS = {
+  type: 'proc',
+  exec: IPFS
+}
+
 function createFactory (options) {
   options = options || {}
 
-  options.factoryOptions = options.factoryOptions || { type: 'proc', exec: IPFS }
+  options.factoryOptions = options.factoryOptions || DEFAULT_FACTORY_OPTIONS
   options.spawnOptions = mergeOptions({
     initOptions: { bits: 512 },
     config: {
@@ -68,25 +73,23 @@ function createFactory (options) {
   }
 }
 
-function createAsync (createFactoryOptions = {}, createSpawnOptions = {}) {
+function createAsync (options = {}) {
   return () => {
     const nodes = []
-    const setup = async (factoryOptions = {}, spawnOptions = {}) => {
-      factoryOptions = mergeOptions(
-        {
-          type: 'proc',
-          exec: IPFS
-        },
-        factoryOptions,
-        createFactoryOptions
+    const setup = async (setupOptions = {}) => {
+      options.factoryOptions = mergeOptions(
+        setupOptions.factoryOptions,
+        options.factoryOptions || DEFAULT_FACTORY_OPTIONS
       )
+
       // When not an in proc daemon use the http-client js-ipfs depends on, not the one from ipfsd-ctl
-      if (factoryOptions.type !== 'proc') {
-        factoryOptions.IpfsClient = factoryOptions.IpfsClient || ipfsClient
+      if (options.factoryOptions.type !== 'proc') {
+        options.factoryOptions.IpfsClient = options.factoryOptions.IpfsClient || ipfsClient
       }
 
-      const ipfsFactory = IPFSFactory.create(factoryOptions)
-      const node = await ipfsFactory.spawn(mergeOptions(
+      const ipfsFactory = IPFSFactory.create(options.factoryOptions)
+
+      options.spawnOptions = mergeOptions(
         {
           config: {
             Bootstrap: [],
@@ -101,9 +104,12 @@ function createAsync (createFactoryOptions = {}, createSpawnOptions = {}) {
           },
           preload: { enabled: false }
         },
-        spawnOptions,
-        createSpawnOptions
-      ))
+        setupOptions.spawnOptions,
+        options.spawnOptions
+      )
+
+      const node = await ipfsFactory.spawn(options.spawnOptions)
+
       nodes.push(node)
 
       const id = await node.api.id()
