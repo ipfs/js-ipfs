@@ -1,3 +1,13 @@
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/ipfs/js-ipfs-mfs/compare/v0.13.1...v0.13.2) (2019-11-22)
+
+
+### Bug Fixes
+
+* response for empty dir when ?stream=true ([14d53ce](https://github.com/ipfs/js-ipfs-mfs/commit/14d53ce)), closes [/github.com/ipfs/interface-js-ipfs-core/blob/c766dbff654fd259f7094070ee71858091898750/src/files-mfs/ls.js#L106-L112](https://github.com//github.com/ipfs/interface-js-ipfs-core/blob/c766dbff654fd259f7094070ee71858091898750/src/files-mfs/ls.js/issues/L106-L112)
+
+
+
 <a name="0.13.1"></a>
 ## [0.13.1](https://github.com/ipfs/js-ipfs-mfs/compare/v0.13.0...v0.13.1) (2019-08-29)
 
