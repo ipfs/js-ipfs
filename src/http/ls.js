@@ -35,26 +35,19 @@ const mfsLs = {
           cidBase
         })
 
-        let passThrough
+        const passThrough = new PassThrough()
 
         readableStream.on('data', (entry) => {
-          if (!passThrough) {
-            passThrough = new PassThrough()
-            resolve(passThrough)
-          }
-
+          resolve(passThrough)
           passThrough.write(JSON.stringify(mapEntry(entry)) + '\n')
         })
 
         readableStream.once('end', (entry) => {
-          if (passThrough) {
-            passThrough.end(entry ? JSON.stringify(mapEntry(entry)) + '\n' : undefined)
-          }
+          resolve(passThrough)
+          passThrough.end(entry ? JSON.stringify(mapEntry(entry)) + '\n' : undefined)
         })
 
-        readableStream.once('error', (error) => {
-          reject(error)
-        })
+        readableStream.once('error', reject)
       })
 
       return h.response(responseStream).header('X-Stream-Output', '1')
