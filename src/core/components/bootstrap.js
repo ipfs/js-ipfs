@@ -45,8 +45,10 @@ module.exports = function bootstrap (self) {
         throw invalidMultiaddrError(multiaddr)
       }
 
+      let res = []
       const config = await self._repo.config.get()
       if (args.all) {
+        res = config.Bootstrap
         config.Bootstrap = []
       } else {
         config.Bootstrap = config.Bootstrap.filter((mh) => mh !== multiaddr)
@@ -54,7 +56,6 @@ module.exports = function bootstrap (self) {
 
       await self._repo.config.set(config)
 
-      const res = []
       if (!args.all && multiaddr) {
         res.push(multiaddr)
       }
