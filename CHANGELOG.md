@@ -22,33 +22,25 @@
 ### BREAKING CHANGES
 
 * The `log.tail` method now returns an async iterator that yields log messages. Use it like:
-
-```js
-for await (const message of ipfs.log.tail()) {
-  console.log(message)
-}
-```
+    ```js
+    for await (const message of ipfs.log.tail()) {
+      console.log(message)
+    }
+    ```
 * The response to a call to `log.level` now returns an object that has camel cased keys. i.e. `Message` and `Error` properties have changed to `message` and `error`.
 * Dropped support for go-ipfs <= 0.4.4 in `swarm.peers` response.
 * The signature for `ipfs.mount` has changed from `ipfs.mount([ipfsPath], [ipnsPath])` to `ipfs.mount([options])`. Where `options` is an optional object that may contain two boolean properties `ipfsPath` and `ipnsPath`. The response object has also changed to be camel case. See https://docs.ipfs.io/reference/api/http/#api-v0-mount.
 * Default ping `count` of 1 in client has been removed. The default ping count is now whatever the IPFS node defaults it to (currently 10). If you specifically need 1 ping message then please pass `count: 1` in options for `ipfs.ping()`.
 * Multi parameter constructor options are no longer supported. To create a new IPFS HTTP client, pass a single parameter to the constructor. The parameter can be one of:
-
-* String, formatted as one of:
-    * Multiaddr e.g. /ip4/127.0.0.1/tcp/5001
-    * URL e.g. http://127.0.0.1:5001
-* [Multiaddr](https://www.npmjs.com/package/multiaddr) instance
-* Object, in format of either:
-    * Address and path e.g. `{ apiAddr: '/ip4/127.0.0.1/tcp/5001': apiPath: '/api/v0' }` (Note: `apiAddr` can also be a string in URL form or a Multiaddr instance)
-    * Node.js style address e.g. `{ host: '127.0.0.1', port: 5001, protocol: 'http' }`
+    * String, formatted as one of:
+        * Multiaddr e.g. /ip4/127.0.0.1/tcp/5001
+        * URL e.g. http://127.0.0.1:5001
+    * [Multiaddr](https://www.npmjs.com/package/multiaddr) instance
+    * Object, in format of either:
+        * Address and path e.g. `{ apiAddr: '/ip4/127.0.0.1/tcp/5001': apiPath: '/api/v0' }` (Note: `apiAddr` can also be a string in URL form or a Multiaddr instance)
+        * Node.js style address e.g. `{ host: '127.0.0.1', port: 5001, protocol: 'http' }`
 * Errors returned from request failures are now all [`HTTPError`](https://github.com/sindresorhus/ky/blob/c0d9d2bb07e4c122a08f019b39e9c55a4c9324f3/index.js#L117-L123)s which carry a `response` property. This is a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) that can be used to inspect _all_ information relating to the HTTP response. This means that the `err.status` or `err.statusCode` property should now be accessed via `err.response.status`.
-
-License: MIT
-Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 * files in `src/files-regular` have moved to `src`. The `src/files-mfs` directory has been renamed to `src/files`. If you were previously requiring files from these directories e.g. `require('ipfs-http-client/src/files-regular/add')` then please be aware that they have moved.
-
-License: MIT
-Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 
