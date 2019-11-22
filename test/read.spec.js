@@ -17,7 +17,7 @@ describe('read', () => {
     mfs = await createMfs()
   })
 
-  describe(`read`, () => {
+  describe('read', () => {
     it('reads a small file', async () => {
       const filePath = '/small-file.txt'
 

@@ -165,7 +165,7 @@ const write = async (context, source, destination, options) => {
           offset: bytesWritten
         })
       } else {
-        log(`Not writing last bytes from original file`)
+        log('Not writing last bytes from original file')
       }
     }
 

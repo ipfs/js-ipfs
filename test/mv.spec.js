@@ -237,7 +237,7 @@ describe('mv', () => {
   it('moves a file from a sub-shard of a sharded directory to a sharded directory', async () => {
     const shardedDirPath = await createShardedDirectory(mfs, 10, 75)
     const otherShardedDirPath = await createShardedDirectory(mfs)
-    const file = `file-1a.txt`
+    const file = 'file-1a.txt'
     const filePath = `${shardedDirPath}/${file}`
     const finalFilePath = `${otherShardedDirPath}/${file}`
 
