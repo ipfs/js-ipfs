@@ -6,7 +6,7 @@ const CommonFactory = require('../utils/interface-common-factory')
 const path = require('path')
 
 describe('interface-ipfs-core over ipfs-http-client tests', () => {
-  const defaultCommonFactory = CommonFactory.create({
+  const defaultCommonFactory = CommonFactory.createAsync({
     factoryOptions: { exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) }
   })
 
@@ -28,7 +28,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }]
   })
 
-  tests.dht(CommonFactory.create({
+  tests.dht(CommonFactory.createAsync({
     spawnOptions: {
       initOptions: { bits: 512 },
       config: {
@@ -54,7 +54,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.filesMFS(defaultCommonFactory)
 
-  tests.key(CommonFactory.create({
+  tests.key(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software'],
       initOptions: { bits: 512 },
@@ -73,21 +73,19 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }
   }))
 
-  tests.miscellaneous(CommonFactory.create({
-    // No need to stop, because the test suite does a 'stop' test.
-    createTeardown: () => cb => cb(),
+  tests.miscellaneous(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
   }))
 
-  tests.name(CommonFactory.create({
+  tests.name(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--pass ipfs-is-awesome-software', '--offline']
     }
   }))
 
-  tests.namePubsub(CommonFactory.create({
+  tests.namePubsub(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--enable-namesys-pubsub'],
       initOptions: { bits: 1024 },
@@ -118,7 +116,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
 
   tests.ping(defaultCommonFactory)
 
-  tests.pubsub(CommonFactory.create({
+  tests.pubsub(CommonFactory.createAsync({
     spawnOptions: {
       initOptions: { bits: 512 }
     }
