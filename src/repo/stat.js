@@ -1,28 +1,28 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const Big = require('bignumber.js')
+const configure = require('../lib/configure')
 
-const transform = function (res, callback) {
-  callback(null, {
-    numObjects: new Big(res.NumObjects),
-    repoSize: new Big(res.RepoSize),
-    repoPath: res.RepoPath,
-    version: res.Version,
-    storageMax: new Big(res.StorageMax)
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.sizeOnly) searchParams.set('size-only', options.sizeOnly)
+
+    const res = await ky.post('repo/stat', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return {
+      numObjects: new Big(res.NumObjects),
+      repoSize: new Big(res.RepoSize),
+      repoPath: res.RepoPath,
+      version: res.Version,
+      storageMax: new Big(res.StorageMax)
     }
-
-    send.andTransform({
-      path: 'repo/stat',
-      qs: opts
-    }, transform, callback)
-  })
-}
+  }
+})

@@ -6,7 +6,6 @@ const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 
 const ipfsClient = require('../src')
-const PingMessageStream = require('../src/utils/ping-message-stream')
 const f = require('./utils/factory')
 
 // Determine if a ping response object is a pong, or something else, like a status message
@@ -58,56 +57,22 @@ describe('.ping', function () {
     }
   })
 
-  it('.ping with default n', async () => {
+  it('.ping with default count', async () => {
     const res = await ipfs.ping(otherId)
-
     expect(res).to.be.an('array')
-    expect(res.filter(isPong)).to.have.lengthOf(1)
+    expect(res.filter(isPong)).to.have.lengthOf(10)
     res.forEach(packet => {
       expect(packet).to.have.keys('success', 'time', 'text')
       expect(packet.time).to.be.a('number')
     })
-
     const resultMsg = res.find(packet => packet.text.includes('Average latency'))
     expect(resultMsg).to.exist()
   })
 
   it('.ping with count = 2', async () => {
     const res = await ipfs.ping(otherId, { count: 2 })
-
     expect(res).to.be.an('array')
     expect(res.filter(isPong)).to.have.lengthOf(2)
-    res.forEach(packet => {
-      expect(packet).to.have.keys('success', 'time', 'text')
-      expect(packet.time).to.be.a('number')
-    })
-    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-    expect(resultMsg).to.exist()
-  })
-
-  it('.ping with n = 2', async () => {
-    const res = await ipfs.ping(otherId, { n: 2 })
-
-    expect(res).to.be.an('array')
-    expect(res.filter(isPong)).to.have.lengthOf(2)
-    res.forEach(packet => {
-      expect(packet).to.have.keys('success', 'time', 'text')
-      expect(packet.time).to.be.a('number')
-    })
-    const resultMsg = res.find(packet => packet.text.includes('Average latency'))
-    expect(resultMsg).to.exist()
-  })
-
-  it('.ping fails with count & n', async function () {
-    this.timeout(20 * 1000)
-
-    await expect(ipfs.ping(otherId, { count: 2, n: 2 })).to.be.rejected()
-  })
-
-  it('.ping with Promises', async () => {
-    const res = await ipfs.ping(otherId)
-    expect(res).to.be.an('array')
-    expect(res.filter(isPong)).to.have.lengthOf(1)
     res.forEach(packet => {
       expect(packet).to.have.keys('success', 'time', 'text')
       expect(packet.time).to.be.a('number')
@@ -118,11 +83,11 @@ describe('.ping', function () {
 
   it('.pingPullStream', (done) => {
     pull(
-      ipfs.pingPullStream(otherId),
+      ipfs.pingPullStream(otherId, { count: 2 }),
       collect((err, data) => {
         expect(err).to.not.exist()
         expect(data).to.be.an('array')
-        expect(data.filter(isPong)).to.have.lengthOf(1)
+        expect(data.filter(isPong)).to.have.lengthOf(2)
         data.forEach(packet => {
           expect(packet).to.have.keys('success', 'time', 'text')
           expect(packet.time).to.be.a('number')
@@ -136,7 +101,7 @@ describe('.ping', function () {
 
   it('.pingReadableStream', (done) => {
     let packetNum = 0
-    ipfs.pingReadableStream(otherId)
+    ipfs.pingReadableStream(otherId, { count: 2 })
       .on('data', data => {
         expect(data).to.be.an('object')
         expect(data).to.have.keys('success', 'time', 'text')
@@ -146,15 +111,8 @@ describe('.ping', function () {
         expect(err).not.to.exist()
       })
       .on('end', () => {
-        expect(packetNum).to.equal(1)
+        expect(packetNum).to.equal(2)
         done()
       })
-  })
-
-  it('message conversion fails if invalid message is received', () => {
-    const messageConverter = new PingMessageStream()
-    expect(() => {
-      messageConverter.write({ some: 'InvalidMessage' })
-    }).to.throw('Invalid ping message received')
   })
 })

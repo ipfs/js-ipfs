@@ -10,7 +10,7 @@ describe('lib/configure', () => {
   it('should accept no config', () => {
     configure(config => {
       if (isBrowser || isWebWorker) {
-        expect(config.apiAddr).to.eql('')
+        expect(config.apiAddr).to.eql(location.origin)
       } else {
         expect(config.apiAddr).to.eql('http://localhost:5001')
       }
@@ -24,10 +24,17 @@ describe('lib/configure', () => {
     })(input)
   })
 
-  it('should accept multiaddr instance', () => {
-    const input = Multiaddr('/ip4/127.0.0.1')
+  it('should accept string url', () => {
+    const input = 'http://127.0.0.1:5001'
     configure(config => {
-      expect(config.apiAddr).to.eql('http://127.0.0.1')
+      expect(config.apiAddr).to.eql('http://127.0.0.1:5001')
+    })(input)
+  })
+
+  it('should accept multiaddr instance', () => {
+    const input = Multiaddr('/ip4/127.0.0.1/tcp/5001')
+    configure(config => {
+      expect(config.apiAddr).to.eql('http://127.0.0.1:5001')
     })(input)
   })
 

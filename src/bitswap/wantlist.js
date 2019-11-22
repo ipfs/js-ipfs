@@ -17,7 +17,7 @@ module.exports = configure(({ ky }) => {
       }
     }
 
-    const res = await ky.get('bitswap/wantlist', {
+    const res = await ky.post('bitswap/wantlist', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

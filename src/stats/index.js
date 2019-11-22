@@ -1,15 +1,19 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
+const { streamify, pullify } = require('../lib/converters')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
+module.exports = config => {
+  const bw = require('./bw')(config)
   return {
-    bitswap: require('./bitswap')(send),
-    bw: require('./bw')(send),
-    bwReadableStream: require('./bw-readable-stream')(send),
-    bwPullStream: require('./bw-pull-stream')(send),
-    repo: require('./repo')(send)
+    bitswap: callbackify.variadic(require('../bitswap/stat')(config)),
+    bw: callbackify.variadic(async options => {
+      for await (const stats of bw(options)) {
+        return stats
+      }
+    }),
+    bwReadableStream: streamify.readable(bw),
+    bwPullStream: pullify.source(bw),
+    repo: callbackify.variadic(require('../repo/stat')(config))
   }
 }

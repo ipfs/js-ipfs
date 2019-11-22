@@ -1,14 +1,19 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const moduleConfig = require('./utils/module-config')
+const configure = require('./lib/configure')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = configure(({ ky }) => {
+  return options => {
+    options = options || {}
 
-  return promisify((callback) => {
-    send({
-      path: 'commands'
-    }, callback)
-  })
-}
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.flags != null) searchParams.set('flags', options.flags)
+
+    return ky.post('commands', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+  }
+})

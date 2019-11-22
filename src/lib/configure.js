@@ -3,7 +3,7 @@
 
 const ky = require('ky-universal').default
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const { toUri } = require('./multiaddr')
+const toUri = require('multiaddr-to-uri')
 const errorHandler = require('./error-handler')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const parseDuration = require('parse-duration')
@@ -22,10 +22,17 @@ module.exports = create => config => {
 
   config.apiAddr = (config.apiAddr || getDefaultApiAddr(config)).toString()
   config.apiAddr = config.apiAddr.startsWith('/') ? toUri(config.apiAddr) : config.apiAddr
-  config.apiPath = config.apiPath || config['api-path'] || '/api/v0'
+  config.apiAddr = trimEnd(config.apiAddr, '/')
 
-  // TODO configure ky to use config.fetch when this is released:
-  // https://github.com/sindresorhus/ky/pull/153
+  const apiAddrPath = getNonRootPath(config.apiAddr)
+
+  // Use configured apiPath, or path on the end of apiAddr (if there is one) or default to /api/v0
+  config.apiPath = config.apiPath || config['api-path'] || apiAddrPath || '/api/v0'
+  config.apiPath = trimEnd(config.apiPath, '/')
+
+  // If user passed apiAddr with a path, trim it from the end (it is now apiPath)
+  config.apiAddr = apiAddrPath ? trimEnd(config.apiAddr, apiAddrPath) : config.apiAddr
+
   const defaults = {
     prefixUrl: config.apiAddr + config.apiPath,
     timeout: parseTimeout(config.timeout) || 60000 * 20,
@@ -50,13 +57,9 @@ module.exports = create => config => {
 
 function getDefaultApiAddr ({ protocol, host, port }) {
   if (isBrowser || isWebWorker) {
-    if (!protocol && !host && !port) { // Use current origin
-      return ''
-    }
-
     if (!protocol) {
       protocol = location.protocol.startsWith('http')
-        ? location.protocol.split(':')[0]
+        ? trimEnd(location.protocol, ':')
         : 'http'
     }
 
@@ -80,4 +83,14 @@ function wrap (fn, defaults) {
 
 function parseTimeout (value) {
   return typeof value === 'string' ? parseDuration(value) : value
+}
+
+const trimEnd = (str, end) => str.endsWith(end) ? str.slice(0, -end.length) : str
+
+// Get the path from a URL is it is not /
+function getNonRootPath (url) {
+  if (url) {
+    const { pathname } = new URL(url)
+    return pathname === '/' ? null : pathname
+  }
 }

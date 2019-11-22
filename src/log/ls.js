@@ -1,17 +1,18 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((callback) => {
-    send({
-      path: 'log/ls'
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
 
-      callback(null, result.Strings)
-    })
-  })
-}
+    const res = await ky.post('log/ls', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).json()
+
+    return res.Strings
+  }
+})

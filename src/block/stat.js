@@ -16,7 +16,7 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${cid}`)
 
-    const res = await ky.get('block/stat', {
+    const res = await ky.post('block/stat', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

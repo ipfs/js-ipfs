@@ -1,20 +1,20 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const pump = require('pump')
-const ndjson = require('ndjson')
+const ndjson = require('iterable-ndjson')
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-module.exports = (send) => {
-  return promisify((callback) => {
-    return send({
-      path: 'log/tail'
-    }, (err, response) => {
-      if (err) {
-        return callback(err)
-      }
-      const outputStream = ndjson.parse()
-      pump(response, outputStream)
-      callback(null, outputStream)
+module.exports = configure(({ ky }) => {
+  return async function * tail (options) {
+    options = options || {}
+
+    const res = await ky.post('log/tail', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
     })
-  })
-}
+
+    yield * ndjson(toIterable(res.body))
+  }
+})

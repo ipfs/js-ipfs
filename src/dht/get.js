@@ -5,14 +5,14 @@ const configure = require('../lib/configure')
 const toIterable = require('../lib/stream-to-iterable')
 
 module.exports = configure(({ ky }) => {
-  return (key, options) => (async function * () {
+  return async function * get (key, options) {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${key}`)
     if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.get('dht/get', {
+    const res = await ky.post('dht/get', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
@@ -26,5 +26,5 @@ module.exports = configure(({ ky }) => {
         yield message.Extra
       }
     }
-  })()
+  }
 })

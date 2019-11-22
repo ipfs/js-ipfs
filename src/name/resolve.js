@@ -1,22 +1,25 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-const transform = function (res, callback) {
-  callback(null, res.Path)
-}
+module.exports = configure(({ ky }) => {
+  return async (path, options) => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', path)
+    if (options.dhtRecordCount != null) searchParams.set('dht-record-count', options.dhtRecordCount)
+    if (options.dhtTimeout != null) searchParams.set('dht-timeout', options.dhtTimeout)
+    if (options.noCache != null) searchParams.set('nocache', options.noCache)
+    if (options.recursive != null) searchParams.set('recursive', options.recursive)
 
-    send.andTransform({
-      path: 'name/resolve',
-      args: args,
-      qs: opts
-    }, transform, callback)
-  })
-}
+    const res = await ky.post('name/resolve', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return res.Path
+  }
+})

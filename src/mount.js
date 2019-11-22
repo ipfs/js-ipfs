@@ -1,30 +1,23 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const moduleConfig = require('./utils/module-config')
+const configure = require('./lib/configure')
+const toCamel = require('./lib/object-to-camel')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
 
-  return promisify((ipfs, ipns, callback) => {
-    if (typeof ipfs === 'function') {
-      callback = ipfs
-      ipfs = null
-    } else if (typeof ipns === 'function') {
-      callback = ipns
-      ipns = null
-    }
-    const opts = {}
-    if (ipfs) {
-      opts.f = ipfs
-    }
-    if (ipns) {
-      opts.n = ipns
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.ipfsPath != null) searchParams.set('ipfs-path', options.ipfsPath)
+    if (options.ipnsPath != null) searchParams.set('ipns-path', options.ipnsPath)
 
-    send({
-      path: 'mount',
-      qs: opts
-    }, callback)
-  })
-}
+    const res = await ky.post('dns', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return toCamel(res)
+  }
+})

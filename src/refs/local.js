@@ -9,7 +9,7 @@ module.exports = configure(({ ky }) => {
   return async function * refsLocal (options) {
     options = options || {}
 
-    const res = await ky.get('refs/local', {
+    const res = await ky.post('refs/local', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers

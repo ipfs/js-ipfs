@@ -1,24 +1,22 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const multiaddr = require('multiaddr')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
-    send({
-      path: 'swarm/addrs/local',
-      qs: opts
-    }, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-      callback(null, result.Strings.map((addr) => {
-        return multiaddr(addr)
-      }))
-    })
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.id != null) searchParams.append('id', options.id)
+
+    const res = await ky.post('swarm/addrs/local', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return (res.Strings || []).map(a => multiaddr(a))
+  }
+})

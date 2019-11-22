@@ -12,7 +12,7 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    const res = await ky.get('object/links', {
+    const res = await ky.post('object/links', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

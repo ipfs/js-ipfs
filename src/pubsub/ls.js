@@ -6,7 +6,7 @@ module.exports = configure(({ ky }) => {
   return async (options) => {
     options = options || {}
 
-    const { Strings } = await ky.get('pubsub/ls', {
+    const { Strings } = await ky.post('pubsub/ls', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

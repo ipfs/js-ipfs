@@ -1,7 +1,9 @@
 'use strict'
 
-module.exports = (send) => ({
-  cancel: require('./cancel')(send),
-  state: require('./state')(send),
-  subs: require('./subs')(send)
+const callbackify = require('callbackify')
+
+module.exports = config => ({
+  cancel: callbackify.variadic(require('./cancel')(config)),
+  state: callbackify.variadic(require('./state')(config)),
+  subs: callbackify.variadic(require('./subs')(config))
 })

@@ -1,10 +1,13 @@
 'use strict'
 
-module.exports = (config) => {
+const configure = require('./lib/configure')
+
+module.exports = configure(({ apiAddr, apiPath }) => {
+  const url = new URL(apiAddr)
   return () => ({
-    host: config.host,
-    port: config.port,
-    protocol: config.protocol,
-    'api-path': config['api-path']
+    host: url.hostname,
+    port: url.port,
+    protocol: url.protocol.split(':')[0], // remove ":"
+    'api-path': apiPath
   })
-}
+})

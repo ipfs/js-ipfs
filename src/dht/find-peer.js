@@ -8,14 +8,14 @@ const configure = require('../lib/configure')
 const toIterable = require('../lib/stream-to-iterable')
 
 module.exports = configure(({ ky }) => {
-  return (peerId, options) => (async function * () {
+  return async function * findPeer (peerId, options) {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', `${peerId}`)
     if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.get('dht/findpeer', {
+    const res = await ky.post('dht/findpeer', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
@@ -33,5 +33,5 @@ module.exports = configure(({ ky }) => {
         }
       }
     }
-  })()
+  }
 })

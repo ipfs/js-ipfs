@@ -2,24 +2,16 @@
 
 const configure = require('./lib/configure')
 const Tar = require('it-tar')
-const IsIpfs = require('is-ipfs')
+const { Buffer } = require('buffer')
+const CID = require('cids')
 const toIterable = require('./lib/stream-to-iterable')
-const cleanCID = require('./utils/clean-cid')
 
 module.exports = configure(({ ky }) => {
   return async function * get (path, options) {
     options = options || {}
 
-    try {
-      path = cleanCID(path)
-    } catch (err) {
-      if (!IsIpfs.ipfsPath(path)) {
-        throw err
-      }
-    }
-
     const searchParams = new URLSearchParams()
-    searchParams.set('arg', path.toString())
+    searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
 
     if (options.compress !== undefined) {
       searchParams.set('compress', options.compress)
@@ -37,7 +29,7 @@ module.exports = configure(({ ky }) => {
       searchParams.set('length', options.length)
     }
 
-    const res = await ky.get('get', {
+    const res = await ky.post('get', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

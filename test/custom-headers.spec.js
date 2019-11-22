@@ -4,23 +4,13 @@
 const isNode = require('detect-node')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const ipfsClient = require('../src')
-const f = require('./utils/factory')
 
 describe('custom headers', function () {
   // do not test in browser
   if (!isNode) { return }
-  this.timeout(50 * 1000) // slow CI
   let ipfs
-  let ipfsd
   // initialize ipfs with custom headers
-  before(async () => {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-
+  before(() => {
     ipfs = ipfsClient({
       host: 'localhost',
       port: 6001,
@@ -37,6 +27,7 @@ describe('custom headers', function () {
       req.on('data', () => {})
       req.on('end', () => {
         res.writeHead(200)
+        res.write(JSON.stringify({}))
         res.end()
         // ensure custom headers are present
         expect(req.headers.authorization).to.equal('Bearer ' + 'YOLO')
@@ -48,16 +39,10 @@ describe('custom headers', function () {
     server.listen(6001, () => {
       ipfs.id((err, res) => {
         if (err) {
-          throw new Error('Unexpected error.')
+          throw err
         }
         // this call is used to test that headers are being sent.
       })
     })
-  })
-
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
   })
 })

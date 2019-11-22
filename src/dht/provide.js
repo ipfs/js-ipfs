@@ -9,7 +9,7 @@ const toIterable = require('../lib/stream-to-iterable')
 const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
-  return (cids, options) => (async function * () {
+  return async function * provide (cids, options) {
     cids = Array.isArray(cids) ? cids : [cids]
     options = options || {}
 
@@ -18,7 +18,7 @@ module.exports = configure(({ ky }) => {
     if (options.recursive != null) searchParams.set('recursive', options.recursive)
     if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.get('dht/provide', {
+    const res = await ky.post('dht/provide', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
@@ -36,5 +36,5 @@ module.exports = configure(({ ky }) => {
       }
       yield message
     }
-  })()
+  }
 })

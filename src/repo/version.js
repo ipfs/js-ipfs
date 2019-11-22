@@ -1,21 +1,21 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-const transform = function (res, callback) {
-  callback(null, res.Version)
-}
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.sizeOnly) searchParams.set('size-only', options.sizeOnly)
 
-    send.andTransform({
-      path: 'repo/version',
-      qs: opts
-    }, transform, callback)
-  })
-}
+    const res = await ky.post('repo/version', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return res.Version
+  }
+})

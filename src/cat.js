@@ -6,7 +6,7 @@ const configure = require('./lib/configure')
 const toIterable = require('./lib/stream-to-iterable')
 
 module.exports = configure(({ ky }) => {
-  return (path, options) => (async function * () {
+  return async function * cat (path, options) {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
@@ -20,7 +20,7 @@ module.exports = configure(({ ky }) => {
     if (options.offset) searchParams.set('offset', options.offset)
     if (options.length) searchParams.set('length', options.length)
 
-    const res = await ky.get('cat', {
+    const res = await ky.post('cat', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
@@ -30,5 +30,5 @@ module.exports = configure(({ ky }) => {
     for await (const chunk of toIterable(res.body)) {
       yield Buffer.from(chunk)
     }
-  })()
+  }
 })

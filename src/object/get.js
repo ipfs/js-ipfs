@@ -13,7 +13,7 @@ module.exports = configure(({ ky }) => {
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
     searchParams.set('data-encoding', 'base64')
 
-    const res = await ky.get('object/get', {
+    const res = await ky.post('object/get', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

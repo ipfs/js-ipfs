@@ -1,16 +1,12 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return {
-    gen: require('./gen')(send),
-    list: require('./list')(send),
-    rename: require('./rename')(send),
-    rm: require('./rm')(send),
-    export: require('./export')(send),
-    import: require('./import')(send)
-  }
-}
+module.exports = config => ({
+  gen: callbackify.variadic(require('./gen')(config)),
+  list: callbackify.variadic(require('./list')(config)),
+  rename: callbackify.variadic(require('./rename')(config)),
+  rm: callbackify.variadic(require('./rm')(config)),
+  export: callbackify.variadic(require('./export')(config)),
+  import: callbackify.variadic(require('./import')(config))
+})

@@ -8,7 +8,7 @@ const configure = require('../lib/configure')
 const toIterable = require('../lib/stream-to-iterable')
 
 module.exports = configure(({ ky }) => {
-  return (cid, options) => (async function * () {
+  return async function * findProvs (cid, options) {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
@@ -16,7 +16,7 @@ module.exports = configure(({ ky }) => {
     if (options.numProviders) searchParams.set('num-providers', options.numProviders)
     if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.get('dht/findprovs', {
+    const res = await ky.post('dht/findprovs', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
@@ -34,5 +34,5 @@ module.exports = configure(({ ky }) => {
         }
       }
     }
-  })()
+  }
 })

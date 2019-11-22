@@ -1,33 +1,29 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const streamToValueWithTransformer = require('../utils/stream-to-value-with-transformer')
 const CID = require('cids')
+const ndjson = require('iterable-ndjson')
+const configure = require('../lib/configure')
+const toIterable = require('../lib/stream-to-iterable')
 
-const transform = function (res, callback) {
-  callback(null, res.map(r => ({
-    err: r.Err ? new Error(r.Err) : null,
-    cid: (r.Key || {})['/'] ? new CID(r.Key['/']) : null
-  })))
-}
+module.exports = configure(({ ky }) => {
+  return async function * gc (peerId, options) {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.streamErrors) searchParams.set('stream-errors', options.streamErrors)
 
-    const request = {
-      path: 'repo/gc',
-      qs: opts
-    }
-    send(request, (err, result) => {
-      if (err) {
-        return callback(err)
-      }
-
-      streamToValueWithTransformer(result, transform, callback)
+    const res = await ky.post('repo/gc', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
     })
-  })
-}
+
+    for await (const gcResult of ndjson(toIterable(res.body))) {
+      yield {
+        err: gcResult.Error ? new Error(gcResult.Error) : null,
+        cid: (gcResult.Key || {})['/'] ? new CID(gcResult.Key['/']) : null
+      }
+    }
+  }
+})

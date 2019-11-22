@@ -1,60 +1,27 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const pump = require('pump')
-const Writable = require('readable-stream').Writable
-const moduleConfig = require('./utils/module-config')
-const PingMessageStream = require('./utils/ping-message-stream')
+const ndjson = require('iterable-ndjson')
+const configure = require('./lib/configure')
+const toIterable = require('./lib/stream-to-iterable')
+const toCamel = require('./lib/object-to-camel')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = configure(({ ky }) => {
+  return async function * ping (peerId, options) {
+    options = options || {}
 
-  return promisify((id, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', `${peerId}`)
+    if (options.count != null) searchParams.set('count', options.count)
+
+    const res = await ky.post('ping', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    })
+
+    for await (const chunk of ndjson(toIterable(res.body))) {
+      yield toCamel(chunk)
     }
-
-    if (opts.n && opts.count) {
-      return callback(new Error('Use either n or count, not both'))
-    }
-
-    // Default number of packtes to 1
-    if (!opts.n && !opts.count) {
-      opts.n = 1
-    }
-
-    const request = {
-      path: 'ping',
-      args: id,
-      qs: opts
-    }
-
-    // Transform the response stream to a value:
-    // [{ success: <boolean>, time: <number>, text: <string> }]
-    const transform = (stream, callback) => {
-      const messageConverter = new PingMessageStream()
-      const responses = []
-
-      pump(
-        stream,
-        messageConverter,
-        new Writable({
-          objectMode: true,
-          write (chunk, enc, cb) {
-            responses.push(chunk)
-            cb()
-          }
-        }),
-        (err) => {
-          if (err) {
-            return callback(err)
-          }
-          callback(null, responses)
-        }
-      )
-    }
-
-    send.andTransform(request, transform, callback)
-  })
-}
+  }
+})

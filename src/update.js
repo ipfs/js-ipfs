@@ -1,41 +1,16 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const moduleConfig = require('./utils/module-config')
+const configure = require('./lib/configure')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+module.exports = configure(({ ky }) => {
+  return options => {
+    options = options || {}
 
-  return {
-    apply: promisify((opts, callback) => {
-      if (typeof (opts) === 'function') {
-        callback = opts
-        opts = {}
-      }
-      send({
-        path: 'update',
-        qs: opts
-      }, callback)
-    }),
-    check: promisify((opts, callback) => {
-      if (typeof (opts) === 'function') {
-        callback = opts
-        opts = {}
-      }
-      send({
-        path: 'update/check',
-        qs: opts
-      }, callback)
-    }),
-    log: promisify((opts, callback) => {
-      if (typeof (opts) === 'function') {
-        callback = opts
-        opts = {}
-      }
-      send({
-        path: 'update/log',
-        qs: opts
-      }, callback)
-    })
+    return ky.post('update', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).text()
   }
-}
+})

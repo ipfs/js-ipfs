@@ -19,7 +19,7 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', cidPath)
 
-    const res = await ky.get('dag/resolve', {
+    const res = await ky.post('dag/resolve', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

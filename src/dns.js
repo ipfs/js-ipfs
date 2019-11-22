@@ -1,25 +1,22 @@
 'use strict'
 
-const promisify = require('promisify-es6')
-const moduleConfig = require('./utils/module-config')
+const configure = require('./lib/configure')
 
-const transform = function (res, callback) {
-  callback(null, res.Path)
-}
+module.exports = configure(({ ky }) => {
+  return async (domain, options) => {
+    options = options || {}
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', domain)
+    if (options.recursive != null) searchParams.set('recursive', options.recursive)
 
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const res = await ky.post('dns', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
 
-    send.andTransform({
-      path: 'dns',
-      args: args,
-      qs: opts
-    }, transform, callback)
-  })
-}
+    return res.Path
+  }
+})

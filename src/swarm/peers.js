@@ -1,74 +1,48 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const multiaddr = require('multiaddr')
 const PeerId = require('peer-id')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
-    const verbose = opts.v || opts.verbose
-    send({
-      path: 'swarm/peers',
-      qs: opts
-    }, (err, response) => {
-      if (err) {
-        return callback(err)
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    if (options.direction != null) searchParams.append('direction', options.direction)
+    if (options.latency != null) searchParams.append('latency', options.latency)
+    if (options.streams != null) searchParams.append('streams', options.streams)
+    if (options.verbose != null) searchParams.append('verbose', options.verbose)
+
+    const res = await ky.post('swarm/peers', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return (res.Peers || []).map(peer => {
+      const info = {}
+      try {
+        info.addr = multiaddr(peer.Addr)
+        info.peer = PeerId.createFromB58String(peer.Peer)
+      } catch (error) {
+        info.error = error
+        info.rawPeerInfo = peer
       }
-      const peerInfo = parsePeersResponse(verbose, response)
-      callback(null, peerInfo)
+      if (peer.Muxer) {
+        info.muxer = peer.Muxer
+      }
+      if (peer.Latency) {
+        info.latency = peer.Latency
+      }
+      if (peer.Streams) {
+        info.streams = peer.Streams
+      }
+      if (peer.Direction != null) {
+        info.direction = peer.Direction
+      }
+      return info
     })
-  })
-}
-
-function parsePeersResponse (verbose, response) {
-  // go-ipfs <= 0.4.4
-  if (Array.isArray(response.Strings)) {
-    return response.Strings.map(parseLegacyPeer.bind(null, verbose))
   }
-  // go-ipfs >= 0.4.5
-  if (Array.isArray(response.Peers)) {
-    return response.Peers.map(parsePeer.bind(null, verbose))
-  }
-  return []
-}
-
-function parseLegacyPeer (verbose, peer) {
-  const res = {}
-  try {
-    if (verbose) {
-      const parts = peer.split(' ')
-      res.addr = multiaddr(parts[0])
-      res.latency = parts[1]
-    } else {
-      res.addr = multiaddr(peer)
-    }
-    res.peer = PeerId.createFromB58String(res.addr.getPeerId())
-  } catch (error) {
-    res.error = error
-    res.rawPeerInfo = peer
-  }
-  return res
-}
-
-function parsePeer (verbose, peer) {
-  const res = {}
-  try {
-    res.addr = multiaddr(peer.Addr)
-    res.peer = PeerId.createFromB58String(peer.Peer)
-    res.muxer = peer.Muxer
-  } catch (error) {
-    res.error = error
-    res.rawPeerInfo = peer
-  }
-  if (peer.Latency) {
-    res.latency = peer.Latency
-  }
-  if (peer.Streams) {
-    res.streams = peer.Streams
-  }
-  return res
-}
+})

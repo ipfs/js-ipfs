@@ -29,24 +29,6 @@ describe('.swarm.peers', function () {
     expect(scope.isDone()).to.equal(true)
   })
 
-  it('handles a go-ipfs <= 0.4.4 peer response', async () => {
-    const response = { Strings: ['/ip4/73.109.217.59/tcp/49311/ipfs/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm'] }
-
-    const scope = nock(apiUrl)
-      .post('/api/v0/swarm/peers')
-      .query(true)
-      .reply(200, response)
-
-    const res = await ipfs.swarm.peers()
-
-    expect(res).to.be.a('array')
-    expect(res.length).to.equal(1)
-    expect(res[0].error).to.not.exist()
-    expect(res[0].addr.toString()).to.equal('/ip4/73.109.217.59/tcp/49311/ipfs/QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm')
-    expect(res[0].peer.toB58String()).to.equal('QmWjxEGC7BthJrCf7QTModrcsRweHbupdPTY4oGMVoDZXm')
-    expect(scope.isDone()).to.equal(true)
-  })
-
   it('handles an ip6 quic peer', async () => {
     const response = { Peers: [{ Addr: '/ip6/2001:8a0:7ac5:4201:3ac9:86ff:fe31:7095/udp/4001/quic', Peer: 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSupNKC', Latency: '', Muxer: '', Streams: null }] }
 

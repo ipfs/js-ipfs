@@ -1,21 +1,18 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../../lib/configure')
 
-const transform = function (res, callback) {
-  callback(null, res.Strings || [])
-}
+module.exports = configure(({ ky }) => {
+  return async (name, options) => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const res = await ky.post('name/pubsub/subs', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).json()
 
-    send.andTransform({
-      path: 'name/pubsub/subs',
-      qs: opts
-    }, transform, callback)
-  })
-}
+    return res.Strings || []
+  }
+})

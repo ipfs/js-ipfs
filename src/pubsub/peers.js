@@ -14,7 +14,7 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', topic)
 
-    const { Strings } = await ky.get('pubsub/peers', {
+    const { Strings } = await ky.post('pubsub/peers', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

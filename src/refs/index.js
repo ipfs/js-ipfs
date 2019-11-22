@@ -1,8 +1,8 @@
 'use strict'
 
 const configure = require('../lib/configure')
-const cleanCID = require('../utils/clean-cid')
-const IsIpfs = require('is-ipfs')
+const { Buffer } = require('buffer')
+const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const toIterable = require('../lib/stream-to-iterable')
 const toCamel = require('../lib/object-to-camel')
@@ -38,19 +38,11 @@ module.exports = config => {
         args = [args]
       }
 
-      for (let arg of args) {
-        try {
-          arg = cleanCID(arg)
-        } catch (err) {
-          if (!IsIpfs.ipfsPath(arg)) {
-            throw err
-          }
-        }
-
-        searchParams.append('arg', arg.toString())
+      for (const arg of args) {
+        searchParams.append('arg', `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`)
       }
 
-      const res = await ky.get('refs', {
+      const res = await ky.post('refs', {
         timeout: options.timeout,
         signal: options.signal,
         headers: options.headers,

@@ -2,14 +2,10 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const defaultConfig = require('../src/utils/default-config.js')
-const config = defaultConfig()
-config.host = 'test'
-config.port = '1111'
 
 describe('submodules', () => {
   it('bitswap', () => {
-    const bitswap = require('../src/bitswap')(config)
+    const bitswap = require('../src/bitswap')()
 
     expect(bitswap.wantlist).to.be.a('function')
     expect(bitswap.stat).to.be.a('function')
@@ -17,7 +13,7 @@ describe('submodules', () => {
   })
 
   it('block', () => {
-    const block = require('../src/block')(config)
+    const block = require('../src/block')()
 
     expect(block.get).to.be.a('function')
     expect(block.stat).to.be.a('function')
@@ -25,7 +21,7 @@ describe('submodules', () => {
   })
 
   it('bootstrap', () => {
-    const bootstrap = require('../src/bootstrap')(config)
+    const bootstrap = require('../src/bootstrap')()
 
     expect(bootstrap.add).to.be.a('function')
     expect(bootstrap.rm).to.be.a('function')
@@ -33,7 +29,7 @@ describe('submodules', () => {
   })
 
   it('config', () => {
-    const cfg = require('../src/config')(config)
+    const cfg = require('../src/config')()
 
     expect(cfg.get).to.be.a('function')
     expect(cfg.set).to.be.a('function')
@@ -44,7 +40,7 @@ describe('submodules', () => {
   })
 
   it('dht', () => {
-    const dht = require('../src/dht')(config)
+    const dht = require('../src/dht')()
 
     expect(dht.get).to.be.a('function')
     expect(dht.put).to.be.a('function')
@@ -55,21 +51,21 @@ describe('submodules', () => {
   })
 
   it('id', () => {
-    const id = require('../src/id')(config)
+    const id = require('../src/id')()
 
     expect(id).to.be.a('function')
   })
 
   it('version', () => {
-    const version = require('../src/version')(config)
+    const version = require('../src/version')()
 
     expect(version).to.be.a('function')
   })
 
   it('ping', () => {
-    const ping = require('../src/ping')(config)
-    const pingPullStream = require('../src/ping-pull-stream')(config)
-    const pingReadableStream = require('../src/ping-readable-stream')(config)
+    const ping = require('../src')().ping
+    const pingPullStream = require('../src')().pingPullStream
+    const pingReadableStream = require('../src')().pingReadableStream
 
     expect(ping).to.be.a('function')
     expect(pingPullStream).to.be.a('function')
@@ -77,7 +73,7 @@ describe('submodules', () => {
   })
 
   it('log', () => {
-    const log = require('../src/log')(config)
+    const log = require('../src/log')()
 
     expect(log.ls).to.be.a('function')
     expect(log.tail).to.be.a('function')
@@ -85,21 +81,21 @@ describe('submodules', () => {
   })
 
   it('key', () => {
-    const key = require('../src/key')(config)
+    const key = require('../src/key')()
 
     expect(key.gen).to.be.a('function')
     expect(key.list).to.be.a('function')
   })
 
   it('name', () => {
-    const name = require('../src/name')(config)
+    const name = require('../src/name')()
 
     expect(name.publish).to.be.a('function')
     expect(name.resolve).to.be.a('function')
   })
 
   it('pin', () => {
-    const pin = require('../src/pin')(config)
+    const pin = require('../src/pin')()
 
     expect(pin.add).to.be.a('function')
     expect(pin.rm).to.be.a('function')
@@ -107,14 +103,14 @@ describe('submodules', () => {
   })
 
   it('repo', () => {
-    const repo = require('../src/repo')(config)
+    const repo = require('../src/repo')()
 
     expect(repo.gc).to.be.a('function')
     expect(repo.stat).to.be.a('function')
   })
 
   it('stats', () => {
-    const stats = require('../src/stats')(config)
+    const stats = require('../src/stats')()
 
     expect(stats.bitswap).to.be.a('function')
     expect(stats.bw).to.be.a('function')
@@ -122,7 +118,7 @@ describe('submodules', () => {
   })
 
   it('swarm', () => {
-    const swarm = require('../src/swarm')(config)
+    const swarm = require('../src/swarm')()
 
     expect(swarm.peers).to.be.a('function')
     expect(swarm.connect).to.be.a('function')
@@ -132,7 +128,7 @@ describe('submodules', () => {
   })
 
   it('diag', () => {
-    const diag = require('../src/diag')(config)
+    const diag = require('../src/diag')()
 
     expect(diag.net).to.be.a('function')
     expect(diag.sys).to.be.a('function')
@@ -140,7 +136,7 @@ describe('submodules', () => {
   })
 
   it('object', () => {
-    const object = require('../src/object')(config)
+    const object = require('../src/object')()
 
     expect(object.get).to.be.a('function')
     expect(object.put).to.be.a('function')
@@ -155,7 +151,7 @@ describe('submodules', () => {
   })
 
   it('pubsub', () => {
-    const pubsub = require('../src/pubsub')(config)
+    const pubsub = require('../src/pubsub')()
 
     expect(pubsub.subscribe).to.be.a('function')
     expect(pubsub.unsubscribe).to.be.a('function')
@@ -165,7 +161,7 @@ describe('submodules', () => {
   })
 
   it('files regular API', () => {
-    const filesRegular = require('../src')(config)
+    const filesRegular = require('../src')()
 
     expect(filesRegular.add).to.be.a('function')
     expect(filesRegular.addReadableStream).to.be.a('function')
@@ -191,7 +187,7 @@ describe('submodules', () => {
   })
 
   it('files MFS API', () => {
-    const files = require('../src/files')(config)
+    const files = require('../src/files')()
 
     expect(files.cp).to.be.a('function')
     expect(files.ls).to.be.a('function')
@@ -204,13 +200,13 @@ describe('submodules', () => {
   })
 
   it('commands', () => {
-    const commands = require('../src/commands')(config)
+    const commands = require('../src/commands')()
 
     expect(commands).to.be.a('function')
   })
 
   it('mount', () => {
-    const mount = require('../src/mount')(config)
+    const mount = require('../src/mount')()
 
     expect(mount).to.be.a('function')
   })

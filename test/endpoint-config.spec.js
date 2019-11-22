@@ -3,43 +3,16 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const isNode = require('detect-node')
 const ipfsClient = require('../src')
-const f = require('./utils/factory')
 
 describe('.getEndpointConfig', () => {
-  if (!isNode) { return }
-
-  let ipfsd
-  let ipfs
-
-  before(async function () {
-    this.timeout(20 * 1000) // slow CI
-
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
-  })
-
-  after(async function () {
-    this.timeout(10 * 1000)
-
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
-
   it('should return the endpoint configuration', function () {
+    const ipfs = ipfsClient('https://127.0.0.1:5501/ipfs/api/')
     const endpoint = ipfs.getEndpointConfig()
 
     expect(endpoint.host).to.equal('127.0.0.1')
-    expect(endpoint.protocol).to.equal('http')
-    expect(endpoint['api-path']).to.equal('/api/v0/')
-    // changes per test run so we just assert it exists.
-    expect(endpoint).to.have.property('port')
+    expect(endpoint.protocol).to.equal('https')
+    expect(endpoint['api-path']).to.equal('/ipfs/api')
+    expect(endpoint.port).to.equal('5501')
   })
 })

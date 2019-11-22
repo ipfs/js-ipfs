@@ -15,7 +15,7 @@ module.exports = configure(({ ky }) => {
     if (path) searchParams.set('arg', `${path}`)
     if (options.type) searchParams.set('type', options.type)
 
-    const { Keys } = await ky.get('pin/ls', {
+    const { Keys } = await ky.post('pin/ls', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

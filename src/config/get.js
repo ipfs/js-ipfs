@@ -15,7 +15,7 @@ module.exports = configure(({ ky }) => {
     if (key) searchParams.set('arg', key)
 
     const url = key ? 'config' : 'config/show'
-    const data = await ky.get(url, {
+    const data = await ky.post(url, {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

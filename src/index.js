@@ -1,5 +1,4 @@
 'use strict'
-/* global self */
 
 const isIPFS = require('is-ipfs')
 const { Buffer } = require('buffer')
@@ -10,67 +9,151 @@ const multicodec = require('multicodec')
 const multihash = require('multihashes')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const loadCommands = require('./utils/load-commands')
-const getConfig = require('./utils/default-config')
-const sendRequest = require('./utils/send-request')
+const nodeify = require('promise-nodeify')
+const callbackify = require('callbackify')
+const all = require('async-iterator-all')
+const toPullStream = require('async-iterator-to-pull-stream')
+const toStream = require('it-to-stream')
+const BufferList = require('bl/BufferList')
+const { concatify, collectify, pullify, streamify } = require('./lib/converters')
 
-function ipfsClient (hostOrMultiaddr, port, userOptions) {
-  // convert all three params to objects that we can merge.
-  let options = {}
+function ipfsClient (config) {
+  const add = require('./add')(config)
+  const addFromFs = require('./add-from-fs')(config)
+  const addFromURL = require('./add-from-url')(config)
+  const cat = require('./cat')(config)
+  const get = require('./get')(config)
+  const ls = require('./ls')(config)
+  const ping = require('./ping')(config)
+  const refs = require('./refs')(config)
 
-  if (!hostOrMultiaddr) {
-    // autoconfigure host and port in browser
-    if (typeof self !== 'undefined') {
-      options = urlToOptions(self.location)
-    }
-  } else if (multiaddr.isMultiaddr(hostOrMultiaddr)) {
-    options = maToOptions(hostOrMultiaddr)
-  } else if (typeof hostOrMultiaddr === 'object') {
-    options = hostOrMultiaddr
-  } else if (typeof hostOrMultiaddr === 'string') {
-    if (hostOrMultiaddr[0] === '/') {
-      // throws if multiaddr is malformed or can't be converted to a nodeAddress
-      options = maToOptions(multiaddr(hostOrMultiaddr))
-    } else {
-      // hostOrMultiaddr is domain or ip address as a string
-      options.host = hostOrMultiaddr
-    }
+  const api = {
+    add: (input, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      return nodeify(collectify(add)(input, options), callback)
+    },
+    addReadableStream: streamify.transform(add),
+    addPullStream: pullify.transform(add),
+    addFromFs: (path, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      return nodeify(collectify(addFromFs)(path, options), callback)
+    },
+    addFromURL: (url, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      return nodeify(collectify(addFromURL)(url, options), callback)
+    },
+    addFromStream: (input, options, callback) => {
+      if (typeof options === 'function') {
+        callback = options
+        options = {}
+      }
+      return nodeify(collectify(add)(input, options), callback)
+    },
+    _addAsyncIterator: add,
+    bitswap: require('./bitswap')(config),
+    block: require('./block')(config),
+    bootstrap: require('./bootstrap')(config),
+    cat: callbackify.variadic((path, options) => concatify(cat)(path, options)),
+    catReadableStream: streamify.readable(cat),
+    catPullStream: pullify.source(cat),
+    _catAsyncIterator: cat,
+    commands: callbackify.variadic(require('./commands')(config)),
+    config: require('./config')(config),
+    dag: require('./dag')(config),
+    dht: require('./dht')(config),
+    diag: require('./diag')(config),
+    dns: callbackify.variadic(require('./dns')(config)),
+    files: require('./files')(config),
+    get: callbackify.variadic(async (path, options) => {
+      const output = []
+
+      for await (const entry of get(path, options)) {
+        if (entry.content) {
+          entry.content = new BufferList(await all(entry.content)).slice()
+        }
+
+        output.push(entry)
+      }
+
+      return output
+    }),
+    getEndpointConfig: require('./get-endpoint-config')(config),
+    getReadableStream: streamify.readable(async function * (path, options) {
+      for await (const file of get(path, options)) {
+        if (file.content) {
+          const { content } = file
+          file.content = toStream((async function * () {
+            for await (const chunk of content) {
+              yield chunk.slice() // Convert bl to Buffer
+            }
+          })())
+        }
+
+        yield file
+      }
+    }),
+    getPullStream: pullify.source(async function * (path, options) {
+      for await (const file of get(path, options)) {
+        if (file.content) {
+          const { content } = file
+          file.content = toPullStream((async function * () {
+            for await (const chunk of content) {
+              yield chunk.slice() // Convert bl to Buffer
+            }
+          })())
+        }
+
+        yield file
+      }
+    }),
+    _getAsyncIterator: get,
+    id: callbackify.variadic(require('./id')(config)),
+    key: require('./key')(config),
+    log: require('./log')(config),
+    ls: callbackify.variadic((path, options) => collectify(ls)(path, options)),
+    lsReadableStream: streamify.readable(ls),
+    lsPullStream: pullify.source(ls),
+    _lsAsyncIterator: ls,
+    mount: callbackify.variadic(require('./mount')(config)),
+    name: require('./name')(config),
+    object: require('./object')(config),
+    pin: require('./pin')(config),
+    ping: callbackify.variadic(collectify(ping)),
+    pingReadableStream: streamify.readable(ping),
+    pingPullStream: pullify.source(ping),
+    pubsub: require('./pubsub')(config),
+    refs: callbackify.variadic((path, options) => collectify(refs)(path, options)),
+    refsReadableStream: streamify.readable(refs),
+    refsPullStream: pullify.source(refs),
+    _refsAsyncIterator: refs,
+    repo: require('./repo')(config),
+    resolve: callbackify.variadic(require('./resolve')(config)),
+    stats: require('./stats')(config),
+    stop: callbackify.variadic(require('./stop')(config)),
+    shutdown: callbackify.variadic(require('./stop')(config)),
+    swarm: require('./swarm')(config),
+    version: callbackify.variadic(require('./version')(config))
   }
 
-  if (port && typeof port !== 'object') {
-    port = { port: port }
-  }
+  Object.assign(api.refs, {
+    local: callbackify.variadic(options => collectify(refs.local)(options)),
+    localReadableStream: streamify.readable(refs.local),
+    localPullStream: pullify.source(refs.local),
+    _localAsyncIterator: refs.local
+  })
 
-  const config = Object.assign(getConfig(), options, port, userOptions)
-  const requestAPI = sendRequest(config)
-  const cmds = loadCommands(requestAPI, config)
-  cmds.send = requestAPI
-
-  return cmds
+  return api
 }
 
-function maToOptions (multiaddr) {
-  // ma.nodeAddress() throws if multiaddr can't be converted to a nodeAddress
-  const nodeAddr = multiaddr.nodeAddress()
-  const protos = multiaddr.protos()
-  // only http and https are allowed as protocol,
-  // anything else will be replaced with http
-  const exitProtocol = protos[protos.length - 1].name
-  return {
-    host: nodeAddr.address,
-    port: nodeAddr.port,
-    protocol: exitProtocol.startsWith('http') ? exitProtocol : 'http'
-  }
-}
-
-function urlToOptions (url) {
-  return {
-    host: url.hostname,
-    port: url.port || (url.protocol.startsWith('https') ? 443 : 80),
-    protocol: url.protocol.startsWith('http') ? url.protocol.split(':')[0] : 'http'
-  }
-}
+Object.assign(ipfsClient, { isIPFS, Buffer, CID, multiaddr, multibase, multicodec, multihash, PeerId, PeerInfo })
 
 module.exports = ipfsClient
-
-Object.assign(module.exports, { isIPFS, Buffer, CID, multiaddr, multibase, multicodec, multihash, PeerId, PeerInfo })

@@ -1,23 +1,19 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../../lib/configure')
+const toCamel = require('../../lib/object-to-camel')
 
-const transform = function (res, callback) {
-  callback(null, {
-    enabled: res.Enabled
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async options => {
+    options = options || {}
 
-module.exports = (send) => {
-  return promisify((opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
+    const res = await ky.post('name/pubsub/state', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams: options.searchParams
+    }).json()
 
-    send.andTransform({
-      path: 'name/pubsub/state',
-      qs: opts
-    }, transform, callback)
-  })
-}
+    return toCamel(res)
+  }
+})

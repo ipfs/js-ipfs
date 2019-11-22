@@ -1,23 +1,15 @@
 'use strict'
 
-const IsIpfs = require('is-ipfs')
-const cleanCID = require('./utils/clean-cid')
+const { Buffer } = require('buffer')
+const CID = require('cids')
 const configure = require('./lib/configure')
 
 module.exports = configure(({ ky }) => {
   return async function * ls (path, options) {
     options = options || {}
 
-    try {
-      path = cleanCID(path)
-    } catch (err) {
-      if (!IsIpfs.ipfsPath(path)) {
-        throw err
-      }
-    }
-
     const searchParams = new URLSearchParams()
-    searchParams.set('arg', path.toString())
+    searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
 
     if (options.long !== undefined) {
       searchParams.set('long', options.long)
@@ -31,7 +23,7 @@ module.exports = configure(({ ky }) => {
       searchParams.set('recursive', options.recursive)
     }
 
-    const res = await ky.get('ls', {
+    const res = await ky.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

@@ -1,13 +1,10 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
+const { collectify } = require('../lib/converters')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return {
-    gc: require('./gc')(send),
-    stat: require('./stat')(send),
-    version: require('./version')(send)
-  }
-}
+module.exports = config => ({
+  gc: callbackify.variadic(collectify(require('./gc')(config))),
+  stat: callbackify.variadic(require('./stat')(config)),
+  version: callbackify.variadic(require('./version')(config))
+})

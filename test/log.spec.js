@@ -37,20 +37,11 @@ describe('.log', function () {
       }
     }, 1000)
 
-    const res = await ipfs.log.tail()
-
-    return new Promise((resolve, reject) => {
-      res.on('error', (err) => {
-        reject(err)
-      })
-
-      res.once('data', (obj) => {
-        clearInterval(i)
-        expect(obj).to.be.an('object')
-        res.end()
-        resolve()
-      })
-    })
+    for await (const message of ipfs.log.tail()) {
+      clearInterval(i)
+      expect(message).to.be.an('object')
+      break
+    }
   })
 
   it('.log.ls', async () => {
@@ -65,7 +56,7 @@ describe('.log', function () {
 
     expect(res).to.exist()
     expect(res).to.be.an('object')
-    expect(res).to.not.have.property('Error')
-    expect(res).to.have.property('Message')
+    expect(res).to.not.have.property('error')
+    expect(res).to.have.property('message')
   })
 })

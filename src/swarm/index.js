@@ -1,15 +1,11 @@
 'use strict'
 
-const moduleConfig = require('../utils/module-config')
+const callbackify = require('callbackify')
 
-module.exports = (arg) => {
-  const send = moduleConfig(arg)
-
-  return {
-    peers: require('./peers')(send),
-    connect: require('./connect')(send),
-    disconnect: require('./disconnect')(send),
-    addrs: require('./addrs')(send),
-    localAddrs: require('./localAddrs')(send)
-  }
-}
+module.exports = config => ({
+  addrs: callbackify.variadic(require('./addrs')(config)),
+  connect: callbackify.variadic(require('./connect')(config)),
+  disconnect: callbackify.variadic(require('./disconnect')(config)),
+  localAddrs: callbackify.variadic(require('./localAddrs')(config)),
+  peers: callbackify.variadic(require('./peers')(config))
+})

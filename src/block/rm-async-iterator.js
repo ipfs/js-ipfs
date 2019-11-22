@@ -7,7 +7,7 @@ const toIterable = require('../lib/stream-to-iterable')
 const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
-  return async function * removeBlock (cid, options) {
+  return async function * rm (cid, options) {
     options = options || {}
 
     if (!Array.isArray(cid)) {

@@ -1,27 +1,23 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
+const toCamel = require('../lib/object-to-camel')
 
-module.exports = (send) => {
-  return promisify((subsystem, level, opts, callback) => {
-    if (typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
-    if (typeof subsystem !== 'string') {
-      return callback(new Error('Invalid subsystem type'))
-    }
+module.exports = configure(({ ky }) => {
+  return async (subsystem, level, options) => {
+    options = options || {}
 
-    if (typeof level !== 'string') {
-      return callback(new Error('Invalid level type'))
-    }
+    const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('arg', subsystem)
+    searchParams.append('arg', level)
 
-    send({
-      path: 'log/level',
-      args: [subsystem, level],
-      qs: opts,
-      files: undefined,
-      buffer: true
-    }, callback)
-  })
-}
+    const res = await ky.post('log/level', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return toCamel(res)
+  }
+})

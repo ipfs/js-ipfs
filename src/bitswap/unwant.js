@@ -15,7 +15,7 @@ module.exports = configure(({ ky }) => {
       searchParams.set('arg', new CID(cid).toString())
     }
 
-    const res = await ky.get('bitswap/unwant', {
+    const res = await ky.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,

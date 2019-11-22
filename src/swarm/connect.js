@@ -1,17 +1,22 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const configure = require('../lib/configure')
 
-module.exports = (send) => {
-  return promisify((args, opts, callback) => {
-    if (typeof (opts) === 'function') {
-      callback = opts
-      opts = {}
-    }
-    send({
-      path: 'swarm/connect',
-      args: args,
-      qs: opts
-    }, callback)
-  })
-}
+module.exports = configure(({ ky }) => {
+  return async (addrs, options) => {
+    addrs = Array.isArray(addrs) ? addrs : [addrs]
+    options = options || {}
+
+    const searchParams = new URLSearchParams(options.searchParams)
+    addrs.forEach(addr => searchParams.append('arg', addr))
+
+    const res = await ky.post('swarm/connect', {
+      timeout: options.timeout,
+      signal: options.signal,
+      headers: options.headers,
+      searchParams
+    }).json()
+
+    return res.Strings || []
+  }
+})

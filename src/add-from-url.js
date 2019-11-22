@@ -6,7 +6,7 @@ const toIterable = require('./lib/stream-to-iterable')
 module.exports = (config) => {
   const add = require('./add')(config)
 
-  return (url, options) => (async function * () {
+  return async function * addFromURL (url, options) {
     options = options || {}
 
     const { body } = await kyDefault.get(url)
@@ -17,5 +17,5 @@ module.exports = (config) => {
     }
 
     yield * add(input, options)
-  })()
+  }
 }

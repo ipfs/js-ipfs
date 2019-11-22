@@ -10,7 +10,7 @@ const encodeBufferURIComponent = require('../lib/encode-buffer-uri-component')
 const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
-  return (key, value, options) => (async function * () {
+  return async function * put (key, value, options) {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
@@ -20,7 +20,7 @@ module.exports = configure(({ ky }) => {
     value = Buffer.isBuffer(value) ? encodeBufferURIComponent(value) : encodeURIComponent(value)
 
     const url = `dht/put?arg=${key}&arg=${value}&${searchParams}`
-    const res = await ky.get(url, {
+    const res = await ky.post(url, {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers
@@ -37,5 +37,5 @@ module.exports = configure(({ ky }) => {
       }
       yield message
     }
-  })()
+  }
 })
