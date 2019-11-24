@@ -63,7 +63,7 @@
     "@hapi/ammo": "^4.0.0",
     "@hapi/boom": "^7.4.3",
     "@hapi/hapi": "^18.3.2",
-    "@hapi/joi": "^15.0.0",
+    "@hapi/joi": "^16.1.8",
     "abort-controller": "^3.0.0",
     "array-shuffle": "^1.0.1",
     "async-iterator-all": "^1.0.0",
