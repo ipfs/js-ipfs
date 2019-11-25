@@ -7,7 +7,7 @@ const path = require('path')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
 
-describe.only('dag', () => runOnAndOff.off((thing) => {
+describe('dag', () => runOnAndOff.off((thing) => {
   let ipfs
 
   before(() => {
