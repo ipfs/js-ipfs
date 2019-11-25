@@ -21,7 +21,7 @@
 # ✅ Release Checklist
 
 - [ ] **Stage 0 - Automated Testing**
-  - [ ] Feature freeze. If any "non-trivial" changes (see the footnotes of [doc/releases.md](https://github.com/ipfs/js-ipfs/tree/master/doc/releases.md) for a definition) get added to the release, uncheck all the checkboxes and return to this stage.
+  - [ ] Feature freeze. If any "non-trivial" changes (see the footnotes of [docs/releases.md](https://github.com/ipfs/js-ipfs/tree/master/docs/releases.md) for a definition) get added to the release, uncheck all the checkboxes and return to this stage.
   - [ ] Automated Testing (already tested in CI) - Ensure that all tests are passing, this includes:
     - [ ] unit/functional/integration/e2e
     - [ ] interop
@@ -71,11 +71,11 @@
   - Infrastructure Testing:
     - TBD
 - [ ] **Stage 2 - Community Dev Testing**
-  - [ ] Reach out to the IPFS _early testers_ listed in [doc/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
+  - [ ] Reach out to the IPFS _early testers_ listed in [docs/EARLY_TESTERS.md](https://github.com/ipfs/js-ipfs/tree/master/docs/EARLY_TESTERS.md) for testing this release (check when no more problems have been reported). If you'd like to be added to this list, please file a PR.
   - [ ] Reach out on IRC for additional early testers.
 - [ ] **Stage 3 - Community Prod Testing**
   - [ ] Update [js.ipfs.io](https://js.ipfs.io) examples to use the latest js-ipfs
-  - [ ] Invite the IPFS [_early testers_](https://github.com/ipfs/js-ipfs/tree/master/doc/EARLY_TESTERS.md) to deploy the release to part of their production infrastructure.
+  - [ ] Invite the IPFS [_early testers_](https://github.com/ipfs/js-ipfs/tree/master/docs/EARLY_TESTERS.md) to deploy the release to part of their production infrastructure.
   - [ ] Invite the wider community (link to the release issue):
     - [ ] [discuss.ipfs.io](https://discuss.ipfs.io/c/announcements)
     - [ ] Twitter
