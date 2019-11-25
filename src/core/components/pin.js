@@ -59,7 +59,7 @@ module.exports = (self) => {
         results.forEach(key => pinset.add(key))
 
         // persist updated pin sets to datastore
-        await pinManager.flushPins()
+        pinManager.flushPins()
 
         return results.map(hash => ({ hash }))
       }
@@ -134,7 +134,7 @@ module.exports = (self) => {
         })
 
         // persist updated pin sets to datastore
-        await pinManager.flushPins()
+        pinManager.flushPins()
 
         self.log(`Removed pins: ${results}`)
 
