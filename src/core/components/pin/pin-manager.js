@@ -10,7 +10,8 @@ const multicodec = require('multicodec')
 const dagCborLinks = require('dag-cbor-links')
 const debug = require('debug')
 const { cidToString } = require('../../../utils/cid')
-
+const delay = require('delay')
+const AbortController = require('abort-controller')
 const createPinSet = require('./pin-set')
 
 const { Errors } = require('interface-datastore')
@@ -106,43 +107,65 @@ class PinManager {
   // Encode and write pin key sets to the datastore:
   // a DAGLink for each of the recursive and direct pinsets
   // a DAGNode holding those as DAGLinks, a kind of root pin
-  async flushPins () {
-    const [
-      dLink,
-      rLink
-    ] = await Promise.all([
-      // create a DAGLink to the node with direct pins
-      this.pinset.storeSet(this.directKeys())
-        .then((result) => {
-          return new DAGLink(PinTypes.direct, result.node.size, result.cid)
-        }),
-      // create a DAGLink to the node with recursive pins
-      this.pinset.storeSet(this.recursiveKeys())
-        .then((result) => {
-          return new DAGLink(PinTypes.recursive, result.node.size, result.cid)
-        }),
-      // the pin-set nodes link to a special 'empty' node, so make sure it exists
-      this.dag.put(new DAGNode(Buffer.alloc(0)), {
-        version: 0,
-        format: multicodec.DAG_PB,
-        hashAlg: multicodec.SHA2_256,
-        preload: false
-      })
-    ])
+  async flushPins () { // eslint-disable-line require-await
+    if (this._flushingPins) {
+      this._flushingPins.controller.abort()
+    }
 
-    // create a root node with DAGLinks to the direct and recursive DAGs
-    const rootNode = new DAGNode(Buffer.alloc(0), [dLink, rLink])
-    const rootCid = await this.dag.put(rootNode, {
-      version: 0,
-      format: multicodec.DAG_PB,
-      hashAlg: multicodec.SHA2_256,
-      preload: false
-    })
+    const controller = new AbortController()
 
-    // save root to datastore under a consistent key
-    await this.repo.datastore.put(PIN_DS_KEY, rootCid.buffer)
+    this._flushingPins = {
+      controller,
+      promise: delay(100)
+        .then(async () => {
+          if (controller.signal.aborted) {
+            return
+          }
 
-    this.log(`Flushed pins with root: ${rootCid}`)
+          this._flushingPins = null
+
+          const [
+            dLink,
+            rLink
+          ] = await Promise.all([
+          // create a DAGLink to the node with direct pins
+            this.pinset.storeSet(this.directKeys())
+              .then((result) => {
+                return new DAGLink(PinTypes.direct, result.node.size, result.cid)
+              }),
+            // create a DAGLink to the node with recursive pins
+            this.pinset.storeSet(this.recursiveKeys())
+              .then((result) => {
+                return new DAGLink(PinTypes.recursive, result.node.size, result.cid)
+              }),
+            // the pin-set nodes link to a special 'empty' node, so make sure it exists
+            this.dag.put(new DAGNode(Buffer.alloc(0)), {
+              version: 0,
+              format: multicodec.DAG_PB,
+              hashAlg: multicodec.SHA2_256,
+              preload: false
+            })
+          ])
+
+          // create a root node with DAGLinks to the direct and recursive DAGs
+          const rootNode = new DAGNode(Buffer.alloc(0), [dLink, rLink])
+
+          const rootCid = await this.dag.put(rootNode, {
+            version: 0,
+            format: multicodec.DAG_PB,
+            hashAlg: multicodec.SHA2_256,
+            preload: false
+          })
+
+          // save root to datastore under a consistent key
+          await this.repo.datastore.put(PIN_DS_KEY, rootCid.buffer)
+
+          this.log(`Flushed pins with root: ${rootCid}`)
+        })
+        .catch(err => this.log(`Could not flush pins: ${err}`))
+    }
+
+    return this._flushingPins.promise
   }
 
   async load () {
