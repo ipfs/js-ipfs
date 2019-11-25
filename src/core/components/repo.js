@@ -40,10 +40,8 @@ module.exports = function repo (self) {
 
     gc: require('./pin/gc')(self),
 
-    stat: callbackify.variadic(async (options) => {
-      options = options || {}
-
-      const stats = await self._repo.stat(options)
+    stat: callbackify.variadic(async () => {
+      const stats = await self._repo.stat()
 
       return {
         numObjects: stats.numObjects,
