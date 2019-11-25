@@ -137,11 +137,11 @@ function objectSlashToCID (obj) {
 
   if (obj && typeof obj === 'object') {
     const keys = Object.keys(obj)
-    if (keys.length === 1 && '/' in keys) {
-      if (typeof keys['/'] !== 'string') {
+    if (keys.length === 1 && '/' in obj) {
+      if (typeof obj['/'] !== 'string') {
         throw new Error('link should have been a string')
       }
-      return new CID(keys['/']) // throws if not a CID - consistent with go-ipfs
+      return new CID(obj['/']) // throws if not a CID - consistent with go-ipfs
     }
 
     return keys.reduce((obj, key) => {
