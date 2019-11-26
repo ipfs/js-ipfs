@@ -16,7 +16,7 @@ const DEFAULT_FACTORY_OPTIONS = {
 function createFactory (options) {
   options = options || {}
 
-  options.factoryOptions = options.factoryOptions || DEFAULT_FACTORY_OPTIONS
+  options.factoryOptions = options.factoryOptions || { ...DEFAULT_FACTORY_OPTIONS }
   options.spawnOptions = mergeOptions({
     initOptions: { bits: 512 },
     config: {
@@ -78,8 +78,9 @@ function createAsync (options = {}) {
     const nodes = []
     const setup = async (setupOptions = {}) => {
       options.factoryOptions = mergeOptions(
+        options.factoryOptions ? {} : { ...DEFAULT_FACTORY_OPTIONS },
         setupOptions.factoryOptions,
-        options.factoryOptions || DEFAULT_FACTORY_OPTIONS
+        options.factoryOptions
       )
 
       // When not an in proc daemon use the http-client js-ipfs depends on, not the one from ipfsd-ctl
