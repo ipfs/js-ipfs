@@ -2,8 +2,8 @@
 'use strict'
 
 const { fixtures } = require('./utils')
-const pull = require('pull-stream')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const pullToPromise = require('pull-to-promise')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -11,44 +11,25 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.catPullStream', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = await common.setup() })
 
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
-    })
+    before(() => ipfs.add(fixtures.smallFile.data))
+    after(() => common.teardown())
 
-    before((done) => ipfs.add(fixtures.smallFile.data, done))
-
-    after((done) => common.teardown(done))
-
-    it('should return a Pull Stream for a CID', (done) => {
+    it('should return a Pull Stream for a CID', async () => {
       const stream = ipfs.catPullStream(fixtures.smallFile.cid)
 
-      pull(
-        stream,
-        pull.concat((err, data) => {
-          expect(err).to.not.exist()
-          expect(data.length).to.equal(fixtures.smallFile.data.length)
-          expect(data).to.eql(fixtures.smallFile.data.toString())
-          done()
-        })
-      )
+      const data = Buffer.concat(await pullToPromise.any(stream))
+
+      expect(data.length).to.equal(fixtures.smallFile.data.length)
+      expect(data.toString()).to.deep.equal(fixtures.smallFile.data.toString())
     })
 
-    it('should export a chunk of a file in a Pull Stream', (done) => {
+    it('should export a chunk of a file in a Pull Stream', async () => {
       const offset = 1
       const length = 3
 
@@ -57,14 +38,8 @@ module.exports = (createCommon, options) => {
         length
       })
 
-      pull(
-        stream,
-        pull.concat((err, data) => {
-          expect(err).to.not.exist()
-          expect(data.toString()).to.equal('lz ')
-          done()
-        })
-      )
+      const data = Buffer.concat(await pullToPromise.any(stream))
+      expect(data.toString()).to.equal('lz ')
     })
   })
 }

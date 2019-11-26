@@ -1,14 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
-const pull = require('pull-stream')
+const pullToPromise = require('pull-to-promise')
 
 module.exports = (createCommon, options) => {
   const ipfsRefsLocal = (ipfs) => {
-    return (cb) => {
-      const stream = ipfs.refs.localPullStream()
-      pull(stream, pull.collect(cb))
-    }
+    const stream = ipfs.refs.localPullStream()
+
+    return pullToPromise.any(stream)
   }
   require('./refs-local-tests')(createCommon, '.refs.localPullStream', ipfsRefsLocal, options)
 }

@@ -9,50 +9,31 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.config.replace', function () {
-    this.timeout(30 * 1000)
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     const config = {
       Fruit: 'Bananas'
     }
 
-    it('should replace the whole config', (done) => {
-      ipfs.config.replace(config, (err) => {
-        expect(err).to.not.exist()
-        ipfs.config.get((err, _config) => {
-          expect(err).to.not.exist()
-          expect(_config).to.deep.equal(config)
-          done()
-        })
-      })
+    it('should replace the whole config', async () => {
+      await ipfs.config.replace(config)
+
+      const _config = await ipfs.config.get()
+      expect(_config).to.deep.equal(config)
     })
 
-    it('should replace to empty config', (done) => {
-      ipfs.config.replace({}, (err) => {
-        expect(err).to.not.exist()
-        ipfs.config.get((err, _config) => {
-          expect(err).to.not.exist()
-          expect(_config).to.deep.equal({})
-          done()
-        })
-      })
+    it('should replace to empty config', async () => {
+      await ipfs.config.replace({})
+
+      const _config = await ipfs.config.get()
+      expect(_config).to.deep.equal({})
     })
   })
 }

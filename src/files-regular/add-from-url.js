@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
+const pTimeout = require('p-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const parallel = require('async/parallel')
 const { echoUrl, redirectUrl } = require('../utils/echo-http-server')
 
 module.exports = (createCommon, options) => {
@@ -11,120 +11,98 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.addFromURL', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
-    })
+    before(async () => { ipfs = await common.setup() })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should add from a HTTP URL', (done) => {
+    it('should add from a HTTP URL', async () => {
       const text = `TEST${Date.now()}`
       const url = echoUrl(text)
-      parallel({
-        result: (cb) => ipfs.addFromURL(url, cb),
-        expectedResult: (cb) => ipfs.add(Buffer.from(text), cb)
-      }, (err, { result, expectedResult }) => {
-        expect(err).to.not.exist()
-        expect(result.err).to.not.exist()
-        expect(expectedResult.err).to.not.exist()
-        expect(result[0].hash).to.equal(expectedResult[0].hash)
-        expect(result[0].size).to.equal(expectedResult[0].size)
-        expect(result[0].path).to.equal(text)
-        done()
-      })
+
+      const [result, expectedResult] = await Promise.all([
+        ipfs.addFromURL(url),
+        ipfs.add(Buffer.from(text))
+      ])
+
+      expect(result.err).to.not.exist()
+      expect(expectedResult.err).to.not.exist()
+      expect(result[0].hash).to.equal(expectedResult[0].hash)
+      expect(result[0].size).to.equal(expectedResult[0].size)
+      expect(result[0].path).to.equal(text)
     })
 
-    it('should add from a HTTP URL with redirection', (done) => {
+    it('should add from a HTTP URL with redirection', async () => {
       const text = `TEST${Date.now()}`
       const url = echoUrl(text) + '?foo=bar#buzz'
 
-      parallel({
-        result: (cb) => ipfs.addFromURL(redirectUrl(url), cb),
-        expectedResult: (cb) => ipfs.add(Buffer.from(text), cb)
-      }, (err, { result, expectedResult }) => {
-        expect(err).to.not.exist()
-        expect(result.err).to.not.exist()
-        expect(expectedResult.err).to.not.exist()
-        expect(result[0].hash).to.equal(expectedResult[0].hash)
-        expect(result[0].size).to.equal(expectedResult[0].size)
-        expect(result[0].path).to.equal(text)
-        done()
-      })
+      const [result, expectedResult] = await Promise.all([
+        ipfs.addFromURL(redirectUrl(url)),
+        ipfs.add(Buffer.from(text))
+      ])
+
+      expect(result.err).to.not.exist()
+      expect(expectedResult.err).to.not.exist()
+      expect(result[0].hash).to.equal(expectedResult[0].hash)
+      expect(result[0].size).to.equal(expectedResult[0].size)
+      expect(result[0].path).to.equal(text)
     })
 
-    it('should add from a URL with only-hash=true', (done) => {
+    it('should add from a URL with only-hash=true', async function () {
       const text = `TEST${Date.now()}`
       const url = echoUrl(text)
-      ipfs.addFromURL(url, { onlyHash: true }, (err, res) => {
-        expect(err).to.not.exist()
 
+      const res = await ipfs.addFromURL(url, { onlyHash: true })
+
+      try {
         // A successful object.get for this size data took my laptop ~14ms
-        let didTimeout = false
-        const timeoutId = setTimeout(() => {
-          didTimeout = true
-          done()
-        }, 500)
+        await pTimeout(ipfs.object.get(res[0].hash), 500)
+      } catch (err) {
+        if (err.name === 'TimeoutError') {
+          // This doesn't seem to be the right approach:
+          // the test shouldn't be passing when it gets a timeout error
+          // but this is pretty the same logic as the previous callback one
+          return Promise.resolve()
+        }
 
-        ipfs.object.get(res[0].hash, () => {
-          clearTimeout(timeoutId)
-          if (didTimeout) return
-          expect(new Error('did not timeout')).to.not.exist()
-        })
-      })
+        throw err
+      }
     })
 
-    it('should add from a URL with wrap-with-directory=true', (done) => {
+    it('should add from a URL with wrap-with-directory=true', async () => {
       const filename = `TEST${Date.now()}.txt` // also acts as data
       const url = echoUrl(filename) + '?foo=bar#buzz'
       const addOpts = { wrapWithDirectory: true }
-      parallel({
-        result: (cb) => ipfs.addFromURL(url, addOpts, cb),
-        expectedResult: (cb) => ipfs.add([{ path: filename, content: Buffer.from(filename) }], addOpts, cb)
-      }, (err, { result, expectedResult }) => {
-        expect(err).to.not.exist()
-        expect(result.err).to.not.exist()
-        expect(expectedResult.err).to.not.exist()
-        expect(result).to.deep.equal(expectedResult)
-        done()
-      })
+
+      const [result, expectedResult] = await Promise.all([
+        ipfs.addFromURL(url, addOpts),
+        ipfs.add([{ path: filename, content: Buffer.from(filename) }], addOpts)
+      ])
+      expect(result.err).to.not.exist()
+      expect(expectedResult.err).to.not.exist()
+      expect(result).to.deep.equal(expectedResult)
     })
 
-    it('should add from a URL with wrap-with-directory=true and URL-escaped file name', (done) => {
+    it('should add from a URL with wrap-with-directory=true and URL-escaped file name', async () => {
       const filename = `320px-Domažlice,_Jiráskova_43_(${Date.now()}).jpg` // also acts as data
       const url = echoUrl(filename) + '?foo=bar#buzz'
       const addOpts = { wrapWithDirectory: true }
-      parallel({
-        result: (cb) => ipfs.addFromURL(url, addOpts, cb),
-        expectedResult: (cb) => ipfs.add([{ path: filename, content: Buffer.from(filename) }], addOpts, cb)
-      }, (err, { result, expectedResult }) => {
-        expect(err).to.not.exist()
-        expect(result.err).to.not.exist()
-        expect(expectedResult.err).to.not.exist()
-        expect(result).to.deep.equal(expectedResult)
-        done()
-      })
+
+      const [result, expectedResult] = await Promise.all([
+        ipfs.addFromURL(url, addOpts),
+        ipfs.add([{ path: filename, content: Buffer.from(filename) }], addOpts)
+      ])
+
+      expect(result.err).to.not.exist()
+      expect(expectedResult.err).to.not.exist()
+      expect(result).to.deep.equal(expectedResult)
     })
 
-    it('should not add from an invalid url', (done) => {
-      ipfs.addFromURL('123http://invalid', (err, result) => {
-        expect(err).to.exist()
-        expect(result).to.not.exist()
-        done()
-      })
+    it('should not add from an invalid url', () => {
+      return expect(ipfs.addFromURL('123http://invalid')).to.eventually.be.rejected()
     })
   })
 }

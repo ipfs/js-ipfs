@@ -4,7 +4,7 @@
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('../utils/delay')
+const delay = require('delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -16,22 +16,11 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     // Browser/worker has max ~5 open HTTP requests to the same origin
     const count = isBrowser || isWebWorker || isElectronRenderer ? 5 : 10

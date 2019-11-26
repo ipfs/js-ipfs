@@ -2,6 +2,6 @@
 'use strict'
 
 module.exports = (createCommon, options) => {
-  const ipfsRefsLocal = (ipfs) => (cb) => ipfs.refs.local(cb)
+  const ipfsRefsLocal = (ipfs) => ipfs.refs.local()
   require('./refs-local-tests')(createCommon, '.refs.local', ipfsRefsLocal, options)
 }

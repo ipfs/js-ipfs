@@ -10,24 +10,14 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.block.rm', function () {
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     it('should remove by CID object', async () => {
       const cid = await ipfs.dag.put(Buffer.from(hat()), {

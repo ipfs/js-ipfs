@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const mapSeries = require('async/mapSeries')
+const pMapSeries = require('p-map-series')
+const pTimeout = require('p-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
@@ -12,113 +13,73 @@ module.exports = (createCommon, suiteName, ipfsRefs, options) => {
   const common = createCommon()
 
   describe(suiteName, function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs, pbRootCb, dagRootCid
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    before(function (done) {
-      loadPbContent(ipfs, getMockObjects(), (err, cid) => {
-        expect(err).to.not.exist()
-        pbRootCb = cid
-        done()
-      })
+    before(async function () {
+      const cid = await loadPbContent(ipfs, getMockObjects())
+      pbRootCb = cid
     })
 
-    before(function (done) {
-      loadDagContent(ipfs, getMockObjects(), (err, cid) => {
-        expect(err).to.not.exist()
-        dagRootCid = cid
-        done()
-      })
+    before(async function () {
+      const cid = await loadDagContent(ipfs, getMockObjects())
+      dagRootCid = cid
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     for (const [name, options] of Object.entries(getRefsTests())) {
       const { path, params, expected, expectError, expectTimeout } = options
       // eslint-disable-next-line no-loop-func
-      it(name, function (done) {
+      it(name, async function () {
         this.timeout(20 * 1000)
-
-        // If we're expecting a timeout, call done when it expires
-        let timeout
-        if (expectTimeout) {
-          timeout = setTimeout(() => {
-            done()
-            done = null
-          }, expectTimeout)
-        }
 
         // Call out to IPFS
         const p = (path ? path(pbRootCb) : pbRootCb)
-        ipfsRefs(ipfs)(p, params, (err, refs) => {
-          if (!done) {
-            // Already timed out
-            return
-          }
 
-          if (expectError) {
-            // Expected an error
-            expect(err).to.exist()
-            return done()
-          }
+        if (expectTimeout) {
+          return expect(pTimeout(ipfsRefs(ipfs)(p, params), expectTimeout)).to.eventually.be.rejected
+            .and.be.an.instanceOf(Error)
+            .and.to.have.property('name')
+            .to.eql('TimeoutError')
+        }
 
-          if (expectTimeout && !err) {
-            // Expected a timeout but there wasn't one
-            return expect.fail('Expected timeout error')
-          }
+        if (expectError) {
+          return expect(ipfsRefs(ipfs)(p, params)).to.be.eventually.rejected.and.be.an.instanceOf(Error)
+        }
 
-          // Check there was no error and the refs match what was expected
-          expect(err).to.not.exist()
-          expect(refs.map(r => r.ref)).to.eql(expected)
+        const refs = await ipfsRefs(ipfs)(p, params)
 
-          // Clear any pending timeout
-          clearTimeout(timeout)
-
-          done()
-        })
+        // Check there was no error and the refs match what was expected
+        expect(refs.map(r => r.ref)).to.eql(expected)
       })
     }
 
-    it('dag refs test', function (done) {
+    it('dag refs test', async function () {
       this.timeout(20 * 1000)
 
       // Call out to IPFS
-      ipfsRefs(ipfs)(`/ipfs/${dagRootCid}`, { recursive: true }, (err, refs) => {
-        // Check there was no error and the refs match what was expected
-        expect(err).to.not.exist()
-        expect(refs.map(r => r.ref).sort()).to.eql([
-          'QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbSC',
-          'QmVwtsLUHurA6wUirPSdGeEW5tfBEqenXpeRaqr8XN7bNY',
-          'QmXGL3ZdYV5rNLCfHe1QsFSQGekRFzgbBu1B3XGZ7DV9fd',
-          'QmcSVZRN5E814KkPy4EHnftNAR7htbFvVhRKKqFs4FBwDG',
-          'QmcSVZRN5E814KkPy4EHnftNAR7htbFvVhRKKqFs4FBwDG',
-          'QmdBcHbK7uDQav8YrHsfKju3EKn48knxjd96KRMFs3gtS9',
-          'QmeX96opBHZHLySMFoNiWS5msxjyX6rqtr3Rr1u7uxn7zJ',
-          'Qmf8MwTnY7VdcnF8WcoJ3GB24NmNd1HsGzuEWCtUYDP38x',
-          'bafyreiagelcmhfn33zuslkdo7fkes3dzcr2nju6meh75zm6vqklfqiojam',
-          'bafyreic2f6adq5tqnbrvwiqc3jkz2cf4tz3cz2rp6plpij2qaoufgsxwmi',
-          'bafyreidoqtyvflv5v4c3gd3izxvpq4flke55ayurbrnhsxh7z5wwjc6v6e',
-          'bafyreifs2ub2lnq6n2quqbi3zb5homs5iqlmm77b3am252cqzxiu7phwpy'
-        ])
-
-        done()
-      })
+      const refs = await ipfsRefs(ipfs)(`/ipfs/${dagRootCid}`, { recursive: true })
+      // Check the refs match what was expected
+      expect(refs.map(r => r.ref).sort()).to.eql([
+        'QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbSC',
+        'QmVwtsLUHurA6wUirPSdGeEW5tfBEqenXpeRaqr8XN7bNY',
+        'QmXGL3ZdYV5rNLCfHe1QsFSQGekRFzgbBu1B3XGZ7DV9fd',
+        'QmcSVZRN5E814KkPy4EHnftNAR7htbFvVhRKKqFs4FBwDG',
+        'QmcSVZRN5E814KkPy4EHnftNAR7htbFvVhRKKqFs4FBwDG',
+        'QmdBcHbK7uDQav8YrHsfKju3EKn48knxjd96KRMFs3gtS9',
+        'QmeX96opBHZHLySMFoNiWS5msxjyX6rqtr3Rr1u7uxn7zJ',
+        'Qmf8MwTnY7VdcnF8WcoJ3GB24NmNd1HsGzuEWCtUYDP38x',
+        'bafyreiagelcmhfn33zuslkdo7fkes3dzcr2nju6meh75zm6vqklfqiojam',
+        'bafyreic2f6adq5tqnbrvwiqc3jkz2cf4tz3cz2rp6plpij2qaoufgsxwmi',
+        'bafyreidoqtyvflv5v4c3gd3izxvpq4flke55ayurbrnhsxh7z5wwjc6v6e',
+        'bafyreifs2ub2lnq6n2quqbi3zb5homs5iqlmm77b3am252cqzxiu7phwpy'
+      ])
     })
   })
 }
@@ -340,43 +301,38 @@ function getRefsTests () {
   }
 }
 
-function loadPbContent (ipfs, node, callback) {
+function loadPbContent (ipfs, node) {
   const store = {
-    putData: (data, cb) => ipfs.object.put({ Data: data, Links: [] }, cb),
-    putLinks: (links, cb) => {
+    putData: (data) => ipfs.object.put({ Data: data, Links: [] }),
+    putLinks: (links) =>
       ipfs.object.put({
         Data: '',
         Links: links.map(({ name, cid }) => ({ Name: name, Hash: cid, Size: 8 }))
-      }, cb)
-    }
+      })
   }
-  loadContent(ipfs, store, node, callback)
+  return loadContent(ipfs, store, node)
 }
 
-function loadDagContent (ipfs, node, callback) {
+function loadDagContent (ipfs, node) {
   const store = {
-    putData: (data, cb) => {
-      ipfs.add(data, (err, res) => {
-        if (err) {
-          return cb(err)
-        }
-        return cb(null, res[0].hash)
-      })
+    putData: async (data) => {
+      const res = await ipfs.add(data)
+      return res[0].hash
     },
-    putLinks: (links, cb) => {
+    putLinks: (links) => {
       const obj = {}
       for (const { name, cid } of links) {
         obj[name] = new CID(cid)
       }
-      ipfs.dag.put(obj, cb)
+      return ipfs.dag.put(obj)
     }
   }
-  loadContent(ipfs, store, node, callback)
+  return loadContent(ipfs, store, node)
 }
 
-function loadContent (ipfs, store, node, callback) {
+async function loadContent (ipfs, store, node) {
   if (Buffer.isBuffer(node)) {
-    return store.putData(node, callback)
+    return store.putData(node)
   }
 
   if (typeof node === 'object') {
@@ -389,16 +345,12 @@ function loadContent (ipfs, store, node, callback) {
       }
       return 0
     })
-    mapSeries(sorted, ([name, child], cb) => {
-      loadContent(ipfs, store, child, (err, cid) => {
-        cb(err, { name, cid: cid && cid.toString() })
-      })
-    }, (err, res) => {
-      if (err) {
-        return callback(err)
-      }
 
-      store.putLinks(res, callback)
+    const res = await pMapSeries(sorted, async ([name, child]) => {
+      const cid = await loadContent(ipfs, store, child)
+      return { name, cid: cid && cid.toString() }
     })
+
+    return store.putLinks(res)
   }
 }

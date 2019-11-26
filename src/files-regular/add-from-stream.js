@@ -11,28 +11,15 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.addFromStream', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = await common.setup() })
 
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
-    })
+    after(() => common.teardown())
 
-    after((done) => common.teardown(done))
-
-    it('should add from a stream', (done) => {
+    it('should add from a stream', async () => {
       const stream = new Readable({
         read () {
           this.push(fixtures.bigFile.data)
@@ -40,12 +27,9 @@ module.exports = (createCommon, options) => {
         }
       })
 
-      ipfs.addFromStream(stream, (err, result) => {
-        expect(err).to.not.exist()
-        expect(result.length).to.equal(1)
-        expect(result[0].hash).to.equal(fixtures.bigFile.cid)
-        done()
-      })
+      const result = await ipfs.addFromStream(stream)
+      expect(result.length).to.equal(1)
+      expect(result[0].hash).to.equal(fixtures.bigFile.cid)
     })
   })
 }

@@ -2,9 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { spawnNodeWithId } = require('../utils/spawn')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('../utils/delay')
+const delay = require('delay')
 const CID = require('cids')
 
 module.exports = (createCommon, options) => {
@@ -16,21 +15,12 @@ module.exports = (createCommon, options) => {
     let ipfs
     let nodeId
 
-    before(function (done) {
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-
-        spawnNodeWithId(factory, (err, node) => {
-          expect(err).to.not.exist()
-
-          ipfs = node
-          nodeId = node.peerId.id
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
+      nodeId = ipfs.peerId.id
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     it('should resolve a record default options', async function () {
       this.timeout(20 * 1000)
@@ -142,20 +132,11 @@ module.exports = (createCommon, options) => {
     let ipfs
     this.retries(5)
 
-    before(function (done) {
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     it('should resolve /ipns/ipfs.io', async () => {
       return expect(await ipfs.name.resolve('/ipns/ipfs.io'))

@@ -10,50 +10,31 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.key.rename', () => {
+  describe('.key.rename', function () {
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should rename a key', function (done) {
-      this.timeout(30 * 1000)
-
+    it('should rename a key', async function () {
       const oldName = hat()
       const newName = hat()
 
-      ipfs.key.gen(oldName, { type: 'rsa', size: 2048 }, (err, key) => {
-        expect(err).to.not.exist()
+      const key = await ipfs.key.gen(oldName, { type: 'rsa', size: 2048 })
 
-        ipfs.key.rename(oldName, newName, (err, res) => {
-          expect(err).to.not.exist()
-          expect(res).to.exist()
-          expect(res).to.have.property('was', oldName)
-          expect(res).to.have.property('now', newName)
-          expect(res).to.have.property('id', key.id)
+      const renameRes = await ipfs.key.rename(oldName, newName)
+      expect(renameRes).to.exist()
+      expect(renameRes).to.have.property('was', oldName)
+      expect(renameRes).to.have.property('now', newName)
+      expect(renameRes).to.have.property('id', key.id)
 
-          ipfs.key.list((err, res) => {
-            expect(err).to.not.exist()
-            expect(res.find(k => k.name === newName)).to.exist()
-            expect(res.find(k => k.name === oldName)).to.not.exist()
-            done()
-          })
-        })
-      })
+      const res = await ipfs.key.list()
+      expect(res.find(k => k.name === newName)).to.exist()
+      expect(res.find(k => k.name === oldName)).to.not.exist()
     })
   })
 }

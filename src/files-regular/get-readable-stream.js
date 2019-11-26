@@ -2,9 +2,9 @@
 'use strict'
 
 const { fixtures } = require('./utils')
-const concat = require('concat-stream')
 const through = require('through2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const getStream = require('get-stream')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -12,44 +12,35 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.getReadableStream', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
+      await ipfs.add(fixtures.smallFile.data)
     })
 
-    before((done) => ipfs.add(fixtures.smallFile.data, done))
+    after(() => common.teardown())
 
-    after((done) => common.teardown(done))
-
-    it('should return a Readable Stream of Readable Streams', (done) => {
+    it('should return a Readable Stream of Readable Streams', async () => {
       const stream = ipfs.getReadableStream(fixtures.smallFile.cid)
-      const files = []
 
-      stream.pipe(through.obj((file, enc, next) => {
-        file.content.pipe(concat((content) => {
-          files.push({ path: file.path, content: content })
+      // I was not able to use 'get-stream' module here
+      // as it exceeds the timeout. I think it might be related
+      // to 'pump' module that get-stream uses
+      const files = await new Promise((resolve, reject) => {
+        const filesArr = []
+        stream.pipe(through.obj(async (file, enc, next) => {
+          const content = await getStream.buffer(file.content)
+          filesArr.push({ path: file.path, content: content })
           next()
-        }))
-      }, () => {
-        expect(files).to.be.length(1)
-        expect(files[0].path).to.eql(fixtures.smallFile.cid)
-        expect(files[0].content.toString()).to.contain('Plz add me!')
-        done()
-      }))
+        }, () => resolve(filesArr)))
+      })
+
+      expect(files).to.be.length(1)
+      expect(files[0].path).to.eql(fixtures.smallFile.cid)
+      expect(files[0].content.toString()).to.contain('Plz add me!')
     })
   })
 }

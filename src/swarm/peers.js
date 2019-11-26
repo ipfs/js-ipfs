@@ -21,67 +21,44 @@ module.exports = (createCommon, options) => {
       ipfsA = await common.setup()
       ipfsB = await common.setup()
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      await delay(60 * 1000) // wait for open streams in the connection available
     })
 
     after(() => common.teardown())
 
-    it('should list peers this node is connected to', (done) => {
-      ipfsA.swarm.peers((err, peers) => {
-        expect(err).to.not.exist()
-        expect(peers).to.have.length.above(0)
+    it('should list peers this node is connected to', async () => {
+      const peers = await ipfsA.swarm.peers()
+      expect(peers).to.have.length.above(0)
 
-        const peer = peers[0]
+      const peer = peers[0]
 
-        expect(peer).to.have.a.property('addr')
-        expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
-        expect(peer).to.have.a.property('peer')
-        expect(PeerId.isPeerId(peer.peer)).to.equal(true)
-        expect(peer).to.not.have.a.property('latency')
+      expect(peer).to.have.a.property('addr')
+      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(peer).to.have.a.property('peer')
+      expect(PeerId.isPeerId(peer.peer)).to.equal(true)
+      expect(peer).to.not.have.a.property('latency')
 
-        // only available in 0.4.5
-        // expect(peer).to.have.a.property('muxer')
-        // expect(peer).to.not.have.a.property('streams')
-
-        done()
-      })
+      /* TODO: These assertions must be uncommented as soon as
+         https://github.com/ipfs/js-ipfs/issues/2601 gets resolved */
+      // expect(peer).to.have.a.property('muxer')
+      // expect(peer).to.not.have.a.property('streams')
     })
 
-    it('should list peers this node is connected to (promised)', () => {
-      return ipfsA.swarm.peers().then((peers) => {
-        expect(peers).to.have.length.above(0)
+    it('should list peers this node is connected to with verbose option', async () => {
+      const peers = await ipfsA.swarm.peers({ verbose: true })
+      expect(peers).to.have.length.above(0)
 
-        const peer = peers[0]
+      const peer = peers[0]
+      expect(peer).to.have.a.property('addr')
+      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(peer).to.have.a.property('peer')
+      expect(peer).to.have.a.property('latency')
+      expect(peer.latency).to.match(/n\/a|[0-9]+[mµ]?s/) // n/a or 3ms or 3µs or 3s
 
-        expect(peer).to.have.a.property('addr')
-        expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
-        expect(peer).to.have.a.property('peer')
-        expect(PeerId.isPeerId(peer.peer)).to.equal(true)
-        expect(peer).to.not.have.a.property('latency')
-
-        // only available in 0.4.5
-        // expect(peer).to.have.a.property('muxer')
-        // expect(peer).to.not.have.a.property('streams')
-      })
-    })
-
-    it('should list peers this node is connected to with verbose option', (done) => {
-      ipfsA.swarm.peers({ verbose: true }, (err, peers) => {
-        expect(err).to.not.exist()
-        expect(peers).to.have.length.above(0)
-
-        const peer = peers[0]
-        expect(peer).to.have.a.property('addr')
-        expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
-        expect(peer).to.have.a.property('peer')
-        expect(peer).to.have.a.property('latency')
-        expect(peer.latency).to.match(/n\/a|[0-9]+m?s/) // n/a or 3ms or 3s
-
-        // Only available in 0.4.5
-        // expect(peer).to.have.a.property('muxer')
-        // expect(peer).to.have.a.property('streams')
-
-        done()
-      })
+      /* TODO: These assertions must be uncommented as soon as
+         https://github.com/ipfs/js-ipfs/issues/2601 gets resolved */
+      // expect(peer).to.have.a.property('muxer')
+      // expect(peer).to.have.a.property('streams')
     })
 
     function getConfig (addrs) {
@@ -105,8 +82,8 @@ module.exports = (createCommon, options) => {
     it('should list peers only once', async () => {
       const config = getConfig(['/ip4/127.0.0.1/tcp/0'])
 
-      const nodeA = await common.setup({}, { config })
-      const nodeB = await common.setup({}, { config })
+      const nodeA = await common.setup({ spawnOptions: { config } })
+      const nodeB = await common.setup({ spawnOptions: { config } })
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()
@@ -125,8 +102,8 @@ module.exports = (createCommon, options) => {
         '/ip4/127.0.0.1/tcp/26545',
         '/ip4/127.0.0.1/tcp/26546'
       ])
-      const nodeA = await common.setup({}, { configA })
-      const nodeB = await common.setup({}, { configB })
+      const nodeA = await common.setup({ spawnOptions: { config: configA } })
+      const nodeB = await common.setup({ spawnOptions: { config: configB } })
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

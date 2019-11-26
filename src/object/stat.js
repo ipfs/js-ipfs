@@ -4,7 +4,6 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
 
@@ -18,57 +17,20 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should get stats by multihash', (done) => {
+    it('should get stats by multihash', async () => {
       const testObj = {
         Data: Buffer.from('get test object'),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.stat(cid, (err, stats) => {
-          expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
-        })
-      })
-    })
-
-    it('should get stats for object by multihash (promised)', async () => {
-      const testObj = {
-        Data: Buffer.from('get test object'),
-        Links: []
-      }
-
-      await ipfs.object.put(testObj)
-      const stats = await ipfs.object.stat('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ')
-
+      const cid = await ipfs.object.put(testObj)
+      const stats = await ipfs.object.stat(cid)
       const expected = {
         Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
         NumLinks: 0,
@@ -77,158 +39,96 @@ module.exports = (createCommon, options) => {
         DataSize: 15,
         CumulativeSize: 17
       }
-
       expect(expected).to.deep.equal(stats)
     })
 
-    it('should respect timeout option', (done) => {
+    it('should respect timeout option', async () => {
       const testObj = {
         Data: Buffer.from('get test object'),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err) => {
-        expect(err).to.not.exist()
-        const timeout = 2
-        const startTime = new Date()
-        const badCid = 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ'
+      await ipfs.object.put(testObj)
 
-        // we can test that we are passing in opts by testing the timeout option for a CID that doesn't exist
-        ipfs.object.stat(badCid, { timeout: `${timeout}s` }, (err, stats) => {
-          const timeForRequest = (new Date() - startTime) / 1000
-          expect(err).to.exist()
-          expect(err.message).to.equal('failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
-          expect(stats).to.not.exist()
-          expect(timeForRequest).to.not.lessThan(timeout)
-          expect(timeForRequest).to.not.greaterThan(timeout + 1)
-          done()
-        })
-      })
+      const timeout = 2
+      const startTime = new Date()
+      const badCid = 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ'
+
+      const err = await expect(ipfs.object.stat(badCid, { timeout: `${timeout}s` })).to.be.rejected()
+      const timeForRequest = (new Date() - startTime) / 1000
+
+      expect(err).to.have.property('message', 'failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
+      expect(timeForRequest).to.not.lessThan(timeout)
+      expect(timeForRequest).to.not.greaterThan(timeout + 1)
     })
 
-    it('should get stats for object with links by multihash', (done) => {
-      let node1a
-      let node1b
-      let node1bCid
-      let node2
+    it('should get stats for object with links by multihash', async () => {
+      const node1a = new DAGNode(Buffer.from('Some data 1'))
+      const node2 = new DAGNode(Buffer.from('Some data 2'))
 
-      series([
-        (cb) => {
-          try {
-            node1a = new DAGNode(Buffer.from('Some data 1'))
-          } catch (err) {
-            return cb(err)
-          }
+      const link = await asDAGLink(node2, 'some-link')
 
-          cb()
-        },
-        (cb) => {
-          try {
-            node2 = new DAGNode(Buffer.from('Some data 2'))
-          } catch (err) {
-            return cb(err)
-          }
+      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1bCid = await ipfs.object.put(node1b)
 
-          cb()
-        },
-        (cb) => {
-          asDAGLink(node2, 'some-link', (err, link) => {
-            expect(err).to.not.exist()
-
-            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.put(node1b, (err, cid) => {
-            expect(err).to.not.exist()
-            node1bCid = cid
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.stat(node1bCid, (err, stats) => {
-            expect(err).to.not.exist()
-            const expected = {
-              Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
-              NumLinks: 1,
-              BlockSize: 64,
-              LinksSize: 53,
-              DataSize: 11,
-              CumulativeSize: 77
-            }
-            expect(expected).to.eql(stats)
-            cb()
-          })
-        }
-      ], done)
+      const stats = await ipfs.object.stat(node1bCid)
+      const expected = {
+        Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
+        NumLinks: 1,
+        BlockSize: 64,
+        LinksSize: 53,
+        DataSize: 11,
+        CumulativeSize: 77
+      }
+      expect(expected).to.eql(stats)
     })
 
-    it('should get stats by base58 encoded multihash', (done) => {
+    it('should get stats by base58 encoded multihash', async () => {
       const testObj = {
         Data: Buffer.from('get test object'),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
+      const cid = await ipfs.object.put(testObj)
 
-        ipfs.object.stat(cid.buffer, (err, stats) => {
-          expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
-        })
-      })
+      const stats = await ipfs.object.stat(cid.buffer)
+      const expected = {
+        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+        NumLinks: 0,
+        BlockSize: 17,
+        LinksSize: 2,
+        DataSize: 15,
+        CumulativeSize: 17
+      }
+      expect(expected).to.deep.equal(stats)
     })
 
-    it('should get stats by base58 encoded multihash string', (done) => {
+    it('should get stats by base58 encoded multihash string', async () => {
       const testObj = {
         Data: Buffer.from('get test object'),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
+      const cid = await ipfs.object.put(testObj)
 
-        ipfs.object.stat(cid.toBaseEncodedString(), (err, stats) => {
-          expect(err).to.not.exist()
-          const expected = {
-            Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-            NumLinks: 0,
-            BlockSize: 17,
-            LinksSize: 2,
-            DataSize: 15,
-            CumulativeSize: 17
-          }
-          expect(expected).to.deep.equal(stats)
-          done()
-        })
-      })
+      const stats = await ipfs.object.stat(cid.toBaseEncodedString())
+      const expected = {
+        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+        NumLinks: 0,
+        BlockSize: 17,
+        LinksSize: 2,
+        DataSize: 15,
+        CumulativeSize: 17
+      }
+      expect(expected).to.deep.equal(stats)
     })
 
     it('returns error for request without argument', () => {
-      return ipfs.object.stat(null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.stat(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
-      return ipfs.object.stat('invalid', { enc: 'base58' })
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.stat('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
 }

@@ -1,12 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const parallel = require('async/parallel')
-const { spawnNodesWithId } = require('../utils/spawn')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { connect } = require('../utils/swarm')
-const delay = require('../utils/delay')
+const delay = require('delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -21,24 +18,17 @@ module.exports = (createCommon, options) => {
     let ipfs3
     let subscribedTopics = []
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(100 * 1000)
+    before(async () => {
+      ipfs1 = await common.setup()
+      ipfs2 = await common.setup()
+      ipfs3 = await common.setup()
 
-      common.setup((err, factory) => {
-        if (err) return done(err)
+      const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
+      const ipfs3Addr = ipfs3.peerId.addresses.find((a) => a.includes('127.0.0.1'))
 
-        spawnNodesWithId(3, factory, (err, nodes) => {
-          if (err) return done(err)
-
-          ipfs1 = nodes[0]
-          ipfs2 = nodes[1]
-          ipfs3 = nodes[2]
-
-          done()
-        })
-      })
+      await ipfs1.swarm.connect(ipfs2Addr)
+      await ipfs1.swarm.connect(ipfs3Addr)
+      await ipfs2.swarm.connect(ipfs3Addr)
     })
 
     afterEach(async () => {
@@ -51,17 +41,7 @@ module.exports = (createCommon, options) => {
       await delay(100)
     })
 
-    after((done) => common.teardown(done))
-
-    before((done) => {
-      const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
-      const ipfs3Addr = ipfs3.peerId.addresses.find((a) => a.includes('127.0.0.1'))
-
-      parallel([
-        (cb) => connect(ipfs1, [ipfs2Addr, ipfs3Addr], cb),
-        (cb) => connect(ipfs2, ipfs3Addr, cb)
-      ], done)
-    })
+    after(() => common.teardown())
 
     it('should not error when not subscribed to a topic', async () => {
       const topic = getTopic()

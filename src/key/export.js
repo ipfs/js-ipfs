@@ -9,32 +9,19 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.key.export', () => {
+  describe('.key.export', function () {
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should export "self" key', function (done) {
-      ipfs.key.export('self', hat(), (err, pem) => {
-        expect(err).to.not.exist()
-        expect(pem).to.exist()
-        done()
-      })
+    it('should export "self" key', async function () {
+      const pem = await ipfs.key.export('self', hat())
+      expect(pem).to.exist()
     })
   })
 }

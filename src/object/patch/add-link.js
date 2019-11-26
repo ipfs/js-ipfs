@@ -3,14 +3,8 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const series = require('async/series')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const {
-  calculateCid,
-  createDAGNode,
-  addLinkToDAGNode,
-  asDAGLink
-} = require('../utils')
+const { asDAGLink } = require('../utils')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -22,162 +16,63 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should add a link to an existing node', (done) => {
-      let testNodeCid
-      let node1bCid
-      let node1a
-      let node1b
-      let node2
-
+    it('should add a link to an existing node', async () => {
       const obj = {
         Data: Buffer.from('patch test object'),
         Links: []
       }
+      // link to add
+      const node2 = new DAGNode(Buffer.from('some other node'))
+      // note: we need to put the linked obj, otherwise IPFS won't
+      // timeout. Reason: it needs the node to get its size
+      await ipfs.object.put(node2)
+      const link = await asDAGLink(node2, 'link-to-node')
 
-      series([
-        (cb) => {
-          ipfs.object.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            testNodeCid = cid
-            cb()
-          })
-        },
-        (cb) => {
-          try {
-            node1a = new DAGNode(obj.Data, obj.Links)
-          } catch (err) {
-            return cb(err)
-          }
+      // manual create dag step by step
+      const node1a = new DAGNode(obj.Data, obj.Links)
+      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1bCid = await ipfs.object.put(node1b)
 
-          cb()
-        },
-        (cb) => {
-          try {
-            node2 = new DAGNode(Buffer.from('some other node'))
-          } catch (err) {
-            return cb(err)
-          }
+      // add link with patch.addLink
+      const testNodeCid = await ipfs.object.put(obj)
+      const cid = await ipfs.object.patch.addLink(testNodeCid, link)
 
-          cb()
-        },
-        (cb) => {
-          // note: we need to put the linked obj, otherwise IPFS won't
-          // timeout. Reason: it needs the node to get its size
-          ipfs.object.put(node2, (err, cid) => {
-            expect(err).to.not.exist()
+      // assert both are equal
+      expect(node1bCid).to.eql(cid)
 
-            cb()
-          })
-        },
-        (cb) => {
-          asDAGLink(node2, 'link-to-node', (err, link) => {
-            expect(err).to.not.exist()
-
-            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.put(node1b, (err, cid) => {
-            expect(err).to.not.exist()
-
-            node1bCid = cid
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.patch.addLink(testNodeCid, node1b.Links[0], (err, cid) => {
-            expect(err).to.not.exist()
-            expect(node1bCid).to.eql(cid)
-            cb()
-          })
-        }
-        /* TODO: revisit this assertions.
-        (cb) => {
-          // note: make sure we can link js plain objects
-          const content = Buffer.from(JSON.stringify({
-            title: 'serialized object'
-          }, null, 0))
-          ipfs.add(content, (err, result) => {
-            expect(err).to.not.exist()
-            expect(result).to.exist()
-            expect(result).to.have.lengthOf(1)
-            const object = result.pop()
-            node3 = {
-              name: object.hash,
-              multihash: object.hash,
-              size: object.size
-            }
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.patch.addLink(testNodeWithLinkMultihash, node3, (err, node) => {
-            expect(err).to.not.exist()
-            expect(node).to.exist()
-            testNodeWithLinkMultihash = node.multihash
-            testLinkPlainObject = node3
-            cb()
-          })
-        }
-        */
-      ], done)
-    })
-
-    it('should add a link to an existing node (promised)', async () => {
-      const obj = {
-        Data: Buffer.from('patch test object (promised)'),
-        Links: []
+      /* TODO: revisit this assertions.
+      // note: make sure we can link js plain objects
+      const content = Buffer.from(JSON.stringify({
+        title: 'serialized object'
+      }, null, 0))
+      const result = await ipfs.add(content)
+      expect(result).to.exist()
+      expect(result).to.have.lengthOf(1)
+      const object = result.pop()
+      const node3 = {
+        name: object.hash,
+        multihash: object.hash,
+        size: object.size
       }
-
-      const parentCid = await ipfs.object.put(obj)
-      const parent = await ipfs.object.get(parentCid)
-      const childCid = await ipfs.object.put(await createDAGNode(Buffer.from('some other node'), []))
-      const child = await ipfs.object.get(childCid)
-      const newParent = await addLinkToDAGNode(parent, {
-        name: 'link-to-node',
-        size: child.size,
-        cid: childCid
-      })
-      const newParentCid = await calculateCid(newParent)
-      const nodeFromObjectPatchCid = await ipfs.object.patch.addLink(parentCid, newParent.Links[0])
-
-      expect(newParentCid).to.eql(nodeFromObjectPatchCid)
+      const node = await ipfs.object.patch.addLink(testNodeWithLinkMultihash, node3)
+      expect(node).to.exist()
+      testNodeWithLinkMultihash = node.multihash
+      testLinkPlainObject = node3
+      */
     })
 
     it('returns error for request without arguments', () => {
-      return ipfs.object.patch.addLink(null, null, null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.patch.addLink(null, null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with only one invalid argument', () => {
-      return ipfs.object.patch.addLink('invalid', null, null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.patch.addLink('invalid', null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
 }

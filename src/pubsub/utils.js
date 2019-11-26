@@ -1,7 +1,7 @@
 'use strict'
 
 const hat = require('hat')
-const delay = require('../utils/delay')
+const delay = require('delay')
 
 async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
   const start = Date.now()

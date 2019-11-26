@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { getDescribe, getIt } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -20,12 +20,16 @@ module.exports = (createCommon, options) => {
 
     after(() => common.teardown())
 
-    it('should connect to a peer', (done) => {
-      ipfsA.swarm.connect(ipfsB.peerId.addresses[0], done)
-    })
+    it('should connect to a peer', async () => {
+      let peers
 
-    it('should connect to a peer (promised)', () => {
-      return ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      peers = await ipfsA.swarm.peers()
+      expect(peers).to.have.length(0)
+
+      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+
+      peers = await ipfsA.swarm.peers()
+      expect(peers).to.have.length.above(0)
     })
   })
 }

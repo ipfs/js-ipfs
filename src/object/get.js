@@ -3,7 +3,6 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
@@ -20,76 +19,19 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should get object by multihash', (done) => {
+    it('should get object by multihash', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      let node1
-      let node1Cid
-      let node2
-
-      series([
-        (cb) => {
-          ipfs.object.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            node1Cid = cid
-
-            ipfs.object.get(cid, (err, node) => {
-              expect(err).to.not.exist()
-              node1 = node
-              cb()
-            })
-          })
-        },
-        (cb) => {
-          ipfs.object.get(node1Cid, (err, node) => {
-            expect(err).to.not.exist()
-
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof node.Data === 'string') {
-              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
-            }
-
-            node2 = node
-
-            cb()
-          })
-        },
-        (cb) => {
-          expect(node1.Data).to.eql(node2.Data)
-          expect(node1.Links).to.eql(node2.Links)
-          cb()
-        }
-      ], done)
-    })
-
-    it('should get object by multihash (promised)', async () => {
-      const testObj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      const node1Cid = await ipfs.object.put(testObj)
+      const node1Cid = await ipfs.object.put(obj)
       const node1 = await ipfs.object.get(node1Cid)
       let node2 = await ipfs.object.get(node1Cid)
 
@@ -99,56 +41,11 @@ module.exports = (createCommon, options) => {
         node2 = new DAGNode(Buffer.from(node2.Data), node2.Links, node2.size)
       }
 
-      expect(node1.Data).to.deep.equal(node2.Data)
-      expect(node1.Links).to.deep.equal(node2.Links)
+      expect(node1.Data).to.eql(node2.Data)
+      expect(node1.Links).to.eql(node2.Links)
     })
 
-    it('should get object by multihash string', (done) => {
-      const obj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      let node1
-      let node1Cid
-      let node2
-
-      series([
-        (cb) => {
-          ipfs.object.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            node1Cid = cid
-
-            ipfs.object.get(node1Cid, (err, node) => {
-              expect(err).to.not.exist()
-              node1 = node
-              cb()
-            })
-          })
-        },
-        (cb) => {
-          // get object from ipfs multihash string
-          ipfs.object.get(node1Cid.toBaseEncodedString(), (err, node) => {
-            expect(err).to.not.exist()
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof node.Data === 'string') {
-              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
-            }
-
-            node2 = node
-            cb()
-          })
-        },
-        (cb) => {
-          expect(node1.Data).to.eql(node2.Data)
-          expect(node1.Links).to.eql(node2.Links)
-          cb()
-        }
-      ], done)
-    })
-
-    it('should get object by multihash string (promised)', async () => {
+    it('should get object by multihash string', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
@@ -168,189 +65,86 @@ module.exports = (createCommon, options) => {
       expect(node1.Links).to.deep.equal(node2.Links)
     })
 
-    it('should get object with links by multihash string', (done) => {
-      let node1a
-      let node1b
-      let node1bCid
-      let node1c
-      let node2
+    it('should get object with links by multihash string', async () => {
+      const node1a = new DAGNode(Buffer.from('Some data 1'))
+      const node2 = new DAGNode(Buffer.from('Some data 2'))
 
-      series([
-        (cb) => {
-          try {
-            node1a = new DAGNode(Buffer.from('Some data 1'))
-          } catch (err) {
-            return cb(err)
-          }
+      const link = await asDAGLink(node2, 'some-link')
+      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
 
-          cb()
-        },
-        (cb) => {
-          try {
-            node2 = new DAGNode(Buffer.from('Some data 2'))
-          } catch (err) {
-            return cb(err)
-          }
+      const node1bCid = await ipfs.object.put(node1b)
+      let node1c = await ipfs.object.get(node1bCid)
 
-          cb()
-        },
-        (cb) => {
-          asDAGLink(node2, 'some-link', (err, link) => {
-            if (err) {
-              return cb(err)
-            }
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof node1c.Data === 'string') {
+        node1c = new DAGNode(Buffer.from(node1c.Data), node1c.Links, node1c.size)
+      }
 
-            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.put(node1b, (err, cid) => {
-            expect(err).to.not.exist()
-            node1bCid = cid
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.get(node1bCid, (err, node) => {
-            expect(err).to.not.exist()
-
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof node.Data === 'string') {
-              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
-            }
-
-            node1c = node
-            cb()
-          })
-        },
-        (cb) => {
-          expect(node1a.Data).to.eql(node1c.Data)
-          cb()
-        }
-      ], done)
+      expect(node1a.Data).to.eql(node1c.Data)
     })
 
-    it('should get object by base58 encoded multihash', (done) => {
+    it('should get object by base58 encoded multihash', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      let node1a
-      let node1aCid
-      let node1b
+      const node1aCid = await ipfs.object.put(obj)
+      const node1a = await ipfs.object.get(node1aCid)
+      let node1b = await ipfs.object.get(node1aCid, { enc: 'base58' })
 
-      series([
-        (cb) => {
-          ipfs.object.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            node1aCid = cid
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof node1b.Data === 'string') {
+        node1b = new DAGNode(Buffer.from(node1b.Data), node1b.Links, node1b.size)
+      }
 
-            ipfs.object.get(cid, (err, node) => {
-              expect(err).to.not.exist()
-              node1a = node
-              cb()
-            })
-          })
-        },
-        (cb) => {
-          ipfs.object.get(node1aCid, { enc: 'base58' }, (err, node) => {
-            expect(err).to.not.exist()
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof node.Data === 'string') {
-              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
-            }
-            node1b = node
-            cb()
-          })
-        },
-        (cb) => {
-          expect(node1a.Data).to.eql(node1b.Data)
-          expect(node1a.Links).to.eql(node1b.Links)
-          cb()
-        }
-      ], done)
+      expect(node1a.Data).to.eql(node1b.Data)
+      expect(node1a.Links).to.eql(node1b.Links)
     })
 
-    it('should get object by base58 encoded multihash string', (done) => {
+    it('should get object by base58 encoded multihash string', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      let node1a
-      let node1aCid
-      let node1b
+      const node1aCid = await ipfs.object.put(obj)
+      const node1a = await ipfs.object.get(node1aCid)
+      let node1b = await ipfs.object.get(node1aCid.toBaseEncodedString(), { enc: 'base58' })
 
-      series([
-        (cb) => {
-          ipfs.object.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            node1aCid = cid
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof node1b.Data === 'string') {
+        node1b = new DAGNode(Buffer.from(node1b.Data), node1b.Links, node1b.size)
+      }
 
-            ipfs.object.get(cid, (err, node) => {
-              expect(err).to.not.exist()
-              node1a = node
-              cb()
-            })
-          })
-        },
-        (cb) => {
-          ipfs.object.get(node1aCid.toBaseEncodedString(), { enc: 'base58' }, (err, node) => {
-            expect(err).to.not.exist()
-            // because js-ipfs-api can't infer if the
-            // returned Data is Buffer or String
-            if (typeof node.Data === 'string') {
-              node = new DAGNode(Buffer.from(node.Data), node.Links, node.size)
-            }
-            node1b = node
-            cb()
-          })
-        },
-        (cb) => {
-          expect(node1a.Data).to.eql(node1b.Data)
-          expect(node1a.Links).to.eql(node1b.Links)
-          cb()
-        }
-      ], done)
+      expect(node1a.Data).to.eql(node1b.Data)
+      expect(node1a.Links).to.eql(node1b.Links)
     })
 
-    it('should supply unaltered data', () => {
+    it('should supply unaltered data', async () => {
       // has to be big enough to span several DAGNodes
       const data = crypto.randomBytes(1024 * 3000)
 
-      return ipfs.add({
+      const result = await ipfs.add({
         path: '',
         content: data
       })
-        .then((result) => {
-          return ipfs.object.get(result[0].hash)
-        })
-        .then((node) => {
-          const meta = UnixFs.unmarshal(node.Data)
 
-          expect(meta.fileSize()).to.equal(data.length)
-        })
+      const node = await ipfs.object.get(result[0].hash)
+      const meta = UnixFs.unmarshal(node.Data)
+
+      expect(meta.fileSize()).to.equal(data.length)
     })
 
     it('should error for request without argument', () => {
-      return ipfs.object.get(null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.get(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
-      return ipfs.object.get('invalid', { enc: 'base58' })
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.get('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
 }

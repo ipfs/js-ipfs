@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const series = require('async/series')
 const hat = require('hat')
 const { fixtures } = require('../files-regular/utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -12,68 +11,39 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.files.cp', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = await common.setup() })
 
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
-    })
+    after(() => common.teardown())
 
-    after((done) => common.teardown(done))
-
-    it('should copy file, expect error', (done) => {
+    it('should copy file, expect error', () => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.cp(`${testDir}/c`, `${testDir}/b`, (err) => {
-        expect(err).to.exist()
-        done()
-      })
+      return expect(ipfs.files.cp(`${testDir}/c`, `${testDir}/b`)).to.eventually.be.rejected()
     })
 
-    it('should copy file, expect no error', (done) => {
+    it('should copy file, expect no error', async () => {
       const testDir = `/test-${hat()}`
 
-      series([
-        (cb) => ipfs.files.mkdir(testDir, { parents: true }, cb),
-        (cb) => ipfs.files.write(`${testDir}/a`, Buffer.from('TEST'), { create: true }, cb),
-        (cb) => ipfs.files.cp(`${testDir}/a`, `${testDir}/b`, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
-        done()
-      })
+      await ipfs.files.mkdir(testDir, { parents: true })
+      await ipfs.files.write(`${testDir}/a`, Buffer.from('TEST'), { create: true })
+      await ipfs.files.cp(`${testDir}/a`, `${testDir}/b`)
     })
 
-    it('should copy dir, expect error', (done) => {
+    it('should copy dir, expect error', () => {
       const testDir = `/test-${hat()}`
 
-      ipfs.files.cp(`${testDir}/lv1/lv3`, `${testDir}/lv1/lv4`, (err) => {
-        expect(err).to.exist()
-        done()
-      })
+      return expect(ipfs.files.cp(`${testDir}/lv1/lv3`, `${testDir}/lv1/lv4`)).to.eventually.be.rejected()
     })
 
-    it('should copy dir, expect no error', (done) => {
+    it('should copy dir, expect no error', async () => {
       const testDir = `/test-${hat()}`
 
-      series([
-        (cb) => ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true }, cb),
-        (cb) => ipfs.files.cp(`${testDir}/lv1/lv2`, `${testDir}/lv1/lv3`, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
-        done()
-      })
+      await ipfs.files.mkdir(`${testDir}/lv1/lv2`, { parents: true })
+      await ipfs.files.cp(`${testDir}/lv1/lv2`, `${testDir}/lv1/lv3`)
     })
 
     it('should copy from outside of mfs', async () => {

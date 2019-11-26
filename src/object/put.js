@@ -3,7 +3,6 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
@@ -18,43 +17,13 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should put an object', (done) => {
-      const obj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      ipfs.object.put(obj, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-          const nodeJSON = node.toJSON()
-          expect(nodeJSON.data).to.eql(obj.Data)
-          expect(nodeJSON.links).to.eql(obj.Links)
-          done()
-        })
-      })
-    })
-
-    it('should put an object (promised)', async () => {
+    it('should put an object', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
@@ -68,7 +37,7 @@ module.exports = (createCommon, options) => {
       expect(obj.Links).to.deep.equal(nodeJSON.links)
     })
 
-    it('should put a JSON encoded Buffer', (done) => {
+    it('should put a JSON encoded Buffer', async () => {
       const obj = {
         Data: Buffer.from(hat()),
         Links: []
@@ -81,138 +50,58 @@ module.exports = (createCommon, options) => {
 
       const buf = Buffer.from(JSON.stringify(obj2))
 
-      ipfs.object.put(buf, { enc: 'json' }, (err, cid) => {
-        expect(err).to.not.exist()
+      const cid = await ipfs.object.put(buf, { enc: 'json' })
 
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-          const nodeJSON = node.toJSON()
-          expect(nodeJSON.data).to.eql(node.Data)
-          done()
-        })
-      })
+      const node = await ipfs.object.get(cid)
+      const nodeJSON = node.toJSON()
+      expect(nodeJSON.data).to.eql(node.Data)
     })
 
-    it('should put a Protobuf encoded Buffer', (done) => {
-      let node
-      let serialized
+    it('should put a Protobuf encoded Buffer', async () => {
+      const node = new DAGNode(Buffer.from(hat()))
+      const serialized = node.serialize()
 
-      series([
-        (cb) => {
-          try {
-            node = new DAGNode(Buffer.from(hat()))
-          } catch (err) {
-            return cb(err)
-          }
-
-          cb()
-        },
-        (cb) => {
-          try {
-            serialized = node.serialize()
-          } catch (err) {
-            return cb(err)
-          }
-
-          cb()
-        },
-        (cb) => {
-          ipfs.object.put(serialized, { enc: 'protobuf' }, (err, cid) => {
-            expect(err).to.not.exist()
-            ipfs.object.get(cid, (err, node2) => {
-              expect(err).to.not.exist()
-              expect(node2.Data).to.deep.equal(node.Data)
-              expect(node2.Links).to.deep.equal(node.Links)
-              cb()
-            })
-          })
-        }
-      ], done)
+      const cid = await ipfs.object.put(serialized, { enc: 'protobuf' })
+      const node2 = await ipfs.object.get(cid)
+      expect(node2.Data).to.deep.equal(node.Data)
+      expect(node2.Links).to.deep.equal(node.Links)
     })
 
-    it('should put a Buffer as data', (done) => {
+    it('should put a Buffer as data', async () => {
       const data = Buffer.from(hat())
-      ipfs.object.put(data, (err, cid) => {
-        expect(err).to.not.exist()
 
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-          const nodeJSON = node.toJSON()
-          expect(data).to.deep.equal(nodeJSON.data)
-          expect([]).to.deep.equal(nodeJSON.links)
-          done()
-        })
-      })
+      const cid = await ipfs.object.put(data)
+      const node = await ipfs.object.get(cid)
+      const nodeJSON = node.toJSON()
+      expect(data).to.deep.equal(nodeJSON.data)
+      expect([]).to.deep.equal(nodeJSON.links)
     })
 
-    it('should put a Protobuf DAGNode', (done) => {
+    it('should put a Protobuf DAGNode', async () => {
       const dNode = new DAGNode(Buffer.from(hat()))
 
-      ipfs.object.put(dNode, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-          expect(dNode.Data).to.deep.equal(node.Data)
-          expect(dNode.Links).to.deep.equal(node.Links)
-          done()
-        })
-      })
+      const cid = await ipfs.object.put(dNode)
+      const node = await ipfs.object.get(cid)
+      expect(dNode.Data).to.deep.equal(node.Data)
+      expect(dNode.Links).to.deep.equal(node.Links)
     })
 
-    it('should fail if a string is passed', (done) => {
-      ipfs.object.put(hat(), (err) => {
-        expect(err).to.exist()
-        done()
-      })
+    it('should fail if a string is passed', () => {
+      return expect(ipfs.object.put(hat())).to.eventually.be.rejected()
     })
 
-    it('should put a Protobuf DAGNode with a link', (done) => {
-      let node1a
-      let node1b
-      let node2
+    it('should put a Protobuf DAGNode with a link', async () => {
+      const node1a = new DAGNode(Buffer.from(hat()))
+      const node2 = new DAGNode(Buffer.from(hat()))
 
-      series([
-        (cb) => {
-          try {
-            node1a = new DAGNode(Buffer.from(hat()))
-          } catch (err) {
-            return cb(err)
-          }
+      const link = await asDAGLink(node2, 'some-link')
 
-          cb()
-        },
-        (cb) => {
-          try {
-            node2 = new DAGNode(Buffer.from(hat()))
-          } catch (err) {
-            return cb(err)
-          }
+      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
 
-          cb()
-        },
-        (cb) => {
-          asDAGLink(node2, 'some-link', (err, link) => {
-            expect(err).to.not.exist()
-
-            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.put(node1b, (err, cid) => {
-            expect(err).to.not.exist()
-
-            ipfs.object.get(cid, (err, node) => {
-              expect(err).to.not.exist()
-              expect(node1b.Data).to.deep.equal(node.Data)
-              expect(node1b.Links).to.deep.equal(node.Links)
-              cb()
-            })
-          })
-        }
-      ], done)
+      const cid = await ipfs.object.put(node1b)
+      const node = await ipfs.object.get(cid)
+      expect(node1b.Data).to.deep.equal(node.Data)
+      expect(node1b.Links).to.deep.equal(node.Links)
     })
   })
 }

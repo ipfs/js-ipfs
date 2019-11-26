@@ -4,7 +4,6 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
@@ -20,45 +19,13 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should get empty links by multihash', (done) => {
-      const testObj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-
-          ipfs.object.links(cid, (err, links) => {
-            expect(err).to.not.exist()
-            expect(node.Links).to.deep.equal(links)
-            done()
-          })
-        })
-      })
-    })
-
-    it('should get empty links by multihash (promised)', async () => {
+    it('should get empty links by multihash', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
@@ -71,156 +38,86 @@ module.exports = (createCommon, options) => {
       expect(node.Links).to.eql(links)
     })
 
-    it('should get links by multihash', (done) => {
-      let node1a
-      let node1b
-      let node1bCid
-      let node2
+    it('should get links by multihash', async () => {
+      const node1a = new DAGNode(Buffer.from('Some data 1'))
+      const node2 = new DAGNode(Buffer.from('Some data 2'))
 
-      series([
-        (cb) => {
-          try {
-            node1a = new DAGNode(Buffer.from('Some data 1'))
-          } catch (err) {
-            return cb(err)
-          }
+      const link = await asDAGLink(node2, 'some-link')
 
-          cb()
-        },
-        (cb) => {
-          try {
-            node2 = new DAGNode(Buffer.from('Some data 2'))
-          } catch (err) {
-            return cb(err)
-          }
+      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1bCid = await ipfs.object.put(node1b)
 
-          cb()
-        },
-        (cb) => {
-          asDAGLink(node2, 'some-link', (err, link) => {
-            expect(err).to.not.exist()
-
-            node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.put(node1b, (err, cid) => {
-            expect(err).to.not.exist()
-
-            node1bCid = cid
-
-            cb()
-          })
-        },
-        (cb) => {
-          ipfs.object.links(node1bCid, (err, links) => {
-            expect(err).to.not.exist()
-            expect(node1b.Links[0]).to.eql({
-              Hash: links[0].Hash,
-              Tsize: links[0].Tsize,
-              Name: links[0].Name
-            })
-            cb()
-          })
-        }
-      ], done)
+      const links = await ipfs.object.links(node1bCid)
+      expect(node1b.Links[0]).to.eql({
+        Hash: links[0].Hash,
+        Tsize: links[0].Tsize,
+        Name: links[0].Name
+      })
     })
 
-    it('should get links by base58 encoded multihash', (done) => {
+    it('should get links by base58 encoded multihash', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
+      const cid = await ipfs.object.put(testObj)
+      const node = await ipfs.object.get(cid)
 
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-
-          ipfs.object.links(cid.buffer, { enc: 'base58' }, (err, links) => {
-            expect(err).to.not.exist()
-            expect(node.Links).to.deep.equal(links)
-            done()
-          })
-        })
-      })
+      const links = await ipfs.object.links(cid.buffer, { enc: 'base58' })
+      expect(node.Links).to.deep.equal(links)
     })
 
-    it('should get links by base58 encoded multihash string', (done) => {
+    it('should get links by base58 encoded multihash string', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, cid) => {
-        expect(err).to.not.exist()
+      const cid = await ipfs.object.put(testObj)
+      const node = await ipfs.object.get(cid)
 
-        ipfs.object.get(cid, (err, node) => {
-          expect(err).to.not.exist()
-
-          ipfs.object.links(cid.toBaseEncodedString(), { enc: 'base58' }, (err, links) => {
-            expect(err).to.not.exist()
-            expect(node.Links).to.deep.equal(links)
-            done()
-          })
-        })
-      })
+      const links = await ipfs.object.links(cid.toBaseEncodedString(), { enc: 'base58' })
+      expect(node.Links).to.deep.equal(links)
     })
 
-    it('should get links from CBOR object', (done) => {
+    it('should get links from CBOR object', async () => {
       const hashes = []
-      ipfs.add(Buffer.from('test data'), (err, res1) => {
-        expect(err).to.not.exist()
-        hashes.push(res1[0].hash)
-        ipfs.add(Buffer.from('more test data'), (err, res2) => {
-          hashes.push(res2[0].hash)
-          expect(err).to.not.exist()
-          const obj = {
-            some: 'data',
-            mylink: new CID(hashes[0]),
-            myobj: {
-              anotherLink: new CID(hashes[1])
-            }
-          }
-          ipfs.dag.put(obj, (err, cid) => {
-            expect(err).to.not.exist()
-            ipfs.object.links(cid, (err, links) => {
-              expect(err).to.not.exist()
-              expect(links.length).to.eql(2)
 
-              // TODO: js-ipfs succeeds but go returns empty strings for link name
-              // const names = [links[0].name, links[1].name]
-              // expect(names).includes('mylink')
-              // expect(names).includes('myobj/anotherLink')
+      const res1 = await ipfs.add(Buffer.from('test data'))
+      hashes.push(res1[0].hash)
 
-              const cids = [links[0].Hash.toString(), links[1].Hash.toString()]
-              expect(cids).includes(hashes[0])
-              expect(cids).includes(hashes[1])
+      const res2 = await ipfs.add(Buffer.from('more test data'))
+      hashes.push(res2[0].hash)
 
-              done()
-            })
-          })
-        })
-      })
+      const obj = {
+        some: 'data',
+        mylink: new CID(hashes[0]),
+        myobj: {
+          anotherLink: new CID(hashes[1])
+        }
+      }
+      const cid = await ipfs.dag.put(obj)
+
+      const links = await ipfs.object.links(cid)
+      expect(links.length).to.eql(2)
+
+      // TODO: js-ipfs succeeds but go returns empty strings for link name
+      // const names = [links[0].name, links[1].name]
+      // expect(names).includes('mylink')
+      // expect(names).includes('myobj/anotherLink')
+
+      const cids = [links[0].Hash.toString(), links[1].Hash.toString()]
+      expect(cids).includes(hashes[0])
+      expect(cids).includes(hashes[1])
     })
 
     it('returns error for request without argument', () => {
-      return ipfs.object.links(null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.links(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
-      ipfs.object.links('invalid', { enc: 'base58' })
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.links('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
 }

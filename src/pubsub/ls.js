@@ -3,7 +3,7 @@
 
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('../utils/delay')
+const delay = require('delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -16,19 +16,8 @@ module.exports = (createCommon, options) => {
     let ipfs
     let subscribedTopics = []
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
     afterEach(async () => {
@@ -39,7 +28,7 @@ module.exports = (createCommon, options) => {
       await delay(100)
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     it('should return an empty list when no topics are subscribed', async () => {
       const topics = await ipfs.pubsub.ls()

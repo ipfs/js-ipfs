@@ -9,38 +9,27 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.repo.gc', () => {
+  describe('.repo.gc', function () {
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should run garbage collection', (done) => {
-      ipfs.repo.gc((err, res) => {
-        expect(err).to.not.exist()
-        expect(res).to.exist()
-        done()
-      })
-    })
+    it('should run garbage collection', async () => {
+      const res = await ipfs.add(Buffer.from('apples'))
 
-    it('should run garbage collection (promised)', () => {
-      return ipfs.repo.gc().then((res) => {
-        expect(res).to.exist()
-      })
+      const pinset = await ipfs.pin.ls()
+      expect(pinset.map((obj) => obj.hash)).includes(res[0].hash)
+
+      await ipfs.pin.rm(res[0].hash)
+      await ipfs.repo.gc()
+
+      const finalPinset = await ipfs.pin.ls()
+      expect(finalPinset.map((obj) => obj.hash)).not.includes(res[0].hash)
     })
 
     it('should clean up unpinned data', async () => {

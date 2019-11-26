@@ -16,55 +16,21 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
+    before(async () => {
+      ipfs = await common.setup()
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
-    it('should get data by multihash', (done) => {
-      const testObj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      ipfs.object.put(testObj, (err, nodeCid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.data(nodeCid, (err, data) => {
-          expect(err).to.not.exist()
-
-          // because js-ipfs-api can't infer
-          // if the returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(testObj.Data).to.eql(data)
-          done()
-        })
-      })
-    })
-
-    it('should get data by multihash (promised)', async () => {
+    it('should get data by multihash', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
       const nodeCid = await ipfs.object.put(testObj)
-      let data = await ipfs.object.data(nodeCid)
 
+      let data = await ipfs.object.data(nodeCid)
       // because js-ipfs-api can't infer
       // if the returned Data is Buffer or String
       if (typeof data === 'string') {
@@ -73,66 +39,46 @@ module.exports = (createCommon, options) => {
       expect(testObj.Data).to.deep.equal(data)
     })
 
-    it('should get data by base58 encoded multihash', (done) => {
+    it('should get data by base58 encoded multihash', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, nodeCid) => {
-        expect(err).to.not.exist()
+      const nodeCid = await ipfs.object.put(testObj)
 
-        ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' }, (err, data) => {
-          expect(err).to.not.exist()
-
-          // because js-ipfs-api can't infer
-          // if the returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(testObj.Data).to.eql(data)
-          done()
-        })
-      })
+      let data = await ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' })
+      // because js-ipfs-api can't infer
+      // if the returned Data is Buffer or String
+      if (typeof data === 'string') {
+        data = Buffer.from(data)
+      }
+      expect(testObj.Data).to.deep.equal(data)
     })
 
-    it('should get data by base58 encoded multihash string', (done) => {
+    it('should get data by base58 encoded multihash string', async () => {
       const testObj = {
         Data: Buffer.from(hat()),
         Links: []
       }
 
-      ipfs.object.put(testObj, (err, nodeCid) => {
-        expect(err).to.not.exist()
+      const nodeCid = await ipfs.object.put(testObj)
 
-        ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' }, (err, data) => {
-          expect(err).to.not.exist()
-
-          // because js-ipfs-api can't infer if the
-          // returned Data is Buffer or String
-          if (typeof data === 'string') {
-            data = Buffer.from(data)
-          }
-          expect(testObj.Data).to.eql(data)
-          done()
-        })
-      })
+      let data = await ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' })
+      // because js-ipfs-api can't infer if the
+      // returned Data is Buffer or String
+      if (typeof data === 'string') {
+        data = Buffer.from(data)
+      }
+      expect(testObj.Data).to.eql(data)
     })
 
     it('returns error for request without argument', () => {
-      return ipfs.object.data(null)
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.data(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
-      ipfs.object.data('invalid', { enc: 'base58' })
-        .then(
-          () => expect.fail('should have returned an error for invalid argument'),
-          (err) => expect(err).to.be.an.instanceof(Error)
-        )
+      return expect(ipfs.object.data('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
 }

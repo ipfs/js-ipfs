@@ -19,18 +19,9 @@ module.exports = (createCommon, options) => {
 
     after(() => common.teardown())
 
-    it('should list local addresses the node is listening on', (done) => {
-      ipfs.swarm.localAddrs((err, multiaddrs) => {
-        expect(err).to.not.exist()
-        expect(multiaddrs).to.have.length.above(0)
-        done()
-      })
-    })
-
-    it('should list local addresses the node is listening on (promised)', () => {
-      return ipfs.swarm.localAddrs().then((multiaddrs) => {
-        expect(multiaddrs).to.have.length.above(0)
-      })
+    it('should list local addresses the node is listening on', async () => {
+      const multiaddrs = await ipfs.swarm.localAddrs()
+      expect(multiaddrs).to.have.length.above(0)
     })
   })
 }

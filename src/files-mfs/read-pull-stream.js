@@ -1,11 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const series = require('async/series')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
+const pullToPromise = require('pull-to-promise')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -13,58 +11,32 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.files.readPullStream', function () {
-    this.timeout(40 * 1000)
+    this.timeout(60 * 1000)
 
     let ipfs
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = await common.setup() })
 
-      common.setup((err, factory) => {
-        expect(err).to.not.exist()
-        factory.spawnNode((err, node) => {
-          expect(err).to.not.exist()
-          ipfs = node
-          done()
-        })
-      })
-    })
+    after(() => common.teardown())
 
-    after((done) => common.teardown(done))
-
-    it('should not read not found, expect error', (done) => {
+    it('should not read not found, expect error', () => {
       const testDir = `/test-${hat()}`
 
-      pull(
-        ipfs.files.readPullStream(`${testDir}/404`),
-        collect((err) => {
-          expect(err).to.exist()
-          expect(err.message).to.contain('does not exist')
-          done()
-        })
-      )
+      return expect(pullToPromise.any(ipfs.files.readPullStream(`${testDir}/404`))).to.eventually.be.rejected
+        .and.be.an.instanceOf(Error)
+        .and.have.property('message')
+        .that.include('does not exist')
     })
 
-    it('should read file', (done) => {
+    it('should read file', async () => {
       const testDir = `/test-${hat()}`
 
-      series([
-        (cb) => ipfs.files.mkdir(testDir, cb),
-        (cb) => ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true }, cb)
-      ], (err) => {
-        expect(err).to.not.exist()
+      await ipfs.files.mkdir(testDir)
+      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true })
 
-        pull(
-          ipfs.files.readPullStream(`${testDir}/a`),
-          collect((err, bufs) => {
-            expect(err).to.not.exist()
-            expect(bufs).to.eql([Buffer.from('Hello, world!')])
-            done()
-          })
-        )
-      })
+      const bufs = await pullToPromise.any(ipfs.files.readPullStream(`${testDir}/a`))
+
+      expect(bufs).to.eql([Buffer.from('Hello, world!')])
     })
   })
 }

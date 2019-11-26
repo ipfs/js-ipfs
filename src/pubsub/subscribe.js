@@ -4,11 +4,9 @@
 
 const pushable = require('it-pushable')
 const { collect } = require('streaming-iterables')
-const { spawnNodesWithId } = require('../utils/spawn')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { connect } = require('../utils/swarm')
-const delay = require('../utils/delay')
+const delay = require('delay')
 
 module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
@@ -23,23 +21,9 @@ module.exports = (createCommon, options) => {
     let topic
     let subscribedTopics = []
 
-    before(function (done) {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(100 * 1000)
-
-      common.setup((err, factory) => {
-        if (err) return done(err)
-
-        spawnNodesWithId(2, factory, (err, nodes) => {
-          if (err) return done(err)
-
-          ipfs1 = nodes[0]
-          ipfs2 = nodes[1]
-
-          done()
-        })
-      })
+    before(async () => {
+      ipfs1 = await common.setup()
+      ipfs2 = await common.setup()
     })
 
     beforeEach(() => {
@@ -57,7 +41,7 @@ module.exports = (createCommon, options) => {
       await delay(100)
     })
 
-    after((done) => common.teardown(done))
+    after(() => common.teardown())
 
     describe('single node', () => {
       it('should subscribe to one topic', async () => {
@@ -155,7 +139,7 @@ module.exports = (createCommon, options) => {
     })
 
     describe('multiple connected nodes', () => {
-      before((done) => {
+      before(() => {
         if (ipfs1.pubsub.setMaxListeners) {
           ipfs1.pubsub.setMaxListeners(100)
         }
@@ -165,7 +149,7 @@ module.exports = (createCommon, options) => {
         }
 
         const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
-        connect(ipfs1, ipfs2Addr, done)
+        return ipfs1.swarm.connect(ipfs2Addr)
       })
 
       it('should receive messages from a different node', async () => {

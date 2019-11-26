@@ -23,20 +23,11 @@ module.exports = (createCommon, options) => {
 
     after(() => common.teardown())
 
-    it('should get a list of node addresses', (done) => {
-      ipfsA.swarm.addrs((err, peerInfos) => {
-        expect(err).to.not.exist()
-        expect(peerInfos).to.not.be.empty()
-        expect(peerInfos).to.be.an('array')
-        peerInfos.forEach(m => expect(PeerInfo.isPeerInfo(m)).to.be.true())
-        done()
-      })
-    })
-
-    it('should get a list of node addresses (promised)', () => {
-      return ipfsA.swarm.addrs().then((peerInfos) => {
-        expect(peerInfos).to.have.length.above(0)
-      })
+    it('should get a list of node addresses', async () => {
+      const peerInfos = await ipfsA.swarm.addrs()
+      expect(peerInfos).to.not.be.empty()
+      expect(peerInfos).to.be.an('array')
+      peerInfos.forEach(m => expect(PeerInfo.isPeerInfo(m)).to.be.true())
     })
   })
 }
