@@ -78,7 +78,7 @@
     "buffer-peek-stream": "^1.0.1",
     "byteman": "^1.3.5",
     "callbackify": "^1.1.0",
-    "cid-tool": "~0.3.0",
+    "cid-tool": "~0.4.0",
     "cids": "~0.7.1",
     "class-is": "^1.1.0",
     "dag-cbor-links": "^1.3.0",
