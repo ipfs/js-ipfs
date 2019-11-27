@@ -134,18 +134,18 @@ module.exports = {
       default: false,
       describe: 'Apply modification time to created UnixFS entries'
     },
-    'mode': {
+    mode: {
       type: 'number',
       coerce: (value) => parseInt(value, 8),
       describe: 'File mode to apply to created UnixFS entries'
     },
-    'mtime': {
+    mtime: {
       type: 'number',
       coerce: (value) => {
         value = parseInt(value)
 
         if (isNaN(value)) {
-          throw errcode(new Error('mtime must be a number'), 'ERR_BAD_MTIME')
+          throw new Error('mtime must be a number')
         }
       },
       describe: 'Modification in seconds before or since the Unix Epoch to apply to created UnixFS entries'
