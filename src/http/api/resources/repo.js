@@ -35,8 +35,7 @@ exports.version = async (request, h) => {
 
 exports.stat = async (request, h) => {
   const { ipfs } = request.server.app
-  const human = request.query.human === 'true'
-  const stat = await ipfs.repo.stat({ human })
+  const stat = await ipfs.repo.stat()
 
   return h.response({
     NumObjects: stat.numObjects,
