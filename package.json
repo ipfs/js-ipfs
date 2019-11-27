@@ -84,7 +84,7 @@
     "cross-env": "^6.0.0",
     "detect-node": "^2.0.4",
     "go-ipfs-dep": "^0.4.22",
-    "interface-ipfs-core": "^0.122.0",
+    "interface-ipfs-core": "^0.123.0",
     "ipfsd-ctl": "^0.47.1",
     "ndjson": "^1.5.0",
     "nock": "^11.4.0",

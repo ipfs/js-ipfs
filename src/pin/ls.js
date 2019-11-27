@@ -9,10 +9,12 @@ module.exports = configure(({ ky }) => {
       path = null
     }
 
+    path = path || []
+    path = Array.isArray(path) ? path : [path]
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
-    if (path) searchParams.set('arg', `${path}`)
+    path.forEach(p => searchParams.append('arg', `${p}`))
     if (options.type) searchParams.set('type', options.type)
 
     const { Keys } = await ky.post('pin/ls', {
