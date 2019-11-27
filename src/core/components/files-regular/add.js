@@ -1,6 +1,6 @@
 'use strict'
 
-const all = require('async-iterator-all')
+const all = require('it-all')
 
 module.exports = function (self) {
   // can't use callbackify because if `data` is a pull stream

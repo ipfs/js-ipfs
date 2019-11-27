@@ -2,7 +2,7 @@
 
 const callbackify = require('callbackify')
 const CID = require('cids')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const errCode = require('err-code')
 const multicodec = require('multicodec')
 

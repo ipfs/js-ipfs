@@ -2,7 +2,7 @@
 
 const callbackify = require('callbackify')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const all = require('async-iterator-all')
+const all = require('it-all')
 
 module.exports = self => {
   return callbackify.variadic(async (...args) => { // eslint-disable-line require-await
