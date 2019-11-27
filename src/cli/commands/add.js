@@ -8,7 +8,6 @@ const multibase = require('multibase')
 const { createProgressBar } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const errcode = require('err-code')
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))

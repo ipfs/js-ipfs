@@ -69,7 +69,8 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
     /**
      * Change file mode
      *
-     * @param {String} path - The path(s) of the source to modify.
+     * @param {String} path - The path of the source to modify.
+     * @param {Object} mode - The mode to set the path
      * @param {Object} [opts] - Options for modification.
      * @param {boolean} [opts.recursive=false] - Whether to change modes recursively. (default: false)
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
@@ -229,30 +230,10 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      */
     readPullStream: (path, opts = {}) => toPullStream.source(methods.read(path, opts)),
 
-     /**
-     * Update modification time
-     *
-     * @param {String} path - The path(s) of the source to modify.
-     * @param {Object} [opts] - Options for copy.
-     * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
-     * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb)
-     * @param {String} [opts.hashAlg=sha2-256] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
-     * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<string> | void} When callback is provided nothing is returned.
-     */
-    touch: (path, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.touch(path, opts), cb)
-    },
-
     /**
      * Update modification time
      *
-     * @param {String} path - The path(s) of the source to modify.
+     * @param {String} path - The path of the source to modify.
      * @param {number} mtime - Time to use as the new modification time in seconds since (+ve) or before (-ve) the Unix Epoch
      * @param {Object} [opts] - Options for touch.
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
