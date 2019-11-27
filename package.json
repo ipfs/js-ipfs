@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "40.0.0",
+  "version": "40.0.1",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -157,6 +157,7 @@
     "Níckolas Goline <nickolas.goline@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
     "Orie Steele <orie@ohs.io>",
+    "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
     "Pedro Teixeira <i@pgte.me>",
     "Pete Thomas <pete@xminusone.net>",
     "Richard Littauer <richard.littauer@gmail.com>",
