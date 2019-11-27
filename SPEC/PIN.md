@@ -48,11 +48,11 @@ A great source of [examples][] can be found in the tests for this API.
 
 > List all the objects pinned to local storage or under a specific hash.
 
-##### `ipfs.pin.ls([hash], [options])`
+##### `ipfs.pin.ls([cid], [options])`
 
 Where:
 
-- `hash` is an IPFS multihash.
+- `cid` - a [CID][cid] instance or CID as a string or an array of CIDs.
 - `options` is an object that can contain the following keys:
   - 'type' - Return also the type of pin (direct, indirect or recursive)
 
@@ -107,3 +107,4 @@ console.log(pinset)
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/pin
+[cid]: https://www.npmjs.com/package/cids

@@ -140,5 +140,12 @@ module.exports = (createCommon, options) => {
         hash: fixtures.files[0].cid
       }])
     })
+
+    it('should list pins for multiple CIDs', async () => {
+      const pinset = await ipfs.pin.ls([fixtures.files[0].cid, fixtures.files[1].cid])
+      const cids = pinset.map(({ hash }) => hash)
+      expect(cids).to.include(fixtures.files[0].cid)
+      expect(cids).to.include(fixtures.files[1].cid)
+    })
   })
 }
