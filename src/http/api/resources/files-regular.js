@@ -159,6 +159,8 @@ exports.add = {
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean(),
+        'file-import-concurrency': Joi.number().integer().min(0).default(50),
+        'block-write-concurrency': Joi.number().integer().min(0).default(10),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
         preload: Joi.boolean().default(true)
@@ -218,7 +220,9 @@ exports.add = {
           pin: request.query.pin,
           chunker: request.query.chunker,
           trickle: request.query.trickle,
-          preload: request.query.preload
+          preload: request.query.preload,
+          fileImportConcurrency: request.query.fileImportConcurrency,
+          blockWriteConcurrency: request.query.blockWriteConcurrency
         })
       },
       async function (source) {
