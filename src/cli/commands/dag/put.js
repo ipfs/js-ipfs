@@ -4,6 +4,7 @@ const mh = require('multihashes')
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
+const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 
 const inputDecoders = {
@@ -109,6 +110,12 @@ module.exports = {
 
       source = inputDecoders[inputEncoding](source)
 
+      // Support legacy { "/" : "<CID>" } format so dag put is actually useful
+      // on the command line: https://github.com/ipld/js-ipld-dag-cbor/issues/84
+      if (inputEncoding === 'json' && format === 'dag-cbor') {
+        source = objectSlashToCID(source)
+      }
+
       const cid = await ipfs.dag.put(source, {
         format,
         hashAlg,
@@ -121,4 +128,27 @@ module.exports = {
       print(cidToString(cid, { base: cidBase }))
     })())
   }
+}
+
+function objectSlashToCID (obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(objectSlashToCID)
+  }
+
+  if (obj && typeof obj === 'object') {
+    const keys = Object.keys(obj)
+    if (keys.length === 1 && '/' in obj) {
+      if (typeof obj['/'] !== 'string') {
+        throw new Error('link should have been a string')
+      }
+      return new CID(obj['/']) // throws if not a CID - consistent with go-ipfs
+    }
+
+    return keys.reduce((obj, key) => {
+      obj[key] = objectSlashToCID(obj[key])
+      return obj
+    }, obj)
+  }
+
+  return obj
 }
