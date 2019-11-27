@@ -1,3 +1,13 @@
+<a name="40.0.1"></a>
+## [40.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.0...v40.0.1) (2019-11-27)
+
+
+### Bug Fixes
+
+* pin ls with multiple CIDs ([#1184](https://github.com/ipfs/js-ipfs-http-client/issues/1184)) ([2f3763f](https://github.com/ipfs/js-ipfs-http-client/commit/2f3763f))
+
+
+
 <a name="40.0.0"></a>
 # [40.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.2...v40.0.0) (2019-11-22)
 
