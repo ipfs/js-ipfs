@@ -60,7 +60,7 @@
     "ipld-dag-pb": "^0.18.1",
     "ipld-raw": "^4.0.0",
     "is-ipfs": "~0.6.1",
-    "it-glob": "0.0.6",
+    "it-glob": "0.0.7",
     "it-tar": "^1.1.1",
     "it-to-stream": "^0.1.1",
     "iterable-ndjson": "^1.1.0",
