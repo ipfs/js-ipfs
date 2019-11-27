@@ -7,7 +7,7 @@ const CommonFactory = require('./utils/interface-common-factory')
 const isWindows = process.platform && process.platform === 'win32'
 
 describe('interface-ipfs-core tests', () => {
-  const defaultCommonFactory = CommonFactory.create()
+  const defaultCommonFactory = CommonFactory.createAsync()
 
   tests.bitswap(defaultCommonFactory, {
     skip: [
@@ -172,7 +172,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.name(CommonFactory.create({
+  tests.name(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--offline']
     }
@@ -186,8 +186,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  // TODO: uncomment after https://github.com/ipfs/interface-ipfs-core/pull/361 being merged and a new release
-  tests.namePubsub(CommonFactory.create({
+  tests.namePubsub(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--enable-namesys-pubsub'],
       initOptions: { bits: 1024, profile: 'test' }
@@ -228,7 +227,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.pubsub(CommonFactory.create({
+  tests.pubsub(CommonFactory.createAsync({
     spawnOptions: {
       args: ['--enable-pubsub-experiment'],
       initOptions: { bits: 1024, profile: 'test' }
@@ -251,5 +250,5 @@ describe('interface-ipfs-core tests', () => {
 
   tests.stats(defaultCommonFactory)
 
-  tests.swarm(CommonFactory.createAsync())
+  tests.swarm(defaultCommonFactory)
 })
