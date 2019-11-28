@@ -1,3 +1,13 @@
+<a name="0.40.0-rc.1"></a>
+# [0.40.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.0...v0.40.0-rc.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* support legacy links in cbor data ([#2631](https://github.com/ipfs/js-ipfs/issues/2631)) ([3f446d6](https://github.com/ipfs/js-ipfs/commit/3f446d6))
+
+
+
 <a name="0.40.0-rc.0"></a>
 # [0.40.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0...v0.40.0-rc.0) (2019-11-11)
 
