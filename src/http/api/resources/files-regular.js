@@ -221,8 +221,8 @@ exports.add = {
           chunker: request.query.chunker,
           trickle: request.query.trickle,
           preload: request.query.preload,
-          fileImportConcurrency: request.query.fileImportConcurrency,
-          blockWriteConcurrency: request.query.blockWriteConcurrency
+          fileImportConcurrency: request.query['file-import-concurrency'],
+          blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
       async function (source) {
