@@ -196,7 +196,9 @@ exports.add = {
 
             yield {
               path: entry.name,
-              content: entry.content
+              content: entry.content,
+              mode: entry.mode,
+              mtime: entry.mtime
             }
           }
 
@@ -234,7 +236,9 @@ exports.add = {
           output.write(JSON.stringify({
             Name: file.path,
             Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
-            Size: file.size
+            Size: file.size,
+            Mode: file.mode,
+            Mtime: file.mtime
           }) + '\n')
         }
       }
@@ -300,7 +304,7 @@ exports.ls = {
           Size: file.size,
           Type: toTypeCode(file.type),
           Depth: file.depth,
-          Mode: file.mode.toString(8).padStart(4, '0'),
+          Mode: file.mode,
           Mtime: file.mtime
         }))
       }]
