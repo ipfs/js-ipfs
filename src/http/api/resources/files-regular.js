@@ -221,7 +221,11 @@ exports.add = {
           chunker: request.query.chunker,
           trickle: request.query.trickle,
           preload: request.query.preload,
-          fileImportConcurrency: request.query['file-import-concurrency'],
+
+          // this has to be hardcoded to 1 because we can only read one file
+          // at a time from a http request and we have to consume it completely
+          // before we can read the next file
+          fileImportConcurrency: 1,
           blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
