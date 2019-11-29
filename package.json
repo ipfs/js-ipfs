@@ -7,7 +7,7 @@
   ],
   "homepage": "https://github.com/ipfs/js-ipfs-http-client",
   "bugs": "https://github.com/ipfs/js-ipfs-http-client/issues",
-  "license": "MIT",
+  "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "files": [
     "src",
