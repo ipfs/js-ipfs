@@ -1,5 +1,4 @@
 /* eslint-env mocha */
-/* eslint max-nested-callbacks: ["error", 5] */
 'use strict'
 
 const isIpfs = require('is-ipfs')

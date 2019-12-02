@@ -1,4 +1,3 @@
-/* eslint max-nested-callbacks: ["error", 5] */
 /* eslint-env mocha */
 'use strict'
 

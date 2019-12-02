@@ -1,5 +1,4 @@
 /* eslint-env mocha */
-/* eslint max-nested-callbacks: ["error", 6] */
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
