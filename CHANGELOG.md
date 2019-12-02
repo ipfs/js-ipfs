@@ -1,3 +1,44 @@
+<a name="0.40.0"></a>
+# [0.40.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.1...v0.40.0) (2019-12-02)
+
+
+
+<a name="0.40.0-rc.1"></a>
+# [0.40.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.0...v0.40.0-rc.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* support legacy links in cbor data ([#2631](https://github.com/ipfs/js-ipfs/issues/2631)) ([3f446d6](https://github.com/ipfs/js-ipfs/commit/3f446d6))
+
+
+
+<a name="0.40.0-rc.0"></a>
+# [0.40.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0...v0.40.0-rc.0) (2019-11-11)
+
+
+### Bug Fixes
+
+* add profiles docs, support in validation and tests ([#2545](https://github.com/ipfs/js-ipfs/issues/2545)) ([37073e6](https://github.com/ipfs/js-ipfs/commit/37073e6))
+* choose import strategy in ipfs.add ([#2541](https://github.com/ipfs/js-ipfs/issues/2541)) ([bba1537](https://github.com/ipfs/js-ipfs/commit/bba1537))
+* dht.provide() should accept string keys ([#2573](https://github.com/ipfs/js-ipfs/issues/2573)) ([#2589](https://github.com/ipfs/js-ipfs/issues/2589)) ([53c2144](https://github.com/ipfs/js-ipfs/commit/53c2144))
+* fix ls crash ([#2546](https://github.com/ipfs/js-ipfs/issues/2546)) ([09041c3](https://github.com/ipfs/js-ipfs/commit/09041c3)), closes [ipfs/js-ipfs-unixfs-exporter#24](https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24)
+* make init options look like go-ipfs ([#2544](https://github.com/ipfs/js-ipfs/issues/2544)) ([13a8289](https://github.com/ipfs/js-ipfs/commit/13a8289))
+* remove superfluous backtick ([3bd47c3](https://github.com/ipfs/js-ipfs/commit/3bd47c3))
+* revert evergreen webui ([#2557](https://github.com/ipfs/js-ipfs/issues/2557)) ([16806d9](https://github.com/ipfs/js-ipfs/commit/16806d9))
+* **package:** update [@hapi](https://github.com/hapi)/ammo to version 4.0.0 ([#2538](https://github.com/ipfs/js-ipfs/issues/2538)) ([da78142](https://github.com/ipfs/js-ipfs/commit/da78142))
+
+
+### Features
+
+* add mssing `dag put` and `dag resolve` cli commands ([#2521](https://github.com/ipfs/js-ipfs/issues/2521)) ([8759bf8](https://github.com/ipfs/js-ipfs/commit/8759bf8))
+* evergreen web ui ([#2520](https://github.com/ipfs/js-ipfs/issues/2520)) ([069bf73](https://github.com/ipfs/js-ipfs/commit/069bf73))
+* integrate ipfs-repo-migrations tool ([#2527](https://github.com/ipfs/js-ipfs/issues/2527)) ([1d12ffb](https://github.com/ipfs/js-ipfs/commit/1d12ffb))
+* support CIDs in /ipns/ content paths ([#2566](https://github.com/ipfs/js-ipfs/issues/2566)) ([4fa39fb](https://github.com/ipfs/js-ipfs/commit/4fa39fb))
+* web ui 2.6.0 ([#2576](https://github.com/ipfs/js-ipfs/issues/2576)) ([a61d510](https://github.com/ipfs/js-ipfs/commit/a61d510))
+
+
+
 <a name="0.39.0"></a>
 # [0.39.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.2...v0.39.0) (2019-10-23)
 
