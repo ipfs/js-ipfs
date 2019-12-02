@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.123.0",
+  "version": "0.124.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
