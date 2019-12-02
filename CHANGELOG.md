@@ -1,3 +1,13 @@
+<a name="0.39.1"></a>
+## [0.39.1](https://github.com/ipfs/js-ipfs/compare/v0.39.0...v0.39.1) (2019-12-02)
+
+
+### Bug Fixes
+
+* requires the ipfs-repo version with a fix for [#2629](https://github.com/ipfs/js-ipfs/issues/2629) at a minimum ([#2643](https://github.com/ipfs/js-ipfs/issues/2643)) ([d754abe](https://github.com/ipfs/js-ipfs/commit/d754abe))
+
+
+
 <a name="0.39.0"></a>
 # [0.39.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.2...v0.39.0) (2019-10-23)
 
