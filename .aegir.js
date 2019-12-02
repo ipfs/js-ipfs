@@ -1,13 +1,10 @@
 'use strict'
 
-const promisify = require('promisify-es6')
 const createServer = require('ipfsd-ctl').createServer
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 const server = createServer()
 const echoServer = EchoServer.createServer()
 
-const echoServerStart = promisify(echoServer.start)
-const echoServerStop = promisify(echoServer.stop)
 module.exports = {
   bundlesize: { maxSize: '246kB' },
   webpack: {
@@ -27,20 +24,20 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => echoServerStart(),
-      post: () => echoServerStop()
+      pre: () => echoServer.start(),
+      post: () => echoServer.stop()
     },
     browser: {
       pre: () => {
         return Promise.all([
           server.start(),
-          echoServerStart()
+          echoServer.start()
         ])
       },
       post: () => {
         return Promise.all([
           server.stop(),
-          echoServerStop()
+          echoServer.stop()
         ])
       }
     }
