@@ -104,7 +104,7 @@
     "ipfs-http-response": "~0.4.0",
     "ipfs-mfs": "^0.13.0",
     "ipfs-multipart": "^0.2.0",
-    "ipfs-repo": "^0.29.0",
+    "ipfs-repo": "^0.29.2",
     "ipfs-unixfs": "~0.1.16",
     "ipfs-unixfs-exporter": "^0.38.0",
     "ipfs-unixfs-importer": "^0.40.0",
