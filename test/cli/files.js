@@ -165,6 +165,13 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
+  it('add recursively including hidden files', async function () {
+    this.timeout(60 * 1000)
+
+    const out = await ipfs('add -r -H test/fixtures/test-data/recursive-get-dir')
+    expect(out).to.include('added QmdBd5zgdJQHsyaaAm9Vnth7NWwj23gj3Ew17r6bTvVkch recursive-get-dir/.hidden.txt')
+  })
+
   it('add directory with trailing slash test', async function () {
     this.timeout(30 * 1000)
 
