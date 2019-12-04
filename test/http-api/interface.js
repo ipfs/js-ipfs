@@ -21,7 +21,10 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
       path: require.resolve('ipfs-http-client'),
       ref: require('ipfs-http-client')
     },
-    ipfsBin: './src/cli/bin.js'
+    ipfsBin: './src/cli/bin.js',
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
+    }
   }
   const commonFactory = ctl.createTestsInterface(commonOptions)
 
@@ -53,21 +56,12 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.filesMFS(commonFactory)
 
-  tests.key(ctl.createTestsInterface(merge(commonOptions, {
-    ipfsOptions: {
-      pass: 'ipfs-is-awesome-software'
-    }
-  })))
+  tests.key(commonFactory)
 
-  tests.miscellaneous(ctl.createTestsInterface(merge(commonOptions, {
-    ipfsOptions: {
-      pass: 'ipfs-is-awesome-software'
-    }
-  })))
+  tests.miscellaneous(commonFactory)
 
   tests.name(ctl.createTestsInterface(merge(commonOptions, {
     ipfsOptions: {
-      pass: 'ipfs-is-awesome-software',
       offline: true
     }
   })))
