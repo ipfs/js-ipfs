@@ -30,7 +30,7 @@ module.exports = [
         host = 'gateway.ipfs.io'
       }
 
-      return h.redirect(`${scheme}://${host}:${port}/ipfs/QmPkojhjJkJ5LEGBDrAvdftrjAYmi9GU5Cq27mWvZTDieW`)
+      return h.redirect(`${scheme}://${host}:${port}/ipfs/Qmexhq2sBHnXQbvyP2GfUdbnY7HCagH2Mw5vUNSBn2nxip`)
     }
   }
 ]
