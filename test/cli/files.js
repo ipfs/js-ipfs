@@ -417,12 +417,12 @@ describe('files', () => runOnAndOff((thing) => {
   it('get recursively', async function () {
     this.timeout(20 * 1000)
 
-    const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    const outDir = path.join(process.cwd(), 'QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9')
     rimraf(outDir)
 
-    const out = await ipfs('get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    const out = await ipfs('get QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9')
     expect(out).to.eql(
-      'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
+      'Saving file(s) QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9\n'
     )
 
     const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')
