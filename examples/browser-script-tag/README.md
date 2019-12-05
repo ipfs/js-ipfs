@@ -3,7 +3,7 @@
 You can use IPFS in your in-browser JavaScript code with just a `<script>` tag.
 
 ```html
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs/dist/index.min.js" charset="UTF-8"></script>
 ```
 
 This exposes a global `Ipfs`; you can get a node by making a `new Ipfs()`.
