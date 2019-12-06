@@ -143,7 +143,11 @@ module.exports = function normaliseInput (input) {
 }
 
 function toFileObject (input) {
-  const obj = { path: input.path || '' }
+  const obj = {
+    path: input.path || '',
+    mode: input.mode,
+    mtime: input.mtime
+  }
 
   if (input.content) {
     obj.content = toAsyncIterable(input.content)

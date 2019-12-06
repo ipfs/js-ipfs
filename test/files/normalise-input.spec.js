@@ -6,7 +6,7 @@ const dirtyChai = require('dirty-chai')
 const normalise = require('../../src/files/normalise-input')
 const { supportsFileReader } = require('../../src/supports')
 const { Buffer } = require('buffer')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const globalThis = require('../../src/globalthis')
 
 chai.use(dirtyChai)
