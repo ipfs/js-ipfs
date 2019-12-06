@@ -51,6 +51,8 @@
         * Node.js style address e.g. `{ host: '127.0.0.1', port: 5001, protocol: 'http' }`
 * Errors returned from request failures are now all [`HTTPError`](https://github.com/sindresorhus/ky/blob/c0d9d2bb07e4c122a08f019b39e9c55a4c9324f3/index.js#L117-L123)s which carry a `response` property. This is a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) that can be used to inspect _all_ information relating to the HTTP response. This means that the `err.status` or `err.statusCode` property should now be accessed via `err.response.status`.
 * files in `src/files-regular` have moved to `src`. The `src/files-mfs` directory has been renamed to `src/files`. If you were previously requiring files from these directories e.g. `require('ipfs-http-client/src/files-regular/add')` then please be aware that they have moved.
+* Kebab case options are no longer supported. Please use camel case option names as defined in the [`interface-ipfs-core`](https://github.com/ipfs/interface-js-ipfs-core/tree/master/SPEC) docs. e.g. the `allow-offline` option to `name.publish` should be passed as `allowOffline`.
+  * Note that you can pass [additional query string parameters](https://github.com/ipfs/js-ipfs-http-client#additional-options) in the `searchParams` option available to all API methods.
 
 
 
