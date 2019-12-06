@@ -15,9 +15,9 @@ const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
 const multiaddr = require('multiaddr')
 const {
-  ERR_ALREADY_INITIALIZING,
-  ERR_ALREADY_INITIALIZED,
-  ERR_NOT_STARTED
+  AlreadyInitializingError,
+  AlreadyInitializedError,
+  NotStartedError
 } = require('../../errors')
 const BlockService = require('ipfs-block-service')
 const Ipld = require('ipld')
@@ -35,7 +35,7 @@ module.exports = ({
   print,
   constructorOptions
 }) => async function init (options) {
-  const { cancel } = apiManager.update({ init: ERR_ALREADY_INITIALIZING })
+  const { cancel } = apiManager.update({ init: () => { throw new AlreadyInitializingError() } })
 
   try {
     options = mergeOptions({}, options, constructorOptions.init)
@@ -137,7 +137,7 @@ module.exports = ({
       repo
     })
 
-    apiManager.update(api, ERR_NOT_STARTED)
+    apiManager.update(api, () => { throw new NotStartedError() })
   } catch (err) {
     cancel()
     throw err
@@ -294,7 +294,7 @@ function createApi ({
 
   const api = {
     add,
-    init: ERR_ALREADY_INITIALIZED,
+    init: () => { throw new AlreadyInitializedError() },
     start
   }
 

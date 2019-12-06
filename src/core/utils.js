@@ -127,25 +127,3 @@ const resolvePath = async function (objectAPI, ipfsPaths) {
 exports.normalizePath = normalizePath
 exports.parseIpfsPath = parseIpfsPath
 exports.resolvePath = resolvePath
-
-exports.withFirstAndLast = fn => {
-  return (...args) => {
-    const it = fn(...args)
-    return {
-      [Symbol.asyncIterator] () {
-        return it[Symbol.asyncIterator]()
-      },
-      async first () {
-        const { value } = await it.next()
-        return value
-      },
-      async last () {
-        let last
-        for await (const value of it) {
-          last = value
-        }
-        return last
-      }
-    }
-  }
-}

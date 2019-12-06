@@ -4,10 +4,9 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
-const { withFirstAndLast } = require('../../utils')
 
 module.exports = ({ ipld, dag, gcLock, preload, pin, constructorOptions }) => {
-  return withFirstAndLast(async function * add (source, options) {
+  return async function * add (source, options) {
     options = options || {}
 
     const opts = {
@@ -53,7 +52,7 @@ module.exports = ({ ipld, dag, gcLock, preload, pin, constructorOptions }) => {
     } finally {
       releaseLock()
     }
-  })
+  }
 }
 
 function transformFile (dag, opts) {

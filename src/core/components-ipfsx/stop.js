@@ -2,7 +2,7 @@
 
 const defer = require('p-defer')
 const Components = require('.')
-const { ERR_NOT_STARTED, ERR_ALREADY_INITIALIZED } = require('../../errors')
+const { NotStartedError, AlreadyInitializedError } = require('../../errors')
 
 module.exports = ({
   apiManager,
@@ -51,7 +51,7 @@ module.exports = ({
       repo
     })
 
-    apiManager.update(api, ERR_NOT_STARTED)
+    apiManager.update(api, () => { throw new NotStartedError() })
   } catch (err) {
     cancel()
     stopPromise.reject(err)
@@ -98,7 +98,7 @@ function createApi ({
 
   const api = {
     add,
-    init: ERR_ALREADY_INITIALIZED,
+    init: () => { throw new AlreadyInitializedError() },
     start,
     stop: () => apiManager.api
   }

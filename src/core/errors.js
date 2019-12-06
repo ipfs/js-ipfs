@@ -1,19 +1,43 @@
-const errCode = require('err-code')
-
-exports.ERR_NOT_INITIALIZED = () => {
-  throw errCode(new Error('not initialized'), 'ERR_NOT_INITIALIZED')
+class NotInitializedError extends Error {
+  constructor (message = 'not initialized') {
+    super(message)
+    this.name = 'NotInitializedError'
+    this.code = NotInitializedError.code
+  }
 }
 
-exports.ERR_ALREADY_INITIALIZING = () => {
-  const msg = 'cannot initialize an initializing node'
-  throw errCode(new Error(msg), 'ERR_ALREADY_INITIALIZING')
+NotInitializedError.code = 'ERR_NOT_INITIALIZED'
+exports.NotInitializedError = NotInitializedError
+
+class AlreadyInitializingError extends Error {
+  constructor (message = 'cannot initialize an initializing node') {
+    super(message)
+    this.name = 'AlreadyInitializingError'
+    this.code = AlreadyInitializedError.code
+  }
 }
 
-exports.ERR_ALREADY_INITIALIZED = () => {
-  const msg = 'cannot re-initialize an initialized node'
-  throw errCode(new Error(msg), 'ERR_ALREADY_INITIALIZED')
+AlreadyInitializingError.code = 'ERR_ALREADY_INITIALIZING'
+exports.AlreadyInitializingError = AlreadyInitializingError
+
+class AlreadyInitializedError extends Error {
+  constructor (message = 'cannot re-initialize an initialized node') {
+    super(message)
+    this.name = 'AlreadyInitializedError'
+    this.code = AlreadyInitializedError.code
+  }
 }
 
-exports.ERR_NOT_STARTED = () => {
-  throw errCode(new Error('not started'), 'ERR_NOT_STARTED')
+AlreadyInitializedError.code = 'ERR_ALREADY_INITIALIZED'
+exports.AlreadyInitializedError = AlreadyInitializedError
+
+class NotStartedError extends Error {
+  constructor (message = 'not started') {
+    super(message)
+    this.name = 'NotStartedError'
+    this.code = NotStartedError.code
+  }
 }
+
+NotStartedError.code = 'ERR_NOT_STARTED'
+exports.NotStartedError = NotStartedError
