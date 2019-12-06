@@ -7,10 +7,6 @@ const normalise = require('../../src/files/normalise-input')
 const { supportsFileReader } = require('../../src/supports')
 const { Buffer } = require('buffer')
 const all = require('async-iterator-all')
-const pull = require('pull-stream')
-const Readable2 = require('readable-stream-2')
-const Readable3 = require('readable-stream')
-const ReadableNode = require('stream').Readable
 const globalThis = require('../../src/globalthis')
 
 chai.use(dirtyChai)
@@ -55,46 +51,6 @@ function asyncIterableOf (thing) {
   }())
 }
 
-function pullStreamOf (thing) {
-  return pull.values([thing])
-}
-
-function readable2Of (thing) {
-  const stream = new Readable2({
-    objectMode: true,
-    read () {
-      this.push(thing)
-      this.push(null)
-    }
-  })
-
-  return stream
-}
-
-function readable3Of (thing) {
-  const stream = new Readable3({
-    objectMode: true,
-    read () {
-      this.push(thing)
-      this.push(null)
-    }
-  })
-
-  return stream
-}
-
-function readableNodeOf (thing) {
-  const stream = new ReadableNode({
-    objectMode: true,
-    read () {
-      this.push(thing)
-      this.push(null)
-    }
-  })
-
-  return stream
-}
-
 describe('normalise-input', function () {
   function testInputType (content, name, isBytes) {
     it(name, async function () {
@@ -108,22 +64,6 @@ describe('normalise-input', function () {
 
       it(`AsyncIterable<${name}>`, async function () {
         await testContent(asyncIterableOf(content))
-      })
-
-      it(`PullStream<${name}>`, async function () {
-        await testContent(pullStreamOf(content))
-      })
-
-      it(`Readable2<${name}>`, async function () {
-        await testContent(readable2Of(content))
-      })
-
-      it(`Readable3<${name}>`, async function () {
-        await testContent(readable3Of(content))
-      })
-
-      it(`ReadableNode<${name}>`, async function () {
-        await testContent(readableNodeOf(content))
       })
     }
 
@@ -139,22 +79,6 @@ describe('normalise-input', function () {
       it(`{ path: '', content: AsyncIterable<${name}> }`, async function () {
         await testContent({ path: '', content: asyncIterableOf(content) })
       })
-
-      it(`{ path: '', content: PullStream<${name}> }`, async function () {
-        await testContent({ path: '', content: pullStreamOf(content) })
-      })
-
-      it(`{ path: '', content: Readable2<${name}> }`, async function () {
-        await testContent({ path: '', content: readable2Of(content) })
-      })
-
-      it(`{ path: '', content: Readable3<${name}> }`, async function () {
-        await testContent({ path: '', content: readable3Of(content) })
-      })
-
-      it(`{ path: '', content: ReadableNode<${name}> }`, async function () {
-        await testContent({ path: '', content: readableNodeOf(content) })
-      })
     }
 
     it(`Iterable<{ path: '', content: ${name} }`, async function () {
@@ -163,22 +87,6 @@ describe('normalise-input', function () {
 
     it(`AsyncIterable<{ path: '', content: ${name} }`, async function () {
       await testContent(asyncIterableOf({ path: '', content }))
-    })
-
-    it(`PullStream<{ path: '', content: ${name} }`, async function () {
-      await testContent(pullStreamOf({ path: '', content }))
-    })
-
-    it(`Readable2<{ path: '', content: ${name} }`, async function () {
-      await testContent(readable2Of({ path: '', content }))
-    })
-
-    it(`Readable3<{ path: '', content: ${name} }`, async function () {
-      await testContent(readable3Of({ path: '', content }))
-    })
-
-    it(`ReadableNode<{ path: '', content: ${name} }`, async function () {
-      await testContent(readableNodeOf({ path: '', content }))
     })
 
     if (isBytes) {
@@ -196,22 +104,6 @@ describe('normalise-input', function () {
 
       it(`AsyncIterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
         await testContent(asyncIterableOf({ path: '', content: asyncIterableOf(content) }))
-      })
-
-      it(`PullStream<{ path: '', content: PullStream<${name}> }>`, async function () {
-        await testContent(pullStreamOf({ path: '', content: pullStreamOf(content) }))
-      })
-
-      it(`Readable2<{ path: '', content: Readable2<${name}> }>`, async function () {
-        await testContent(readable2Of({ path: '', content: readable2Of(content) }))
-      })
-
-      it(`Readable3<{ path: '', content: Readable3<${name}> }>`, async function () {
-        await testContent(readable3Of({ path: '', content: readable3Of(content) }))
-      })
-
-      it(`ReadableNode<{ path: '', content: Readable3<${name}> }>`, async function () {
-        await testContent(readableNodeOf({ path: '', content: readableNodeOf(content) }))
       })
     }
   }

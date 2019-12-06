@@ -2,11 +2,7 @@
 
 const errCode = require('err-code')
 const { Buffer } = require('buffer')
-const pullStreamToIterable = require('pull-stream-to-async-iterator')
-const { isSource } = require('is-pull-stream')
 const globalThis = require('../globalthis')
-const { Readable } = require('stream')
-const Readable3 = require('readable-stream')
 
 /*
  * Transform one of:
@@ -21,8 +17,6 @@ const Readable3 = require('readable-stream')
  * { path, content: Iterable<Number> } [single file]
  * { path, content: Iterable<Bytes> } [single file]
  * { path, content: AsyncIterable<Bytes> } [single file]
- * { path, content: PullStream<Bytes> } [single file]
- * { path, content: Readable<Bytes> } [single file]
  * Iterable<Number> [single file]
  * Iterable<Bytes> [single file]
  * Iterable<Bloby> [multiple files]
@@ -33,8 +27,6 @@ const Readable3 = require('readable-stream')
  * Iterable<{ path, content: Iterable<Number> }> [multiple files]
  * Iterable<{ path, content: Iterable<Bytes> }> [multiple files]
  * Iterable<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * Iterable<{ path, content: PullStream<Bytes> }> [multiple files]
- * Iterable<{ path, content: Readable<Bytes> }> [multiple files]
  * AsyncIterable<Bytes> [single file]
  * AsyncIterable<Bloby> [multiple files]
  * AsyncIterable<String> [multiple files]
@@ -44,30 +36,6 @@ const Readable3 = require('readable-stream')
  * AsyncIterable<{ path, content: Iterable<Number> }> [multiple files]
  * AsyncIterable<{ path, content: Iterable<Bytes> }> [multiple files]
  * AsyncIterable<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * AsyncIterable<{ path, content: PullStream<Bytes> }> [multiple files]
- * AsyncIterable<{ path, content: Readable<Bytes> }> [multiple files]
- * PullStream<Bytes> [single file]
- * PullStream<Bloby> [multiple files]
- * PullStream<String> [multiple files]
- * PullStream<{ path, content: Bytes }> [multiple files]
- * PullStream<{ path, content: Bloby }> [multiple files]
- * PullStream<{ path, content: String }> [multiple files]
- * PullStream<{ path, content: Iterable<Number> }> [multiple files]
- * PullStream<{ path, content: Iterable<Bytes> }> [multiple files]
- * PullStream<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * PullStream<{ path, content: PullStream<Bytes> }> [multiple files]
- * PullStream<{ path, content: Readable<Bytes> }> [multiple files]
- * Readable<Bytes> [single file]
- * Readable<Bloby> [multiple files]
- * Readable<String> [multiple files]
- * Readable<{ path, content: Bytes }> [multiple files]
- * Readable<{ path, content: Bloby }> [multiple files]
- * Readable<{ path, content: String }> [multiple files]
- * Readable<{ path, content: Iterable<Number> }> [multiple files]
- * Readable<{ path, content: Iterable<Bytes> }> [multiple files]
- * Readable<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * Readable<{ path, content: PullStream<Bytes> }> [multiple files]
- * Readable<{ path, content: Readable<Bytes> }> [multiple files]
  * ```
  * Into:
  *
@@ -97,11 +65,6 @@ module.exports = function normaliseInput (input) {
     return (async function * () { // eslint-disable-line require-await
       yield toFileObject(input)
     })()
-  }
-
-  // Readable<?>
-  if (isOldReadable(input)) {
-    input = upgradeOldStream(input)
   }
 
   // Iterable<?>
@@ -176,37 +139,6 @@ module.exports = function normaliseInput (input) {
     })()
   }
 
-  // PullStream<?>
-  if (isSource(input)) {
-    return (async function * () {
-      const iterator = pullStreamToIterable(input)[Symbol.asyncIterator]()
-      const first = await iterator.next()
-      if (first.done) return iterator
-
-      // PullStream<Bytes>
-      if (isBytes(first.value)) {
-        yield toFileObject((async function * () { // eslint-disable-line require-await
-          yield first.value
-          yield * iterator
-        })())
-        return
-      }
-
-      // PullStream<Bloby>
-      // PullStream<String>
-      // PullStream<{ path, content }>
-      if (isFileObject(first.value) || isBloby(first.value) || typeof first.value === 'string') {
-        yield toFileObject(first.value)
-        for await (const obj of iterator) {
-          yield toFileObject(obj)
-        }
-        return
-      }
-
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
-  }
-
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
 }
 
@@ -233,11 +165,6 @@ function toAsyncIterable (input) {
   // Bloby
   if (isBloby(input)) {
     return blobToAsyncGenerator(input)
-  }
-
-  // Readable<?>
-  if (isOldReadable(input)) {
-    input = upgradeOldStream(input)
   }
 
   // Iterator<?>
@@ -278,20 +205,7 @@ function toAsyncIterable (input) {
     })()
   }
 
-  // PullStream<Bytes>
-  if (isSource(input)) {
-    return pullStreamToIterable(input)
-  }
-
   throw errCode(new Error(`Unexpected input: ${input}`, 'ERR_UNEXPECTED_INPUT'))
-}
-
-function isOldReadable (obj) {
-  if (obj[Symbol.iterator] || obj[Symbol.asyncIterator]) {
-    return false
-  }
-
-  return Boolean(obj.readable)
 }
 
 function toBuffer (chunk) {
@@ -309,17 +223,6 @@ function isBloby (obj) {
 // An object with a path or content property
 function isFileObject (obj) {
   return typeof obj === 'object' && (obj.path || obj.content)
-}
-
-function upgradeOldStream (stream) {
-  if (stream[Symbol.asyncIterator] || stream[Symbol.iterator]) {
-    return stream
-  }
-
-  // in the browser the stream.Readable is not an async iterator but readble-stream@3 is...
-  stream[Symbol.asyncIterator] = Readable.prototype[Symbol.asyncIterator] || Readable3.prototype[Symbol.asyncIterator]
-
-  return stream
 }
 
 function blobToAsyncGenerator (blob) {

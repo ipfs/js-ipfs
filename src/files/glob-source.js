@@ -4,7 +4,6 @@ const fs = require('fs-extra')
 const glob = require('it-glob')
 const Path = require('path')
 const errCode = require('err-code')
-const kindOf = require('kind-of')
 
 /**
 * Create an async iterator that yields paths that match requested file paths.
@@ -20,7 +19,7 @@ const kindOf = require('kind-of')
 module.exports = async function * globSource (paths, options) {
   options = options || {}
 
-  if (kindOf(paths) === 'string') {
+  if (typeof paths === 'string') {
     paths = [paths]
   }
 
