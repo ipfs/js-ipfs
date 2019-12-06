@@ -3,7 +3,7 @@
 const log = require('debug')('ipfs')
 const mergeOptions = require('merge-options')
 const { isTest } = require('ipfs-utils/src/env')
-const { ERR_NOT_INITIALIZED } = require('./errors')
+const { NotInitializedError } = require('./errors')
 const { validate } = require('./config')
 const Components = require('./components-ipfsx')
 const ApiManager = require('./api-manager')
@@ -29,7 +29,7 @@ module.exports = async options => {
 
   const apiManager = new ApiManager()
   const init = Components.init({ apiManager, print, constructorOptions: options })
-  const { api } = apiManager.update({ init }, ERR_NOT_INITIALIZED)
+  const { api } = apiManager.update({ init }, () => { throw new NotInitializedError() })
 
   if (!options.init) {
     return api
