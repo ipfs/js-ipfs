@@ -1,3 +1,20 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/ipfs/js-ipfs-utils/compare/v0.4.0...v0.5.0) (2019-12-06)
+
+
+### Features
+
+* convert to async iterators ([#15](https://github.com/ipfs/js-ipfs-utils/issues/15)) ([251eff0](https://github.com/ipfs/js-ipfs-utils/commit/251eff0))
+* support unixfs metadata and formatting it ([#14](https://github.com/ipfs/js-ipfs-utils/issues/14)) ([173e4bf](https://github.com/ipfs/js-ipfs-utils/commit/173e4bf))
+
+
+### BREAKING CHANGES
+
+* In order to support metadata on intermediate directories, globSource in this module will now emit directories and files where previously it only emitted files.
+* Support for Node.js streams and Pull Streams has been removed
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/ipfs/js-ipfs-utils/compare/v0.3.0...v0.4.0) (2019-09-19)
 
