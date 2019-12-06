@@ -31,16 +31,16 @@
     "fs-extra": "^8.1.0",
     "is-electron": "^2.2.0",
     "it-glob": "0.0.7",
-    "ky": "^0.15.0",
+    "ky": "^0.16.1",
     "ky-universal": "^0.3.0",
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "^20.3.0",
-    "it-all": "^1.0.1",
+    "aegir": "^20.4.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "dirty-chai": "^2.0.1"
+    "dirty-chai": "^2.0.1",
+    "it-all": "^1.0.1"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
