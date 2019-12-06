@@ -1,7 +1,7 @@
 'use strict'
 
 const toPull = require('async-iterator-to-pull-stream')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const toStream = require('it-to-stream')
 const { Buffer } = require('buffer')
 
