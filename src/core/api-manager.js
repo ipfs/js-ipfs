@@ -3,11 +3,11 @@ module.exports = class ApiManager {
     this._api = {}
     this._onUndef = () => undefined
     this.api = new Proxy({}, {
-      get (target, prop) {
-        return target[prop] === undefined
-          ? this._onUndef(prop)
-          : target[prop]
-      }
+      get: (_, prop) => {
+        if (prop === 'then') return undefined // Not a promise!
+        return this._api[prop] === undefined ? this._onUndef(prop) : this._api[prop]
+      },
+      has: (_, prop) => prop in this._api
     })
   }
 

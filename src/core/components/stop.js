@@ -1,40 +1,107 @@
 'use strict'
 
-const callbackify = require('callbackify')
+const defer = require('p-defer')
+const { NotStartedError, AlreadyInitializedError } = require('../errors')
+const Commands = require('./')
 
-module.exports = (self) => {
-  return callbackify(async () => {
-    self.log('stop')
+module.exports = ({
+  apiManager,
+  constructorOptions,
+  bitswap,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  ipns,
+  keychain,
+  libp2p,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) => async function stop () {
+  const stopPromise = defer()
+  const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
 
-    if (self.state.state() === 'stopped') {
-      throw new Error('Already stopped')
-    }
+  try {
+    blockService.unsetExchange()
+    bitswap.stop()
+    preload.stop()
 
-    if (self.state.state() !== 'running') {
-      throw new Error('Not able to stop from state: ' + self.state.state())
-    }
+    await Promise.all([
+      ipns.republisher.stop(),
+      // mfsPreload.stop(),
+      libp2p.stop(),
+      repo.close()
+    ])
 
-    self.state.stop()
-    self._blockService.unsetExchange()
-    self._bitswap.stop()
-    self._preload.stop()
+    const api = createApi({
+      apiManager,
+      constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
 
-    const libp2p = self.libp2p
-    self.libp2p = null
+    apiManager.update(api, () => { throw new NotStartedError() })
+  } catch (err) {
+    cancel()
+    stopPromise.reject(err)
+    throw err
+  }
 
-    try {
-      await Promise.all([
-        self._ipns.republisher.stop(),
-        self._mfsPreload.stop(),
-        libp2p.stop(),
-        self._repo.close()
-      ])
+  stopPromise.resolve(apiManager.api)
+  return apiManager.api
+}
 
-      self.state.stopped()
-      self.emit('stop')
-    } catch (err) {
-      self.emit('error', err)
-      throw err
-    }
+function createApi ({
+  apiManager,
+  constructorOptions,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  keychain,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) {
+  const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+  const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
+  const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+  const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
+
+  const start = Commands.start({
+    apiManager,
+    constructorOptions,
+    blockService,
+    gcLock,
+    initOptions,
+    ipld,
+    keychain,
+    peerInfo,
+    pinManager,
+    preload,
+    print,
+    repo
   })
+
+  const api = {
+    add,
+    init: () => { throw new AlreadyInitializedError() },
+    start,
+    stop: () => apiManager.api
+  }
+
+  return api
 }

@@ -208,7 +208,7 @@ exports.add = {
         }
       },
       function (source) {
-        return ipfs._addAsyncIterator(source, {
+        return ipfs.add(source, {
           cidVersion: request.query['cid-version'],
           rawLeaves: request.query['raw-leaves'],
           progress: request.query.progress ? progressHandler : null,

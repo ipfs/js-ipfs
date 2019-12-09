@@ -1,51 +1,140 @@
 'use strict'
 
 const Bitswap = require('ipfs-bitswap')
-const callbackify = require('callbackify')
-
+const PeerBook = require('peer-book')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
-const createLibp2pBundle = require('./libp2p')
+const defer = require('p-defer')
+const { AlreadyInitializedError } = require('../errors')
+const Commands = require('./')
 
-module.exports = (self) => {
-  return callbackify(async () => {
-    if (self.state.state() !== 'stopped') {
-      throw new Error(`Not able to start from state: ${self.state.state()}`)
-    }
+module.exports = ({
+  apiManager,
+  constructorOptions,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  keychain,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) => async function start () {
+  const startPromise = defer()
+  const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
-    self.log('starting')
-    self.state.start()
-
+  try {
     // The repo may be closed if previously stopped
-    if (self._repo.closed) {
-      await self._repo.open()
+    if (repo.closed) {
+      await repo.open()
     }
 
-    const config = await self._repo.config.get()
-    const libp2p = createLibp2pBundle(self, config)
+    const config = await repo.config.get()
+
+    const peerBook = new PeerBook()
+    const libp2p = Commands.legacy.libp2p({
+      _options: constructorOptions,
+      _repo: repo,
+      _peerInfo: peerInfo,
+      _peerInfoBook: peerBook,
+      _print: print
+    }, config)
 
     await libp2p.start()
-    self.libp2p = libp2p
 
-    const ipnsRouting = routingConfig(self)
-    self._ipns = new IPNS(ipnsRouting, self._repo.datastore, self._peerInfo, self._keychain, self._options)
+    const ipnsRouting = routingConfig({
+      _options: constructorOptions,
+      libp2p,
+      _repo: repo,
+      _peerInfo: peerInfo
+    })
+    const ipns = new IPNS(ipnsRouting, repo.datastore, peerInfo, keychain, { pass: initOptions.pass })
+    const bitswap = new Bitswap(libp2p, repo.blocks, { statsEnabled: true })
 
-    self._bitswap = new Bitswap(
-      self.libp2p,
-      self._repo.blocks, {
-        statsEnabled: true
-      }
-    )
+    await bitswap.start()
 
-    await self._bitswap.start()
+    blockService.setExchange(bitswap)
 
-    self._blockService.setExchange(self._bitswap)
+    await preload.start()
+    await ipns.republisher.start()
+    // TODO: start mfs preload here
 
-    await self._preload.start()
-    await self._ipns.republisher.start()
-    await self._mfsPreload.start()
+    const api = createApi({
+      apiManager,
+      bitswap,
+      constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      ipns,
+      keychain,
+      libp2p,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
 
-    self.state.started()
-    self.emit('start')
+    apiManager.update(api, () => undefined)
+  } catch (err) {
+    cancel()
+    startPromise.reject(err)
+    throw err
+  }
+
+  startPromise.resolve(apiManager.api)
+  return apiManager.api
+}
+
+function createApi ({
+  apiManager,
+  bitswap,
+  constructorOptions,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  ipns,
+  keychain,
+  libp2p,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) {
+  const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+  const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
+  const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+  const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
+
+  const stop = Commands.stop({
+    apiManager,
+    bitswap,
+    constructorOptions,
+    blockService,
+    gcLock,
+    initOptions,
+    ipld,
+    ipns,
+    keychain,
+    libp2p,
+    peerInfo,
+    preload,
+    print,
+    repo
   })
+
+  const api = {
+    add,
+    init: () => { throw new AlreadyInitializedError() },
+    start: () => apiManager.api,
+    stop
+  }
+
+  return api
 }

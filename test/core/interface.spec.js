@@ -41,23 +41,6 @@ describe('interface-ipfs-core tests', function () {
     }
   })
 
-  tests.filesRegular(defaultCommonFactory, {
-    skip: isNode ? null : [{
-      name: 'addFromStream',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'addFromFs',
-      reason: 'Not designed to run in the browser'
-    }]
-  })
-
-  tests.filesRegular.ipfsx(CommonFactory.create({
-    spawnOptions: {
-      initOptions: { bits: 512, profile: 'test' },
-      EXPERIMENTAL: { ipfsx: true }
-    }
-  }))
-
   tests.filesMFS(defaultCommonFactory)
 
   tests.key(CommonFactory.createAsync({

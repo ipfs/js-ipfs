@@ -159,7 +159,7 @@ module.exports = {
       let finalHash
 
       try {
-        for await (const file of ipfs._addAsyncIterator(source, options)) {
+        for await (const file of ipfs.add(source, options)) {
           if (argv.silent) {
             continue
           }
@@ -184,7 +184,7 @@ module.exports = {
           bar.terminate()
         }
 
-        // Tweak the error message and add more relevant infor for the CLI
+        // Tweak the error message and add more relevant info for the CLI
         if (err.code === 'ERR_DIR_NON_RECURSIVE') {
           err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
         }

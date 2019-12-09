@@ -7,7 +7,7 @@ const all = require('async-iterator-all')
 // Add the default assets to the repo.
 module.exports = async function initAssets ({ add, print }) {
   const initDocsPath = path.join(__dirname, '..', '..', 'init-files', 'init-docs')
-  const results = await all(add(globSource(initDocsPath)))
+  const results = await all(add(globSource(initDocsPath, { recursive: true }), { preload: false }))
   const dir = results.filter(file => file.path === 'init-docs').pop()
 
   print('to get started, enter:\n')
