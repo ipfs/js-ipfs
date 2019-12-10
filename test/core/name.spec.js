@@ -15,11 +15,7 @@ const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
 const { Key, Errors } = require('interface-datastore')
 const CID = require('cids')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'proc',
-  IpfsClient: require('ipfs-http-client')
-})
+const factory = require('../utils/factory')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -37,6 +33,7 @@ const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, re
 }
 
 describe('name', function () {
+  const df = factory()
   describe('republisher', function () {
     this.timeout(40 * 1000)
     let node
@@ -44,10 +41,10 @@ describe('name', function () {
 
     before(async function () {
       ipfsd = await df.spawn({
-        exec: IPFS,
-        args: ['--pass', hat(), '--offline'],
-        config: { Bootstrap: [] },
-        preload: { enabled: false }
+        ipfsOptions: {
+          pass: hat(),
+          offline: true
+        }
       })
       node = ipfsd.api
     })
@@ -56,11 +53,7 @@ describe('name', function () {
       sinon.restore()
     })
 
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should republish entries after 60 seconds', function (done) {
       this.timeout(120 * 1000)

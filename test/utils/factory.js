@@ -14,12 +14,11 @@ const factory = (options, overrides) => {
       ipfsHttpModule: {
         path: require.resolve('ipfs-http-client'),
         ref: require('ipfs-http-client')
-      },
-      ipfsBin: require.resolve('../../src/cli/bin.js')
+      }
     }, options),
     merge({
       js: {
-        ipfsBin: require.resolve('../../src/cli/bin.js')
+        ipfsBin: './src/cli/bin.js'
       }
     }, overrides)
   )

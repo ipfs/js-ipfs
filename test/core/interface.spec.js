@@ -7,7 +7,7 @@ const merge = require('merge-options')
 const { createFactory } = require('ipfsd-ctl')
 const IPFS = require('../../src')
 
-/** @ignore @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
+/** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
   /** @type ControllerOptions */
@@ -28,7 +28,7 @@ describe('interface-ipfs-core tests', function () {
   }
   const overrides = {
     js: {
-      ipfsBin: require.resolve('../../src/cli/bin.js')
+      ipfsBin: './src/cli/bin.js'
     }
   }
   const commonFactory = createFactory(commonOptions, overrides)
@@ -72,7 +72,6 @@ describe('interface-ipfs-core tests', function () {
 
   tests.name(createFactory(merge(commonOptions, {
     ipfsOptions: {
-      pass: 'ipfs-is-awesome-software',
       offline: true
     }
   }), overrides))

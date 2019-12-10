@@ -3,30 +3,36 @@
 
 const tests = require('interface-ipfs-core')
 const merge = require('merge-options')
-const ctl = require('ipfsd-ctl')
+const { isNode } = require('ipfs-utils/src/env')
+const { createFactory } = require('ipfsd-ctl')
 const IPFS = require('../../src')
 
-/** @ignore @typedef { import("ipfsd-ctl").FactoryOptions } FactoryOptions */
+/** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core over ipfs-http-client tests', function () {
   this.timeout(20000)
-  /** @type FactoryOptions */
+  /** @type ControllerOptions */
   const commonOptions = {
+    test: true,
     type: 'js',
-    ipfsApi: {
+    ipfsModule: {
       path: require.resolve('../../src'),
       ref: IPFS
     },
-    ipfsHttp: {
+    ipfsHttpModule: {
       path: require.resolve('ipfs-http-client'),
       ref: require('ipfs-http-client')
     },
-    ipfsBin: './src/cli/bin.js',
     ipfsOptions: {
       pass: 'ipfs-is-awesome-software'
     }
   }
-  const commonFactory = ctl.createTestsInterface(commonOptions)
+  const overrides = {
+    js: {
+      ipfsBin: './src/cli/bin.js'
+    }
+  }
+  const commonFactory = createFactory(commonOptions, overrides)
 
   tests.bitswap(commonFactory)
 
@@ -52,7 +58,15 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }
   })
 
-  tests.filesRegular(commonFactory)
+  tests.filesRegular(commonFactory, {
+    skip: isNode ? null : [{
+      name: 'addFromStream',
+      reason: 'Not designed to run in the browser'
+    }, {
+      name: 'addFromFs',
+      reason: 'Not designed to run in the browser'
+    }]
+  })
 
   tests.filesMFS(commonFactory)
 
@@ -60,19 +74,20 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.miscellaneous(commonFactory)
 
-  tests.name(ctl.createTestsInterface(merge(commonOptions, {
+  tests.name(createFactory(merge(commonOptions, {
     ipfsOptions: {
+      pass: 'ipfs-is-awesome-software',
       offline: true
     }
-  })))
+  }), overrides))
 
-  tests.namePubsub(ctl.createTestsInterface(merge(commonOptions, {
+  tests.namePubsub(createFactory(merge(commonOptions, {
     ipfsOptions: {
       EXPERIMENTAL: {
         ipnsPubsub: true
       }
     }
-  })))
+  }), overrides))
 
   tests.object(commonFactory, {
     skip: [
@@ -87,7 +102,11 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.ping(commonFactory)
 
-  tests.pubsub(commonFactory)
+  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+    go: {
+      args: ['--enable-pubsub-experiment']
+    }
+  })))
 
   tests.repo(commonFactory)
 

@@ -9,21 +9,18 @@ const { fromB58String } = require('multihashes')
 const peerId = require('peer-id')
 const isNode = require('detect-node')
 const ipns = require('ipns')
-const IPFS = require('../../src')
 const waitFor = require('../utils/wait-for')
 const delay = require('delay')
 const promisify = require('promisify-es6')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'proc',
-  IpfsClient: require('ipfs-http-client')
-})
+const factory = require('../utils/factory')
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
 describe('name-pubsub', function () {
+  const df = factory()
+  // TODO make this work in the browser and between daemon and in-proc in nodess
   if (!isNode) {
     return
   }
@@ -34,29 +31,12 @@ describe('name-pubsub', function () {
   let idA
   let idB
 
-  const createNode = () => df.spawn({
-    exec: IPFS,
-    args: ['--pass', hat(), '--enable-namesys-pubsub'],
-    config: {
-      Bootstrap: [],
-      Discovery: {
-        MDNS: {
-          Enabled: false
-        },
-        webRTCStar: {
-          Enabled: false
-        }
-      }
-    },
-    preload: { enabled: false }
-  })
-
   before(async function () {
     this.timeout(40 * 1000)
 
     nodes = await Promise.all([
-      createNode(),
-      createNode()
+      df.spawn({ type: 'proc', ipfsOptions: { pass: hat(), EXPERIMENTAL: { ipnsPubsub: true } } }),
+      df.spawn({ type: 'proc', ipfsOptions: { pass: hat(), EXPERIMENTAL: { ipnsPubsub: true } } })
     ])
 
     nodeA = nodes[0].api
@@ -73,7 +53,7 @@ describe('name-pubsub', function () {
     await nodeA.swarm.connect(idB.addresses[0])
   })
 
-  after(() => Promise.all(nodes.map((node) => node.stop())))
+  after(() => df.clean())
 
   it('should publish and then resolve correctly', async function () {
     this.timeout(80 * 1000)
