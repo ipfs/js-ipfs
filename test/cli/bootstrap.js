@@ -94,10 +94,12 @@ describe('bootstrap', () => runOnAndOff((thing) => {
   it('rm all bootstrap nodes', async function () {
     this.timeout(40 * 1000)
 
-    const out = await ipfs('bootstrap rm --all')
-    expect(out).to.equal('')
+    const outListBefore = await ipfs('bootstrap list')
 
-    const out2 = await ipfs('bootstrap list')
-    expect(out2).to.equal('')
+    const outRm = await ipfs('bootstrap rm --all')
+    expect(outRm).to.equal(outListBefore)
+
+    const outListAfter = await ipfs('bootstrap list')
+    expect(outListAfter).to.equal('')
   })
 }))

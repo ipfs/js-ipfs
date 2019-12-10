@@ -83,7 +83,7 @@ module.exports = (http) => {
       })
 
       expect(res.statusCode).to.be.eql(200)
-      expect(res.result.Peers).to.be.eql([])
+      expect(res.result.Peers).to.be.eql(defaultList)
     })
   })
 }

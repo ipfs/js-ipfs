@@ -1,10 +1,8 @@
 'use strict'
 
 const IPFSFactory = require('ipfsd-ctl')
-const parallel = require('async/parallel')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
-const callbackify = require('callbackify')
 
 const ipfsdServer = IPFSFactory.createServer()
 const preloadNode = MockPreloadNode.createNode()
@@ -29,40 +27,26 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: (cb) => {
-        parallel([
-          (cb) => callbackify(preloadNode.start)(cb),
-          (cb) => echoServer.start(cb)
-        ], cb)
-      },
-      post: (cb) => {
-        parallel([
-          (cb) => callbackify(preloadNode.stop)(cb),
-          (cb) => echoServer.stop(cb)
-        ], cb)
-      }
+      pre: () => Promise.all([
+        preloadNode.start(),
+        echoServer.start()
+      ]),
+      post: () => Promise.all([
+        preloadNode.stop(),
+        echoServer.stop()
+      ])
     },
     browser: {
-      pre: (cb) => {
-        parallel([
-          (cb) => {
-            ipfsdServer.start()
-            cb()
-          },
-          (cb) => callbackify(preloadNode.start)(cb),
-          (cb) => echoServer.start(cb)
-        ], cb)
-      },
-      post: (cb) => {
-        parallel([
-          (cb) => {
-            ipfsdServer.stop()
-            cb()
-          },
-          (cb) => callbackify(preloadNode.stop)(cb),
-          (cb) => echoServer.stop(cb)
-        ], cb)
-      }
+      pre: () => Promise.all([
+        ipfsdServer.start(),
+        preloadNode.start(),
+        echoServer.start()
+      ]),
+      post: () => Promise.all([
+        ipfsdServer.stop(),
+        preloadNode.stop(),
+        echoServer.stop()
+      ])
     }
   }
 }
