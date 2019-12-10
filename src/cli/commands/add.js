@@ -116,6 +116,12 @@ module.exports = {
       type: 'boolean',
       default: true,
       describe: 'Preload this object when adding'
+    },
+    hidden: {
+      alias: 'H',
+      type: 'boolean',
+      default: false,
+      describe: 'Include files that are hidden. Only takes effect on recursive add.'
     }
   },
 
@@ -166,7 +172,7 @@ module.exports = {
       }
 
       const source = argv.file
-        ? globSource(argv.file, { recursive: argv.recursive })
+        ? globSource(argv.file, { recursive: argv.recursive, hidden: argv.hidden })
         : process.stdin // Pipe directly to ipfs.add
 
       let finalHash
