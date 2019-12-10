@@ -2,6 +2,7 @@
 'use strict'
 
 const PeerId = require('peer-id')
+const { promisify } = require('es6-promisify')
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -10,11 +11,15 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.name.pubsub.cancel', function () {
+  describe('.name.pubsub.cancel', () => {
     let ipfs
     let nodeId
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
       nodeId = ipfs.peerId.id
     })
@@ -33,8 +38,7 @@ module.exports = (createCommon, options) => {
     it('should cancel a subscription correctly returning true', async function () {
       this.timeout(300 * 1000)
 
-      const peerId = await PeerId.create({ bits: 512 })
-
+      const peerId = await promisify(PeerId.create.bind(PeerId))({ bits: 512 })
       const id = peerId.toB58String()
       const ipnsPath = `/ipns/${id}`
 

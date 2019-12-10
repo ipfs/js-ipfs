@@ -15,7 +15,11 @@ module.exports = (createCommon, options) => {
     let ipfsA
     let ipfsB
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfsA = await common.setup()
       ipfsB = await common.setup()
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])

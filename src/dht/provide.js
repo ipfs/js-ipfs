@@ -14,13 +14,21 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
       const nodeB = await common.setup()
       await ipfs.swarm.connect(nodeB.peerId.addresses[0])
     })
 
-    after(() => common.teardown())
+    after(function () {
+      this.timeout(50 * 1000)
+
+      return common.teardown()
+    })
 
     it('should provide local CID', async () => {
       const res = await ipfs.add(Buffer.from('test'))

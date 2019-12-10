@@ -9,7 +9,7 @@ module.exports = (createCommon, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe('.name.resolve offline', function () {
+  describe('.name.resolve offline', () => {
     const common = createCommon()
     let ipfs
     let nodeId

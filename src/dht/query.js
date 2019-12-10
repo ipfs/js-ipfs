@@ -15,13 +15,21 @@ module.exports = (createCommon, options) => {
     let nodeA
     let nodeB
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       nodeA = await common.setup()
       nodeB = await common.setup()
       await nodeB.swarm.connect(nodeA.peerId.addresses[0])
     })
 
-    after(() => common.teardown())
+    after(function () {
+      this.timeout(50 * 1000)
+
+      return common.teardown()
+    })
 
     it('should return the other node in the query', async function () {
       const timeout = 150 * 1000

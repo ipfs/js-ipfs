@@ -8,12 +8,10 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.stop', function () {
-    this.timeout(60 * 1000)
-
+  describe('.stop', () => {
     it('should stop the node', async function () {
-      const ipfs = await common.setup()
       this.timeout(10 * 1000)
+      const ipfs = await common.setup()
 
       await ipfs.stop()
 

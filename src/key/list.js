@@ -10,17 +10,22 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.key.list', function () {
-    this.timeout(60 * 1000)
+  describe('.key.list', () => {
     let ipfs
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
     })
 
     after(() => common.teardown())
 
     it('should list all the keys', async function () {
+      this.timeout(60 * 1000)
+
       const keys = await pTimes(3, () => ipfs.key.gen(hat(), { type: 'rsa', size: 2048 }), { concurrency: 1 })
 
       const res = await ipfs.key.list()

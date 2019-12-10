@@ -18,15 +18,16 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.dht.findProvs', function () {
-    this.timeout(80 * 1000)
-
+  describe('.dht.findProvs', () => {
     let nodeA
     let nodeB
     let nodeC
 
     before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
       this.timeout(60 * 1000)
+
       nodeA = await common.setup()
       nodeB = await common.setup()
       nodeC = await common.setup()
@@ -36,7 +37,11 @@ module.exports = (createCommon, options) => {
       ])
     })
 
-    after(() => common.teardown())
+    after(function () {
+      this.timeout(50 * 1000)
+
+      return common.teardown()
+    })
 
     let providedCid
     before('add providers for the same cid', async function () {
@@ -56,6 +61,8 @@ module.exports = (createCommon, options) => {
     })
 
     it('should be able to find providers', async function () {
+      this.timeout(20 * 1000)
+
       const provs = await nodeA.dht.findProvs(providedCid)
       const providerIds = provs.map((p) => p.id.toB58String())
 

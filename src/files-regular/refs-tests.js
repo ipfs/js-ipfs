@@ -13,11 +13,15 @@ module.exports = (createCommon, suiteName, ipfsRefs, options) => {
   const common = createCommon()
 
   describe(suiteName, function () {
-    this.timeout(60 * 1000)
+    this.timeout(40 * 1000)
 
     let ipfs, pbRootCb, dagRootCid
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
     })
 

@@ -10,11 +10,15 @@ module.exports = (createCommon, options) => {
   const common = createCommon()
 
   describe('.pin.rm', function () {
-    this.timeout(60 * 1000)
+    this.timeout(50 * 1000)
 
     let ipfs
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
       await ipfs.add(fixtures.files[0].data, { pin: false })
       await ipfs.pin.add(fixtures.files[0].cid, { recursive: true })

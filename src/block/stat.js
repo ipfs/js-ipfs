@@ -9,12 +9,15 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.block.stat', function () {
-    this.timeout(60 * 1000)
+  describe('.block.stat', () => {
     const data = Buffer.from('blorb')
     let ipfs, hash
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
       ipfs = await common.setup()
       const block = await ipfs.block.put(data)
       hash = block.cid.multihash

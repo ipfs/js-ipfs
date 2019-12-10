@@ -20,7 +20,11 @@ module.exports = (createCommon, options) => {
     let topic
     let subscribedTopics = []
 
-    before(async () => {
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(100 * 1000)
+
       ipfs1 = await common.setup()
       ipfs2 = await common.setup()
     })

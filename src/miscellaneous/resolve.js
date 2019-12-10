@@ -76,8 +76,16 @@ module.exports = (createCommon, options) => {
     })
 
     it('should resolve IPNS link recursively', async function () {
-      const node = await common.setup()
-      await ipfs.swarm.connect(node.peerId.addresses.find((a) => a.includes('127.0.0.1')))
+      this.timeout(20 * 1000)
+
+      // Ensure another node exists for publishing to  - only required by go-ipfs
+      if (ipfs.peerId.agentVersion.includes('go-ipfs')) {
+        const node = await common.setup()
+
+        // this fails in the browser because there is no relay node available to connect the two
+        // nodes, but we only need this for go-ipfs as it doesn't support the `allowOffline` flag yet
+        await ipfs.swarm.connect(node.peerId.addresses.find((a) => a.includes('127.0.0.1')))
+      }
 
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })

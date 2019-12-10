@@ -12,11 +12,16 @@ module.exports = (createCommon, options) => {
   const it = getIt(options)
   const common = createCommon()
 
-  describe('.dag.tree', function () {
-    this.timeout(60 * 1000)
+  describe('.dag.tree', () => {
     let ipfs
 
-    before(async () => { ipfs = await common.setup() })
+    before(async function () {
+      // CI takes longer to instantiate the daemon, so we need to increase the
+      // timeout for the before step
+      this.timeout(60 * 1000)
+
+      ipfs = await common.setup()
+    })
 
     after(() => common.teardown())
 
