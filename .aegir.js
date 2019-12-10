@@ -4,11 +4,9 @@ const IPFSFactory = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 
-const promisify = require('promisify-es6')
-
 const ipfsdServer = IPFSFactory.createServer()
-const preloadNode = promisify(MockPreloadNode.createNode())
-const echoServer = promisify(EchoServer.createServer())
+const preloadNode = MockPreloadNode.createNode()
+const echoServer = EchoServer.createServer()
 
 module.exports = {
   bundlesize: { maxSize: '652kB' },

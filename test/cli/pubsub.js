@@ -6,23 +6,11 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
 const series = require('async/series')
 const ipfsExec = require('../utils/ipfs-exec')
-const IPFS = require('../../src')
-const path = require('path')
-const DaemonFactory = require('ipfsd-ctl')
-
-const config = {
-  Bootstrap: [],
-  Discovery: {
-    MDNS: {
-      Enabled:
-        false
-    }
-  }
-}
+const factory = require('../utils/factory')
 
 describe('pubsub', function () {
   this.timeout(80 * 1000)
-
+  const df = factory()
   let node
   let ipfsdA
   let ipfsdB
@@ -36,15 +24,7 @@ describe('pubsub', function () {
   before(async function () {
     this.timeout(60 * 1000)
 
-    const df = DaemonFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-    ipfsdA = await df.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config
-    })
+    ipfsdA = await df.spawn({ type: 'proc' })
     node = ipfsdA.api
   })
 
@@ -55,17 +35,9 @@ describe('pubsub', function () {
   })
 
   before(async () => {
-    const df = DaemonFactory.create({
-      type: 'js',
-      IpfsClient: require('ipfs-http-client')
-    })
-    ipfsdB = await df.spawn({
-      initOptions: { bits: 512 },
-      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-      config
-    })
+    ipfsdB = await df.spawn({ type: 'js' })
     httpApi = ipfsdB.api
-    httpApi.repoPath = ipfsdB.repoPath
+    httpApi.repoPath = ipfsdB.path
   })
 
   after(() => {
