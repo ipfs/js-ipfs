@@ -10,7 +10,7 @@ const Commands = require('./')
 
 module.exports = ({
   apiManager,
-  constructorOptions,
+  options: constructorOptions,
   blockService,
   gcLock,
   initOptions,
@@ -123,12 +123,12 @@ function createApi ({
     stat: Commands.object.stat({ ipld, preload })
   }
   const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
-  const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
+  const add = Commands.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
 
   const stop = Commands.stop({
     apiManager,
     bitswap,
-    constructorOptions,
+    options: constructorOptions,
     blockService,
     gcLock,
     initOptions,

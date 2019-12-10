@@ -3,9 +3,9 @@
 const CID = require('cids')
 const base32 = require('base32.js')
 
-module.exports = function (self) {
-  return async function * refsLocalAsyncIterator () {
-    for await (const result of self._repo.blocks.query({ keysOnly: true })) {
+module.exports = function ({ repo }) {
+  return async function * refsLocal () {
+    for await (const result of repo.blocks.query({ keysOnly: true })) {
       yield dsKeyToRef(result.key)
     }
   }

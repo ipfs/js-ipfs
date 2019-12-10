@@ -3,7 +3,7 @@
 const callbackify = require('callbackify')
 const Big = require('bignumber.js')
 const Pushable = require('pull-pushable')
-const human = require('human-to-milliseconds')
+const parseDuration = require('parse-duration')
 const toStream = require('pull-stream-to-stream')
 const errCode = require('err-code')
 
@@ -51,7 +51,7 @@ module.exports = function stats (self) {
     if (opts.poll) {
       let value
       try {
-        value = human(opts.interval || '1s')
+        value = parseDuration(opts.interval || '1s')
       } catch (err) {
         // Pull stream expects async work, so we need to simulate it.
         process.nextTick(() => {

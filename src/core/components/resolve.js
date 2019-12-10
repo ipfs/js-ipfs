@@ -2,7 +2,6 @@
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
-const nodeify = require('promise-nodeify')
 const { cidToString } = require('../../utils/cid')
 
 /**
@@ -32,26 +31,28 @@ const { cidToString } = require('../../utils/cid')
  * @param {IPFS} ipfs
  * @returns {ResolveWrapper}
  */
-module.exports = (ipfs) => {
+module.exports = ({ name, ipld }) => {
   /**
    * IPFS Resolve - Resolve the value of names to IPFS
    *
-   * @param {String} name
+   * @param {String} path
    * @param {ResolveOptions} [opts={}]
    * @returns {Promise<string>}
    */
-  const resolve = async (name, opts) => {
+  return async function resolve (path, opts) {
     opts = opts || {}
 
-    if (!isIpfs.path(name)) {
-      throw new Error('invalid argument ' + name)
+    if (!isIpfs.path(path)) {
+      throw new Error('invalid argument ' + path)
     }
 
-    if (isIpfs.ipnsPath(name)) {
-      name = await ipfs.name.resolve(name, opts)
+    if (isIpfs.ipnsPath(path)) {
+      for await (const resolvedPath of name.resolve(path, opts)) {
+        path = resolvedPath
+      }
     }
 
-    const [, , hash, ...rest] = name.split('/') // ['', 'ipfs', 'hash', ...path]
+    const [, , hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
     const cid = new CID(hash)
 
     // nothing to resolve return the input
@@ -59,8 +60,9 @@ module.exports = (ipfs) => {
       return `/ipfs/${cidToString(cid, { base: opts.cidBase })}`
     }
 
-    const path = rest.join('/')
-    const results = ipfs._ipld.resolve(cid, path)
+    path = rest.join('/')
+
+    const results = ipld.resolve(cid, path)
     let value = cid
     let remainderPath = path
 
@@ -72,14 +74,5 @@ module.exports = (ipfs) => {
     }
 
     return `/ipfs/${cidToString(value, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`
-  }
-
-  return (name, opts, cb) => {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = {}
-    }
-    opts = opts || {}
-    return nodeify(resolve(name, opts), cb)
   }
 }

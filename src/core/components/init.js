@@ -33,7 +33,7 @@ const Commands = require('./')
 module.exports = ({
   apiManager,
   print,
-  constructorOptions
+  options: constructorOptions
 }) => async function init (options) {
   const { cancel } = apiManager.update({ init: () => { throw new AlreadyInitializingError() } })
 
@@ -121,7 +121,7 @@ module.exports = ({
     await pinManager.load()
 
     const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
-    const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
+    const add = Commands.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
 
     if (!isInitialized && !options.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
@@ -299,7 +299,7 @@ function createApi ({
 }) {
   const start = Commands.start({
     apiManager,
-    constructorOptions,
+    options: constructorOptions,
     blockService,
     gcLock,
     initOptions,
