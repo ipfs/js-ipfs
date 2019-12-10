@@ -1,3 +1,13 @@
+<a name="40.1.0"></a>
+# [40.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.1...v40.1.0) (2019-12-10)
+
+
+### Features
+
+* expose import concurrency controls ([#1187](https://github.com/ipfs/js-ipfs-http-client/issues/1187)) ([47093d5](https://github.com/ipfs/js-ipfs-http-client/commit/47093d5))
+
+
+
 <a name="40.0.1"></a>
 ## [40.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.0...v40.0.1) (2019-11-27)
 
