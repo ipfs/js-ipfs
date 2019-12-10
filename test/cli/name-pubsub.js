@@ -4,7 +4,6 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const factory = require('../utils/factory')
-const path = require('path')
 const ipfsExec = require('../utils/ipfs-exec')
 
 describe('name-pubsub', () => {
