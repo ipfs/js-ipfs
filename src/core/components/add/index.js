@@ -59,21 +59,23 @@ module.exports = ({ ipld, dag, gcLock, preload, pin, constructorOptions }) => {
 function transformFile (dag, opts) {
   return async function * (source) {
     for await (const { cid, path, unixfs } of source) {
+      const hash = cid.toString()
+
       if (opts.onlyHash) {
         yield {
-          cid,
-          path: path || cid.toString(),
+          hash,
+          path: path || hash,
           size: unixfs.fileSize()
         }
 
         continue
       }
 
-      const node = await dag.get(cid, { ...opts, preload: false })
+      const { value: node } = await dag.get(cid, { ...opts, preload: false })
 
       yield {
-        cid,
-        path: path || cid.toString(),
+        hash,
+        path: path || hash,
         size: Buffer.isBuffer(node) ? node.length : node.size
       }
     }
@@ -103,9 +105,8 @@ function pinFile (pin, opts) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
-      const pin = 'pin' in opts ? opts.pin : true
       const isRootDir = !file.path.includes('/')
-      const shouldPin = pin && isRootDir && !opts.onlyHash
+      const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {
         // Note: addAsyncIterator() has already taken a GC lock, so tell

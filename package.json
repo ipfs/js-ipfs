@@ -209,6 +209,7 @@
     "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#refactor/async-iterables",
     "ipfs-interop": "^0.1.1",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#fix/do-not-call-shutdown-twice",
+    "it-all": "^1.0.1",
     "libp2p-websocket-star": "~0.10.2",
     "lodash": "^4.17.15",
     "ncp": "^2.0.0",

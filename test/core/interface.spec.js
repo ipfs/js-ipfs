@@ -41,7 +41,7 @@ describe('interface-ipfs-core tests', function () {
     }
   })
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.files(defaultCommonFactory)
 
   tests.key(CommonFactory.createAsync({
     spawnOptions: {

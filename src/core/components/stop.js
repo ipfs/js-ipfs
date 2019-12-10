@@ -98,6 +98,7 @@ function createApi ({
 
   const api = {
     add,
+    config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     start,
     stop: () => apiManager.api
