@@ -101,7 +101,26 @@ describe('interface-ipfs-core tests', function () {
     go: {
       args: ['--enable-pubsub-experiment']
     }
-  })))
+  })), {
+    skip: [
+      {
+        name: 'should receive messages from a different node',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should round trip a non-utf8 binary buffer',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should receive multiple messages',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should send/receive 100 messages',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      }
+    ]
+  })
 
   tests.repo(commonFactory)
 
