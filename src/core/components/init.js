@@ -326,6 +326,7 @@ function createApi ({
       print,
       repo
     }),
+    stop: () => apiManager.api,
     version: Components.version({ repo })
   }
 
