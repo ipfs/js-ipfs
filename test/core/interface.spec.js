@@ -97,11 +97,11 @@ describe('interface-ipfs-core tests', function () {
 
   tests.ping(commonFactory)
 
-  tests.pubsub(createFactory(merge(commonOptions,
-    {
+  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+    go: {
       args: ['--enable-pubsub-experiment']
     }
-  ), overrides))
+  })))
 
   tests.repo(commonFactory)
 
