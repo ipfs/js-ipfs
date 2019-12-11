@@ -4,31 +4,24 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
-const IPFS = require('../../src/core')
+const factory = require('../utils/factory')
 
-// This gets replaced by `create-repo-browser.js` in the browser
-const createTempRepo = require('../utils/create-repo-nodejs.js')
-
-describe('key exchange', function () {
-  this.timeout(60 * 1000)
+describe.only('key exchange', function () {
+  this.timeout(20 * 1000)
+  const df = factory()
   let ipfs
-  let repo
   let selfPem
   const passwordPem = hat()
 
-  before(function (done) {
-    repo = createTempRepo()
-    ipfs = new IPFS({
-      repo: repo,
-      pass: hat(),
-      preload: { enabled: false }
-    })
-    ipfs.on('ready', () => done())
+  before(async () => {
+    ipfs = (await df.spawn({
+      ipfsOptions: {
+        pass: hat()
+      }
+    })).api
   })
 
-  after((done) => ipfs.stop(done))
-
-  after((done) => repo.teardown(done))
+  after(() => df.clean())
 
   it('exports', (done) => {
     ipfs.key.export('self', passwordPem, (err, pem) => {
