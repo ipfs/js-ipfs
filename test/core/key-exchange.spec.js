@@ -6,7 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
 const factory = require('../utils/factory')
 
-describe.only('key exchange', function () {
+describe('key exchange', function () {
   this.timeout(20 * 1000)
   const df = factory()
   let ipfs
