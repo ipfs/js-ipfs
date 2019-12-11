@@ -41,11 +41,11 @@ after_success:
 
 jobs:
   include:
-    - stage: check
-      script:
-        - npx aegir build --bundlesize
-        - npx aegir dep-check -- -i wrtc -i electron-webrtc
-        - npm run lint
+    # - stage: check
+    #   script:
+    #     - npx aegir build --bundlesize
+    #     - npx aegir dep-check -- -i wrtc -i electron-webrtc
+    #     - npm run lint
 
     - stage: test
       name: chrome
