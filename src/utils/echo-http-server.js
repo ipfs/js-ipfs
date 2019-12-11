@@ -43,11 +43,21 @@ module.exports.createServer = () => {
 
   const server = http.createServer(handler)
 
-  server.start = (opts) => new Promise(
-    (resolve) => server.listen(Object.assign({ port: defaultPort, host: '127.0.0.1' }, opts), resolve)
-  )
+  server.start = (opts) => new Promise((resolve, reject) => {
+    server.once('error', reject)
+    server.listen(Object.assign({ port: defaultPort, host: '127.0.0.1' }, opts), () => {
+      server.removeListener('error', reject)
+      resolve()
+    })
+  })
 
-  server.stop = () => new Promise((resolve) => server.close(resolve))
+  server.stop = () => new Promise((resolve, reject) => {
+    server.once('error', reject)
+    server.close((err) => {
+      server.removeListener('error', reject)
+      err ? reject(err) : resolve()
+    })
+  })
 
   return server
 }
