@@ -1,3 +1,18 @@
+<a name="0.125.0"></a>
+# [0.125.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.124.1...v0.125.0) (2019-12-11)
+
+
+### Bug Fixes
+
+* handle err on both start and stop echo-server ([#569](https://github.com/ipfs/interface-ipfs-core/issues/569)) ([d25c6f6](https://github.com/ipfs/interface-ipfs-core/commit/d25c6f6))
+
+
+### Features
+
+* add support for new ipfsd-ctl ([#541](https://github.com/ipfs/interface-ipfs-core/issues/541)) ([a27cfa7](https://github.com/ipfs/interface-ipfs-core/commit/a27cfa7))
+
+
+
 ## [0.124.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.124.0...v0.124.1) (2019-12-10)
 
 
