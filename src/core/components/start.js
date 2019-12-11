@@ -6,7 +6,7 @@ const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
 const defer = require('p-defer')
 const { AlreadyInitializedError, NotEnabledError } = require('../errors')
-const Commands = require('./')
+const Components = require('./')
 
 module.exports = ({
   apiManager,
@@ -34,7 +34,7 @@ module.exports = ({
     const config = await repo.config.get()
 
     const peerBook = new PeerBook()
-    const libp2p = Commands.legacy.libp2p({
+    const libp2p = Components.legacy.libp2p({
       _options: constructorOptions,
       _repo: repo,
       _peerInfo: peerInfo,
@@ -107,59 +107,77 @@ function createApi ({
   print,
   repo
 }) {
-  const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+  const dag = Components.legacy.dag({ _ipld: ipld, _preload: preload })
   const object = {
-    data: Commands.object.data({ ipld, preload }),
-    get: Commands.object.get({ ipld, preload }),
-    links: Commands.object.links({ dag }),
-    new: Commands.object.new({ ipld, preload }),
+    data: Components.object.data({ ipld, preload }),
+    get: Components.object.get({ ipld, preload }),
+    links: Components.object.links({ dag }),
+    new: Components.object.new({ ipld, preload }),
     patch: {
-      addLink: Commands.object.patch.addLink({ ipld, gcLock, preload }),
-      appendData: Commands.object.patch.appendData({ ipld, gcLock, preload }),
-      rmLink: Commands.object.patch.rmLink({ ipld, gcLock, preload }),
-      setData: Commands.object.patch.setData({ ipld, gcLock, preload })
+      addLink: Components.object.patch.addLink({ ipld, gcLock, preload }),
+      appendData: Components.object.patch.appendData({ ipld, gcLock, preload }),
+      rmLink: Components.object.patch.rmLink({ ipld, gcLock, preload }),
+      setData: Components.object.patch.setData({ ipld, gcLock, preload })
     },
-    put: Commands.object.put({ ipld, gcLock, preload }),
-    stat: Commands.object.stat({ ipld, preload })
+    put: Components.object.put({ ipld, gcLock, preload }),
+    stat: Components.object.stat({ ipld, preload })
   }
-  const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
-  const add = Commands.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
-
-  const stop = Commands.stop({
-    apiManager,
-    bitswap,
-    options: constructorOptions,
-    blockService,
-    gcLock,
-    initOptions,
-    ipld,
-    ipns,
-    keychain,
-    libp2p,
-    object,
-    peerInfo,
-    preload,
-    print,
-    repo
-  })
+  const pin = Components.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+  const add = Components.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
+  const isOnline = Components.isOnline({ libp2p })
+  const dns = Components.dns()
+  const name = {
+    pubsub: {
+      cancel: Components.name.pubsub.cancel({ ipns, options: constructorOptions }),
+      state: Components.name.pubsub.state({ ipns, options: constructorOptions }),
+      subs: Components.name.pubsub.subs({ ipns, options: constructorOptions })
+    },
+    publish: Components.name.publish({ ipns, dag, peerInfo, isOnline, keychain, options: constructorOptions }),
+    resolve: Components.name.resolve({ dns, ipns, peerInfo, isOnline, options: constructorOptions })
+  }
+  const resolve = Components.resolve({ name, ipld })
+  const refs = Components.refs({ ipld, resolve, preload })
+  refs.local = Components.refs.local({ repo })
 
   const api = {
     add,
     bitswap: {
-      stat: Commands.bitswap.stat({ bitswap }),
-      unwant: Commands.bitswap.unwant({ bitswap }),
-      wantlist: Commands.bitswap.wantlist({ bitswap })
+      stat: Components.bitswap.stat({ bitswap }),
+      unwant: Components.bitswap.unwant({ bitswap }),
+      wantlist: Components.bitswap.wantlist({ bitswap })
     },
-    config: Commands.config({ repo }),
-    id: Commands.id({ peerInfo }),
+    cat: Components.cat({ ipld, preload }),
+    config: Components.config({ repo }),
+    dns,
+    get: Components.get({ ipld, preload }),
+    id: Components.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
-    ping: Commands.ping({ libp2p }),
+    ls: Components.ls({ ipld, preload }),
+    name,
+    ping: Components.ping({ libp2p }),
     pubsub: libp2p.pubsub
-      ? Commands.pubsub({ libp2p })
+      ? Components.pubsub({ libp2p })
       : () => { throw new NotEnabledError('pubsub not enabled') },
+    refs,
+    resolve,
     start: () => apiManager.api,
-    stop,
-    version: Commands.version({ repo })
+    stop: Components.stop({
+      apiManager,
+      bitswap,
+      options: constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      ipns,
+      keychain,
+      libp2p,
+      peerInfo,
+      preload,
+      print,
+      repo
+    }),
+    version: Components.version({ repo })
   }
 
   return api

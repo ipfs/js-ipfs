@@ -8,9 +8,11 @@ exports.bitswap = {
   wantlist: require('./bitswap/wantlist')
 }
 exports.config = require('./config')
+exports.dns = require('./dns')
 exports.get = require('./get')
 exports.id = require('./id')
 exports.init = require('./init')
+exports.isOnline = require('./is-online')
 exports.ls = require('./ls')
 exports.name = {
   publish: require('./name/publish'),
@@ -40,6 +42,7 @@ exports.start = require('./start')
 exports.stop = require('./stop')
 exports.refs = require('./refs')
 exports.refs.local = require('./refs/local')
+exports.resolve = require('./resolve')
 exports.version = require('./version')
 
 exports.legacy = { // TODO: these will be removed as the new API is completed

@@ -17,7 +17,7 @@ const multicodec = require('multicodec')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const { NotInitializedError } = require('./errors')
-const createInitApi = require('./components/init')
+const Components = require('./components')
 const ApiManager = require('./api-manager')
 
 const getDefaultOptions = () => ({
@@ -40,8 +40,12 @@ async function create (options) {
   const print = options.silent ? log : console.log
 
   const apiManager = new ApiManager()
-  const init = createInitApi({ apiManager, print, constructorOptions: options })
-  const { api } = apiManager.update({ init }, () => { throw new NotInitializedError() })
+
+  const { api } = apiManager.update({
+    init: Components.init({ apiManager, print, constructorOptions: options }),
+    dns: Components.dns(),
+    isOnline: Components.isOnline({})
+  }, () => { throw new NotInitializedError() })
 
   if (!options.init) {
     return api

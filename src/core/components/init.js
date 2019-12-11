@@ -28,7 +28,7 @@ const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 const initAssets = require('../runtime/init-assets-nodejs')
 const PinManager = require('./pin/pin-manager')
-const Commands = require('./')
+const Components = require('./')
 
 module.exports = ({
   apiManager,
@@ -101,6 +101,7 @@ module.exports = ({
       morticeId: repo.path
     })
 
+<<<<<<< HEAD
     const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
     const object = {
       data: Commands.object.data({ ipld, preload }),
@@ -116,12 +117,16 @@ module.exports = ({
       put: Commands.object.put({ ipld, gcLock, preload }),
       stat: Commands.object.stat({ ipld, preload })
     }
+=======
+    const dag = Components.legacy.dag({ _ipld: ipld, _preload: preload })
+    const object = Components.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
+>>>>>>> refactor: expose APIs
 
     const pinManager = new PinManager(repo, dag)
     await pinManager.load()
 
-    const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
-    const add = Commands.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
+    const pin = Components.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+    const add = Components.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
 
     if (!isInitialized && !options.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
@@ -297,29 +302,42 @@ function createApi ({
   print,
   repo
 }) {
-  const start = Commands.start({
-    apiManager,
-    options: constructorOptions,
-    blockService,
-    gcLock,
-    initOptions,
-    ipld,
-    keychain,
-    peerInfo,
-    pinManager,
-    preload,
-    print,
-    repo
-  })
+  const refs = () => { throw new NotStartedError() }
+  refs.local = Components.refs.local({ repo })
 
   const api = {
     add,
+<<<<<<< HEAD
     config: Commands.config({ repo }),
     id: Commands.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
     object,
     start,
     version: Commands.version({ repo })
+=======
+    cat: Components.cat({ ipld, preload }),
+    config: Components.config({ repo }),
+    dns: Components.dns(),
+    get: Components.get({ ipld, preload }),
+    init: () => { throw new AlreadyInitializedError() },
+    isOnline: Components.isOnline({}),
+    ls: Components.ls({ ipld, preload }),
+    refs,
+    start: Components.start({
+      apiManager,
+      options: constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
+>>>>>>> refactor: expose APIs
   }
 
   return api
