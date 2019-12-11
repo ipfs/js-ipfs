@@ -4,6 +4,7 @@ const multibase = require('multibase')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
 const isIpfs = require('is-ipfs')
+const toStream = require('it-to-stream')
 const { cidToString } = require('../../../utils/cid')
 
 function parseArgs (request, h) {
@@ -52,21 +53,7 @@ exports.ls = {
   async handler (request, h) {
     const { ipfs } = request.server.app
     const { path, type } = request.pre.args
-
-    let result
-    try {
-      result = await ipfs.pin.ls(path, { type })
-    } catch (err) {
-      throw Boom.boomify(err)
-    }
-
-    return h.response({
-      Keys: result.reduce((acc, v) => {
-        const prop = cidToString(v.hash, { base: request.query['cid-base'] })
-        acc[prop] = { Type: v.type }
-        return acc
-      }, {})
-    })
+    return h.response(toStream.readable(ipfs.pin.ls(path, { type })))
   }
 }
 

@@ -9,7 +9,7 @@ const getDefaultConfig = require('../runtime/config-nodejs.js')
 const createRepo = require('../runtime/repo-nodejs')
 const Keychain = require('libp2p-keychain')
 const NoKeychain = require('./no-keychain')
-const GCLock = require('./pin/gc-lock')
+const mortice = require('mortice')
 const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
@@ -95,19 +95,21 @@ module.exports = ({
     const preload = createPreloader(constructorOptions.preload)
     await preload.start()
 
-    const gcLock = new GCLock(constructorOptions.repoOwner, {
-      // Make sure GCLock is specific to repo, for tests where there are
-      // multiple instances of IPFS
-      morticeId: repo.path
-    })
-
+    // Make sure GC lock is specific to repo, for tests where there are
+    // multiple instances of IPFS
+    const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner })
     const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
     const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
 
     const pinManager = new PinManager(repo, dag)
     await pinManager.load()
 
-    const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+    const pin = {
+      add: Commands.pin.add({ pinManager, gcLock, dag, object }),
+      ls: Commands.pin.ls({ pinManager, object }),
+      rm: Commands.pin.rm({ pinManager, gcLock, object })
+    }
+
     const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
 
     if (!isInitialized && !options.emptyRepo) {
@@ -135,6 +137,7 @@ module.exports = ({
       ipld,
       keychain,
       peerInfo,
+      pin,
       pinManager,
       preload,
       print,
@@ -277,6 +280,7 @@ function createApi ({
   ipld,
   keychain,
   peerInfo,
+  pin,
   pinManager,
   preload,
   print,
@@ -301,6 +305,7 @@ function createApi ({
     add,
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
+    pin,
     start
   }
 

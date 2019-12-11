@@ -78,7 +78,11 @@ function createApi ({
 }) {
   const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
   const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
-  const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+  const pin = {
+    add: Commands.pin.add({ pinManager, gcLock, dag, object }),
+    ls: Commands.pin.ls({ pinManager, object }),
+    rm: Commands.pin.rm({ pinManager, gcLock, object })
+  }
   const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
 
   const start = Commands.start({

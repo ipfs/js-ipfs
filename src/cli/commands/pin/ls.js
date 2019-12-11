@@ -34,14 +34,13 @@ module.exports = {
     resolve((async () => {
       const paths = ipfsPath
       const ipfs = await getIpfs()
-      const results = await ipfs.pin.ls(paths, { type })
-      results.forEach((res) => {
+      for await (const res of ipfs.pin.ls(paths, { type })) {
         let line = cidToString(res.hash, { base: cidBase })
         if (!quiet) {
           line += ` ${res.type}`
         }
         print(line)
-      })
+      }
     })())
   }
 }
