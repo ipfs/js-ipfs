@@ -150,6 +150,11 @@ function createApi ({
       unwant: Commands.bitswap.unwant({ bitswap }),
       wantlist: Commands.bitswap.wantlist({ bitswap })
     },
+    bootstrap: {
+      add: Commands.bootstrap.add({ repo }),
+      list: Commands.bootstrap.list({ repo }),
+      rm: Commands.bootstrap.rm({ repo })
+    },
     config: Commands.config({ repo }),
     id: Commands.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },

@@ -6,6 +6,11 @@ exports.bitswap = {
   unwant: require('./bitswap/unwant'),
   wantlist: require('./bitswap/wantlist')
 }
+exports.bootstrap = {
+  add: require('./bootstrap/add'),
+  list: require('./bootstrap/list'),
+  rm: require('./bootstrap/rm')
+}
 exports.config = require('./config')
 exports.id = require('./id')
 exports.init = require('./init')
