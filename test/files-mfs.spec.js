@@ -10,7 +10,6 @@ const values = require('pull-stream/sources/values')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 const expectTimeout = require('./utils/expect-timeout')
 
@@ -31,26 +30,15 @@ const HASH_ALGS = [
 describe('.files (the MFS API part)', function () {
   this.timeout(20 * 1000)
 
-  let ipfsd
   let ipfs
 
   const expectedMultihash = 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'
 
   before(async () => {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
+    ipfs = (await f.spawn()).api
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('.add file for testing', async () => {
     const res = await ipfs.add(testfile)

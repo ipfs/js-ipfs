@@ -3,30 +3,18 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('.log', function () {
   this.timeout(100 * 1000)
 
-  let ipfsd
   let ipfs
 
   before(async () => {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
+    ipfs = (await f.spawn()).api
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('.log.tail', async () => {
     const i = setInterval(async () => {

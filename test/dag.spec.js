@@ -6,29 +6,17 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const CID = require('cids')
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
-let ipfsd
 let ipfs
 
 describe('.dag', function () {
   this.timeout(20 * 1000)
   before(async function () {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
+    ipfs = (await f.spawn()).api
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('should be able to put and get a DAG node with format dag-pb', async () => {
     const data = Buffer.from('some data')

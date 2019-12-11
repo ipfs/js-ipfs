@@ -2,30 +2,18 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('.repo', function () {
   this.timeout(50 * 1000) // slow CI
 
   let ipfs
-  let ipfsd
 
   before(async () => {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
+    ipfs = (await f.spawn()).api
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('.repo.gc', async () => {
     const res = await ipfs.repo.gc()

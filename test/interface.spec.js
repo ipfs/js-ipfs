@@ -2,47 +2,41 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const isNode = require('detect-node')
-const CommonFactory = require('./utils/interface-common-factory')
+const merge = require('merge-options')
+const { isNode } = require('ipfs-utils/src/env')
+const { createFactory } = require('ipfsd-ctl')
+const { findBin } = require('ipfsd-ctl/src/utils')
 const isWindows = process.platform && process.platform === 'win32'
 
+/** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
+
 describe('interface-ipfs-core tests', () => {
-  const defaultCommonFactory = CommonFactory.createAsync()
+  /** @type ControllerOptions */
+  const commonOptions = {
+    test: true,
+    ipfsHttpModule: {
+      path: require.resolve('../src'),
+      ref: require('../src')
+    },
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
+    },
+    ipfsBin: findBin('go')
+  }
+  const commonFactory = createFactory(commonOptions)
 
-  tests.bitswap(defaultCommonFactory, {
-    skip: [
-      // bitswap.stat
-      {
-        name: 'should not get bitswap stats when offline',
-        reason: 'FIXME go-ipfs returns an error https://github.com/ipfs/go-ipfs/issues/4078'
-      },
-      // bitswap.wantlist
-      {
-        name: 'should not get the wantlist when offline',
-        reason: 'FIXME go-ipfs returns an error https://github.com/ipfs/go-ipfs/issues/4078'
-      },
-      // bitswap.unwant
-      {
-        name: 'should remove a key from the wantlist',
-        reason: 'FIXME why is this skipped?'
-      },
-      {
-        name: 'should not remove a key from the wantlist when offline',
-        reason: 'FIXME go-ipfs returns an error https://github.com/ipfs/go-ipfs/issues/4078'
-      }
-    ]
-  })
+  tests.bitswap(commonFactory)
 
-  tests.block(defaultCommonFactory, {
+  tests.block(commonFactory, {
     skip: [{
       name: 'should get a block added as CIDv1 with a CIDv0',
       reason: 'go-ipfs does not support the `version` param'
     }]
   })
 
-  tests.bootstrap(defaultCommonFactory)
+  tests.bootstrap(commonFactory)
 
-  tests.config(defaultCommonFactory, {
+  tests.config(commonFactory, {
     skip: [
       // config.replace
       {
@@ -60,7 +54,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.dag(defaultCommonFactory, {
+  tests.dag(commonFactory, {
     skip: [
       // dag.tree
       {
@@ -87,7 +81,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.dht(defaultCommonFactory, {
+  tests.dht(commonFactory, {
     skip: [
       // dht.findpeer
       {
@@ -107,7 +101,24 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.filesRegular(defaultCommonFactory, {
+  tests.filesMFS(commonFactory, {
+    skip: [
+      {
+        name: 'should ls directory with long option',
+        reason: 'TODO unskip when go-ipfs supports --long https://github.com/ipfs/go-ipfs/pull/6528'
+      },
+      {
+        name: 'should read from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should ls from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      }
+    ]
+  })
+
+  tests.filesRegular(commonFactory, {
     skip: [
       // .addFromFs
       isNode ? null : {
@@ -130,24 +141,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.filesMFS(defaultCommonFactory, {
-    skip: [
-      {
-        name: 'should ls directory with long option',
-        reason: 'TODO unskip when go-ipfs supports --long https://github.com/ipfs/go-ipfs/pull/6528'
-      },
-      {
-        name: 'should read from outside of mfs',
-        reason: 'TODO not implemented in go-ipfs yet'
-      },
-      {
-        name: 'should ls from outside of mfs',
-        reason: 'TODO not implemented in go-ipfs yet'
-      }
-    ]
-  })
-
-  tests.key(defaultCommonFactory, {
+  tests.key(commonFactory, {
     skip: [
       // key.export
       {
@@ -162,21 +156,15 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.miscellaneous(defaultCommonFactory, {
-    skip: [
-      // stop
-      {
-        name: 'should stop the node',
-        reason: 'FIXME go-ipfs returns an error https://github.com/ipfs/go-ipfs/issues/4078'
-      }
-    ]
-  })
+  tests.miscellaneous(commonFactory)
 
-  tests.name(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--offline']
+  tests.name(createFactory(merge(commonOptions,
+    {
+      ipfsOptions: {
+        offline: true
+      }
     }
-  }), {
+  )), {
     skip: [
       // stop
       {
@@ -186,12 +174,15 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.namePubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024, profile: 'test' }
+  tests.namePubsub(createFactory(merge(commonOptions,
+    {
+      ipfsOptions: {
+        EXPERIMENTAL: {
+          ipnsPubsub: true
+        }
+      }
     }
-  }), {
+  )), {
     skip: [
       // name.pubsub.cancel
       {
@@ -206,11 +197,11 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.object(defaultCommonFactory)
+  tests.object(commonFactory)
 
-  tests.pin(defaultCommonFactory)
+  tests.pin(commonFactory)
 
-  tests.ping(defaultCommonFactory, {
+  tests.ping(commonFactory, {
     skip: [
       {
         name: 'should fail when pinging an unknown peer over pull stream',
@@ -227,10 +218,9 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.pubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--enable-pubsub-experiment'],
-      initOptions: { bits: 1024, profile: 'test' }
+  tests.pubsub(createFactory(commonOptions, {
+    go: {
+      args: ['--enable-pubsub-experiment']
     }
   }), {
     skip: isWindows ? [
@@ -246,9 +236,9 @@ describe('interface-ipfs-core tests', () => {
     ] : null
   })
 
-  tests.repo(defaultCommonFactory)
+  tests.repo(commonFactory)
 
-  tests.stats(defaultCommonFactory)
+  tests.stats(commonFactory)
 
-  tests.swarm(defaultCommonFactory)
+  tests.swarm(commonFactory)
 })

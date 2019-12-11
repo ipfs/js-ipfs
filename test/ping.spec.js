@@ -5,7 +5,6 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const pull = require('pull-stream/pull')
 const collect = require('pull-stream/sinks/collect')
 
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 // Determine if a ping response object is a pong, or something else, like a status message
@@ -17,29 +16,14 @@ describe('.ping', function () {
   this.timeout(20 * 1000)
 
   let ipfs
-  let ipfsd
   let other
-  let otherd
   let otherId
 
   before(async function () {
     this.timeout(30 * 1000) // slow CI
 
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
-
-    otherd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    other = otherd.api
+    ipfs = (await f.spawn()).api
+    other = (await f.spawn()).api
 
     const ma = (await ipfs.id()).addresses[0]
     await other.swarm.connect(ma)
@@ -47,15 +31,7 @@ describe('.ping', function () {
     otherId = (await other.id()).id
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-
-    if (otherd) {
-      await otherd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('.ping with default count', async () => {
     const res = await ipfs.ping(otherId)

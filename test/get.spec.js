@@ -6,7 +6,6 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const loadFixture = require('aegir/fixtures')
 
-const ipfsClient = require('../src')
 const f = require('./utils/factory')
 
 describe('.get (specific go-ipfs features)', function () {
@@ -21,26 +20,14 @@ describe('.get (specific go-ipfs features)', function () {
     data: fixture('test/fixtures/testfile.txt')
   }
 
-  let ipfsd
   let ipfs
 
   before(async () => {
-    ipfsd = await f.spawn({
-      initOptions: {
-        bits: 1024,
-        profile: 'test'
-      }
-    })
-    ipfs = ipfsClient(ipfsd.apiAddr)
-
+    ipfs = (await f.spawn()).api
     await ipfs.add(smallFile.data)
   })
 
-  after(async () => {
-    if (ipfsd) {
-      await ipfsd.stop()
-    }
-  })
+  after(() => f.clean())
 
   it('no compression args', async () => {
     const files = await ipfs.get(smallFile.cid)

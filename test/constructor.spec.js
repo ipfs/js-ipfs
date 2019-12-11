@@ -93,24 +93,18 @@ describe('ipfs-http-client constructor tests', () => {
   })
 
   describe('integration', () => {
-    let apiAddr
     let ipfsd
 
     before(async function () {
       this.timeout(60 * 1000) // slow CI
 
-      ipfsd = await f.spawn({ initOptions: { bits: 1024, profile: 'test' } })
-      apiAddr = ipfsd.apiAddr.toString()
+      ipfsd = await f.spawn()
     })
 
-    after(async () => {
-      if (ipfsd) {
-        await ipfsd.stop()
-      }
-    })
+    after(() => f.clean())
 
     it('can connect to an ipfs http api', async () => {
-      await clientWorks(ipfsClient(apiAddr))
+      await clientWorks(ipfsClient(ipfsd.apiAddr))
     })
   })
 })
