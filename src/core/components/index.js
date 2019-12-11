@@ -2,6 +2,7 @@
 
 exports.add = require('./add')
 exports.config = require('./config')
+exports.id = require('./id')
 exports.init = require('./init')
 exports.start = require('./start')
 exports.stop = require('./stop')

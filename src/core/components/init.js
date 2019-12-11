@@ -300,6 +300,7 @@ function createApi ({
   const api = {
     add,
     config: Commands.config({ repo }),
+    id: Commands.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
     start
   }
