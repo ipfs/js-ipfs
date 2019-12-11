@@ -2,7 +2,7 @@
 
 const { cleanCid } = require('./utils')
 
-module.exports = function block ({ blockService, preload }) {
+module.exports = ({ blockService, preload }) => {
   return async function get (cid, options) { // eslint-disable-line require-await
     options = options || {}
     cid = cleanCid(cid)

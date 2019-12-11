@@ -135,6 +135,12 @@ function createApi ({
 
   const api = {
     add,
+    block: {
+      get: Commands.block.get({ blockService, preload }),
+      put: Commands.block.put({ blockService, gcLock, preload }),
+      rm: Commands.block.rm({ blockService, gcLock, pinManager }),
+      stat: Commands.block.stat({ blockService, preload })
+    },
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     pin,

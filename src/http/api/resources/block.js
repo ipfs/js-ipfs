@@ -132,7 +132,7 @@ exports.rm = {
 
     return streamResponse(request, h, async (output) => {
       try {
-        for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
+        for await (const result of request.server.app.ipfs.block.rm(arg, {
           force,
           quiet
         })) {

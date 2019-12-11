@@ -1,6 +1,12 @@
 'use strict'
 
 exports.add = require('./add')
+exports.block = {
+  get: require('./block/get'),
+  put: require('./block/put'),
+  rm: require('./block/rm'),
+  stat: require('./block/stat')
+}
 exports.config = require('./config')
 exports.init = require('./init')
 exports.pin = {
