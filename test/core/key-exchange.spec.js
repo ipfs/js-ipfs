@@ -9,14 +9,14 @@ const IPFS = require('../../src/core')
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('key exchange', () => {
+describe('key exchange', function () {
+  this.timeout(60 * 1000)
   let ipfs
   let repo
   let selfPem
   const passwordPem = hat()
 
   before(function (done) {
-    this.timeout(20 * 1000)
     repo = createTempRepo()
     ipfs = new IPFS({
       repo: repo,
@@ -40,8 +40,6 @@ describe('key exchange', () => {
   })
 
   it('imports', function (done) {
-    this.timeout(20 * 1000)
-
     ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
       expect(err).to.not.exist()
       expect(key).to.exist()
