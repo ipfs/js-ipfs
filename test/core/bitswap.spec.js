@@ -17,7 +17,7 @@ const makeBlock = async () => {
 }
 
 describe('bitswap', function () {
-  this.timeout(20 * 1000)
+  this.timeout(60 * 1000)
   const df = factory()
 
   describe('transfer a block between', () => {
