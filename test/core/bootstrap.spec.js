@@ -3,7 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const factory = require('../utils/factory')
-const { isBrowser } = require('ipfs-utils/src/env')
+const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 
 describe('bootstrap', () => {
   const df = factory()
@@ -41,7 +41,7 @@ describe('bootstrap', () => {
 
   it('get bootstrap list', async () => {
     const list = await node.bootstrap.list()
-    if (isBrowser) {
+    if (isBrowser || isWebWorker) {
       expect(list.Peers).to.deep.equal(browserList)
     } else {
       expect(list.Peers).to.deep.equal(defaultList)
@@ -54,7 +54,7 @@ describe('bootstrap', () => {
     expect(res).to.be.eql({ Peers: [peer] })
     const list = await node.bootstrap.list()
 
-    if (isBrowser) {
+    if (isBrowser || isWebWorker) {
       expect(list.Peers).to.deep.equal(browserList.concat([peer]))
     } else {
       expect(list.Peers).to.deep.equal(defaultList.concat([peer]))
@@ -66,7 +66,7 @@ describe('bootstrap', () => {
     const res = await node.bootstrap.rm(peer)
     expect(res).to.be.eql({ Peers: [peer] })
     const list = await node.bootstrap.list()
-    if (isBrowser) {
+    if (isBrowser || isWebWorker) {
       expect(list.Peers).to.deep.equal(browserList)
     } else {
       expect(list.Peers).to.deep.equal(defaultList)
