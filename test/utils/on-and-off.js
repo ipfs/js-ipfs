@@ -63,10 +63,7 @@ function on (tests) {
 
     after(function () {
       resetLocaleToSystem()
-      if (ipfsd) {
-        this.timeout(15 * 1000)
-        return ipfsd.stop()
-      }
+      df.clean()
     })
 
     tests(thing)

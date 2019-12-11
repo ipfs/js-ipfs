@@ -31,7 +31,7 @@ describe('bitswap', function () {
       const b = await remote.block.get(block.cid)
 
       expect(b.data).to.eql(block.data)
-      df.clean()
+      await df.clean()
     })
 
     it('3 peers', async () => {
@@ -55,7 +55,7 @@ describe('bitswap', function () {
         expect(await remote2.block.get(block.cid)).to.eql(block)
         expect(await proc.block.get(block.cid)).to.eql(block)
       }, { concurrency: 3 })
-      df.clean()
+      await df.clean()
     })
   })
 
@@ -71,7 +71,7 @@ describe('bitswap', function () {
       const files = await remote.add([{ path: 'awesome.txt', content: file }])
       const data = await proc.cat(files[0].hash)
       expect(data).to.eql(file)
-      df.clean()
+      await df.clean()
     })
   })
 
@@ -84,7 +84,7 @@ describe('bitswap', function () {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_CID')
       } finally {
-        df.clean()
+        await df.clean()
       }
     })
   })

@@ -45,11 +45,7 @@ describe.skip('dht', () => {
       ipfs = ipfsd.api
     })
 
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     describe('put', () => {
       it('should error when DHT not available', async () => {

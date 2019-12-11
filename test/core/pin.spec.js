@@ -15,11 +15,7 @@ describe('pin', function () {
     ipfs = ipfsd.api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('ls', () => {
     it('should callback with error for invalid non-string pin type option', (done) => {

@@ -81,7 +81,6 @@ describe('name', function () {
 
   // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
   describe.skip('work with dht', () => {
-    let nodes
     let nodeA
     let nodeB
     let nodeC
@@ -115,7 +114,6 @@ describe('name', function () {
       ], (err, _nodes) => {
         expect(err).to.not.exist()
 
-        nodes = _nodes
         nodeA = _nodes[0].api
         nodeB = _nodes[1].api
         nodeC = _nodes[2].api
@@ -136,11 +134,7 @@ describe('name', function () {
       })
     })
 
-    after(function (done) {
-      this.timeout(80 * 1000)
-
-      parallel(nodes.map((node) => (cb) => node.stop(cb)), done)
-    })
+    after(() => df.clean())
 
     it('should publish and then resolve correctly with the default options', function (done) {
       this.timeout(380 * 1000)
@@ -175,20 +169,9 @@ describe('name', function () {
     before(async function () {
       this.timeout(40 * 1000)
       ipfsd = await df.spawn({
-        exec: IPFS,
-        args: ['--pass', hat()],
-        config: {
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
+        ipfsOptions: {
+          pass: hat()
+        }
       })
       node = ipfsd.api
 
@@ -196,11 +179,7 @@ describe('name', function () {
       nodeId = res.id
     })
 
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should error to publish if does not receive private key', function () {
       return expect(node._ipns.publisher.publish(null, ipfsRef))
@@ -322,20 +301,10 @@ describe('name', function () {
     before(async function () {
       this.timeout(40 * 1000)
       ipfsd = await df.spawn({
-        exec: IPFS,
-        args: ['--pass', hat(), '--offline'],
-        config: {
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
+        ipfsOptions: {
+          pass: hat(),
+          offline: true
+        }
       })
       node = ipfsd.api
 
@@ -343,11 +312,7 @@ describe('name', function () {
       nodeId = res.id
     })
 
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should resolve an ipfs path correctly', async function () {
       const res = await node.add(fixture)

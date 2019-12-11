@@ -163,23 +163,7 @@ describe('ping', function () {
       })
     })
 
-    after(async () => {
-      if (ipfsdA) {
-        await ipfsdA.stop()
-      }
-    })
-
-    after(async () => {
-      if (ipfsdB) {
-        await ipfsdB.stop()
-      }
-    })
-
-    after(async () => {
-      if (ipfsdC) {
-        await ipfsdC.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('if enabled uses the DHT peer routing to find peer', (done) => {
       let messageNum = 0
