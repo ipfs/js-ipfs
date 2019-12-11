@@ -8,6 +8,12 @@ exports.block = {
   stat: require('./block/stat')
 }
 exports.config = require('./config')
+exports.dag = {
+  get: require('./dag/get'),
+  put: require('./dag/put'),
+  resolve: require('./dag/resolve'),
+  tree: require('./dag/tree')
+}
 exports.init = require('./init')
 exports.pin = {
   add: require('./pin/add'),
@@ -18,7 +24,6 @@ exports.start = require('./start')
 exports.stop = require('./stop')
 
 exports.legacy = { // TODO: these will be removed as the new API is completed
-  dag: require('./dag'),
   libp2p: require('./libp2p'),
   object: require('./object')
 }

@@ -76,13 +76,19 @@ function createApi ({
   print,
   repo
 }) {
-  const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+  const dag = {
+    get: Commands.dag.get({ ipld, preload }),
+    resolve: Commands.dag.resolve({ ipld, preload }),
+    tree: Commands.dag.tree({ ipld, preload })
+  }
   const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
   const pin = {
     add: Commands.pin.add({ pinManager, gcLock, dag, object }),
     ls: Commands.pin.ls({ pinManager, object }),
     rm: Commands.pin.rm({ pinManager, gcLock, object })
   }
+  // FIXME: resolve this circular dependency
+  dag.put = Commands.dag.put({ ipld, pin, gcLock, preload })
   const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
 
   const start = Commands.start({
