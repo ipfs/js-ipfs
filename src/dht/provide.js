@@ -4,31 +4,27 @@
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.dht.provide', function () {
     this.timeout(80 * 1000)
 
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      ipfs = await common.setup()
-      const nodeB = await common.setup()
+    before(async () => {
+      ipfs = (await common.spawn()).api
+      const nodeB = (await common.spawn()).api
       await ipfs.swarm.connect(nodeB.peerId.addresses[0])
     })
 
-    after(function () {
-      this.timeout(50 * 1000)
-
-      return common.teardown()
-    })
+    after(() => common.clean())
 
     it('should provide local CID', async () => {
       const res = await ipfs.add(Buffer.from('test'))

@@ -5,10 +5,14 @@ const pullToPromise = require('pull-to-promise')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isPong } = require('./utils.js')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.pingPullStream', function () {
     this.timeout(60 * 1000)
@@ -17,12 +21,12 @@ module.exports = (createCommon, options) => {
     let ipfsB
 
     before(async () => {
-      ipfsA = await common.setup()
-      ipfsB = await common.setup()
+      ipfsA = (await common.spawn()).api
+      ipfsB = (await common.spawn({ type: 'js' })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should send the specified number of packets over pull stream', async () => {
       const count = 3

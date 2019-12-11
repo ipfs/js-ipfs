@@ -3,20 +3,24 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.id', function () {
     this.timeout(60 * 1000)
     let ipfs
 
     before(async () => {
-      ipfs = await common.setup()
+      ipfs = (await common.spawn()).api
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should get the node ID', async () => {
       const res = await ipfs.id()

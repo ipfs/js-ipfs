@@ -4,10 +4,14 @@
 const pTimeout = require('p-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.dht.query', function () {
     this.timeout(80 * 1000)
@@ -15,21 +19,13 @@ module.exports = (createCommon, options) => {
     let nodeA
     let nodeB
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      nodeA = await common.setup()
-      nodeB = await common.setup()
+    before(async () => {
+      nodeA = (await common.spawn()).api
+      nodeB = (await common.spawn()).api
       await nodeB.swarm.connect(nodeA.peerId.addresses[0])
     })
 
-    after(function () {
-      this.timeout(50 * 1000)
-
-      return common.teardown()
-    })
+    after(() => common.clean())
 
     it('should return the other node in the query', async function () {
       const timeout = 150 * 1000

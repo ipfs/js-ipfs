@@ -4,10 +4,14 @@
 const PeerInfo = require('peer-info')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.swarm.addrs', function () {
     this.timeout(80 * 1000)
@@ -16,12 +20,12 @@ module.exports = (createCommon, options) => {
     let ipfsB
 
     before(async () => {
-      ipfsA = await common.setup()
-      ipfsB = await common.setup()
+      ipfsA = (await common.spawn()).api
+      ipfsB = (await common.spawn({ type: 'js' })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should get a list of node addresses', async () => {
       const peerInfos = await ipfsA.swarm.addrs()

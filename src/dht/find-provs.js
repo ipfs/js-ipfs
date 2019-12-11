@@ -13,35 +13,32 @@ async function fakeCid () {
   return new CID(0, 'dag-pb', mh)
 }
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
-  describe('.dht.findProvs', () => {
+  describe('.dht.findProvs', function () {
+    this.timeout(20000)
     let nodeA
     let nodeB
     let nodeC
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      nodeA = await common.setup()
-      nodeB = await common.setup()
-      nodeC = await common.setup()
+    before(async () => {
+      nodeA = (await common.spawn()).api
+      nodeB = (await common.spawn()).api
+      nodeC = (await common.spawn()).api
       await Promise.all([
         nodeB.swarm.connect(nodeA.peerId.addresses[0]),
         nodeC.swarm.connect(nodeB.peerId.addresses[0])
       ])
     })
 
-    after(function () {
-      this.timeout(50 * 1000)
-
-      return common.teardown()
-    })
+    after(() => common.clean())
 
     let providedCid
     before('add providers for the same cid', async function () {

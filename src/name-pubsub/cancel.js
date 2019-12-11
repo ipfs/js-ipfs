@@ -6,25 +6,25 @@ const { promisify } = require('es6-promisify')
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.name.pubsub.cancel', () => {
     let ipfs
     let nodeId
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      ipfs = await common.setup()
+    before(async () => {
+      ipfs = (await common.spawn()).api
       nodeId = ipfs.peerId.id
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should return false when the name that is intended to cancel is not subscribed', async function () {
       this.timeout(60 * 1000)

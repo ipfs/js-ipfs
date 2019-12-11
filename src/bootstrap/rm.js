@@ -3,10 +3,14 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   const invalidArg = 'this/Is/So/Invalid/'
   const validIp4 = '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
@@ -16,15 +20,9 @@ module.exports = (createCommon, options) => {
 
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = (await common.spawn()).api })
 
-      ipfs = await common.setup()
-    })
-
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should return an error when called with an invalid arg', () => {
       return expect(ipfs.bootstrap.rm(invalidArg)).to.eventually.be.rejected

@@ -4,29 +4,27 @@
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.files.mv', function () {
     this.timeout(40 * 1000)
 
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      ipfs = await common.setup()
-    })
+    before(async () => { ipfs = (await common.spawn()).api })
 
     before(async () => {
       await ipfs.files.mkdir('/test/lv1/lv2', { parents: true })
       await ipfs.files.write('/test/a', Buffer.from('Hello, world!'), { create: true })
     })
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should not move not found file/dir, expect error', () => {
       const testDir = `/test-${hat()}`

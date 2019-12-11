@@ -7,10 +7,14 @@ const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.pubsub.subscribe', function () {
     this.timeout(80 * 1000)
@@ -20,13 +24,11 @@ module.exports = (createCommon, options) => {
     let topic
     let subscribedTopics = []
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(100 * 1000)
-
-      ipfs1 = await common.setup()
-      ipfs2 = await common.setup()
+    before(async () => {
+      ipfs1 = (await common.spawn()).api
+      // TODO 'multiple connected nodes' tests fails with go in Firefox
+      // and JS is flaky everywhere
+      ipfs2 = (await common.spawn({ type: 'go' })).api
     })
 
     beforeEach(() => {
@@ -44,7 +46,7 @@ module.exports = (createCommon, options) => {
       await delay(100)
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     describe('single node', () => {
       it('should subscribe to one topic', async () => {

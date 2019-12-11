@@ -4,36 +4,35 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { expectIsBitswap } = require('../stats/utils')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
-  describe('.bitswap.stat', () => {
+  describe('.bitswap.stat', function () {
+    this.timeout(60 * 1000)
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      ipfs = await common.setup()
+    before(async () => {
+      ipfs = (await common.spawn()).api
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should get bitswap stats', async () => {
       const res = await ipfs.bitswap.stat()
       expectIsBitswap(null, res)
     })
 
-    it('should not get bitswap stats when offline', async function () {
-      this.timeout(60 * 1000)
-
-      const node = await createCommon().setup()
+    it('should not get bitswap stats when offline', async () => {
+      const node = await common.spawn()
       await node.stop()
 
-      return expect(node.bitswap.stat()).to.eventually.be.rejected()
+      return expect(node.api.bitswap.stat()).to.eventually.be.rejected()
     })
   })
 }

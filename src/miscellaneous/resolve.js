@@ -7,20 +7,24 @@ const hat = require('hat')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.resolve', function () {
     this.timeout(60 * 1000)
     let ipfs
 
     before(async () => {
-      ipfs = await common.setup()
+      ipfs = (await common.spawn()).api
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should resolve an IPFS hash', async () => {
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
@@ -77,16 +81,8 @@ module.exports = (createCommon, options) => {
 
     it('should resolve IPNS link recursively', async function () {
       this.timeout(20 * 1000)
-
-      // Ensure another node exists for publishing to  - only required by go-ipfs
-      if (ipfs.peerId.agentVersion.includes('go-ipfs')) {
-        const node = await common.setup()
-
-        // this fails in the browser because there is no relay node available to connect the two
-        // nodes, but we only need this for go-ipfs as it doesn't support the `allowOffline` flag yet
-        await ipfs.swarm.connect(node.peerId.addresses.find((a) => a.includes('127.0.0.1')))
-      }
-
+      const node = (await common.spawn({ type: 'go' })).api
+      await ipfs.swarm.connect(node.peerId.addresses[0])
       const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 

@@ -5,10 +5,14 @@ const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.pubsub.peers', function () {
     this.timeout(80 * 1000)
@@ -17,15 +21,10 @@ module.exports = (createCommon, options) => {
     let ipfs2
     let ipfs3
     let subscribedTopics = []
-
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(100 * 1000)
-
-      ipfs1 = await common.setup()
-      ipfs2 = await common.setup()
-      ipfs3 = await common.setup()
+    before(async () => {
+      ipfs1 = (await common.spawn()).api
+      ipfs2 = (await common.spawn({ type: 'go' })).api
+      ipfs3 = (await common.spawn({ type: 'go' })).api
 
       const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
       const ipfs3Addr = ipfs3.peerId.addresses.find((a) => a.includes('127.0.0.1'))
@@ -45,7 +44,7 @@ module.exports = (createCommon, options) => {
       await delay(100)
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should not error when not subscribed to a topic', async () => {
       const topic = getTopic()

@@ -3,25 +3,23 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.bootstrap.list', function () {
     this.timeout(100 * 1000)
 
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
+    before(async () => { ipfs = (await common.spawn()).api })
 
-      ipfs = await common.setup()
-    })
-
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should return a list of peers', async () => {
       const res = await ipfs.bootstrap.list()

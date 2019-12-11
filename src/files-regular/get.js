@@ -6,27 +6,27 @@ const bs58 = require('bs58')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-module.exports = (createCommon, options) => {
+/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @param {Factory} common
+ * @param {Object} options
+ */
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const common = createCommon()
 
   describe('.get', function () {
     this.timeout(40 * 1000)
 
     let ipfs
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(60 * 1000)
-
-      ipfs = await common.setup()
+    before(async () => {
+      ipfs = (await common.spawn()).api
       await ipfs.add(fixtures.smallFile.data)
       await ipfs.add(fixtures.bigFile.data)
     })
 
-    after(() => common.teardown())
+    after(() => common.clean())
 
     it('should get with a base58 encoded multihash', async () => {
       const files = await ipfs.get(fixtures.smallFile.cid)
