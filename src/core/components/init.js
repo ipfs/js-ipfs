@@ -101,26 +101,21 @@ module.exports = ({
       morticeId: repo.path
     })
 
-<<<<<<< HEAD
-    const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
-    const object = {
-      data: Commands.object.data({ ipld, preload }),
-      get: Commands.object.get({ ipld, preload }),
-      links: Commands.object.links({ dag }),
-      new: Commands.object.new({ ipld, preload }),
-      patch: {
-        addLink: Commands.object.patch.addLink({ ipld, gcLock, preload }),
-        appendData: Commands.object.patch.appendData({ ipld, gcLock, preload }),
-        rmLink: Commands.object.patch.rmLink({ ipld, gcLock, preload }),
-        setData: Commands.object.patch.setData({ ipld, gcLock, preload })
-      },
-      put: Commands.object.put({ ipld, gcLock, preload }),
-      stat: Commands.object.stat({ ipld, preload })
-    }
-=======
     const dag = Components.legacy.dag({ _ipld: ipld, _preload: preload })
-    const object = Components.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
->>>>>>> refactor: expose APIs
+    const object = {
+      data: Components.object.data({ ipld, preload }),
+      get: Components.object.get({ ipld, preload }),
+      links: Components.object.links({ dag }),
+      new: Components.object.new({ ipld, preload }),
+      patch: {
+        addLink: Components.object.patch.addLink({ ipld, gcLock, preload }),
+        appendData: Components.object.patch.appendData({ ipld, gcLock, preload }),
+        rmLink: Components.object.patch.rmLink({ ipld, gcLock, preload }),
+        setData: Components.object.patch.setData({ ipld, gcLock, preload })
+      },
+      put: Components.object.put({ ipld, gcLock, preload }),
+      stat: Components.object.stat({ ipld, preload })
+    }
 
     const pinManager = new PinManager(repo, dag)
     await pinManager.load()
@@ -307,21 +302,15 @@ function createApi ({
 
   const api = {
     add,
-<<<<<<< HEAD
-    config: Commands.config({ repo }),
-    id: Commands.id({ peerInfo }),
-    init: () => { throw new AlreadyInitializedError() },
-    object,
-    start,
-    version: Commands.version({ repo })
-=======
     cat: Components.cat({ ipld, preload }),
     config: Components.config({ repo }),
     dns: Components.dns(),
     get: Components.get({ ipld, preload }),
+    id: Components.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
     isOnline: Components.isOnline({}),
     ls: Components.ls({ ipld, preload }),
+    object,
     refs,
     start: Components.start({
       apiManager,
@@ -336,8 +325,8 @@ function createApi ({
       preload,
       print,
       repo
-    })
->>>>>>> refactor: expose APIs
+    }),
+    version: Components.version({ repo })
   }
 
   return api

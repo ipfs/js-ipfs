@@ -2,7 +2,7 @@
 
 const defer = require('p-defer')
 const { NotStartedError, AlreadyInitializedError } = require('../errors')
-const Commands = require('./')
+const Components = require('./')
 
 module.exports = ({
   apiManager,
@@ -76,48 +76,53 @@ function createApi ({
   print,
   repo
 }) {
-  const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+  const dag = Components.legacy.dag({ _ipld: ipld, _preload: preload })
   const object = {
-    data: Commands.object.data({ ipld, preload }),
-    get: Commands.object.get({ ipld, preload }),
-    links: Commands.object.links({ dag }),
-    new: Commands.object.new({ ipld, preload }),
+    data: Components.object.data({ ipld, preload }),
+    get: Components.object.get({ ipld, preload }),
+    links: Components.object.links({ dag }),
+    new: Components.object.new({ ipld, preload }),
     patch: {
-      addLink: Commands.object.patch.addLink({ ipld, gcLock, preload }),
-      appendData: Commands.object.patch.appendData({ ipld, gcLock, preload }),
-      rmLink: Commands.object.patch.rmLink({ ipld, gcLock, preload }),
-      setData: Commands.object.patch.setData({ ipld, gcLock, preload })
+      addLink: Components.object.patch.addLink({ ipld, gcLock, preload }),
+      appendData: Components.object.patch.appendData({ ipld, gcLock, preload }),
+      rmLink: Components.object.patch.rmLink({ ipld, gcLock, preload }),
+      setData: Components.object.patch.setData({ ipld, gcLock, preload })
     },
-    put: Commands.object.put({ ipld, gcLock, preload }),
-    stat: Commands.object.stat({ ipld, preload })
+    put: Components.object.put({ ipld, gcLock, preload }),
+    stat: Components.object.stat({ ipld, preload })
   }
-  const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
-  const add = Commands.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
-
-  const start = Commands.start({
-    apiManager,
-    options: constructorOptions,
-    blockService,
-    gcLock,
-    initOptions,
-    ipld,
-    keychain,
-    object,
-    peerInfo,
-    pinManager,
-    preload,
-    print,
-    repo
-  })
+  const pin = Components.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
+  const add = Components.add({ ipld, dag, preload, pin, gcLock, options: constructorOptions })
+  const refs = () => { throw new NotStartedError() }
+  refs.local = Components.refs.local({ repo })
 
   const api = {
     add,
-    config: Commands.config({ repo }),
-    id: Commands.id({ peerInfo }),
+    cat: Components.cat({ ipld, preload }),
+    config: Components.config({ repo }),
+    dns: Components.dns(),
+    get: Components.get({ ipld, preload }),
+    id: Components.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
-    start,
+    isOnline: Components.isOnline({}),
+    ls: Components.ls({ ipld, preload }),
+    refs,
+    start: Components.start({
+      apiManager,
+      options: constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    }),
     stop: () => apiManager.api,
-    version: Commands.version({ repo })
+    version: Components.version({ repo })
   }
 
   return api
