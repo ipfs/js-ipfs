@@ -45,14 +45,12 @@ const parseChunkerString = (chunker) => {
     }
     return {
       chunker: 'fixed',
-      chunkerOptions: {
-        maxChunkSize: size
-      }
+      maxChunkSize: size
     }
   } else if (chunker.startsWith('rabin')) {
     return {
       chunker: 'rabin',
-      chunkerOptions: parseRabinString(chunker)
+      ...parseRabinString(chunker)
     }
   } else {
     throw new Error(`Unrecognized chunker option: ${chunker}`)

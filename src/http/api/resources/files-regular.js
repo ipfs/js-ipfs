@@ -159,6 +159,8 @@ exports.add = {
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean(),
+        'file-import-concurrency': Joi.number().integer().min(0).default(50),
+        'block-write-concurrency': Joi.number().integer().min(0).default(10),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
         preload: Joi.boolean().default(true)
@@ -218,7 +220,13 @@ exports.add = {
           pin: request.query.pin,
           chunker: request.query.chunker,
           trickle: request.query.trickle,
-          preload: request.query.preload
+          preload: request.query.preload,
+
+          // this has to be hardcoded to 1 because we can only read one file
+          // at a time from a http request and we have to consume it completely
+          // before we can read the next file
+          fileImportConcurrency: 1,
+          blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
       async function (source) {

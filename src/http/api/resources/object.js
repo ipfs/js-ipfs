@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 const Joi = require('@hapi/joi')

@@ -49,9 +49,19 @@ module.exports = {
       default: false,
       describe: 'Only chunk and hash, do not write'
     },
+    'block-write-concurrency': {
+      type: 'integer',
+      default: 10,
+      describe: 'After a file has been chunked, this controls how many chunks to hash and add to the block store concurrently'
+    },
     chunker: {
       default: 'size-262144',
       describe: 'Chunking algorithm to use, formatted like [size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]'
+    },
+    'file-import-concurrency': {
+      type: 'integer',
+      default: 50,
+      describe: 'How many files to import at once'
     },
     'enable-sharding-experiment': {
       type: 'boolean',
@@ -130,7 +140,10 @@ module.exports = {
         wrapWithDirectory: argv.wrapWithDirectory,
         pin: argv.pin,
         chunker: argv.chunker,
-        preload: argv.preload
+        preload: argv.preload,
+        nonatomic: argv.nonatomic,
+        fileImportConcurrency: argv.fileImportConcurrency,
+        blockWriteConcurrency: argv.blockWriteConcurrency
       }
 
       if (options.enableShardingExperiment && argv.isDaemonOn()) {

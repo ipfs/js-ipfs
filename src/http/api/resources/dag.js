@@ -11,7 +11,7 @@ const debug = require('debug')
 const {
   cidToString
 } = require('../../../utils/cid')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
 

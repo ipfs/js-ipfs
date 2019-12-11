@@ -22,8 +22,7 @@ module.exports = function (self) {
         : Infinity
     }, options, {
       strategy: 'balanced',
-      chunker: chunkerOptions.chunker,
-      chunkerOptions: chunkerOptions.chunkerOptions
+      ...chunkerOptions
     })
 
     // CID v0 is for multihashes encoded with sha2-256

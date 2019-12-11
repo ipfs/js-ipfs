@@ -1,7 +1,7 @@
 'use strict'
 
 const callbackify = require('callbackify')
-const all = require('async-iterator-all')
+const all = require('it-all')
 
 module.exports = function (self) {
   return callbackify.variadic(async function refsLocal (ipfsPath, options) { // eslint-disable-line require-await

@@ -5,7 +5,7 @@ const multihashing = require('multihashing-async')
 const CID = require('cids')
 const callbackify = require('callbackify')
 const errCode = require('err-code')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const { PinTypes } = require('./pin/pin-manager')
 
 module.exports = function block (self) {
