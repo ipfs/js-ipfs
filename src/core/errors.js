@@ -41,3 +41,14 @@ class NotStartedError extends Error {
 
 NotStartedError.code = 'ERR_NOT_STARTED'
 exports.NotStartedError = NotStartedError
+
+class DisabledError extends Error {
+  constructor (message = 'disabled') {
+    super(message)
+    this.name = 'DisabledError'
+    this.code = DisabledError.code
+  }
+}
+
+DisabledError.code = 'ERR_DISABLED'
+exports.DisabledError = DisabledError
