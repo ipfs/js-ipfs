@@ -300,6 +300,7 @@ function createApi ({
   const api = {
     add,
     config: Commands.config({ repo }),
+    files: Commands.files({ ipld, blockService, repo, preload, options: constructorOptions }),
     init: () => { throw new AlreadyInitializedError() },
     start
   }
