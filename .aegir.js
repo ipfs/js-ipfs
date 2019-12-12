@@ -27,26 +27,27 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => Promise.all([
-        preloadNode.start(),
-        echoServer.start()
-      ]),
-      post: () => Promise.all([
-        preloadNode.stop(),
-        echoServer.stop()
-      ])
+      pre: async () => {
+        await preloadNode.start(),
+        await echoServer.start()
+      },
+      post: async () => {
+        await preloadNode.stop(),
+        await echoServer.stop()
+
+      }
     },
     browser: {
-      pre: () => Promise.all([
-        ipfsdServer.start(),
-        preloadNode.start(),
-        echoServer.start()
-      ]),
-      post: () => Promise.all([
-        ipfsdServer.stop(),
-        preloadNode.stop(),
-        echoServer.stop()
-      ])
+      pre: async () => {
+          await ipfsdServer.start()
+          await preloadNode.start()
+          await echoServer.start()
+      },
+      post: async () => {
+          await ipfsdServer.stop()
+          await preloadNode.stop()
+          await echoServer.stop()
+      }
     }
   }
 }

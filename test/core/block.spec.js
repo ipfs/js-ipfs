@@ -4,33 +4,17 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
-
-const IPFSFactory = require('ipfsd-ctl')
-const IPFS = require('../../src/core')
+const factory = require('../utils/factory')
 
 describe('block', () => {
-  let ipfsd, ipfs
+  let ipfs
+  const df = factory()
 
-  before(async function () {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config: { Bootstrap: [] },
-      preload: { enabled: false }
-    })
-    ipfs = ipfsd.api
+  before(async () => {
+    ipfs = (await df.spawn()).api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('get', () => {
     it('should callback with error for invalid CID input', (done) => {

@@ -6,55 +6,30 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const waterfall = require('async/waterfall')
 const multiaddr = require('multiaddr')
 const crypto = require('crypto')
-const IPFS = require('../../src')
+const factory = require('../utils/factory')
 
-const DaemonFactory = require('ipfsd-ctl')
-const procDf = DaemonFactory.create({
-  type: 'proc',
-  exec: IPFS,
-  IpfsClient: require('ipfs-http-client')
-})
+const df = factory()
 
-const baseConf = {
-  Bootstrap: [],
-  Addresses: {
-    API: '/ip4/0.0.0.0/tcp/0',
-    Gateway: '/ip4/0.0.0.0/tcp/0'
-  },
-  Discovery: {
-    MDNS: {
-      Enabled:
-        false
-    }
-  }
-}
-
-const setupInProcNode = async (addrs, hop) => {
-  const ipfsd = await procDf.spawn({
-    libp2p: {
-      config: {
-        relay: {
-          enabled: true,
-          hop: {
-            enabled: hop
+const setupInProcNode = async (type = 'proc', hop) => {
+  const ipfsd = await df.spawn({
+    type,
+    ipfsOptions: {
+      libp2p: {
+        config: {
+          relay: {
+            enabled: true,
+            hop: {
+              enabled: hop
+            }
           }
         }
       }
-    },
-    config: Object.assign({}, baseConf, {
-      Addresses: {
-        Swarm: addrs
-      }
-    }),
-    preload: { enabled: false }
+    }
   })
   const id = await ipfsd.api.id()
 
   return { ipfsd, addrs: id.addresses }
 }
-
-const wsAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => a.includes('/ws'))
-const tcpAddr = (addrs) => addrs.map((a) => a.toString()).find((a) => !a.includes('/ws'))
 
 describe('circuit relay', () => {
   describe('A <-> R <-> B', function () {
@@ -68,24 +43,19 @@ describe('circuit relay', () => {
 
     let relayNode
 
-    let nodes
     before('create and connect', async () => {
       const res = await Promise.all([
-        setupInProcNode([
-          '/ip4/0.0.0.0/tcp/0',
-          '/ip4/0.0.0.0/tcp/0/ws'
-        ], true),
-        setupInProcNode(['/ip4/0.0.0.0/tcp/0']),
-        setupInProcNode(['/ip4/0.0.0.0/tcp/0/ws'])
+        setupInProcNode('proc', true),
+        setupInProcNode('js'),
+        setupInProcNode('js')
       ])
-      nodes = res.map((node) => node.ipfsd)
 
       relayNode = res[0].ipfsd
 
-      nodeAAddr = tcpAddr(res[1].addrs)
+      nodeAAddr = res[1].addrs[0]
       nodeA = res[1].ipfsd.api
 
-      nodeBAddr = wsAddr(res[2].addrs)
+      nodeBAddr = res[2].addrs[0]
 
       nodeB = res[2].ipfsd.api
       nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
@@ -101,7 +71,7 @@ describe('circuit relay', () => {
       await nodeA.swarm.connect(nodeBCircuitAddr)
     })
 
-    after(() => Promise.all(nodes.map((node) => node.stop())))
+    after(() => df.clean())
 
     it('should transfer', function (done) {
       const data = crypto.randomBytes(128)

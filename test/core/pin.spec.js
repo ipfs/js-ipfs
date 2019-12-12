@@ -3,33 +3,19 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const IPFSFactory = require('ipfsd-ctl')
-const IPFS = require('../../src/core')
+const factory = require('../utils/factory')
 
 describe('pin', function () {
   this.timeout(10 * 1000)
+  const df = factory()
   let ipfsd, ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config: { Bootstrap: [] },
-      preload: { enabled: false }
-    })
+    ipfsd = await df.spawn()
     ipfs = ipfsd.api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('ls', () => {
     it('should callback with error for invalid non-string pin type option', (done) => {

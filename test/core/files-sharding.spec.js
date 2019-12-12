@@ -4,16 +4,11 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const pull = require('pull-stream')
+const factory = require('../utils/factory')
 
-const IPFS = require('../../src/core')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'proc',
-  IpfsClient: require('ipfs-http-client')
-})
-
-describe('files directory (sharding tests)', () => {
+describe('files directory (sharding tests)', function () {
+  this.timeout(40 * 1000)
+  const df = factory()
   function createTestFiles () {
     const files = []
 
@@ -32,33 +27,11 @@ describe('files directory (sharding tests)', () => {
     let ipfsd
 
     before(async function () {
-      this.timeout(40 * 1000)
-
-      ipfsd = await df.spawn({
-        exec: IPFS,
-        initOptions: { bits: 512 },
-        config: {
-          Addresses: {
-            Swarm: []
-          },
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
-      })
+      ipfsd = await df.spawn()
       ipfs = ipfsd.api
     })
 
-    after(function () {
-      if (ipfsd) {
-        this.timeout(40 * 1000)
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should be able to add dir without sharding', function (done) {
       this.timeout(70 * 1000)
@@ -82,38 +55,15 @@ describe('files directory (sharding tests)', () => {
     let ipfsd
 
     before(async function () {
-      this.timeout(40 * 1000)
-
       ipfsd = await df.spawn({
-        exec: IPFS,
-        initOptions: { bits: 512 },
-        args: ['--enable-sharding-experiment'],
-        config: {
-          Addresses: {
-            Swarm: []
-          },
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
+        ipfsOptions: { EXPERIMENTAL: { sharding: true } }
       })
       ipfs = ipfsd.api
     })
 
-    after(function () {
-      if (ipfsd) {
-        this.timeout(40 * 1000)
-        return ipfsd.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should be able to add dir with sharding', function (done) {
-      this.timeout(80 * 1000)
-
       pull(
         pull.values(createTestFiles()),
         ipfs.addPullStream(),

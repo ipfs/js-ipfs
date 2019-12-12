@@ -5,12 +5,22 @@ const path = require('path')
 const os = require('os')
 const execa = require('execa')
 const delay = require('delay')
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'js',
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-  IpfsClient: require('ipfs-http-client')
-})
+const { createFactory } = require('ipfsd-ctl')
+const df = createFactory({
+  ipfsModule: {
+    path: require.resolve('../../src'),
+    ref: require('../../src')
+  },
+  ipfsHttpModule: {
+    path: require.resolve('ipfs-http-client'),
+    ref: require('ipfs-http-client')
+  }
+}, {
+  js: {
+    ipfsBin: path.resolve(`${__dirname}/../../src/cli/bin.js`)
+  }
+}
+)
 const {
   startServer
 } = require('../utils')
@@ -35,14 +45,14 @@ async function testUI (env) {
 
 async function runTest () {
   const ipfsd = await df.spawn({
-    initOptions: { bits: 512 },
-    config: {
-      Addresses: {
-        Swarm: [
-          '/ip4/127.0.0.1/tcp/0/ws'
-        ]
-      },
-      Bootstrap: []
+    ipfsOptions: {
+      config: {
+        Addresses: {
+          Swarm: [
+            '/ip4/127.0.0.1/tcp/0/ws'
+          ]
+        }
+      }
     }
   })
 

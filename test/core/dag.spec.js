@@ -3,33 +3,18 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const IPFSFactory = require('ipfsd-ctl')
-const IPFS = require('../../src/core')
+const factory = require('../utils/factory')
 
 describe('dag', function () {
   this.timeout(10 * 1000)
-  let ipfsd, ipfs
+  const df = factory()
+  let ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config: { Bootstrap: [] },
-      preload: { enabled: false }
-    })
-    ipfs = ipfsd.api
+    ipfs = (await df.spawn()).api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('get', () => {
     it('should callback with error for invalid string CID input', (done) => {

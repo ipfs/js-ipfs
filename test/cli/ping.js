@@ -3,23 +3,8 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const DaemonFactory = require('ipfsd-ctl')
+const factory = require('../utils/factory')
 const ipfsExec = require('../utils/ipfs-exec')
-const path = require('path')
-const df = DaemonFactory.create({
-  type: 'js',
-  IpfsClient: require('ipfs-http-client')
-})
-
-const config = {
-  Bootstrap: [],
-  Discovery: {
-    MDNS: {
-      Enabled:
-        false
-    }
-  }
-}
 
 describe('ping', function () {
   this.timeout(60 * 1000)
@@ -28,15 +13,12 @@ describe('ping', function () {
   let bMultiaddr
   let ipfsdBId
   let cli
+  const df = factory({ type: 'js' })
 
   before(async function () {
     this.timeout(60 * 1000)
 
-    ipfsdB = await df.spawn({
-      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-      config,
-      initOptions: { bits: 512 }
-    })
+    ipfsdB = await df.spawn()
     const peerInfo = await ipfsdB.api.id()
     ipfsdBId = peerInfo.id
     bMultiaddr = peerInfo.addresses[0]
@@ -45,30 +27,17 @@ describe('ping', function () {
   before(async function () {
     this.timeout(60 * 1000)
 
-    ipfsdA = await df.spawn({
-      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-      config,
-      initOptions: { bits: 512 }
-    })
+    ipfsdA = await df.spawn()
     // Without DHT we need to have an already established connection
     await ipfsdA.api.swarm.connect(bMultiaddr)
   })
 
   before(() => {
     this.timeout(60 * 1000)
-    cli = ipfsExec(ipfsdA.repoPath)
+    cli = ipfsExec(ipfsdA.path)
   })
 
-  after(() => {
-    if (ipfsdA) {
-      return ipfsdA.stop()
-    }
-  })
-  after(() => {
-    if (ipfsdB) {
-      return ipfsdB.stop()
-    }
-  })
+  after(() => df.clean())
 
   it('ping host', async () => {
     this.timeout(60 * 1000)

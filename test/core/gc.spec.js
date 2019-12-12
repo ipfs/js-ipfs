@@ -3,10 +3,8 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const IPFSFactory = require('ipfsd-ctl')
+const factory = require('../utils/factory')
 const pEvent = require('p-event')
-const env = require('ipfs-utils/src/env')
-const IPFS = require('../../src/core')
 
 // We need to detect when a readLock or writeLock is requested for the tests
 // so we override the Mutex class to emit an event
@@ -38,6 +36,7 @@ class MutexEmitter extends Mutex {
 
 describe('gc', function () {
   this.timeout(40 * 1000)
+  const df = factory()
   const fixtures = [{
     path: 'test/my/path1',
     content: Buffer.from('path1')
@@ -57,20 +56,7 @@ describe('gc', function () {
   let lockEmitter
 
   before(async function () {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      exec: IPFS,
-      IpfsClient: require('ipfs-http-client')
-    })
-    const config = { Bootstrap: [] }
-
-    if (env.isNode) {
-      config.Addresses = {
-        Swarm: ['/ip4/127.0.0.1/tcp/0']
-      }
-    }
-
-    ipfsd = await factory.spawn({ config })
+    ipfsd = await df.spawn()
     ipfs = ipfsd.api
 
     // Replace the Mutex with one that emits events when a readLock or
@@ -79,11 +65,7 @@ describe('gc', function () {
     lockEmitter = ipfs._gcLock.mutex.emitter
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   const blockAddTests = [{
     name: 'add',

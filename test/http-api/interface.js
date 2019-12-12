@@ -2,23 +2,47 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const CommonFactory = require('../utils/interface-common-factory')
-const path = require('path')
+const merge = require('merge-options')
+const { isNode } = require('ipfs-utils/src/env')
+const { createFactory } = require('ipfsd-ctl')
+const IPFS = require('../../src')
 
-describe('interface-ipfs-core over ipfs-http-client tests', () => {
-  const defaultCommonFactory = CommonFactory.createAsync({
-    factoryOptions: { exec: path.resolve(`${__dirname}/../../src/cli/bin.js`) }
-  })
+/** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
-  tests.bitswap(defaultCommonFactory)
+describe('interface-ipfs-core over ipfs-http-client tests', function () {
+  this.timeout(20000)
+  /** @type ControllerOptions */
+  const commonOptions = {
+    test: true,
+    type: 'js',
+    ipfsModule: {
+      path: require.resolve('../../src'),
+      ref: IPFS
+    },
+    ipfsHttpModule: {
+      path: require.resolve('ipfs-http-client'),
+      ref: require('ipfs-http-client')
+    },
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
+    }
+  }
+  const overrides = {
+    js: {
+      ipfsBin: './src/cli/bin.js'
+    }
+  }
+  const commonFactory = createFactory(commonOptions, overrides)
 
-  tests.block(defaultCommonFactory)
+  tests.bitswap(commonFactory)
 
-  tests.bootstrap(defaultCommonFactory)
+  tests.block(commonFactory)
 
-  tests.config(defaultCommonFactory)
+  tests.bootstrap(commonFactory)
 
-  tests.dag(defaultCommonFactory, {
+  tests.config(commonFactory)
+
+  tests.dag(commonFactory, {
     skip: [{
       name: 'should get only a CID, due to resolving locally only',
       reason: 'Local resolve option is not implemented yet'
@@ -28,82 +52,44 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     }]
   })
 
-  tests.dht(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      preload: { enabled: false }
-    }
-  }), {
+  tests.dht(commonFactory, {
     skip: {
       reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 
-  tests.filesRegular(defaultCommonFactory)
+  tests.filesRegular(commonFactory, {
+    skip: isNode ? null : [{
+      name: 'addFromStream',
+      reason: 'Not designed to run in the browser'
+    }, {
+      name: 'addFromFs',
+      reason: 'Not designed to run in the browser'
+    }]
+  })
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(commonFactory)
 
-  tests.key(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      preload: { enabled: false }
+  tests.key(commonFactory)
+
+  tests.miscellaneous(commonFactory)
+
+  tests.name(createFactory(merge(commonOptions, {
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software',
+      offline: true
     }
-  }))
+  }), overrides))
 
-  tests.miscellaneous(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
-    }
-  }))
-
-  tests.name(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
-    }
-  }))
-
-  tests.namePubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
+  tests.namePubsub(createFactory(merge(commonOptions, {
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        ipnsPubsub: true
       }
     }
-  }))
+  }), overrides))
 
-  tests.object(defaultCommonFactory, {
+  tests.object(commonFactory, {
     skip: [
       {
         name: 'should respect timeout option',
@@ -112,19 +98,19 @@ describe('interface-ipfs-core over ipfs-http-client tests', () => {
     ]
   })
 
-  tests.pin(defaultCommonFactory)
+  tests.pin(commonFactory)
 
-  tests.ping(defaultCommonFactory)
+  tests.ping(commonFactory)
 
-  tests.pubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 }
+  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+    go: {
+      args: ['--enable-pubsub-experiment']
     }
-  }))
+  })))
 
-  tests.repo(defaultCommonFactory)
+  tests.repo(commonFactory)
 
-  tests.stats(defaultCommonFactory)
+  tests.stats(commonFactory)
 
-  tests.swarm(CommonFactory.createAsync())
+  tests.swarm(commonFactory)
 })

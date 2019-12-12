@@ -2,46 +2,59 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const CommonFactory = require('../utils/interface-common-factory')
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
+const merge = require('merge-options')
+const { createFactory } = require('ipfsd-ctl')
+const IPFS = require('../../src')
+
+/** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
-  this.timeout(20 * 1000)
-
-  const defaultCommonFactory = CommonFactory.createAsync()
-
-  tests.bitswap(defaultCommonFactory, { skip: !isNode })
-
-  tests.block(defaultCommonFactory)
-
-  tests.bootstrap(defaultCommonFactory)
-
-  tests.config(defaultCommonFactory)
-
-  tests.dag(defaultCommonFactory)
-
-  tests.dht(CommonFactory.createAsync({
-    spawnOptions: {
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      },
-      initOptions: { bits: 512 }
+  /** @type ControllerOptions */
+  const commonOptions = {
+    test: true,
+    type: 'proc',
+    ipfsModule: {
+      path: require.resolve('../../src'),
+      ref: IPFS
+    },
+    ipfsHttpModule: {
+      path: require.resolve('ipfs-http-client'),
+      ref: require('ipfs-http-client')
+    },
+    ipfsOptions: {
+      pass: 'ipfs-is-awesome-software'
     }
-  }), {
+  }
+  const overrides = {
+    js: {
+      ipfsBin: './src/cli/bin.js'
+    }
+  }
+  const commonFactory = createFactory(commonOptions, overrides)
+
+  tests.bitswap(commonFactory, {
+    skip: isNode ? null : [{
+      name: 'should get the wantlist by peer ID for a different node',
+      reason: 'FIXME: Does not find wantlist list in the browser'
+    }]
+  })
+
+  tests.block(commonFactory)
+
+  tests.bootstrap(commonFactory)
+
+  tests.config(commonFactory)
+
+  tests.dag(commonFactory)
+
+  tests.dht(commonFactory, {
     skip: {
       reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })
 
-  tests.filesRegular(defaultCommonFactory, {
+  tests.filesRegular(commonFactory, {
     skip: isNode ? null : [{
       name: 'addFromStream',
       reason: 'Not designed to run in the browser'
@@ -51,57 +64,27 @@ describe('interface-ipfs-core tests', function () {
     }]
   })
 
-  tests.filesMFS(defaultCommonFactory)
+  tests.filesMFS(commonFactory)
 
-  tests.key(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software'],
-      initOptions: { bits: 512 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
+  tests.key(commonFactory)
+
+  tests.miscellaneous(commonFactory)
+
+  tests.name(createFactory(merge(commonOptions, {
+    ipfsOptions: {
+      offline: true
+    }
+  }), overrides))
+
+  tests.namePubsub(createFactory(merge(commonOptions, {
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        ipnsPubsub: true
       }
     }
-  }))
+  }), overrides))
 
-  tests.miscellaneous(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
-    }
-  }))
-
-  tests.name(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--pass ipfs-is-awesome-software', '--offline']
-    }
-  }))
-
-  tests.namePubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      args: ['--enable-namesys-pubsub'],
-      initOptions: { bits: 1024 },
-      config: {
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          },
-          webRTCStar: {
-            Enabled: false
-          }
-        }
-      }
-    }
-  }))
-
-  tests.object(defaultCommonFactory, {
+  tests.object(commonFactory, {
     skip: [
       {
         name: 'should respect timeout option',
@@ -110,27 +93,38 @@ describe('interface-ipfs-core tests', function () {
     ]
   })
 
-  tests.pin(defaultCommonFactory)
+  tests.pin(commonFactory)
 
-  tests.ping(defaultCommonFactory, {
-    skip: isNode ? null : {
-      reason: 'FIXME: ping implementation requires DHT'
+  tests.ping(commonFactory)
+
+  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+    go: {
+      args: ['--enable-pubsub-experiment']
     }
+  })), {
+    skip: [
+      {
+        name: 'should receive messages from a different node',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should round trip a non-utf8 binary buffer',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should receive multiple messages',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      },
+      {
+        name: 'should send/receive 100 messages',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+      }
+    ]
   })
 
-  tests.pubsub(CommonFactory.createAsync({
-    spawnOptions: {
-      initOptions: { bits: 512 }
-    }
-  }), {
-    skip: isNode ? null : {
-      reason: 'FIXME: disabled because no swarm addresses'
-    }
-  })
+  tests.repo(commonFactory)
 
-  tests.repo(defaultCommonFactory)
+  tests.stats(commonFactory)
 
-  tests.stats(defaultCommonFactory)
-
-  tests.swarm(defaultCommonFactory, { skip: !isNode })
+  tests.swarm(commonFactory)
 })

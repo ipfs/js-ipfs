@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const $room = document.querySelector('#room')
   const $roomId = document.querySelector('#room-id')
 
-  let roomName = `default`
+  let roomName = 'default'
   const fragment = window.location.hash.substr(1)
   if (fragment) {
     roomName = fragment
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   $roomId.addEventListener('keyup', (event) => {
     const kp = event.keyCode || event.which
     if (kp === 13 && $roomId.value.length > 0) {
-      let name = $roomId.value
+      const name = $roomId.value
       $room.innerText = name
 
       $room.setAttribute('style', 'display: inline')
