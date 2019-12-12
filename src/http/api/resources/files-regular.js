@@ -225,7 +225,7 @@ exports.add = {
         for await (const file of source) {
           output.write(JSON.stringify({
             Name: file.path,
-            Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
+            Hash: cidToString(file.cid, { base: request.query['cid-base'] }),
             Size: file.size
           }) + '\n')
         }

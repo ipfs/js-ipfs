@@ -59,12 +59,10 @@ module.exports = ({ ipld, dag, gcLock, preload, pin, constructorOptions }) => {
 function transformFile (dag, opts) {
   return async function * (source) {
     for await (const { cid, path, unixfs } of source) {
-      const hash = cid.toString()
-
       if (opts.onlyHash) {
         yield {
-          hash,
-          path: path || hash,
+          cid,
+          path: path || cid.toString(),
           size: unixfs.fileSize()
         }
 
@@ -74,8 +72,8 @@ function transformFile (dag, opts) {
       const { value: node } = await dag.get(cid, { ...opts, preload: false })
 
       yield {
-        hash,
-        path: path || hash,
+        cid,
+        path: path || cid.toString(),
         size: Buffer.isBuffer(node) ? node.length : node.size
       }
     }

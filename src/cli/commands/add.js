@@ -156,7 +156,7 @@ module.exports = {
         ? globSource(argv.file, { recursive: argv.recursive })
         : process.stdin // Pipe directly to ipfs.add
 
-      let finalHash
+      let finalCid
 
       try {
         for await (const file of ipfs.add(source, options)) {
@@ -165,11 +165,11 @@ module.exports = {
           }
 
           if (argv.quieter) {
-            finalHash = file.hash
+            finalCid = file.cid
             continue
           }
 
-          const cid = cidToString(file.hash, { base: argv.cidBase })
+          const cid = cidToString(file.cid, { base: argv.cidBase })
           let message = cid
 
           if (!argv.quiet) {
@@ -197,7 +197,7 @@ module.exports = {
       }
 
       if (argv.quieter) {
-        log(cidToString(finalHash, { base: argv.cidBase }))
+        log(cidToString(finalCid, { base: argv.cidBase }))
       }
     })())
   }
