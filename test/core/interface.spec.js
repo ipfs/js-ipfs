@@ -46,7 +46,12 @@ describe('interface-ipfs-core tests', function () {
 
   tests.config(commonFactory)
 
-  tests.dag(commonFactory)
+  tests.dag(commonFactory, {
+    skip: [{
+      name: 'should error when missing DAG resolver for multicodec from requested CID',
+      reason: 'js-ipfs loads all the ipld formats so there no missing resolvers'
+    }]
+  })
 
   tests.dht(commonFactory, {
     skip: {
