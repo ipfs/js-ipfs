@@ -3,6 +3,7 @@
 exports.add = require('./add')
 exports.config = require('./config')
 exports.init = require('./init')
+exports.ping = require('./ping')
 exports.start = require('./start')
 exports.stop = require('./stop')
 

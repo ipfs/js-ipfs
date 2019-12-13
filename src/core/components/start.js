@@ -133,6 +133,7 @@ function createApi ({
     add,
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
+    ping: Commands.ping({ libp2p }),
     start: () => apiManager.api,
     stop
   }
