@@ -133,6 +133,7 @@ function createApi ({
     add,
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
+    ping: Commands.ping({ libp2p }),
     pubsub: libp2p.pubsub
       ? Commands.pubsub({ libp2p })
       : () => { throw new NotEnabledError('pubsub not enabled') },
