@@ -3,6 +3,11 @@
 exports.add = require('./add')
 exports.config = require('./config')
 exports.init = require('./init')
+exports.repo = {
+  gc: require('./repo/gc'),
+  stat: require('./repo/stat'),
+  version: require('./repo/version')
+}
 exports.start = require('./start')
 exports.stop = require('./stop')
 

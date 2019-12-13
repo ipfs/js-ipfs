@@ -301,6 +301,16 @@ function createApi ({
     add,
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
+    repo: {
+      // TODO: gc should be available after init
+      // `resolve` (passed to `refs` API) which is a dependency for `gc` API
+      // needs to be altered to allow `name` API dependency to be optional, so
+      // that `resolve` can also be available when not started, and so `gc` can
+      // be run when not started.
+      // gc: Commands.repo.gc({ gcLock, pin, pinManager, refs, repo }),
+      stat: Commands.repo.stat({ repo }),
+      version: Commands.repo.version({ repo })
+    },
     start
   }
 
