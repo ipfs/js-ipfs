@@ -38,7 +38,7 @@ describe.skip('dht', () => {
     const df = factory()
     let ipfsd, ipfs
 
-    before(async function (done) {
+    before(async function () {
       this.timeout(30 * 1000)
 
       ipfsd = await df.spawn()

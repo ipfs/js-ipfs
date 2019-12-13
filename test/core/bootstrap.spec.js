@@ -47,38 +47,4 @@ describe('bootstrap', () => {
       expect(list.Peers).to.deep.equal(defaultList)
     }
   })
-
-  it('add a peer to the bootstrap list', async () => {
-    const peer = '/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'
-    const res = await node.bootstrap.add(peer)
-    expect(res).to.be.eql({ Peers: [peer] })
-    const list = await node.bootstrap.list()
-
-    if (isBrowser || isWebWorker) {
-      expect(list.Peers).to.deep.equal(browserList.concat([peer]))
-    } else {
-      expect(list.Peers).to.deep.equal(defaultList.concat([peer]))
-    }
-  })
-
-  it('remove a peer from the bootstrap list', async () => {
-    const peer = '/ip4/111.111.111.111/tcp/1001/ipfs/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'
-    const res = await node.bootstrap.rm(peer)
-    expect(res).to.be.eql({ Peers: [peer] })
-    const list = await node.bootstrap.list()
-    if (isBrowser || isWebWorker) {
-      expect(list.Peers).to.deep.equal(browserList)
-    } else {
-      expect(list.Peers).to.deep.equal(defaultList)
-    }
-  })
-
-  it('fails if passing in a invalid multiaddr', (done) => {
-    node.bootstrap.add('/funky/invalid/multiaddr', (err, res) => {
-      expect(err).to.match(/not a valid Multiaddr/)
-      expect(err).to.match(/funky/)
-      expect(res).to.not.exist()
-      done()
-    })
-  })
 })
