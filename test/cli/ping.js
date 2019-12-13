@@ -58,37 +58,5 @@ describe('ping', function () {
     expect(result[11]).to.match(/^Average latency: \d+(.\d+)?ms$/)
   })
 
-  it('ping host with --n option', async () => {
-    this.timeout(60 * 1000)
-    const ping = cli(`ping --n 1 ${ipfsdBId}`)
-    const result = []
-    ping.stdout.on('data', (output) => {
-      const packets = output.toString().split('\n').slice(0, -1)
-      result.push(...packets)
-    })
-
-    await ping
-
-    expect(result).to.have.lengthOf(3)
-    expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-    expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
-    expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
-  })
-
-  it('ping host with --count option', async () => {
-    this.timeout(60 * 1000)
-    const ping = cli(`ping --count 1 ${ipfsdBId}`)
-    const result = []
-    ping.stdout.on('data', (output) => {
-      const packets = output.toString().split('\n').slice(0, -1)
-      result.push(...packets)
-    })
-
-    await ping
-
-    expect(result).to.have.lengthOf(3)
-    expect(result[0]).to.equal(`PING ${ipfsdBId}`)
-    expect(result[1]).to.match(/^Pong received: time=\d+ ms$/)
-    expect(result[2]).to.match(/^Average latency: \d+(.\d+)?ms$/)
-  })
+  // TODO test error
 })

@@ -21,7 +21,7 @@ module.exports = {
 
       return new Promise((resolve, reject) => {
         const peerId = argv.peerId
-        const count = argv.count || 10
+        const count = argv.count
         pull(
           ipfs.pingPullStream(peerId, { count }),
           pull.drain(({ success, time, text }) => {

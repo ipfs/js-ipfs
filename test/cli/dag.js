@@ -21,6 +21,9 @@ describe('dag', () => runOnAndOff.off((thing) => {
   })
 
   describe('get', () => {
+    // TODO test local-resolve
+    // TODO output format
+    // TODO err output format
     it('get', async function () {
       this.timeout(20 * 1000)
 
@@ -36,18 +39,13 @@ describe('dag', () => runOnAndOff.off((thing) => {
   })
 
   describe('resolve', () => {
+    // TODO test err output format
+    // TODO test empty lastCid logic
     it('resolve cid', async function () {
       this.timeout(20 * 1000)
 
       const out = await ipfs('dag resolve Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       expect(out).to.equal('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n')
-    })
-
-    it('resolve sub directory', async function () {
-      this.timeout(20 * 1000)
-
-      const out = await ipfs('dag resolve Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs/tour/0.0-intro')
-      expect(out).to.equal('QmYE7xo6NxbHEVEHej1yzxijYaNY51BaeKxjXxn6Ssa6Bs\n')
     })
   })
 

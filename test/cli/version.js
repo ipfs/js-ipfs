@@ -31,6 +31,7 @@ describe('version', () => runOnAndOff((thing) => {
   })
 
   describe('handles --all', function () {
+    // TODO merge all of these
     it('prints js-ipfs version', async () => {
       const out = await ipfs('version --all')
       expect(out).to.include(`js-ipfs version: ${pkgversion}`)

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 'use strict'
 
 const promisify = require('promisify-es6')

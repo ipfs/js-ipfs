@@ -2,14 +2,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOnAndOff = require('../utils/on-and-off')
-const UnixFs = require('ipfs-unixfs')
 const path = require('path')
-const fs = require('fs')
-const crypto = require('crypto')
-const os = require('os')
 const multibase = require('multibase')
 
 describe('object', () => runOnAndOff((thing) => {
@@ -17,20 +12,6 @@ describe('object', () => runOnAndOff((thing) => {
 
   before(() => {
     ipfs = thing.ipfs
-  })
-
-  it('new', async () => {
-    const out = await ipfs('object new')
-    expect(out).to.eql(
-      'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n\n'
-    )
-  })
-
-  it('new unixfs-dir', async () => {
-    const out = await ipfs('object new unixfs-dir')
-    expect(out).to.eql(
-      'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn\n'
-    )
   })
 
   // TODO: unskip after switch to v1 CIDs by default
@@ -46,17 +27,6 @@ describe('object', () => runOnAndOff((thing) => {
     const result = JSON.parse(out)
     expect(result.Links).to.eql([])
     expect(result.Data).to.eql('')
-  })
-
-  it('get with data', async function () {
-    this.timeout(15 * 1000)
-
-    const out = await ipfs('object new')
-    const out2 = await ipfs(`object patch set-data ${out.trim()} ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/hello`)
-    const res = await ipfs(`object get ${out2.trim()}`)
-    const result = JSON.parse(res)
-
-    expect(result.Data).to.eql('aGVsbG8gd29ybGQK')
   })
 
   it('get while overriding data-encoding', async function () {
@@ -93,6 +63,8 @@ describe('object', () => runOnAndOff((thing) => {
     )
   })
 
+  // TODO test stdin input
+
   // TODO: unskip after switch to v1 CIDs by default
   it.skip('should put and print CID encoded in specified base', async () => {
     const out = await ipfs(`object put ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json --cid-base=base64`)
@@ -118,23 +90,6 @@ describe('object', () => runOnAndOff((thing) => {
   it('data', async () => {
     const out = await ipfs('object data QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
     expect(out).to.eql('another')
-  })
-
-  it('unaltered data', async function () {
-    this.timeout(10 * 1000)
-
-    // has to be big enough to span several DAGNodes
-    const data = crypto.randomBytes(1024 * 300)
-    const file = path.join(os.tmpdir(), `file-${hat()}.txt`)
-
-    fs.writeFileSync(file, data)
-
-    const out = await ipfs(`add ${file}`)
-    const out2 = await ipfs.raw(`object data ${out.split(' ')[1]}`)
-    const meta = UnixFs.unmarshal(out2)
-
-    expect(meta.type).to.equal('file')
-    expect(meta.fileSize()).to.equal(data.length)
   })
 
   it('links', async () => {

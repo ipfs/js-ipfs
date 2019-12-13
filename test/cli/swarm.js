@@ -4,11 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const multiaddr = require('multiaddr')
-const PeerInfo = require('peer-info')
 const ipfsExec = require('../utils/ipfs-exec')
-const PeerId = require('peer-id')
-const addrsCommand = require('../../src/cli/commands/swarm/addrs')
 const factory = require('../utils/factory')
 
 describe('swarm', () => {
@@ -70,50 +66,7 @@ describe('swarm', () => {
       const out = await ipfsA('swarm peers')
       expect(out).to.be.empty()
     })
-  })
 
-  describe('handlers', () => {
-    let peerInfo
-    const ipfs = {
-      swarm: { addrs: () => {} }
-    }
-    const argv = {
-      resolve: () => {},
-      getIpfs: () => ipfs
-    }
-
-    describe('addrs', () => {
-      before((done) => {
-        PeerId.create({ bits: 512 }, (err, peerId) => {
-          if (err) return done(err)
-          peerInfo = new PeerInfo(peerId)
-          done()
-        })
-      })
-
-      it('should return addresses for all peers', (done) => {
-        sinon.stub(argv, 'resolve').callsFake(promise => {
-          promise.then(({ data }) => {
-            expect(data).to.eql([
-              `${peerInfo.id.toB58String()} (2)`,
-              '\t/ip4/127.0.0.1/tcp/4001',
-              '\t/ip4/127.0.0.1/tcp/4001/ws'
-            ].join('\n'))
-            done()
-          })
-        })
-
-        sinon.stub(peerInfo.multiaddrs, '_multiaddrs').value([
-          multiaddr('/ip4/127.0.0.1/tcp/4001'),
-          multiaddr(`/ip4/127.0.0.1/tcp/4001/ws/ipfs/${peerInfo.id.toB58String()}`)
-        ])
-
-        sinon.stub(ipfs.swarm, 'addrs').returns(
-          Promise.resolve([peerInfo])
-        )
-
-        addrsCommand.handler(argv)
-      })
-    })
+    // TODO these tests above need to be standalone
   })
 })

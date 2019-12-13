@@ -11,13 +11,6 @@ describe('block', () => runOnAndOff((thing) => {
     ipfs = thing.ipfs
   })
 
-  it('put', async function () {
-    this.timeout(40 * 1000)
-
-    const out = await ipfs('block put test/fixtures/test-data/hello')
-    expect(out).to.eql('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp\n')
-  })
-
   it('put with flags, format and mhtype', async function () {
     this.timeout(40 * 1000)
 
@@ -32,13 +25,6 @@ describe('block', () => runOnAndOff((thing) => {
     expect(out).to.eql('mAXASIKlIkE8vD0ebj4GXaUswGEsNLtHBzSoewPuF0pmhkqRH\n')
   })
 
-  it('get', async function () {
-    this.timeout(40 * 1000)
-
-    const out = await ipfs('block get QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-    expect(out).to.eql('hello world\n')
-  })
-
   it('get block from file without a final newline', async function () {
     this.timeout(40 * 1000)
 
@@ -49,15 +35,7 @@ describe('block', () => runOnAndOff((thing) => {
     expect(out2).to.eql('there is no newline at end of this file')
   })
 
-  it('stat', async function () {
-    this.timeout(40 * 1000)
-
-    const out = await ipfs('block stat QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-    expect(out).to.eql([
-      'Key: QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp',
-      'Size: 12'
-    ].join('\n') + '\n')
-  })
+  // TODO: missing block.get error test when block is undefined
 
   it('should stat and print CID encoded in specified base', async function () {
     this.timeout(80 * 1000)
@@ -70,15 +48,6 @@ describe('block', () => runOnAndOff((thing) => {
       'Key: mAXASIKlIkE8vD0ebj4GXaUswGEsNLtHBzSoewPuF0pmhkqRH',
       'Size: 12'
     ].join('\n') + '\n')
-  })
-
-  it('rm', async function () {
-    this.timeout(40 * 1000)
-
-    await ipfs('block put test/fixtures/test-data/hello')
-
-    const out = await ipfs('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-    expect(out).to.eql('removed QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp\n')
   })
 
   it('rm quietly', async function () {

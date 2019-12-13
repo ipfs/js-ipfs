@@ -69,12 +69,10 @@ describe('config', () => runOnAndOff((thing) => {
   describe('show', function () {
     this.timeout(40 * 1000)
 
-    it('returns the full config', async () => {
-      const out = await ipfs('config show')
-      expect(JSON.parse(out)).to.be.eql(updatedConfig())
-    })
+    // TODO test json output format
   })
 
+  // TODO unskip this test
   describe.skip('replace', () => {
     it('replace config with file', async () => {
       const filePath = 'test/fixtures/test-data/otherconfig'

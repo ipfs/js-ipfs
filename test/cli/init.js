@@ -51,32 +51,10 @@ describe('init', function () {
     expect(out2).to.equal(readme)
   })
 
-  it('bits', async function () {
-    await ipfs('init --bits 1024')
-    expect(repoDirSync('blocks')).to.have.length.above(2)
-    expect(repoExistsSync('config')).to.equal(true)
-    expect(repoExistsSync('version')).to.equal(true)
-  })
-
-  it('empty', async function () {
-    await ipfs('init --bits 1024 --empty-repo true')
-    expect(repoDirSync('blocks')).to.have.length(2)
-    expect(repoExistsSync('config')).to.equal(true)
-    expect(repoExistsSync('version')).to.equal(true)
-  })
-
   it('profile', async function () {
     this.timeout(40 * 1000)
 
     await ipfs('init --profile lowpower')
-    expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
-  })
-
-  it('profile multiple', async function () {
-    this.timeout(40 * 1000)
-
-    await ipfs('init --profile server,lowpower')
-    expect(repoConfSync().Discovery.MDNS.Enabled).to.equal(false)
     expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
   })
 
@@ -88,17 +66,6 @@ describe('init', function () {
       .and.to.have.property('stdout').that.includes('Could not find profile')
   })
 
-  it('should present ipfs path help when option help is received', async function () {
-    const res = await ipfs('init --help')
-
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
-  })
-
-  it('should present ipfs path help when option help is received', async function () {
-    const res = await ipfs('init --help')
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
-  })
-
   it('default config argument', async () => {
     const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
     await ipfs(`init ${configPath}`)
@@ -106,4 +73,6 @@ describe('init', function () {
     const config = JSON.parse(configRaw)
     expect(config.Addresses.API).to.be.eq('/ip4/127.0.0.1/tcp/9999')
   })
+
+  // TODO test error for the config arg
 })
