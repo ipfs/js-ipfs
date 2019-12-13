@@ -5,7 +5,7 @@ const PeerBook = require('peer-book')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
 const defer = require('p-defer')
-const { AlreadyInitializedError } = require('../errors')
+const { AlreadyInitializedError, NotEnabledError } = require('../errors')
 const Commands = require('./')
 
 module.exports = ({
@@ -134,6 +134,9 @@ function createApi ({
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     ping: Commands.ping({ libp2p }),
+    pubsub: libp2p.pubsub
+      ? Commands.pubsub({ libp2p })
+      : () => { throw new NotEnabledError('pubsub not enabled') },
     start: () => apiManager.api,
     stop
   }
