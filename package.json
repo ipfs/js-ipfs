@@ -182,7 +182,7 @@
     "pull-traverse": "^1.0.3",
     "readable-stream": "^3.4.0",
     "receptacle": "^1.3.2",
-    "semver": "^6.3.0",
+    "semver": "^7.0.0",
     "stream-to-pull-stream": "^1.7.3",
     "superstruct": "~0.6.2",
     "tar-stream": "^2.0.0",
