@@ -1,6 +1,7 @@
 'use strict'
 
 const multicodec = require('multicodec')
+const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   return async function put (dagNode, options) {
@@ -19,12 +20,10 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
 
     // The IPLD expects the format and hashAlg as constants
     if (options.format && typeof options.format === 'string') {
-      const constantName = options.format.toUpperCase().replace(/-/g, '_')
-      options.format = multicodec[constantName]
+      options.format = nameToCodec(options.format)
     }
     if (options.hashAlg && typeof options.hashAlg === 'string') {
-      const constantName = options.hashAlg.toUpperCase().replace(/-/g, '_')
-      options.hashAlg = multicodec[constantName]
+      options.hashAlg = nameToCodec(options.hashAlg)
     }
 
     options = options.cid ? options : Object.assign({}, optionDefaults, options)
