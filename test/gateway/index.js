@@ -105,7 +105,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.suborigin).to.equal(undefined)
   })
 
-  it('400 for request with invalid argument', async () => {
+  it('returns 400 for request with invalid argument', async () => {
     const res = await gateway.inject({
       method: 'GET',
       url: '/ipfs/invalid'
@@ -116,6 +116,18 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal(undefined)
     expect(res.headers['x-ipfs-path']).to.equal(undefined)
     expect(res.headers.suborigin).to.equal(undefined)
+  })
+
+  it('returns 400 for service worker registration outside of an IPFS content root', async () => {
+    const res = await gateway.inject({
+      method: 'GET',
+      url: '/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o?filename=sw.js',
+      headers: { 'Service-Worker': 'script' }
+    })
+
+    // Expect 400 Bad Request
+    // https://github.com/ipfs/go-ipfs/issues/4025#issuecomment-342250616
+    expect(res.statusCode).to.equal(400)
   })
 
   it('valid CIDv0', async () => {

@@ -76,6 +76,11 @@ module.exports = {
       // add trailing slash for directories with implicit index.html
       return h.redirect(`${path}/`).permanent(true)
     }
+    if (request.headers['service-worker'] === 'script') {
+      // Disallow Service Worker registration on /ipfs scope
+      // https://github.com/ipfs/go-ipfs/issues/4025
+      if (path.match(/^\/ip[nf]s\/[^/]+$/)) throw Boom.badRequest('navigator.serviceWorker: registration is not allowed for this scope')
+    }
 
     // Support If-None-Match & Etag (Conditional Requests from RFC7232)
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
