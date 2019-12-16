@@ -33,12 +33,7 @@ describe('interface-ipfs-core tests', function () {
   }
   const commonFactory = createFactory(commonOptions, overrides)
 
-  tests.bitswap(commonFactory, {
-    skip: isNode ? null : [{
-      name: 'should get the wantlist by peer ID for a different node',
-      reason: 'FIXME: Does not find wantlist list in the browser'
-    }]
-  })
+  tests.bitswap(commonFactory)
 
   tests.block(commonFactory)
 
