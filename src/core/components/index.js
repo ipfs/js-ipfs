@@ -5,6 +5,7 @@ exports.config = require('./config')
 exports.init = require('./init')
 exports.start = require('./start')
 exports.stop = require('./stop')
+exports.version = require('./version')
 
 exports.legacy = { // TODO: these will be removed as the new API is completed
   dag: require('./dag'),

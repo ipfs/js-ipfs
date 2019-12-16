@@ -101,7 +101,8 @@ function createApi ({
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     start,
-    stop: () => apiManager.api
+    stop: () => apiManager.api,
+    version: Commands.version({ repo })
   }
 
   return api
