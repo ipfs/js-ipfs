@@ -7,7 +7,7 @@ const { MFS_ROOT_KEY } = require('ipfs-mfs')
 const Repo = require('ipfs-repo')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
-const { parallelMerge, transform } = require('streaming-iterables')
+const { parallelMerge, transform, map } = require('streaming-iterables')
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
@@ -38,11 +38,7 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
 
 // Get Set of CIDs of blocks to keep
 async function createMarkedSet ({ pin, pinManager, refs, repo }) {
-  const pinsSource = async function * () {
-    for await (const { hash } of pin.ls()) {
-      yield hash
-    }
-  }
+  const pinsSource = map(({ hash }) => hash, pin.ls())
 
   const pinInternalsSource = async function * () {
     const cids = await pinManager.getInternalBlocks()
