@@ -101,6 +101,11 @@ function createApi ({
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     start,
+    stats: {
+      bitswap: () => { throw new NotStartedError() },
+      bw: () => { throw new NotStartedError() },
+      repo: Commands.repo.stat({ repo })
+    },
     stop: () => apiManager.api
   }
 

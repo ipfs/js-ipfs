@@ -134,6 +134,11 @@ function createApi ({
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     start: () => apiManager.api,
+    stats: {
+      bitswap: Commands.bitswap.stat({ bitswap }),
+      bw: Commands.stats.bw({ libp2p }),
+      repo: Commands.repo.stat({ repo })
+    },
     stop
   }
 
