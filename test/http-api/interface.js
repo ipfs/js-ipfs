@@ -89,14 +89,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }
   }), overrides))
 
-  tests.object(commonFactory, {
-    skip: [
-      {
-        name: 'should respect timeout option',
-        reason: 'js-ipfs doesn\'t support timeout yet'
-      }
-    ]
-  })
+  tests.object(commonFactory)
 
   tests.pin(commonFactory)
 
