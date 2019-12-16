@@ -144,7 +144,8 @@ function createApi ({
       ? Commands.pubsub({ libp2p })
       : () => { throw new NotEnabledError('pubsub not enabled') },
     start: () => apiManager.api,
-    stop
+    stop,
+    version: Commands.version({ repo })
   }
 
   return api

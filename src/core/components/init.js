@@ -302,7 +302,8 @@ function createApi ({
     config: Commands.config({ repo }),
     id: Commands.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
-    start
+    start,
+    version: Commands.version({ repo })
   }
 
   return api
