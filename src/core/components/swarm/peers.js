@@ -9,21 +9,24 @@ module.exports = ({ libp2p }) => {
     const verbose = options.v || options.verbose
     const peers = []
 
-    for (const [peerId, peerInfo] of libp2p.peerStore.peers.entries()) {
-      const connectedAddr = peerInfo.isConnected()
+    for (const [peerId, connections] of libp2p.connections) {
+      for (const connection of connections) {
+        const tupple = {
+          addr: connection.remoteAddr,
+          peer: new CID(peerId)
+        }
 
-      if (!connectedAddr) continue
+        if (verbose || options.direction) {
+          tupple.direction = connection.stat.direction
+        }
 
-      const tupple = {
-        addr: connectedAddr,
-        peer: new CID(peerId)
+        if (verbose) {
+          tupple.muxer = connection.stat.multiplexer
+          tupple.latency = 'n/a'
+        }
+
+        peers.push(tupple)
       }
-
-      if (verbose) {
-        tupple.latency = 'n/a'
-      }
-
-      peers.push(tupple)
     }
 
     return peers
