@@ -137,6 +137,7 @@ function createApi ({
       wantlist: Commands.bitswap.wantlist({ bitswap })
     },
     config: Commands.config({ repo }),
+    id: Commands.id({ peerInfo }),
     init: () => { throw new AlreadyInitializedError() },
     ping: Commands.ping({ libp2p }),
     pubsub: libp2p.pubsub

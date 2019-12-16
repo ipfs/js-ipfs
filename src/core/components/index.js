@@ -7,6 +7,7 @@ exports.bitswap = {
   wantlist: require('./bitswap/wantlist')
 }
 exports.config = require('./config')
+exports.id = require('./id')
 exports.init = require('./init')
 exports.ping = require('./ping')
 exports.start = require('./start')
