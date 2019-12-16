@@ -1,9 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
+const { parallelMap } = require('streaming-iterables')
 const { resolvePath } = require('../utils')
 const PinManager = require('./pin/pin-manager')
-const PinTypes = PinManager.PinTypes
+const { PinTypes } = PinManager
+
+const PIN_LS_CONCURRENCY = 8
 
 module.exports = ({ pinManager, object }) => {
   return async function * ls (paths, options) {
@@ -31,29 +34,19 @@ module.exports = ({ pinManager, object }) => {
       // check the pinned state of specific hashes
       const cids = await resolvePath(object, paths)
 
-      for (let i = 0; i < cids.length; i++) {
-        const cid = cids[i]
+      yield * parallelMap(PIN_LS_CONCURRENCY, async cid => {
         const { key, reason, pinned } = await pinManager.isPinnedWithType(cid, type)
 
-        if (pinned) {
-          switch (reason) {
-            case PinTypes.direct:
-            case PinTypes.recursive:
-              yield {
-                hash: key,
-                type: reason
-              }
-              break
-            default:
-              yield {
-                hash: key,
-                type: `${PinTypes.indirect} through ${reason}`
-              }
-          }
-        } else {
-          throw new Error(`path '${paths[i]}' is not pinned`)
+        if (!pinned) {
+          throw new Error(`path '${paths[cids.indexOf(cid)]}' is not pinned`)
         }
-      }
+
+        if (reason === PinTypes.direct || reason === PinTypes.recursive) {
+          return { hash: key, type: reason }
+        }
+
+        return { hash: key, type: `${PinTypes.indirect} through ${reason}` }
+      }, cids)
 
       return
     }
@@ -85,14 +78,8 @@ module.exports = ({ pinManager, object }) => {
       pins = pins
         // if something is pinned both directly and indirectly,
         // report the indirect entry
-        .filter(({ hash }) =>
-          !indirects.includes(hash) ||
-          (indirects.includes(hash) && !pinManager.directPins.has(hash))
-        )
-        .concat(indirects.map(hash => ({
-          type: PinTypes.indirect,
-          hash
-        })))
+        .filter(({ hash }) => !indirects.includes(hash) || !pinManager.directPins.has(hash))
+        .concat(indirects.map(hash => ({ type: PinTypes.indirect, hash })))
     }
 
     // FIXME: https://github.com/ipfs/js-ipfs/issues/2244
