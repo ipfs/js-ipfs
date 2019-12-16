@@ -1,14 +1,6 @@
 'use strict'
 
-const isMultiaddr = require('mafmt').IPFS.matches
-
-function isValidMultiaddr (ma) {
-  try {
-    return isMultiaddr(ma)
-  } catch (err) {
-    return false
-  }
-}
+const { isValidMultiaddr } = require('./utils')
 
 module.exports = ({ repo }) => {
   return async function rm (multiaddr, options) {
