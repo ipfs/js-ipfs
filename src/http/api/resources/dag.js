@@ -248,7 +248,7 @@ exports.resolve = {
       let lastRemainderPath = path
 
       if (path) {
-        const result = ipfs._ipld.resolve(lastCid, path)
+        const result = ipfs.dag.resolve(lastCid, path)
         while (true) {
           const resolveResult = (await result.next()).value
           if (!CID.isCID(resolveResult.value)) {

@@ -98,7 +98,11 @@ module.exports = ({
     // Make sure GC lock is specific to repo, for tests where there are
     // multiple instances of IPFS
     const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner })
-    const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
+    const dag = {
+      get: Commands.dag.get({ ipld, preload }),
+      resolve: Commands.dag.resolve({ ipld, preload }),
+      tree: Commands.dag.tree({ ipld, preload })
+    }
     const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
 
     const pinManager = new PinManager(repo, dag)
@@ -109,6 +113,9 @@ module.exports = ({
       ls: Commands.pin.ls({ pinManager, object }),
       rm: Commands.pin.rm({ pinManager, gcLock, object })
     }
+
+    // FIXME: resolve this circular dependency
+    dag.put = Commands.dag.put({ ipld, pin, gcLock, preload })
 
     const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
 
@@ -132,6 +139,7 @@ module.exports = ({
       apiManager,
       constructorOptions,
       blockService,
+      dag,
       gcLock,
       initOptions: options,
       ipld,
@@ -275,6 +283,7 @@ function createApi ({
   apiManager,
   constructorOptions,
   blockService,
+  dag,
   gcLock,
   initOptions,
   ipld,
@@ -310,6 +319,7 @@ function createApi ({
       stat: Commands.block.stat({ blockService, preload })
     },
     config: Commands.config({ repo }),
+    dag,
     init: () => { throw new AlreadyInitializedError() },
     pin,
     start
