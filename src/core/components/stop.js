@@ -77,7 +77,20 @@ function createApi ({
   repo
 }) {
   const dag = Commands.legacy.dag({ _ipld: ipld, _preload: preload })
-  const object = Commands.legacy.object({ _ipld: ipld, _preload: preload, dag, _gcLock: gcLock })
+  const object = {
+    data: Commands.object.data({ ipld, preload }),
+    get: Commands.object.get({ ipld, preload }),
+    links: Commands.object.links({ dag }),
+    new: Commands.object.new({ ipld, preload }),
+    patch: {
+      addLink: Commands.object.patch.addLink({ ipld, gcLock, preload }),
+      appendData: Commands.object.patch.appendData({ ipld, gcLock, preload }),
+      rmLink: Commands.object.patch.rmLink({ ipld, gcLock, preload }),
+      setData: Commands.object.patch.setData({ ipld, gcLock, preload })
+    },
+    put: Commands.object.put({ ipld, gcLock, preload }),
+    stat: Commands.object.stat({ ipld, preload })
+  }
   const pin = Commands.legacy.pin({ _ipld: ipld, _preload: preload, object, _repo: repo, _pinManager: pinManager })
   const add = Commands.add({ ipld, dag, preload, pin, gcLock, constructorOptions })
 
@@ -89,6 +102,7 @@ function createApi ({
     initOptions,
     ipld,
     keychain,
+    object,
     peerInfo,
     pinManager,
     preload,
