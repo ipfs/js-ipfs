@@ -159,6 +159,13 @@ function createApi ({
       : () => { throw new NotEnabledError('pubsub not enabled') },
     start: () => apiManager.api,
     stop,
+    swarm: {
+      addrs: () => Commands.swarm.addrs({ libp2p }),
+      connect: () => Commands.swarm.connect({ libp2p }),
+      disconnect: () => Commands.swarm.disconnect({ libp2p }),
+      localAddrs: Commands.swarm.localAddrs({ peerInfo }),
+      peers: () => Commands.swarm.peers({ libp2p })
+    },
     version: Commands.version({ repo })
   }
 
