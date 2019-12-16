@@ -131,6 +131,11 @@ function createApi ({
 
   const api = {
     add,
+    bitswap: {
+      stat: Commands.bitswap.stat({ bitswap }),
+      unwant: Commands.bitswap.unwant({ bitswap }),
+      wantlist: Commands.bitswap.wantlist({ bitswap })
+    },
     config: Commands.config({ repo }),
     init: () => { throw new AlreadyInitializedError() },
     ping: Commands.ping({ libp2p }),
