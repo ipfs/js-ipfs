@@ -117,6 +117,13 @@ function createApi ({
     init: () => { throw new AlreadyInitializedError() },
     start,
     stop: () => apiManager.api,
+    swarm: {
+      addrs: () => { throw new NotStartedError() },
+      connect: () => { throw new NotStartedError() },
+      disconnect: () => { throw new NotStartedError() },
+      localAddrs: Commands.swarm.localAddrs({ peerInfo }),
+      peers: () => { throw new NotStartedError() }
+    },
     version: Commands.version({ repo })
   }
 

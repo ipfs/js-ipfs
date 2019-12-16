@@ -26,6 +26,13 @@ exports.object = {
 exports.ping = require('./ping')
 exports.start = require('./start')
 exports.stop = require('./stop')
+exports.swarm = {
+  addrs: require('./swarm/addrs'),
+  connect: require('./swarm/connect'),
+  disconnect: require('./swarm/disconnect'),
+  localAddrs: require('./swarm/localAddrs'),
+  peers: require('./swarm/peers')
+}
 exports.version = require('./version')
 
 exports.legacy = { // TODO: these will be removed as the new API is completed
