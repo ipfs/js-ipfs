@@ -22,8 +22,7 @@ module.exports = {
   handler ({ getIpfs, print, quiet, streamErrors, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
-      const res = await ipfs.repo.gc()
-      for (const r of res) {
+      for await (const r of ipfs.repo.gc()) {
         if (r.err) {
           streamErrors && print(r.err.message, true, true)
         } else {

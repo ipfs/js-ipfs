@@ -17,7 +17,7 @@ describe('gc', () => {
     const gcFake = sinon.fake.returns(gcRes)
     sinon
       .stub(cliUtils, 'getIPFS')
-      .callsArgWith(1, null, { repo: { gc: gcFake } })
+      .returns(Promise.resolve({ repo: { gc: gcFake } }))
 
     return sinon.stub(cliUtils, 'print')
   }

@@ -77,20 +77,19 @@ describe('--migrate', () => {
 
     const daemon = ipfs('daemon --migrate')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', data => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
 
     const version = await getRepoVersion()
     expect(version).to.equal(repoVersion) // Should have migrated to latest

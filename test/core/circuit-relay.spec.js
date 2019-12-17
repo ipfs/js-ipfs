@@ -3,8 +3,8 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const waterfall = require('async/waterfall')
-const multiaddr = require('multiaddr')
+const all = require('it-all')
+const concat = require('it-concat')
 const crypto = require('crypto')
 const factory = require('../utils/factory')
 
@@ -42,6 +42,7 @@ describe('circuit relay', () => {
     let nodeBCircuitAddr
 
     let relayNode
+    let relayAddr
 
     before('create and connect', async () => {
       const res = await Promise.all([
@@ -51,6 +52,7 @@ describe('circuit relay', () => {
       ])
 
       relayNode = res[0].ipfsd
+      relayAddr = `${res[0].addrs[0]}/p2p/${relayNode.api.peerId.id}`
 
       nodeAAddr = res[1].addrs[0]
       nodeA = res[1].ipfsd.api
@@ -58,7 +60,7 @@ describe('circuit relay', () => {
       nodeBAddr = res[2].addrs[0]
 
       nodeB = res[2].ipfsd.api
-      nodeBCircuitAddr = `/p2p-circuit/ipfs/${multiaddr(nodeBAddr).getPeerId()}`
+      nodeBCircuitAddr = `${relayAddr}/p2p-circuit/p2p/${nodeB.peerId.id}`
 
       // ensure we have an address string
       expect(nodeAAddr).to.be.a('string')
@@ -73,16 +75,11 @@ describe('circuit relay', () => {
 
     after(() => df.clean())
 
-    it('should transfer', function (done) {
+    it('should transfer via relay', async () => {
       const data = crypto.randomBytes(128)
-      waterfall([
-        (cb) => nodeA.add(data, cb),
-        (res, cb) => nodeB.cat(res[0].hash, cb),
-        (buffer, cb) => {
-          expect(buffer).to.deep.equal(data)
-          cb()
-        }
-      ], done)
+      const res = await all(nodeA.add(data))
+      const buffer = await concat(nodeB.cat(res[0].cid))
+      expect(buffer.slice()).to.deep.equal(data)
     })
   })
 })

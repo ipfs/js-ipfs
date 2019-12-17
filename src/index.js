@@ -2,4 +2,4 @@
 
 const IPFS = require('./core')
 
-exports = module.exports = IPFS
+module.exports = IPFS

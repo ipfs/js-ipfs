@@ -3,19 +3,18 @@
 
 const IPFSRepo = require('ipfs-repo')
 const hat = require('hat')
-const callbackify = require('callbackify')
 
 const idb = self.indexedDB ||
   self.mozIndexedDB ||
   self.webkitIndexedDB ||
   self.msIndexedDB
 
-function createTempRepo (repoPath) {
+module.exports = function createTempRepo (repoPath) {
   repoPath = repoPath || '/ipfs-' + hat()
 
   const repo = new IPFSRepo(repoPath)
 
-  repo.teardown = callbackify(async () => {
+  repo.teardown = async () => {
     try {
       await repo.close()
     } catch (err) {
@@ -26,9 +25,7 @@ function createTempRepo (repoPath) {
 
     idb.deleteDatabase(repoPath)
     idb.deleteDatabase(repoPath + '/blocks')
-  })
+  }
 
   return repo
 }
-
-module.exports = createTempRepo

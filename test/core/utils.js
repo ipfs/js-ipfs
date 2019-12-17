@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
 const fromB58String = require('multihashes').fromB58String
+const all = require('it-all')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -109,21 +110,21 @@ describe('utils', () => {
     let node
     let repo
 
-    before(done => {
+    before(async () => {
       repo = createTempRepo()
-      node = new IPFS({
+      node = await IPFS.create({
         repo,
         config: {
           Bootstrap: []
         },
         preload: { enabled: false }
       })
-      node.once('ready', () => node.add(fixtures, done))
+      await all(node.add(fixtures))
     })
 
-    after(done => node.stop(done))
+    after(() => node.stop())
 
-    after(done => repo.teardown(done))
+    after(() => repo.teardown())
 
     it('handles base58 hash format', async () => {
       const hashes = await utils.resolvePath(node.object, rootHash)

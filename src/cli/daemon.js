@@ -9,6 +9,7 @@ const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
 const Bootstrap = require('libp2p-bootstrap')
+const createRepo = require('../core/runtime/repo-nodejs')
 
 class Daemon {
   constructor (options) {
@@ -53,11 +54,13 @@ class Daemon {
       libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
     }
 
-    // start the daemon
-    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p }, this._options)
-    const ipfs = await IPFS.create(ipfsOpts)
+    const repo = typeof this._options.repo === 'string' || this._options.repo == null
+      ? createRepo({ path: this._options.repo, autoMigrate: this._options.repoAutoMigrate })
+      : this._options.repo
 
-    this._ipfs = ipfs
+    // start the daemon
+    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p }, this._options, { repo })
+    const ipfs = this._ipfs = await IPFS.create(ipfsOpts)
 
     // start HTTP servers (if API or Gateway is enabled in options)
     const httpApi = new HttpApi(ipfs, ipfsOpts)
@@ -65,7 +68,7 @@ class Daemon {
 
     // for the CLI to know the where abouts of the API
     if (this._httpApi._apiServers.length) {
-      await ipfs._repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
+      await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
     this._log('started')

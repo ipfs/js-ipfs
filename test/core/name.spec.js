@@ -8,7 +8,7 @@ const sinon = require('sinon')
 const parallel = require('async/parallel')
 const series = require('async/series')
 const IPFS = require('../../src')
-const ipnsPath = require('../../src/core/ipns/path')
+const { resolvePath } = require('../../src/core/components/name/utils')
 const ipnsRouting = require('../../src/core/ipns/routing/config')
 const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
@@ -319,7 +319,7 @@ describe('name', function () {
 
       await node.name.publish(`/ipfs/${res[0].hash}`)
 
-      const value = await ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`)
+      const value = await resolvePath(node, `/ipfs/${res[0].hash}`)
 
       expect(value).to.exist()
     })
@@ -327,7 +327,7 @@ describe('name', function () {
     it('should resolve an ipns path correctly', async function () {
       const res = await node.add(fixture)
       await node.name.publish(`/ipfs/${res[0].hash}`)
-      const value = await ipnsPath.resolvePath(node, `/ipns/${nodeId}`)
+      const value = await resolvePath(node, `/ipns/${nodeId}`)
 
       expect(value).to.exist()
     })
@@ -337,7 +337,7 @@ describe('name', function () {
       await node.name.publish(`/ipfs/${res[0].hash}`)
       let peerCid = new CID(nodeId)
       if (peerCid.version === 0) peerCid = peerCid.toV1() // future-proofing
-      const value = await ipnsPath.resolvePath(node, `/ipns/${peerCid.toString('base32')}`)
+      const value = await resolvePath(node, `/ipns/${peerCid.toString('base32')}`)
 
       expect(value).to.exist()
     })

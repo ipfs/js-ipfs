@@ -35,7 +35,7 @@ const parser = yargs
   })
   .commandDir('commands')
   .middleware(argv => Object.assign(argv, {
-    getIpfs: utils.singleton(cb => utils.getIPFS(argv, cb)),
+    getIpfs: utils.singleton(() => utils.getIPFS(argv)),
     getStdin: () => process.stdin,
     print: utils.print,
     isDaemonOn: utils.isDaemonOn,

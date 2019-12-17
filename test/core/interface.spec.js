@@ -2,7 +2,6 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const { isNode } = require('ipfs-utils/src/env')
 const merge = require('merge-options')
 const { createFactory } = require('ipfsd-ctl')
 const IPFS = require('../../src')
@@ -33,6 +32,19 @@ describe('interface-ipfs-core tests', function () {
   }
   const commonFactory = createFactory(commonOptions, overrides)
 
+  tests.root(commonFactory, {
+    skip: isNode ? [{
+      name: 'should ignore a directory from the file system',
+      reason: 'FIXME: unixfs importer returns an extra QmUNLLs dir first (seems to be fixed in 0.42)'
+    }] : [{
+      name: 'should ignore a directory from the file system',
+      reason: 'FIXME: unixfs importer returns an extra QmUNLLs dir first (seems to be fixed in 0.42)'
+    }, {
+      name: 'should add with mtime as hrtime',
+      reason: 'Not designed to run in the browser'
+    }]
+  })
+
   tests.bitswap(commonFactory)
 
   tests.block(commonFactory)
@@ -49,20 +61,7 @@ describe('interface-ipfs-core tests', function () {
     }
   })
 
-  tests.filesRegular(commonFactory, {
-    skip: isNode ? null : [{
-      name: 'addFromStream',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'addFromFs',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should add with mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }]
-  })
-
-  tests.filesMFS(commonFactory, {
+  tests.files(commonFactory, {
     skip: isNode ? null : [{
       name: 'should make directory and specify mtime as hrtime',
       reason: 'Not designed to run in the browser'
@@ -93,14 +92,7 @@ describe('interface-ipfs-core tests', function () {
     }
   }), overrides))
 
-  tests.object(commonFactory, {
-    skip: [
-      {
-        name: 'should respect timeout option',
-        reason: 'js-ipfs doesn\'t support timeout yet'
-      }
-    ]
-  })
+  tests.object(commonFactory)
 
   tests.pin(commonFactory)
 

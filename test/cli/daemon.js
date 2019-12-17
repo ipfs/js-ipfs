@@ -99,21 +99,19 @@ describe('daemon', () => {
 
     const daemon = ipfs('daemon')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', (data) => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-      .and.to.have.property('stdout').that.includes('Daemon is ready')
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
   })
 
   it('should allow bind to multiple addresses for API and Gateway', async function () {
@@ -135,23 +133,22 @@ describe('daemon', () => {
 
     const daemon = ipfs('daemon')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', (data) => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    const err = await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
 
-    apiAddrs.forEach(addr => expect(err.stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
-    gatewayAddrs.forEach(addr => expect(err.stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
+    apiAddrs.forEach(addr => expect(stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
+    gatewayAddrs.forEach(addr => expect(stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
   })
 
   it('should allow no bind addresses for API and Gateway', async function () {
@@ -163,21 +160,20 @@ describe('daemon', () => {
 
     const daemon = ipfs('daemon')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', (data) => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-      .and.have.property('stdout').that.does.not.include(/(API|Gateway \(read only\)) listening on/g)
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
+      .and.not.include(/(API|Gateway \(read only\)) listening on/g)
   })
 
   skipOnWindows('should handle SIGINT gracefully', async function () {
@@ -236,24 +232,22 @@ describe('daemon', () => {
 
     const daemon = ipfs('daemon')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', (data) => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    const err = await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-
-    expect(err.stdout).to.include(`js-ipfs version: ${pkg.version}`)
-    expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
-    expect(err.stdout).to.include(`Node.js version: ${process.versions.node}`)
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
+      .and.to.include(`js-ipfs version: ${pkg.version}`)
+      .and.to.include(`System version: ${os.arch()}/${os.platform()}`)
+      .and.to.include(`Node.js version: ${process.versions.node}`)
   })
 
   it('should init by default', async function () {
@@ -263,20 +257,19 @@ describe('daemon', () => {
 
     const daemon = ipfs('daemon')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', (data) => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
+    await expect(daemon).to.eventually.include('Daemon is ready')
+      .and.to.include('Received interrupt signal, shutting down...')
 
     expect(fs.existsSync(repoPath)).to.be.true()
   })

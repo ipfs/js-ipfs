@@ -98,7 +98,7 @@ module.exports = (self) => {
      */
     findPeer: callbackify(async (peer) => { // eslint-disable-line require-await
       if (typeof peer === 'string') {
-        peer = PeerId.createFromB58String(peer)
+        peer = PeerId.createFromCID(peer)
       }
 
       return self.libp2p.peerRouting.findPeer(peer)
@@ -160,7 +160,7 @@ module.exports = (self) => {
     query: callbackify(async (peerId) => {
       if (typeof peerId === 'string') {
         try {
-          peerId = PeerId.createFromB58String(peerId)
+          peerId = PeerId.createFromCID(peerId)
         } catch (err) {
           log.error(err)
 

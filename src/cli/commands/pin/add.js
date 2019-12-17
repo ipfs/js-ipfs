@@ -28,7 +28,7 @@ module.exports = {
       const ipfs = await getIpfs()
       const results = await ipfs.pin.add(ipfsPath, { recursive })
       results.forEach((res) => {
-        print(`pinned ${cidToString(res.hash, { base: cidBase })} ${type}ly`)
+        print(`pinned ${cidToString(res.cid, { base: cidBase })} ${type}ly`)
       })
     })())
   }

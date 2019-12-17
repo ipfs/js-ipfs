@@ -31,11 +31,16 @@ exports.peers = {
     return h.response({
       Peers: peers.map((p) => {
         const res = {
-          Peer: p.peer.toB58String(),
+          Peer: p.peer.toString(),
           Addr: p.addr.toString()
         }
 
+        if (verbose || request.query.direction === 'true') {
+          res.Direction = p.direction
+        }
+
         if (verbose) {
+          res.Muxer = p.muxer
           res.Latency = p.latency
         }
 
@@ -52,7 +57,7 @@ exports.addrs = {
 
     const addrs = {}
     peers.forEach((peer) => {
-      addrs[peer.id.toB58String()] = peer.multiaddrs.toArray()
+      addrs[peer.id.toString()] = peer.multiaddrs.toArray()
         .map((addr) => addr.toString())
     })
 

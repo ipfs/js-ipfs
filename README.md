@@ -302,9 +302,9 @@ a case, you should provide a way to trigger migrations manually.**
 |------|---------|
 | boolean or object | `true` |
 
-Initialize the repo when creating the IPFS node.
+Perform repo initialization steps when creating the IPFS node.
 
-If you have already initialized a repo before creating your IPFS node (e.g. you are loading a repo that was saved to disk from a previous run of your program), you must make sure to set this to `false`. Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
+Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
 
 Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
 
@@ -314,13 +314,13 @@ Instead of a boolean, you may provide an object with custom initialization optio
     ```js
     // Generating a Peer ID:
     const PeerId = require('peer-id')
-    PeerId.create({ bits: 2048 }, (err, peerId) => {
-      // Generates a new Peer ID, complete with public/private keypair
-      // See https://github.com/libp2p/js-peer-id
-    })
+    // Generates a new Peer ID, complete with public/private keypair
+    // See https://github.com/libp2p/js-peer-id
+    const peerId = await PeerId.create({ bits: 2048 })
     ```
 - `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
 - `profiles` (Array) Apply profile settings to config.
+- `allowNew` (boolean, default: `true`) Set to `false` to disallow initialization if the repo does not already exist.
 
 ##### `options.start`
 
