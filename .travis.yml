@@ -45,7 +45,7 @@ jobs:
       script:
         - npx aegir build --bundlesize
         - npx aegir dep-check -- -i wrtc -i electron-webrtc
-        - npm run lint
+        - npx aegir lint
 
     - stage: test
       name: chrome
