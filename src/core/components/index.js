@@ -23,6 +23,7 @@ exports.object = {
   put: require('./object/put'),
   stat: require('./object/stat')
 }
+exports.libp2p = require('./libp2p')
 exports.ping = require('./ping')
 exports.start = require('./start')
 exports.stop = require('./stop')
@@ -37,6 +38,5 @@ exports.version = require('./version')
 
 exports.legacy = { // TODO: these will be removed as the new API is completed
   dag: require('./dag'),
-  libp2p: require('./libp2p'),
   pin: require('./pin')
 }

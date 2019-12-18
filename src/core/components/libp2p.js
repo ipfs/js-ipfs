@@ -9,24 +9,26 @@ const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
-module.exports = function libp2p (self, config) {
-  const options = self._options || {}
-  config = config || {}
+module.exports = ({
+  constructorOptions,
+  peerInfo,
+  repo,
+  print,
+  config
+}) => {
+  const { datastore } = repo
+  const libp2pOptions = getLibp2pOptions({ options: constructorOptions, config, datastore, peerInfo })
 
-  const { datastore } = self._repo
-  const peerInfo = self._peerInfo
-  const peerBook = self._peerInfoBook
-
-  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerInfo, peerBook })
   let libp2p
 
   if (typeof options.libp2p === 'function') {
-    libp2p = options.libp2p({ libp2pOptions, options, config, datastore, peerInfo, peerBook })
+    libp2p = options.libp2p({ libp2pOptions, options, config, datastore, peerInfo })
   } else {
     // Required inline to reduce startup time
     const Libp2p = require('libp2p')
     libp2p = new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
   }
+
 
   libp2p.on('stop', () => {
     // Clear our addresses so we can start clean
@@ -35,16 +37,14 @@ module.exports = function libp2p (self, config) {
 
   libp2p.on('start', () => {
     peerInfo.multiaddrs.forEach((ma) => {
-      self._print('Swarm listening on', ma.toString())
+      print('Swarm listening on', ma.toString())
     })
   })
-
-  libp2p.on('peer:connect', peerInfo => peerBook.put(peerInfo))
 
   return libp2p
 }
 
-function getLibp2pOptions ({ options, config, datastore, peerInfo, peerBook }) {
+function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
   // Set up Delegate Routing based on the presence of Delegates in the config
   let contentRouting
   let peerRouting
@@ -82,7 +82,6 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo, peerBook }) {
   const libp2pDefaults = {
     datastore,
     peerInfo,
-    peerBook,
     modules: {
       contentRouting,
       peerRouting
@@ -138,8 +137,8 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo, peerBook }) {
     },
     connectionManager: get(options, 'connectionManager',
       {
-        maxPeers: get(config, 'Swarm.ConnMgr.HighWater'),
-        minPeers: get(config, 'Swarm.ConnMgr.LowWater')
+        maxConnections: get(config, 'Swarm.ConnMgr.HighWater'),
+        minConnections: get(config, 'Swarm.ConnMgr.LowWater')
       })
   }
 
@@ -150,7 +149,7 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo, peerBook }) {
   // Merge defaults with Node.js/browser/other environments options and configuration
   return mergeOptions(
     libp2pDefaults,
-    getEnvLibp2pOptions({ options, config, datastore, peerInfo, peerBook }),
+    getEnvLibp2pOptions(),
     libp2pOptions
   )
 }
