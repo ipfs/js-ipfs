@@ -44,9 +44,6 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.dag(commonFactory, {
     skip: [{
-      name: 'should get only a CID, due to resolving locally only',
-      reason: 'Local resolve option is not implemented yet'
-    }, {
       name: 'tree',
       reason: 'dag.tree is not implemented yet'
     }]

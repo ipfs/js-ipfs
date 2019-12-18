@@ -229,7 +229,8 @@ exports.put = {
 exports.resolve = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      localResolve: Joi.boolean().default(false)
     }).unknown()
   },
 
@@ -248,6 +249,7 @@ exports.resolve = {
       let lastRemainderPath = path
 
       if (path) {
+        const localResolve = request.query.localResolve
         const result = ipfs._ipld.resolve(lastCid, path)
         while (true) {
           const resolveResult = (await result.next()).value
@@ -257,6 +259,10 @@ exports.resolve = {
 
           lastRemainderPath = resolveResult.remainderPath
           lastCid = resolveResult.value
+
+          if (localResolve) {
+            break
+          }
         }
       }
 
