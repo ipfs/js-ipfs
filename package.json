@@ -115,7 +115,7 @@
     "ipld-git": "~0.5.0",
     "ipld-raw": "^4.0.0",
     "ipld-zcash": "~0.4.0",
-    "ipns": "^0.6.1",
+    "ipns": "^0.7.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "~0.6.1",
     "is-pull-stream": "~0.0.0",
