@@ -3,11 +3,11 @@
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
-const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 const Multiplex = require('pull-mplex')
 const SECIO = require('libp2p-secio')
+const ipnsUtils = require('../ipns/routing/utils')
 
 module.exports = () => {
   return {
@@ -19,8 +19,7 @@ module.exports = () => {
     modules: {
       transport: [
         TCP,
-        WS,
-        wsstar
+        WS
       ],
       streamMuxer: [
         Multiplex
@@ -29,9 +28,7 @@ module.exports = () => {
         SECIO
       ],
       peerDiscovery: [
-        MulticastDNS,
-        Bootstrap,
-        wsstar.discovery
+        MulticastDNS
       ],
       dht: KadDHT,
       pubsub: GossipSub
@@ -54,6 +51,12 @@ module.exports = () => {
         enabled: false,
         randomWalk: {
           enabled: false
+        },
+        validators: {
+          ipns: ipnsUtils.validator
+        },
+        selectors: {
+          ipns: ipnsUtils.selector
         }
       },
       pubsub: {

@@ -3,21 +3,20 @@
 const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
-const ipnsUtils = require('../ipns/routing/utils')
 const multiaddr = require('multiaddr')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 module.exports = ({
-  constructorOptions,
+  constructorOptions: options,
   peerInfo,
   repo,
   print,
   config
 }) => {
   const { datastore } = repo
-  const libp2pOptions = getLibp2pOptions({ options: constructorOptions, config, datastore, peerInfo })
+  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerInfo })
 
   let libp2p
 
@@ -68,10 +67,6 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
   const getPubsubRouter = () => {
     let router = get(config, 'Pubsub.Router', 'gossipsub')
 
-    if (!router) {
-      router = 'gossipsub'
-    }
-
     if (!PubsubRouters[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
     }
@@ -88,6 +83,7 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
     }
   }
 
+  const bootstrapList = get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
   const libp2pOptions = {
     modules: {
       pubsub: getPubsubRouter()
@@ -103,8 +99,7 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
             get(config, 'Discovery.webRTCStar.Enabled', true))
         },
         bootstrap: {
-          list: get(options, 'config.Bootstrap',
-            get(config, 'Bootstrap', []))
+          list: bootstrapList
         }
       },
       relay: {
@@ -118,28 +113,16 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
         }
       },
       dht: {
-        kBucketSize: get(options, 'dht.kBucketSize', 20),
-        // enabled: !get(options, 'offline', false), // disable if offline, on by default
-        enabled: false,
-        randomWalk: {
-          enabled: false // disabled waiting for https://github.com/libp2p/js-libp2p-kad-dht/issues/86
-        },
-        validators: {
-          ipns: ipnsUtils.validator
-        },
-        selectors: {
-          ipns: ipnsUtils.selector
-        }
+        kBucketSize: get(options, 'dht.kBucketSize', 20)
       },
       pubsub: {
         enabled: get(config, 'Pubsub.Enabled', true)
       }
     },
-    connectionManager: get(options, 'connectionManager',
-      {
-        maxConnections: get(config, 'Swarm.ConnMgr.HighWater'),
-        minConnections: get(config, 'Swarm.ConnMgr.LowWater')
-      })
+    connectionManager: get(options, 'connectionManager', {
+      maxConnections: get(config, 'Swarm.ConnMgr.HighWater'),
+      minConnections: get(config, 'Swarm.ConnMgr.LowWater')
+    })
   }
 
   // Required inline to reduce startup time
@@ -147,9 +130,15 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
 
   // Merge defaults with Node.js/browser/other environments options and configuration
-  return mergeOptions(
+  const libp2pConfig = mergeOptions(
     libp2pDefaults,
     getEnvLibp2pOptions(),
     libp2pOptions
   )
+
+  if (bootstrapList.length > 0) {
+    libp2pConfig.modules.peerDiscovery.push(require('libp2p-bootstrap'))
+  }
+
+  return libp2pConfig
 }

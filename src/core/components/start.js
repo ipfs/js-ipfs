@@ -32,7 +32,7 @@ module.exports = ({
 
     const config = await repo.config.get()
 
-    const libp2p = Commands.libp2p({
+    const libp2p = Components.libp2p({
       constructorOptions,
       repo,
       peerInfo,
