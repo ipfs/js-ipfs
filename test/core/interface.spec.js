@@ -56,10 +56,24 @@ describe('interface-ipfs-core tests', function () {
     }, {
       name: 'addFromFs',
       reason: 'Not designed to run in the browser'
+    }, {
+      name: 'should add with mtime as hrtime',
+      reason: 'Not designed to run in the browser'
     }]
   })
 
-  tests.filesMFS(commonFactory)
+  tests.filesMFS(commonFactory, {
+    skip: isNode ? null : [{
+      name: 'should make directory and specify mtime as hrtime',
+      reason: 'Not designed to run in the browser'
+    }, {
+      name: 'should set mtime as hrtime',
+      reason: 'Not designed to run in the browser'
+    }, {
+      name: 'should write file and specify mtime as hrtime',
+      reason: 'Not designed to run in the browser'
+    }]
+  })
 
   tests.key(commonFactory)
 
