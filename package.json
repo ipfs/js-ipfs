@@ -205,7 +205,7 @@
     "form-data": "^3.0.0",
     "hat": "0.0.3",
     "interface-ipfs-core": "ipfs/interface-js-ipfs-core#add-unixfs-metadata-tests-and-docs",
-    "ipfs-interop": "^0.1.1",
+    "ipfs-interop": "^0.2.0",
     "ipfsd-ctl": "^1.0.2",
     "libp2p-websocket-star": "~0.10.2",
     "lodash": "^4.17.15",
