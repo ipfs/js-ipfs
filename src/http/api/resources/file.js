@@ -15,7 +15,9 @@ function toFileObject (file) {
   const fo = {
     Hash: toB58String(file.hash),
     Size: file.size,
-    Type: fileTypeMap[file.type] || file.type
+    Type: fileTypeMap[file.type] || file.type,
+    Mode: file.mode,
+    Mtime: file.mtime
   }
   if (fo.Hash !== file.name) {
     fo.Name = file.name

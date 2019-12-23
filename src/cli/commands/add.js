@@ -206,7 +206,7 @@ module.exports = {
           mode: argv.mode,
           mtime: argv.mtime
         })
-        : process.stdin // Pipe directly to ipfs.add
+        : argv.getStdin() // Pipe directly to ipfs.add
 
       let finalHash
 

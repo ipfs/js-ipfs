@@ -98,7 +98,7 @@
     "ipfs-bitswap": "^0.26.2",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.16.0",
-    "ipfs-http-client": "^40.1.0",
+    "ipfs-http-client": "ipfs/js-ipfs-http-client#support-unixfs-metadata",
     "ipfs-http-response": "~0.4.0",
     "ipfs-mfs": "ipfs/js-ipfs-mfs#add-metadata-support",
     "ipfs-multipart": "ipfs/js-ipfs-multipart#store-mtime-as-timespec",
