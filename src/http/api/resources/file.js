@@ -20,6 +20,12 @@ function toFileObject (file) {
   if (fo.Hash !== file.name) {
     fo.Name = file.name
   }
+  if (file.mtime) {
+    fo.Mtime = Math.round(file.mtime.getTime() / 1000)
+  }
+  if (file.mode) {
+    fo.Mode = file.mode
+  }
   return fo
 }
 

@@ -41,14 +41,21 @@ module.exports = {
       const ipfs = await getIpfs()
       let links = await ipfs.ls(key, { recursive })
 
-      links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, { base: cidBase }) }))
+      links = links.map(file => {
+        return Object.assign(file, {
+          hash: cidToString(file.hash, { base: cidBase }),
+          mode: formatMode(file.mode, file.type === 'dir'),
+          mtime: formatMtime(file.mtime)
+        })
+      })
 
       if (headers) {
-        links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)
+        links = [{ mode: 'Mode', mtime: 'Mtime', hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)
       }
 
       const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
       const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
+      const mtimeWidth = Math.max.apply(null, links.map((file) => file.mtime.length))
 
       // replace multiple slashes
       key = key.replace(/\/(\/+)/g, '/')
@@ -71,8 +78,8 @@ module.exports = {
         const padding = Math.max(link.depth - pathParts.length, 0)
 
         print(
-          rightpad(formatMode(link.mode, link.type === 'dir'), 11) +
-          rightpad(formatMtime(link.mtime), 30) +
+          rightpad(link.mode, 11) +
+          rightpad(link.mtime || '-', mtimeWidth + 1) +
           rightpad(link.hash, multihashWidth + 1) +
           rightpad(link.size || '-', sizeWidth + 1) +
           '  '.repeat(padding) + fileName

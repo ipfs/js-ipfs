@@ -24,14 +24,19 @@ const mapLsFile = (options) => {
   const long = options.long || options.l
 
   return (file) => {
-    return {
+    const output = {
       hash: long ? cidToString(file.cid, { base: options.cidBase }) : '',
       name: file.name,
       type: long ? file.type : 0,
       size: long ? file.size || 0 : 0,
-      mode: file.mode,
-      mtime: file.mtime
+      mode: file.mode
     }
+
+    if (file.mtime !== undefined) {
+      output.mtime = file.mtime
+    }
+
+    return output
   }
 }
 
