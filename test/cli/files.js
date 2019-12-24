@@ -342,6 +342,30 @@ describe('files', () => runOnAndOff((thing) => {
     await clean(filePath)
   })
 
+  it('add with mtime', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mtime 5 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added Qmd7enmVy7ZZnSMQnsCKnMkLXfCYq11naCTiqXqHKe6YRg readme\n')
+  })
+
+  it('add with mtime-nsecs', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mtime 5 --mtime-nsecs 100 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmV4urwzA1Z8JxHN3fCjXSeQzRvy3SdpX7U11tyjascyjx readme\n')
+  })
+
+  it('add with mode', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mode 0655 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmUkGGwA3MvnutubCDQmW9MUC9oSHbZw58PcJERy4bNnDW readme\n')
+  })
+
   HASH_ALGS.forEach((name) => {
     it(`add with hash=${name} and raw-leaves=false`, async function () {
       this.timeout(30 * 1000)

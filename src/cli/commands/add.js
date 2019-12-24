@@ -146,8 +146,27 @@ module.exports = {
         if (isNaN(value)) {
           throw new Error('mtime must be a number')
         }
+
+        return value
       },
-      describe: 'Modification in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+      describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+    },
+    'mtime-nsecs': {
+      type: 'number',
+      coerce: (value) => {
+        value = parseInt(value)
+
+        if (isNaN(value)) {
+          throw new Error('mtime-nsecs must be a number')
+        }
+
+        if (value < 0 || value > 999999999) {
+          throw new Error('mtime-nsecs must be in the range [0,999999999]')
+        }
+
+        return value
+      },
+      describe: 'Modification time fraction in nanoseconds'
     }
   },
 
@@ -197,6 +216,18 @@ module.exports = {
         }
       }
 
+      let mtime
+
+      if (argv.mtime != null) {
+        mtime = {
+          secs: argv.mtime
+        }
+
+        if (argv.mtimeNsecs != null) {
+          mtime.nsecs = argv.mtimeNsecs
+        }
+      }
+
       const source = argv.file
         ? globSource(argv.file, {
           recursive: argv.recursive,
@@ -204,7 +235,7 @@ module.exports = {
           preserveMode: argv.preserveMode,
           preserveMtime: argv.preserveMtime,
           mode: argv.mode,
-          mtime: argv.mtime
+          mtime
         })
         : argv.getStdin() // Pipe directly to ipfs.add
 

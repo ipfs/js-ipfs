@@ -237,7 +237,7 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {number} mtime - Time to use as the new modification time in seconds since (+ve) or before (-ve) the Unix Epoch
      * @param {Object} [opts] - Options for touch.
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
-     * @param {Object} [opts.cidVersion=0] - CID version to use with the newly updated node
+     * @param {number} [opts.cidVersion=0] - CID version to use with the newly updated node
      * @param {number} [opts.shardSplitThreshold] - If the modified path has more than this many links it will be turned into a HAMT shard
      * @param {function(Error): void} [cb] - Callback function.
      * @returns {Promise<string> | void} When callback is provided nothing is returned.
