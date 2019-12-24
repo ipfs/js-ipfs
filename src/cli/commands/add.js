@@ -134,8 +134,7 @@ module.exports = {
       describe: 'Apply modification time to created UnixFS entries'
     },
     mode: {
-      type: 'number',
-      coerce: (value) => parseInt(value, 8),
+      type: 'string',
       describe: 'File mode to apply to created UnixFS entries'
     },
     mtime: {

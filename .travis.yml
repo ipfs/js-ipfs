@@ -78,16 +78,20 @@ jobs:
       script:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
+        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
-        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t node --bail
+        - npx aegir test -t node --bail
 
     - stage: test
       name: interop - browser
       script:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
+        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
-        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t browser --bail
+        - npx aegir test -t browser --bail
 
     - stage: test
       name: interop - electron-main
@@ -95,8 +99,10 @@ jobs:
       script:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
+        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
-        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
+        - npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
@@ -104,8 +110,10 @@ jobs:
       script:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
+        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
-        - IPFS_JS_EXEC=./../../src/cli/bin.js IPFS_REUSEPORT=false npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
+        - npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
 
     - stage: test
       name: external - ipfs-companion
