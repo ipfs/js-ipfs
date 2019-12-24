@@ -1,6 +1,6 @@
 'use strict'
 
-const IPFS = require('ipfs')
+const IPFS = require('../../')
 
 const execa = require('execa')
 const os = require('os')
