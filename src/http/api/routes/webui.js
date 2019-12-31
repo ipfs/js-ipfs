@@ -20,7 +20,7 @@ module.exports = [
         const address = multiaddr(gateway).nodeAddress()
 
         port = address.port
-        host = address.host
+        host = address.address
       } catch (err) {
         // may not have gateway configured
         log.error(err)
