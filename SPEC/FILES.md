@@ -774,7 +774,6 @@ Where:
 - `to` is the path of the destination to copy to
 - `options` is an optional Object that might contain the following keys:
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
-  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
 
@@ -818,7 +817,6 @@ Where:
 - `path` is the path to the directory to make
 - `options` is an optional Object that might contain the following keys:
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist  (default: false)
-  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk  (default: true)
 
@@ -1061,7 +1059,6 @@ Where:
 - `to` is the path of the destination to move to
 - `options` is an optional Object that might contain the following keys:
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist (default: false)
-  - `format` is what type of nodes to write any newly created directories as (default: `dag-pb`)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
 
