@@ -1,3 +1,18 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.4.0...v0.5.0) (2020-01-07)
+
+
+### Code Refactoring
+
+* use new IPFS async/await APIs ([#30](https://github.com/ipfs/js-ipfs-http-response/issues/30)) ([68f1204](https://github.com/ipfs/js-ipfs-http-response/commit/68f1204))
+
+
+### BREAKING CHANGES
+
+* Switch to using async/await and async iterators.
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.3.1...v0.4.0) (2019-10-14)
 
