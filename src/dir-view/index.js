@@ -17,7 +17,7 @@ function getParentHref (path) {
 function buildFilesList (path, links) {
   const rows = links.map((link) => {
     let row = [
-      `<div class="ipfs-icon ipfs-_blank">&nbsp;</div>`,
+      '<div class="ipfs-icon ipfs-_blank">&nbsp;</div>',
       `<a href="${path}${path.endsWith('/') ? '' : '/'}${link.Name}">${link.Name}</a>`,
       filesize(link.Tsize)
     ]
@@ -78,5 +78,4 @@ function render (path, links) {
   `
 }
 
-exports = module.exports
 exports.render = render

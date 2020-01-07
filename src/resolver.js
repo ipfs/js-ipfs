@@ -2,7 +2,6 @@
 
 const pTryEach = require('p-try-each')
 const mh = require('multihashes')
-const CID = require('cids')
 const debug = require('debug')
 const log = debug('jsipfs:http:response:resolver')
 log.error = debug('jsipfs:http:response:resolver:error')
@@ -21,7 +20,7 @@ const findIndexFile = (ipfs, path) => {
 
       return {
         name: file,
-        cid: new CID(stats.hash)
+        cid: stats.cid
       }
     }
   }))
@@ -48,18 +47,16 @@ const directory = async (ipfs, path, cid) => {
 const cid = async (ipfs, path) => {
   const stats = await ipfs.files.stat(path)
 
-  const cid = new CID(stats.hash)
-
   if (stats.type.includes('directory')) {
     const err = new Error('This dag node is a directory')
-    err.cid = cid
+    err.cid = stats.cid
     err.fileName = stats.name
     err.dagDirType = stats.type
 
     throw err
   }
 
-  return { cid }
+  return { cid: stats.cid }
 }
 
 const multihash = async (ipfs, path) => {
@@ -71,7 +68,7 @@ const multihash = async (ipfs, path) => {
 }
 
 module.exports = {
-  directory: directory,
-  cid: cid,
-  multihash: multihash
+  directory,
+  cid,
+  multihash
 }

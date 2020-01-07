@@ -36,19 +36,22 @@
     "debug": "^4.1.1",
     "file-type": "^8.0.0",
     "filesize": "^3.6.1",
-    "get-stream": "^3.0.0",
-    "ipfs-unixfs": "~0.1.16",
+    "it-buffer": "^0.1.1",
+    "it-concat": "^1.0.0",
+    "it-reader": "^2.1.0",
+    "it-to-stream": "^0.1.1",
     "mime-types": "^2.1.21",
     "multihashes": "~0.4.14",
-    "p-try-each": "^1.0.1",
-    "stream-to-blob": "^2.0.0"
+    "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^18.0.3",
+    "aegir": "^20.5.0",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "ipfs": "0.36.0",
-    "ipfsd-ctl": "~0.42.2"
+    "get-stream": "^3.0.0",
+    "ipfs": "github:ipfs/js-ipfs#refactor/async-await-roundup",
+    "ipfsd-ctl": "^1.0.2",
+    "it-all": "^1.0.1"
   },
   "contributors": [
     "Alex Potsides <alex@achingbrain.net>",

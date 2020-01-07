@@ -7,14 +7,21 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const loadFixture = require('aegir/fixtures')
-const ipfs = require('ipfs')
-const DaemonFactory = require('ipfsd-ctl')
+const Ctl = require('ipfsd-ctl')
 const CID = require('cids')
 const mh = require('multihashes')
+const all = require('it-all')
 
 const ipfsResolver = require('../src/resolver')
 
-const df = DaemonFactory.create({ type: 'proc', exec: ipfs })
+const factory = Ctl.createFactory({
+  test: true,
+  type: 'proc',
+  ipfsModule: {
+    ref: require('ipfs'),
+    path: require.resolve('ipfs')
+  }
+})
 
 describe('resolve file (CIDv0)', function () {
   let ipfs = null
@@ -25,23 +32,17 @@ describe('resolve file (CIDv0)', function () {
     data: loadFixture('test/fixtures/testfile.txt')
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      ipfs.add(file.data, { cidVersion: 0 }, (err, filesAdded) => {
-        expect(err).to.not.exist()
-        expect(filesAdded).to.have.length(1)
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
 
-        const retrievedFile = filesAdded[0]
-        expect(new CID(retrievedFile.hash)).to.deep.equal(new CID(file.cid))
+    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 0 }))
+    expect(filesAdded).to.have.length(1)
 
-        done()
-      })
-    })
+    const retrievedFile = filesAdded[0]
+    expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
   })
 
   it('should resolve a multihash', async () => {
@@ -74,23 +75,18 @@ describe('resolve file (CIDv1)', function () {
     data: loadFixture('test/fixtures/testfile.txt')
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      ipfs.add(file.data, { cidVersion: 1 }, (err, filesAdded) => {
-        expect(err).to.not.exist()
-        expect(filesAdded).to.have.length(1)
-        // console.log('ipfs.files.add result', filesAdded)
-        const retrievedFile = filesAdded[0]
-        expect(new CID(retrievedFile.hash)).to.deep.equal(new CID(file.cid))
-        // expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').greaterThan(file.data.length)
-        done()
-      })
-    })
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
+
+    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 1 }))
+    expect(filesAdded).to.have.length(1)
+    // console.log('ipfs.files.add result', filesAdded)
+    const retrievedFile = filesAdded[0]
+    expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
+    // expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').greaterThan(file.data.length)
   })
 
   it('should resolve a multihash', async () => {
@@ -126,32 +122,27 @@ describe('resolve directory (CIDv0)', function () {
     }
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      const content = (name) => ({
-        path: `test-folder/${name}`,
-        content: directory.files[name]
-      })
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
 
-      const dirs = [
-        content('pp.txt'),
-        content('holmes.txt')
-      ]
-
-      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
-        expect(err).to.not.exist()
-        const root = res[res.length - 1]
-
-        expect(root.path).to.equal('test-folder')
-        expect(new CID(root.hash)).to.deep.equal(new CID(directory.cid))
-        done()
-      })
+    const content = (name) => ({
+      path: `test-folder/${name}`,
+      content: directory.files[name]
     })
+
+    const dirs = [
+      content('pp.txt'),
+      content('holmes.txt')
+    ]
+
+    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const root = res[res.length - 1]
+
+    expect(root.path).to.equal('test-folder')
+    expect(root.cid).to.deep.equal(new CID(directory.cid))
   })
 
   it('should throw an error when trying to fetch a directory', async () => {
@@ -184,34 +175,29 @@ describe('resolve directory (CIDv1)', function () {
     }
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      const content = (name) => ({
-        path: `test-folder/${name}`,
-        content: directory.files[name]
-      })
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
 
-      const dirs = [
-        content('pp.txt'),
-        content('holmes.txt')
-      ]
-
-      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
-        expect(err).to.not.exist()
-        const root = res[res.length - 1]
-        // console.log('ipfs.files.add result', res)
-        expect(root.path).to.equal('test-folder')
-        // expect(res[0].size, 'ipfs.files.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
-        // expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
-        expect(new CID(root.hash)).to.deep.equal(new CID(directory.cid))
-        done()
-      })
+    const content = (name) => ({
+      path: `test-folder/${name}`,
+      content: directory.files[name]
     })
+
+    const dirs = [
+      content('pp.txt'),
+      content('holmes.txt')
+    ]
+
+    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    const root = res[res.length - 1]
+    // console.log('ipfs.files.add result', res)
+    expect(root.path).to.equal('test-folder')
+    // expect(res[0].size, 'ipfs.files.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
+    // expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
+    expect(root.cid).to.deep.equal(new CID(directory.cid))
   })
 
   it('should throw an error when trying to fetch a directory', async () => {
@@ -246,33 +232,28 @@ describe('resolve web page (CIDv0)', function () {
     }
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      const content = (name) => ({
-        path: `test-site/${name}`,
-        content: webpage.files[name]
-      })
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
 
-      const dirs = [
-        content('pp.txt'),
-        content('holmes.txt'),
-        content('index.html')
-      ]
-
-      ipfs.add(dirs, { cidVersion: 0 }, (err, res) => {
-        expect(err).to.not.exist()
-        const root = res[res.length - 1]
-
-        expect(root.path).to.equal('test-site')
-        expect(new CID(root.hash)).to.deep.equal(new CID(webpage.cid))
-        done()
-      })
+    const content = (name) => ({
+      path: `test-site/${name}`,
+      content: webpage.files[name]
     })
+
+    const dirs = [
+      content('pp.txt'),
+      content('holmes.txt'),
+      content('index.html')
+    ]
+
+    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const root = res[res.length - 1]
+
+    expect(root.path).to.equal('test-site')
+    expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
 
   it('should throw an error when trying to fetch a directory containing a web page', async () => {
@@ -308,33 +289,28 @@ describe('resolve web page (CIDv1)', function () {
     }
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
-    df.spawn({ initOptions: { bits: 512 } }, (err, _ipfsd) => {
-      expect(err).to.not.exist()
-      ipfsd = _ipfsd
-      ipfs = ipfsd.api
 
-      const content = (name) => ({
-        path: `test-site/${name}`,
-        content: webpage.files[name]
-      })
+    ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
 
-      const dirs = [
-        content('pp.txt'),
-        content('holmes.txt'),
-        content('index.html')
-      ]
-
-      ipfs.add(dirs, { cidVersion: 1 }, (err, res) => {
-        expect(err).to.not.exist()
-        // console.log(res)
-        const root = res[res.length - 1]
-        expect(root.path).to.equal('test-site')
-        expect(new CID(root.hash)).to.deep.equal(new CID(webpage.cid))
-        done()
-      })
+    const content = (name) => ({
+      path: `test-site/${name}`,
+      content: webpage.files[name]
     })
+
+    const dirs = [
+      content('pp.txt'),
+      content('holmes.txt'),
+      content('index.html')
+    ]
+
+    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    // console.log(res)
+    const root = res[res.length - 1]
+    expect(root.path).to.equal('test-site')
+    expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
 
   it('should throw an error when trying to fetch a directory containing a web page', async () => {
