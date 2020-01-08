@@ -7,11 +7,8 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const list = await ipfs.bootstrap.list()
-      list.Peers.forEach((node) => argv.print(node))
-    })())
+  async handler ({ ipfs, print }) {
+    const list = await ipfs.api.bootstrap.list()
+    list.Peers.forEach((node) => print(node))
   }
 }

@@ -23,16 +23,13 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, root, name, ref, cidBase, cidVersion, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      const nodeA = await ipfs.object.get(ref, { enc: 'base58' })
-      const result = await dagPB.util.cid(dagPB.util.serialize(nodeA), {
-        cidVersion
-      })
-      const link = new DAGLink(name, nodeA.size, result)
-      const cid = await ipfs.object.patch.addLink(root, link, { enc: 'base58' })
-      print(cidToString(cid, { base: cidBase, upgrade: false }))
-    })())
+  async handler ({ ipfs, print, root, name, ref, cidBase, cidVersion }) {
+    const nodeA = await ipfs.api.object.get(ref, { enc: 'base58' })
+    const result = await dagPB.util.cid(dagPB.util.serialize(nodeA), {
+      cidVersion
+    })
+    const link = new DAGLink(name, nodeA.size, result)
+    const cid = await ipfs.api.object.patch.addLink(root, link, { enc: 'base58' })
+    print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }

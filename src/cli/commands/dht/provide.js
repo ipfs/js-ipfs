@@ -9,14 +9,12 @@ module.exports = {
     recursive: {
       alias: 'r',
       recursive: 'Recursively provide entire graph.',
-      default: false
+      default: false,
+      type: 'boolean'
     }
   },
 
-  handler ({ getIpfs, key, recursive, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      await ipfs.dht.provide(key, { recursive })
-    })())
+  async handler ({ ipfs, key, recursive }) {
+    await ipfs.dht.provide(key, { recursive })
   }
 }

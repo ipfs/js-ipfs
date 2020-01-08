@@ -16,14 +16,11 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, root, link, cidBase, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      const cid = await ipfs.object.patch.rmLink(root, { name: link }, {
-        enc: 'base58'
-      })
+  async handler ({ ipfs, print, root, link, cidBase }) {
+    const cid = await ipfs.api.object.patch.rmLink(root, { name: link }, {
+      enc: 'base58'
+    })
 
-      print(cidToString(cid, { base: cidBase, upgrade: false }))
-    })())
+    print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }

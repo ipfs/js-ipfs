@@ -115,12 +115,12 @@ describe('name-pubsub', () => {
 
     it('should get error getting the available subscriptions', async function () {
       const err = await ipfsA.fail('name pubsub subs')
-      expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
+      expect(err.stderr).to.have.string('IPNS pubsub subsystem is not enabled')
     })
 
     it('should get error canceling a subscription', async function () {
       const err = await ipfsA.fail('name pubsub cancel /ipns/QmSWxaPcGgf4TDnFEBDWz2JnbHywF14phmY9hNcAeBEK5v')
-      expect(err.stdout).to.have.string('IPNS pubsub subsystem is not enabled')
+      expect(err.stderr).to.have.string('IPNS pubsub subsystem is not enabled')
     })
   })
 })

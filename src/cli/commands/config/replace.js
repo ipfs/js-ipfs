@@ -11,18 +11,12 @@ module.exports = {
 
   builder: {},
 
-  handler (argv) {
-    argv.resolve((async () => {
-      if (argv._handled) return
-      argv._handled = true
+  handler ({ ipfs, file }) {
+    const filePath = path.resolve(process.cwd(), file)
 
-      const filePath = path.resolve(process.cwd(), argv.file)
+    const config = utils.isDaemonOn()
+      ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-      const config = utils.isDaemonOn()
-        ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-      const ipfs = await argv.getIpfs()
-      return ipfs.config.replace(config)
-    })())
+    return ipfs.api.config.replace(config)
   }
 }

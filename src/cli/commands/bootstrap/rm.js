@@ -17,11 +17,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const list = await ipfs.bootstrap.rm(argv.peer, { all: argv.all })
-      list.Peers.forEach((peer) => argv.print(peer))
-    })())
+  async handler ({ ipfs, print, all, peer }) {
+    const list = await ipfs.api.bootstrap.rm(peer, { all })
+    list.Peers.forEach((peer) => print(peer))
   }
 }

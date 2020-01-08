@@ -35,22 +35,19 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, key, keys, recursive, format, edges, unique, maxDepth, resolve }) {
-    resolve((async () => {
-      if (maxDepth === 0) {
-        return
-      }
+  async handler ({ ipfs, print, key, keys, recursive, format, edges, unique, maxDepth }) {
+    if (maxDepth === 0) {
+      return
+    }
 
-      const ipfs = await getIpfs()
-      const k = [key].concat(keys)
+    const k = [key].concat(keys)
 
-      for await (const ref of ipfs.refs(k, { recursive, format, edges, unique, maxDepth })) {
-        if (ref.err) {
-          print(ref.err, true, true)
-        } else {
-          print(ref.ref)
-        }
+    for await (const ref of ipfs.api.refs(k, { recursive, format, edges, unique, maxDepth })) {
+      if (ref.err) {
+        print(ref.err, true, true)
+      } else {
+        print(ref.ref)
       }
-    })())
+    }
   }
 }

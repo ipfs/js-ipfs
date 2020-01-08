@@ -18,13 +18,9 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, ipfsPath, offset, length, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-
-      for await (const buf of ipfs.cat(ipfsPath, { offset, length })) {
-        process.stdout.write(buf)
-      }
-    })())
+  async handler ({ ipfs, ipfsPath, offset, length, print }) {
+    for await (const buf of ipfs.cat(ipfsPath, { offset, length })) {
+      process.stdout.write(buf)
+    }
   }
 }

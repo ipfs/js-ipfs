@@ -1,7 +1,7 @@
 'use strict'
 
 const fs = require('fs')
-const bl = require('bl')
+const concat = require('it-concat')
 const multibase = require('multibase')
 const { cidToString } = require('../../../../utils/cid')
 
@@ -18,27 +18,19 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      let data
+  async handler (argv) {
+    let data
 
-      if (argv.data) {
-        data = fs.readFileSync(argv.data)
-      } else {
-        data = await new Promise((resolve, reject) => {
-          argv.getStdin().pipe(bl((err, input) => {
-            if (err) return reject(err)
-            resolve(input)
-          }))
-        })
-      }
+    if (argv.data) {
+      data = fs.readFileSync(argv.data)
+    } else {
+      data = await concat(process.stdin)
+    }
 
-      const ipfs = await argv.getIpfs()
-      const cid = await ipfs.object.patch.setData(argv.root, data, {
-        enc: 'base58'
-      })
+    const cid = await argv.ipfs.api.object.patch.setData(argv.root, data, {
+      enc: 'base58'
+    })
 
-      argv.print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
-    })())
+    argv.print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
   }
 }

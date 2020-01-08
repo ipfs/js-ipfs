@@ -8,8 +8,8 @@ const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const ipfsExec = require('../utils/ipfs-exec')
 const PeerId = require('peer-id')
-const addrsCommand = require('../../src/cli/commands/swarm/addrs')
 const factory = require('../utils/factory')
+const cli = require('../../src/cli/parser')
 
 // TODO: libp2p integration
 describe.skip('swarm', () => {
@@ -75,13 +75,6 @@ describe.skip('swarm', () => {
 
   describe('handlers', () => {
     let peerInfo
-    const ipfs = {
-      swarm: { addrs: () => {} }
-    }
-    const argv = {
-      resolve: () => {},
-      getIpfs: () => ipfs
-    }
 
     describe('addrs', () => {
       before(async () => {
@@ -90,27 +83,27 @@ describe.skip('swarm', () => {
       })
 
       it('should return addresses for all peers', (done) => {
-        sinon.stub(argv, 'resolve').callsFake(promise => {
-          promise.then(({ data }) => {
-            expect(data).to.eql([
-              `${peerInfo.id.toB58String()} (2)`,
-              '\t/ip4/127.0.0.1/tcp/4001',
-              '\t/ip4/127.0.0.1/tcp/4001/ws'
-            ].join('\n'))
-            done()
-          })
-        })
-
         sinon.stub(peerInfo.multiaddrs, '_multiaddrs').value([
           multiaddr('/ip4/127.0.0.1/tcp/4001'),
           multiaddr(`/ip4/127.0.0.1/tcp/4001/ws/ipfs/${peerInfo.id.toB58String()}`)
         ])
+        const methodFake = sinon.fake.resolves([peerInfo])
+        const printFake = sinon.fake()
+        cli
+          .onFinishCommand(() => {
+            sinon.assert.calledWith(printFake, [
+              `${peerInfo.id.toB58String()} (2)\n` +
+                '\t/ip4/127.0.0.1/tcp/4001\n' +
+                '\t/ip4/127.0.0.1/tcp/4001/ws'
+            ].join('\n'))
 
-        sinon.stub(ipfs.swarm, 'addrs').returns(
-          Promise.resolve([peerInfo])
-        )
-
-        addrsCommand.handler(argv)
+            sinon.assert.called(methodFake)
+            done()
+          })
+          .parse('swarm addrs', {
+            print: printFake,
+            ipfs: { api: { swarm: { addrs: methodFake } } }
+          })
       })
     })
   })

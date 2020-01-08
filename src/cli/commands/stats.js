@@ -7,8 +7,5 @@ module.exports = {
 
   builder (yargs) {
     return yargs.commandDir('stats')
-  },
-
-  handler (argv) {
   }
 }

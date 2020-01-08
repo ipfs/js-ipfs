@@ -102,6 +102,6 @@ describe('block', () => runOnAndOff((thing) => {
 
     const out = await ipfs.fail('block rm QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
     expect(out.stdout).to.include('block not found')
-    expect(out.stdout).to.include('some blocks not removed')
+    expect(out.stderr).to.include('some blocks not removed')
   })
 }))

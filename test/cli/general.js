@@ -16,15 +16,13 @@ const { isWindows } = require('../utils/platforms')
 
 describe('general cli options', () => runOnAndOff.off((thing) => {
   it('should handle --silent flag', async () => {
-    const out = await thing.ipfs('help --silent')
+    const out = await thing.ipfs('version --silent')
     expect(out).to.be.empty()
   })
 
   it('should handle unknown arguments correctly', async () => {
-    const out = await thing.ipfs('random --again')
-    expect(out).to.include('Unknown arguments: again, random')
-    expect(out).to.include('random')
-    expect(out).to.include('again')
+    const out = await thing.ipfs.fail('random --again')
+    expect(out.all).to.include('Unknown arguments: again, random')
   })
 }))
 
@@ -54,7 +52,7 @@ describe('--migrate', () => {
     // the same in repo.version.check.
     await setRepoVersion(5)
     const err = await ipfs.fail('daemon')
-    expect(err.stdout).to.include('Pass --migrate for automatic migration')
+    expect(err.stderr).to.include('Pass --migrate for automatic migration')
     const version = await getRepoVersion()
     expect(version).to.equal(5) // Should not have migrated
   })
@@ -65,7 +63,7 @@ describe('--migrate', () => {
     // the same in repo.version.check.
     await setRepoVersion(5)
     const err = await ipfs.fail('files ls')
-    expect(err.stdout).to.include('Pass --migrate for automatic migration')
+    expect(err.stderr).to.include('Pass --migrate for automatic migration')
     const version = await getRepoVersion()
     expect(version).to.equal(5) // Should not have migrated
   })

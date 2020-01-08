@@ -31,20 +31,8 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      // yargs-promise adds resolve/reject properties to argv
-      // resolve should use the alias as resolve will always be overwritten to a function
-      const opts = {
-        resolve: argv.r,
-        lifetime: argv.lifetime,
-        key: argv.key,
-        ttl: argv.ttl
-      }
-
-      const ipfs = await argv.getIpfs()
-      const result = await ipfs.name.publish(argv.ipfsPath, opts)
-      argv.print(`Published to ${result.name}: ${result.value}`)
-    })())
+  async handler (argv) {
+    const result = await argv.ipfs.api.name.publish(argv.ipfsPath, argv)
+    argv.print(`Published to ${result.name}: ${result.value}`)
   }
 }

@@ -4,6 +4,7 @@ const mh = require('multihashes')
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
+const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 
@@ -79,54 +80,46 @@ module.exports = {
     }
   },
 
-  handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, getIpfs, print, resolve, getStdin }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
+  async handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, ipfs, print }) {
+    if (inputEncoding === 'cbor') {
+      format = 'dag-cbor'
+    } else if (inputEncoding === 'protobuf') {
+      format = 'dag-pb'
+    }
 
-      if (inputEncoding === 'cbor') {
-        format = 'dag-cbor'
-      } else if (inputEncoding === 'protobuf') {
-        format = 'dag-pb'
-      }
+    format = formats[format]
 
-      format = formats[format]
+    if (format !== 'dag-pb') {
+      cidVersion = 1
+    }
 
-      if (format !== 'dag-pb') {
-        cidVersion = 1
-      }
+    let source = data
 
-      let source = data
+    if (!source) {
+      // pipe from stdin
+      source = await concat(process.stdin)
+    } else {
+      source = Buffer.from(source)
+    }
 
-      if (!source) {
-        // pipe from stdin
-        source = Buffer.alloc(0)
+    source = inputDecoders[inputEncoding](source)
 
-        for await (const buf of getStdin()) {
-          source = Buffer.concat([source, buf])
-        }
-      } else {
-        source = Buffer.from(source)
-      }
+    // Support legacy { "/" : "<CID>" } format so dag put is actually useful
+    // on the command line: https://github.com/ipld/js-ipld-dag-cbor/issues/84
+    if (inputEncoding === 'json' && format === 'dag-cbor') {
+      source = objectSlashToCID(source)
+    }
 
-      source = inputDecoders[inputEncoding](source)
+    const cid = await ipfs.api.dag.put(source, {
+      format,
+      hashAlg,
+      version: cidVersion,
+      onlyHash,
+      preload,
+      pin
+    })
 
-      // Support legacy { "/" : "<CID>" } format so dag put is actually useful
-      // on the command line: https://github.com/ipld/js-ipld-dag-cbor/issues/84
-      if (inputEncoding === 'json' && format === 'dag-cbor') {
-        source = objectSlashToCID(source)
-      }
-
-      const cid = await ipfs.dag.put(source, {
-        format,
-        hashAlg,
-        version: cidVersion,
-        onlyHash,
-        preload,
-        pin
-      })
-
-      print(cidToString(cid, { base: cidBase }))
-    })())
+    print(cidToString(cid, { base: cidBase }))
   }
 }
 

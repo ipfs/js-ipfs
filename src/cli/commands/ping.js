@@ -13,20 +13,16 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-
-      for await (const pong of ipfs.ping(argv.peerId, { count: argv.count })) {
-        const { success, time, text } = pong
-        // Check if it's a pong
-        if (success && !text) {
-          argv.print(`Pong received: time=${time} ms`)
+  async handler ({ ipfs, print, count, peerId }) {
+    for await (const pong of ipfs.api.ping(peerId, { count })) {
+      const { success, time, text } = pong
+      // Check if it's a pong
+      if (success && !text) {
+        print(`Pong received: time=${time} ms`)
         // Status response
-        } else {
-          argv.print(text)
-        }
+      } else {
+        print(text)
       }
-    })())
+    }
   }
 }

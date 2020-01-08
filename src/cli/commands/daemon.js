@@ -45,77 +45,72 @@ module.exports = {
       })
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const { print } = argv
+  async handler (argv) {
+    const { print, repoPath } = argv
+    print('Initializing IPFS daemon...')
+    print(`js-ipfs version: ${require('../../../package.json').version}`)
+    print(`System version: ${os.arch()}/${os.platform()}`)
+    print(`Node.js version: ${process.versions.node}`)
 
-      print('Initializing IPFS daemon...')
-      print(`js-ipfs version: ${require('../../../package.json').version}`)
-      print(`System version: ${os.arch()}/${os.platform()}`)
-      print(`Node.js version: ${process.versions.node}`)
-
-      const repoPath = argv.getRepoPath()
-
-      let config = {}
-      // read and parse config file
-      if (argv.initConfig) {
-        try {
-          const raw = fs.readFileSync(argv.initConfig)
-          config = JSON.parse(raw)
-        } catch (error) {
-          debug(error)
-          throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
-        }
-      }
-
-      // Required inline to reduce startup time
-      const Daemon = require('../../cli/daemon')
-      const daemon = new Daemon({
-        config,
-        silent: argv.silent,
-        repo: process.env.IPFS_PATH,
-        repoAutoMigrate: argv.migrate,
-        offline: argv.offline,
-        pass: argv.pass,
-        preload: { enabled: argv.enablePreload },
-        EXPERIMENTAL: {
-          ipnsPubsub: argv.enableNamesysPubsub,
-          dht: argv.enableDhtExperiment,
-          sharding: argv.enableShardingExperiment
-        },
-        init: argv.initProfile ? { profiles: argv.initProfile } : true
-      })
-
+    let config = {}
+    // read and parse config file
+    if (argv.initConfig) {
       try {
-        await daemon.start()
-        daemon._httpApi._apiServers.forEach(apiServer => {
-          print(`API listening on ${apiServer.info.ma}`)
-        })
-        daemon._httpApi._gatewayServers.forEach(gatewayServer => {
-          print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
-        })
-        daemon._httpApi._apiServers.forEach(apiServer => {
-          print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
-        })
-      } catch (err) {
-        if (err.code === 'ERR_REPO_NOT_INITIALIZED' || err.message.match(/uninitialized/i)) {
-          err.message = 'no initialized ipfs repo found in ' + repoPath + '\nplease run: jsipfs init'
-        }
-        throw err
+        const raw = fs.readFileSync(argv.initConfig)
+        config = JSON.parse(raw)
+      } catch (error) {
+        debug(error)
+        throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
       }
+    }
 
-      print('Daemon is ready')
+    // Required inline to reduce startup time
+    const Daemon = require('../../cli/daemon')
+    const daemon = new Daemon({
+      config,
+      silent: argv.silent,
+      repo: process.env.IPFS_PATH,
+      repoAutoMigrate: argv.migrate,
+      offline: argv.offline,
+      pass: argv.pass,
+      preload: { enabled: argv.enablePreload },
+      EXPERIMENTAL: {
+        ipnsPubsub: argv.enableNamesysPubsub,
+        dht: argv.enableDhtExperiment,
+        sharding: argv.enableShardingExperiment
+      },
+      init: argv.initProfile ? { profiles: argv.initProfile } : true
+    })
 
-      const cleanup = async () => {
-        print('Received interrupt signal, shutting down...')
-        await daemon.stop()
-        process.exit(0)
+    try {
+      await daemon.start()
+      daemon._httpApi._apiServers.forEach(apiServer => {
+        print(`API listening on ${apiServer.info.ma}`)
+      })
+      daemon._httpApi._gatewayServers.forEach(gatewayServer => {
+        print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
+      })
+      daemon._httpApi._apiServers.forEach(apiServer => {
+        print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
+      })
+    } catch (err) {
+      if (err.code === 'ERR_REPO_NOT_INITIALIZED' || err.message.match(/uninitialized/i)) {
+        err.message = 'no initialized ipfs repo found in ' + repoPath + '\nplease run: jsipfs init'
       }
+      throw err
+    }
 
-      // listen for graceful termination
-      process.on('SIGTERM', cleanup)
-      process.on('SIGINT', cleanup)
-      process.on('SIGHUP', cleanup)
-    })())
+    print('Daemon is ready')
+
+    const cleanup = async () => {
+      print('Received interrupt signal, shutting down...')
+      await daemon.stop()
+      process.exit(0)
+    }
+
+    // listen for graceful termination
+    process.on('SIGTERM', cleanup)
+    process.on('SIGINT', cleanup)
+    process.on('SIGHUP', cleanup)
   }
 }

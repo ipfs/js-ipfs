@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 'use strict'
 
 const { promisify } = require('util')
@@ -169,118 +170,115 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const options = {
-        trickle: argv.trickle,
-        shardSplitThreshold: argv.enableShardingExperiment
-          ? argv.shardSplitThreshold
-          : Infinity,
-        cidVersion: argv.cidVersion,
-        rawLeaves: argv.rawLeaves,
-        onlyHash: argv.onlyHash,
-        hashAlg: argv.hash,
-        wrapWithDirectory: argv.wrapWithDirectory,
-        pin: argv.pin,
-        chunker: argv.chunker,
-        preload: argv.preload,
-        nonatomic: argv.nonatomic,
-        fileImportConcurrency: argv.fileImportConcurrency,
-        blockWriteConcurrency: argv.blockWriteConcurrency
+  async handler (argv) {
+    const ipfs = argv.ipfs
+    const options = {
+      trickle: argv.trickle,
+      shardSplitThreshold: argv.enableShardingExperiment
+        ? argv.shardSplitThreshold
+        : Infinity,
+      cidVersion: argv.cidVersion,
+      rawLeaves: argv.rawLeaves,
+      onlyHash: argv.onlyHash,
+      hashAlg: argv.hash,
+      wrapWithDirectory: argv.wrapWithDirectory,
+      pin: argv.pin,
+      chunker: argv.chunker,
+      preload: argv.preload,
+      nonatomic: argv.nonatomic,
+      fileImportConcurrency: argv.fileImportConcurrency,
+      blockWriteConcurrency: argv.blockWriteConcurrency
+    }
+
+    if (options.enableShardingExperiment && argv.api.daemon) {
+      throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
+    }
+
+    let bar
+    let log = argv.print
+
+    if (argv.quieter || argv.quiet || argv.silent) {
+      argv.progress = false
+    }
+
+    if (argv.progress && argv.file) {
+      const totalBytes = await getTotalBytes(argv.file)
+      bar = createProgressBar(totalBytes)
+
+      if (process.stdout.isTTY) {
+        // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs
+        log = bar.interrupt.bind(bar)
+      }
+      options.progress = byteLength => {
+        bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
+      }
+    }
+
+    let mtime
+
+    if (argv.mtime != null) {
+      mtime = {
+        secs: argv.mtime
       }
 
-      if (options.enableShardingExperiment && argv.isDaemonOn()) {
-        throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
+      if (argv.mtimeNsecs != null) {
+        mtime.nsecs = argv.mtimeNsecs
       }
+    }
 
-      let bar
-      let log = argv.print
+    const source = argv.file
+      ? globSource(argv.file, {
+        recursive: argv.recursive,
+        hidden: argv.hidden,
+        preserveMode: argv.preserveMode,
+        preserveMtime: argv.preserveMtime,
+        mode: argv.mode,
+        mtime
+      })
+      : argv.getStdin() // Pipe directly to ipfs.add
 
-      if (argv.quieter || argv.quiet || argv.silent) {
-        argv.progress = false
+    let finalCid
+
+    try {
+      for await (const file of ipfs.add(source, options)) {
+        if (argv.silent) {
+          continue
+        }
+
+        if (argv.quieter) {
+          finalCid = file.cid
+          continue
+        }
+
+        const cid = cidToString(file.cid, { base: argv.cidBase })
+        let message = cid
+
+        if (!argv.quiet) {
+          // print the hash twice if we are piping from stdin
+          message = `added ${cid} ${argv.file ? file.path || '' : cid}`.trim()
+        }
+
+        log(message)
       }
-
-      if (argv.progress && argv.file) {
-        const totalBytes = await getTotalBytes(argv.file)
-        bar = createProgressBar(totalBytes)
-
-        if (process.stdout.isTTY) {
-          // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs
-          log = bar.interrupt.bind(bar)
-        }
-
-        options.progress = byteLength => {
-          bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
-        }
-      }
-
-      let mtime
-
-      if (argv.mtime != null) {
-        mtime = {
-          secs: argv.mtime
-        }
-
-        if (argv.mtimeNsecs != null) {
-          mtime.nsecs = argv.mtimeNsecs
-        }
-      }
-
-      const source = argv.file
-        ? globSource(argv.file, {
-          recursive: argv.recursive,
-          hidden: argv.hidden,
-          preserveMode: argv.preserveMode,
-          preserveMtime: argv.preserveMtime,
-          mode: argv.mode,
-          mtime
-        })
-        : argv.getStdin() // Pipe directly to ipfs.add
-
-      let finalCid
-
-      try {
-        for await (const file of ipfs.add(source, options)) {
-          if (argv.silent) {
-            continue
-          }
-
-          if (argv.quieter) {
-            finalCid = file.cid
-            continue
-          }
-
-          const cid = cidToString(file.cid, { base: argv.cidBase })
-          let message = cid
-
-          if (!argv.quiet) {
-            // print the hash twice if we are piping from stdin
-            message = `added ${cid} ${argv.file ? file.path || '' : cid}`.trim()
-          }
-
-          log(message)
-        }
-      } catch (err) {
-        if (bar) {
-          bar.terminate()
-        }
-
-        // Tweak the error message and add more relevant info for the CLI
-        if (err.code === 'ERR_DIR_NON_RECURSIVE') {
-          err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
-        }
-
-        throw err
-      }
-
+    } catch (err) {
       if (bar) {
         bar.terminate()
       }
 
-      if (argv.quieter) {
-        log(cidToString(finalCid, { base: argv.cidBase }))
+      // Tweak the error message and add more relevant infor for the CLI
+      if (err.code === 'ERR_DIR_NON_RECURSIVE') {
+        err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
       }
-    })())
+
+      throw err
+    }
+
+    if (bar) {
+      bar.terminate()
+    }
+
+    if (argv.quieter) {
+      log(cidToString(finalCid, { base: argv.cidBase }))
+    }
   }
 }

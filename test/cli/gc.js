@@ -2,65 +2,68 @@
 'use strict'
 
 const sinon = require('sinon')
-const YargsPromise = require('yargs-promise')
 const CID = require('cids')
-const cliUtils = require('../../src/cli/utils')
-const cli = new YargsPromise(require('../../src/cli/parser'))
+const cli = require('../../src/cli/parser')
 
 describe('gc', () => {
-  const setupMocks = (cids, errMsg) => {
-    let gcRes = cids.map(h => ({ cid: new CID(h) }))
-    if (errMsg) {
-      gcRes = gcRes.concat([{ err: new Error(errMsg) }])
-    }
-
-    const gcFake = sinon.fake.returns(gcRes)
-    sinon
-      .stub(cliUtils, 'getIPFS')
-      .returns(Promise.resolve({ repo: { gc: gcFake } }))
-
-    return sinon.stub(cliUtils, 'print')
-  }
-
-  afterEach(() => {
-    sinon.restore()
+  it('gc with no flags prints errors and outputs hashes', (done) => {
+    const methodFake = sinon.fake.resolves([
+      { cid: new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u') },
+      { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
+      { err: new Error('some err') }
+    ])
+    const printFake = sinon.fake()
+    cli
+      .onFinishCommand(() => {
+        sinon.assert.calledWith(printFake.getCall(0), 'removed Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+        sinon.assert.calledWith(printFake.getCall(1), 'removed QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu')
+        sinon.assert.calledWith(printFake.getCall(2), 'some err')
+        sinon.assert.called(methodFake)
+        done()
+      })
+      .parse('repo gc', {
+        print: printFake,
+        ipfs: { api: { repo: { gc: methodFake } } }
+      })
   })
 
-  it('gc with no flags prints errors and outputs hashes', async () => {
-    const cids = [
-      'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u',
-      'QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu'
-    ]
-    const errMsg = 'some err'
-    const printSpy = setupMocks(cids, errMsg)
-
-    await cli.parse('repo gc')
-
-    const exp = cids.map(c => 'removed ' + c).concat(errMsg)
-    for (let i = 0; i < exp.length; i++) {
-      sinon.assert.calledWith(printSpy.getCall(i), exp[i])
-    }
+  it('gc with --quiet prints hashes only', (done) => {
+    const methodFake = sinon.fake.resolves([
+      { cid: new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u') },
+      { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
+      { err: new Error('some err') }
+    ])
+    const printFake = sinon.fake()
+    cli
+      .onFinishCommand(() => {
+        sinon.assert.calledWith(printFake.getCall(0), 'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+        sinon.assert.calledWith(printFake.getCall(1), 'QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu')
+        sinon.assert.calledWith(printFake.getCall(2), 'some err')
+        sinon.assert.called(methodFake)
+        done()
+      })
+      .parse('repo gc --quiet', {
+        print: printFake,
+        ipfs: { api: { repo: { gc: methodFake } } }
+      })
   })
 
-  it('gc with --quiet prints hashes only', async () => {
-    const cids = [
-      'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u',
-      'QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu'
-    ]
-    const printSpy = setupMocks(cids)
-
-    await cli.parse('repo gc --quiet')
-
-    const exp = cids.map(c => c.toString())
-    for (let i = 0; i < exp.length; i++) {
-      sinon.assert.calledWith(printSpy.getCall(i), exp[i])
-    }
-  })
-
-  it('gc with --stream-errors=false does not print errors', async () => {
-    const printSpy = setupMocks([], 'some err')
-
-    await cli.parse('repo gc --stream-errors=false')
-    sinon.assert.notCalled(printSpy)
+  it('gc with --stream-errors=false does not print errors', (done) => {
+    const methodFake = sinon.fake.resolves([
+      { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
+      { err: new Error('some err') }
+    ])
+    const printFake = sinon.fake()
+    cli
+      .onFinishCommand(() => {
+        sinon.assert.calledOnce(printFake)
+        sinon.assert.calledWith(printFake, 'removed QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu')
+        sinon.assert.called(methodFake)
+        done()
+      })
+      .parse('repo gc --stream-errors=false', {
+        print: printFake,
+        ipfs: { api: { repo: { gc: methodFake } } }
+      })
   })
 })

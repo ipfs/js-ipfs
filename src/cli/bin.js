@@ -23,36 +23,79 @@ if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
   process.exit(1)
 }
 
-const YargsPromise = require('yargs-promise')
+const fs = require('fs')
 const updateNotifier = require('update-notifier')
 const debug = require('debug')('ipfs:cli')
 const { errors: { InvalidRepoVersionError } } = require('ipfs-repo')
 const parser = require('./parser')
+
 const commandAlias = require('./command-alias')
-const { print } = require('./utils')
+const { print, getAPI, getRepoPath } = require('./utils')
 
 // Check if an update is available and notify
 const oneWeek = 1000 * 60 * 60 * 24 * 7
 updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
-const cli = new YargsPromise(parser)
-
 // Apply command aliasing (eg `refs local` -> `refs-local`)
 const args = commandAlias(process.argv.slice(2))
-cli
-  .parse(args)
-  .then(({ data, argv }) => {
-    if (data) {
-      print(data)
-    }
-  })
-  .catch(({ error, argv }) => {
-    if (error.code === InvalidRepoVersionError.code) {
-      error.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
+const repoPath = getRepoPath()
+
+let ipfs = null
+parser
+  .middleware(async (argv) => {
+    // Check for repo in all commands that need it
+    if (!['init', 'daemon', 'version'].includes(argv._[0])) {
+      if (!fs.existsSync(repoPath)) {
+        throw new Error(`no IPFS repo found in ${repoPath}.\nplease run: 'ipfs init'`)
+      }
     }
 
-    print(error.message || 'Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
-    debug(error)
+    // Get an API in all commands that need one
+    if (!['daemon', 'init'].includes(argv._[0])) {
+      ipfs = argv.ipfs = await getAPI(argv)
+    }
+
+    // Add repo path and print function to the commands context
+    argv.repoPath = repoPath
+    argv.print = print
+    return argv
+  })
+  .onFinishCommand(async (data) => {
+    // Print to stdout anything returned by the commands
+    if (data) {
+      console.log(data)
+    }
+
+    // Clean the ipfs interface if needed
+    if (ipfs) {
+      await ipfs.cleanup()
+    }
+  })
+  .fail(async (msg, err, yargs) => {
+    // Handle yargs errors
+    if (msg) {
+      yargs.showHelp()
+      console.error('\n')
+      console.error('Error:', msg)
+    }
+
+    // Handle commands handler errors
+    if (err) {
+      if (err.code === InvalidRepoVersionError.code) {
+        err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
+      }
+      if (debug.enabled) {
+        debug(err)
+      } else {
+        console.error(err.message)
+      }
+    }
+
+    // Clean the ipfs interface if needed
+    if (ipfs) {
+      await ipfs.cleanup()
+    }
 
     process.exit(1)
   })
+  .parse(args)

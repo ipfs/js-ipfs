@@ -22,15 +22,12 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const pem = await ipfs.key.export(argv.name, argv.passout)
-      if (argv.output === 'stdout') {
-        process.stdout.write(pem)
-      } else {
-        fs.writeFileSync(argv.output, pem)
-      }
-    })())
+  async handler ({ ipfs, name, passout, output }) {
+    const pem = await ipfs.api.key.export(name, passout)
+    if (output === 'stdout') {
+      process.stdout.write(pem)
+    } else {
+      fs.writeFileSync(output, pem)
+    }
   }
 }

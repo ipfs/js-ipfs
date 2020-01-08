@@ -22,24 +22,21 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      let data
+  async handler (argv) {
+    let data
 
-      if (argv.data) {
-        data = fs.readFileSync(argv.data)
-      } else {
-        data = await new Promise((resolve, reject) => {
-          process.stdin.pipe(bl((err, input) => {
-            if (err) return reject(err)
-            resolve(input)
-          }))
-        })
-      }
+    if (argv.data) {
+      data = fs.readFileSync(argv.data)
+    } else {
+      data = await new Promise((resolve, reject) => {
+        process.stdin.pipe(bl((err, input) => {
+          if (err) return reject(err)
+          resolve(input)
+        }))
+      })
+    }
 
-      const ipfs = await argv.getIpfs()
-      const cid = await ipfs.object.put(data, { enc: argv.inputEnc })
-      argv.print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
-    })())
+    const cid = await argv.ipfs.api.object.put(data, { enc: argv.inputEnc })
+    argv.print(`added ${cidToString(cid, { base: argv.cidBase, upgrade: false })}`)
   }
 }

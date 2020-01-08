@@ -5,13 +5,8 @@ module.exports = {
 
   describe: 'Given a key, query the routing system for its best value.',
 
-  builder: {},
-
-  handler ({ getIpfs, print, key, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      const value = await ipfs.dht.get(key)
-      print(value)
-    })())
+  async handler ({ ipfs, print, key }) {
+    const value = await ipfs.api.dht.get(key)
+    print(value)
   }
 }

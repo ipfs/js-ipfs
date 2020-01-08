@@ -35,19 +35,16 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      let data
+  async handler (argv) {
+    let data
 
-      if (argv.block) {
-        data = await fs.readFileSync(argv.block)
-      } else {
-        data = (await concat(argv.getStdin())).slice()
-      }
+    if (argv.block) {
+      data = fs.readFileSync(argv.block)
+    } else {
+      data = await concat(process.stdin)
+    }
 
-      const ipfs = await argv.getIpfs()
-      const { cid } = await ipfs.block.put(data, argv)
-      argv.print(cidToString(cid, { base: argv.cidBase }))
-    })())
+    const { cid } = await argv.ipfs.api.block.put(data, argv)
+    argv.print(cidToString(cid, { base: argv.cidBase }))
   }
 }

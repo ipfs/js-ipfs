@@ -15,25 +15,20 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const { getIpfs, human } = argv
+  async handler ({ ipfs, human, print }) {
+    const stats = await ipfs.api.repo.stat()
 
-      const ipfs = await getIpfs()
-      const stats = await ipfs.repo.stat()
+    if (human) {
+      stats.numObjects = stats.numObjects.toNumber()
+      stats.repoSize = prettyBytes(stats.repoSize.toNumber()).toUpperCase()
+      stats.storageMax = prettyBytes(stats.storageMax.toNumber()).toUpperCase()
+    }
 
-      if (human) {
-        stats.numObjects = stats.numObjects.toNumber()
-        stats.repoSize = prettyBytes(stats.repoSize.toNumber()).toUpperCase()
-        stats.storageMax = prettyBytes(stats.storageMax.toNumber()).toUpperCase()
-      }
-
-      argv.print(
+    print(
 `NumObjects: ${stats.numObjects}
 RepoSize: ${stats.repoSize}
 StorageMax: ${stats.storageMax}
 RepoPath: ${stats.repoPath}
 Version: ${stats.version}`)
-    })())
   }
 }
