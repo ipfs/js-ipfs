@@ -10,6 +10,10 @@ const expect = chai.expect
 
 describe('format-mtime', function () {
   it('formats mtime', function () {
-    expect((new Date(formatMtime(0))).getTime()).to.equal(0)
+    expect(formatMtime({ secs: 100, nsecs: 0 })).to.include('Jan 1, 1970')
+  })
+
+  it('formats empty mtime', function () {
+    expect(formatMtime()).to.equal('-')
   })
 })
