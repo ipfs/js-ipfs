@@ -12,22 +12,16 @@ const isDirectory = (mediatype) => mediatype === multipartFormdataType || mediat
 const parseDisposition = (disposition) => {
   const details = {}
   details.type = disposition.split(';')[0]
+
   if (details.type === 'file' || details.type === 'form-data') {
-    const namePattern = / filename="(.[^"]+)"/
-    const matches = disposition.match(namePattern)
-    details.name = matches ? matches[1] : ''
+    const filenamePattern = / filename="(.[^"]+)"/
+    const filenameMatches = disposition.match(filenamePattern)
+    details.filename = filenameMatches ? filenameMatches[1] : ''
+
+    const namePattern = / name="(.[^"]+)"/
+    const nameMatches = disposition.match(namePattern)
+    details.name = nameMatches ? nameMatches[1] : ''
   }
-
-  return details
-}
-
-const parseHeader = (header) => {
-  const type = Content.type(header['content-type'])
-  const disposition = parseDisposition(header['content-disposition'])
-
-  const details = type
-  details.name = decodeURIComponent(disposition.name)
-  details.type = disposition.type
 
   return details
 }
@@ -50,49 +44,92 @@ const ignore = async (stream) => {
   }
 }
 
-async function * parser (stream, options) {
-  for await (const part of multipart(stream, options.boundary)) {
-    const partHeader = parseHeader(part.headers)
+async function * parseEntry (stream, options) {
+  for await (const part of stream) {
+    if (!part.headers['content-type']) {
+      throw new Error('No content-type in multipart part')
+    }
 
-    if (isDirectory(partHeader.mime)) {
+    const type = Content.type(part.headers['content-type'])
+
+    if (type.boundary) {
+      // recursively parse nested multiparts
+      yield * parser(part.body, {
+        ...options,
+        boundary: type.boundary
+      })
+
+      continue
+    }
+
+    if (!part.headers['content-disposition']) {
+      throw new Error('No content disposition in multipart part')
+    }
+
+    const entry = {}
+
+    if (part.headers.mtime) {
+      entry.mtime = {
+        secs: parseInt(part.headers.mtime, 10)
+      }
+
+      if (part.headers['mtime-nsecs']) {
+        entry.mtime.nsecs = parseInt(part.headers['mtime-nsecs'], 10)
+      }
+    }
+
+    if (part.headers.mode) {
+      entry.mode = parseInt(part.headers.mode, 8)
+    }
+
+    if (isDirectory(type.mime)) {
+      entry.type = 'directory'
+    } else if (type.mime === applicationSymlink) {
+      entry.type = 'symlink'
+    } else {
+      entry.type = 'file'
+    }
+
+    const disposition = parseDisposition(part.headers['content-disposition'])
+
+    entry.name = decodeURIComponent(disposition.filename)
+    entry.body = part.body
+
+    yield entry
+  }
+}
+
+async function * parser (stream, options) {
+  for await (const entry of parseEntry(multipart(stream, options.boundary), options)) {
+    if (entry.type === 'directory') {
       yield {
         type: 'directory',
-        name: partHeader.name
+        name: entry.name,
+        mtime: entry.mtime,
+        mode: entry.mode
       }
 
-      await ignore(part.body)
-
-      continue
+      await ignore(entry.body)
     }
 
-    if (partHeader.mime === applicationSymlink) {
-      const target = await collect(part.body)
-
+    if (entry.type === 'symlink') {
       yield {
         type: 'symlink',
-        name: partHeader.name,
-        target: target.toString('utf8')
+        name: entry.name,
+        target: (await collect(entry.body)).toString('utf8'),
+        mtime: entry.mtime,
+        mode: entry.mode
       }
-
-      continue
     }
 
-    if (partHeader.boundary) {
-      // recursively parse nested multiparts
-      for await (const entry of parser(part, {
-        ...options,
-        boundary: partHeader.boundary
-      })) {
-        yield entry
+    if (entry.type === 'file') {
+      yield {
+        type: 'file',
+        name: entry.name,
+        content: entry.body,
+        mtime: entry.mtime,
+        mode: entry.mode
       }
-
-      continue
-    }
-
-    yield {
-      type: 'file',
-      name: partHeader.name,
-      content: part.body
     }
   }
 }

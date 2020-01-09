@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "@hapi/content": "^4.1.0",
-    "it-multipart": "~0.0.2"
+    "it-multipart": "^1.0.1"
   },
   "devDependencies": {
     "aegir": "^20.0.0",
     "chai": "^4.2.0",
-    "ipfs-http-client": "^35.1.0",
+    "ipfs-http-client": "^40.2.0",
     "request": "^2.88.0"
   },
   "engines": {
