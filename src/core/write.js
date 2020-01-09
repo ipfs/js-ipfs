@@ -28,7 +28,6 @@ const defaultOptions = {
   reduceSingleLeafToSelf: false,
   cidVersion: 0,
   hashAlg: 'sha2-256',
-  format: 'dag-pb',
   parents: false, // whether to create intermediate directories if they do not exist
   progress: () => {},
   strategy: 'trickle',
@@ -104,7 +103,6 @@ const updateOrImport = async (context, path, source, destination, options) => {
       size: child.size,
       flush: options.flush,
       shardSplitThreshold: options.shardSplitThreshold,
-      format: options.format,
       hashAlg: options.hashAlg,
       cidVersion: options.cidVersion
     })

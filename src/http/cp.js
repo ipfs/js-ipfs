@@ -13,7 +13,6 @@ const mfsCp = {
       arg,
       parents,
       flush,
-      format,
       hashAlg,
       shardSplitThreshold
     } = request.query
@@ -21,7 +20,6 @@ const mfsCp = {
     const args = arg.concat({
       parents,
       flush,
-      format,
       hashAlg,
       shardSplitThreshold
     })
@@ -40,14 +38,9 @@ const mfsCp = {
         arg: Joi.array().items(Joi.string()).min(2),
         parents: Joi.boolean().default(false),
         flush: Joi.boolean().default(true),
-        format: Joi.string().valid([
-          'dag-pb',
-          'dag-cbor'
-        ]).default('dag-pb'),
         hashAlg: Joi.string().default('sha2-256'),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000)
       })
-        .rename('codec', 'format')
     }
   }
 }

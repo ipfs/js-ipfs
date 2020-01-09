@@ -21,7 +21,6 @@ const mfsWrite = {
       reduceSingleLeafToSelf,
       cidVersion,
       hashAlg,
-      format,
       parents,
       progress,
       strategy,
@@ -48,7 +47,6 @@ const mfsWrite = {
           reduceSingleLeafToSelf,
           cidVersion,
           hashAlg,
-          format,
           parents,
           progress,
           strategy,
@@ -84,10 +82,6 @@ const mfsWrite = {
           1
         ]).default(0),
         hashAlg: Joi.string().default('sha2-256'),
-        format: Joi.string().valid([
-          'dag-pb',
-          'dag-cbor'
-        ]).default('dag-pb'),
         parents: Joi.boolean().default(false),
         progress: Joi.func(),
         strategy: Joi.string().valid([

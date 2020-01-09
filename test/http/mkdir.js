@@ -9,7 +9,6 @@ function defaultOptions (modification = {}) {
   const options = {
     parents: false,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000,
@@ -75,21 +74,6 @@ describe('mkdir', () => {
       path,
       defaultOptions({
         cidVersion: 1
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/mkdir?arg=${path}&format=dag-cbor`
-    }, { ipfs })
-
-    expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        format: 'dag-cbor'
       })
     ])
   })

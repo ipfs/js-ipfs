@@ -19,7 +19,6 @@ const defaultOptions = {
   hashAlg: 'sha2-256',
   cidVersion: 0,
   shardSplitThreshold: 1000,
-  format: 'dag-pb',
   flush: true,
   mode: null,
   mtime: null
@@ -116,7 +115,6 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     size: emptyDir.node.size,
     cid: emptyDir.cid,
     name: childName,
-    format: options.format,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
     mode: options.mode,

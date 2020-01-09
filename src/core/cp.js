@@ -15,7 +15,6 @@ const toTrail = require('./utils/to-trail')
 const defaultOptions = {
   parents: false,
   flush: true,
-  format: 'dag-pb',
   hashAlg: 'sha2-256',
   cidVersion: 0,
   shardSplitThreshold: 1000
@@ -150,7 +149,6 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
     size: sourceBlock.data.length,
     cid: source.cid,
     name: childName,
-    format: options.format,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
     flush: options.flush

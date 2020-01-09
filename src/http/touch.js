@@ -15,7 +15,6 @@ const mfsTouch = {
       flush,
       shardSplitThreshold,
       cidVersion,
-      format,
       hashAlg,
       mtime,
       mtimeNsecs
@@ -26,7 +25,6 @@ const mfsTouch = {
       flush,
       shardSplitThreshold,
       cidVersion,
-      format,
       hashAlg
     })
 
@@ -42,10 +40,6 @@ const mfsTouch = {
         arg: Joi.string().required(),
         mtime: Joi.number().integer(),
         mtimeNsecs: Joi.number().integer().min(0),
-        format: Joi.string().valid([
-          'dag-pb',
-          'dag-cbor'
-        ]).default('dag-pb'),
         hashAlg: Joi.string().default('sha2-256'),
         cidVersion: Joi.number().integer().valid([
           0,

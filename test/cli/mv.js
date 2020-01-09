@@ -11,7 +11,6 @@ function defaultOptions (modification = {}) {
     parents: false,
     recursive: false,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -126,32 +125,6 @@ describe('mv', () => {
       dest,
       defaultOptions({
         cidVersion: 5
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec', async () => {
-    await cli(`files mv --codec dag-foo ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec (short option)', async () => {
-    await cli(`files mv -c dag-foo ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

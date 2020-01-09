@@ -8,7 +8,6 @@ const sinon = require('sinon')
 function defaultOptions (modification = {}) {
   const options = {
     recursive: false,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -93,32 +92,6 @@ describe('chmod', () => {
       parseInt(mode, 8),
       defaultOptions({
         flush: false
-      })
-    ])
-  })
-
-  it('should update the mode with a different codec', async () => {
-    await cli(`files chmod ${mode} --codec dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      parseInt(mode, 8),
-      defaultOptions({
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should update the mode with a different codec (short option)', async () => {
-    await cli(`files chmod ${mode} -c dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      parseInt(mode, 8),
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

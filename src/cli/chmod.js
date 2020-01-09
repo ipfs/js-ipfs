@@ -27,12 +27,6 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Whether to change modes recursively'
     },
-    codec: {
-      alias: 'c',
-      type: 'string',
-      default: 'dag-pb',
-      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
-    },
     'hash-alg': {
       alias: 'h',
       type: 'string',
@@ -59,7 +53,6 @@ module.exports = {
       mode,
       getIpfs,
       recursive,
-      codec,
       hashAlg,
       flush,
       shardSplitThreshold
@@ -70,7 +63,6 @@ module.exports = {
 
       return ipfs.files.chmod(path, mode, {
         recursive,
-        format: codec,
         hashAlg,
         flush,
         shardSplitThreshold

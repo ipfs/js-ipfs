@@ -48,11 +48,10 @@ const removeLink = async (context, options) => {
 }
 
 const removeFromDirectory = async (context, options) => {
-  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
   options.parent.rmLink(options.name)
-  const cid = await context.ipld.put(options.parent, format, {
+  const cid = await context.ipld.put(options.parent, mc.DAG_PB, {
     cidVersion: options.cidVersion,
     hashAlg
   })
@@ -79,7 +78,6 @@ const removeFromShardedDirectory = async (context, options) => {
     cid: options.cid,
     size: options.size,
     hashAlg: options.hashAlg,
-    format: options.format,
     cidVersion: options.cidVersion,
     flush: options.flush
   }, options)

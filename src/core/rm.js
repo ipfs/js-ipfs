@@ -16,7 +16,6 @@ const defaultOptions = {
   recursive: false,
   cidVersion: 0,
   hashAlg: 'sha2-256',
-  format: 'dag-pb',
   flush: true
 }
 
@@ -64,7 +63,6 @@ const removePath = async (context, path, options) => {
   } = await removeLink(context, {
     parentCid: parent.cid,
     name: child.name,
-    format: options.format,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
     flush: options.flush

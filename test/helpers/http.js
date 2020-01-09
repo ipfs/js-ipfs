@@ -8,7 +8,9 @@ module.exports = (request, { ipfs }) => {
   server.app.ipfs = ipfs
 
   for (const key in routes) {
-    server.route(routes[key])
+    if (Object.prototype.hasOwnProperty.call(routes, key)) {
+      server.route(routes[key])
+    }
   }
 
   return server.inject(request)

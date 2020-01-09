@@ -10,7 +10,6 @@ function defaultOptions (modification = {}) {
   const options = {
     mtime: null,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -74,32 +73,6 @@ describe('touch', () => {
       defaultOptions({
         mtime,
         flush: false
-      })
-    ])
-  })
-
-  it('should update the mtime with a different codec', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} --codec dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime,
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should update the mtime with a different codec (short option)', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} -c dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime,
-        format: 'dag-foo'
       })
     ])
   })

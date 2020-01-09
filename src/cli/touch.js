@@ -31,12 +31,6 @@ module.exports = {
       default: 0,
       describe: 'Cid version to use. (experimental).'
     },
-    codec: {
-      alias: 'c',
-      type: 'string',
-      default: 'dag-pb',
-      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
-    },
     'hash-alg': {
       alias: 'h',
       type: 'string',
@@ -56,7 +50,6 @@ module.exports = {
       getIpfs,
       flush,
       cidVersion,
-      codec,
       hashAlg,
       shardSplitThreshold,
       mtime
@@ -69,7 +62,6 @@ module.exports = {
         mtime,
         flush,
         cidVersion,
-        format: codec,
         hashAlg,
         shardSplitThreshold
       })

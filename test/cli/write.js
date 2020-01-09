@@ -16,7 +16,6 @@ function defaultOptions (modification = {}) {
     reduceSingleLeafToSelf: false,
     cidVersion: 0,
     hashAlg: 'sha2-256',
-    format: 'dag-pb',
     parents: false,
     progress: undefined,
     strategy: 'balanced',
@@ -344,36 +343,6 @@ describe('write', () => {
       stdin,
       defaultOptions({
         cidVersion: 5
-      })
-    ])
-  })
-
-  it('should write to a file with a specified codec', async () => {
-    const path = '/foo'
-
-    await cli(`files write --codec dag-foo ${path}`, { ipfs, getStdin })
-
-    expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0).args).to.deep.equal([
-      path,
-      stdin,
-      defaultOptions({
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should write to a file with a specified codec (short option)', async () => {
-    const path = '/foo'
-
-    await cli(`files write -c dag-foo ${path}`, { ipfs, getStdin })
-
-    expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0).args).to.deep.equal([
-      path,
-      stdin,
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

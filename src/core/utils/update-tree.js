@@ -39,7 +39,6 @@ const updateTree = async (context, trail, options) => {
       size: child.size,
       flush: options.flush,
       shardSplitThreshold: options.shardSplitThreshold,
-      format: options.format,
       hashAlg: options.hashAlg,
       cidVersion: options.cidVersion
     })

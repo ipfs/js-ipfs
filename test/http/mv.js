@@ -10,7 +10,6 @@ function defaultOptions (modification = {}) {
     parents: false,
     recursive: false,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -94,22 +93,6 @@ describe('mv', () => {
       dest,
       defaultOptions({
         cidVersion: 1
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/mv?arg=${source}&arg=${dest}&format=dag-cbor`
-    }, { ipfs })
-
-    expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-cbor'
       })
     ])
   })

@@ -9,7 +9,6 @@ function defaultOptions (modification = {}) {
   const options = {
     mtime: null,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -66,24 +65,6 @@ describe('touch', () => {
           secs: 1000
         },
         flush: false
-      })
-    ])
-  })
-
-  it('should update the mtime with a different codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&format=dag-pb`
-    }, { ipfs })
-
-    expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000
-        },
-        format: 'dag-pb'
       })
     ])
   })

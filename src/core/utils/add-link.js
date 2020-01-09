@@ -99,11 +99,10 @@ const addToDirectory = async (context, options) => {
   node.mtime = new Date()
   options.parent = new DAGNode(node.marshal(), options.parent.Links)
 
-  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
   // Persist the new parent DAGNode
-  const cid = await context.ipld.put(options.parent, format, {
+  const cid = await context.ipld.put(options.parent, mc.DAG_PB, {
     cidVersion: options.cidVersion,
     hashAlg,
     onlyHash: !options.flush

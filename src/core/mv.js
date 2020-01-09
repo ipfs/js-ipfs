@@ -10,7 +10,6 @@ const defaultOptions = {
   recursive: false,
   flush: true,
   cidVersion: 0,
-  format: 'dag-pb',
   hashAlg: 'sha2-256',
   shardSplitThreshold: 1000
 }

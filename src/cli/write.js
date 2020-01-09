@@ -78,11 +78,6 @@ module.exports = {
       type: 'string',
       default: 'sha2-256'
     },
-    codec: {
-      alias: ['c'],
-      type: 'string',
-      default: 'dag-pb'
-    },
     'shard-split-threshold': {
       type: 'number',
       default: 1000,
@@ -114,7 +109,6 @@ module.exports = {
       reduceSingleLeafToSelf,
       cidVersion,
       hashAlg,
-      codec,
       parents,
       progress,
       strategy,
@@ -136,7 +130,6 @@ module.exports = {
         reduceSingleLeafToSelf,
         cidVersion,
         hashAlg,
-        format: codec,
         parents,
         progress,
         strategy,

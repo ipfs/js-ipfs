@@ -16,7 +16,6 @@ const mh = require('multihashes')
 const defaultOptions = {
   flush: true,
   shardSplitThreshold: 1000,
-  format: 'dag-pb',
   hashAlg: 'sha2-256',
   cidVersion: 0,
   recursive: false
@@ -174,7 +173,7 @@ module.exports = (context) => {
 
     const updatedCid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: cid.version,
-      hashAlg: mh.names['sha2-256'],
+      hashAlg: mh.names[options.hashAlg],
       onlyHash: !options.flush
     })
 
@@ -188,8 +187,7 @@ module.exports = (context) => {
       cid: updatedCid,
       size: node.serialize().length,
       flush: options.flush,
-      format: 'dag-pb',
-      hashAlg: 'sha2-256',
+      hashAlg: options.hashAlg,
       cidVersion: cid.version
     })
 

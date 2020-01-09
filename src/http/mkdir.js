@@ -16,7 +16,6 @@ const mfsMkdir = {
       mtime,
       mtimeNsecs,
       parents,
-      format,
       hashAlg,
       cidVersion,
       flush,
@@ -27,7 +26,6 @@ const mfsMkdir = {
       mode,
       mtime: parseMtime(mtime, mtimeNsecs),
       parents,
-      format,
       hashAlg,
       cidVersion,
       flush,
@@ -48,10 +46,6 @@ const mfsMkdir = {
         mtime: Joi.number().integer(),
         mtimeNsecs: Joi.number().integer().min(0),
         parents: Joi.boolean().default(false),
-        format: Joi.string().valid([
-          'dag-pb',
-          'dag-cbor'
-        ]).default('dag-pb'),
         hashAlg: Joi.string().default('sha2-256'),
         cidVersion: Joi.number().integer().valid([
           0,

@@ -30,12 +30,6 @@ module.exports = {
       default: 0,
       describe: 'Cid version to use. (experimental).'
     },
-    codec: {
-      alias: 'c',
-      type: 'string',
-      default: 'dag-pb',
-      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
-    },
     'hash-alg': {
       alias: 'h',
       type: 'string',
@@ -64,7 +58,6 @@ module.exports = {
       parents,
       recursive,
       cidVersion,
-      codec,
       hashAlg,
       flush,
       shardSplitThreshold
@@ -77,7 +70,6 @@ module.exports = {
         parents,
         recursive,
         cidVersion,
-        format: codec,
         hashAlg,
         flush,
         shardSplitThreshold

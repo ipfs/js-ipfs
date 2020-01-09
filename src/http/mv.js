@@ -13,7 +13,6 @@ const mfsMv = {
       arg,
       recursive,
       parents,
-      format,
       hashAlg,
       cidVersion,
       flush,
@@ -25,7 +24,6 @@ const mfsMv = {
       parents,
       cidVersion,
       flush,
-      format,
       hashAlg,
       shardSplitThreshold
     })
@@ -44,10 +42,6 @@ const mfsMv = {
         arg: Joi.array().items(Joi.string()).min(2),
         recursive: Joi.boolean().default(false),
         parents: Joi.boolean().default(false),
-        format: Joi.string().valid([
-          'dag-pb',
-          'dag-cbor'
-        ]).default('dag-pb'),
         hashAlg: Joi.string().default('sha2-256'),
         cidVersion: Joi.number().integer().valid([
           0,

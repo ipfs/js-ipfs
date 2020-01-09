@@ -8,7 +8,6 @@ const sinon = require('sinon')
 function defaultOptions (modification = {}) {
   const options = {
     parents: false,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -67,32 +66,6 @@ describe('cp', () => {
       dest,
       defaultOptions({
         parents: true
-      })
-    ])
-  })
-
-  it('should copy files with a different codec', async () => {
-    await cli(`files cp --codec dag-foo ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should copy files with a different codec (short option)', async () => {
-    await cli(`files cp -c dag-foo ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

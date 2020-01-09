@@ -8,7 +8,6 @@ const sinon = require('sinon')
 function defaultOptions (modification = {}) {
   const options = {
     parents: false,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -60,22 +59,6 @@ describe('cp', () => () => {
       dest,
       defaultOptions({
         parents: true
-      })
-    ])
-  })
-
-  it('should copy files with a different codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/cp?arg=${source}&arg=${dest}&codec=dag-cbor`
-    }, { ipfs })
-
-    expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        format: 'dag-cbor'
       })
     ])
   })

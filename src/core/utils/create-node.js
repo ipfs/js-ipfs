@@ -8,7 +8,6 @@ const mc = require('multicodec')
 const mh = require('multihashes')
 
 const createNode = async (context, type, options) => {
-  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
   const metadata = new UnixFS({
     type,
@@ -17,7 +16,7 @@ const createNode = async (context, type, options) => {
   })
 
   const node = new DAGNode(metadata.marshal())
-  const cid = await context.ipld.put(node, format, {
+  const cid = await context.ipld.put(node, mc.DAG_PB, {
     cidVersion: options.cidVersion,
     hashAlg,
     onlyHash: !options.flush

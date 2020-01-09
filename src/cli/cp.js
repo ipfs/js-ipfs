@@ -17,12 +17,6 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
-    codec: {
-      alias: 'c',
-      type: 'string',
-      default: 'dag-pb',
-      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
-    },
     'hash-alg': {
       alias: 'h',
       type: 'string',
@@ -49,7 +43,6 @@ module.exports = {
       dest,
       getIpfs,
       parents,
-      codec,
       flush,
       hashAlg,
       shardSplitThreshold
@@ -59,7 +52,6 @@ module.exports = {
       const ipfs = await getIpfs()
       return ipfs.files.cp(source, dest, {
         parents,
-        format: codec,
         flush,
         hashAlg,
         shardSplitThreshold

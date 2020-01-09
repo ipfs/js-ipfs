@@ -8,7 +8,6 @@ const sinon = require('sinon')
 function defaultOptions (modification = {}) {
   const options = {
     recursive: false,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000
@@ -76,22 +75,6 @@ describe('chmod', () => {
       mode,
       defaultOptions({
         flush: false
-      })
-    ])
-  })
-
-  it('should update the mode a different codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/chmod?arg=${path}&mode=${mode}&codec=dag-foo`
-    }, { ipfs })
-
-    expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

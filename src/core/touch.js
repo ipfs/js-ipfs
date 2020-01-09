@@ -18,7 +18,6 @@ const defaultOptions = {
   flush: true,
   shardSplitThreshold: 1000,
   cidVersion: 0,
-  format: 'dag-pb',
   hashAlg: 'sha2-256'
 }
 
@@ -85,7 +84,6 @@ module.exports = (context) => {
       size: node.serialize().length,
       flush: options.flush,
       shardSplitThreshold: options.shardSplitThreshold,
-      format: 'dag-pb',
       hashAlg: 'sha2-256',
       cidVersion
     })

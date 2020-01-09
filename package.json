@@ -73,7 +73,7 @@
     "ipfs-multipart": "^0.3.0",
     "ipfs-unixfs": "^0.3.0",
     "ipfs-unixfs-exporter": "^0.40.0",
-    "ipfs-unixfs-importer": "^0.43.0",
+    "ipfs-unixfs-importer": "^0.43.1",
     "ipfs-utils": "^0.4.2",
     "ipld-dag-pb": "^0.18.0",
     "it-last": "^1.0.1",

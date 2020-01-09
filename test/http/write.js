@@ -17,7 +17,6 @@ function defaultOptions (modification = {}) {
     reduceSingleLeafToSelf: false,
     cidVersion: 0,
     hashAlg: 'sha2-256',
-    format: 'dag-pb',
     parents: false,
     progress: undefined,
     strategy: 'trickle',
@@ -226,21 +225,6 @@ describe('write', () => {
     expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
     expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
       cidVersion: 1
-    }))
-    expect(content).to.equal('hello world')
-  })
-
-  it('should write to a file with a specified codec', async () => {
-    await http({
-      method: 'POST',
-      url: `/api/v0/files/write?arg=${path}&format=dag-cbor`,
-      ...await send('hello world')
-    }, { ipfs })
-
-    expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
-      format: 'dag-cbor'
     }))
     expect(content).to.equal('hello world')
   })

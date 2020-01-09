@@ -24,11 +24,9 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     mtime: node.mtime
   })
 
-  const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
-
   const parent = new DAGNode(dir.marshal(), links)
-  const cid = await context.ipld.put(parent, format, {
+  const cid = await context.ipld.put(parent, mc.DAG_PB, {
     cidVersion: options.cidVersion,
     hashAlg,
     onlyHash: !options.flush
@@ -184,7 +182,10 @@ const createShard = async (context, contents, options) => {
     flat: false,
     mtime: options.mtime,
     mode: options.mode
-  }, options)
+  }, {
+    ...options,
+    codec: 'dag-pb'
+  })
 
   for (let i = 0; i < contents.length; i++) {
     await shard._bucket.put(contents[i].name, {

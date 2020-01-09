@@ -13,7 +13,6 @@ const mfsChmod = {
       arg,
       mode,
       recursive,
-      codec,
       hashAlg,
       flush,
       shardSplitThreshold
@@ -21,7 +20,6 @@ const mfsChmod = {
 
     await ipfs.files.chmod(arg, mode, {
       recursive,
-      format: codec,
       hashAlg,
       flush,
       shardSplitThreshold
@@ -40,7 +38,6 @@ const mfsChmod = {
         mode: Joi.string(),
         recursive: Joi.boolean().default(false),
         flush: Joi.boolean().default(true),
-        codec: Joi.string().default('dag-pb'),
         hashAlg: Joi.string().default('sha2-256'),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000)
       })

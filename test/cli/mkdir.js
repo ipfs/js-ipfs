@@ -10,7 +10,6 @@ function defaultOptions (modification = {}) {
   const options = {
     parents: false,
     cidVersion: 0,
-    format: 'dag-pb',
     hashAlg: 'sha2-256',
     flush: true,
     shardSplitThreshold: 1000,
@@ -95,30 +94,6 @@ describe('mkdir', () => {
       path,
       defaultOptions({
         cidVersion: 5
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec', async () => {
-    await cli(`files mkdir --codec dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        format: 'dag-foo'
-      })
-    ])
-  })
-
-  it('should make a directory with a different codec (short option)', async () => {
-    await cli(`files mkdir -c dag-foo ${path}`, { ipfs })
-
-    expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        format: 'dag-foo'
       })
     ])
   })

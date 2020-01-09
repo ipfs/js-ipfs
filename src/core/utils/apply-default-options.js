@@ -17,13 +17,6 @@ module.exports = (options = {}, defaults) => {
     }
   }
 
-  const format = output.format || output.codec
-
-  if (format && isNaN(format)) {
-    output.format = format
-    delete output.codec
-  }
-
   // support legacy go arguments
   if (options.count !== undefined) {
     output.length = options.count
