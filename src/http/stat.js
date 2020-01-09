@@ -32,7 +32,10 @@ const mfsStat = {
       CumulativeSize: stats.cumulativeSize,
       WithLocality: stats.withLocality,
       Local: stats.local,
-      SizeLocal: stats.sizeLocal
+      SizeLocal: stats.sizeLocal,
+      Mtime: stats.mtime ? stats.mtime.secs : undefined,
+      MtimeNsecs: stats.mtime ? stats.mtime.nsecs : undefined,
+      Mode: stats.mode.toString(8).padStart(4, '0')
     })
   },
   options: {

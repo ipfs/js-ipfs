@@ -15,15 +15,13 @@ const mfsRead = {
     const {
       arg,
       offset,
-      length,
-      count
+      length
     } = request.query
 
     const responseStream = await new Promise((resolve, reject) => {
       const stream = ipfs.files.readReadableStream(arg, {
         offset,
-        length,
-        count
+        length
       })
 
       stream.once('data', (chunk) => {
@@ -58,6 +56,10 @@ const mfsRead = {
           ignoreUndefined: true
         })
         .rename('n', 'length', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('count', 'length', {
           override: true,
           ignoreUndefined: true
         })

@@ -5,8 +5,8 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const crypto = require('crypto')
-const createMfs = require('./helpers/create-mfs')
-const createShardedDirectory = require('./helpers/create-sharded-directory')
+const createMfs = require('../helpers/create-mfs')
+const createShardedDirectory = require('../helpers/create-sharded-directory')
 const mc = require('multicodec')
 
 describe('stat', () => {

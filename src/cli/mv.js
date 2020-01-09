@@ -24,6 +24,31 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Remove directories recursively'
     },
+    'cid-version': {
+      alias: ['cid-ver'],
+      type: 'number',
+      default: 0,
+      describe: 'Cid version to use. (experimental).'
+    },
+    codec: {
+      alias: 'c',
+      type: 'string',
+      default: 'dag-pb',
+      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
+    },
+    'hash-alg': {
+      alias: 'h',
+      type: 'string',
+      default: 'sha2-256',
+      describe: 'Hash function to use. Will set CID version to 1 if used'
+    },
+    flush: {
+      alias: 'f',
+      type: 'boolean',
+      default: true,
+      coerce: asBoolean,
+      describe: 'Flush the changes to disk immediately'
+    },
     'shard-split-threshold': {
       type: 'number',
       default: 1000,
@@ -38,6 +63,10 @@ module.exports = {
       getIpfs,
       parents,
       recursive,
+      cidVersion,
+      codec,
+      hashAlg,
+      flush,
       shardSplitThreshold
     } = argv
 
@@ -47,6 +76,10 @@ module.exports = {
       return ipfs.files.mv(source, dest, {
         parents,
         recursive,
+        cidVersion,
+        format: codec,
+        hashAlg,
+        flush,
         shardSplitThreshold
       })
     })())

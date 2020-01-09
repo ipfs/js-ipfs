@@ -152,7 +152,8 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
     name: childName,
     format: options.format,
     hashAlg: options.hashAlg,
-    cidVersion: options.cidVersion
+    cidVersion: options.cidVersion,
+    flush: options.flush
   })
 
   parent.node = node

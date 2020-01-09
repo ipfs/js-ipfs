@@ -4,12 +4,13 @@ const pull = require('pull-stream/pull')
 const onEnd = require('pull-stream/sinks/on-end')
 const through = require('pull-stream/throughs/through')
 const {
-  print,
   asBoolean
 } = require('./utils')
 const {
   FILE_SEPARATOR
 } = require('../core/utils/constants')
+const formatMode = require('ipfs-utils/src/files/format-mode')
+const formatMtime = require('ipfs-utils/src/files/format-mtime')
 
 module.exports = {
   command: 'ls [path]',
@@ -43,18 +44,15 @@ module.exports = {
       getIpfs,
       long,
       sort,
-      cidBase
+      cidBase,
+      print
     } = argv
 
     argv.resolve((async () => {
       const ipfs = await getIpfs()
       return new Promise((resolve, reject) => {
         if (sort) {
-          ipfs.files.ls(path || FILE_SEPARATOR, {
-            long,
-            sort,
-            cidBase
-          })
+          ipfs.files.ls(path || FILE_SEPARATOR)
             .then(files => {
               // https://github.com/ipfs/go-ipfs/issues/5181
               if (sort) {
@@ -64,8 +62,8 @@ module.exports = {
               }
 
               if (long) {
-                files.forEach(link => {
-                  print(`${link.name}\t${link.hash}\t${link.size}`)
+                files.forEach(file => {
+                  print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.hash}\t${file.size}`)
                 })
               } else {
                 files.forEach(link => print(link.name))
@@ -85,7 +83,7 @@ module.exports = {
           }),
           through(file => {
             if (long) {
-              print(`${file.name}\t${file.hash}\t${file.size}`)
+              print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.hash}\t${file.size}`)
             } else {
               print(file.name)
             }

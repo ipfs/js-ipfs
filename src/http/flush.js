@@ -2,6 +2,10 @@
 
 const Joi = require('@hapi/joi')
 
+const {
+  FILE_SEPARATOR
+} = require('../core/utils/constants')
+
 const mfsFlush = {
   method: 'POST',
   path: '/api/v0/files/flush',
@@ -13,7 +17,7 @@ const mfsFlush = {
       arg
     } = request.query
 
-    await ipfs.files.flush.call(null, arg)
+    await ipfs.files.flush(arg || FILE_SEPARATOR, {})
 
     return h.response()
   },
@@ -24,7 +28,7 @@ const mfsFlush = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string().required()
+        arg: Joi.string()
       })
     }
   }

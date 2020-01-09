@@ -4,13 +4,13 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const createMfs = require('./helpers/create-mfs')
-const createShardedDirectory = require('./helpers/create-sharded-directory')
-const createTwoShards = require('./helpers/create-two-shards')
+const createMfs = require('../helpers/create-mfs')
+const createShardedDirectory = require('../helpers/create-sharded-directory')
+const createTwoShards = require('../helpers/create-two-shards')
 const crypto = require('crypto')
 const {
   FILE_SEPARATOR
-} = require('../src/core/utils/constants')
+} = require('../../src/core/utils/constants')
 
 describe('rm', () => {
   let mfs

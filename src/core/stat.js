@@ -57,35 +57,43 @@ const statters = {
     }
   },
   'dag-pb': (file) => {
-    let blocks = file.node.Links.length
-    let size = file.node.size
-    let cumulativeSize = file.node.size
-    let nodeType = null
+    const blocks = file.node.Links.length
+    const size = file.node.size
+    const cumulativeSize = file.node.size
 
-    if (file.unixfs) {
-      size = file.unixfs.fileSize()
-      nodeType = file.unixfs.type
-
-      if (nodeType.includes('directory')) {
-        size = 0
-        cumulativeSize = file.node.size
-      }
-
-      if (nodeType === 'file') {
-        blocks = file.unixfs.blockSizes.length
-      }
-    }
-
-    return {
+    const output = {
       cid: file.cid,
       size: size,
       cumulativeSize: cumulativeSize,
       blocks: blocks,
-      type: nodeType,
       local: undefined,
       sizeLocal: undefined,
       withLocality: false
     }
+
+    if (file.unixfs) {
+      output.size = file.unixfs.fileSize()
+      output.type = file.unixfs.type
+
+      if (file.unixfs.isDirectory()) {
+        output.size = 0
+        output.cumulativeSize = file.node.size
+      }
+
+      if (output.type === 'file') {
+        output.blocks = file.unixfs.blockSizes.length
+      }
+
+      if (file.unixfs.mtime) {
+        output.mtime = file.unixfs.mtime
+      }
+
+      if (file.unixfs.mode !== undefined && file.unixfs.mode !== null) {
+        output.mode = file.unixfs.mode
+      }
+    }
+
+    return output
   },
   'dag-cbor': (file) => {
     return {

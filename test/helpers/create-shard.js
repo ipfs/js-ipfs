@@ -1,7 +1,7 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
-const last = require('async-iterator-last')
+const last = require('it-last')
 
 const createShard = async (ipld, files, shardSplitThreshold = 10) => {
   const result = await last(importer(files, ipld, {

@@ -17,17 +17,24 @@ module.exports = {
       coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
-    format: {
-      alias: 'h',
+    codec: {
+      alias: 'c',
       type: 'string',
       default: 'dag-pb',
-      describe: 'If intermediate directories are created, use this format to create them (experimental)'
+      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
     },
     'hash-alg': {
       alias: 'h',
       type: 'string',
       default: 'sha2-256',
       describe: 'Hash function to use. Will set CID version to 1 if used'
+    },
+    flush: {
+      alias: 'f',
+      type: 'boolean',
+      default: true,
+      coerce: asBoolean,
+      describe: 'Flush the changes to disk immediately'
     },
     'shard-split-threshold': {
       type: 'number',
@@ -42,7 +49,8 @@ module.exports = {
       dest,
       getIpfs,
       parents,
-      format,
+      codec,
+      flush,
       hashAlg,
       shardSplitThreshold
     } = argv
@@ -51,7 +59,8 @@ module.exports = {
       const ipfs = await getIpfs()
       return ipfs.files.cp(source, dest, {
         parents,
-        format,
+        format: codec,
+        flush,
         hashAlg,
         shardSplitThreshold
       })

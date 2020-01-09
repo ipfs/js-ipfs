@@ -6,12 +6,23 @@ const {
 } = require('stream')
 
 const mapEntry = (entry) => {
-  return {
+  const output = {
     Name: entry.name,
     Type: entry.type,
     Size: entry.size,
-    Hash: entry.hash
+    Hash: entry.hash,
+    Mode: entry.mode.toString(8).padStart(4, '0')
   }
+
+  if (entry.mtime) {
+    output.Mtime = entry.mtime.secs
+
+    if (entry.mtime.nsecs != null) {
+      output.MtimeNsecs = entry.mtime.nsecs
+    }
+  }
+
+  return output
 }
 
 const mfsLs = {
@@ -47,7 +58,10 @@ const mfsLs = {
           passThrough.end(entry ? JSON.stringify(mapEntry(entry)) + '\n' : undefined)
         })
 
-        readableStream.once('error', reject)
+        readableStream.once('error', (err) => {
+          passThrough.end()
+          reject(err)
+        })
       })
 
       return h.response(responseStream).header('X-Stream-Output', '1')

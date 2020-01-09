@@ -9,14 +9,20 @@ const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
 const UnixFS = require('ipfs-unixfs')
 const mc = require('multicodec')
 const mh = require('multihashes')
-const last = require('async-iterator-last')
+const last = require('it-last')
 
 const updateHamtDirectory = async (context, links, bucket, options) => {
   // update parent with new bit field
   const data = Buffer.from(bucket._children.bitField().reverse())
-  const dir = new UnixFS('hamt-sharded-directory', data)
-  dir.fanout = bucket.tableSize()
-  dir.hashType = DirSharded.hashFn.code
+  const node = UnixFS.unmarshal(options.parent.Data)
+  const dir = new UnixFS({
+    type: 'hamt-sharded-directory',
+    data,
+    fanout: bucket.tableSize(),
+    hashType: DirSharded.hashFn.code,
+    mode: node.mode,
+    mtime: node.mtime
+  })
 
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
@@ -25,7 +31,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   const cid = await context.ipld.put(parent, format, {
     cidVersion: options.cidVersion,
     hashAlg,
-    hashOnly: !options.flush
+    onlyHash: !options.flush
   })
 
   return {
@@ -175,7 +181,9 @@ const createShard = async (context, contents, options) => {
     parentKey: null,
     path: '',
     dirty: true,
-    flat: false
+    flat: false,
+    mtime: options.mtime,
+    mode: options.mode
   }, options)
 
   for (let i = 0; i < contents.length; i++) {

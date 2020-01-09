@@ -4,7 +4,7 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const createMfs = require('./helpers/create-mfs')
+const createMfs = require('../helpers/create-mfs')
 
 describe('flush', () => {
   let mfs

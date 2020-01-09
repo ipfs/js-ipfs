@@ -31,8 +31,18 @@ const asBoolean = (value) => {
   return false
 }
 
+const asOctal = (value) => {
+  return parseInt(value, 8)
+}
+
+const asDateFromSeconds = (value) => {
+  return new Date(parseInt(value, 10) * 1000)
+}
+
 module.exports = {
   disablePrinting,
   print,
-  asBoolean
+  asBoolean,
+  asOctal,
+  asDateFromSeconds
 }

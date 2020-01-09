@@ -1,7 +1,8 @@
 'use strict'
 
 const {
-  DAGLink
+  DAGLink,
+  DAGNode
 } = require('ipld-dag-pb')
 const CID = require('cids')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
@@ -17,7 +18,7 @@ const {
 const errCode = require('err-code')
 const mc = require('multicodec')
 const mh = require('multihashes')
-const last = require('async-iterator-last')
+const last = require('it-last')
 
 const addLink = async (context, options) => {
   if (!options.parentCid && !options.parent) {
@@ -61,7 +62,11 @@ const addLink = async (context, options) => {
   if (options.parent.Links.length >= options.shardSplitThreshold) {
     log('Converting directory to sharded directory')
 
-    return convertToShardedDirectory(context, options)
+    return convertToShardedDirectory(context, {
+      ...options,
+      mtime: meta.mtime,
+      mode: meta.mode
+    })
   }
 
   log(`Adding ${options.name} (${options.cid}) to regular directory`)
@@ -89,6 +94,11 @@ const addToDirectory = async (context, options) => {
   options.parent.rmLink(options.name)
   options.parent.addLink(new DAGLink(options.name, options.size, options.cid))
 
+  // Update mtime
+  const node = UnixFS.unmarshal(options.parent.Data)
+  node.mtime = new Date()
+  options.parent = new DAGNode(node.marshal(), options.parent.Links)
+
   const format = mc[options.format.toUpperCase().replace(/-/g, '_')]
   const hashAlg = mh.names[options.hashAlg]
 
@@ -96,7 +106,7 @@ const addToDirectory = async (context, options) => {
   const cid = await context.ipld.put(options.parent, format, {
     cidVersion: options.cidVersion,
     hashAlg,
-    hashOnly: !options.flush
+    onlyHash: !options.flush
   })
 
   return {
@@ -137,6 +147,7 @@ const addFileToShardedDirectory = async (context, options) => {
 
   // start at the root bucket and descend, loading nodes as we go
   const rootBucket = await recreateHamtLevel(options.parent.Links)
+  const node = UnixFS.unmarshal(options.parent.Data)
 
   const shard = new DirSharded({
     root: true,
@@ -145,9 +156,11 @@ const addFileToShardedDirectory = async (context, options) => {
     parentKey: null,
     path: '',
     dirty: true,
-    flat: false
+    flat: false,
+    mode: node.mode
   }, options)
   shard._bucket = rootBucket
+  shard.mtime = new Date()
 
   // load subshards until the bucket & position no longer changes
   const position = await rootBucket._findNewBucketAndPos(file.name)

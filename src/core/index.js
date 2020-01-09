@@ -10,11 +10,13 @@ const readOperations = {
 
 // These operations are locked at the function level and will execute in series
 const writeOperations = {
+  chmod: require('./chmod'),
   cp: require('./cp'),
   flush: require('./flush'),
   mkdir: require('./mkdir'),
   mv: require('./mv'),
-  rm: require('./rm')
+  rm: require('./rm'),
+  touch: require('./touch')
 }
 
 // These operations are asynchronous and manage their own locking

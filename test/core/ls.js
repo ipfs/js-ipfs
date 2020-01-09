@@ -7,10 +7,10 @@ const expect = chai.expect
 const CID = require('cids')
 const {
   FILE_TYPES
-} = require('../src')
-const createMfs = require('./helpers/create-mfs')
-const createShardedDirectory = require('./helpers/create-sharded-directory')
-const streamToArray = require('./helpers/stream-to-array')
+} = require('../../src')
+const createMfs = require('../helpers/create-mfs')
+const createShardedDirectory = require('../helpers/create-sharded-directory')
+const streamToArray = require('../helpers/stream-to-array')
 const crypto = require('crypto')
 
 describe('ls', () => {

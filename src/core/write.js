@@ -17,7 +17,7 @@ const errCode = require('err-code')
 const {
   MAX_CHUNK_SIZE
 } = require('./utils/constants')
-const last = require('async-iterator-last')
+const last = require('it-last')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
@@ -34,12 +34,13 @@ const defaultOptions = {
   strategy: 'trickle',
   flush: true,
   leafType: 'raw',
-  shardSplitThreshold: 1000
+  shardSplitThreshold: 1000,
+  mode: undefined,
+  mtime: undefined
 }
 
 module.exports = (context) => {
   return async function mfsWrite (path, content, options) {
-    log('Hello world, writing', path, content, options)
     options = applyDefaultOptions(options, defaultOptions)
 
     let source, destination, parent
@@ -174,8 +175,28 @@ const write = async (context, source, destination, options) => {
     }
   })
 
+  let mode
+
+  if (options.mode !== undefined && options.mode !== null) {
+    mode = options.mode
+  } else if (destination && destination.unixfs) {
+    mode = destination.unixfs.mode
+  }
+
+  let mtime
+
+  if (options.mtime !== undefined && options.mtine !== null) {
+    mtime = options.mtime
+  } else if (destination && destination.unixfs) {
+    mtime = destination.unixfs.mtime
+  }
+
   const result = await last(importer([{
-    content: content
+    content: content,
+
+    // persist mode & mtime if set previously
+    mode,
+    mtime
   }], context.ipld, {
     progress: options.progress,
     hashAlg: options.hashAlg,

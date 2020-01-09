@@ -18,6 +18,7 @@ const mfsWrite = {
       create,
       truncate,
       rawLeaves,
+      reduceSingleLeafToSelf,
       cidVersion,
       hashAlg,
       format,
@@ -44,6 +45,7 @@ const mfsWrite = {
           create,
           truncate,
           rawLeaves,
+          reduceSingleLeafToSelf,
           cidVersion,
           hashAlg,
           format,
@@ -51,7 +53,9 @@ const mfsWrite = {
           progress,
           strategy,
           flush,
-          shardSplitThreshold
+          shardSplitThreshold,
+          mode: entry.mode,
+          mtime: entry.mtime
         })
       }
     }
@@ -79,9 +83,7 @@ const mfsWrite = {
           0,
           1
         ]).default(0),
-        hashAlg: Joi.string().valid([
-          'sha2-256'
-        ]).default('sha2-256'),
+        hashAlg: Joi.string().default('sha2-256'),
         format: Joi.string().valid([
           'dag-pb',
           'dag-cbor'
@@ -93,7 +95,9 @@ const mfsWrite = {
           'balanced',
           'trickle'
         ]).default('trickle'),
-        flush: Joi.boolean().default(true)
+        flush: Joi.boolean().default(true),
+        reduceSingleLeafToSelf: Joi.boolean().default(false),
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
       })
         .rename('o', 'offset', {
           override: true,

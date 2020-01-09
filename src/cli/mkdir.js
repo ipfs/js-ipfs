@@ -1,7 +1,9 @@
 'use strict'
 
 const {
-  asBoolean
+  asBoolean,
+  asOctal,
+  asDateFromSeconds
 } = require('./utils')
 
 module.exports = {
@@ -23,9 +25,17 @@ module.exports = {
       default: 0,
       describe: 'Cid version to use. (experimental).'
     },
-    'hash-alg': {
+    codec: {
+      alias: 'c',
       type: 'string',
-      describe: 'Hash function to use. Will set Cid version to 1 if used. (experimental).'
+      default: 'dag-pb',
+      describe: 'If intermediate directories are created, use this codec to create them (experimental)'
+    },
+    'hash-alg': {
+      alias: 'h',
+      type: 'string',
+      default: 'sha2-256',
+      describe: 'Hash function to use. Will set CID version to 1 if used'
     },
     flush: {
       alias: 'f',
@@ -38,6 +48,16 @@ module.exports = {
       type: 'number',
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
+    },
+    mode: {
+      type: 'number',
+      coerce: asOctal,
+      describe: 'Mode to apply to the new directory'
+    },
+    mtime: {
+      type: 'date',
+      coerce: asDateFromSeconds,
+      describe: 'Mtime to apply to the new directory in seconds'
     }
   },
 
@@ -47,9 +67,12 @@ module.exports = {
       getIpfs,
       parents,
       cidVersion,
+      codec,
       hashAlg,
       flush,
-      shardSplitThreshold
+      shardSplitThreshold,
+      mode,
+      mtime
     } = argv
 
     argv.resolve((async () => {
@@ -58,9 +81,12 @@ module.exports = {
       return ipfs.files.mkdir(path, {
         parents,
         cidVersion,
+        format: codec,
         hashAlg,
         flush,
-        shardSplitThreshold
+        shardSplitThreshold,
+        mode,
+        mtime
       })
     })())
   }

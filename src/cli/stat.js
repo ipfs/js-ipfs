@@ -1,8 +1,7 @@
 'use strict'
 
 const {
-  asBoolean,
-  print
+  asBoolean
 } = require('./utils')
 
 module.exports = {
@@ -18,8 +17,10 @@ module.exports = {
 Size: <size>
 CumulativeSize: <cumulsize>
 ChildBlocks: <childs>
-Type: <type>`,
-      describe: 'Print statistics in given format. Allowed tokens: <hash> <size> <cumulsize> <type> <childs>. Conflicts with other format options.'
+Type: <type>
+Mode: <mode>
+Mtime: <mtime>`,
+      describe: 'Print statistics in given format. Allowed tokens: <hash> <size> <cumulsize> <type> <childs> <mode> <mtime>. Conflicts with other format options.'
     },
     hash: {
       alias: 'h',
@@ -52,6 +53,7 @@ Type: <type>`,
     const {
       path,
       getIpfs,
+      print,
       format,
       hash,
       size,
@@ -79,6 +81,8 @@ Type: <type>`,
             .replace('<cumulsize>', stats.cumulativeSize)
             .replace('<childs>', stats.blocks)
             .replace('<type>', stats.type)
+            .replace('<mode>', stats.mode)
+            .replace('<mtime>', stats.mtime)
           )
         })
     })())

@@ -20,7 +20,9 @@ const defaultOptions = {
   cidVersion: 0,
   shardSplitThreshold: 1000,
   format: 'dag-pb',
-  flush: true
+  flush: true,
+  mode: null,
+  mtime: null
 }
 
 module.exports = (context) => {
@@ -116,7 +118,10 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     name: childName,
     format: options.format,
     hashAlg: options.hashAlg,
-    cidVersion: options.cidVersion
+    cidVersion: options.cidVersion,
+    mode: options.mode,
+    mtime: options.mtime,
+    flush: options.flush
   })
 
   trail[trail.length - 1].cid = result.cid

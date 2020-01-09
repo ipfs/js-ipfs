@@ -7,14 +7,14 @@ const expect = chai.expect
 const isNode = require('detect-node')
 const multihash = require('multihashes')
 const util = require('util')
-const createMfs = require('./helpers/create-mfs')
-const cidAtPath = require('./helpers/cid-at-path')
-const traverseLeafNodes = require('./helpers/traverse-leaf-nodes')
-const createShard = require('./helpers/create-shard')
-const createShardedDirectory = require('./helpers/create-sharded-directory')
-const createTwoShards = require('./helpers/create-two-shards')
+const createMfs = require('../helpers/create-mfs')
+const cidAtPath = require('../helpers/cid-at-path')
+const traverseLeafNodes = require('../helpers/traverse-leaf-nodes')
+const createShard = require('../helpers/create-shard')
+const createShardedDirectory = require('../helpers/create-sharded-directory')
+const createTwoShards = require('../helpers/create-two-shards')
 const crypto = require('crypto')
-const all = require('async-iterator-all')
+const all = require('it-all')
 
 let fs, tempWrite
 

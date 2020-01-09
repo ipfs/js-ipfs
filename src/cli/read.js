@@ -3,9 +3,6 @@
 const pull = require('pull-stream/pull')
 const through = require('pull-stream/throughs/through')
 const onEnd = require('pull-stream/sinks/on-end')
-const {
-  print
-} = require('./utils')
 
 module.exports = {
   command: 'read <path>',
@@ -29,6 +26,7 @@ module.exports = {
     const {
       path,
       getIpfs,
+      print,
       offset,
       length
     } = argv

@@ -11,14 +11,20 @@ const mfsMv = {
     } = request.server.app
     const {
       arg,
+      recursive,
       parents,
       format,
       hashAlg,
+      cidVersion,
+      flush,
       shardSplitThreshold
     } = request.query
 
     const args = arg.concat({
+      recursive,
       parents,
+      cidVersion,
+      flush,
       format,
       hashAlg,
       shardSplitThreshold
@@ -36,12 +42,19 @@ const mfsMv = {
       },
       query: Joi.object().keys({
         arg: Joi.array().items(Joi.string()).min(2),
+        recursive: Joi.boolean().default(false),
         parents: Joi.boolean().default(false),
         format: Joi.string().valid([
           'dag-pb',
           'dag-cbor'
         ]).default('dag-pb'),
-        hashAlg: Joi.string().default('sha2-256')
+        hashAlg: Joi.string().default('sha2-256'),
+        cidVersion: Joi.number().integer().valid([
+          0,
+          1
+        ]).default(0),
+        flush: Joi.boolean().default(true),
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
       })
     }
   }

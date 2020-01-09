@@ -1,7 +1,9 @@
 'use strict'
 
 const {
-  asBoolean
+  asBoolean,
+  asOctal,
+  asDateFromSeconds
 } = require('./utils')
 
 module.exports = {
@@ -13,6 +15,7 @@ module.exports = {
     parents: {
       alias: 'p',
       type: 'boolean',
+      default: false,
       describe: 'Create any non-existent intermediate directories'
     },
     create: {
@@ -75,7 +78,8 @@ module.exports = {
       type: 'string',
       default: 'sha2-256'
     },
-    format: {
+    codec: {
+      alias: ['c'],
       type: 'string',
       default: 'dag-pb'
     },
@@ -83,6 +87,17 @@ module.exports = {
       type: 'number',
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
+    },
+    mode: {
+      type: 'int',
+      coerce: asOctal,
+      describe: 'The mode to use'
+    },
+    mtime: {
+      alias: 'm',
+      type: 'date',
+      coerce: asDateFromSeconds,
+      describe: 'Time to use as the new modification time'
     }
   },
 
@@ -90,6 +105,7 @@ module.exports = {
     const {
       path,
       getIpfs,
+      getStdin,
       offset,
       length,
       create,
@@ -98,18 +114,20 @@ module.exports = {
       reduceSingleLeafToSelf,
       cidVersion,
       hashAlg,
-      format,
+      codec,
       parents,
       progress,
       strategy,
       flush,
-      shardSplitThreshold
+      shardSplitThreshold,
+      mode,
+      mtime
     } = argv
 
     argv.resolve((async () => {
       const ipfs = await getIpfs()
 
-      await ipfs.files.write(path, process.stdin, {
+      await ipfs.files.write(path, getStdin(), {
         offset,
         length,
         create,
@@ -118,12 +136,14 @@ module.exports = {
         reduceSingleLeafToSelf,
         cidVersion,
         hashAlg,
-        format,
+        format: codec,
         parents,
         progress,
         strategy,
         flush,
-        shardSplitThreshold
+        shardSplitThreshold,
+        mode,
+        mtime
       })
     })())
   }
