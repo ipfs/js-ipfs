@@ -355,7 +355,7 @@ describe('files', () => runOnAndOff((thing) => {
 
     const out = await ipfs('add --mtime 5 --mtime-nsecs 100 src/init-files/init-docs/readme')
     expect(out)
-      .to.eql('added QmV4urwzA1Z8JxHN3fCjXSeQzRvy3SdpX7U11tyjascyjx readme\n')
+      .to.eql('added QmXbVCG5go62V1g7UQtyrJ3svYArc53stCxLx9CNtv1GGT readme\n')
   })
 
   it('add with mode', async function () {
