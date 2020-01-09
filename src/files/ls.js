@@ -4,7 +4,7 @@ const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const toIterable = require('../lib/stream-to-iterable')
 const configure = require('../lib/configure')
-const toCamel = require('../lib/object-to-camel')
+const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 
 module.exports = configure(({ ky }) => {
   return async function * ls (path, options) {
@@ -32,11 +32,12 @@ module.exports = configure(({ ky }) => {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {
-          yield toCamel(entry)
+          yield toCamelWithMetadata(entry)
         }
         return
       }
-      yield toCamel(result)
+
+      yield toCamelWithMetadata(result)
     }
   }
 })

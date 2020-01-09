@@ -48,7 +48,7 @@ module.exports = configure(({ ky }) => {
     }
 
     for (const link of result) {
-      yield {
+      const entry = {
         name: link.Name,
         path: path + '/' + link.Name,
         size: link.Size,
@@ -56,6 +56,22 @@ module.exports = configure(({ ky }) => {
         type: typeOf(link),
         depth: link.Depth || 1
       }
+
+      if (link.Mode) {
+        entry.mode = parseInt(link.Mode, 8)
+      }
+
+      if (link.Mtime !== undefined && link.Mtime !== null) {
+        entry.mtime = {
+          secs: link.Mtime
+        }
+
+        if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {
+          entry.mtime.nsecs = link.MtimeNsecs
+        }
+      }
+
+      yield entry
     }
   }
 })

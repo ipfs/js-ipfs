@@ -3,9 +3,25 @@
 const FormData = require('form-data')
 const { isElectronRenderer } = require('ipfs-utils/src/env')
 
-module.exports = buf => {
+module.exports = (buf, { mode, mtime, mtimeNsecs } = {}) => {
+  const headers = {}
+
+  if (mode != null) {
+    headers.mode = mode
+  }
+
+  if (mtime != null) {
+    headers.mtime = mtime
+
+    if (mtimeNsecs != null) {
+      headers['mtime-nsecs'] = mtimeNsecs
+    }
+  }
+
   const formData = new FormData()
-  formData.append('file', buf)
+  formData.append('file', buf, {
+    header: headers
+  })
   return formData
 }
 

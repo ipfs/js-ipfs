@@ -114,6 +114,134 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should ls from outside of mfs',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should change file mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should change directory mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should change file mode as string',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should change file mode to 0',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update file mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update directory mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should respect metadata when copying files',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should respect metadata when copying directories',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should respect metadata when copying from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'ls directory with long option should include metadata',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should have default mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should set mtime as Date',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should set mtime as { nsecs, secs }',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should set mtime as timespec',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should set mtime as hrtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and have default mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mode as string',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mode as number',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mtime as Date',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mtime as { nsecs, secs }',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mtime as timespec',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should make directory and specify mtime as hrtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mode as a string',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mode as a number',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mtime as Date',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mtime as { nsecs, secs }',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mtime as timespec',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should write file and specify mtime as hrtime',
+        reason: 'TODO not implemented in go-ipfs yet'
       }
     ]
   })
@@ -124,6 +252,30 @@ describe('interface-ipfs-core tests', () => {
       isNode ? null : {
         name: 'addFromFs',
         reason: 'Not designed to run in the browser'
+      },
+      {
+        name: 'should add with mode as string',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add with mode as number',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add with mtime as Date',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add with mtime as { nsecs, secs }',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add with mtime as timespec',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add with mtime as hrtime',
+        reason: 'TODO not implemented in go-ipfs yet'
       },
       // .catPullStream
       {
@@ -136,6 +288,10 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should export a chunk of a file in a Readable Stream',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should ls with metadata',
         reason: 'TODO not implemented in go-ipfs yet'
       }
     ]

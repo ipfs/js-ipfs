@@ -8,6 +8,7 @@ module.exports = config => {
   const read = require('./read')(config)
 
   return {
+    chmod: callbackify.variadic(require('./chmod')(config)),
     cp: callbackify.variadic(require('./cp')(config)),
     mkdir: callbackify.variadic(require('./mkdir')(config)),
     flush: callbackify.variadic(require('./flush')(config)),
@@ -19,6 +20,7 @@ module.exports = config => {
     read: callbackify.variadic(concatify(read)),
     readReadableStream: streamify.readable(read),
     readPullStream: pullify.source(read),
+    touch: callbackify.variadic(require('./touch')(config)),
     write: callbackify.variadic(require('./write')(config)),
     mv: callbackify.variadic(require('./mv')(config))
   }
