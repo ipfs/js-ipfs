@@ -1,3 +1,13 @@
+<a name="40.2.0"></a>
+# [40.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.1.0...v40.2.0) (2020-01-09)
+
+
+### Features
+
+* support UnixFSv1.5 metadata ([#1186](https://github.com/ipfs/js-ipfs-http-client/issues/1186)) ([da9d17a](https://github.com/ipfs/js-ipfs-http-client/commit/da9d17a))
+
+
+
 <a name="40.1.0"></a>
 # [40.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.1...v40.1.0) (2019-12-10)
 
