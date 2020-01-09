@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "40.1.0",
+  "version": "40.2.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -137,6 +137,7 @@
     "Jeff Downie <JeffDownie@users.noreply.github.com>",
     "Jeromy <why@ipfs.io>",
     "Jeromy <jeromyj@gmail.com>",
+    "Jim Pick <jim@protocol.ai>",
     "Joe Turgeon <arithmetric@gmail.com>",
     "Jonathan <jkrone@vt.edu>",
     "Juan Batiz-Benet <juan@benet.ai>",
@@ -158,6 +159,7 @@
     "Níckolas Goline <nickolas.goline@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
     "Orie Steele <orie@ohs.io>",
+    "Paul Cowgill <pauldavidcowgill@gmail.com>",
     "Pedro Santos <pedro.santos@moxy.studio>",
     "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
     "Pedro Teixeira <i@pgte.me>",
