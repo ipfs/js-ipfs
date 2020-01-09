@@ -1,6 +1,6 @@
 {
   "name": "ipfs-multipart",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A set of utilities to help dealing with IPFS multipart.",
   "keywords": [
     "ipfs",
@@ -45,6 +45,7 @@
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Hugo Dias <hugomrdias@gmail.com>",
     "Hugo Dias <mail@hugodias.me>",
-    "Maciej Krüger <mkg20001@gmail.com>"
+    "Maciej Krüger <mkg20001@gmail.com>",
+    "dependabot-preview[bot] <27856297+dependabot-preview[bot]@users.noreply.github.com>"
   ]
 }
