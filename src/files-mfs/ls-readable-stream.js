@@ -43,10 +43,15 @@ module.exports = (common, options) => {
 
       const entries = await getStream.array(stream)
 
-      expect(entries.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
-        { name: 'b', type: 0, size: 0, hash: '' },
-        { name: 'lv1', type: 0, size: 0, hash: '' }
-      ])
+      expect(entries).to.have.lengthOf(2)
+      expect(entries).to.have.nested.property('[0].name', 'b')
+      expect(entries).to.have.nested.property('[0].type', 0)
+      expect(entries).to.have.nested.property('[0].size', 0)
+      expect(entries).to.have.nested.property('[0].hash', '')
+      expect(entries).to.have.nested.property('[1].name', 'lv1')
+      expect(entries).to.have.nested.property('[1].type', 0)
+      expect(entries).to.have.nested.property('[1].size', 0)
+      expect(entries).to.have.nested.property('[1].hash', '')
     })
 
     it('should ls directory with long option', async () => {
@@ -58,20 +63,15 @@ module.exports = (common, options) => {
       const stream = ipfs.files.lsReadableStream(testDir, { long: true })
       const entries = await getStream.array(stream)
 
-      expect(entries.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
-        {
-          name: 'b',
-          type: 0,
-          size: 13,
-          hash: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T'
-        },
-        {
-          name: 'lv1',
-          type: 1,
-          size: 0,
-          hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
-        }
-      ])
+      expect(entries).to.have.lengthOf(2)
+      expect(entries).to.have.nested.property('[0].name', 'b')
+      expect(entries).to.have.nested.property('[0].type', 0)
+      expect(entries).to.have.nested.property('[0].size', 13)
+      expect(entries).to.have.nested.property('[0].hash', 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T')
+      expect(entries).to.have.nested.property('[1].name', 'lv1')
+      expect(entries).to.have.nested.property('[1].type', 1)
+      expect(entries).to.have.nested.property('[1].size', 0)
+      expect(entries).to.have.nested.property('[1].hash', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
     })
   })
 }

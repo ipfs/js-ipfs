@@ -35,12 +35,17 @@ module.exports = (common, options) => {
       await ipfs.files.mkdir(`${testDir}/lv1`, { parents: true })
       await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
 
-      const info = await ipfs.files.ls(testDir)
+      const entries = await ipfs.files.ls(testDir)
 
-      expect(info.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
-        { name: 'b', type: 0, size: 0, hash: '' },
-        { name: 'lv1', type: 0, size: 0, hash: '' }
-      ])
+      expect(entries).to.have.lengthOf(2)
+      expect(entries).to.have.nested.property('[0].name', 'b')
+      expect(entries).to.have.nested.property('[0].type', 0)
+      expect(entries).to.have.nested.property('[0].size', 0)
+      expect(entries).to.have.nested.property('[0].hash', '')
+      expect(entries).to.have.nested.property('[1].name', 'lv1')
+      expect(entries).to.have.nested.property('[1].type', 0)
+      expect(entries).to.have.nested.property('[1].size', 0)
+      expect(entries).to.have.nested.property('[1].hash', '')
     })
 
     it('should ls directory with long option', async () => {
@@ -49,22 +54,50 @@ module.exports = (common, options) => {
       await ipfs.files.mkdir(`${testDir}/lv1`, { parents: true })
       await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
 
-      const info = await ipfs.files.ls(testDir, { long: true })
+      const entries = await ipfs.files.ls(testDir, { long: true })
 
-      expect(info.sort((a, b) => a.name.localeCompare(b.name))).to.eql([
-        {
-          name: 'b',
-          type: 0,
-          size: 13,
-          hash: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T'
-        },
-        {
-          name: 'lv1',
-          type: 1,
-          size: 0,
-          hash: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
+      expect(entries).to.have.lengthOf(2)
+      expect(entries).to.have.nested.property('[0].name', 'b')
+      expect(entries).to.have.nested.property('[0].type', 0)
+      expect(entries).to.have.nested.property('[0].size', 13)
+      expect(entries).to.have.nested.property('[0].hash', 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T')
+      expect(entries).to.have.nested.property('[1].name', 'lv1')
+      expect(entries).to.have.nested.property('[1].type', 1)
+      expect(entries).to.have.nested.property('[1].size', 0)
+      expect(entries).to.have.nested.property('[1].hash', 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+    })
+
+    it('ls directory with long option should include metadata', async () => {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(`${testDir}/lv1`, {
+        parents: true,
+        mtime: {
+          secs: 5
         }
-      ])
+      })
+      await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), {
+        create: true,
+        mtime: {
+          secs: 5
+        }
+      })
+
+      const entries = await ipfs.files.ls(testDir, { long: true })
+
+      expect(entries).to.have.lengthOf(2)
+      expect(entries).to.have.nested.property('[0].hash', 'QmTVnczjg445RUAEYNH1wvhVa2rnPoWMfHMxQc6W7HHoyM')
+      expect(entries).to.have.nested.property('[0].mode', 0o0644)
+      expect(entries).to.have.nested.deep.property('[0].mtime', {
+        secs: 5,
+        nsecs: 0
+      })
+      expect(entries).to.have.nested.property('[1].hash', 'QmXkBjmbtWUxXLa3s541UBSzPgvaAR7b8X3Amcp5D1VKTQ')
+      expect(entries).to.have.nested.property('[1].mode', 0o0755)
+      expect(entries).to.have.nested.deep.property('[1].mtime', {
+        secs: 5,
+        nsecs: 0
+      })
     })
 
     it('should ls from outside of mfs', async () => {
@@ -85,20 +118,19 @@ module.exports = (common, options) => {
       expect(contents).to.be.an('array').and.to.be.empty()
     })
 
-    it('should list an file directly', async () => {
+    it('should list a file directly', async () => {
       const fileName = `single-file-${hat()}.txt`
       const filePath = `/${fileName}`
       await ipfs.files.write(filePath, Buffer.from('Hello world'), {
         create: true
       })
-      const contents = await ipfs.files.ls(filePath)
+      const entries = await ipfs.files.ls(filePath)
 
-      expect(contents).to.be.an('array').and.have.lengthOf(1).and.to.deep.equal([{
-        hash: '',
-        name: fileName,
-        size: 0,
-        type: 0
-      }])
+      expect(entries).to.have.lengthOf(1)
+      expect(entries).to.have.nested.property('[0].name', fileName)
+      expect(entries).to.have.nested.property('[0].type', 0)
+      expect(entries).to.have.nested.property('[0].size', 0)
+      expect(entries).to.have.nested.property('[0].hash', '')
     })
   })
 }

@@ -3,6 +3,7 @@
 const { createSuite } = require('../utils/suite')
 
 const tests = {
+  chmod: require('./chmod'),
   mkdir: require('./mkdir'),
   write: require('./write'),
   cp: require('./cp'),
@@ -15,7 +16,8 @@ const tests = {
   ls: require('./ls'),
   lsReadableStream: require('./ls-readable-stream'),
   lsPullStream: require('./ls-pull-stream'),
-  flush: require('./flush')
+  flush: require('./flush'),
+  touch: require('./touch')
 }
 
 module.exports = createSuite(tests)

@@ -24,6 +24,7 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 The Files API, aka MFS (Mutable File System)
 
 _Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
+  - [files.chmod](#fileschmod)
   - [files.cp](#filescp)
   - [files.flush](#filesflush)
   - [files.ls](#filesls)
@@ -36,6 +37,7 @@ _Explore the Mutable File System through interactive coding challenges in our [P
   - [files.readReadableStream](#filesreadreadablestream)
   - [files.rm](#filesrm)
   - [files.stat](#filesstat)
+  - [files.touch](#filestouch)
   - [files.write](#fileswrite)
 
 ### ⚠️ Note
@@ -58,6 +60,8 @@ Where `data` may be:
 {
     path: '/tmp/myfile.txt', // The file path
     content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
+    mode: <Number> // optional integer mode to store the entry with
+    mtime: <time> // optional value representing the modification time of the entry - either a `Date` object, an object with `{ secs, nsecs }` properties where `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
 }
 ```
 If no `content` is passed, then the path is treated as an empty directory
@@ -98,6 +102,8 @@ an array of objects is returned, each of the form:
 {
   path: '/tmp/myfile.txt',
   hash: 'QmHash', // base58 encoded multihash
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -130,16 +136,20 @@ const results = await ipfs.add(files)
 
 The `results` array:
 
-```json
+```javascript
 [
   {
     "path": "tmp",
     "hash": "QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg",
+    "mode": 493,
+    "mtime": { secs: Number, nsecs: Number },
     "size": 67
   },
   {
     "path": "/tmp/myfile.txt",
     "hash": "QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW",
+    "mode": 420,
+    "mtime": { secs: Number, nsecs: Number },
     "size": 11
   }
 ]
@@ -179,6 +189,8 @@ stream.on('data', function (file) {
   // {
   //   path: '/tmp/myfile.txt',
   //   hash: 'QmHash' // base58 encoded multihash
+  //   mode: Number,
+  //   mtime: { secs: Number, nsecs: Number },
   //   size: 123
   // }
 })
@@ -207,6 +219,8 @@ Returns a Pull Stream, where objects can be written of the forms
 {
   path: '/tmp/myfile.txt', // The file path
   content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
+  mode: <Number> // optional integer mode to store the entry with
+  mtime: <time> // optional value representing the modification time of the entry - either a `Date` object, an object with `{ secs, nsecs }` properties where `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
 }
 ```
 
@@ -233,6 +247,8 @@ pull(
     // {
     //   path: '/tmp/myfile.txt',
     //   hash: 'QmHash' // base58 encoded multihash
+    //   mode: Number
+    //   mtime: { secs: Number, nsecs: Number }
     //   size: 123
     // }
   })
@@ -264,6 +280,8 @@ an array of objects is returned, each of the form:
 {
   path: 'test-folder',
   hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
+  mode: Number
+  mtime: Date
   size: 123
 }
 ```
@@ -318,6 +336,8 @@ an array of objects is returned, each of the form:
 {
   path: '/tmp/myfile.txt',
   hash: 'QmHash', // base58 encoded multihash
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -511,7 +531,9 @@ the yielded objects are of the form:
 ```js
 {
   path: '/tmp/myfile.txt',
-  content: <Readable stream>
+  content: <Readable stream>,
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -563,7 +585,9 @@ the yielded objects are of the form:
 ```js
 {
   path: '/tmp/myfile.txt',
-  content: <Pull Stream>
+  content: <Pull Stream>,
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -624,7 +648,9 @@ an array of objects is returned, each of the form:
   path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
   size: 11696,
   hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
-  type: 'file'
+  type: 'file',
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -674,7 +700,9 @@ the yielded objects are of the form:
   path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
   size: 11696,
   hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
-  type: 'file'
+  type: 'file',
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -727,7 +755,9 @@ the yielded objects are of the form:
   path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
   size: 11696,
   hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
-  type: 'file'
+  type: 'file',
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -758,6 +788,46 @@ A great source of [examples][] can be found in the tests for this API.
 ## The Files API aka MFS (The Mutable File System)
 
 The Mutable File System (MFS) is a virtual file system on top of IPFS that exposes a Unix like API over a virtual directory. It enables users to write and read from paths without having to worry about updating the graph. It enables things like [ipfs-blob-store](https://github.com/ipfs/ipfs-blob-store) to exist.
+
+#### `files.chmod`
+
+> Change mode for files and directories
+
+##### `ipfs.files.chmod(path, mode, [options])`
+
+Where:
+
+- `path` is the path to the entry to modify.  It might be:
+  - An existing MFS path to a file or a directory (e.g. `/my-dir/my-file.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
+- `mode` is the new file mode.  It might be:
+  - A string modification of the existing mode, e.g. `'a+x'`, `'g-w'`, etc
+  - An integer, e.g. the returned value from `parseInt('0755', 8)` or `0o755`
+- `options` is an optional Object that might contain the following keys:
+  - `recursive` is a Boolean value that indicates if `mode` should be applied to all sub files/directories of `path` (default: false)
+  - `hashAlg` is which algorithm to use when creating CIDs for modified entries. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
+  - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
+  - `cidVersion`: the CID version to use for any updated entries (integer, default 0)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
+
+**Example:**
+
+```JavaScript
+// To give a file -rwxrwxrwx permissions
+await ipfs.files.chmod('/path/to/file.txt', parseInt('0777', 8))
+
+// Alternatively
+await ipfs.files.chmod('/path/to/file.txt', '+rwx')
+
+// You can omit the leading `0` too
+await ipfs.files.chmod('/path/to/file.txt', '777')
+```
 
 #### `files.cp`
 
@@ -819,6 +889,8 @@ Where:
   - `parents` is a Boolean value to decide whether or not to make the parent directories if they don't exist  (default: false)
   - `hashAlg` is which algorithm to use when creating CIDs for newly created directories (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
   - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk  (default: true)
+  - `mode`: optional UnixFS mode to create the directory with - a number or a string that will be interpreted as a base 8 number
+  - `mtime`: A Date object, an object with `{ secs, nsecs }` properties where `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second, or the output of [`process.hrtime()`](https://nodejs.org/api/process.html#process_process_hrtime_time)
 
 **Returns**
 
@@ -880,6 +952,42 @@ console.log(stats)
 //   blocks: 1,
 //   type: 'file'
 // }
+```
+
+#### `files.touch`
+
+> Update the mtime of a file or directory
+
+##### `ipfs.files.touch(path, [options])`
+
+Where:
+
+- `path` is the path to the file or directory to update. It might be:
+  - An existing MFS path to a file or directory (e.g. `/my-dir/a.txt`)
+  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
+  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
+- `options` is an optional Object that might contain the following keys:
+  - `mtime` Either a ` Date` object, an object with `{ sec, nsecs }` properties or the output of `process.hrtime()`  (default: now)
+  - `hashAlg` is which algorithm to use when creating CIDs for modified entries. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
+  - `flush` is a Boolean value to decide whether or not to immediately flush MFS changes to disk (default: true)
+  - `cidVersion`: the CID version to use for any updated entries (integer, default 0)
+
+**Returns**
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
+
+**Example:**
+
+```JavaScript
+// set the mtime to the current time
+await ipfs.files.touch('/path/to/file.txt')
+
+// set the mtime to a specific time
+await ipfs.files.touch('/path/to/file.txt', {
+  mtime: new Date('May 23, 2014 14:45:14 -0700')
+})
 ```
 
 #### `files.rm`
@@ -1034,6 +1142,8 @@ Where:
   - `length` is an Integer with the maximum number of bytes to read (default: Read all bytes from `content`)
   - `rawLeaves`: if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (boolean, default false)
   - `cidVersion`: the CID version to use when storing the data (storage keys are based on the CID, including its version) (integer, default 0)
+  - `mode`: optional UnixFS mode to create or update the file with - a number or a string that will be interpreted as a base 8 number
+  - `mtime`: A Date object, an object with `{ sec, nsecs }` properties or the output of `process.hrtime()` or `process.hrtime.bigint()`
 
 **Returns**
 
@@ -1141,6 +1251,8 @@ each object contains the following keys:
 - `type` which is the object's type (`directory` or `file`)
 - `size` the size of the file in bytes
 - `hash` the hash of the file
+- `mode` the UnixFS mode as a Number
+- `mtime` an objects with numeric `secs` and `nsecs` properties
 
 **Example:**
 
@@ -1185,6 +1297,8 @@ the yielded objects contain the following keys:
 - `type` which is the object's type (`directory` or `file`)
 - `size` the size of the file in bytes
 - `hash` the hash of the file
+- `mode` the UnixFS mode as a Number
+- `mtime` an object with numeric `secs` and `nsecs` properties
 
 **Example:**
 
@@ -1227,6 +1341,8 @@ the yielded objects contain the following keys:
   - `type` which is the object's type (`directory` or `file`)
   - `size` the size of the file in bytes
   - `hash` the hash of the file
+  - `mode` the UnixFS mode as a Number
+  - `mtime` an object with numeric `secs` and `nsecs` properties
 
 **Example:**
 

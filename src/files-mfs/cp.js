@@ -59,5 +59,76 @@ module.exports = (common, options) => {
       const testFileData = await ipfs.files.read(testFilePath)
       expect(testFileData).to.eql(fixtures.smallFile.data)
     })
+
+    it('should respect metadata when copying files', async function () {
+      const testSrcPath = `/test-${hat()}`
+      const testDestPath = `/test-${hat()}`
+      const mode = parseInt('0321', 8)
+      const mtime = new Date()
+      const seconds = Math.floor(mtime.getTime() / 1000)
+      const expectedMtime = {
+        secs: seconds,
+        nsecs: (mtime - (seconds * 1000)) * 1000
+      }
+
+      await ipfs.files.write(testSrcPath, Buffer.from('TEST'), {
+        create: true,
+        mode,
+        mtime
+      })
+      await ipfs.files.cp(testSrcPath, testDestPath)
+
+      const stats = await ipfs.files.stat(testDestPath)
+      expect(stats).to.have.deep.property('mtime', expectedMtime)
+      expect(stats).to.have.property('mode', mode)
+    })
+
+    it('should respect metadata when copying directories', async function () {
+      const testSrcPath = `/test-${hat()}`
+      const testDestPath = `/test-${hat()}`
+      const mode = parseInt('0321', 8)
+      const mtime = new Date()
+      const seconds = Math.floor(mtime.getTime() / 1000)
+      const expectedMtime = {
+        secs: seconds,
+        nsecs: (mtime - (seconds * 1000)) * 1000
+      }
+
+      await ipfs.files.mkdir(testSrcPath, {
+        mode,
+        mtime
+      })
+      await ipfs.files.cp(testSrcPath, testDestPath, {
+        recursive: true
+      })
+
+      const stats = await ipfs.files.stat(testDestPath)
+      expect(stats).to.have.deep.property('mtime', expectedMtime)
+      expect(stats).to.have.property('mode', mode)
+    })
+
+    it('should respect metadata when copying from outside of mfs', async function () {
+      const testDestPath = `/test-${hat()}`
+      const mode = parseInt('0321', 8)
+      const mtime = new Date()
+      const seconds = Math.floor(mtime.getTime() / 1000)
+      const expectedMtime = {
+        secs: seconds,
+        nsecs: (mtime - (seconds * 1000)) * 1000
+      }
+
+      const [{
+        hash
+      }] = await ipfs.add({
+        content: fixtures.smallFile.data,
+        mode,
+        mtime
+      })
+      await ipfs.files.cp(`/ipfs/${hash}`, testDestPath)
+
+      const stats = await ipfs.files.stat(testDestPath)
+      expect(stats).to.have.deep.property('mtime', expectedMtime)
+      expect(stats).to.have.property('mode', mode)
+    })
   })
 }

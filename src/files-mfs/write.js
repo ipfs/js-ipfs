@@ -18,6 +18,32 @@ module.exports = (common, options) => {
 
     let ipfs
 
+    async function testMode (mode, expectedMode) {
+      const testPath = `/test-${hat()}`
+
+      await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
+        create: true,
+        parents: true,
+        mode
+      })
+
+      const stats = await ipfs.files.stat(testPath)
+      expect(stats).to.have.property('mode', expectedMode)
+    }
+
+    async function testMtime (mtime, expectedMtime) {
+      const testPath = `/test-${hat()}`
+
+      await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
+        create: true,
+        parents: true,
+        mtime
+      })
+
+      const stats = await ipfs.files.stat(testPath)
+      expect(stats).to.have.deep.property('mtime', expectedMtime)
+    }
+
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
@@ -44,6 +70,52 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(testPath)
       expect(stats.type).to.equal('file')
+    })
+
+    it('should write file and specify mode as a string', async function () {
+      const mode = '0321'
+      await testMode(mode, parseInt(mode, 8))
+    })
+
+    it('should write file and specify mode as a number', async function () {
+      const mode = parseInt('0321', 8)
+      await testMode(mode, mode)
+    })
+
+    it('should write file and specify mtime as Date', async function () {
+      const mtime = new Date()
+      const seconds = Math.floor(mtime.getTime() / 1000)
+      const expectedMtime = {
+        secs: seconds,
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
+      }
+      await testMtime(mtime, expectedMtime)
+    })
+
+    it('should write file and specify mtime as { nsecs, secs }', async function () {
+      const mtime = {
+        secs: 5,
+        nsecs: 0
+      }
+      await testMtime(mtime, mtime)
+    })
+
+    it('should write file and specify mtime as timespec', async function () {
+      await testMtime({
+        Seconds: 5,
+        FractionalNanoseconds: 0
+      }, {
+        secs: 5,
+        nsecs: 0
+      })
+    })
+
+    it('should write file and specify mtime as hrtime', async function () {
+      const mtime = process.hrtime()
+      await testMtime(mtime, {
+        secs: mtime[0],
+        nsecs: mtime[1]
+      })
     })
   })
 }

@@ -44,7 +44,8 @@ module.exports = (common, options) => {
       const filesPath = path.join(fixturesPath, 'test-folder')
 
       const result = await ipfs.addFromFs(filesPath, { recursive: true, ignore: ['files/**'] })
-      expect(result.length).to.be.below(9)
+
+      expect(result.some(file => file.path.includes('test-folder/files/'))).to.be.false()
     })
 
     it('should add a file from the file system', async () => {

@@ -22,6 +22,30 @@ module.exports = (common, options) => {
 
     let ipfs
 
+    async function testMode (mode, expectedMode) {
+      const content = String(Math.random() + Date.now())
+      const files = await ipfs.add({
+        content: Buffer.from(content),
+        mode
+      })
+      expect(files).to.have.length(1)
+
+      const stats = await ipfs.files.stat(`/ipfs/${files[0].hash}`)
+      expect(stats).to.have.property('mode', expectedMode)
+    }
+
+    async function testMtime (mtime, expectedMtime) {
+      const content = String(Math.random() + Date.now())
+      const files = await ipfs.add({
+        content: Buffer.from(content),
+        mtime
+      })
+      expect(files).to.have.length(1)
+
+      const stats = await ipfs.files.stat(`/ipfs/${files[0].hash}`)
+      expect(stats).to.have.deep.property('mtime', expectedMtime)
+    }
+
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
@@ -298,6 +322,56 @@ module.exports = (common, options) => {
       expect(files).to.have.length(1)
 
       await expectTimeout(ipfs.object.get(files[0].hash), 4000)
+    })
+
+    it('should add with mode as string', async function () {
+      this.slow(10 * 1000)
+      const mode = '0777'
+      await testMode(mode, parseInt(mode, 8))
+    })
+
+    it('should add with mode as number', async function () {
+      this.slow(10 * 1000)
+      const mode = parseInt('0777', 8)
+      await testMode(mode, mode)
+    })
+
+    it('should add with mtime as Date', async function () {
+      this.slow(10 * 1000)
+      const mtime = new Date(5000)
+      await testMtime(mtime, {
+        secs: 5,
+        nsecs: 0
+      })
+    })
+
+    it('should add with mtime as { nsecs, secs }', async function () {
+      this.slow(10 * 1000)
+      const mtime = {
+        secs: 5,
+        nsecs: 0
+      }
+      await testMtime(mtime, mtime)
+    })
+
+    it('should add with mtime as timespec', async function () {
+      this.slow(10 * 1000)
+      await testMtime({
+        Seconds: 5,
+        FractionalNanoseconds: 0
+      }, {
+        secs: 5,
+        nsecs: 0
+      })
+    })
+
+    it('should add with mtime as hrtime', async function () {
+      this.slow(10 * 1000)
+      const mtime = process.hrtime()
+      await testMtime(mtime, {
+        secs: mtime[0],
+        nsecs: mtime[1]
+      })
     })
   })
 }
