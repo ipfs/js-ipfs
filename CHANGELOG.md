@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ipfs/js-ipfs-multipart/compare/v0.2.0...v0.3.0) (2020-01-09)
+
+
+### Features
+
+* support UnixFSv1.5 metadata  ([008e872](https://github.com/ipfs/js-ipfs-multipart/commit/008e872))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/ipfs/js-ipfs-multipart/compare/v0.1.1...v0.2.0) (2019-08-27)
 
