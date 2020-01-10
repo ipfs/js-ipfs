@@ -15,10 +15,18 @@ function toFileObject (file) {
   const fo = {
     Hash: toB58String(file.hash),
     Size: file.size,
-    Type: fileTypeMap[file.type] || file.type
+    Type: fileTypeMap[file.type] || file.type,
+    Mode: file.mode,
+    Mtime: file.mtime
   }
   if (fo.Hash !== file.name) {
     fo.Name = file.name
+  }
+  if (file.mtime) {
+    fo.Mtime = Math.round(file.mtime.getTime() / 1000)
+  }
+  if (file.mode) {
+    fo.Mode = file.mode
   }
   return fo
 }

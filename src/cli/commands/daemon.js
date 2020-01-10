@@ -48,6 +48,7 @@ module.exports = {
   handler (argv) {
     argv.resolve((async () => {
       const { print } = argv
+
       print('Initializing IPFS daemon...')
       print(`js-ipfs version: ${require('../../../package.json').version}`)
       print(`System version: ${os.arch()}/${os.platform()}`)

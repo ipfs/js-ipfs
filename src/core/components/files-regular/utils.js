@@ -101,25 +101,27 @@ const parseChunkSize = (str, name) => {
 const mapFile = (file, options) => {
   options = options || {}
 
-  let size = 0
-  let type = 'dir'
-
-  if (file.unixfs && file.unixfs.type === 'file') {
-    size = file.unixfs.fileSize()
-    type = 'file'
-  }
-
   const output = {
     hash: cidToString(file.cid, { base: options.cidBase }),
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,
-    size,
-    type
+    size: 0,
+    type: 'dir'
   }
 
-  if (options.includeContent && file.unixfs && file.unixfs.type === 'file') {
-    output.content = file.content
+  if (file.unixfs) {
+    if (file.unixfs.type === 'file') {
+      output.size = file.unixfs.fileSize()
+      output.type = 'file'
+
+      if (options.includeContent) {
+        output.content = file.content
+      }
+    }
+
+    output.mode = file.unixfs.mode
+    output.mtime = file.unixfs.mtime
   }
 
   return output

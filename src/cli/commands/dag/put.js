@@ -79,7 +79,7 @@ module.exports = {
     }
   },
 
-  handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, getIpfs, print, resolve }) {
+  handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, getIpfs, print, resolve, getStdin }) {
     resolve((async () => {
       const ipfs = await getIpfs()
 
@@ -101,7 +101,7 @@ module.exports = {
         // pipe from stdin
         source = Buffer.alloc(0)
 
-        for await (const buf of process.stdin) {
+        for await (const buf of getStdin()) {
           source = Buffer.concat([source, buf])
         }
       } else {

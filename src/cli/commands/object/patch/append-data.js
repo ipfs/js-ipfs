@@ -26,7 +26,7 @@ module.exports = {
         data = fs.readFileSync(argv.data)
       } else {
         data = await new Promise((resolve, reject) => {
-          process.stdin.pipe(bl((err, input) => {
+          argv.getStdin().pipe(bl((err, input) => {
             if (err) return reject(err)
             resolve(input)
           }))

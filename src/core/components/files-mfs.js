@@ -28,7 +28,9 @@ const mapLsFile = (options) => {
       hash: long ? cidToString(file.cid, { base: options.cidBase }) : '',
       name: file.name,
       type: long ? file.type : 0,
-      size: long ? file.size || 0 : 0
+      size: long ? file.size || 0 : 0,
+      mode: file.mode,
+      mtime: file.mtime
     }
   }
 }
@@ -64,6 +66,26 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
   }
 
   return {
+    /**
+     * Change file mode
+     *
+     * @param {String} path - The path of the source to modify.
+     * @param {Object} mode - The mode to set the path
+     * @param {Object} [opts] - Options for modification.
+     * @param {boolean} [opts.recursive=false] - Whether to change modes recursively. (default: false)
+     * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
+     * @param {number} [opts.shardSplitThreshold] - If the modified path has more than this many links it will be turned into a HAMT shard
+     * @param {function(Error): void} [cb] - Callback function.
+     * @returns {Promise<string> | void} When callback is provided nothing is returned.
+     */
+    chmod: (path, mode, opts, cb) => {
+      if (typeof opts === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return nodeify(methods.chmod(path, mode, opts), cb)
+    },
+
     /**
      * Copy files
      *
@@ -207,6 +229,26 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @returns {PullStream} Returns a PullStream with the contents of path.
      */
     readPullStream: (path, opts = {}) => toPullStream.source(methods.read(path, opts)),
+
+    /**
+     * Update modification time
+     *
+     * @param {String} path - The path of the source to modify.
+     * @param {number} mtime - Time to use as the new modification time in seconds since (+ve) or before (-ve) the Unix Epoch
+     * @param {Object} [opts] - Options for touch.
+     * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
+     * @param {number} [opts.cidVersion=0] - CID version to use with the newly updated node
+     * @param {number} [opts.shardSplitThreshold] - If the modified path has more than this many links it will be turned into a HAMT shard
+     * @param {function(Error): void} [cb] - Callback function.
+     * @returns {Promise<string> | void} When callback is provided nothing is returned.
+     */
+    touch: (path, mtime, opts, cb) => {
+      if (typeof opts === 'function') {
+        cb = opts
+        opts = {}
+      }
+      return nodeify(methods.touch(path, mtime, opts), cb)
+    },
 
     /**
      * Write to a file.

@@ -196,7 +196,9 @@ exports.add = {
 
             yield {
               path: entry.name,
-              content: entry.content
+              content: entry.content,
+              mode: entry.mode,
+              mtime: entry.mtime
             }
           }
 
@@ -234,7 +236,9 @@ exports.add = {
           output.write(JSON.stringify({
             Name: file.path,
             Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
-            Size: file.size
+            Size: file.size,
+            Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
+            Mtime: file.mtime
           }) + '\n')
         }
       }
@@ -294,13 +298,26 @@ exports.ls = {
     return h.response({
       Objects: [{
         Hash: key,
-        Links: files.map((file) => ({
-          Name: file.name,
-          Hash: cidToString(file.hash, { base: cidBase }),
-          Size: file.size,
-          Type: toTypeCode(file.type),
-          Depth: file.depth
-        }))
+        Links: files.map((file) => {
+          const output = {
+            Name: file.name,
+            Hash: cidToString(file.hash, { base: cidBase }),
+            Size: file.size,
+            Type: toTypeCode(file.type),
+            Depth: file.depth,
+            Mode: file.mode.toString(8).padStart(4, '0')
+          }
+
+          if (file.mtime) {
+            output.Mtime = file.mtime.secs
+
+            if (file.mtime.nsecs !== null && file.mtime.nsecs !== undefined) {
+              output.MtimeNsecs = file.mtime.nsecs
+            }
+          }
+
+          return output
+        })
       }]
     })
   }
