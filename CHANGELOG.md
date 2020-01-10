@@ -1,3 +1,20 @@
+# [0.15.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.14.0...v0.15.0) (2020-01-10)
+
+
+### Bug Fixes
+
+* allow writing starting at offset beyond file length ([#71](https://github.com/ipfs/js-ipfs-mfs/issues/71)) ([68bd372](https://github.com/ipfs/js-ipfs-mfs/commit/68bd37249f40bf3318fb0f0ab527231e671ed0df)), closes [#53](https://github.com/ipfs/js-ipfs-mfs/issues/53)
+* fix formatting of mode and optional mtimes ([#70](https://github.com/ipfs/js-ipfs-mfs/issues/70)) ([5747297](https://github.com/ipfs/js-ipfs-mfs/commit/57472970bde1f36f525b0e65f29bb2e5c32a6717))
+* remove format and/or codec options ([#69](https://github.com/ipfs/js-ipfs-mfs/issues/69)) ([009fb98](https://github.com/ipfs/js-ipfs-mfs/commit/009fb9817b7c65eb014338500724150f33d002d5)), closes [#67](https://github.com/ipfs/js-ipfs-mfs/issues/67)
+* returns cid of flushed path ([#72](https://github.com/ipfs/js-ipfs-mfs/issues/72)) ([d331b35](https://github.com/ipfs/js-ipfs-mfs/commit/d331b3554332c13d294fa17071a030f404799dc1)), closes [#50](https://github.com/ipfs/js-ipfs-mfs/issues/50)
+
+
+### BREAKING CHANGES
+
+* `--format` and/or `--codec` option has been removed from the CLI, the HTTP API and the core API.
+
+
+
 <a name="0.14.0"></a>
 # [0.14.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.13.2...v0.14.0) (2020-01-09)
 
