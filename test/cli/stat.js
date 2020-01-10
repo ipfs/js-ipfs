@@ -137,6 +137,6 @@ describe('stat', () => {
       path,
       defaultOptions()
     ])
-    expect(output).to.equal('stats-mode stats-type\n')
+    expect(output).to.equal('---------- stats-type\n')
   })
 })

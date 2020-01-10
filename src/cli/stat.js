@@ -3,6 +3,8 @@
 const {
   asBoolean
 } = require('./utils')
+const formatMode = require('ipfs-utils/src/files/format-mode')
+const formatMtime = require('ipfs-utils/src/files/format-mtime')
 
 module.exports = {
   command: 'stat [path]',
@@ -81,8 +83,8 @@ Mtime: <mtime>`,
             .replace('<cumulsize>', stats.cumulativeSize)
             .replace('<childs>', stats.blocks)
             .replace('<type>', stats.type)
-            .replace('<mode>', stats.mode)
-            .replace('<mtime>', stats.mtime)
+            .replace('<mode>', formatMode(stats.mode, stats.type === 'directory'))
+            .replace('<mtime>', formatMtime(stats.mtime))
           )
         })
     })())
