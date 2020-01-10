@@ -128,7 +128,7 @@ const write = async (context, source, destination, options) => {
 
   // pad start of file if necessary
   if (options.offset > 0) {
-    if (destination.unixfs && destination.unixfs.fileSize() > options.offset) {
+    if (destination.unixfs) {
       log(`Writing first ${options.offset} bytes of original file`)
 
       sources.push(
@@ -139,6 +139,15 @@ const write = async (context, source, destination, options) => {
           })
         }
       )
+
+      if (destination.unixfs.fileSize() < options.offset) {
+        const extra = options.offset - destination.unixfs.fileSize()
+
+        log(`Writing zeros for extra ${extra} bytes`)
+        sources.push(
+          asyncZeroes(extra)
+        )
+      }
     } else {
       log(`Writing zeros for first ${options.offset} bytes`)
       sources.push(

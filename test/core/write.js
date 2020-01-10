@@ -373,11 +373,13 @@ describe('write', () => {
       const stats = await mfs.stat(path)
       expect(stats.size).to.equal(newContent.length + offset)
 
-      const buffer = Buffer.concat(await all(mfs.read(path, {
-        offset: offset - 5
-      })))
+      const buffer = Buffer.concat(await all(mfs.read(path)))
 
-      expect(buffer).to.deep.equal(Buffer.concat([Buffer.from([0, 0, 0, 0, 0]), newContent]))
+      if (content[Symbol.asyncIterator]) {
+        content = Buffer.concat(await all(content))
+      }
+
+      expect(buffer).to.deep.equal(Buffer.concat([content, Buffer.from([0, 0, 0, 0, 0]), newContent]))
     })
   })
 
