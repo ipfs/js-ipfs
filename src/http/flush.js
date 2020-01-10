@@ -14,12 +14,19 @@ const mfsFlush = {
       ipfs
     } = request.server.app
     const {
-      arg
+      arg,
+      cidBase
     } = request.query
 
-    await ipfs.files.flush(arg || FILE_SEPARATOR, {})
+    let cid = await ipfs.files.flush(arg || FILE_SEPARATOR, {})
 
-    return h.response()
+    if (cidBase !== 'base58btc' && cid.version === 0) {
+      cid = cid.toV1()
+    }
+
+    return h.response({
+      Cid: cid.toString(cidBase)
+    })
   },
   options: {
     validate: {
@@ -28,7 +35,8 @@ const mfsFlush = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string()
+        arg: Joi.string(),
+        cidBase: Joi.string().default('base58btc')
       })
     }
   }

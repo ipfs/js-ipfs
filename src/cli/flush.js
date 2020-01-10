@@ -9,17 +9,32 @@ module.exports = {
 
   describe: ' Flush a given path\'s data to disk',
 
-  builder: {},
+  builder: {
+    'cid-base': {
+      default: 'base58btc',
+      describe: 'CID base to use.'
+    }
+  },
 
   handler (argv) {
     const {
       path,
-      getIpfs
+      getIpfs,
+      cidBase,
+      print
     } = argv
 
     argv.resolve((async () => {
       const ipfs = await getIpfs()
-      return ipfs.files.flush(path || FILE_SEPARATOR, {})
+      let cid = await ipfs.files.flush(path || FILE_SEPARATOR, {})
+
+      if (cidBase !== 'base58btc' && cid.version === 0) {
+        cid = cid.toV1()
+      }
+
+      print(JSON.stringify({
+        Cid: cid.toString(cidBase)
+      }))
     })())
   }
 }

@@ -11,9 +11,9 @@
   "scripts": {
     "test": "aegir test",
     "test:node": "aegir test -t node",
-    "test:cli": "aegir test -t node -f test/cli/**/*.js",
-    "test:core": "aegir test -t node -f test/core/**/*.js",
-    "test:http": "aegir test -t node -f test/http/**/*.js",
+    "test:cli": "aegir test -t node -f test/cli/index.js",
+    "test:core": "aegir test -t node -f test/core/index.js",
+    "test:http": "aegir test -t node -f test/http/index.js",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
     "build": "aegir build",

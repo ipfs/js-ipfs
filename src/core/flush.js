@@ -12,6 +12,8 @@ module.exports = (context) => {
   return async function mfsFlush (path = FILE_SEPARATOR, options = defaultOptions) {
     options = applyDefaultOptions(options, defaultOptions)
 
-    await stat(context)(path, options)
+    const result = await stat(context)(path, options)
+
+    return result.cid
   }
 }

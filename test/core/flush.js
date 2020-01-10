@@ -14,7 +14,9 @@ describe('flush', () => {
   })
 
   it('flushes the root node', async () => {
-    await mfs.flush()
+    const cid = await mfs.flush()
+
+    expect(cid.toString()).to.equal((await mfs.stat('/')).cid.toString())
   })
 
   it('throws a error when trying to flush non-existent directories', async () => {
