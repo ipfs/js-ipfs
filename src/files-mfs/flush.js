@@ -32,13 +32,22 @@ module.exports = (common, options) => {
       }
     })
 
-    it('should flush root', () => ipfs.files.flush())
+    it('should flush root', async () => {
+      const root = await ipfs.files.stat('/')
+      const flushed = await ipfs.files.flush()
+
+      expect(root.hash).to.equal(flushed.toString())
+    })
 
     it('should flush specific dir', async () => {
       const testDir = `/test-${hat()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
-      await ipfs.files.flush(testDir)
+
+      const dirStats = await ipfs.files.stat(testDir)
+      const flushed = await ipfs.files.flush(testDir)
+
+      expect(dirStats.hash).to.equal(flushed.toString())
     })
   })
 }

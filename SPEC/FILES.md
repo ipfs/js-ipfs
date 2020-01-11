@@ -1204,22 +1204,22 @@ await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
 
 > Flush a given path's data to the disk
 
-##### `ipfs.files.flush([...paths])`
+##### `ipfs.files.flush([path])`
 
 Where:
 
-- `paths` are optional string paths to flush (default: `/`)
+- `path` is an optional string path to flush (default: `/`)
 
 **Returns**
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<void>` | If successfully copied. Otherwise an error will be thrown |
+| `Promise<CID>` | The CID of the path that has been flushed |
 
 **Example:**
 
 ```JavaScript
-await ipfs.files.flush('/')
+const cid = await ipfs.files.flush('/')
 ```
 
 #### `files.ls`
