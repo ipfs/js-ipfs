@@ -200,7 +200,7 @@
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
     "detect-node": "^2.0.4",
-    "dir-compare": "^1.7.3",
+    "dir-compare": "^2.0.0",
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "hat": "0.0.3",
