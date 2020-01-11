@@ -1,3 +1,8 @@
+<a name="0.127.0"></a>
+# [0.127.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.126.0...v0.127.0) (2020-01-11)
+
+
+
 <a name="0.126.0"></a>
 # [0.126.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.125.0...v0.126.0) (2020-01-09)
 
