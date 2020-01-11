@@ -1,6 +1,7 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const CID = require('cids')
 
 module.exports = configure(({ ky }) => {
   return async (path, options) => {
@@ -14,11 +15,13 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', path)
 
-    await ky.post('files/flush', {
+    const res = await ky.post('files/flush', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
       searchParams
-    }).text()
+    }).json()
+
+    return new CID(res.Cid)
   }
 })
