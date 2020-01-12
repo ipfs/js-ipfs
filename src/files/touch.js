@@ -14,7 +14,6 @@ module.exports = configure(({ ky }) => {
       searchParams.set('mtime', mtime.secs)
       searchParams.set('mtimeNsecs', mtime.nsecs)
     }
-    if (options.format) searchParams.set('format', options.format)
     if (options.flush != null) searchParams.set('flush', options.flush)
     if (options.hashAlg) searchParams.set('hash', options.hashAlg)
     if (options.parents != null) searchParams.set('parents', options.parents)

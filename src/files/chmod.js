@@ -10,7 +10,6 @@ module.exports = configure(({ ky }) => {
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.append('arg', path)
     searchParams.append('mode', modeToString(mode))
-    if (options.format) searchParams.set('format', options.format)
     if (options.flush != null) searchParams.set('flush', options.flush)
     if (options.hashAlg) searchParams.set('hash', options.hashAlg)
     if (options.parents != null) searchParams.set('parents', options.parents)
