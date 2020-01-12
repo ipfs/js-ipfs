@@ -1,3 +1,26 @@
+<a name="41.0.0"></a>
+# [41.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.2.1...v41.0.0) (2020-01-12)
+
+
+### Bug Fixes
+
+* return CIDs from files.flush ([#1216](https://github.com/ipfs/js-ipfs-http-client/issues/1216)) ([13f8d7a](https://github.com/ipfs/js-ipfs-http-client/commit/13f8d7a))
+
+
+### Code Refactoring
+
+* removes format option ([#1218](https://github.com/ipfs/js-ipfs-http-client/issues/1218)) ([4ef26cd](https://github.com/ipfs/js-ipfs-http-client/commit/4ef26cd))
+
+
+### BREAKING CHANGES
+
+* `format` option is no longer supported as everything is `dag-pb` all
+of the time.
+
+Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
+
+
+
 <a name="40.2.1"></a>
 ## [40.2.1](https://github.com/ipfs/js-ipfs-http-client/compare/v40.2.0...v40.2.1) (2020-01-09)
 
