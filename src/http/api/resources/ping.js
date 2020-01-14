@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const { PassThrough } = require('readable-stream')
+const { PassThrough } = require('stream')
 const toIterable = require('stream-to-it')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')

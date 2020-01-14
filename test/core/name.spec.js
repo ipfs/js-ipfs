@@ -1,35 +1,27 @@
-/* eslint max-nested-callbacks: ["error", 7] */
 /* eslint-env mocha */
 'use strict'
 
 const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const parallel = require('async/parallel')
-const series = require('async/series')
 const IPFS = require('../../src')
 const { resolvePath } = require('../../src/core/components/name/utils')
 const ipnsRouting = require('../../src/core/ipns/routing/config')
+// const IpnsRepublisher = require('../../src/core/ipns/republisher')
 const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
 const { Key, Errors } = require('interface-datastore')
 const CID = require('cids')
+const last = require('it-last')
 
 const factory = require('../utils/factory')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
-const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts, callback) => {
-  series([
-    (cb) => publisher.name.publish(ipfsRef, publishOpts, cb),
-    (cb) => resolver.name.resolve(nodeId, resolveOpts, cb)
-  ], (err, res) => {
-    expect(err).to.not.exist()
-    expect(res[0]).to.exist()
-    expect(res[1]).to.exist()
-    expect(res[1]).to.equal(ipfsRef)
-    callback()
-  })
+const publishAndResolve = async (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts) => {
+  await publisher.name.publish(ipfsRef, publishOpts)
+  const value = await last(resolver.name.resolve(nodeId, resolveOpts))
+  expect(value).to.equal(ipfsRef)
 }
 
 describe('name', function () {
@@ -57,6 +49,10 @@ describe('name', function () {
 
     it('should republish entries after 60 seconds', function (done) {
       this.timeout(120 * 1000)
+
+      // const rebublisher = IpnsRepublisher(publisher, datastore, peerInfo, keychain, options)
+      // await rebublisher.start()
+
       sinon.spy(node._ipns.republisher, '_republishEntries')
 
       setTimeout(function () {

@@ -1,6 +1,6 @@
 'use strict'
 
-const { PassThrough } = require('readable-stream')
+const { PassThrough } = require('stream')
 
 function streamResponse (request, h, fn) {
   const output = new PassThrough()

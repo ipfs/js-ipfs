@@ -1,10 +1,8 @@
 'use strict'
 
-const callbackify = require('callbackify')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const CID = require('cids')
-const { every, forEach } = require('p-iteration')
 const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('ipfs:dht')
@@ -18,10 +16,9 @@ module.exports = (self) => {
      * @param {Buffer} key
      * @param {Object} options - get options
      * @param {number} options.timeout - optional timeout
-     * @param {function(Error)} [callback]
-     * @returns {Promise|void}
+     * @returns {Promise}
      */
-    get: callbackify.variadic(async (key, options) => { // eslint-disable-line require-await
+    get: async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
       if (!Buffer.isBuffer(key)) {
@@ -35,7 +32,7 @@ module.exports = (self) => {
       }
 
       return self.libp2p.dht.get(key, options)
-    }),
+    },
 
     /**
      * Write a key/value pair to the DHT.
@@ -46,10 +43,9 @@ module.exports = (self) => {
      *
      * @param {Buffer} key
      * @param {Buffer} value
-     * @param {function(Error)} [callback]
      * @returns {Promise|void}
      */
-    put: callbackify(async (key, value) => { // eslint-disable-line require-await
+    put: async (key, value) => { // eslint-disable-line require-await
       if (!Buffer.isBuffer(key)) {
         try {
           key = (new CID(key)).buffer
@@ -61,7 +57,7 @@ module.exports = (self) => {
       }
 
       return self.libp2p.dht.put(key, value)
-    }),
+    },
 
     /**
      * Find peers in the DHT that can provide a specific value, given a key.
@@ -70,10 +66,9 @@ module.exports = (self) => {
      * @param {Object} options - findProviders options
      * @param {number} options.timeout - how long the query should maximally run, in milliseconds (default: 60000)
      * @param {number} options.maxNumProviders - maximum number of providers to find
-     * @param {function(Error, Array<PeerInfo>)} [callback]
-     * @returns {Promise<PeerInfo>|void}
+     * @returns {Promise<PeerInfo>}
      */
-    findProvs: callbackify.variadic(async (key, options) => { // eslint-disable-line require-await
+    findProvs: async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
       if (typeof key === 'string') {
@@ -87,7 +82,7 @@ module.exports = (self) => {
       }
 
       return self.libp2p.contentRouting.findProviders(key, options)
-    }),
+    },
 
     /**
      * Query the DHT for all multiaddresses associated with a `PeerId`.
@@ -96,13 +91,13 @@ module.exports = (self) => {
      * @param {function(Error, PeerInfo)} [callback]
      * @returns {Promise<PeerInfo>|void}
      */
-    findPeer: callbackify(async (peer) => { // eslint-disable-line require-await
+    findPeer: async (peer) => { // eslint-disable-line require-await
       if (typeof peer === 'string') {
         peer = PeerId.createFromCID(peer)
       }
 
       return self.libp2p.peerRouting.findPeer(peer)
-    }),
+    },
 
     /**
      * Announce to the network that we are providing given values.
@@ -110,10 +105,9 @@ module.exports = (self) => {
      * @param {CID|Array<CID>} keys - The keys that should be announced.
      * @param {Object} options - provide options
      * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
-     * @param {function(Error)} [callback]
-     * @returns {Promise|void}
+     * @returns {Promise}
      */
-    provide: callbackify.variadic(async (keys, options) => {
+    provide: async (keys, options) => {
       options = options || {}
 
       if (!Array.isArray(keys)) {
@@ -131,11 +125,10 @@ module.exports = (self) => {
       }
 
       // ensure blocks are actually local
-      const has = await every(keys, (key) => {
-        return self._repo.blocks.has(key)
-      })
+      const hasKeys = await Promise.all(keys.map(k => self._repo.blocks.has(k)))
+      const hasAll = hasKeys.every(has => has)
 
-      if (!has) {
+      if (!hasAll) {
         const errMsg = 'block(s) not found locally, cannot provide'
 
         log.error(errMsg)
@@ -146,9 +139,9 @@ module.exports = (self) => {
         // TODO: Implement recursive providing
         throw errcode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET')
       } else {
-        await forEach(keys, (cid) => self.libp2p.contentRouting.provide(cid))
+        await Promise.all(keys.map(k => self.libp2p.contentRouting.provide(k)))
       }
-    }),
+    },
 
     /**
      * Find the closest peers to a given `PeerId`, by querying the DHT.
@@ -157,7 +150,7 @@ module.exports = (self) => {
      * @param {function(Error, Array<PeerInfo>)} [callback]
      * @returns {Promise<Array<PeerInfo>>|void}
      */
-    query: callbackify(async (peerId) => {
+    query: async (peerId) => {
       if (typeof peerId === 'string') {
         try {
           peerId = PeerId.createFromCID(peerId)
@@ -178,6 +171,6 @@ module.exports = (self) => {
 
         throw err
       }
-    })
+    }
   }
 }

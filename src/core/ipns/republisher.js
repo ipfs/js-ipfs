@@ -21,7 +21,7 @@ class IpnsRepublisher {
     this._datastore = datastore
     this._peerInfo = peerInfo
     this._keychain = keychain
-    this._options = options
+    this._options = options || {}
     this._republishHandle = null
   }
 
@@ -75,7 +75,7 @@ class IpnsRepublisher {
       if (firstRun) {
         firstRun = false
 
-        return minute
+        return this._options.initialBroadcastDelay || minute
       }
 
       return defaultBroadcastInterval

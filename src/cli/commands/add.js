@@ -1,6 +1,6 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
 const mh = require('multihashes')

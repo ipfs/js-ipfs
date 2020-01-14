@@ -3,9 +3,6 @@
 const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
-const multiaddr = require('multiaddr')
-const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
-const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 module.exports = ({
@@ -31,26 +28,6 @@ module.exports = ({
 }
 
 function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
-  // Set up Delegate Routing based on the presence of Delegates in the config
-  let contentRouting
-  let peerRouting
-  const delegateHosts = get(options, 'config.Addresses.Delegates',
-    get(config, 'Addresses.Delegates', [])
-  )
-  if (delegateHosts.length > 0) {
-    // Pick a random delegate host
-    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
-    const delegateAddr = multiaddr(delegateString).toOptions()
-    const delegatedApiOptions = {
-      host: delegateAddr.host,
-      // port is a string atm, so we need to convert for the check
-      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
-      port: delegateAddr.port
-    }
-    contentRouting = [new DelegatedContentRouter(peerInfo.id, delegatedApiOptions)]
-    peerRouting = [new DelegatedPeerRouter(delegatedApiOptions)]
-  }
-
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router', 'gossipsub')
 
@@ -64,10 +41,7 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
   const libp2pDefaults = {
     datastore,
     peerInfo,
-    modules: {
-      contentRouting,
-      peerRouting
-    }
+    modules: {}
   }
 
   const bootstrapList = get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))

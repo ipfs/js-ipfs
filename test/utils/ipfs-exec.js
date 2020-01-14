@@ -2,7 +2,6 @@
 
 const execa = require('execa')
 const path = require('path')
-const _ = require('lodash')
 
 // This is our new test utility to easily check and execute ipfs cli commands.
 //
@@ -15,7 +14,7 @@ const _ = require('lodash')
 // The `.fail` variation asserts that the command exited with `Code > 0`
 // and returns a promise that resolves to `stderr`.
 module.exports = (repoPath, opts) => {
-  const env = _.clone(process.env)
+  const env = { ...process.env }
   env.IPFS_PATH = repoPath
 
   const config = Object.assign({}, {

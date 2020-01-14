@@ -1,7 +1,6 @@
 'use strict'
 
-const CID = require('cids')
-const base32 = require('base32.js')
+const Repo = require('ipfs-repo')
 
 module.exports = function ({ repo }) {
   return async function * refsLocal () {
@@ -13,12 +12,7 @@ module.exports = function ({ repo }) {
 
 function dsKeyToRef (key) {
   try {
-    // Block key is of the form /<base32 encoded string>
-    const decoder = new base32.Decoder()
-    const buff = Buffer.from(decoder.write(key.toString().slice(1)).finalize())
-    return {
-      ref: new CID(buff).toString()
-    }
+    return { ref: Repo.utils.blockstore.keyToCid(key) }
   } catch (err) {
     return { err: `Could not convert block with key '${key}' to CID: ${err.message}` }
   }
