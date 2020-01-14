@@ -10,7 +10,7 @@ function isPong (pingResponse) {
   return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
 }
 
-describe.only('ping', function () {
+describe('ping', function () {
   this.timeout(60 * 1000)
   const df = factory()
 
