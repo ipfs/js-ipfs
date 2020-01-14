@@ -6,7 +6,6 @@ module.exports = ({ libp2p }) => {
     unsubscribe: (...args) => libp2p.pubsub.unsubscribe(...args),
     publish: (...args) => libp2p.pubsub.publish(...args),
     ls: (...args) => libp2p.pubsub.getTopics(...args),
-    peers: (...args) => libp2p.pubsub.getSubscribers(...args),
-    setMaxListeners: (n) => libp2p.pubsub.setMaxListeners(n)
+    peers: (...args) => libp2p.pubsub.getSubscribers(...args)
   }
 }
