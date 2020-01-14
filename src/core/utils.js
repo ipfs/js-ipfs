@@ -88,9 +88,7 @@ const normalizeCidPath = (path) => {
  *
  * @param {Dag} dag The IPFS dag api
  * @param {Array<CID|string>} ipfsPaths A single or collection of ipfs-paths
- * @param {Object} [options] Optional options
- * @param {string|number} [options.timeout] Timeout for the resolves
- * @param {AbortSignal} [options.signal] Abort signal to abort the resolve on request
+ * @param {Object} [options] Optional options passed directly to dag.resolve
  * @return {Promise<Array<CID>>}
  */
 const resolvePath = async function (dag, ipfsPaths, options) {
@@ -109,7 +107,7 @@ const resolvePath = async function (dag, ipfsPaths, options) {
     }
 
     let cid
-    for await (const { value } of dag.resolve(path, { signal: options.signal })) {
+    for await (const { value } of dag.resolve(path, options)) {
       if (CID.isCID(value)) {
         cid = value
       }
