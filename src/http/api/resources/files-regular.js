@@ -107,31 +107,29 @@ exports.get = {
   async handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
+
     const pack = tar.pack()
-
-    let filesArray
-    try {
-      filesArray = await all(ipfs.get(key))
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to get key' })
-    }
-
     pack.entry = promisify(pack.entry.bind(pack))
 
-    Promise
-      .all(filesArray.map(async file => {
-        if (!file.content) {
-          return pack.entry({ name: file.path, type: 'directory' })
+    const streamFiles = async () => {
+      try {
+        for await (const file of ipfs.get(key)) {
+          if (file.content) {
+            const content = await concat(file.content)
+            pack.entry({ name: file.path, size: file.size }, content.slice())
+          } else {
+            pack.entry({ name: file.path, type: 'directory' })
+          }
         }
-        const content = await concat(file.content)
-        return pack.entry({ name: file.path, size: file.size }, content.slice())
-      }))
-      .then(() => pack.finalize())
-      .catch(err => {
+        pack.finalize()
+      } catch (err) {
         log.error(err)
         pack.emit('error', err)
         pack.destroy()
-      })
+      }
+    }
+
+    streamFiles()
 
     // reply must be called right away so that tar-stream offloads its content
     // otherwise it will block in large files

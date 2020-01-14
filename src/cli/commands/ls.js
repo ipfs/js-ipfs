@@ -55,21 +55,21 @@ module.exports = {
       const ipfs = await getIpfs()
       let first = true
 
-      const widths = {
-        cid: 0,
-        size: 0,
-        mtime: 0,
-        mode: 0
+      let maxWidths = []
+      const getMaxWidths = (...args) => {
+        maxWidths = args.map((v, i) => Math.max(maxWidths[i] || 0, v.length))
+        return maxWidths
       }
 
       const printLink = (mode, mtime, cid, size, name, depth = 0) => {
+        const widths = getMaxWidths(mode, mtime, cid, size, name)
         // todo: fix this by resolving https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24
         const padding = Math.max(depth - pathParts.length, 0)
         print(
-          rightpad(mode, 11) +
-          rightpad(mtime || '-', widths.mtime + 1) +
-          rightpad(cid, widths.cid + 1) +
-          rightpad(size || '-', widths.size + 1) +
+          rightpad(mode, widths[0] + 1) +
+          rightpad(mtime, widths[1] + 1) +
+          rightpad(cid, widths[2] + 1) +
+          rightpad(size, widths[3] + 1) +
           '  '.repeat(padding) + name
         )
       }
@@ -78,25 +78,19 @@ module.exports = {
         const mode = formatMode(link.mode, link.type === 'dir')
         const mtime = formatMtime(link.mtime)
         const cid = cidToString(link.cid, { base: cidBase })
+        const size = link.size ? String(link.size) : '-'
         const name = link.type === 'dir' ? `${link.name || ''}/` : link.name
-
-        widths.mode = Math.max(widths.mode, mode)
-        widths.mtime = Math.max(widths.mtime, mtime)
-        widths.cid = Math.max(widths.cid, cid.length)
-        widths.size = Math.max(widths.size, String(link.size).length)
 
         if (first) {
           first = false
           if (headers) {
-            widths.mode = Math.max(widths.mode, 'Mode'.length)
-            widths.mtime = Math.max(widths.mtime, 'Mtime'.length)
-            widths.cid = Math.max(widths.cid, 'Hash'.length)
-            widths.size = Math.max(widths.size, 'Size'.length)
+            // Seed max widths for the first item
+            getMaxWidths(mode, mtime, cid, size, name)
             printLink('Mode', 'Mtime', 'Hash', 'Size', 'Name')
           }
         }
 
-        printLink(mode, mtime, cid, link.size, name, link.depth)
+        printLink(mode, mtime, cid, size, name, link.depth)
       }
     })())
   }

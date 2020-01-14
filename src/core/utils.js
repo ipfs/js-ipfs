@@ -158,7 +158,7 @@ const mapFile = (file, options) => {
       output.type = 'file'
 
       if (options.includeContent) {
-        output.content = file.content
+        output.content = file.content()
       }
     }
 

@@ -55,14 +55,11 @@ exports.addrs = {
     const { ipfs } = request.server.app
     const peers = await ipfs.swarm.addrs()
 
-    const addrs = {}
-    peers.forEach((peer) => {
-      addrs[peer.id.toString()] = peer.multiaddrs.toArray()
-        .map((addr) => addr.toString())
-    })
-
     return h.response({
-      Addrs: addrs
+      Addrs: peers.reduce((addrs, peer) => {
+        addrs[peer.id.toString()] = peer.addrs.map(a => a.toString())
+        return addrs
+      }, {})
     })
   }
 }

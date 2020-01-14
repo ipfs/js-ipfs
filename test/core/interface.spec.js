@@ -4,6 +4,7 @@
 const tests = require('interface-ipfs-core')
 const merge = require('merge-options')
 const { createFactory } = require('ipfsd-ctl')
+const { isNode } = require('ipfs-utils/src/env')
 const IPFS = require('../../src')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
@@ -33,13 +34,7 @@ describe('interface-ipfs-core tests', function () {
   const commonFactory = createFactory(commonOptions, overrides)
 
   tests.root(commonFactory, {
-    skip: isNode ? [{
-      name: 'should ignore a directory from the file system',
-      reason: 'FIXME: unixfs importer returns an extra QmUNLLs dir first (seems to be fixed in 0.42)'
-    }] : [{
-      name: 'should ignore a directory from the file system',
-      reason: 'FIXME: unixfs importer returns an extra QmUNLLs dir first (seems to be fixed in 0.42)'
-    }, {
+    skip: isNode ? null : [{
       name: 'should add with mtime as hrtime',
       reason: 'Not designed to run in the browser'
     }]
