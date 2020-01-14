@@ -86,8 +86,11 @@ const normalizeCidPath = (path) => {
  *  - multihash Buffer
  *  - Arrays of the above
  *
- * @param  {IPFS}               objectAPI The IPFS object api
- * @param  {?}    ipfsPaths A single or collection of ipfs-paths
+ * @param {Dag} dag The IPFS dag api
+ * @param {Array<CID|string>} ipfsPaths A single or collection of ipfs-paths
+ * @param {Object} [options] Optional options
+ * @param {string|number} [options.timeout] Timeout for the resolves
+ * @param {AbortSignal} [options.signal] Abort signal to abort the resolve on request
  * @return {Promise<Array<CID>>}
  */
 const resolvePath = async function (dag, ipfsPaths, options) {
