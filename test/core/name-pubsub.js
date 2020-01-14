@@ -20,9 +20,7 @@ const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 describe('name-pubsub', function () {
   const df = factory()
   // TODO make this work in the browser and between daemon and in-proc in nodes
-  if (!isNode) {
-    return this.skip()
-  }
+  if (!isNode) return
 
   let nodes
   let nodeA

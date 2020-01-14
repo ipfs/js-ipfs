@@ -13,7 +13,7 @@ const privateKey = 'CAASqAkwggSkAgEAAoIBAQChVmiObYo6pkKrMSd3OzW1cTL+RDmX1rkETYGK
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
 describe('init', function () {
-  if (!isNode) return this.skip()
+  if (!isNode) return
 
   let ipfs
   let repo

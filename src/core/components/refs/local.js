@@ -12,7 +12,7 @@ module.exports = function ({ repo }) {
 
 function dsKeyToRef (key) {
   try {
-    return { ref: Repo.utils.blockstore.keyToCid(key) }
+    return { ref: Repo.utils.blockstore.keyToCid(key).toString() }
   } catch (err) {
     return { err: `Could not convert block with key '${key}' to CID: ${err.message}` }
   }
