@@ -113,9 +113,9 @@ module.exports = ({
     await pinManager.load()
 
     const pin = {
-      add: Components.pin.add({ pinManager, gcLock, dag, object }),
-      ls: Components.pin.ls({ pinManager, object }),
-      rm: Components.pin.rm({ pinManager, gcLock, object })
+      add: Components.pin.add({ pinManager, gcLock, dag }),
+      ls: Components.pin.ls({ pinManager, dag }),
+      rm: Components.pin.rm({ pinManager, gcLock, dag })
     }
 
     // FIXME: resolve this circular dependency

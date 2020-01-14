@@ -90,7 +90,9 @@ const normalizeCidPath = (path) => {
  * @param  {?}    ipfsPaths A single or collection of ipfs-paths
  * @return {Promise<Array<CID>>}
  */
-const resolvePath = async function (objectAPI, ipfsPaths) {
+const resolvePath = async function (dag, ipfsPaths, options) {
+  options = options || {}
+
   if (!Array.isArray(ipfsPaths)) {
     ipfsPaths = [ipfsPaths]
   }
@@ -98,43 +100,19 @@ const resolvePath = async function (objectAPI, ipfsPaths) {
   const cids = []
 
   for (const path of ipfsPaths) {
-    if (typeof path !== 'string') {
+    if (isIpfs.cid(path)) {
       cids.push(new CID(path))
-
       continue
     }
 
-    const parsedPath = exports.parseIpfsPath(path)
-    let hash = new CID(parsedPath.hash)
-    let links = parsedPath.links
-
-    if (!links.length) {
-      cids.push(hash)
-
-      continue
+    let cid
+    for await (const { value } of dag.resolve(path, { signal: options.signal })) {
+      if (CID.isCID(value)) {
+        cid = value
+      }
     }
 
-    // recursively follow named links to the target node
-    while (true) {
-      const obj = await objectAPI.get(hash)
-
-      if (!links.length) {
-        // done tracing, obj is the target node
-        cids.push(hash)
-
-        break
-      }
-
-      const linkName = links[0]
-      const nextObj = obj.Links.find(link => link.Name === linkName)
-
-      if (!nextObj) {
-        throw new Error(`no link named "${linkName}" under ${hash}`)
-      }
-
-      hash = nextObj.Hash
-      links = links.slice(1)
-    }
+    cids.push(cid)
   }
 
   return cids

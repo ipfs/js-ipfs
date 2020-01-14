@@ -10,6 +10,6 @@ module.exports = ({ ipld, preload }) => {
       preload(cid)
     }
 
-    yield * ipld.resolve(cid, path)
+    yield * ipld.resolve(cid, path, { signal: options.signal })
   }
 }

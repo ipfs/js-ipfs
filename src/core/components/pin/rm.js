@@ -9,7 +9,7 @@ const { PinTypes } = require('./pin-manager')
 
 const PIN_RM_CONCURRENCY = 8
 
-module.exports = ({ pinManager, gcLock, object }) => {
+module.exports = ({ pinManager, gcLock, dag }) => {
   return async function rm (paths, options) {
     options = options || {}
 
@@ -19,7 +19,7 @@ module.exports = ({ pinManager, gcLock, object }) => {
       throw errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE')
     }
 
-    const cids = await resolvePath(object, paths)
+    const cids = await resolvePath(dag, paths)
     const release = await gcLock.readLock()
 
     try {

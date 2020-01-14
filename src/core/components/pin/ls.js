@@ -9,7 +9,7 @@ const { PinTypes } = PinManager
 
 const PIN_LS_CONCURRENCY = 8
 
-module.exports = ({ pinManager, object }) => {
+module.exports = ({ pinManager, dag }) => {
   return async function * ls (paths, options) {
     options = options || {}
 
@@ -35,7 +35,7 @@ module.exports = ({ pinManager, object }) => {
       paths = Array.isArray(paths) ? paths : [paths]
 
       // check the pinned state of specific hashes
-      const cids = await resolvePath(object, paths)
+      const cids = await resolvePath(dag, paths)
 
       yield * parallelMap(PIN_LS_CONCURRENCY, async cid => {
         const { reason, pinned } = await pinManager.isPinnedWithType(cid, type)

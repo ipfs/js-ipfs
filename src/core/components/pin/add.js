@@ -1,14 +1,14 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { resolvePath } = require('../../utils')
+const { resolvePath, withTimeoutOption } = require('../../utils')
 
-module.exports = ({ pinManager, gcLock, dag, object }) => {
-  return async function add (paths, options) {
+module.exports = ({ pinManager, gcLock, dag }) => {
+  return withTimeoutOption(async function add (paths, options) {
     options = options || {}
 
     const recursive = options.recursive !== false
-    const cids = await resolvePath(object, paths)
+    const cids = await resolvePath(dag, paths, { signal: options.signal })
     const pinAdd = async () => {
       const results = []
 
@@ -26,7 +26,7 @@ module.exports = ({ pinManager, gcLock, dag, object }) => {
 
           // entire graph of nested links should be pinned,
           // so make sure we have all the objects
-          await pinManager.fetchCompleteDag(key, { preload: options.preload })
+          await pinManager.fetchCompleteDag(key, { preload: options.preload, signal: options.signal })
 
           // found all objects, we can add the pin
           results.push(cid)
@@ -70,5 +70,5 @@ module.exports = ({ pinManager, gcLock, dag, object }) => {
     } finally {
       release()
     }
-  }
+  })
 }
