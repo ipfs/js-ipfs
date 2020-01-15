@@ -74,6 +74,11 @@ function transformFile (ipfs, opts) {
   return async function * (source) {
     for await (const file of source) {
       let cid = file.cid
+
+      if (opts.cidVersion === 1) {
+        cid = cid.toV1()
+      }
+
       const hash = cid.toBaseEncodedString()
       let path = file.path ? file.path : hash
 
@@ -81,32 +86,12 @@ function transformFile (ipfs, opts) {
         path = ''
       }
 
-      if (opts.onlyHash) {
-        yield {
-          path,
-          hash,
-          size: file.unixfs.fileSize()
-        }
-
-        return
-      }
-
-      const node = await ipfs.object.get(file.cid, Object.assign({}, opts, { preload: false }))
-
-      if (opts.cidVersion === 1) {
-        cid = cid.toV1()
-      }
-
-      let size = node.size
-
-      if (Buffer.isBuffer(node)) {
-        size = node.length
-      }
-
       yield {
         path,
         hash,
-        size
+        size: file.size,
+        mode: file.unixfs && file.unixfs.mode,
+        mtime: file.unixfs && file.unixfs.mtime
       }
     }
   }
