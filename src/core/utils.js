@@ -23,11 +23,10 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  * @throws on an invalid @param ipfsPath
  */
 function parseIpfsPath (ipfsPath) {
-  const invalidPathErr = new Error('invalid ipfs ref path')
   ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
   const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
   if (!matched) {
-    throw invalidPathErr
+    throw new Error('invalid ipfs ref path')
   }
 
   const [hash, ...links] = matched[1].split('/')
@@ -36,7 +35,7 @@ function parseIpfsPath (ipfsPath) {
   if (isIpfs.cid(hash)) {
     return { hash, links }
   } else {
-    throw invalidPathErr
+    throw new Error('invalid ipfs ref path')
   }
 }
 
@@ -103,6 +102,13 @@ const resolvePath = async function (dag, ipfsPaths, options) {
   for (const path of ipfsPaths) {
     if (isIpfs.cid(path)) {
       cids.push(new CID(path))
+      continue
+    }
+
+    const { hash, links } = parseIpfsPath(path)
+
+    if (!links.length) {
+      cids.push(new CID(hash))
       continue
     }
 
