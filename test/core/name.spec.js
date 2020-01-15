@@ -35,7 +35,7 @@ describe('name', function () {
 
     afterEach(async () => {
       if (republisher) {
-        republisher.stop()
+        await republisher.stop()
         republisher = null
       }
     })

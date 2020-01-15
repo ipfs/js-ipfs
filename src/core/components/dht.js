@@ -146,9 +146,8 @@ module.exports = (self) => {
     /**
      * Find the closest peers to a given `PeerId`, by querying the DHT.
      *
-     * @param {PeerId} peer - The `PeerId` to run the query agains.
-     * @param {function(Error, Array<PeerInfo>)} [callback]
-     * @returns {Promise<Array<PeerInfo>>|void}
+     * @param {PeerId} peerId - The `PeerId` to run the query against.
+     * @returns {Promise<Array<PeerInfo>>}
      */
     query: async (peerId) => {
       if (typeof peerId === 'string') {
