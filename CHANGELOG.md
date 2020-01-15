@@ -1,3 +1,13 @@
+<a name="0.16.0"></a>
+# [0.16.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.15.0...v0.16.0) (2020-01-15)
+
+
+### Features
+
+* adds support for -X symbolic mode and recursive chmod ([#73](https://github.com/ipfs/js-ipfs-mfs/issues/73)) ([f3b6e5d](https://github.com/ipfs/js-ipfs-mfs/commit/f3b6e5d))
+
+
+
 # [0.15.0](https://github.com/ipfs/js-ipfs-mfs/compare/v0.14.0...v0.15.0) (2020-01-10)
 
 
