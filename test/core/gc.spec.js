@@ -35,7 +35,8 @@ class MutexEmitter /* extends Mutex */ {
   }
 }
 
-describe('gc', function () {
+// TODO: there's no way to access the gcLock instance anymore - decide what to do with these tests
+describe.skip('gc', function () {
   this.timeout(40 * 1000)
   const df = factory()
   const fixtures = [{
@@ -85,8 +86,7 @@ describe('gc', function () {
     resToCid: (res) => res.cid.toString()
   }]
 
-  // TODO: there's no way to access the gcLock instance anymore - decide what to do with these tests
-  describe.skip('locks', function () {
+  describe('locks', function () {
     for (const test of blockAddTests) {
       // eslint-disable-next-line no-loop-func
       it(`garbage collection should wait for pending ${test.name} to finish`, async () => {
