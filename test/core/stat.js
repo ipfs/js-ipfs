@@ -8,6 +8,9 @@ const crypto = require('crypto')
 const createMfs = require('../helpers/create-mfs')
 const createShardedDirectory = require('../helpers/create-sharded-directory')
 const mc = require('multicodec')
+const CID = require('cids')
+const mh = require('multihashes')
+const Block = require('ipfs-block')
 
 describe('stat', () => {
   let mfs
@@ -171,5 +174,18 @@ describe('stat', () => {
     const stats = await mfs.stat(path)
 
     expect(stats.cid.toString()).to.equal(cid.toString())
+  })
+
+  it('stats an identity CID', async () => {
+    const data = Buffer.from('derp')
+    const path = '/identity.node'
+    const cid = new CID(1, 'identity', mh.encode(data, 'identity'))
+    await mfs.repo.blocks.put(new Block(data, cid))
+    await mfs.cp(`/ipfs/${cid}`, path)
+
+    const stats = await mfs.stat(path)
+
+    expect(stats.cid.toString()).to.equal(cid.toString())
+    expect(stats).to.have.property('size', data.length)
   })
 })

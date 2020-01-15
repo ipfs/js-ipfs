@@ -94,10 +94,14 @@ const addToDirectory = async (context, options) => {
   options.parent.rmLink(options.name)
   options.parent.addLink(new DAGLink(options.name, options.size, options.cid))
 
-  // Update mtime
   const node = UnixFS.unmarshal(options.parent.Data)
-  node.mtime = new Date()
-  options.parent = new DAGNode(node.marshal(), options.parent.Links)
+
+  if (node.mtime) {
+    // Update mtime if previously set
+    node.mtime = new Date()
+
+    options.parent = new DAGNode(node.marshal(), options.parent.Links)
+  }
 
   const hashAlg = mh.names[options.hashAlg]
 
@@ -110,7 +114,8 @@ const addToDirectory = async (context, options) => {
 
   return {
     node: options.parent,
-    cid
+    cid,
+    size: options.parent.size
   }
 }
 
@@ -120,12 +125,13 @@ const addToShardedDirectory = async (context, options) => {
   } = await addFileToShardedDirectory(context, options)
 
   const result = await last(shard.flush('', context.ipld))
+  const node = await context.ipld.get(result.cid)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
   const oldLink = options.parent.Links
     .find(link => link.Name.substring(0, 2) === path[0].prefix)
 
-  const newLink = result.node.Links
+  const newLink = node.Links
     .find(link => link.Name.substring(0, 2) === path[0].prefix)
 
   if (oldLink) {
@@ -159,7 +165,11 @@ const addFileToShardedDirectory = async (context, options) => {
     mode: node.mode
   }, options)
   shard._bucket = rootBucket
-  shard.mtime = new Date()
+
+  if (node.mtime) {
+    // update mtime if previously set
+    shard.mtime = new Date()
+  }
 
   // load subshards until the bucket & position no longer changes
   const position = await rootBucket._findNewBucketAndPos(file.name)

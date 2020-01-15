@@ -34,7 +34,8 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
 
   return {
     node: parent,
-    cid
+    cid,
+    size: parent.size
   }
 }
 

@@ -95,6 +95,9 @@ describe('chmod', () => {
     await testChmod('0000', 'ugo+x', '0111')
     await testChmod('0000', 'ugo+w', '0222')
     await testChmod('0000', 'ugo+r', '0444')
+    await testChmod('0000', 'a+x', '0111')
+    await testChmod('0000', 'a+w', '0222')
+    await testChmod('0000', 'a+r', '0444')
   })
 
   it('should update modes with basic symbolic notation that removes bits', async () => {
@@ -116,6 +119,9 @@ describe('chmod', () => {
     await testChmod('0111', 'ugo-x', '0000')
     await testChmod('0222', 'ugo-w', '0000')
     await testChmod('0444', 'ugo-r', '0000')
+    await testChmod('0111', 'a-x', '0000')
+    await testChmod('0222', 'a-w', '0000')
+    await testChmod('0444', 'a-r', '0000')
   })
 
   it('should update modes with basic symbolic notation that overrides bits', async () => {
@@ -137,6 +143,9 @@ describe('chmod', () => {
     await testChmod('0777', 'ugo=x', '0111')
     await testChmod('0777', 'ugo=w', '0222')
     await testChmod('0777', 'ugo=r', '0444')
+    await testChmod('0777', 'a=x', '0111')
+    await testChmod('0777', 'a=w', '0222')
+    await testChmod('0777', 'a=r', '0444')
   })
 
   it('should update modes with multiple symbolic notation', async () => {
@@ -148,5 +157,166 @@ describe('chmod', () => {
     await testChmod('0000', 'u+s', '4000')
     await testChmod('0000', '+t', '1000')
     await testChmod('0000', '+s', '6000')
+  })
+
+  it('should apply special execute permissions to world', async () => {
+    const path = `/foo-${Date.now()}`
+    const sub = `${path}/sub`
+    const file = `${path}/sub/foo.txt`
+    const bin = `${path}/sub/bar`
+
+    await mfs.mkdir(sub, {
+      parents: true
+    })
+    await mfs.touch(file)
+    await mfs.touch(bin)
+
+    await mfs.chmod(path, 0o644, {
+      recursive: true
+    })
+    await mfs.chmod(bin, 'u+x')
+
+    expect((await mfs.stat(path)).mode).to.equal(0o644)
+    expect((await mfs.stat(sub)).mode).to.equal(0o644)
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+    expect((await mfs.stat(bin)).mode).to.equal(0o744)
+
+    await mfs.chmod(path, 'a+X', {
+      recursive: true
+    })
+
+    // directories should be world-executable
+    expect((await mfs.stat(path)).mode).to.equal(0o755)
+    expect((await mfs.stat(sub)).mode).to.equal(0o755)
+
+    // files without prior execute bit should be untouched
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+
+    // files with prior execute bit should now be world-executable
+    expect((await mfs.stat(bin)).mode).to.equal(0o755)
+  })
+
+  it('should apply special execute permissions to user', async () => {
+    const path = `/foo-${Date.now()}`
+    const sub = `${path}/sub`
+    const file = `${path}/sub/foo.txt`
+    const bin = `${path}/sub/bar`
+
+    await mfs.mkdir(sub, {
+      parents: true
+    })
+    await mfs.touch(file)
+    await mfs.touch(bin)
+
+    await mfs.chmod(path, 0o644, {
+      recursive: true
+    })
+    await mfs.chmod(bin, 'u+x')
+
+    expect((await mfs.stat(path)).mode).to.equal(0o644)
+    expect((await mfs.stat(sub)).mode).to.equal(0o644)
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+    expect((await mfs.stat(bin)).mode).to.equal(0o744)
+
+    await mfs.chmod(path, 'u+X', {
+      recursive: true
+    })
+
+    // directories should be user executable
+    expect((await mfs.stat(path)).mode).to.equal(0o744)
+    expect((await mfs.stat(sub)).mode).to.equal(0o744)
+
+    // files without prior execute bit should be untouched
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+
+    // files with prior execute bit should now be user executable
+    expect((await mfs.stat(bin)).mode).to.equal(0o744)
+  })
+
+  it('should apply special execute permissions to user and group', async () => {
+    const path = `/foo-${Date.now()}`
+    const sub = `${path}/sub`
+    const file = `${path}/sub/foo.txt`
+    const bin = `${path}/sub/bar`
+
+    await mfs.mkdir(sub, {
+      parents: true
+    })
+    await mfs.touch(file)
+    await mfs.touch(bin)
+
+    await mfs.chmod(path, 0o644, {
+      recursive: true
+    })
+    await mfs.chmod(bin, 'u+x')
+
+    expect((await mfs.stat(path)).mode).to.equal(0o644)
+    expect((await mfs.stat(sub)).mode).to.equal(0o644)
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+    expect((await mfs.stat(bin)).mode).to.equal(0o744)
+
+    await mfs.chmod(path, 'ug+X', {
+      recursive: true
+    })
+
+    // directories should be user and group executable
+    expect((await mfs.stat(path)).mode).to.equal(0o754)
+    expect((await mfs.stat(sub)).mode).to.equal(0o754)
+
+    // files without prior execute bit should be untouched
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+
+    // files with prior execute bit should now be user and group executable
+    expect((await mfs.stat(bin)).mode).to.equal(0o754)
+  })
+
+  it('should apply special execute permissions to sharded directories', async () => {
+    const path = `/foo-${Date.now()}`
+    const sub = `${path}/sub`
+    const file = `${path}/sub/foo.txt`
+    const bin = `${path}/sub/bar`
+
+    await mfs.mkdir(sub, {
+      parents: true,
+      shardSplitThreshold: 0
+    })
+    await mfs.touch(file, {
+      shardSplitThreshold: 0
+    })
+    await mfs.touch(bin, {
+      shardSplitThreshold: 0
+    })
+
+    await mfs.chmod(path, 0o644, {
+      recursive: true,
+      shardSplitThreshold: 0
+    })
+    await mfs.chmod(bin, 'u+x', {
+      recursive: true,
+      shardSplitThreshold: 0
+    })
+
+    expect((await mfs.stat(path)).mode).to.equal(0o644)
+    expect((await mfs.stat(sub)).mode).to.equal(0o644)
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+    expect((await mfs.stat(bin)).mode).to.equal(0o744)
+
+    await mfs.chmod(path, 'ug+X', {
+      recursive: true,
+      shardSplitThreshold: 0
+    })
+
+    // directories should be user and group executable
+    expect((await mfs.stat(path))).to.include({
+      type: 'hamt-sharded-directory',
+      mode: 0o754
+    })
+    expect((await mfs.stat(sub)).mode).to.equal(0o754)
+
+    // files without prior execute bit should be untouched
+    expect((await mfs.stat(file)).mode).to.equal(0o644)
+
+    // files with prior execute bit should now be user and group executable
+    expect((await mfs.stat(bin)).mode).to.equal(0o754)
   })
 })

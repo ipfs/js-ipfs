@@ -31,10 +31,6 @@ module.exports = (context) => {
       throw errCode(new Error('Please supply at least one source'), 'ERR_INVALID_PARAMS')
     }
 
-    if (!destination) {
-      throw errCode(new Error('Please supply a destination'), 'ERR_INVALID_PARAMS')
-    }
-
     options.parents = options.p || options.parents
 
     // make sure all sources exist

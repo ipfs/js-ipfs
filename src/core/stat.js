@@ -74,6 +74,7 @@ const statters = {
     if (file.unixfs) {
       output.size = file.unixfs.fileSize()
       output.type = file.unixfs.type
+      output.mode = file.unixfs.mode
 
       if (file.unixfs.isDirectory()) {
         output.size = 0
@@ -87,10 +88,6 @@ const statters = {
       if (file.unixfs.mtime) {
         output.mtime = file.unixfs.mtime
       }
-
-      if (file.unixfs.mode !== undefined && file.unixfs.mode !== null) {
-        output.mode = file.unixfs.mode
-      }
     }
 
     return output
@@ -98,6 +95,18 @@ const statters = {
   'dag-cbor': (file) => {
     return {
       cid: file.cid,
+      local: undefined,
+      sizeLocal: undefined,
+      withLocality: false
+    }
+  },
+  identity: (file) => {
+    return {
+      cid: file.cid,
+      size: file.node.digest.length,
+      cumulativeSize: file.node.digest.length,
+      blocks: 0,
+      type: 'file', // for go compatibility
       local: undefined,
       sizeLocal: undefined,
       withLocality: false

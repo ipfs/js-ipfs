@@ -9,6 +9,9 @@ const createShardedDirectory = require('../helpers/create-sharded-directory')
 const streamToBuffer = require('../helpers/stream-to-buffer')
 const streamToArray = require('../helpers/stream-to-array')
 const crypto = require('crypto')
+const CID = require('cids')
+const mh = require('multihashes')
+const Block = require('ipfs-block')
 
 describe('cp', () => {
   let mfs
@@ -51,6 +54,31 @@ describe('cp', () => {
     } catch (err) {
       expect(err.message).to.contain('does not exist')
     }
+  })
+
+  it('refuses to copy files to a non-existent child directory', async () => {
+    const src1 = `/src2-${Math.random()}`
+    const src2 = `/src2-${Math.random()}`
+    const parent = `/output-${Math.random()}`
+
+    await mfs.touch(src1)
+    await mfs.touch(src2)
+    await mfs.mkdir(parent)
+    await expect(mfs.cp(src1, src2, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
+      .that.has.property('message').that.matches(/destination did not exist/)
+  })
+
+  it('refuses to copy files to an unreadable node', async () => {
+    const src1 = `/src2-${Math.random()}`
+    const parent = `/output-${Math.random()}`
+
+    const cid = new CID(1, 'identity', mh.encode(Buffer.from('derp'), 'identity'))
+    await mfs.repo.blocks.put(new Block(Buffer.from('derp'), cid))
+    await mfs.cp(`/ipfs/${cid}`, parent)
+
+    await mfs.touch(src1)
+    await expect(mfs.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
+      .that.has.property('message').that.matches(/No resolver found for codec "identity"/)
   })
 
   it('refuses to copy files to an exsting file', async () => {

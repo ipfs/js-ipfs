@@ -47,7 +47,7 @@ const updateTree = async (context, trail, options) => {
     child = {
       cid: result.cid,
       name,
-      size: result.node.size
+      size: result.size
     }
   }
 

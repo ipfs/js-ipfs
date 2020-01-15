@@ -117,8 +117,6 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     name: childName,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
-    mode: options.mode,
-    mtime: options.mtime,
     flush: options.flush
   })
 

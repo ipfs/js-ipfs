@@ -41,6 +41,7 @@ const createMfs = async () => {
   })
 
   mfs.ipld = ipld
+  mfs.repo = repo
 
   return mfs
 }

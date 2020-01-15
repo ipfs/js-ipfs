@@ -20,7 +20,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('cp', () => () => {
+describe('cp', () => {
   const source = 'source'
   const dest = 'dest'
   let ipfs
