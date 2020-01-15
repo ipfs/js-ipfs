@@ -26,7 +26,7 @@ const publishAndResolve = async (publisher, resolver, ipfsRef, publishOpts, node
   expect(value).to.equal(ipfsRef)
 }
 
-describe.only('name', function () {
+describe('name', function () {
   const df = factory()
 
   describe('republisher', function () {
