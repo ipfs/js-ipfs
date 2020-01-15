@@ -169,7 +169,8 @@ describe('pin', function () {
     it('should fail to directly pin a recursive pin', async () => {
       await pin.add(pins.root)
       return expect(pin.add(pins.root, { recursive: false }))
-        .to.eventually.be.rejected.with(/already pinned recursively/)
+        .to.eventually.be.rejected()
+        .with(/already pinned recursively/)
     })
 
     it('should fail to pin a hash not in datastore', function () {
@@ -359,14 +360,16 @@ describe('pin', function () {
 
     it('should fail to remove an indirect pin', async () => {
       await expect(pin.rm(pins.solarWiki))
-        .to.eventually.be.rejected.with(/is pinned indirectly under/)
+        .to.eventually.be.rejected()
+        .with(/is pinned indirectly under/)
       await expectPinned(pins.solarWiki)
     })
 
     it('should fail when an item is not pinned', async () => {
       await pin.rm(pins.root)
       await expect(pin.rm(pins.root))
-        .to.eventually.be.rejected.with(/is not pinned/)
+        .to.eventually.be.rejected()
+        .with(/is not pinned/)
     })
   })
 
