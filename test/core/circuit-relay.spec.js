@@ -52,7 +52,7 @@ describe('circuit relay', () => {
       ])
 
       relayNode = res[0].ipfsd
-      relayAddr = `${res[0].addrs[0]}/p2p/${relayNode.api.peerId.id}`
+      relayAddr = res[0].addrs[0]
 
       nodeAAddr = res[1].addrs[0]
       nodeA = res[1].ipfsd.api
