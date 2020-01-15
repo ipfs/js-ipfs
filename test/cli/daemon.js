@@ -114,7 +114,7 @@ describe('daemon', () => {
       .and.to.include('Received interrupt signal, shutting down...')
   })
 
-  it('should allow bind to multiple addresses for API and Gateway', async function () {
+  it.only('should allow bind to multiple addresses for API and Gateway', async function () {
     this.timeout(100 * 1000)
 
     const apiAddrs = [
