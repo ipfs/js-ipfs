@@ -283,6 +283,7 @@ describe('preload disabled', function () {
   before(async () => {
     repo = createTempRepo()
     ipfs = await IPFS.create({
+      silent: true,
       repo,
       config: {
         Addresses: {
@@ -305,7 +306,7 @@ describe('preload disabled', function () {
     const res = await all(ipfs.add(Buffer.from(hat())))
 
     return expect(MockPreloadNode.waitForCids(res[0].cid))
-      .to.eventually.be.rejected
+      .to.eventually.be.rejected()
       .and.have.property('code')
       .that.equals('ERR_TIMEOUT')
   })
