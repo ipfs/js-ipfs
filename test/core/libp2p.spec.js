@@ -6,8 +6,6 @@ const MemoryStore = require('interface-datastore').MemoryDatastore
 const PeerInfo = require('peer-info')
 const Libp2p = require('libp2p')
 const EE = require('events')
-const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
-const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const libp2pComponent = require('../../src/core/components/libp2p')
 
 class DummyTransport {
@@ -187,57 +185,6 @@ describe('libp2p customization', function () {
       const discoveries = Array.from(libp2p._discovery.values())
       expect(discoveries).to.have.length(1)
       expect(discoveries[0] instanceof DummyDiscovery).to.be.true()
-    })
-
-    it('should NOT create delegate routers if they are not defined', async () => {
-      libp2p = libp2pComponent({
-        peerInfo,
-        repo: { datastore },
-        print: console.log, // eslint-disable-line no-console
-        config: {
-          ...testConfig,
-          Addresses: {
-            Delegates: []
-          }
-        }
-      })
-
-      await libp2p.start()
-
-      expect(libp2p._modules.contentRouting).to.not.exist()
-      expect(libp2p._modules.peerRouting).to.not.exist()
-    })
-
-    it('should create delegate routers if they are defined', async () => {
-      libp2p = libp2pComponent({
-        peerInfo,
-        repo: { datastore },
-        print: console.log, // eslint-disable-line no-console
-        config: {
-          ...testConfig,
-          Addresses: {
-            Delegates: ['/dns4/node0.preload.ipfs.io/tcp/443/https']
-          }
-        }
-      })
-
-      await libp2p.start()
-
-      const contentRouter = libp2p._modules.contentRouting.find(r => r instanceof DelegatedContentRouter)
-      expect(contentRouter).to.exist()
-      expect(contentRouter.api).to.include({
-        host: 'node0.preload.ipfs.io',
-        port: 443,
-        protocol: 'https'
-      })
-
-      const peerRouter = libp2p._modules.peerRouting.find(r => r instanceof DelegatedPeerRouter)
-      expect(peerRouter).to.exist()
-      expect(peerRouter.api).to.include({
-        host: 'node0.preload.ipfs.io',
-        port: 443,
-        protocol: 'https'
-      })
     })
   })
 
