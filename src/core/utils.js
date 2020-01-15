@@ -112,13 +112,21 @@ const resolvePath = async function (dag, ipfsPaths, options) {
       continue
     }
 
-    let cid
-    for await (const { value } of dag.resolve(path, options)) {
-      if (CID.isCID(value)) {
-        cid = value
+    let cid = new CID(hash)
+    try {
+      for await (const { value } of dag.resolve(path, options)) {
+        if (CID.isCID(value)) {
+          cid = value
+        }
       }
+    } catch (err) {
+      // TODO: add error codes to IPLD
+      if (err.message.startsWith('Object has no property')) {
+        const linkName = err.message.replace('Object has no property \'', '').slice(0, -1)
+        err.message = `no link named "${linkName}" under ${cid}`
+      }
+      throw err
     }
-
     cids.push(cid)
   }
 

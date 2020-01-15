@@ -168,7 +168,7 @@ describe('utils', () => {
       return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
         .to.be.rejected()
         .and.eventually.have.property('message')
-        .that.includes("no property 'fusion'")
+        .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })
 })
