@@ -124,6 +124,7 @@ const resolvePath = async function (dag, ipfsPaths, options) {
       if (err.message.startsWith('Object has no property')) {
         const linkName = err.message.replace('Object has no property \'', '').slice(0, -1)
         err.message = `no link named "${linkName}" under ${cid}`
+        err.code = 'ERR_NO_LINK'
       }
       throw err
     }
