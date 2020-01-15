@@ -1,4 +1,3 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
@@ -14,13 +13,11 @@ const setupInProcNode = async (type = 'proc', hop) => {
   const ipfsd = await df.spawn({
     type,
     ipfsOptions: {
-      libp2p: {
-        config: {
-          relay: {
-            enabled: true,
-            hop: {
-              enabled: hop
-            }
+      config: {
+        relay: {
+          enabled: true,
+          hop: {
+            enabled: hop
           }
         }
       }
@@ -36,40 +33,27 @@ describe('circuit relay', () => {
     this.timeout(80 * 1000)
 
     let nodeA
-    let nodeAAddr
     let nodeB
-    let nodeBAddr
     let nodeBCircuitAddr
 
-    let relayNode
     let relayAddr
 
     before('create and connect', async () => {
       const res = await Promise.all([
-        setupInProcNode('proc', true),
-        setupInProcNode('js'),
+        setupInProcNode('proc'),
+        setupInProcNode('js', true),
         setupInProcNode('js')
       ])
 
-      relayNode = res[0].ipfsd
-      relayAddr = res[0].addrs[0]
-
-      nodeAAddr = res[1].addrs[0]
-      nodeA = res[1].ipfsd.api
-
-      nodeBAddr = res[2].addrs[0]
-
+      nodeA = res[0].ipfsd.api
+      relayAddr = res[1].addrs[0]
       nodeB = res[2].ipfsd.api
+
       nodeBCircuitAddr = `${relayAddr}/p2p-circuit/p2p/${nodeB.peerId.id}`
 
-      // ensure we have an address string
-      expect(nodeAAddr).to.be.a('string')
-      expect(nodeBAddr).to.be.a('string')
-      expect(nodeBCircuitAddr).to.be.a('string')
+      await nodeA.swarm.connect(relayAddr)
+      await nodeB.swarm.connect(relayAddr)
 
-      await relayNode.api.swarm.connect(nodeAAddr)
-      await relayNode.api.swarm.connect(nodeBAddr)
-      await new Promise(resolve => setTimeout(resolve, 1000))
       await nodeA.swarm.connect(nodeBCircuitAddr)
     })
 

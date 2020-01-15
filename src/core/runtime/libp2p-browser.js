@@ -26,9 +26,7 @@ module.exports = () => {
       connEncryption: [
         SECIO
       ],
-      peerDiscovery: [
-        WebRTCStar
-      ],
+      peerDiscovery: [],
       dht: KadDHT,
       pubsub: GossipSub
     },

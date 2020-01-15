@@ -2,6 +2,7 @@
 
 const log = require('debug')('ipfs:daemon')
 const get = require('dlv')
+const set = require('just-safe-set')
 const Multiaddr = require('multiaddr')
 const WebRTCStar = require('libp2p-webrtc-star')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
@@ -75,11 +76,9 @@ function getLibp2p ({ libp2pOptions, options, config, peerInfo }) {
   }
 
   if (wrtc || electronWebRTC) {
-    const using = wrtc ? 'wrtc' : 'electron-webrtc'
-    log(`Using ${using} for webrtc support`)
-    const webRTCStar = new WebRTCStar({ wrtc: (wrtc || electronWebRTC) })
-    libp2pOptions.modules.transport.push(webRTCStar)
-    libp2pOptions.modules.peerDiscovery.push(webRTCStar.discovery)
+    log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
+    set(libp2pOptions, 'config.transport.webRTCStar.wrtc', wrtc || electronWebRTC)
+    libp2pOptions.modules.transport.push(WebRTCStar)
   }
 
   // Set up Delegate Routing based on the presence of Delegates in the config

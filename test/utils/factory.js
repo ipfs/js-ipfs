@@ -1,9 +1,10 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
+const set = require('just-safe-set')
 
 const factory = (options, overrides) => {
-  return createFactory(
+  const df = createFactory(
     merge({
       test: true,
       type: 'proc',
@@ -22,5 +23,20 @@ const factory = (options, overrides) => {
       }
     }, overrides)
   )
+
+  const _spawn = df.spawn.bind(df)
+  df.spawn = options => {
+    options = options || {}
+
+    if (options.type === 'js') {
+      // Do not use the test profile for this remote node so we can connect to it
+      // FIXME use [] when resolved: https://github.com/ipfs/js-ipfsd-ctl/pull/433
+      set(options, 'ipfsOptions.init.profiles', null)
+    }
+
+    return _spawn(options)
+  }
+
+  return df
 }
 module.exports = factory
