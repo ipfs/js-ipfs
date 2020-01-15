@@ -409,6 +409,11 @@ Available delegate multiaddrs are:
 
 **Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
 
+**Note**: If you wish to use delegated routing and are creating your node _programmatically_ in Node.js or the browser you must `npm install libp2p-delegated-content-routing` and/or `npm install libp2p-delegated-peer-routing` and provide configured instances of them in [`options.libp2p`](#optionslibp2p). See the module repos for further instructions:
+
+- https://github.com/libp2p/js-libp2p-delegated-content-routing
+- https://github.com/libp2p/js-libp2p-delegated-peer-routing
+
 ##### `options.ipld`
 
  | Type | Default |
@@ -550,10 +555,12 @@ The libp2p option allows you to build your libp2p node by configuration, or via 
 You can see the bundle in action in the [custom libp2p example](examples/custom-libp2p).
 
 - `modules` (object):
-    - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/interface-transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/interface-transport](https://github.com/libp2p/interface-transport) for details.
-    - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/interface-peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/peer-discovery](https://github.com/libp2p/interface-peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
+    - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/js-interfaces/tree/master/src/transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/js-interfaces/transport](https://github.com/libp2p/js-interfaces/tree/master/src/transport) for details.
+    - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/js-interfaces/tree/master/src/peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/js-interfaces/peer-discovery](https://github.com/libp2p/js-interfaces/tree/master/src/peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
     - `dht` (object): a DHT implementation that enables PeerRouting and ContentRouting. Example [libp2p/js-libp2p-kad-dht](https://github.com/libp2p/js-libp2p-kad-dht)
     - `pubsub` (object): a Pubsub implementation on top of [libp2p/js-libp2p-pubsub](https://github.com/libp2p/js-libp2p-pubsub)
+    - `contentRouting` (Array<[libp2p.ContentRouting](https://github.com/libp2p/js-interfaces/tree/master/src/content-routing)>): An array of Libp2p content routing modules. See [libp2p/js-interfaces/content-routing](https://github.com/libp2p/js-interfaces/tree/master/src/content-routing) for details.
+    - `peerRouting` (Array<[libp2p.PeerRouting](https://github.com/libp2p/js-interfaces/tree/master/src/peer-routing)>): An array of Libp2p peer routing modules. See [libp2p/js-interfaces/peer-routing](https://github.com/libp2p/js-interfaces/tree/master/src/peer-routing) for details.
 - `config` (object):
     - `peerDiscovery` (object):
         - `autoDial` (boolean): Dial to discovered peers when under the Connection Manager min peer count watermark. (default `true`)
@@ -739,48 +746,31 @@ node.on('stop', () => console.log('Node stopped!'))
 
 The IPFS core API provides all functionality that is not specific to setting up and starting or stopping a node. This API is available directly on an IPFS instance, on the command line (when using the CLI interface), and as an HTTP REST API. For a complete reference, see [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/interface-ipfs-core).
 
-All the API methods aside from streaming methods (ones that end in `ReadableStream` or `PullStream`) are asynchronous and return Promises, but _also_ accept callbacks.
-
 The core API is grouped into several areas:
 
 #### Files
 
 - [Regular Files API](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md)
   - [`ipfs.add(data, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add)
-  - [`ipfs.addPullStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addpullstream)
-  - [`ipfs.addReadableStream([options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addreadablestream)
-  - [`ipfs.addFromStream(stream)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromstream)
-  - [`ipfs.addFromFs(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromfs)
-  - [`ipfs.addFromUrl(url, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#addfromurl)
   - [`ipfs.cat(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#cat)
-  - [`ipfs.catPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catpullstream)
-  - [`ipfs.catReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#catreadablestream)
   - [`ipfs.get(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#get)
-  - [`ipfs.getPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getpullstream)
-  - [`ipfs.getReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#getreadablestream)
   - [`ipfs.ls(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#ls)
-  - [`ipfs.lsPullStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lspullstream)
-  - [`ipfs.lsReadableStream(ipfsPath)`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#lsreadablestream)
 - [MFS (mutable file system) specific](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
+  - [`ipfs.files.chmod(path, mode, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileschmod)
   - [`ipfs.files.cp([from, to])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filescp)
   - [`ipfs.files.flush([path])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesflush)
   - [`ipfs.files.ls([path], [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesls)
   - [`ipfs.files.mkdir(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir)
   - [`ipfs.files.mv([from, to])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesmv)
   - [`ipfs.files.read(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesread)
-  - [`ipfs.files.readPullStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadpullstream)
-  - [`ipfs.files.readReadableStream(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesreadreadablestream)
   - [`ipfs.files.rm(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesrm)
   - [`ipfs.files.stat(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesstat)
+  - [`ipfs.files.touch(path, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filestouch)
   - [`ipfs.files.write(path, content, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#fileswrite)
 
 - [refs](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md)
   - [`ipfs.refs(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refs)
-  - [`ipfs.refsReadableStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refsreadablestream)
-  - [`ipfs.refsPullStream(ipfsPath, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refspullstream)
   - [`ipfs.refs.local()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocal)
-  - [`ipfs.refs.localReadableStream()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocalreadablestream)
-  - [`ipfs.refs.localPullStream()`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REFS.md#refslocalpullstream)
 
 #### Graph
 
@@ -794,7 +784,7 @@ The core API is grouped into several areas:
   - [`ipfs.pin.ls([hash], [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinls)
   - [`ipfs.pin.rm(hash, [options])`](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/PIN.md#pinrm)
 
-- [object (legacy)](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md)
+- [object](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md)
   - [`ipfs.object.new([template])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectnew)
   - [`ipfs.object.put(obj, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectput)
   - [`ipfs.object.get(multihash, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/OBJECT.md#objectget)
@@ -877,8 +867,6 @@ The core API is grouped into several areas:
   - [`ipfs.id()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#id)
   - [`ipfs.version()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#version)
   - [`ipfs.ping(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#ping)
-  - [`ipfs.pingReadableStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingreadablestream)
-  - [`ipfs.pingPullStream(peerId, [options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#pingpullstream)
   - `ipfs.init([options])`
   - `ipfs.start()`
   - [`ipfs.stop()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/MISCELLANEOUS.md#stop)
@@ -895,8 +883,6 @@ The core API is grouped into several areas:
 - [stats](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md)
   - [`ipfs.stats.bitswap()`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbitswap)
   - [`ipfs.stats.bw([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbw)
-  - [`ipfs.stats.bwPullStream([options]) -> Pull Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwpullstream)
-  - [`ipfs.stats.bwReadableStream([options]) -> Readable Stream`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsbwreadablestream)
   - [`ipfs.stats.repo([options])`](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/STATS.md#statsrepo)
 
 - [config](https://github.com/ipfs/interface-ipfs-core/tree/master/SPEC/CONFIG.md)
