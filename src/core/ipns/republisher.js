@@ -25,7 +25,7 @@ class IpnsRepublisher {
     this._republishHandle = null
   }
 
-  start () {
+  async start () { // eslint-disable-line require-await
     if (this._republishHandle) {
       throw errcode(new Error('republisher is already running'), 'ERR_REPUBLISH_ALREADY_RUNNING')
     }
@@ -66,19 +66,15 @@ class IpnsRepublisher {
     const { pass } = this._options
     let firstRun = true
 
-    republishHandle._task = async () => {
-      await this._republishEntries(privKey, pass)
+    republishHandle._task = () => this._republishEntries(privKey, pass)
 
-      return defaultBroadcastInterval
-    }
     republishHandle.runPeriodically(() => {
       if (firstRun) {
         firstRun = false
-
-        return this._options.initialBroadcastDelay || minute
+        return this._options.initialBroadcastInterval || minute
       }
 
-      return defaultBroadcastInterval
+      return this._options.broadcastInterval || defaultBroadcastInterval
     })
 
     this._republishHandle = republishHandle
