@@ -98,7 +98,7 @@ describe('interface-ipfs-core tests', function () {
       args: ['--enable-pubsub-experiment']
     }
   })), {
-    skip: [
+    skip: isNode ? null : [
       {
         name: 'should receive messages from a different node',
         reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
