@@ -170,8 +170,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   emptyRepo = emptyRepo || false
   bits = bits == null ? 2048 : Number(bits)
 
-  config = mergeOptions(getDefaultConfig(), config)
-  config = applyProfiles(profiles, config)
+  config = mergeOptions(applyProfiles(profiles, getDefaultConfig()), config)
 
   // Verify repo does not exist yet
   const exists = await repo.exists()
@@ -216,11 +215,11 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
   let config = await repo.config.get()
 
   if (newConfig || profiles) {
-    if (newConfig) {
-      config = mergeOptions(config, newConfig)
-    }
     if (profiles) {
       config = applyProfiles(profiles, config)
+    }
+    if (newConfig) {
+      config = mergeOptions(config, newConfig)
     }
     await repo.config.set(config)
   }
