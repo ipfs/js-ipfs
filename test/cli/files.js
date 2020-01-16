@@ -159,7 +159,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   // TODO: FIXME bugs in it-glob
-  it.skip('add recursively test', async function () {
+  it('add recursively test', async function () {
     this.timeout(60 * 1000)
 
     const out = await ipfs('add -r test/fixtures/test-data/recursive-get-dir')
@@ -167,7 +167,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   // TODO: FIXME bugs in it-glob
-  it.skip('add recursively including hidden files', async function () {
+  it('add recursively including hidden files', async function () {
     this.timeout(60 * 1000)
 
     const out = await ipfs('add -r -H test/fixtures/test-data/recursive-get-dir')
@@ -175,7 +175,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   // TODO: FIXME bugs in it-glob
-  it.skip('add directory with trailing slash test', async function () {
+  it('add directory with trailing slash test', async function () {
     this.timeout(30 * 1000)
 
     const out = await ipfs('add -r test/fixtures/test-data/recursive-get-dir/')
@@ -183,7 +183,7 @@ describe('files', () => runOnAndOff((thing) => {
   })
 
   // TODO: FIXME bugs in it-glob
-  it.skip('add directory with odd name', async function () {
+  it('add directory with odd name', async function () {
     this.timeout(30 * 1000)
     const expected = [
       'added QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o odd-name-[v0]/odd name [v1]/hello',
@@ -444,7 +444,7 @@ describe('files', () => runOnAndOff((thing) => {
 
   // TODO: FIXME bugs in it-glob
   // FIXME: tests that depend on output of other tests
-  it.skip('get recursively', async function () {
+  it('get recursively', async function () {
     this.timeout(20 * 1000)
 
     const outDir = path.join(process.cwd(), 'QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9')
