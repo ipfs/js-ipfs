@@ -37,6 +37,8 @@ module.exports = (repoPath, opts) => {
   }
 
   const execute = (exec, args, options) => {
+    options = options || {}
+
     const cp = exec(args, options)
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
@@ -77,7 +79,7 @@ module.exports = (repoPath, opts) => {
    *                    rejects if it was successful.
    */
   ipfs.fail = function ipfsFail (command, options) {
-    return ipfs(command, { disableErrorLog: true, ...options })
+    return ipfs(command, { disableErrorLog: true, ...(options || {}) })
       .then(() => {
         throw new Error(`jsipfs expected to fail during command: jsipfs ${command}`)
       }, (err) => {
