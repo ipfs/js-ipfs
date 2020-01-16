@@ -29,7 +29,9 @@ const factory = (options, overrides) => {
     options = options || {}
 
     if (options.type === 'js') {
-      // Do not use the test profile for this remote node so we can connect to it
+      // FIXME Do not use the test profile for this remote node so we can connect
+      // to it from the browser. ipfsd-ctl adds WebSockets as the 1 and only
+      // swarm address but using a profile removes it.
       // FIXME use [] when resolved: https://github.com/ipfs/js-ipfsd-ctl/pull/433
       set(options, 'ipfsOptions.init.profiles', null)
     }

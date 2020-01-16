@@ -212,9 +212,9 @@ describe('create node', function () {
           Addresses: {
             API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
             Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
-            Swarm: [
+            Swarm: isNode ? [
               `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`
-            ]
+            ] : []
           },
           Bootstrap: []
         },

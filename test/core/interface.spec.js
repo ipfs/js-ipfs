@@ -5,6 +5,7 @@ const tests = require('interface-ipfs-core')
 const merge = require('merge-options')
 const { createFactory } = require('ipfsd-ctl')
 const { isNode } = require('ipfs-utils/src/env')
+const set = require('just-safe-set')
 const IPFS = require('../../src')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
@@ -32,6 +33,21 @@ describe('interface-ipfs-core tests', function () {
     }
   }
   const commonFactory = createFactory(commonOptions, overrides)
+
+  const _spawn = commonFactory.spawn.bind(commonFactory)
+  commonFactory.spawn = options => {
+    options = options || {}
+
+    if (options.type === 'js') {
+      // FIXME Do not use the test profile for this remote node so we can connect
+      // to it from the browser. ipfsd-ctl adds WebSockets as the 1 and only
+      // swarm address but using a profile removes it.
+      // FIXME use [] when resolved: https://github.com/ipfs/js-ipfsd-ctl/pull/433
+      set(options, 'ipfsOptions.init.profiles', null)
+    }
+
+    return _spawn(options)
+  }
 
   tests.root(commonFactory, {
     skip: isNode ? null : [{
