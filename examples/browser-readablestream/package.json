@@ -17,6 +17,7 @@
     "webpack": "^4.28.4"
   },
   "dependencies": {
-    "videostream": "^3.2.0"
+    "videostream": "^3.2.0",
+    "it-to-stream": "^0.1.1"
   }
 }

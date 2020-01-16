@@ -26,6 +26,7 @@ export default function useIpfsFactory ({ commands }) {
       if (ipfs && ipfs.stop) {
         console.log('Stopping IPFS')
         ipfs.stop().catch(err => console.error(err))
+        ipfs = null
         setIpfsReady(false)
       }
     }
