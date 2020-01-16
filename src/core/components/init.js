@@ -88,7 +88,7 @@ module.exports = ({
 
     // Make sure GC lock is specific to repo, for tests where there are
     // multiple instances of IPFS
-    const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner })
+    const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner !== false })
     const dag = {
       get: Components.dag.get({ ipld, preload }),
       resolve: Components.dag.resolve({ ipld, preload }),
