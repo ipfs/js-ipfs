@@ -9,23 +9,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function store () {
     const toStore = document.getElementById('source').value
-    const result = await node.add(toStore)
 
-    for (const file of result) {
-      if (file && file.hash) {
-        console.log('successfully stored', file.hash)
+    for await (const file of node.add(toStore)) {
+      if (file && file.cid) {
+        console.log('successfully stored', file.cid)
 
-        await display(file.hash)
+        await display(file.cid)
       }
     }
   }
 
-  async function display (hash) {
-    const data = await node.cat(hash)
-
-    document.getElementById('hash').innerText = hash
-    document.getElementById('content').innerText = data
-    document.getElementById('output').setAttribute('style', 'display: block')
+  async function display (cid) {
+    for await (const data of node.cat(cid)) {
+      document.getElementById('cid').innerText = cid
+      document.getElementById('content').innerText = data
+      document.getElementById('output').setAttribute('style', 'display: block')
+    }
   }
 
   document.getElementById('store').onclick = store

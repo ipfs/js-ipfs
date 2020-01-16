@@ -1,7 +1,6 @@
 'use strict'
 
 const {
-  log,
   createNode
 } = require('./utils')
 
@@ -20,13 +19,7 @@ const loadFiles = async (ipfs, path) => {
   const output = {}
   path = path.replace(/\/\/+/g, '/')
 
-  const contents = await ipfs.files.ls(path, {
-    long: true
-  })
-    .catch(error => log(error))
-
-  for (let i = 0; i < contents.length; i++) {
-    let entry = contents[i]
+  for await (const entry of ipfs.files.ls(path)) {
     output[entry.name] = entry
 
     if (entry.type === FILE_TYPES.DIRECTORY) {

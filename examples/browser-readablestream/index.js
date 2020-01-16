@@ -4,6 +4,7 @@
 
 const Ipfs = require('../../')
 const VideoStream = require('videostream')
+const toStream = require('it-to-stream')
 const {
   dragDrop,
   statusMessages,
@@ -18,14 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Set up event listeners on the <video> element from index.html
   const videoElement = createVideoElement()
-  const hashInput = document.getElementById('hash')
+  const cidInput = document.getElementById('cid')
   const goButton = document.getElementById('gobutton')
   let stream
 
   goButton.onclick = function (event) {
     event.preventDefault()
 
-    log(`IPFS: Playing ${hashInput.value.trim()}`)
+    log(`IPFS: Playing ${cidInput.value.trim()}`)
 
     // Set up the video stream an attach it to our <video> element
     const videoStream = new VideoStream({
@@ -46,10 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // This stream will contain the requested bytes
-        stream = ipfs.catReadableStream(hashInput.value.trim(), {
+        stream = toStream.readable(ipfs.cat(cidInput.value.trim(), {
           offset: start,
           length: end && end - start
-        })
+        }))
 
         // Log error messages
         stream.on('error', (error) => log(error))
@@ -73,6 +74,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   log('IPFS: Drop an .mp4 file into this window to add a file')
   log('IPFS: Then press the "Go!" button to start playing a video')
 
-  hashInput.disabled = false
+  cidInput.disabled = false
   goButton.disabled = false
 })

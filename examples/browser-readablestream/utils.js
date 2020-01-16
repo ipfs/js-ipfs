@@ -36,23 +36,23 @@ const dragDrop = (ipfs) => {
     const files = Array.from(event.dataTransfer.items)
       .filter(item => item.kind === 'file')
       .map(item => item.getAsFile())
-
-    for (const file of files) {
-      const progress = log(`IPFS: Adding ${file.name} 0%`)
-      const added = await ipfs.add({
-        path: file.name,
-        content: file
-      }, {
-        progress: (addedBytes) => {
-          progress.textContent = `IPFS: Adding ${file.name} ${parseInt((addedBytes / file.size) * 100)}%\r\n`
+      .map(file => {
+        return {
+          path: file.name,
+          content: file
         }
       })
 
-      const hash = added[0].hash
+    const progress = log(`IPFS: Adding...`)
 
-      log(`IPFS: Added ${hash}`)
+    for await (const added of ipfs.add(files, {
+      progress: (addedBytes) => {
+        progress.textContent = `IPFS: Adding ${addedBytes} bytes\r\n`
+      }
+    })) {
+      log(`IPFS: Added ${added.cid}`)
 
-      document.querySelector('#hash').value = hash
+      document.querySelector('#cid').value = added.cid.toString()
     }
 
     if (event.dataTransfer.items && event.dataTransfer.items.clear) {
