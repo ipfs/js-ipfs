@@ -38,27 +38,29 @@ const createFiles = (directory) => {
   }]
 }
 
-const streamFiles = (ipfs, directory, files) => new Promise((resolve, reject) => {
+const streamFiles = async (ipfs, directory, files) => {
   // Create a stream to write files to
-  const stream = ipfs.addReadableStream()
+  const stream = new ReadableStream({
+    start(controller) {
+      for (let i = 0; i < files.length; i++) {
+        // Add the files one by one
+        controller.enqueue(files[i])
+      }
 
-  stream.on('data', (data) => {
+      // When we have no more files to add, close the stream
+      controller.close()
+    }
+  })
+
+  for await (const data of ipfs.add(stream)) {
     log(`Added ${data.path} hash: ${data.hash}`)
 
     // The last data event will contain the directory hash
     if (data.path === directory) {
-      resolve(data.hash)
+      return data.cid
     }
-  })
-
-  stream.on('error', reject)
-
-  // Add the files one by one
-  files.forEach(file => stream.write(file))
-
-  // When we have no more files to add, close the stream
-  stream.end()
-})
+  }
+}
 
 const log = (line) => {
   document.getElementById('output').appendChild(document.createTextNode(`${line}\r\n`))
