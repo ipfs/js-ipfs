@@ -43,13 +43,6 @@ module.exports = (repoPath, opts) => {
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
       return res.stdout
-    }, (err) => {
-      if (process.env.DEBUG) {
-        // print the error output if we are debugging
-        console.error(err.stderr) // eslint-disable-line no-console
-      }
-
-      throw err
     })
 
     res.cancel = cp.cancel.bind(cp)
@@ -64,11 +57,19 @@ module.exports = (repoPath, opts) => {
 
   function ipfs (command, options) {
     return execute(exec, command, options)
+      .catch(err => {
+        console.error(err.stderr) // eslint-disable-line no-console
+        throw err
+      })
   }
 
   // Will return buffers instead of strings
   ipfs.raw = function (command, options) {
     return execute(execRaw, command, options)
+      .catch(err => {
+        console.error(err.stderr) // eslint-disable-line no-console
+        throw err
+      })
   }
 
   /**
@@ -79,7 +80,7 @@ module.exports = (repoPath, opts) => {
    *                    rejects if it was successful.
    */
   ipfs.fail = function ipfsFail (command, options) {
-    return ipfs(command, options)
+    return execute(exec, command, options)
       .then(() => {
         throw new Error(`jsipfs expected to fail during command: jsipfs ${command}`)
       }, (err) => {
