@@ -92,6 +92,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
     - [Network](#network)
     - [Node Management](#node-management)
     - [Static types and utils](#static-types-and-utils)
+      - [Glob source](#glob-source)
+      - [URL source](#url-source)
 - [FAQ](#faq)
     - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
     - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
@@ -914,6 +916,78 @@ These can be accessed like this, for example:
 const { CID } = require('ipfs')
 // ...or from an es-module:
 import { CID } from 'ipfs'
+```
+
+##### Glob source
+
+A utility to allow files on the file system to be easily added to IPFS.
+
+###### `globSource(path, [options])`
+
+- `path`: A path to a single file or directory to glob from
+- `options`: Optional options
+- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
+- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
+- `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
+
+Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
+
+###### Example
+
+```js
+const IPFS = require('ipfs')
+const { globSource } = IPFS
+
+const ipfs = await IPFS.create()
+
+for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
+  console.log(file)
+}
+
+/*
+{
+  path: 'docs/assets/anchor.js',
+  cid: CID('QmVHxRocoWgUChLEvfEyDuuD6qJ4PhdDL2dTLcpUy3dSC2'),
+  size: 15347
+}
+{
+  path: 'docs/assets/bass-addons.css',
+  cid: CID('QmPiLWKd6yseMWDTgHegb8T7wVS7zWGYgyvfj7dGNt2viQ'),
+  size: 232
+}
+...
+*/
+```
+
+##### URL source
+
+A utility to allow content from the internet to be easily added to IPFS.
+
+###### `urlSource(url)`
+
+- `url`: A string URL or [`URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL) instance to send HTTP GET request to
+
+Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
+
+###### Example
+
+```js
+const IPFS = require('ipfs')
+const { urlSource } = IPFS
+
+const ipfs = await IPFS.create()
+
+for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
+  console.log(file)
+}
+
+/*
+{
+  path: 'ipfs-logo.svg',
+  cid: CID('QmTqZhR6f7jzdhLgPArDPnsbZpvvgxzCZycXK7ywkLxSyU'),
+  size: 3243
+}
+*/
 ```
 
 ## FAQ
