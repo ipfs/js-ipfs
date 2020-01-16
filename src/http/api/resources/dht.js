@@ -137,7 +137,7 @@ exports.query = {
       arg: Joi.string().required()
     }).unknown()
   },
-  async handler (request, h) {
+  handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 

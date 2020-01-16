@@ -76,7 +76,7 @@ module.exports = ({ libp2p, repo }) => {
       }
 
       for await (const peerInfo of libp2p._dht.findProviders(key, options)) {
-        return {
+        yield {
           id: new CID(peerInfo.id.toB58String()),
           addrs: peerInfo.multiaddrs.toArray()
         }
