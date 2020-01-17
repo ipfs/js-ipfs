@@ -12,6 +12,7 @@ const ncp = promisify(require('ncp').ncp)
 const runOnAndOff = require('../utils/on-and-off')
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
+const { isWindows } = require('../utils/platforms')
 
 describe('general cli options', () => runOnAndOff.off((thing) => {
   it('should handle --silent flag', async () => {
@@ -88,8 +89,16 @@ describe('--migrate', () => {
       }
     })
 
-    await expect(daemon).to.eventually.include('Daemon is ready')
-      .and.to.include('Received interrupt signal, shutting down...')
+    if (isWindows) {
+      await expect(daemon)
+        .to.eventually.be.rejected()
+        .and.to.include({ killed: true })
+        .and.to.have.a.property('stdout').that.includes('Daemon is ready')
+    } else {
+      await expect(daemon)
+        .to.eventually.include('Daemon is ready')
+        .and.to.include('Received interrupt signal, shutting down...')
+    }
 
     const version = await getRepoVersion()
     expect(version).to.equal(repoVersion) // Should have migrated to latest
