@@ -42,8 +42,8 @@ describe('name', function () {
 
     it('should republish entries', async function () {
       republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), sinon.stub(), {
-        initialBroadcastInterval: 50,
-        broadcastInterval: 100
+        initialBroadcastInterval: 500,
+        broadcastInterval: 1000
       })
       republisher._republishEntries = sinon.stub()
 
@@ -51,12 +51,12 @@ describe('name', function () {
 
       expect(republisher._republishEntries.calledOnce).to.equal(false)
 
-      // Initial republish should happen after ~50ms
-      await delay(100)
+      // Initial republish should happen after ~500ms
+      await delay(750)
       expect(republisher._republishEntries.calledOnce).to.equal(true)
 
-      // Subsequent republishes should happen after ~150ms
-      await delay(100)
+      // Subsequent republishes should happen after ~1500ms
+      await delay(1000)
       expect(republisher._republishEntries.calledTwice).to.equal(true)
     })
 
