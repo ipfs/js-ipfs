@@ -27,7 +27,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
         parallelMap(BLOCK_RM_CONCURRENCY, async cid => {
           cid = cleanCid(cid)
 
-          const result = { hash: cid.toString() }
+          const result = { cid }
 
           try {
             const pinResult = await pinManager.isPinnedWithType(cid, PinTypes.all)
@@ -50,7 +50,8 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
             await blockService.delete(cid)
           } catch (err) {
             if (!options.force) {
-              result.error = `cannot remove ${cid}: ${err.message}`
+              err.message = `cannot remove ${cid}: ${err.message}`
+              result.error = err
             }
           }
 

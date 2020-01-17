@@ -137,8 +137,8 @@ exports.rm = {
           quiet
         })) {
           output.write(JSON.stringify({
-            Hash: result.hash,
-            Error: result.error
+            Hash: result.cid.toString(),
+            Error: result.error ? result.error.message : undefined
           }) + '\n')
         }
       } catch (err) {

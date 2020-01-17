@@ -34,7 +34,7 @@ module.exports = {
         }
 
         if (!quiet) {
-          print(result.error || 'removed ' + result.hash)
+          print(result.error ? result.error.message : `removed ${result.cid}`)
         }
       }
 
