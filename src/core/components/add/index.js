@@ -4,26 +4,18 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
-const log = require('debug')('ipfs:add')
-log.error = require('debug')('ipfs:add:error')
 
-function noop () {}
-
-module.exports = function (self) {
-  // Internal add func that gets used by all add funcs
-  return async function * addAsyncIterator (source, options) {
+module.exports = ({ ipld, dag, gcLock, preload, pin, options: constructorOptions }) => {
+  const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
+  return async function * add (source, options) {
     options = options || {}
 
-    const chunkerOptions = parseChunkerString(options.chunker)
-
-    const opts = Object.assign({}, {
-      shardSplitThreshold: self._options.EXPERIMENTAL.sharding
-        ? 1000
-        : Infinity
-    }, options, {
+    const opts = {
+      shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
+      ...options,
       strategy: 'balanced',
-      ...chunkerOptions
-    })
+      ...parseChunkerString(options.chunker)
+    }
 
     // CID v0 is for multihashes encoded with sha2-256
     if (opts.hashAlg && opts.cidVersion !== 1) {
@@ -36,25 +28,25 @@ module.exports = function (self) {
 
     delete opts.trickle
 
-    let total = 0
+    if (opts.progress) {
+      let total = 0
+      const prog = opts.progress
 
-    const prog = opts.progress || noop
-    const progress = (bytes) => {
-      total += bytes
-      prog(total)
+      opts.progress = (bytes) => {
+        total += bytes
+        prog(total)
+      }
     }
-
-    opts.progress = progress
 
     const iterator = pipe(
       normaliseAddInput(source),
-      doImport(self, opts),
-      transformFile(self, opts),
-      preloadFile(self, opts),
-      pinFile(self, opts)
+      source => importer(source, ipld, opts),
+      transformFile(dag, opts),
+      preloadFile(preload, opts),
+      pinFile(pin, opts)
     )
 
-    const releaseLock = await self._gcLock.readLock()
+    const releaseLock = await gcLock.readLock()
 
     try {
       yield * iterator
@@ -64,55 +56,31 @@ module.exports = function (self) {
   }
 }
 
-function doImport (ipfs, opts) {
-  return async function * (source) { // eslint-disable-line require-await
-    yield * importer(source, ipfs._ipld, opts)
-  }
-}
-
-function transformFile (ipfs, opts) {
+function transformFile (dag, opts) {
   return async function * (source) {
-    for await (const file of source) {
-      let cid = file.cid
-      const hash = cid.toBaseEncodedString()
-      let path = file.path ? file.path : hash
-
-      if (opts.wrapWithDirectory && !file.path) {
-        path = ''
-      }
-
+    for await (const { cid, path, unixfs } of source) {
       if (opts.onlyHash) {
         yield {
-          path,
-          hash,
-          size: file.unixfs.fileSize()
+          cid,
+          path: path || (opts.wrapWithDirectory ? '' : cid.toString()),
+          size: unixfs.fileSize()
         }
 
-        return
+        continue
       }
 
-      const node = await ipfs.object.get(file.cid, Object.assign({}, opts, { preload: false }))
-
-      if (opts.cidVersion === 1) {
-        cid = cid.toV1()
-      }
-
-      let size = node.size
-
-      if (Buffer.isBuffer(node)) {
-        size = node.length
-      }
+      const { value: node } = await dag.get(cid, { ...opts, preload: false })
 
       yield {
-        path,
-        hash,
-        size
+        cid,
+        path: path || (opts.wrapWithDirectory ? '' : cid.toString()),
+        size: Buffer.isBuffer(node) ? node.length : node.size
       }
     }
   }
 }
 
-function preloadFile (ipfs, opts) {
+function preloadFile (preload, opts) {
   return async function * (source) {
     for await (const file of source) {
       const isRootFile = !file.path || opts.wrapWithDirectory
@@ -122,7 +90,7 @@ function preloadFile (ipfs, opts) {
       const shouldPreload = isRootFile && !opts.onlyHash && opts.preload !== false
 
       if (shouldPreload) {
-        ipfs._preload(file.hash)
+        preload(file.cid)
       }
 
       yield file
@@ -130,19 +98,18 @@ function preloadFile (ipfs, opts) {
   }
 }
 
-function pinFile (ipfs, opts) {
+function pinFile (pin, opts) {
   return async function * (source) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
-      const pin = 'pin' in opts ? opts.pin : true
       const isRootDir = !file.path.includes('/')
-      const shouldPin = pin && isRootDir && !opts.onlyHash && !opts.hashAlg
+      const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {
         // Note: addAsyncIterator() has already taken a GC lock, so tell
         // pin.add() not to take a (second) GC lock
-        await ipfs.pin.add(file.hash, {
+        await pin.add(file.cid, {
           preload: false,
           lock: false
         })

@@ -25,7 +25,7 @@ module.exports = {
       const ipfs = await getIpfs()
       let errored = false
 
-      for await (const result of ipfs.block._rmAsyncIterator(hash, {
+      for await (const result of ipfs.block.rm(hash, {
         force,
         quiet
       })) {
@@ -34,7 +34,7 @@ module.exports = {
         }
 
         if (!quiet) {
-          print(result.error || 'removed ' + result.hash)
+          print(result.error ? result.error.message : `removed ${result.cid}`)
         }
       }
 

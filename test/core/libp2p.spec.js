@@ -1,18 +1,36 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const MemoryStore = require('interface-datastore').MemoryDatastore
 const PeerInfo = require('peer-info')
-const PeerBook = require('peer-book')
-const WebSocketStar = require('libp2p-websocket-star')
-const Multiplex = require('pull-mplex')
-const SECIO = require('libp2p-secio')
-const KadDHT = require('libp2p-kad-dht')
 const Libp2p = require('libp2p')
-
+const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
+
+class DummyTransport {
+  get [Symbol.toStringTag] () {
+    return 'DummyTransport'
+  }
+
+  filter () {
+    return []
+  }
+}
+
+class DummyDiscovery extends EE {
+  get [Symbol.toStringTag] () {
+    return 'DummyDiscovery'
+  }
+
+  start () {
+    return Promise.resolve()
+  }
+
+  stop () {
+    return Promise.resolve()
+  }
+}
 
 describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
@@ -20,11 +38,10 @@ describe('libp2p customization', function () {
 
   let datastore
   let peerInfo
-  let peerBook
   let testConfig
-  let _libp2p
+  let libp2p
 
-  before(function (done) {
+  before(async function () {
     this.timeout(25 * 1000)
 
     testConfig = {
@@ -43,309 +60,149 @@ describe('libp2p customization', function () {
       }
     }
     datastore = new MemoryStore()
-    peerBook = new PeerBook()
-    PeerInfo.create((err, pi) => {
-      peerInfo = pi
-      done(err)
-    })
+    peerInfo = await PeerInfo.create()
   })
 
-  afterEach((done) => {
-    if (!_libp2p) return done()
-
-    _libp2p.stop(() => {
-      _libp2p = null
-      done()
-    })
+  afterEach(async () => {
+    if (libp2p) {
+      await libp2p.stop()
+      libp2p = null
+    }
   })
 
   describe('bundle', () => {
-    it('should allow for using a libp2p bundle', (done) => {
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {
+    it('should allow for using a libp2p bundle', async () => {
+      libp2p = libp2pComponent({
+        options: {
           libp2p: (opts) => {
-            const wsstar = new WebSocketStar({ id: opts.peerInfo.id })
-
             return new Libp2p({
               peerInfo: opts.peerInfo,
-              peerBook: opts.peerBook,
-              modules: {
-                transport: [
-                  wsstar
-                ],
-                streamMuxer: [
-                  Multiplex
-                ],
-                connEncryption: [
-                  SECIO
-                ],
-                peerDiscovery: [
-                  wsstar.discovery
-                ],
-                dht: KadDHT
-              }
+              modules: { transport: [DummyTransport] },
+              config: { relay: { enabled: false } }
             })
           }
-        }
-      }
-
-      _libp2p = libp2pComponent(ipfs, testConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._config.peerDiscovery).to.eql({
-          autoDial: true
-        })
-        expect(_libp2p._transport).to.have.length(1)
-        done()
+        },
+        peerInfo,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: testConfig
       })
+
+      await libp2p.start()
+
+      expect(libp2p._config.peerDiscovery).to.eql({ autoDial: true })
+      const transports = Array.from(libp2p.transportManager.getTransports())
+      expect(transports).to.have.length(1)
     })
 
-    it('should pass libp2p options to libp2p bundle function', (done) => {
-      class DummyTransport {
-        filter () {
-          return []
-        }
-      }
-
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {
-          libp2p: ({ libp2pOptions, peerInfo }) => {
-            libp2pOptions.modules.transport = [DummyTransport]
-            return new Libp2p(libp2pOptions)
+    it('should pass libp2p options to libp2p bundle function', async () => {
+      libp2p = libp2pComponent({
+        options: {
+          libp2p: (opts) => {
+            return new Libp2p({
+              peerInfo: opts.peerInfo,
+              modules: { transport: [DummyTransport] },
+              config: { relay: { enabled: false } }
+            })
           }
-        }
-      }
-
-      _libp2p = libp2pComponent(ipfs, testConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._transport).to.have.length(1)
-        expect(_libp2p._transport[0] instanceof DummyTransport).to.equal(true)
-        done()
+        },
+        peerInfo,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: testConfig
       })
+
+      await libp2p.start()
+
+      expect(libp2p._config.peerDiscovery).to.eql({ autoDial: true })
+      const transports = Array.from(libp2p.transportManager.getTransports())
+      expect(transports[0] instanceof DummyTransport).to.equal(true)
     })
   })
 
   describe('options', () => {
-    it('should use options by default', (done) => {
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log
-      }
-
-      _libp2p = libp2pComponent(ipfs, testConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._config).to.deep.include({
-          peerDiscovery: {
-            autoDial: true,
-            bootstrap: {
-              enabled: true,
-              list: []
-            },
-            mdns: {
-              enabled: false
-            },
-            webRTCStar: {
-              enabled: false
-            },
-            websocketStar: {
-              enabled: true
-            }
-          },
-          pubsub: {
-            enabled: true,
-            emitSelf: true,
-            signMessages: true,
-            strictSigning: true
-          }
-        })
-        expect(_libp2p._transport).to.have.length(3)
-        done()
+    it('should use options by default', async () => {
+      libp2p = libp2pComponent({
+        peerInfo,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: testConfig
       })
+
+      await libp2p.start()
+
+      expect(libp2p._config).to.deep.include({
+        peerDiscovery: {
+          autoDial: true,
+          bootstrap: {
+            enabled: true,
+            list: []
+          },
+          mdns: {
+            enabled: false
+          },
+          webRTCStar: {
+            enabled: false
+          },
+          websocketStar: {
+            enabled: true
+          }
+        },
+        pubsub: {
+          enabled: true,
+          emitSelf: true,
+          signMessages: true,
+          strictSigning: true
+        }
+      })
+      const transports = Array.from(libp2p.transportManager.getTransports())
+      expect(transports).to.have.length(3)
     })
 
-    it('should allow for overriding via options', (done) => {
-      const wsstar = new WebSocketStar({ id: peerInfo.id })
-
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {
-          config: {
-            Discovery: {
-              MDNS: {
-                Enabled: true
-              }
-            }
-          },
-          pubsub: {
-            enabled: true
-          },
+    it('should allow for overriding via options', async () => {
+      libp2p = libp2pComponent({
+        peerInfo,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: testConfig,
+        options: {
           libp2p: {
             modules: {
-              transport: [
-                wsstar
-              ],
-              peerDiscovery: [
-                wsstar.discovery
-              ]
-            }
+              transport: [DummyTransport],
+              peerDiscovery: [DummyDiscovery]
+            },
+            config: { relay: { enabled: false } }
           }
         }
-      }
-
-      _libp2p = libp2pComponent(ipfs, testConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._config).to.deep.include({
-          peerDiscovery: {
-            autoDial: true,
-            bootstrap: {
-              enabled: true,
-              list: []
-            },
-            mdns: {
-              enabled: true
-            },
-            webRTCStar: {
-              enabled: false
-            },
-            websocketStar: {
-              enabled: true
-            }
-          }
-        })
-        expect(_libp2p._transport).to.have.length(1)
-        done()
       })
-    })
 
-    it('should NOT create delegate routers if they are not defined', (done) => {
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {
-          config: {
-            Addresses: {
-              Delegates: []
-            }
-          }
-        }
-      }
+      await libp2p.start()
 
-      _libp2p = libp2pComponent(ipfs, testConfig)
+      const transports = Array.from(libp2p.transportManager.getTransports())
+      expect(transports).to.have.length(1)
+      expect(transports[0] instanceof DummyTransport).to.be.true()
 
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-
-        expect(_libp2p._modules.contentRouting).to.not.exist()
-        expect(_libp2p._modules.peerRouting).to.not.exist()
-        done()
-      })
-    })
-
-    it('should create delegate routers if they are defined', (done) => {
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {
-          config: {
-            Addresses: {
-              Delegates: [
-                '/dns4/node0.preload.ipfs.io/tcp/443/https'
-              ]
-            }
-          }
-        }
-      }
-
-      _libp2p = libp2pComponent(ipfs, testConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-
-        expect(_libp2p._modules.contentRouting).to.have.length(1)
-        expect(_libp2p._modules.contentRouting[0].api).to.include({
-          host: 'node0.preload.ipfs.io',
-          port: '443',
-          protocol: 'https'
-        })
-        expect(_libp2p._modules.peerRouting).to.have.length(1)
-        expect(_libp2p._modules.peerRouting[0].api).to.include({
-          host: 'node0.preload.ipfs.io',
-          port: '443',
-          protocol: 'https'
-        })
-        done()
-      })
+      const discoveries = Array.from(libp2p._discovery.values())
+      expect(discoveries).to.have.length(1)
+      expect(discoveries[0] instanceof DummyDiscovery).to.be.true()
     })
   })
 
-  describe('bundle via custom config for pubsub', () => {
-    it('select gossipsub as pubsub router', (done) => {
-      const ipfs = {
-        _repo: {
-          datastore
-        },
-        _peerInfo: peerInfo,
-        _peerBook: peerBook,
-        // eslint-disable-next-line no-console
-        _print: console.log,
-        _options: {}
-      }
-      const customConfig = {
-        ...testConfig,
-        Pubsub: {
-          Router: 'gossipsub'
+  describe('config', () => {
+    it('should select gossipsub as pubsub router', async () => {
+      libp2p = libp2pComponent({
+        peerInfo,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: {
+          ...testConfig,
+          Pubsub: { Router: 'gossipsub' }
         }
-      }
-
-      _libp2p = libp2pComponent(ipfs, customConfig)
-
-      _libp2p.start((err) => {
-        expect(err).to.not.exist()
-        expect(_libp2p._modules.pubsub).to.eql(require('libp2p-gossipsub'))
-        done()
       })
+
+      await libp2p.start()
+
+      expect(libp2p._modules.pubsub).to.eql(require('libp2p-gossipsub'))
     })
   })
 })

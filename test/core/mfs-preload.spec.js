@@ -1,16 +1,24 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
+const multihashing = require('multihashing-async')
+const hat = require('hat')
+const { Buffer } = require('buffer')
+const CID = require('cids')
 const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')
+
+const fakeCid = async () => {
+  const mh = await multihashing(Buffer.from(hat()), 'sha2-256')
+  return new CID(mh)
+}
 
 const createMockFilesStat = (cids = []) => {
   let n = 0
   return () => {
-    return Promise.resolve({ hash: cids[n++] || 'QmHash' })
+    return Promise.resolve({ cid: cids[n++] || 'QmHash' })
   }
 }
 
@@ -22,35 +30,28 @@ const createMockPreload = () => {
 
 describe('MFS preload', () => {
   // CIDs returned from our mock files.stat function
-  const statCids = ['QmInitial', 'QmSame', 'QmSame', 'QmUpdated']
+  let testCids
   let mockPreload
-  let mockFilesStat
-  let mockIpfs
+  let mockFiles
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPreload = createMockPreload()
-    mockFilesStat = createMockFilesStat(statCids)
-    mockIpfs = {
-      files: {
-        stat: mockFilesStat
-      },
-      _preload: mockPreload,
-      _options: {
-        preload: {
-          interval: 10
-        }
-      }
+
+    testCids = {
+      initial: await fakeCid(),
+      same: await fakeCid(),
+      updated: await fakeCid()
     }
+
+    mockFiles = { stat: createMockFilesStat([testCids.initial, testCids.same, testCids.same, testCids.updated]) }
   })
 
   it('should preload MFS root periodically', async function () {
     this.timeout(80 * 1000)
 
-    mockIpfs._options.preload.enabled = true
-
     // The CIDs we expect to have been preloaded
-    const expectedPreloadCids = ['QmSame', 'QmUpdated']
-    const preloader = mfsPreload(mockIpfs)
+    const expectedPreloadCids = [testCids.same, testCids.updated]
+    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: true, interval: 10 } })
 
     await preloader.start()
 
@@ -62,7 +63,7 @@ describe('MFS preload', () => {
         return false
       }
 
-      return cids.every((cid, i) => cid === expectedPreloadCids[i])
+      return cids.every((cid, i) => cid.toString() === expectedPreloadCids[i].toString())
     }
 
     await waitFor(test, { name: 'CIDs to be preloaded' })
@@ -70,9 +71,7 @@ describe('MFS preload', () => {
   })
 
   it('should disable preloading MFS', async () => {
-    mockIpfs._options.preload.enabled = false
-
-    const preloader = mfsPreload(mockIpfs)
+    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: false, interval: 10 } })
     await preloader.start()
     await delay(500)
     expect(mockPreload.cids).to.be.empty()

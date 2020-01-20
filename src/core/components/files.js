@@ -1,46 +1,14 @@
 'use strict'
 
 const mfs = require('ipfs-mfs/core')
-const isPullStream = require('is-pull-stream')
-const toPullStream = require('async-iterator-to-pull-stream')
-const toReadableStream = require('async-iterator-to-stream')
-const pullStreamToAsyncIterator = require('pull-stream-to-async-iterator')
-const all = require('it-all')
-const nodeify = require('promise-nodeify')
-const PassThrough = require('stream').PassThrough
-const pull = require('pull-stream/pull')
-const map = require('pull-stream/throughs/map')
 const isIpfs = require('is-ipfs')
-const { cidToString } = require('../../utils/cid')
 
-/**
- * @typedef { import("readable-stream").Readable } ReadableStream
- * @typedef { import("pull-stream") } PullStream
- */
-
-const mapLsFile = (options) => {
-  options = options || {}
-
-  const long = options.long || options.l
-
-  return (file) => {
-    return {
-      hash: long ? cidToString(file.cid, { base: options.cidBase }) : '',
-      name: file.name,
-      type: long ? file.type : 0,
-      size: long ? file.size || 0 : 0,
-      mode: file.mode,
-      mtime: file.mtime
-    }
-  }
-}
-
-module.exports = (/** @type { import("../index") } */ ipfs) => {
-  const methodsOriginal = mfs({
-    ipld: ipfs._ipld,
-    blocks: ipfs._blockService,
-    datastore: ipfs._repo.root,
-    repoOwner: ipfs._options.repoOwner
+module.exports = ({ ipld, blockService, repo, preload, options: constructorOptions }) => {
+  const methods = mfs({
+    ipld,
+    blocks: blockService,
+    datastore: repo.root,
+    repoOwner: constructorOptions.repoOwner
   })
 
   const withPreload = fn => (...args) => {
@@ -49,23 +17,16 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
     if (paths.length) {
       const options = args[args.length - 1]
       if (options && options.preload !== false) {
-        paths.forEach(path => ipfs._preload(path))
+        paths.forEach(path => preload(path))
       }
     }
 
     return fn(...args)
   }
 
-  const methods = {
-    ...methodsOriginal,
-    cp: withPreload(methodsOriginal.cp),
-    ls: withPreload(methodsOriginal.ls),
-    mv: withPreload(methodsOriginal.mv),
-    read: withPreload(methodsOriginal.read),
-    stat: withPreload(methodsOriginal.stat)
-  }
-
   return {
+    ...methods,
+
     /**
      * Change file mode
      *
@@ -75,16 +36,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {boolean} [opts.recursive=false] - Whether to change modes recursively. (default: false)
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
      * @param {number} [opts.shardSplitThreshold] - If the modified path has more than this many links it will be turned into a HAMT shard
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<string> | void} When callback is provided nothing is returned.
+     * @returns {Promise<string>}
      */
-    chmod: (path, mode, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.chmod(path, mode, opts), cb)
-    },
+    chmod: methods.chmod,
 
     /**
      * Copy files
@@ -96,16 +50,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb)
      * @param {String} [opts.hashAlg=sha2-256] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<string> | void} When callback is provided nothing is returned.
+     * @returns {Promise<string>}
      */
-    cp: (from, to, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.cp(from, to, opts), cb)
-    },
+    cp: withPreload(methods.cp),
 
     /**
      * Make a directory
@@ -116,16 +63,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
      * @param {String} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<undefined> | void} When callback is provided nothing is returned.
+     * @returns {Promise<void>}
      */
-    mkdir: (path, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.mkdir(path, opts), cb)
-    },
+    mkdir: methods.mkdir,
 
     /**
      * @typedef {Object} StatOutput
@@ -147,27 +87,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {boolean} [opts.hash=false] - Return only the hash. (default: false)
      * @param {boolean} [opts.size=false] - Return only the size. (default: false)
      * @param {boolean} [opts.withLocal=false] - Compute the amount of the dag that is local, and if possible the total size. (default: false)
-     * @param {String} [opts.cidBase=base58btc] - Which number base to use to format hashes - e.g. base32, base64 etc. (default: base58btc)
-     * @param {function(Error, StatOutput): void} [cb] - Callback function.
-     * @returns {Promise<StatOutput> | void} When callback is provided nothing is returned.
+     * @returns {Promise<StatOutput>}
      */
-    stat: (path, opts, cb) => {
-      const stat = async (path, opts = {}) => {
-        const stats = await methods.stat(path, opts)
-
-        stats.hash = stats.cid.toBaseEncodedString(opts && opts.cidBase)
-        delete stats.cid
-
-        return stats
-      }
-
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-
-      return nodeify(stat(path, opts), cb)
-    },
+    stat: withPreload(methods.stat),
 
     /**
      * Remove a file or directory.
@@ -175,16 +97,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {String | Array<String>} paths - One or more paths to remove.
      * @param {Object} [opts] - Options for remove.
      * @param {boolean} [opts.recursive=false] - Whether or not to remove directories recursively. (default: false)
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<undefined> | void} When callback is provided nothing is returned.
+     * @returns {Promise<void>}
      */
-    rm: (paths, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.rm(paths, opts), cb)
-    },
+    rm: methods.rm,
 
     /**
      * @typedef {Object} ReadOptions
@@ -197,38 +112,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      *
      * @param {string} path - Path of the file to read and must point to a file (and not a directory).
      * @param {ReadOptions} [opts] - Object for read.
-     * @param {function(Error, Buffer): void} [cb] - Callback function.
-     * @returns {Promise<Buffer> | void} When callback is provided nothing is returned.
+     * @returns {AsyncIterable<Buffer>}
      */
-    read: (path, opts, cb) => {
-      const read = async (path, opts = {}) => {
-        return Buffer.concat(await all(methods.read(path, opts)))
-      }
-
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(read(path, opts), cb)
-    },
-
-    /**
-     * Read a file into a ReadableStream.
-     *
-     * @param {string} path - Path of the file to read and must point to a file (and not a directory).
-     * @param {ReadOptions} [opts] - Object for read.
-     * @returns {ReadableStream} Returns a ReadableStream with the contents of path.
-     */
-    readReadableStream: (path, opts = {}) => toReadableStream(methods.read(path, opts)),
-
-    /**
-     * Read a file into a PullStrean.
-     *
-     * @param {string} path - Path of the file to read and must point to a file (and not a directory).
-     * @param {ReadOptions} [opts] - Object for read.
-     * @returns {PullStream} Returns a PullStream with the contents of path.
-     */
-    readPullStream: (path, opts = {}) => toPullStream.source(methods.read(path, opts)),
+    read: withPreload(methods.read),
 
     /**
      * Update modification time
@@ -239,16 +125,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
      * @param {number} [opts.cidVersion=0] - CID version to use with the newly updated node
      * @param {number} [opts.shardSplitThreshold] - If the modified path has more than this many links it will be turned into a HAMT shard
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<string> | void} When callback is provided nothing is returned.
+     * @returns {Promise<string>}
      */
-    touch: (path, mtime, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.touch(path, mtime, opts), cb)
-    },
+    touch: methods.touch,
 
     /**
      * Write to a file.
@@ -263,23 +142,9 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {number} [opts.length] - Maximum number of bytes to read. (default: Read all bytes from content)
      * @param {boolean} [opts.rawLeaves=false] - If true, DAG leaves will contain raw file data and not be wrapped in a protobuf. (default: false)
      * @param {number} [opts.cidVersion=0] - The CID version to use when storing the data (storage keys are based on the CID, including its version). (default: 0)
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<undefined> | void} When callback is provided nothing is returned.
+     * @returns {Promise<void>}
      */
-    write: (path, content, opts, cb) => {
-      const write = async (path, content, opts = {}) => {
-        if (isPullStream.isSource(content)) {
-          content = pullStreamToAsyncIterator(content)
-        }
-
-        await methods.write(path, content, opts)
-      }
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(write(path, content, opts), cb)
-    },
+    write: methods.write,
 
     /**
      * Move files.
@@ -291,8 +156,7 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
      * @param {String} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Value to decide whether or not to immediately flush MFS changes to disk. (default: true)
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<undefined> | void} When callback is provided nothing is returned.
+     * @returns {Promise<void>}
      * @description
      * If from has multiple values then to must be a directory.
      *
@@ -304,28 +168,15 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      *
      * All values of from will be removed after the operation is complete unless they are an IPFS path.
      */
-    mv: (from, to, opts, cb) => {
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(methods.mv(from, to, opts), cb)
-    },
+    mv: withPreload(methods.mv),
 
     /**
      * Flush a given path's data to the disk.
      *
      * @param {string | Array<string>} [paths] - String paths to flush. (default: /)
-     * @param {function(Error): void} [cb] - Callback function.
-     * @returns {Promise<undefined> | void} When callback is provided nothing is returned.
+     * @returns {Promise<void>}
      */
-    flush: (paths, cb) => {
-      if (typeof paths === 'function') {
-        cb = paths
-        paths = undefined
-      }
-      return nodeify(methods.flush(paths), cb)
-    },
+    flush: methods.flush,
 
     /**
      * @typedef {Object} ListOutputFile
@@ -338,7 +189,6 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
     /**
      * @typedef {Object} ListOptions
      * @prop {boolean} [long=false] - Value to decide whether or not to populate type, size and hash. (default: false)
-     * @prop {string} [cidBase=base58btc] - Which number base to use to format hashes - e.g. base32, base64 etc. (default: base58btc)
      * @prop {boolean} [sort=false] - If true entries will be sorted by filename. (default: false)
      */
 
@@ -347,70 +197,12 @@ module.exports = (/** @type { import("../index") } */ ipfs) => {
      *
      * @param {string} [path="/"] - String to show listing for. (default: /)
      * @param {ListOptions} [opts] - Options for list.
-     * @param {function(Error, Array<ListOutputFile>): void} [cb] - Callback function.
-     * @returns {Promise<Array<ListOutputFile>> | void} When callback is provided nothing is returned.
+     * @returns {AsyncIterable<ListOutputFile>}
      */
-    ls: (path, opts, cb) => {
-      const ls = async (path, opts = {}) => {
-        const files = await all(methods.ls(path, opts))
-
-        return files.map(mapLsFile(opts))
+    ls: withPreload(async function * (...args) {
+      for await (const file of methods.ls(...args)) {
+        yield { ...file, size: file.size || 0 }
       }
-
-      if (typeof path === 'function') {
-        cb = path
-        path = '/'
-        opts = {}
-      }
-
-      if (typeof opts === 'function') {
-        cb = opts
-        opts = {}
-      }
-      return nodeify(ls(path, opts), cb)
-    },
-
-    /**
-     * Lists a directory from the local mutable namespace that is addressed by a valid IPFS Path. The list will be yielded as Readable Streams.
-     *
-     * @param {string} [path="/"] - String to show listing for. (default: /)
-     * @param {ListOptions} [opts] - Options for list.
-     * @returns {ReadableStream} It returns a Readable Stream in Object mode that will yield {@link ListOutputFile}
-     */
-    lsReadableStream: (path, opts = {}) => {
-      const stream = toReadableStream.obj(methods.ls(path, opts))
-      const through = new PassThrough({
-        objectMode: true
-      })
-      stream.on('data', (file) => {
-        through.write(mapLsFile(opts)(file))
-      })
-      stream.on('error', (err) => {
-        through.destroy(err)
-      })
-      stream.on('end', (file, enc, cb) => {
-        if (file) {
-          file = mapLsFile(opts)(file)
-        }
-
-        through.end(file, enc, cb)
-      })
-
-      return through
-    },
-
-    /**
-     * Lists a directory from the local mutable namespace that is addressed by a valid IPFS Path. The list will be yielded as PullStreams.
-     *
-     * @param {string} [path="/"] - String to show listing for. (default: /)
-     * @param {ListOptions} [opts] - Options for list.
-     * @returns {PullStream} It returns a PullStream that will yield {@link ListOutputFile}
-     */
-    lsPullStream: (path, opts = {}) => {
-      return pull(
-        toPullStream.source(methods.ls(path, opts)),
-        map(mapLsFile(opts))
-      )
-    }
+    })
   }
 }

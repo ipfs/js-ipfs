@@ -1,6 +1,6 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
 const mh = require('multihashes')
@@ -238,20 +238,20 @@ module.exports = {
         })
         : argv.getStdin() // Pipe directly to ipfs.add
 
-      let finalHash
+      let finalCid
 
       try {
-        for await (const file of ipfs._addAsyncIterator(source, options)) {
+        for await (const file of ipfs.add(source, options)) {
           if (argv.silent) {
             continue
           }
 
           if (argv.quieter) {
-            finalHash = file.hash
+            finalCid = file.cid
             continue
           }
 
-          const cid = cidToString(file.hash, { base: argv.cidBase })
+          const cid = cidToString(file.cid, { base: argv.cidBase })
           let message = cid
 
           if (!argv.quiet) {
@@ -266,7 +266,7 @@ module.exports = {
           bar.terminate()
         }
 
-        // Tweak the error message and add more relevant infor for the CLI
+        // Tweak the error message and add more relevant info for the CLI
         if (err.code === 'ERR_DIR_NON_RECURSIVE') {
           err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
         }
@@ -279,7 +279,7 @@ module.exports = {
       }
 
       if (argv.quieter) {
-        log(cidToString(finalHash, { base: argv.cidBase }))
+        log(cidToString(finalCid, { base: argv.cidBase }))
       }
     })())
   }

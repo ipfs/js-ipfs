@@ -11,11 +11,12 @@ describe('pubsub disabled', () => {
   let ipfs
   let repo
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
 
     repo = createTempRepo()
-    ipfs = new IPFS({
+    ipfs = await IPFS.create({
+      silent: true,
       repo,
       config: {
         Addresses: {
@@ -29,108 +30,50 @@ describe('pubsub disabled', () => {
         enabled: false
       }
     })
-
-    ipfs.on('ready', done)
   })
 
-  after((done) => ipfs.stop(done))
+  after(() => ipfs.stop())
 
-  after((done) => repo.teardown(done))
+  after(() => repo.teardown())
 
-  it('should not allow subscribe if disabled', done => {
-    const topic = hat()
-    const handler = () => done(new Error('unexpected message'))
-    ipfs.pubsub.subscribe(topic, handler, (err) => {
-      expect(err).to.exist()
-      expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-      done()
-    })
-  })
-
-  it('should not allow subscribe if disabled (promised)', async () => {
+  it('should not allow subscribe if disabled', async () => {
     const topic = hat()
     const handler = () => { throw new Error('unexpected message') }
 
     await expect(ipfs.pubsub.subscribe(topic, handler))
       .to.eventually.be.rejected()
-      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
+      .and.to.have.property('code', 'ERR_NOT_ENABLED')
   })
 
-  it('should not allow unsubscribe if disabled', done => {
-    const topic = hat()
-    const handler = () => done(new Error('unexpected message'))
-    ipfs.pubsub.unsubscribe(topic, handler, (err) => {
-      expect(err).to.exist()
-      expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-      done()
-    })
-  })
-
-  it('should not allow unsubscribe if disabled (promised)', async () => {
+  it('should not allow unsubscribe if disabled', async () => {
     const topic = hat()
     const handler = () => { throw new Error('unexpected message') }
 
     await expect(ipfs.pubsub.unsubscribe(topic, handler))
       .to.eventually.be.rejected()
-      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
+      .and.to.have.property('code', 'ERR_NOT_ENABLED')
   })
 
-  it('should not allow publish if disabled', done => {
-    const topic = hat()
-    const msg = Buffer.from(hat())
-    ipfs.pubsub.publish(topic, msg, (err) => {
-      expect(err).to.exist()
-      expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-      done()
-    })
-  })
-
-  it('should not allow publish if disabled (promised)', async () => {
+  it('should not allow publish if disabled', async () => {
     const topic = hat()
     const msg = Buffer.from(hat())
 
     await expect(ipfs.pubsub.publish(topic, msg))
       .to.eventually.be.rejected()
-      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
+      .and.to.have.property('code', 'ERR_NOT_ENABLED')
   })
 
-  it('should not allow ls if disabled', done => {
-    ipfs.pubsub.ls((err) => {
-      expect(err).to.exist()
-      expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-      done()
-    })
-  })
-
-  it('should not allow ls if disabled (promised)', async () => {
+  it('should not allow ls if disabled', async () => {
     await expect(ipfs.pubsub.ls())
       .to.eventually.be.rejected()
-      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
+      .and.to.have.property('code', 'ERR_NOT_ENABLED')
   })
 
-  it('should not allow peers if disabled', done => {
-    const topic = hat()
-    ipfs.pubsub.peers(topic, (err) => {
-      expect(err).to.exist()
-      expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-      done()
-    })
-  })
-
-  it('should not allow peers if disabled (promised)', async () => {
+  it('should not allow peers if disabled', async () => {
     const topic = hat()
 
     await expect(ipfs.pubsub.peers(topic))
       .to.eventually.be.rejected()
-      .and.to.have.property('code', 'ERR_PUBSUB_DISABLED')
-  })
-
-  it('should not allow setMaxListeners if disabled', () => {
-    try {
-      ipfs.pubsub.setMaxListeners(100)
-    } catch (err) {
-      return expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-    }
-    throw new Error('expected error to be thrown')
+      .and.to.have.property('code', 'ERR_NOT_ENABLED')
   })
 })

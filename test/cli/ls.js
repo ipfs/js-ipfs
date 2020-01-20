@@ -17,7 +17,7 @@ describe('ls', () => runOnAndOff((thing) => {
     this.timeout(20 * 1000)
     const out = await ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
     expect(out).to.eql(
-      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
+      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
       '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n' +
       'drwxr-xr-x - QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv -    datastore/\n' +
       'drwxr-xr-x - QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU -    init-docs/\n' +
@@ -29,7 +29,7 @@ describe('ls', () => runOnAndOff((thing) => {
     this.timeout(20 * 1000)
     const out = await ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/')
     expect(out).to.eql(
-      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
+      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
       '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n' +
       'drwxr-xr-x - QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv -    datastore/\n' +
       'drwxr-xr-x - QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU -    init-docs/\n' +
@@ -41,7 +41,7 @@ describe('ls', () => runOnAndOff((thing) => {
     this.timeout(20 * 1000)
     const out = await ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z///')
     expect(out).to.eql(
-      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
+      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
       '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n' +
       'drwxr-xr-x - QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv -    datastore/\n' +
       'drwxr-xr-x - QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU -    init-docs/\n' +
@@ -139,7 +139,7 @@ describe('ls', () => runOnAndOff((thing) => {
 
     const out = await ipfs('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z --cid-base=base64')
     expect(out).to.eql(
-      'drwxr-xr-x - mAXASILidvV1YroHLqBvmuXko1Ly1UVenZV1K+MvhsjXhdvZQ -    blocks/\n' +
+      'drwxr-xr-x - mAXASILidvV1YroHLqBvmuXko1Ly1UVenZV1K+MvhsjXhdvZQ - blocks/\n' +
       '-rw-r--r-- - mAXASIBT4ZYkQw0IApLoNHBxSjpezyayKZHJyxmFKpt0I3sK5 3928 config\n' +
       'drwxr-xr-x - mAXASIGCpScP8zpa0CqUgyVCR/Cm0Co8pnULGe3seXSsOnJsJ -    datastore/\n' +
       'drwxr-xr-x - mAXASIF58POI3+TbHb69iXpD3dRqfXusEj1mHMwPCFenM6HWZ -    init-docs/\n' +

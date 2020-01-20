@@ -3,13 +3,18 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
-const { normalizePath } = require('./utils')
-const { Format } = require('./refs')
+const { normalizeCidPath } = require('../../utils')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
+const { withTimeoutOption } = require('../../utils')
 
-module.exports = function (self) {
-  return async function * refsAsyncIterator (ipfsPath, options) { // eslint-disable-line require-await
+const Format = {
+  default: '<dst>',
+  edges: '<src> -> <dst>'
+}
+
+module.exports = function ({ ipld, resolve, preload }) {
+  return withTimeoutOption(async function * refs (ipfsPath, options) { // eslint-disable-line require-await
     options = options || {}
 
     if (options.maxDepth === 0) {
@@ -27,18 +32,20 @@ module.exports = function (self) {
     }
 
     const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
-    const paths = rawPaths.map(p => getFullPath(self, p, options))
+    const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {
-      yield * refsStream(self, path, options)
+      yield * refsStream(resolve, ipld, path, options)
     }
-  }
+  })
 }
 
-function getFullPath (ipfs, ipfsPath, options) {
-  // normalizePath() strips /ipfs/ off the front of the path so the CID will
+module.exports.Format = Format
+
+function getFullPath (preload, ipfsPath, options) {
+  // normalizeCidPath() strips /ipfs/ off the front of the path so the CID will
   // be at the front of the path
-  const path = normalizePath(ipfsPath)
+  const path = normalizeCidPath(ipfsPath)
   const pathComponents = path.split('/')
   const cid = pathComponents[0]
 
@@ -47,22 +54,22 @@ function getFullPath (ipfs, ipfsPath, options) {
   }
 
   if (options.preload !== false) {
-    ipfs._preload(cid)
+    preload(cid)
   }
 
   return '/ipfs/' + path
 }
 
 // Get a stream of refs at the given path
-async function * refsStream (ipfs, path, options) {
+async function * refsStream (resolve, ipld, path, options) {
   // Resolve to the target CID of the path
-  const resPath = await ipfs.resolve(path)
+  const resPath = await resolve(path)
   // path is /ipfs/<cid>
   const parts = resPath.split('/')
   const cid = parts[2]
 
   // Traverse the DAG, converting it into a stream
-  for await (const obj of objectStream(ipfs, cid, options.maxDepth, options.unique)) {
+  for await (const obj of objectStream(ipld, cid, options.maxDepth, options.unique)) {
     // Root object will not have a parent
     if (!obj.parent) {
       continue
@@ -90,7 +97,7 @@ function formatLink (srcCid, dstCid, linkName, format) {
 }
 
 // Do a depth first search of the DAG, starting from the given root cid
-async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
+async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
   const seen = new Set()
 
   async function * traverseLevel (parent, depth) {
@@ -104,7 +111,7 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) { // eslint-
     // Get this object's links
     try {
       // Look at each link, parent and the new depth
-      for (const link of await getLinks(ipfs, parent.cid)) {
+      for (const link of await getLinks(ipld, parent.cid)) {
         yield {
           parent: parent,
           node: link,
@@ -130,8 +137,8 @@ async function * objectStream (ipfs, rootCid, maxDepth, uniqueOnly) { // eslint-
 }
 
 // Fetch a node from IPLD then get all its links
-async function getLinks (ipfs, cid) {
-  const node = await ipfs._ipld.get(new CID(cid))
+async function getLinks (ipld, cid) {
+  const node = await ipld.get(new CID(cid))
 
   if (DAGNode.isDAGNode(node)) {
     return node.Links.map(({ Name, Hash }) => ({ name: Name, cid: new CID(Hash) }))

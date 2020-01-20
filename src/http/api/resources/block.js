@@ -132,13 +132,13 @@ exports.rm = {
 
     return streamResponse(request, h, async (output) => {
       try {
-        for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
+        for await (const result of request.server.app.ipfs.block.rm(arg, {
           force,
           quiet
         })) {
           output.write(JSON.stringify({
-            Hash: result.hash,
-            Error: result.error
+            Hash: result.cid.toString(),
+            Error: result.error ? result.error.message : undefined
           }) + '\n')
         }
       } catch (err) {
@@ -170,7 +170,7 @@ exports.stat = {
     }
 
     return h.response({
-      Key: cidToString(stats.key, { base: request.query['cid-base'] }),
+      Key: cidToString(stats.cid, { base: request.query['cid-base'] }),
       Size: stats.size
     })
   }

@@ -5,8 +5,6 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
 const factory = require('../utils/factory')
-const auto = require('async/auto')
-const waterfall = require('async/waterfall')
 
 describe('object', function () {
   this.timeout(10 * 1000)
@@ -21,127 +19,68 @@ describe('object', function () {
   after(() => df.clean())
 
   describe('get', () => {
-    it('should callback with error for invalid CID input', (done) => {
-      ipfs.object.get('INVALID CID', (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_CID')
-        done()
-      })
+    it('should callback with error for invalid CID input', () => {
+      return expect(ipfs.object.get('INVALID CID'))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
     })
 
-    it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.get(cid, null, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
+    it('should not error when passed null options', async () => {
+      const cid = await ipfs.object.put(Buffer.from(hat()))
+      await ipfs.object.get(cid)
     })
   })
 
   describe('put', () => {
-    it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), null, (err) => {
-        expect(err).to.not.exist()
-        done()
-      })
+    it('should not error when passed null options', () => {
+      return ipfs.object.put(Buffer.from(hat()), null)
     })
   })
 
   describe('patch.addLink', () => {
-    it('should not error when passed null options', (done) => {
-      auto({
-        a: (cb) => {
-          waterfall([
-            (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
-          ], cb)
-        },
-        b: (cb) => {
-          waterfall([
-            (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
-          ], cb)
-        }
-      }, (err, results) => {
-        expect(err).to.not.exist()
+    it('should not error when passed null options', async () => {
+      const aCid = await ipfs.object.put(Buffer.from(hat()))
+      const bCid = await ipfs.object.put(Buffer.from(hat()))
+      const bNode = await ipfs.object.get(bCid)
 
-        const link = {
-          name: 'link-name',
-          cid: results.b.cid,
-          size: results.b.node.size
-        }
+      const link = {
+        name: 'link-name',
+        cid: bCid,
+        size: bNode.size
+      }
 
-        ipfs.object.patch.addLink(results.a.cid, link, null, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
+      await ipfs.object.patch.addLink(aCid, link, null)
     })
   })
 
   describe('patch.rmLink', () => {
-    it('should not error when passed null options', (done) => {
-      auto({
-        nodeA: (cb) => {
-          waterfall([
-            (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
-          ], cb)
-        },
-        nodeB: (cb) => {
-          waterfall([
-            (done) => ipfs.object.put(Buffer.from(hat()), done),
-            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
-          ], cb)
-        },
-        nodeAWithLink: ['nodeA', 'nodeB', (res, cb) => {
-          waterfall([
-            (done) => ipfs.object.patch.addLink(res.nodeA.cid, {
-              Name: 'nodeBLink',
-              Hash: res.nodeB.cid,
-              Tsize: res.nodeB.node.size
-            }, done),
-            (cid, done) => ipfs.object.get(cid, (err, node) => done(err, { node, cid }))
-          ], cb)
-        }]
-      }, (err, res) => {
-        expect(err).to.not.exist()
+    it('should not error when passed null options', async () => {
+      const aCid = await ipfs.object.put(Buffer.from(hat()))
+      const bCid = await ipfs.object.put(Buffer.from(hat()))
+      const bNode = await ipfs.object.get(bCid)
 
-        const link = res.nodeAWithLink.node.Links[0]
-        ipfs.object.patch.rmLink(res.nodeAWithLink.cid, link, null, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
+      const cCid = await ipfs.object.patch.addLink(aCid, {
+        Name: 'nodeBLink',
+        Hash: bCid,
+        Tsize: bNode.size
       })
+      const cNode = await ipfs.object.get(cCid)
+
+      await ipfs.object.patch.rmLink(cCid, cNode.Links[0], null)
     })
   })
 
   describe('patch.appendData', () => {
-    it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), null, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.patch.appendData(cid, Buffer.from(hat()), null, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
+    it('should not error when passed null options', async () => {
+      const cid = await ipfs.object.put(Buffer.from(hat()), null)
+      await ipfs.object.patch.appendData(cid, Buffer.from(hat()), null)
     })
   })
 
   describe('patch.setData', () => {
-    it('should not error when passed null options', (done) => {
-      ipfs.object.put(Buffer.from(hat()), null, (err, cid) => {
-        expect(err).to.not.exist()
-
-        ipfs.object.patch.setData(cid, Buffer.from(hat()), null, (err) => {
-          expect(err).to.not.exist()
-          done()
-        })
-      })
+    it('should not error when passed null options', async () => {
+      const cid = await ipfs.object.put(Buffer.from(hat()), null)
+      await ipfs.object.patch.setData(cid, Buffer.from(hat()), null)
     })
   })
 })

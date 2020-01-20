@@ -22,7 +22,7 @@ module.exports = {
     resolve((async () => {
       const ipfs = await getIpfs()
 
-      for await (const buf of ipfs._catAsyncIterator(ipfsPath, { offset, length })) {
+      for await (const buf of ipfs.cat(ipfsPath, { offset, length })) {
         process.stdout.write(buf)
       }
     })())

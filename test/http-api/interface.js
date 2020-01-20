@@ -3,7 +3,6 @@
 
 const tests = require('interface-ipfs-core')
 const merge = require('merge-options')
-const { isNode } = require('ipfs-utils/src/env')
 const { createFactory } = require('ipfsd-ctl')
 const IPFS = require('../../src')
 
@@ -34,6 +33,8 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
   }
   const commonFactory = createFactory(commonOptions, overrides)
 
+  tests.root(commonFactory)
+
   tests.bitswap(commonFactory)
 
   tests.block(commonFactory)
@@ -58,17 +59,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }
   })
 
-  tests.filesRegular(commonFactory, {
-    skip: isNode ? null : [{
-      name: 'addFromStream',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'addFromFs',
-      reason: 'Not designed to run in the browser'
-    }]
-  })
-
-  tests.filesMFS(commonFactory)
+  tests.files(commonFactory)
 
   tests.key(commonFactory)
 
@@ -76,7 +67,6 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.name(createFactory(merge(commonOptions, {
     ipfsOptions: {
-      pass: 'ipfs-is-awesome-software',
       offline: true
     }
   }), overrides))
@@ -91,9 +81,22 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
 
   tests.object(commonFactory)
 
-  tests.pin(commonFactory)
+  tests.pin(commonFactory, {
+    skip: [{
+      name: 'should throw an error on missing direct pins for existing path',
+      reason: 'FIXME: fetch does not yet support HTTP trailers https://github.com/ipfs/js-ipfs/issues/2519'
+    }, {
+      name: 'should throw an error on missing link for a specific path',
+      reason: 'FIXME: fetch does not yet support HTTP trailers https://github.com/ipfs/js-ipfs/issues/2519'
+    }]
+  })
 
-  tests.ping(commonFactory)
+  tests.ping(commonFactory, {
+    skip: [{
+      name: 'should fail when pinging a peer that is not available',
+      reason: 'FIXME: fetch does not yet support HTTP trailers https://github.com/ipfs/js-ipfs/issues/2519'
+    }]
+  })
 
   tests.pubsub(createFactory(commonOptions, merge(overrides, {
     go: {

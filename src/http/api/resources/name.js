@@ -1,24 +1,39 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
+const pipe = require('it-pipe')
+const ndjson = require('iterable-ndjson')
+const toStream = require('it-to-stream')
+const { map } = require('streaming-iterables')
+const last = require('it-last')
 
 exports.resolve = {
   validate: {
     query: Joi.object().keys({
       arg: Joi.string(),
       nocache: Joi.boolean().default(false),
-      recursive: Joi.boolean().default(true)
+      recursive: Joi.boolean().default(true),
+      stream: Joi.boolean().default(false)
     }).unknown()
   },
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { arg } = request.query
+    const { arg, stream } = request.query
 
-    const res = await ipfs.name.resolve(arg, request.query)
+    if (!stream) {
+      const value = await last(ipfs.name.resolve(arg, request.query))
+      return h.response({ Path: value })
+    }
 
-    return h.response({
-      Path: res
-    })
+    return h.response(
+      toStream.readable(
+        pipe(
+          ipfs.name.resolve(arg, request.query),
+          map(value => ({ Path: value })),
+          ndjson.stringify
+        )
+      )
+    )
   }
 }
 

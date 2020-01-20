@@ -1,20 +1,15 @@
 'use strict'
 
 const path = require('path')
-const CID = require('cids')
+const globSource = require('ipfs-utils/src/files/glob-source')
+const all = require('it-all')
 
 // Add the default assets to the repo.
-module.exports = async function addDefaultAssets (self, log) {
-  const initDocsPath = path.join(__dirname, '../../init-files/init-docs')
-
-  const results = await self.addFromFs(initDocsPath, {
-    recursive: true,
-    preload: false
-  })
-
+module.exports = async function initAssets ({ add, print }) {
+  const initDocsPath = path.join(__dirname, '..', '..', 'init-files', 'init-docs')
+  const results = await all(add(globSource(initDocsPath, { recursive: true }), { preload: false }))
   const dir = results.filter(file => file.path === 'init-docs').pop()
-  const cid = new CID(dir.hash)
 
-  log('to get started, enter:\n')
-  log(`\tjsipfs cat /ipfs/${cid.toBaseEncodedString()}/readme\n`)
+  print('to get started, enter:\n')
+  print(`\tjsipfs cat /ipfs/${dir.cid}/readme\n`)
 }

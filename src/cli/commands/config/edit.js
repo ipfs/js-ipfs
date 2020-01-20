@@ -3,7 +3,7 @@
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const temp = require('temp')
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const utils = require('../../utils')
 
 module.exports = {

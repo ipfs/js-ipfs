@@ -237,6 +237,17 @@ module.exports = (http) => {
         expect(res.result.Keys).to.include.all.keys(Object.values(pins))
       })
 
+      it('finds all pinned objects streaming', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/pin/ls?stream=true'
+        })
+
+        expect(res.statusCode).to.equal(200)
+        const cids = res.result.trim().split('\n').map(json => JSON.parse(json).Cid)
+        Object.values(pins).forEach(pinnedCid => expect(cids).to.include(pinnedCid))
+      })
+
       it('finds specific pinned objects', async () => {
         const res = await api.inject({
           method: 'GET',

@@ -35,7 +35,7 @@ module.exports = {
         stats.dupDataReceived = prettyBytes(stats.dupDataReceived.toNumber()).toUpperCase()
         stats.wantlist = `[${stats.wantlist.length} keys]`
       } else {
-        const wantlist = stats.wantlist.map((elem) => cidToString(elem['/'], { base: cidBase, upgrade: false }))
+        const wantlist = stats.wantlist.map(cid => cidToString(cid, { base: cidBase, upgrade: false }))
         stats.wantlist = `[${wantlist.length} keys]
             ${wantlist.join('\n            ')}`
       }

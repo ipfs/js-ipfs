@@ -1,6 +1,11 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
+const { map, filter } = require('streaming-iterables')
+const pipe = require('it-pipe')
+const ndjson = require('iterable-ndjson')
+const toIterable = require('stream-to-it')
+const streamResponse = require('../../utils/stream-response')
 
 exports.gc = {
   validate: {
@@ -9,19 +14,20 @@ exports.gc = {
     }).unknown()
   },
 
-  async handler (request, h) {
+  handler (request, h) {
     const streamErrors = request.query['stream-errors']
     const { ipfs } = request.server.app
-    const res = await ipfs.repo.gc()
 
-    const filtered = res.filter(r => !r.err || streamErrors)
-    const response = filtered.map(r => {
-      return {
+    return streamResponse(request, h, output => pipe(
+      ipfs.repo.gc(),
+      filter(r => !r.err || streamErrors),
+      map(r => ({
         Error: r.err && r.err.message,
         Key: !r.err && { '/': r.cid.toString() }
-      }
-    })
-    return h.response(response)
+      })),
+      ndjson.stringify,
+      toIterable.sink(output)
+    ))
   }
 }
 

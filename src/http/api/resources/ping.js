@@ -1,9 +1,11 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const pull = require('pull-stream')
-const ndjson = require('pull-ndjson')
-const { PassThrough } = require('readable-stream')
+const { PassThrough } = require('stream')
+const toIterable = require('stream-to-it')
+const pipe = require('it-pipe')
+const ndjson = require('iterable-ndjson')
+const { map } = require('streaming-iterables')
 
 module.exports = {
   validate: {
@@ -25,28 +27,30 @@ module.exports = {
     // Default count to 10
     const count = request.query.n || request.query.count || 10
 
-    const responseStream = await new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    const stream = await new Promise(async (resolve, reject) => {
+      let started = false
       const stream = new PassThrough()
 
-      pull(
-        ipfs.pingPullStream(peerId, { count }),
-        pull.map((chunk) => ({
-          Success: chunk.success,
-          Time: chunk.time,
-          Text: chunk.text
-        })),
-        ndjson.serialize(),
-        pull.drain(chunk => {
-          stream.write(chunk)
-        }, err => {
-          if (err) return reject(err)
-          resolve(stream)
-          stream.end()
-        })
-      )
+      try {
+        await pipe(
+          ipfs.ping(peerId, { count }),
+          map(pong => {
+            if (!started) {
+              started = true
+              resolve(stream)
+            }
+            return pong
+          }),
+          ndjson.stringify,
+          toIterable.sink(stream)
+        )
+      } catch (err) {
+        reject(err)
+      }
     })
 
-    return h.response(responseStream)
+    return h.response(stream)
       .type('application/json')
       .header('X-Chunked-Output', '1')
   }

@@ -2,14 +2,12 @@
 
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
-
+const all = require('it-all')
 const CID = require('cids')
-
-const debug = require('debug')
-const log = debug('ipfs:http-api:dht')
-log.error = debug('ipfs:http-api:dht:error')
-
-exports = module.exports
+const pipe = require('it-pipe')
+const ndjson = require('iterable-ndjson')
+const toStream = require('it-to-stream')
+const { map } = require('streaming-iterables')
 
 exports.findPeer = {
   validate: {
@@ -34,8 +32,8 @@ exports.findPeer = {
 
     return h.response({
       Responses: [{
-        ID: res.id.toB58String(),
-        Addrs: res.multiaddrs.toArray().map((a) => a.toString())
+        ID: res.id.toString(),
+        Addrs: res.addrs.map(a => a.toString())
       }],
       Type: 2
     })
@@ -56,12 +54,12 @@ exports.findProvs = {
 
     request.query.maxNumProviders = request.query['num-providers']
 
-    const res = await ipfs.dht.findProvs(arg, request.query)
+    const res = await all(ipfs.dht.findProvs(arg, { numProviders: request.query['num-providers'] }))
 
     return h.response({
-      Responses: res.map((peerInfo) => ({
-        ID: peerInfo.id.toB58String(),
-        Addrs: peerInfo.multiaddrs.toArray().map((a) => a.toString())
+      Responses: res.map(({ id, addrs }) => ({
+        ID: id.toString(),
+        Addrs: addrs.map(a => a.toString())
       })),
       Type: 4
     })
@@ -102,7 +100,6 @@ exports.provide = {
     try {
       cid = new CID(arg)
     } catch (err) {
-      log.error(err)
       throw Boom.boomify(err, { message: err.toString() })
     }
 
@@ -125,9 +122,8 @@ exports.put = {
     }
   },
   async handler (request, h) {
-    const key = request.pre.args.key
-    const value = request.pre.args.value
     const ipfs = request.server.app.ipfs
+    const { key, value } = request.pre.args
 
     await ipfs.dht.put(Buffer.from(key), Buffer.from(value))
 
@@ -141,14 +137,17 @@ exports.query = {
       arg: Joi.string().required()
     }).unknown()
   },
-  async handler (request, h) {
+  handler (request, h) {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
-    const res = await ipfs.dht.query(arg)
-    const response = res.map((peerInfo) => ({
-      ID: peerInfo.id.toB58String()
-    }))
+    const response = toStream.readable(
+      pipe(
+        ipfs.dht.query(arg),
+        map(({ id }) => ({ ID: id.toString() })),
+        ndjson.stringify
+      )
+    )
 
     return h.response(response)
   }

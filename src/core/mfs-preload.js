@@ -1,32 +1,31 @@
 'use strict'
 
 const debug = require('debug')
+const { cidToString } = require('../utils/cid')
 const log = debug('ipfs:mfs-preload')
 log.error = debug('ipfs:mfs-preload:error')
 
-module.exports = (self) => {
-  const options = self._options.preload || {}
+module.exports = ({ preload, files, options }) => {
+  options = options || {}
   options.interval = options.interval || 30 * 1000
 
   if (!options.enabled) {
     log('MFS preload disabled')
-    return {
-      start: async () => {},
-      stop: async () => {}
-    }
+    const noop = async () => {}
+    return { start: noop, stop: noop }
   }
 
-  let rootCid
-  let timeoutId
+  let rootCid, timeoutId
 
   const preloadMfs = async () => {
     try {
-      const stats = await self.files.stat('/')
+      const stats = await files.stat('/')
+      const nextRootCid = cidToString(stats.cid, { base: 'base32' })
 
-      if (rootCid !== stats.hash) {
-        log(`preloading updated MFS root ${rootCid} -> ${stats.hash}`)
-        await self._preload(stats.hash)
-        rootCid = stats.hash
+      if (rootCid !== nextRootCid) {
+        log(`preloading updated MFS root ${rootCid} -> ${stats.cid}`)
+        await preload(stats.cid)
+        rootCid = nextRootCid
       }
     } catch (err) {
       log.error('failed to preload MFS root', err)
@@ -37,9 +36,9 @@ module.exports = (self) => {
 
   return {
     async start () {
-      const stats = await self.files.stat('/')
-      rootCid = stats.hash
-      log(`monitoring MFS root ${rootCid}`)
+      const stats = await files.stat('/')
+      rootCid = cidToString(stats.cid, { base: 'base32' })
+      log(`monitoring MFS root ${stats.cid}`)
       timeoutId = setTimeout(preloadMfs, options.interval)
     },
     stop () {

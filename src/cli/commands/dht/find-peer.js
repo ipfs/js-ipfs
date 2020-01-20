@@ -1,18 +1,17 @@
 'use strict'
 
 module.exports = {
-  command: 'findpeer <peerID>',
+  command: 'findpeer <peerId>',
 
   describe: 'Find the multiaddresses associated with a Peer ID.',
 
   builder: {},
 
-  handler ({ getIpfs, print, peerID, resolve }) {
+  handler ({ getIpfs, print, peerId, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
-      const peers = await ipfs.dht.findPeer(peerID)
-      const addresses = peers.multiaddrs.toArray().map((ma) => ma.toString())
-      addresses.forEach((addr) => print(addr))
+      const peer = await ipfs.dht.findPeer(peerId)
+      peer.addrs.forEach(addr => print(`${addr}`))
     })())
   }
 }

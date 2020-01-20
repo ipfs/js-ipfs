@@ -1,10 +1,9 @@
 'use strict'
 
 const dns = require('dns')
-const flatten = require('lodash.flatten')
 const isIPFS = require('is-ipfs')
 const errcode = require('err-code')
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 
 const MAX_RECURSIVE_DEPTH = 32
 
@@ -61,7 +60,7 @@ async function recursiveResolveDnslink (domain, depth) {
 async function resolveDnslink (domain) {
   const DNSLINK_REGEX = /^dnslink=.+$/
   const records = await promisify(dns.resolveTxt)(domain)
-  const dnslinkRecords = flatten(records)
+  const dnslinkRecords = records.reduce((rs, r) => rs.concat(r), [])
     .filter(record => DNSLINK_REGEX.test(record))
 
   // we now have dns text entries as an array of strings

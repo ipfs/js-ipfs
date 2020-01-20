@@ -22,7 +22,7 @@ module.exports = {
       result.forEach((item) => {
         let ma = multiaddr(item.addr.toString())
         if (!mafmt.IPFS.matches(ma)) {
-          ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
+          ma = ma.encapsulate('/ipfs/' + item.peer.toString())
         }
         const addr = ma.toString()
         argv.print(addr)

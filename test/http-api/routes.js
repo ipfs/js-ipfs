@@ -4,7 +4,7 @@
 const fs = require('fs')
 const hat = require('hat')
 const Daemon = require('../../src/cli/daemon')
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)
 const path = require('path')
 const clean = require('../utils/clean')

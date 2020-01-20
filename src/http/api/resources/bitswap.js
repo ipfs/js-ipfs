@@ -20,8 +20,8 @@ exports.wantlist = {
     const list = await ipfs.bitswap.wantlist(peerId)
 
     return h.response({
-      Keys: list.Keys.map(k => ({
-        '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+      Keys: list.map(cid => ({
+        '/': cidToString(cid, { base: cidBase, upgrade: false })
       }))
     })
   }
@@ -40,8 +40,8 @@ exports.stat = {
 
     const stats = await ipfs.bitswap.stat()
 
-    stats.wantlist = stats.wantlist.map(k => ({
-      '/': cidToString(k['/'], { base: cidBase, upgrade: false })
+    stats.wantlist = stats.wantlist.map(cid => ({
+      '/': cidToString(cid, { base: cidBase, upgrade: false })
     }))
 
     return h.response({
