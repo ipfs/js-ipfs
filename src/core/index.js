@@ -52,6 +52,8 @@ class IPFS extends EventEmitter {
         addresses: [
           '/dnsaddr/node0.preload.ipfs.io/https',
           '/dnsaddr/node1.preload.ipfs.io/https'
+          '/dnsaddr/node2.preload.ipfs.io/https'
+          '/dnsaddr/node3.preload.ipfs.io/https'
         ]
       }
     }
