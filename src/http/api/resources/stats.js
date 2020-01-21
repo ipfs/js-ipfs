@@ -3,7 +3,6 @@
 const { map } = require('streaming-iterables')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it')
 const streamResponse = require('../../utils/stream-response')
 
 exports.bitswap = require('./bitswap').stat
@@ -13,7 +12,7 @@ exports.repo = require('./repo').stat
 exports.bw = (request, h) => {
   const { ipfs } = request.server.app
 
-  return streamResponse(request, h, output => pipe(
+  return streamResponse(request, h, () => pipe(
     ipfs.stats.bw({
       peer: request.query.peer,
       proto: request.query.proto,
@@ -26,7 +25,6 @@ exports.bw = (request, h) => {
       RateIn: stat.rateIn,
       RateOut: stat.rateOut
     })),
-    ndjson.stringify,
-    toIterable.sink(output)
+    ndjson.stringify
   ))
 }

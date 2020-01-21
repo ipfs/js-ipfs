@@ -67,35 +67,13 @@ exports.cat = {
     const { ipfs } = request.server.app
     const { key, options } = request.pre.args
 
-    // eslint-disable-next-line no-async-promise-executor
-    const stream = await new Promise(async (resolve, reject) => {
-      let started = false
-      const stream = new PassThrough()
-
-      try {
-        await pipe(
-          ipfs.cat(key, options),
-          map(chunk => {
-            if (!started) {
-              started = true
-              resolve(stream)
-            }
-            return chunk
-          }),
-          toIterable.sink(stream)
-        )
-      } catch (err) {
-        log.error(err)
-
+    return streamResponse(request, h, () => ipfs.cat(key, options), {
+      onError (err) {
         err.message = err.message === 'file does not exist'
           ? err.message
-          : 'Failed to cat file: ' + err
-
-        reject(err)
+          : 'Failed to cat file: ' + err.message
       }
     })
-
-    return h.response(stream).header('X-Stream-Output', '1')
   }
 }
 
@@ -203,7 +181,6 @@ exports.add = {
         return ipfs.add(source, {
           cidVersion: request.query['cid-version'],
           rawLeaves: request.query['raw-leaves'],
-          // FIXME: can pass null when merged: https://github.com/ipfs/js-ipfs-unixfs-importer/pull/43
           progress: request.query.progress ? progressHandler : () => {},
           onlyHash: request.query['only-hash'],
           hashAlg: request.query.hash,
@@ -308,30 +285,11 @@ exports.ls = {
       return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
     }
 
-    // eslint-disable-next-line no-async-promise-executor
-    const stream = await new Promise(async (resolve, reject) => {
-      let started = false
-      const stream = new PassThrough()
-
-      try {
-        await pipe(
-          ipfs.ls(key, { recursive }),
-          map(link => {
-            if (!started) {
-              started = true
-              resolve(stream)
-            }
-            return { Objects: [{ Hash: key, Links: [mapLink(link)] }] }
-          }),
-          ndjson.stringify,
-          toIterable.sink(stream)
-        )
-      } catch (err) {
-        reject(err)
-      }
-    })
-
-    return h.response(stream).header('X-Stream-Output', '1')
+    return streamResponse(request, h, () => pipe(
+      ipfs.ls(key, { recursive }),
+      map(link => ({ Objects: [{ Hash: key, Links: [mapLink(link)] }] })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -373,17 +331,10 @@ exports.refs = {
       maxDepth: request.query['max-depth']
     }
 
-    // have to do this here otherwise the validation error appears in the stream tail and
-    // this doesn't work in browsers: https://github.com/ipfs/js-ipfs/issues/2519
-    if (options.edges && options.format !== Format.default) {
-      throw Boom.badRequest('Cannot set edges to true and also specify format')
-    }
-
-    return streamResponse(request, h, output => pipe(
+    return streamResponse(request, h, () => pipe(
       ipfs.refs(key, options),
       map(({ ref, err }) => ({ Ref: ref, Err: err })),
-      ndjson.stringify,
-      toIterable.sink(output)
+      ndjson.stringify
     ))
   }
 }
@@ -393,11 +344,10 @@ exports.refs.local = {
   handler (request, h) {
     const { ipfs } = request.server.app
 
-    return streamResponse(request, h, output => pipe(
+    return streamResponse(request, h, () => pipe(
       ipfs.refs.local(),
       map(({ ref, err }) => ({ Ref: ref, Err: err })),
-      ndjson.stringify,
-      toIterable.sink(output)
+      ndjson.stringify
     ))
   }
 }

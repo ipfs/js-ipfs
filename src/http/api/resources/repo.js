@@ -4,7 +4,6 @@ const Joi = require('@hapi/joi')
 const { map, filter } = require('streaming-iterables')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it')
 const streamResponse = require('../../utils/stream-response')
 
 exports.gc = {
@@ -18,15 +17,14 @@ exports.gc = {
     const streamErrors = request.query['stream-errors']
     const { ipfs } = request.server.app
 
-    return streamResponse(request, h, output => pipe(
+    return streamResponse(request, h, () => pipe(
       ipfs.repo.gc(),
       filter(r => !r.err || streamErrors),
       map(r => ({
         Error: r.err && r.err.message,
         Key: !r.err && { '/': r.cid.toString() }
       })),
-      ndjson.stringify,
-      toIterable.sink(output)
+      ndjson.stringify
     ))
   }
 }

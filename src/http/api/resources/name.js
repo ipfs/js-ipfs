@@ -2,10 +2,10 @@
 
 const Joi = require('@hapi/joi')
 const pipe = require('it-pipe')
-const ndjson = require('iterable-ndjson')
-const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
 const last = require('it-last')
+const ndjson = require('iterable-ndjson')
+const streamResponse = require('../../utils/stream-response')
 
 exports.resolve = {
   validate: {
@@ -25,15 +25,11 @@ exports.resolve = {
       return h.response({ Path: value })
     }
 
-    return h.response(
-      toStream.readable(
-        pipe(
-          ipfs.name.resolve(arg, request.query),
-          map(value => ({ Path: value })),
-          ndjson.stringify
-        )
-      )
-    )
+    return streamResponse(request, h, () => pipe(
+      ipfs.name.resolve(arg, request.query),
+      map(value => ({ Path: value })),
+      ndjson.stringify
+    ))
   }
 }
 

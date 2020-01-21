@@ -4,7 +4,6 @@ const multibase = require('multibase')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
 const isIpfs = require('is-ipfs')
-const toIterable = require('stream-to-it')
 const { map, reduce } = require('streaming-iterables')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
@@ -71,11 +70,10 @@ exports.ls = {
       return h.response(res)
     }
 
-    return streamResponse(request, h, output => pipe(
+    return streamResponse(request, h, () => pipe(
       ipfs.pin.ls(path, { type }),
       map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: request.query['cid-base'] }) })),
-      ndjson.stringify,
-      toIterable.sink(output)
+      ndjson.stringify
     ))
   }
 }
