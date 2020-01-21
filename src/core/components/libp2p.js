@@ -29,7 +29,7 @@ module.exports = ({
 
 function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
   const getPubsubRouter = () => {
-    const router = get(config, 'Pubsub.Router', 'gossipsub')
+    const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
     if (!PubsubRouters[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
