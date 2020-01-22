@@ -63,7 +63,7 @@ exports.cat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key, options } = request.pre.args
 

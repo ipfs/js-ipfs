@@ -19,7 +19,7 @@ module.exports = {
       arg: Joi.string().required()
     }).unknown()
   },
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const peerId = request.query.arg
 
