@@ -19,7 +19,11 @@ module.exports = (common, options) => {
 
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => {
+      ipfs = (await common.spawn({
+        args: common.opts.type === 'go' ? [] : ['--enable-sharding-experiment']
+      })).api
+    })
     before(async () => { await ipfs.add(fixtures.smallFile.data) })
 
     after(() => common.clean())
@@ -50,6 +54,41 @@ module.exports = (common, options) => {
       expect(stat.sizeLocal).to.be.undefined()
     })
 
+    it('should stat file with mode', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, { parents: true })
+      await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
+
+      const stat = await ipfs.files.stat(`${testDir}/b`)
+
+      expect(stat).to.include({
+        mode: 0o644
+      })
+    })
+
+    it('should stat file with mtime', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, { parents: true })
+      await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), {
+        create: true,
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
+
+      const stat = await ipfs.files.stat(`${testDir}/b`)
+
+      expect(stat).to.deep.include({
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
+    })
+
     it('should stat dir', async function () {
       const testDir = `/test-${hat()}`
 
@@ -66,6 +105,81 @@ module.exports = (common, options) => {
       })
       expect(stat.local).to.be.undefined()
       expect(stat.sizeLocal).to.be.undefined()
+    })
+
+    it('should stat dir with mode', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, { parents: true })
+      const stat = await ipfs.files.stat(testDir)
+
+      expect(stat).to.include({
+        mode: 0o755
+      })
+    })
+
+    it('should stat dir with mtime', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, {
+        parents: true,
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
+
+      const stat = await ipfs.files.stat(testDir)
+
+      expect(stat).to.deep.include({
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
+    })
+
+    it('should stat sharded dir with mode', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, { parents: true })
+      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), {
+        create: true,
+        shardSplitThreshold: 0
+      })
+
+      const stat = await ipfs.files.stat(testDir)
+
+      expect(stat).to.have.property('type', 'hamt-sharded-directory')
+      expect(stat).to.include({
+        mode: 0o755
+      })
+    })
+
+    it('should stat sharded dir with mtime', async function () {
+      const testDir = `/test-${hat()}`
+
+      await ipfs.files.mkdir(testDir, {
+        parents: true,
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
+      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), {
+        create: true,
+        shardSplitThreshold: 0
+      })
+
+      const stat = await ipfs.files.stat(testDir)
+
+      expect(stat).to.have.property('type', 'hamt-sharded-directory')
+      expect(stat).to.deep.include({
+        mtime: {
+          secs: 5,
+          nsecs: 0
+        }
+      })
     })
 
     // TODO enable this test when this feature gets released on go-ipfs

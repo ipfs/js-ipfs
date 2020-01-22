@@ -59,7 +59,7 @@ module.exports = (common, options) => {
 
       const res = await pullToPromise.any(pull(pull.values(data), stream))
       expect(res).to.have.property('length', 1)
-      expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      expect(res[0]).to.include({ path: expectedCid, hash: expectedCid, size: 12 })
     })
   })
 }

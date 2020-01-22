@@ -28,7 +28,9 @@ module.exports = (common, options) => {
         content: Buffer.from(content),
         mode
       })
+
       expect(files).to.have.length(1)
+      expect(files).to.have.nested.property('[0].mode', expectedMode)
 
       const stats = await ipfs.files.stat(`/ipfs/${files[0].hash}`)
       expect(stats).to.have.property('mode', expectedMode)
@@ -41,6 +43,7 @@ module.exports = (common, options) => {
         mtime
       })
       expect(files).to.have.length(1)
+      expect(files).to.have.deep.nested.property('[0].mtime', expectedMtime)
 
       const stats = await ipfs.files.stat(`/ipfs/${files[0].hash}`)
       expect(stats).to.have.deep.property('mtime', expectedMtime)
@@ -197,7 +200,7 @@ module.exports = (common, options) => {
 
       const res = await ipfs.add(pull.values([Buffer.from('test')]))
       expect(res).to.have.length(1)
-      expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      expect(res[0]).to.include({ path: expectedCid, hash: expectedCid, size: 12 })
     })
 
     it('should add array of objects with pull stream content', async () => {
@@ -205,7 +208,7 @@ module.exports = (common, options) => {
 
       const res = await ipfs.add([{ content: pull.values([Buffer.from('test')]) }])
       expect(res).to.have.length(1)
-      expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      expect(res[0]).to.include({ path: expectedCid, hash: expectedCid, size: 12 })
     })
 
     it('should add a nested directory as array of tupples', async function () {
