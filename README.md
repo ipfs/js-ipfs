@@ -1,4 +1,4 @@
-# MFS (Mutable File System) JavaScript Implementation
+# MFS (Mutable File System) JavaScript Implementation <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
@@ -15,11 +15,11 @@
 
 [The MFS spec can be found inside the ipfs/specs repository](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
 [Alex Potsides](https://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)
   - [npm](#npm)
