@@ -1,9 +1,5 @@
 'use strict'
 
-const pull = require('pull-stream/pull')
-const through = require('pull-stream/throughs/through')
-const onEnd = require('pull-stream/sinks/on-end')
-
 module.exports = {
   command: 'read <path>',
 
@@ -34,24 +30,12 @@ module.exports = {
     argv.resolve((async () => {
       const ipfs = await getIpfs()
 
-      return new Promise((resolve, reject) => {
-        pull(
-          ipfs.files.readPullStream(path, {
-            offset,
-            length
-          }),
-          through(buffer => {
-            print(buffer, false)
-          }),
-          onEnd((error) => {
-            if (error) {
-              return reject(error)
-            }
-
-            resolve()
-          })
-        )
-      })
+      for await (const buffer of ipfs.files.read(path, {
+        offset,
+        length
+      })) {
+        print(buffer, false)
+      }
     })())
   }
 }

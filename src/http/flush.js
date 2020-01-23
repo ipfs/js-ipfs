@@ -20,7 +20,7 @@ const mfsFlush = {
 
     let cid = await ipfs.files.flush(arg || FILE_SEPARATOR, {})
 
-    if (cidBase !== 'base58btc' && cid.version === 0) {
+    if (cidBase && cidBase !== 'base58btc' && cid.version === 0) {
       cid = cid.toV1()
     }
 
@@ -36,7 +36,7 @@ const mfsFlush = {
       },
       query: Joi.object().keys({
         arg: Joi.string(),
-        cidBase: Joi.string().default('base58btc')
+        cidBase: Joi.string()
       })
     }
   }

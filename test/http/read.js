@@ -4,7 +4,6 @@
 const expect = require('../helpers/chai')
 const http = require('../helpers/http')
 const sinon = require('sinon')
-const PassThrough = require('stream').PassThrough
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -26,16 +25,7 @@ describe('read', () => {
   beforeEach(() => {
     ipfs = {
       files: {
-        readReadableStream: sinon.stub().callsFake(() => {
-          const stream = new PassThrough()
-
-          setImmediate(() => {
-            stream.emit('data', Buffer.from('hello world'))
-            stream.end()
-          })
-
-          return stream
-        })
+        read: sinon.stub().returns([Buffer.from('hello world')])
       }
     }
   })
@@ -46,8 +36,8 @@ describe('read', () => {
       url: `/api/v0/files/read?arg=${path}`
     }, { ipfs })
 
-    expect(ipfs.files.readReadableStream.callCount).to.equal(1)
-    expect(ipfs.files.readReadableStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions()
     ])
@@ -61,8 +51,8 @@ describe('read', () => {
       url: `/api/v0/files/read?arg=${path}&offset=${offset}`
     }, { ipfs })
 
-    expect(ipfs.files.readReadableStream.callCount).to.equal(1)
-    expect(ipfs.files.readReadableStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         offset
@@ -78,8 +68,8 @@ describe('read', () => {
       url: `/api/v0/files/read?arg=${path}&length=${length}`
     }, { ipfs })
 
-    expect(ipfs.files.readReadableStream.callCount).to.equal(1)
-    expect(ipfs.files.readReadableStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         length
@@ -95,8 +85,8 @@ describe('read', () => {
       url: `/api/v0/files/read?arg=${path}&count=${length}`
     }, { ipfs })
 
-    expect(ipfs.files.readReadableStream.callCount).to.equal(1)
-    expect(ipfs.files.readReadableStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         length

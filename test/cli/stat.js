@@ -5,6 +5,8 @@ const expect = require('../helpers/chai')
 const cli = require('../helpers/cli')
 const sinon = require('sinon')
 const isNode = require('detect-node')
+const CID = require('cids')
+const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -33,7 +35,7 @@ describe('stat', () => {
     ipfs = {
       files: {
         stat: sinon.stub().resolves({
-          hash: 'stats-hash',
+          cid: fileCid,
           size: 'stats-size',
           cumulativeSize: 'stats-cumulativeSize',
           blocks: 'stats-blocks',
@@ -93,7 +95,7 @@ describe('stat', () => {
       path,
       defaultOptions()
     ])
-    expect(output).to.equal('stats-hash\n')
+    expect(output).to.equal(`${fileCid}\n`)
   })
 
   it('should stat a path and only show hashes (short option)', async () => {
@@ -104,7 +106,7 @@ describe('stat', () => {
       path,
       defaultOptions()
     ])
-    expect(output).to.equal('stats-hash\n')
+    expect(output).to.equal(`${fileCid}\n`)
   })
 
   it('should stat a path and only show sizes', async () => {

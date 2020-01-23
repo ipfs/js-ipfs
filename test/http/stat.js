@@ -4,13 +4,14 @@
 const expect = require('../helpers/chai')
 const http = require('../helpers/http')
 const sinon = require('sinon')
+const CID = require('cids')
+const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 function defaultOptions (modification = {}) {
   const options = {
     withLocal: false,
     hash: false,
-    size: false,
-    cidBase: 'base58btc'
+    size: false
   }
 
   Object.keys(modification).forEach(key => {
@@ -23,7 +24,7 @@ function defaultOptions (modification = {}) {
 describe('stat', () => {
   const path = '/foo'
   const stats = {
-    hash: 'stats-hash',
+    cid: fileCid,
     size: 'stats-size',
     cumulativeSize: 'stats-cumulativeSize',
     blocks: 'stats-blocks',
@@ -83,7 +84,7 @@ describe('stat', () => {
         hash: true
       })
     ])
-    expect(response).to.have.nested.property('result.Hash', stats.hash)
+    expect(response).to.have.nested.property('result.Hash', stats.cid.toString())
   })
 
   it('should stat a path and only show sizes', async () => {
@@ -111,10 +112,8 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions({
-        cidBase: 'base64'
-      })
+      defaultOptions()
     ])
-    expect(response).to.have.nested.property('result.Hash', stats.hash)
+    expect(response).to.have.nested.property('result.Hash', stats.cid.toString('base64'))
   })
 })

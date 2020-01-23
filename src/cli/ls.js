@@ -1,8 +1,6 @@
 'use strict'
 
-const pull = require('pull-stream/pull')
-const onEnd = require('pull-stream/sinks/on-end')
-const through = require('pull-stream/throughs/through')
+const all = require('it-all')
 const {
   asBoolean
 } = require('./utils')
@@ -33,7 +31,6 @@ module.exports = {
       describe: 'Sort entries by name'
     },
     'cid-base': {
-      default: 'base58btc',
       describe: 'CID base to use.'
     }
   },
@@ -50,53 +47,30 @@ module.exports = {
 
     argv.resolve((async () => {
       const ipfs = await getIpfs()
-      return new Promise((resolve, reject) => {
-        if (sort) {
-          ipfs.files.ls(path || FILE_SEPARATOR)
-            .then(files => {
-              // https://github.com/ipfs/go-ipfs/issues/5181
-              if (sort) {
-                files = files.sort((a, b) => {
-                  return a.name.localeCompare(b.name)
-                })
-              }
 
-              if (long) {
-                files.forEach(file => {
-                  print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.hash}\t${file.size}`)
-                })
-              } else {
-                files.forEach(link => print(link.name))
-              }
-
-              resolve()
-            })
-            .catch(reject)
-
-          return
+      const printListing = file => {
+        if (long) {
+          print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.cid.toString(cidBase)}\t${file.size}`)
+        } else {
+          print(file.name)
         }
+      }
 
-        pull(
-          ipfs.files.lsPullStream(path, {
-            long,
-            cidBase
-          }),
-          through(file => {
-            if (long) {
-              print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.hash}\t${file.size}`)
-            } else {
-              print(file.name)
-            }
-          }),
-          onEnd((error) => {
-            if (error) {
-              return reject(error)
-            }
+      // https://github.com/ipfs/go-ipfs/issues/5181
+      if (sort) {
+        let files = await all(ipfs.files.ls(path || FILE_SEPARATOR))
 
-            resolve()
-          })
-        )
-      })
+        files = files.sort((a, b) => {
+          return a.name.localeCompare(b.name)
+        })
+
+        files.forEach(printListing)
+        return
+      }
+
+      for await (const file of ipfs.files.ls(path || FILE_SEPARATOR)) {
+        printListing(file)
+      }
     })())
   }
 }

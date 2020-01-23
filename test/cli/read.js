@@ -4,7 +4,6 @@
 const expect = require('../helpers/chai')
 const cli = require('../helpers/cli')
 const sinon = require('sinon')
-const values = require('pull-stream/sources/values')
 const isNode = require('detect-node')
 
 function defaultOptions (modification = {}) {
@@ -34,7 +33,7 @@ describe('read', () => {
     output = ''
     ipfs = {
       files: {
-        readPullStream: sinon.stub().returns(values(['hello world']))
+        read: sinon.stub().returns(['hello world'])
       }
     }
     print = (msg = '', newline = true) => {
@@ -45,8 +44,8 @@ describe('read', () => {
   it('should read a path', async () => {
     await cli(`files read ${path}`, { ipfs, print })
 
-    expect(ipfs.files.readPullStream.callCount).to.equal(1)
-    expect(ipfs.files.readPullStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions()
     ])
@@ -58,8 +57,8 @@ describe('read', () => {
 
     await cli(`files read --offset ${offset} ${path}`, { ipfs, print })
 
-    expect(ipfs.files.readPullStream.callCount).to.equal(1)
-    expect(ipfs.files.readPullStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         offset
@@ -73,8 +72,8 @@ describe('read', () => {
 
     await cli(`files read -o ${offset} ${path}`, { ipfs, print })
 
-    expect(ipfs.files.readPullStream.callCount).to.equal(1)
-    expect(ipfs.files.readPullStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path, {
         offset,
         length: undefined
@@ -88,8 +87,8 @@ describe('read', () => {
 
     await cli(`files read --length ${length} ${path}`, { ipfs, print })
 
-    expect(ipfs.files.readPullStream.callCount).to.equal(1)
-    expect(ipfs.files.readPullStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         length
@@ -103,8 +102,8 @@ describe('read', () => {
 
     await cli(`files read -l ${length} ${path}`, { ipfs, print })
 
-    expect(ipfs.files.readPullStream.callCount).to.equal(1)
-    expect(ipfs.files.readPullStream.getCall(0).args).to.deep.equal([
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
         length

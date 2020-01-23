@@ -46,7 +46,6 @@ Mtime: <mtime>`,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
     },
     'cid-base': {
-      default: 'base58btc',
       describe: 'CID base to use.'
     }
   },
@@ -59,7 +58,8 @@ Mtime: <mtime>`,
       format,
       hash,
       size,
-      withLocal
+      withLocal,
+      cidBase
     } = argv
 
     argv.resolve((async () => {
@@ -70,7 +70,7 @@ Mtime: <mtime>`,
       })
         .then((stats) => {
           if (hash) {
-            return print(stats.hash)
+            return print(stats.cid.toString(cidBase))
           }
 
           if (size) {
@@ -78,7 +78,7 @@ Mtime: <mtime>`,
           }
 
           print(format
-            .replace('<hash>', stats.hash)
+            .replace('<hash>', stats.cid.toString(cidBase))
             .replace('<size>', stats.size)
             .replace('<cumulsize>', stats.cumulativeSize)
             .replace('<childs>', stats.blocks)

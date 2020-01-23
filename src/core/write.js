@@ -160,7 +160,7 @@ const write = async (context, source, destination, options) => {
     limitAsyncStreamBytes(source, options.length)
   )
 
-  const content = countBytesStreamed(catAsyncInterators(sources), (bytesWritten) => {
+  const content = countBytesStreamed(catAsyncIterators(sources), (bytesWritten) => {
     if (destination.unixfs && !options.truncate) {
       // if we've done reading from the new source and we are not going
       // to truncate the file, add the end of the existing file to the output
@@ -254,11 +254,9 @@ const asyncZeroes = (count, chunkSize = MAX_CHUNK_SIZE) => {
   return limitAsyncStreamBytes(stream, count)
 }
 
-const catAsyncInterators = async function * (sources) {
+const catAsyncIterators = async function * (sources) { // eslint-disable-line require-await
   for (let i = 0; i < sources.length; i++) {
-    for await (const buf of sources[i]()) {
-      yield buf
-    }
+    yield * sources[i]()
   }
 }
 

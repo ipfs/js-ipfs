@@ -4,13 +4,17 @@ const Joi = require('@hapi/joi')
 const {
   PassThrough
 } = require('stream')
+const toStream = require('it-to-stream')
+const all = require('it-all')
 
-const mapEntry = (entry) => {
+const mapEntry = (entry, options) => {
+  options = options || {}
+
   const output = {
     Name: entry.name,
-    Type: entry.type,
-    Size: entry.size,
-    Hash: entry.hash,
+    Type: options.long ? entry.type : 0,
+    Size: options.long ? entry.size || 0 : 0,
+    Hash: entry.cid.toString(options.cidBase),
     Mode: entry.mode.toString(8).padStart(4, '0')
   }
 
@@ -41,21 +45,18 @@ const mfsLs = {
 
     if (stream) {
       const responseStream = await new Promise((resolve, reject) => {
-        const readableStream = ipfs.files.lsReadableStream(arg, {
-          long,
-          cidBase
-        })
+        const readableStream = toStream.readable(ipfs.files.ls(arg), { objectMode: true })
 
         const passThrough = new PassThrough()
 
         readableStream.on('data', (entry) => {
           resolve(passThrough)
-          passThrough.write(JSON.stringify(mapEntry(entry)) + '\n')
+          passThrough.write(JSON.stringify(mapEntry(entry, { cidBase, long })) + '\n')
         })
 
         readableStream.once('end', (entry) => {
           resolve(passThrough)
-          passThrough.end(entry ? JSON.stringify(mapEntry(entry)) + '\n' : undefined)
+          passThrough.end(entry ? JSON.stringify(mapEntry(entry, { cidBase, long })) + '\n' : undefined)
         })
 
         readableStream.once('error', (err) => {
@@ -67,13 +68,10 @@ const mfsLs = {
       return h.response(responseStream).header('X-Stream-Output', '1')
     }
 
-    const files = await ipfs.files.ls(arg, {
-      long,
-      cidBase
-    })
+    const files = await all(ipfs.files.ls(arg))
 
     return h.response({
-      Entries: files.map(mapEntry)
+      Entries: files.map(entry => mapEntry(entry, { cidBase, long }))
     })
   },
   options: {
@@ -85,7 +83,7 @@ const mfsLs = {
       query: Joi.object().keys({
         arg: Joi.string().default('/'),
         long: Joi.boolean().default(false),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string(),
         stream: Joi.boolean().default(false)
       })
         .rename('l', 'long', {

@@ -11,7 +11,6 @@ module.exports = {
 
   builder: {
     'cid-base': {
-      default: 'base58btc',
       describe: 'CID base to use.'
     }
   },
@@ -28,7 +27,7 @@ module.exports = {
       const ipfs = await getIpfs()
       let cid = await ipfs.files.flush(path || FILE_SEPARATOR, {})
 
-      if (cidBase !== 'base58btc' && cid.version === 0) {
+      if (cidBase && cidBase !== 'base58btc' && cid.version === 0) {
         cid = cid.toV1()
       }
 
