@@ -128,7 +128,7 @@
     "libp2p-delegated-content-routing": "^0.4.1",
     "libp2p-delegated-peer-routing": "^0.4.0",
     "libp2p-floodsub": "^0.20.0",
-    "libp2p-gossipsub": "github:alanshaw/gossipsub-js#patch-1",
+    "libp2p-gossipsub": "github:ChainSafe/gossipsub-js#71cb905983b125b50c64a9b75d745dfd7fb8f094",
     "libp2p-kad-dht": "^0.18.3",
     "libp2p-keychain": "^0.6.0",
     "libp2p-mdns": "^0.13.0",
