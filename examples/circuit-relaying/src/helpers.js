@@ -15,7 +15,7 @@ const mkRoomName = (name) => {
 
 module.exports = (ipfs, peersSet) => {
   const createRoom = (name) => {
-    const room = Room(ipfs, mkRoomName(name))
+    const room = new Room(ipfs, mkRoomName(name))
 
     room.on('peer joined', (peer) => {
       console.log('peer ' + peer + ' joined')
@@ -31,9 +31,9 @@ module.exports = (ipfs, peersSet) => {
 
     // send and receive messages
     room.on('message', (message) => {
-      console.log('got message from ' + message.from + ': ' + message.data.toString())
+      console.log('got message from ' + message.from.toString() + ': ' + message.data.toString())
       const node = document.createElement(`li`)
-      node.innerText = `${message.from.substr(-4)}: ${message.data.toString()}`
+      node.innerText = `${message.from.toString().substr(-4)}: ${message.data.toString()}`
       $msgs.appendChild(node)
     })
 

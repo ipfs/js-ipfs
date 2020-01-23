@@ -4,12 +4,14 @@ const pkgversion = require('../../../package.json').version
 
 module.exports = ({ peerInfo }) => {
   return async function id () { // eslint-disable-line require-await
+    const id = peerInfo.id.toB58String()
+
     return {
-      id: peerInfo.id.toB58String(),
+      id,
       publicKey: peerInfo.id.pubKey.bytes.toString('base64'),
       addresses: peerInfo.multiaddrs
         .toArray()
-        .map(ma => `${ma}/p2p/${peerInfo.id.toB58String()}`)
+        .map(ma => `${ma}/p2p/${id}`)
         .sort(),
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
