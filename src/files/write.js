@@ -21,6 +21,7 @@ module.exports = configure(({ ky }) => {
     if (options.parents != null) searchParams.set('parents', options.parents)
     if (options.rawLeaves != null) searchParams.set('raw-leaves', options.rawLeaves)
     if (options.truncate != null) searchParams.set('truncate', options.truncate)
+    if (options.shardSplitThreshold != null) searchParams.set('shardSplitThreshold', options.shardSplitThreshold)
     if (mtime) {
       searchParams.set('mtime', mtime.secs)
 

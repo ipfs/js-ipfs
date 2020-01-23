@@ -13,6 +13,7 @@ module.exports = configure(({ ky }) => {
     if (options.flush != null) searchParams.set('flush', options.flush)
     if (options.hashAlg) searchParams.set('hash', options.hashAlg)
     if (options.parents != null) searchParams.set('parents', options.parents)
+    if (options.shardSplitThreshold != null) searchParams.set('shardSplitThreshold', options.shardSplitThreshold)
 
     return ky.post('files/cp', {
       timeout: options.timeout,

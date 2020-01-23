@@ -42,7 +42,7 @@ module.exports = configure(({ ky }) => {
 
     for await (let file of ndjson(toIterable(res.body))) {
       file = toCamel(file)
-      // console.log(file)
+
       if (options.progress && file.bytes) {
         options.progress(file.bytes)
       } else {
@@ -52,15 +52,22 @@ module.exports = configure(({ ky }) => {
   }
 })
 
-function toCoreInterface ({ name, hash, size, mode, mtime }) {
+function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   const output = {
     path: name,
     hash,
     size: parseInt(size)
   }
 
-  if (mode !== undefined) {
+  if (mode != null) {
     output.mode = parseInt(mode, 8)
+  }
+
+  if (mtime != null) {
+    output.mtime = {
+      secs: mtime,
+      nsecs: mtimeNsecs || 0
+    }
   }
 
   return output

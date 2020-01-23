@@ -242,6 +242,30 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should write file and specify mtime as hrtime',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat file with mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat file with mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat dir with mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat dir with mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat sharded dir with mode',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should stat sharded dir with mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
       }
     ]
   })
