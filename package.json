@@ -99,7 +99,7 @@
     "ipfs-unixfs": "^0.3.0",
     "ipfs-unixfs-exporter": "^0.40.0",
     "ipfs-unixfs-importer": "^0.43.1",
-    "ipfs-utils": "github:ipfs/js-ipfs-utils#fix/downgrade-to-ky-15",
+    "ipfs-utils": "^0.7.1",
     "ipld": "~0.25.0",
     "ipld-bitcoin": "~0.3.0",
     "ipld-dag-cbor": "~0.15.0",
