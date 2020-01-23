@@ -65,8 +65,7 @@ function transformFile (opts) {
         cid = cid.toV1()
       }
 
-      const hash = cid.toBaseEncodedString()
-      let path = file.path ? file.path : hash
+      let path = file.path ? file.path : cid.toString()
 
       if (opts.wrapWithDirectory && !file.path) {
         path = ''
@@ -74,7 +73,7 @@ function transformFile (opts) {
 
       yield {
         path,
-        hash,
+        cid,
         size: file.size,
         mode: file.unixfs && file.unixfs.mode,
         mtime: file.unixfs && file.unixfs.mtime
