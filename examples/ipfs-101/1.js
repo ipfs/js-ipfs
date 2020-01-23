@@ -8,16 +8,20 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  for await (const file of await node.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
-  })
+  })) {
+    console.log('Added file:', file.path, file.cid.toString())
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+    const bufs = []
 
-  const fileBuffer = await node.cat(filesAdded[0].hash)
+    for await (const buf of node.cat(file.cid)) {
+      bufs.push(buf)
+    }
 
-  console.log('Added file contents:', fileBuffer.toString())
+    console.log('Added file contents:', Buffer.concat(bufs).toString())
+  }
 }
 
 main()

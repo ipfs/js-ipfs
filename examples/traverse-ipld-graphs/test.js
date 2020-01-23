@@ -19,7 +19,7 @@ async function runTest () {
   await waitForOutput('capoeira', path.resolve(__dirname, 'get-path-accross-formats.js'))
 
   console.info('Testing tree.js')
-  await waitForOutput("'hobbies/0/Links'", path.resolve(__dirname, 'tree.js'))
+  await waitForOutput("hobbies/0/Links", path.resolve(__dirname, 'tree.js'))
 
   console.info('Testing eth.js')
   await waitForOutput('302516', path.resolve(__dirname, 'eth.js'))

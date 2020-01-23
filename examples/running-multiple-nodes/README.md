@@ -42,7 +42,7 @@ Firstly, you'll want to pass the [`repo`](https://github.com/ipfs/js-ipfs#option
 
 ```js
 // The repo path by default is `os.homedir() + '/.jsipfs'`.
-new IPFS({ repo: os.homedir() + '/.jsipfs2' })
+await IPFS.create({ repo: os.homedir() + '/.jsipfs2' })
 ```
 
 Secondly, you'll need them to bind to different ports because otherwise bad things happen.
@@ -50,7 +50,7 @@ Secondly, you'll need them to bind to different ports because otherwise bad thin
 To do this, simply pass the different ports to the [`config`](https://github.com/ipfs/js-ipfs#optionsconfig) constructor option. All together:
 
 ```js
-new IPFS({
+await IPFS.create({
   repo: os.homedir() + '/.jsipfs2',
   config: {
     Addresses: {

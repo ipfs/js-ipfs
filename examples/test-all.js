@@ -24,6 +24,8 @@ async function testAll () {
       continue
     }
 
+    console.info('Testing example', dir)
+
     await waitForOutput('npm info ok', 'npm', ['test', '--verbose', '--', dir], {
       cwd: __dirname
     })

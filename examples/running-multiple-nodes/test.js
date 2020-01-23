@@ -6,8 +6,8 @@ const execa = require('execa')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
+const delay = require('delay')
 const {
-  ephemeralPort,
   waitForOutput
 } = require('../utils')
 
@@ -29,9 +29,9 @@ async function startCliNode () {
   const ipfs = path.resolve(__dirname, '../../src/cli/bin.js')
 
   await execa(ipfs, ['init'], opts)
-  await execa(ipfs, ['config', 'Addresses.Swarm', '--json', JSON.stringify([`/ip4/0.0.0.0/tcp/${ephemeralPort()}`, `/ip4/127.0.0.1/tcp/${ephemeralPort()}/ws`])], opts)
-  await execa(ipfs, ['config', 'Addresses.API', `/ip4/127.0.0.1/tcp/${ephemeralPort()}`], opts)
-  await execa(ipfs, ['config', 'Addresses.Gateway', `/ip4/127.0.0.1/tcp/${ephemeralPort()}`], opts)
+  await execa(ipfs, ['config', 'Addresses.Swarm', '--json', JSON.stringify([`/ip4/0.0.0.0/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`])], opts)
+  await execa(ipfs, ['config', 'Addresses.API', `/ip4/127.0.0.1/tcp/0`], opts)
+  await execa(ipfs, ['config', 'Addresses.Gateway', `/ip4/127.0.0.1/tcp/0`], opts)
 
   return waitForOutput('Daemon is ready', ipfs, ['daemon'], opts)
 }
@@ -45,25 +45,24 @@ async function testProgramatically () {
 
 async function startProgramaticNode () {
   const repoDir = path.join(os.tmpdir(), `repo-${hat()}`)
-  const node = new IPFS({
+  const node = await IPFS.create({
     repo: repoDir,
     config: {
       Addresses: {
         Swarm: [
-          `/ip4/0.0.0.0/tcp/${ephemeralPort()}`,
-          `/ip4/127.0.0.1/tcp/${ephemeralPort()}/ws`
+          `/ip4/0.0.0.0/tcp/0`,
+          `/ip4/127.0.0.1/tcp/0/ws`
         ],
-        API: `/ip4/127.0.0.1/tcp/${ephemeralPort()}`,
-        Gateway: `/ip4/127.0.0.1/tcp/${ephemeralPort()}`
+        API: `/ip4/127.0.0.1/tcp/0`,
+        Gateway: `/ip4/127.0.0.1/tcp/0`
       },
       Bootstrap: []
     }
   })
 
-  console.info('Initialising programmatic node')
-  await node.init()
-  console.info('Starting programmatic node')
-  await node.start()
+  // https://github.com/ChainSafe/gossipsub-js/pull/59
+  await delay(5000)
+
   console.info('Stopping programmatic node')
   await node.stop()
 }

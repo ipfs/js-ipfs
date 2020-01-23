@@ -1,14 +1,13 @@
 'use strict'
 
 const Libp2p = require('libp2p')
-const IPFS = require('ipfs')
+const IPFS = require('../../')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
-const WebSocketStar = require('libp2p-websocket-star')
 const Bootstrap = require('libp2p-bootstrap')
 const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
-const MPLEX = require('pull-mplex')
+const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 
 /**
@@ -32,11 +31,6 @@ const libp2pBundle = (opts) => {
   const peerBook = opts.peerBook
   const bootstrapList = opts.config.Bootstrap
 
-  // Create our WebSocketStar transport and give it our PeerId, straight from the ipfs node
-  const wsstar = new WebSocketStar({
-    id: peerInfo.id
-  })
-
   // Build and return our libp2p node
   return new Libp2p({
     peerInfo,
@@ -49,8 +43,7 @@ const libp2pBundle = (opts) => {
     },
     modules: {
       transport: [
-        TCP,
-        wsstar
+        TCP
       ],
       streamMuxer: [
         MPLEX,
@@ -61,8 +54,7 @@ const libp2pBundle = (opts) => {
       ],
       peerDiscovery: [
         MulticastDNS,
-        Bootstrap,
-        wsstar.discovery
+        Bootstrap
       ],
       dht: KadDHT
     },
