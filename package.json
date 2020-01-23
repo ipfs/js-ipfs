@@ -146,7 +146,7 @@
     "libp2p-websocket-star-multi": "~0.4.3",
     "libp2p-websockets": "~0.12.3",
     "lodash.flatten": "^4.4.0",
-    "mafmt": "^6.0.10",
+    "mafmt": "^7.0.1",
     "merge-options": "^2.0.0",
     "mime-types": "^2.1.21",
     "mkdirp": "~0.5.1",
