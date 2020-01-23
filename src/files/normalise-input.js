@@ -99,6 +99,15 @@ module.exports = function normaliseInput (input) {
     })()
   }
 
+  // window.ReadableStream
+  if (typeof input.getReader === 'function') {
+    return (async function * () {
+      for await (const obj of browserStreamToIt(input)) {
+        yield toFileObject(obj)
+      }
+    })()
+  }
+
   // AsyncIterable<?>
   if (input[Symbol.asyncIterator]) {
     return (async function * () {
@@ -171,6 +180,11 @@ function toAsyncIterable (input) {
     return blobToAsyncGenerator(input)
   }
 
+  // Browser stream
+  if (typeof input.getReader === 'function') {
+    return browserStreamToIt(input)
+  }
+
   // Iterator<?>
   if (input[Symbol.iterator]) {
     return (async function * () { // eslint-disable-line require-await
@@ -232,14 +246,14 @@ function isFileObject (obj) {
 function blobToAsyncGenerator (blob) {
   if (typeof blob.stream === 'function') {
     // firefox < 69 does not support blob.stream()
-    return streamBlob(blob)
+    return browserStreamToIt(blob.stream())
   }
 
   return readBlob(blob)
 }
 
-async function * streamBlob (blob) {
-  const reader = blob.stream().getReader()
+async function * browserStreamToIt (stream) {
+  const reader = stream.getReader()
 
   while (true) {
     const result = await reader.read()
