@@ -29,9 +29,9 @@ module.exports = (common, options) => {
     it('should find other peers', async () => {
       const res = await nodeA.dht.findPeer(nodeB.peerId.id)
 
-      const id = res.id.toB58String()
+      const id = res.id.toString()
       const nodeAddresses = nodeB.peerId.addresses.map((addr) => addr.split('/ipfs/')[0]) // remove '/ipfs/'
-      const peerAddresses = res.multiaddrs.toArray().map((ma) => ma.toString().split('/ipfs/')[0])
+      const peerAddresses = res.addrs.map(ma => ma.toString().split('/ipfs/')[0])
 
       expect(id).to.be.eql(nodeB.peerId.id)
       expect(nodeAddresses).to.include(peerAddresses[0])

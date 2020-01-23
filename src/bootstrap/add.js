@@ -4,7 +4,7 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 const invalidArg = 'this/Is/So/Invalid/'
-const validIp4 = '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+const validIp4 = '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

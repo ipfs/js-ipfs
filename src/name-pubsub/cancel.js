@@ -2,8 +2,7 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const { promisify } = require('es6-promisify')
-
+const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -38,14 +37,14 @@ module.exports = (common, options) => {
     it('should cancel a subscription correctly returning true', async function () {
       this.timeout(300 * 1000)
 
-      const peerId = await promisify(PeerId.create.bind(PeerId))({ bits: 512 })
+      const peerId = await PeerId.create({ bits: 512 })
       const id = peerId.toB58String()
       const ipnsPath = `/ipns/${id}`
 
       const subs = await ipfs.name.pubsub.subs()
       expect(subs).to.be.an('array').that.does.not.include(ipnsPath)
 
-      await expect(ipfs.name.resolve(id)).to.be.rejected()
+      await expect(all(ipfs.name.resolve(id))).to.be.rejected()
 
       const subs1 = await ipfs.name.pubsub.subs()
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)

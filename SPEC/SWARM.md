@@ -8,9 +8,6 @@
 * [swarm.filters.add](#swarmfiltersadd) (not implemented yet)
 * [swarm.filters.rm](#swarmfiltersrm) (not implemented yet)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `swarm.addrs`
 
 > List of known addresses of each peer connected.
@@ -21,13 +18,29 @@ Although not listed in the documentation, all the following APIs that actually r
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of of [`PeerInfo`](https://github.com/libp2p/js-peer-info)s |
+| `Promise<{ id: CID, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a [`CID`](https://github.com/multiformats/js-cid) - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
 **Example:**
 
 ```JavaScript
 const peerInfos = await ipfs.swarm.addrs()
-console.log(peerInfos)
+
+peerInfos.forEach(info => {
+  console.log(info.id.toString())
+  /*
+  QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
+  */
+
+  info.addrs.forEach(addr => console.log(addr.toString()))
+  /*
+  /ip4/147.75.94.115/udp/4001/quic
+  /ip6/2604:1380:3000:1f00::1/udp/4001/quic
+  /dnsaddr/bootstrap.libp2p.io
+  /ip6/2604:1380:3000:1f00::1/tcp/4001
+  /ip4/147.75.94.115/tcp/4001
+  */
+})
+
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -86,7 +99,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of [`MultiAddr`](https://github.com/multiformats/js-multiaddr) representing the local addresses the node is listening |
+| `Promise<Multiaddr[]>` | An array of [`Multiaddr`](https://github.com/multiformats/js-multiaddr) representing the local addresses the node is listening |
 
 **Example:**
 
@@ -103,31 +116,33 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.swarm.peers([options])`
 
-If `options.verbose` is set to `true` additional information, such as `latency` is provided.
+`options` an optional object with the following properties:
+  - `direction` - set to `true` to return connection direction information. Default `false`
+  - `streams` - set to `true` to return information about open muxed streams. Default `false`
+  - `verbose` - set to `true` to return all extra information. Default `false`
+  - `latency` - set to `true` to return latency information. Default `false`
 
 **Returns**
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array with the list of peers that the node have connections with |
+| `Promise<Object[]>` | An array with the list of peers that the node have connections with |
 
-the returned array has the following form:
+The returned array has the following form:
 
 - `addr: Multiaddr`
-- `peer: PeerId`
-- `latency: String` Only if `verbose: true`  was passed
-
-Starting with `go-ipfs 0.4.5` these additional properties are provided
-
+- `peer: CID`
+- `latency: String` - Only if `verbose: true`  was passed
 - `muxer: String` - The type of stream muxer the peer is usng
-- `streams: []String` - Only if `verbose: true`, a list of currently open streams
+- `streams: string[]` - Only if `verbose: true`, a list of currently open streams
+- `direction: number` - Inbound or outbound connection
 
-If an error occurs trying to create an individual `peerInfo` object, it will have the properties
+If an error occurs trying to create an individual object, it will have the properties:
 
 - `error: Error` - the error that occurred
 - `rawPeerInfo: Object` - the raw data for the peer
 
-and all other properties may be undefined.
+All other properties may be `undefined`.
 
 **Example:**
 

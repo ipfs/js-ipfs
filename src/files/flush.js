@@ -36,7 +36,7 @@ module.exports = (common, options) => {
       const root = await ipfs.files.stat('/')
       const flushed = await ipfs.files.flush()
 
-      expect(root.hash).to.equal(flushed.toString())
+      expect(root.cid.toString()).to.equal(flushed.toString())
     })
 
     it('should flush specific dir', async () => {
@@ -47,7 +47,7 @@ module.exports = (common, options) => {
       const dirStats = await ipfs.files.stat(testDir)
       const flushed = await ipfs.files.flush(testDir)
 
-      expect(dirStats.hash).to.equal(flushed.toString())
+      expect(dirStats.cid.toString()).to.equal(flushed.toString())
     })
   })
 }

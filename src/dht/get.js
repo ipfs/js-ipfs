@@ -32,9 +32,10 @@ module.exports = (common, options) => {
         .and.be.an.instanceOf(Error)
     })
 
-    it('should get a value after it was put on another node', async function () {
-      this.timeout(80 * 1000)
-
+    // TODO: revisit this test - it puts an invalid key and so go-ipfs throws
+    // "invalid record keytype" - it needs to put a valid key and value for it to
+    // be a useful test.
+    it.skip('should get a value after it was put on another node', async () => {
       const key = Buffer.from(hat())
       const value = Buffer.from(hat())
 

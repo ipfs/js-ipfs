@@ -6,9 +6,6 @@
 * [pubsub.ls](#pubsubls)
 * [pubsub.peers](#pubsubpeers)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `pubsub.subscribe`
 
 > Subscribe to a pubsub topic.
@@ -53,12 +50,6 @@ If the `topic` and `handler` are provided, the `handler` will no longer receive 
 
 If **only** the `topic` param is provided, unsubscribe will remove **all** handlers for the `topic`. This behaves like [EventEmitter.removeAllListeners](https://nodejs.org/dist/latest/docs/api/events.html#events_emitter_removealllisteners_eventname). Use this if you would like to no longer receive any updates for the `topic`.
 
-**WARNING:** Unsubscribe is an async operation, but removing **all** handlers for a topic can only be done using the Promises API (due to the difficulty in distinguishing between a "handler" and a "callback" - they are both functions). If you _need_ to know when unsubscribe has completed you must use `await` or `.then` on the return value from
-
-```JavaScript
-ipfs.pubsub.unsubscribe('topic')
-```
-
 **Returns**
 
 | Type | Description |
@@ -79,6 +70,7 @@ console.log(`unsubscribed from ${topic}`)
 ```
 
 Or removing all listeners:
+
 ```JavaScript
 const topic = 'fruit-of-the-day'
 const receiveMsg = (msg) => console.log(msg.toString())
@@ -130,7 +122,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of topicIDs that the peer is subscribed to |
+| `Promise<string[]>` | An array of topicIDs that the peer is subscribed to |
 
 **Example:**
 
@@ -153,14 +145,14 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of peer IDs subscribed to the `topic` |
+| `Promise<string[]>` | An array of peer IDs subscribed to the `topic` |
 
 **Example:**
 
 ```JavaScript
 const topic = 'fruit-of-the-day'
 
-const peerIds = ipfs.pubsub.peers(topic)
+const peerIds = await ipfs.pubsub.peers(topic)
 console.log(peerIds)
 ```
 

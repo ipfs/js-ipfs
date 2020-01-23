@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const pTimes = require('p-times')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -26,7 +25,7 @@ module.exports = (common, options) => {
     it('should list all the keys', async function () {
       this.timeout(60 * 1000)
 
-      const keys = await pTimes(3, () => ipfs.key.gen(hat(), { type: 'rsa', size: 2048 }), { concurrency: 1 })
+      const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(hat(), { type: 'rsa', size: 2048 })))
 
       const res = await ipfs.key.list()
       expect(res).to.exist()

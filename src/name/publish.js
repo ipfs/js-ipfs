@@ -5,6 +5,8 @@ const hat = require('hat')
 
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const all = require('it-all')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,7 +25,7 @@ module.exports = (common, options) => {
     before(async () => {
       ipfs = (await common.spawn()).api
       nodeId = ipfs.peerId.id
-      await ipfs.add(fixture.data, { pin: false })
+      await all(ipfs.add(fixture.data, { pin: false }))
     })
 
     after(() => common.clean())
@@ -40,10 +42,9 @@ module.exports = (common, options) => {
     })
 
     it('should publish correctly with the lifetime option and resolve', async () => {
-      const [{ path }] = await ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve'))
+      const [{ path }] = await all(ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve')))
       await ipfs.name.publish(path, { allowOffline: true, resolve: false, lifetime: '2h' })
-
-      return expect(await ipfs.name.resolve(`/ipns/${nodeId}`)).to.eq(`/ipfs/${path}`)
+      expect(await last(ipfs.name.resolve(`/ipns/${nodeId}`))).to.eq(`/ipfs/${path}`)
     })
 
     it('should publish correctly when the file was not added but resolve is disabled', async function () {
@@ -78,8 +79,8 @@ module.exports = (common, options) => {
       }
 
       const key = await ipfs.key.gen(keyName, { type: 'rsa', size: 2048 })
-
       const res = await ipfs.name.publish(value, options)
+
       expect(res).to.exist()
       expect(res.name).to.equal(key.id)
       expect(res.value).to.equal(`/ipfs/${value}`)

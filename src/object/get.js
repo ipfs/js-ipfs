@@ -8,6 +8,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
 const crypto = require('crypto')
 const { asDAGLink } = require('./utils')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -132,12 +133,12 @@ module.exports = (common, options) => {
       // has to be big enough to span several DAGNodes
       const data = crypto.randomBytes(1024 * 3000)
 
-      const result = await ipfs.add({
+      const result = await all(ipfs.add({
         path: '',
         content: data
-      })
+      }))
 
-      const node = await ipfs.object.get(result[0].hash)
+      const node = await ipfs.object.get(result[0].cid)
       const meta = UnixFs.unmarshal(node.Data)
 
       expect(meta.fileSize()).to.equal(data.length)

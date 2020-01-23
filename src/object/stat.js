@@ -60,7 +60,12 @@ module.exports = (common, options) => {
       const err = await expect(ipfs.object.stat(badCid, { timeout: `${timeout}s` })).to.be.rejected()
       const timeForRequest = (new Date() - startTime) / 1000
 
-      expect(err).to.have.property('message', 'failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
+      if (err.code) {
+        expect(err.code).to.equal('ERR_TIMEOUT')
+      } else {
+        expect(err.message).to.equal('failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
+      }
+
       expect(timeForRequest).to.not.lessThan(timeout)
       expect(timeForRequest).to.not.greaterThan(timeout + 1)
     })

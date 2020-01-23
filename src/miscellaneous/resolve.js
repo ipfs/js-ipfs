@@ -6,6 +6,7 @@ const loadFixture = require('aegir/fixtures')
 const hat = require('hat')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,27 +30,27 @@ module.exports = (common, options) => {
     it('should resolve an IPFS hash', async () => {
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
 
-      const [{ hash }] = await ipfs.add(content)
-      const path = await ipfs.resolve(`/ipfs/${hash}`)
-      expect(path).to.equal(`/ipfs/${hash}`)
+      const [{ cid }] = await all(ipfs.add(content))
+      const path = await ipfs.resolve(`/ipfs/${cid}`)
+      expect(path).to.equal(`/ipfs/${cid}`)
     })
 
     it('should resolve an IPFS hash and return a base64url encoded CID in path', async () => {
-      const [{ hash }] = await ipfs.add(Buffer.from('base64url encoded'))
-      const path = await ipfs.resolve(`/ipfs/${hash}`, { cidBase: 'base64url' })
-      const [,, cid] = path.split('/')
+      const [{ cid }] = await all(ipfs.add(Buffer.from('base64url encoded')))
+      const path = await ipfs.resolve(`/ipfs/${cid}`, { cidBase: 'base64url' })
+      const [,, cidStr] = path.split('/')
 
-      expect(multibase.isEncoded(cid)).to.equal('base64url')
+      expect(multibase.isEncoded(cidStr)).to.equal('base64url')
     })
 
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash
     it('should resolve an IPFS path link', async () => {
       const path = 'path/to/testfile.txt'
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
-      const [{ hash: fileHash }, , , { hash: rootHash }] = await ipfs.add([{ path, content }], { wrapWithDirectory: true })
-      const resolve = await ipfs.resolve(`/ipfs/${rootHash}/${path}`)
+      const [{ cid: fileCid }, , , { cid: rootCid }] = await all(ipfs.add([{ path, content }], { wrapWithDirectory: true }))
+      const resolve = await ipfs.resolve(`/ipfs/${rootCid}/${path}`)
 
-      expect(resolve).to.equal(`/ipfs/${fileHash}`)
+      expect(resolve).to.equal(`/ipfs/${fileCid}`)
     })
 
     it('should resolve up to the last node', async () => {
@@ -83,7 +84,7 @@ module.exports = (common, options) => {
       this.timeout(20 * 1000)
       const node = (await common.spawn({ type: 'go' })).api
       await ipfs.swarm.connect(node.peerId.addresses[0])
-      const [{ path }] = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
+      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive === true')))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })

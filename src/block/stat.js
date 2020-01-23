@@ -27,10 +27,8 @@ module.exports = (common, options) => {
 
     it('should stat by CID', async () => {
       const cid = new CID(hash)
-
       const stats = await ipfs.block.stat(cid)
-
-      expect(stats).to.have.property('key')
+      expect(stats.cid.toString()).to.equal(cid.toString())
       expect(stats).to.have.property('size')
     })
 

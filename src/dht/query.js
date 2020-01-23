@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const pTimeout = require('p-timeout')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -32,9 +32,8 @@ module.exports = (common, options) => {
       this.timeout(timeout)
 
       try {
-        const peers = await pTimeout(nodeA.dht.query(nodeB.peerId.id), timeout - 1000)
-
-        expect(peers.map((p) => p.id.toB58String())).to.include(nodeB.peerId.id)
+        const peers = await all(nodeA.dht.query(nodeB.peerId.id, { timeout: timeout - 1000 }))
+        expect(peers.map(p => p.id.toString())).to.include(nodeB.peerId.id)
       } catch (err) {
         if (err.name === 'TimeoutError') {
           // This test is meh. DHT works best with >= 20 nodes. Therefore a

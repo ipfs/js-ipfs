@@ -18,10 +18,14 @@ module.exports = (common, options) => {
     it('should stop the node', async () => {
       const ipfs = await common.spawn()
 
+      // Should succeed because node is started
+      await ipfs.api.swarm.peers()
+
+      // Stop the node and try the call again
       await ipfs.stop()
-      // Trying to stop an already stopped node should return an error
-      // as the node can't respond to requests anymore
-      return expect(ipfs.api.stop()).to.eventually.be.rejected()
+
+      // Trying to use an API that requires a started node should return an error
+      return expect(ipfs.api.swarm.peers()).to.eventually.be.rejected()
     })
   })
 }

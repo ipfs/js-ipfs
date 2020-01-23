@@ -31,4 +31,4 @@ function createSuite (tests, parent) {
   return Object.assign(suite, tests)
 }
 
-module.exports.createSuite = createSuite
+exports.createSuite = createSuite

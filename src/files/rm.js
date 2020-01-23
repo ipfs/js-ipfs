@@ -2,6 +2,7 @@
 'use strict'
 
 const hat = require('hat')
+const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -36,7 +37,7 @@ module.exports = (common, options) => {
 
       await ipfs.files.rm(`${testDir}/c`)
 
-      const contents = await ipfs.files.ls(testDir)
+      const contents = await all(ipfs.files.ls(testDir))
       expect(contents).to.be.an('array').and.to.be.empty()
     })
 
@@ -47,7 +48,7 @@ module.exports = (common, options) => {
 
       await ipfs.files.rm(`${testDir}/lv1/lv2`, { recursive: true })
 
-      const lv1Contents = await ipfs.files.ls(`${testDir}/lv1`)
+      const lv1Contents = await all(ipfs.files.ls(`${testDir}/lv1`))
       expect(lv1Contents).to.be.an('array').and.to.be.empty()
     })
   })

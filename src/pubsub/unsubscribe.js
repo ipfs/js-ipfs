@@ -46,7 +46,7 @@ module.exports = (common, options) => {
       expect(topics).to.eql([])
     })
 
-    it(`should subscribe ${count} handlers and unsunscribe once with no reference to the handlers`, async () => {
+    it(`should subscribe ${count} handlers and unsubscribe once with no reference to the handlers`, async () => {
       const someTopic = getTopic()
       for (let i = 0; i < count; i++) {
         await ipfs.pubsub.subscribe(someTopic, (msg) => {})

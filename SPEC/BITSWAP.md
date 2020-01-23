@@ -3,9 +3,6 @@
 * [bitswap.wantlist](#bitswapwantlist)
 * [bitswap.stat](#bitswapstat)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 ### `bitswap.wantlist`
 
 > Returns the wantlist, optionally filtered by peer ID
@@ -16,23 +13,18 @@ Although not listed in the documentation, all the following APIs that actually r
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Object>` | An object representing the wantlist |
-
-the returned object contains the following keys:
-
-- `Keys` An array of objects containing the following keys:
-    - `/` A string multihash
+| `Promise<CID[]>` | An array of [CID][cid]s currently in the wantlist |
 
 **Example:**
 
 ```JavaScript
 const list = await ipfs.bitswap.wantlist()
 console.log(list)
-// { Keys: [{ '/': 'QmHash' }] }
+// [ CID('QmHash') ]
 
 const list2 = await ipfs.bitswap.wantlist(peerId)
 console.log(list2)
-// { Keys: [{ '/': 'QmHash' }] }
+// [ CID('QmHash') ]
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -51,11 +43,11 @@ Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
 | -------- | -------- |
 | `Promise<Object>` | An object that contains information about the bitswap agent |
 
-the returned object contains the following keys:
+The returned object contains the following keys:
 
 - `provideBufLen` is an integer.
-- `wantlist` (array of CIDs)
-- `peers` (array of peer IDs)
+- `wantlist` (array of [CID][cid]s)
+- `peers` (array of peer IDs as [CID][cid] instances)
 - `blocksReceived` is a [BigNumber Int][1]
 - `dataReceived` is a [BigNumber Int][1]
 - `blocksSent` is a [BigNumber Int][1]
@@ -70,17 +62,17 @@ const stats = await ipfs.bitswap.stat()
 console.log(stats)
 // {
 //   provideBufLen: 0,
-//   wantlist: [ { '/': 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM' } ],
+//   wantlist: [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM') ],
 //   peers:
-//    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
-//      'QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
-//      'QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd' ],
+//    [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM'),
+//      CID('QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu'),
+//      CID('QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd') ],
 //   blocksReceived: 0,
 //   dataReceived: 0,
 //   blocksSent: 0,
 //   dataSent: 0,
 //   dupBlksReceived: 0,
-//  dupDataReceived: 0
+//   dupDataReceived: 0
 // }
 ```
 
@@ -88,3 +80,4 @@ A great source of [examples][] can be found in the tests for this API.
 
 [1]: https://github.com/MikeMcl/bignumber.js/
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/bitswap
+[cid]: https://www.npmjs.com/package/cids

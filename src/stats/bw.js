@@ -3,6 +3,7 @@
 
 const { expectIsBandwidth } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,7 +24,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should get bandwidth stats ', async () => {
-      const res = await ipfs.stats.bw()
+      const res = await last(ipfs.stats.bw())
       expectIsBandwidth(null, res)
     })
   })

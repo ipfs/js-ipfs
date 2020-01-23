@@ -2,7 +2,7 @@
 'use strict'
 
 const pushable = require('it-pushable')
-const { collect } = require('streaming-iterables')
+const all = require('it-all')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
@@ -108,10 +108,10 @@ module.exports = (common, options) => {
 
         await ipfs1.pubsub.publish(topic, Buffer.from('hello'))
 
-        const [handler1Msg] = await collect(msgStream1)
+        const [handler1Msg] = await all(msgStream1)
         expect(handler1Msg.data.toString()).to.eql('hello')
 
-        const [handler2Msg] = await collect(msgStream2)
+        const [handler2Msg] = await all(msgStream2)
         expect(handler2Msg.data.toString()).to.eql('hello')
 
         await ipfs1.pubsub.unsubscribe(topic, handler1)
@@ -181,11 +181,11 @@ module.exports = (common, options) => {
 
         await ipfs2.pubsub.publish(topic, Buffer.from(expectedString))
 
-        const [sub1Msg] = await collect(msgStream1)
+        const [sub1Msg] = await all(msgStream1)
         expect(sub1Msg.data.toString()).to.be.eql(expectedString)
         expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
 
-        const [sub2Msg] = await collect(msgStream2)
+        const [sub2Msg] = await all(msgStream2)
         expect(sub2Msg.data.toString()).to.be.eql(expectedString)
         expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
       })
@@ -215,11 +215,11 @@ module.exports = (common, options) => {
 
         await ipfs2.pubsub.publish(topic, buffer)
 
-        const [sub1Msg] = await collect(msgStream1)
+        const [sub1Msg] = await all(msgStream1)
         expect(sub1Msg.data.toString('hex')).to.be.eql(expectedHex)
         expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
 
-        const [sub2Msg] = await collect(msgStream2)
+        const [sub2Msg] = await all(msgStream2)
         expect(sub2Msg.data.toString('hex')).to.be.eql(expectedHex)
         expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
       })
@@ -253,12 +253,12 @@ module.exports = (common, options) => {
 
         outbox.forEach(msg => ipfs2.pubsub.publish(topic, Buffer.from(msg)))
 
-        const sub1Msgs = await collect(msgStream1)
+        const sub1Msgs = await all(msgStream1)
         sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
         const inbox1 = sub1Msgs.map(msg => msg.data.toString())
         expect(inbox1.sort()).to.eql(outbox.sort())
 
-        const sub2Msgs = await collect(msgStream2)
+        const sub2Msgs = await all(msgStream2)
         sub2Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
         const inbox2 = sub2Msgs.map(msg => msg.data.toString())
         expect(inbox2.sort()).to.eql(outbox.sort())
@@ -292,7 +292,7 @@ module.exports = (common, options) => {
           await ipfs2.pubsub.publish(topic, msgData)
         }
 
-        const msgs = await collect(msgStream)
+        const msgs = await all(msgStream)
         const duration = new Date().getTime() - startTime
         const opsPerSec = Math.floor(count / (duration / 1000))
 

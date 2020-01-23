@@ -1,12 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const pEachSeries = require('p-each-series')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const Unixfs = require('ipfs-unixfs')
-const CID = require('cids')
+const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -47,13 +46,8 @@ module.exports = (common, options) => {
 
       cidCbor = await dagCBOR.util.cid(dagCBOR.util.serialize(nodeCbor))
 
-      await pEachSeries([
-        { node: nodePb, multicodec: 'dag-pb', hashAlg: 'sha2-256' },
-        { node: nodeCbor, multicodec: 'dag-cbor', hashAlg: 'sha2-256' }
-      ], (el) => ipfs.dag.put(el.node, {
-        format: el.multicodec,
-        hashAlg: el.hashAlg
-      }))
+      await ipfs.dag.put(nodePb, { format: 'dag-pb', hashAlg: 'sha2-256' })
+      await ipfs.dag.put(nodeCbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
     })
 
     it('should get a dag-pb node', async () => {
@@ -160,9 +154,9 @@ module.exports = (common, options) => {
     it('should get a node added as CIDv1 with a CIDv0', async () => {
       const input = Buffer.from(`TEST${Date.now()}`)
 
-      const res = await ipfs.add(input, { cidVersion: 1, rawLeaves: false })
+      const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
 
-      const cidv1 = new CID(res[0].hash)
+      const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
 
       const cidv0 = cidv1.toV0()

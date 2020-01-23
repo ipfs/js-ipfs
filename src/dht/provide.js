@@ -2,6 +2,7 @@
 'use strict'
 
 const CID = require('cids')
+const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -27,46 +28,40 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should provide local CID', async () => {
-      const res = await ipfs.add(Buffer.from('test'))
+      const res = await all(ipfs.add(Buffer.from('test')))
 
-      await ipfs.dht.provide(new CID(res[0].hash))
+      await all(ipfs.dht.provide(res[0].cid))
     })
 
     it('should not provide if block not found locally', () => {
       const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
 
-      return expect(ipfs.dht.provide(cid)).to.eventually.be.rejected
+      return expect(all(ipfs.dht.provide(cid))).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.have.property('message')
         .that.include('not found locally')
     })
 
     it('should allow multiple CIDs to be passed', async () => {
-      const res = await ipfs.add([
+      const res = await all(ipfs.add([
         { content: Buffer.from('t0') },
         { content: Buffer.from('t1') }
-      ])
+      ]))
 
-      await ipfs.dht.provide([
-        new CID(res[0].hash),
-        new CID(res[1].hash)
-      ])
+      await all(ipfs.dht.provide(res.map(f => f.cid)))
     })
 
     it('should provide a CIDv1', async () => {
-      const res = await ipfs.add(Buffer.from('test'), { cidVersion: 1 })
-
-      const cid = new CID(res[0].hash)
-
-      await ipfs.dht.provide(cid)
+      const res = await all(ipfs.add(Buffer.from('test'), { cidVersion: 1 }))
+      await all(ipfs.dht.provide(res[0].cid))
     })
 
     it('should error on non CID arg', () => {
-      return expect(ipfs.dht.provide({})).to.eventually.be.rejected()
+      return expect(all(ipfs.dht.provide({}))).to.eventually.be.rejected()
     })
 
     it('should error on array containing non CID arg', () => {
-      return expect(ipfs.dht.provide([{}])).to.eventually.be.rejected()
+      return expect(all(ipfs.dht.provide([{}]))).to.eventually.be.rejected()
     })
   })
 }

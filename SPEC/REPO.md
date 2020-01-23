@@ -4,9 +4,6 @@
 * [repo.stat](#repostat)
 * [repo.version](#repoversion)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `repo.gc`
 
 > Perform a garbage collection sweep on the repo.
@@ -23,18 +20,19 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects |
+| `AsyncIterable<Object>` | An async iterable that yields objects describing nodes that were garbage collected |
 
-each object contains the following properties:
+Each yielded object contains the following properties:
 
-- `err` is an Error if it was not possible to GC a particular block.
+- `err` is an `Error` if it was not possible to GC a particular block.
 - `cid` is the [CID][cid] of the block that was Garbage Collected.
 
 **Example:**
 
 ```JavaScript
-const res = await ipfs.repo.gc()
-console.log(res)
+for await (const res of ipfs.repo.gc()) {
+  console.log(res)
+}
 ```
 
 #### `repo.stat`

@@ -4,104 +4,117 @@
 
 #### The Regular API
 The regular, top-level API for add, cat, get and ls Files on IPFS
-  - [add](#add)
-  - [addFromFs](#addfromfs)
-  - [addFromStream](#addfromstream)
-  - [addFromURL](#addfromurl)
-  - [addPullStream](#addpullstream)
-  - [addReadableStream](#addreadablestream)
-  - [cat](#cat)
-  - [catPullStream](#catpullstream)
-  - [catReadableStream](#catreadablestream)
-  - [get](#get)
-  - [getPullStream](#getpullstream)
-  - [getReadableStream](#getreadablestream)
-  - [ls](#ls)
-  - [lsPullStream](#lspullstream)
-  - [lsReadableStream](#lsreadablestream)
+- [add](#add)
+- [cat](#cat)
+- [get](#get)
+- [ls](#ls)
 
 #### The Files API
 The Files API, aka MFS (Mutable File System)
+- [files.chmod](#fileschmod)
+- [files.cp](#filescp)
+- [files.flush](#filesflush)
+- [files.ls](#filesls)
+- [files.mkdir](#filesmkdir)
+- [files.mv](#filesmv)
+- [files.read](#filesread)
+- [files.rm](#filesrm)
+- [files.stat](#filesstat)
+- [files.touch](#filestouch)
+- [files.write](#fileswrite)
 
 _Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
-  - [files.chmod](#fileschmod)
-  - [files.cp](#filescp)
-  - [files.flush](#filesflush)
-  - [files.ls](#filesls)
-  - [files.lsReadableStream](#fileslsreadablestream)
-  - [files.lsPullStream](#fileslspullstream)
-  - [files.mkdir](#filesmkdir)
-  - [files.mv](#filesmv)
-  - [files.read](#filesread)
-  - [files.readPullStream](#filesreadpullstream)
-  - [files.readReadableStream](#filesreadreadablestream)
-  - [files.rm](#filesrm)
-  - [files.stat](#filesstat)
-  - [files.touch](#filestouch)
-  - [files.write](#fileswrite)
-
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
 
 #### `add`
 
-> Add files and data to IPFS.
+> Import files and data into IPFS.
 
 ##### `ipfs.add(data, [options])`
 
 Where `data` may be:
 
-- a [`Buffer instance`][b]
-- a [`Readable Stream`][rs]
-- a [`Pull Stream`][ps]
-- a [`File`][file]
-- an array of objects, each of the form:
-```JavaScript
+* `Bytes` (alias for `Buffer`|`ArrayBuffer`|`TypedArray`) [single file]
+* `Bloby` (alias for: `Blob`|`File`) [single file]
+* `string` [single file]
+* `FileObject` (see below for definition) [single file]
+* `Iterable<number>` [single file]
+* `Iterable<Bytes>` [single file]
+* `Iterable<Bloby>` [multiple files]
+* `Iterable<string>` [multiple files]
+* `Iterable<FileObject>` [multiple files]
+* `AsyncIterable<Bytes>` [single file]
+* `AsyncIterable<Bloby>` [multiple files]
+* `AsyncIterable<String>` [multiple files]
+* `AsyncIterable<FileObject>` [multiple files]
+
+`FileObject` is a plain JS object of the following form:
+
+```js
 {
-    path: '/tmp/myfile.txt', // The file path
-    content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
-    mode: <Number> // optional integer mode to store the entry with
-    mtime: <time> // optional value representing the modification time of the entry - either a `Date` object, an object with `{ secs, nsecs }` properties where `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
+  // The path you want to the file to be accessible at from the root CID _after_ it has been added
+  path?: string
+  // The contents of the file (see below for definition)
+  content?: FileContent
+  // File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
+  mode?: number | string
+  // The modification time of the entry (see below for definition)
+  mtime?: UnixTime
 }
 ```
-If no `content` is passed, then the path is treated as an empty directory
+
+If no `path` is specified, then the item will be added to the root level and will be given a name according to it's CID.
+
+If no `content` is passed, then the item is treated as an empty directory.
+
+One of `path` or `content` _must_ be passed.
+
+`FileContent` is one of the following types:
+
+```js
+Bytes | Bloby | string | Iterable<number> | Iterable<Bytes> | AsyncIterable<Bytes>
+```
+
+`UnixTime` is one of the following types:
+
+```js
+Date | { secs: number, nsecs?: number } | number[]
+```
+
+As an object, `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second.
+
+As an array of numbers, it must have two elements, as per the output of [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
 
 `options` is an optional object argument that might include the following keys:
 
-- chunker (string, default `size-262144`): chunking algorithm used to build ipfs DAGs. Available formats:
+- `chunker` (string, default `size-262144`): chunking algorithm used to build ipfs DAGs. Available formats:
   - size-{size}
   - rabin
   - rabin-{avg}
   - rabin-{min}-{avg}-{max}
-- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version).
-- cidBase (string, default `base58btc`): Number base to display CIDs in. [The list of all possible values](https://github.com/multiformats/js-multibase/blob/master/src/constants.js).
-- enableShardingExperiment: allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature.
-- hashAlg || hash (string, default `sha2-256`): multihash hashing algorithm to use. [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343).
-- onlyHash (boolean, default false): doesn't actually add the file to IPFS, but rather calculates its hash.
-- pin (boolean, default true): pin this object when adding.
-- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
-- quiet (boolean, default false): writes a minimal output.
-- quieter (boolean, default false): writes only final hash.
-- rawLeaves (boolean, default false): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf.
-- recursive (boolean, default false): for when a Path is passed, this option can be enabled to add recursively all the files.
-- shardSplitThreshold (integer, default 1000): specifies the maximum size of unsharded directory that can be generated.
-- silent (boolean, default false): writes no output.
-- trickle (boolean, default false): if true will use the trickle DAG format for DAG generation.
+- `cidVersion` (integer, default `0`): the CID version to use when storing the data (storage keys are based on the CID, including its version).
+- `enableShardingExperiment`: allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature.
+- `hashAlg` (string, default `sha2-256`): multihash hashing algorithm to use. [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343).
+- `onlyHash` (boolean, default `false`): doesn't actually add the file to IPFS, but rather calculates its hash.
+- `pin` (boolean, default `true`): pin this object when adding.
+- `progress` (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
+- `rawLeaves` (boolean, default `false`): if true, DAG leaves will contain raw file data and not be wrapped in a protobuf.
+- `shardSplitThreshold` (integer, default `1000`): specifies the maximum size of unsharded directory that can be generated.
+- `trickle` (boolean, default `false`): if true will use the trickle DAG format for DAG generation.
   [Trickle definition from go-ipfs documentation](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle).
-- wrapWithDirectory (boolean, default false): adds a wrapping node around the content.
+- `wrapWithDirectory` (boolean, default `false`): adds a wrapping node around the content.
 
 **Returns**
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects describing the added data |
+| `AsyncIterable<Object>` | An async iterable that yields objects describing the added data |
 
-an array of objects is returned, each of the form:
+Each yielded object is of the form:
 
 ```JavaScript
 {
   path: '/tmp/myfile.txt',
-  hash: 'QmHash', // base58 encoded multihash
+  cid: CID('QmHash'),
   mode: Number,
   mtime: { secs: Number, nsecs: Number },
   size: 123
@@ -110,244 +123,92 @@ an array of objects is returned, each of the form:
 
 **Example:**
 
-In the browser, assuming `ipfs = new Ipfs(...)`:
-
 ```js
-const content = Ipfs.Buffer.from('ABC')
-const results = await ipfs.add(content)
-const hash = results[0].hash // "Qm...WW"
-```
-
-Now [ipfs.io/ipfs/Qm...WW](https://ipfs.io/ipfs/QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW)
-returns the "ABC" string.
-
-The following allows you to add multiple files at once. Note that intermediate directories in file paths will be automatically created and returned in the response along with files:
-
-```JavaScript
-const files = [
-  {
-    path: '/tmp/myfile.txt',
-    content:  Ipfs.Buffer.from('ABC')
-  }
-]
-
-const results = await ipfs.add(files)
-```
-
-The `results` array:
-
-```javascript
-[
-  {
-    "path": "tmp",
-    "hash": "QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg",
-    "mode": 493,
-    "mtime": { secs: Number, nsecs: Number },
-    "size": 67
-  },
-  {
-    "path": "/tmp/myfile.txt",
-    "hash": "QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW",
-    "mode": 420,
-    "mtime": { secs: Number, nsecs: Number },
-    "size": 11
-  }
-]
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-#### `addReadableStream`
-
-> Add files and data to IPFS using a [Readable Stream][rs] of class Duplex.
-
-##### `ipfs.addReadableStream([options])` -> [Readable Stream][rs]
-
-Returns a Readable Stream of class Duplex, where objects can be written of the forms
-
-```js
-{
-  path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
-}
-```
-
-`options` is an optional object argument that might include the following keys:
-
-- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version)
-- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
-- hashAlg || hash (string): multihash hashing algorithm to use. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
-- wrapWithDirectory (boolean): adds a wrapping node around the content
-- pin (boolean, default true): pin this object when adding.
-
-**Example:**
-
-```JavaScript
-const stream = ipfs.addReadableStream()
-stream.on('data', function (file) {
-  // 'file' will be of the form
-  // {
-  //   path: '/tmp/myfile.txt',
-  //   hash: 'QmHash' // base58 encoded multihash
-  //   mode: Number,
-  //   mtime: { secs: Number, nsecs: Number },
-  //   size: 123
-  // }
-})
-
-stream.write({
-  path: <path>
-  content: <data>
-})
-// write as many files as you want
-
-stream.end()
-})
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-#### `addPullStream`
-
-> Add files and data to IPFS using a [Pull Stream][ps].
-
-##### `ipfs.addPullStream([options])` -> [Pull Stream][ps]
-
-Returns a Pull Stream, where objects can be written of the forms
-
-```js
-{
-  path: '/tmp/myfile.txt', // The file path
-  content: <data> // A Buffer, Readable Stream, Pull Stream or File with the contents of the file
-  mode: <Number> // optional integer mode to store the entry with
-  mtime: <time> // optional value representing the modification time of the entry - either a `Date` object, an object with `{ secs, nsecs }` properties where `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
-}
-```
-
-`options` is an optional object argument that might include the following keys:
-
-- cidVersion (integer, default 0): the CID version to use when storing the data (storage keys are based on the CID, including its version)
-- progress (function): a function that will be called with the byte length of chunks as a file is added to ipfs.
-- hashAlg || hash (string): multihash hashing algorithm to use. (default: `sha2-256`) [The list of all possible values]( https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343)
-- wrapWithDirectory (boolean): adds a wrapping node around the content
-- pin (boolean, default true): pin this object when adding.
-
-**Example:**
-
-```JavaScript
-const stream = ipfs.addPullStream()
-
-pull(
-  pull.values([
-    { path: <path>, content: <data> }
-  ]),
-  stream,
-  pull.collect((err, values) => {
-    // values will be an array of objects, which one of the form
-    // {
-    //   path: '/tmp/myfile.txt',
-    //   hash: 'QmHash' // base58 encoded multihash
-    //   mode: Number
-    //   mtime: { secs: Number, nsecs: Number }
-    //   size: 123
-    // }
-  })
-)
-```
-
-#### `addFromFs`
-
-> Add files or entire directories from the FileSystem to IPFS
-
-##### `ipfs.addFromFs(path, [options])`
-
-Reads a file or folder from `path` on the filesystem and adds it to IPFS.
-
-Options:
-  - **recursive**: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-  - **ignore**: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
-  - **hidden**: hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<Array>` | An array of objects describing the files that were added |
-
-an array of objects is returned, each of the form:
-
-```js
-{
-  path: 'test-folder',
-  hash: 'QmRNjDeKStKGTQXnJ2NFqeQ9oW23WcpbmvCVrpDHgDg3T6',
-  mode: Number
-  mtime: Date
-  size: 123
-}
-```
-
-**Example**
-
-```JavaScript
-const results = await ipfs.addFromFs('path/to/a/folder', { recursive: true , ignore: ['subfolder/to/ignore/**']})
-console.log(results)
-```
-
-#### `addFromURL`
-
-> Add a file from a URL to IPFS
-
-##### `ipfs.addFromURL(url, [options])`
-
-`options` is an optional object that argument that might include the same keys of [`ipfs.add(data, [options])`](#add)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<Array>` | An object describing the added file |
-
-**Example**
-
-```JavaScript
-const result = await ipfs.addFromURL('http://example.com/')
-console.log('result')
-```
-
-#### `addFromStream`
-
-> Add a file from a stream to IPFS
-
-##### `ipfs.addFromStream(stream, [options])`
-
-This is very similar to `ipfs.add({ path:'', content: stream })`. It is like the reverse of cat.
-
-`options` is an optional object that argument that might include the same keys of [`ipfs.add(data, [options])`](#add)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<Array>` | An array of objects describing the added data |
-
-an array of objects is returned, each of the form:
-
-```JavaScript
-{
+const files = [{
   path: '/tmp/myfile.txt',
-  hash: 'QmHash', // base58 encoded multihash
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
-  size: 123
+  content: 'ABC'
+}]
+
+for await (const result of ipfs.add(content)) {
+  console.log(result)
 }
+
+/*
+Prints out objects like:
+
+{
+  "path": "tmp",
+  "cid": CID("QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg"),
+  "mode": 493,
+  "mtime": { secs: Number, nsecs: Number },
+  "size": 67
+}
+
+{
+  "path": "/tmp/myfile.txt",
+  "cid": CID("QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW"),
+  "mode": 420,
+  "mtime": { secs: Number, nsecs: Number },
+  "size": 11
+}
+*/
 ```
 
-**Example**
+Now [ipfs.io/ipfs/Qm...WW](https://ipfs.io/ipfs/QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW) returns the "ABC" string.
 
-```JavaScript
-const result = await ipfs.addFromStream(<readable-stream>)
-console.log(result)
+**Importing files from the file system:**
+
+Both js-ipfs and js-ipfs-http-client export a utility to make importing files from the file system easier (Note: it not available in the browser).
+
+```js
+const IPFS = require('ipfs')
+const { globSource } = IPFS
+
+const ipfs = await IPFS.create()
+
+for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
+  console.log(file)
+}
+
+/*
+{
+  path: 'docs/assets/anchor.js',
+  cid: CID('QmVHxRocoWgUChLEvfEyDuuD6qJ4PhdDL2dTLcpUy3dSC2'),
+  size: 15347
+}
+{
+  path: 'docs/assets/bass-addons.css',
+  hash: CID('QmPiLWKd6yseMWDTgHegb8T7wVS7zWGYgyvfj7dGNt2viQ'),
+  size: 232
+}
+...
+*/
 ```
+
+**Importing a file from a URL:**
+
+Both js-ipfs and js-ipfs-http-client export a utility to make importing a file from a URL easier.
+
+```js
+const IPFS = require('ipfs')
+const { globSource } = IPFS
+
+const ipfs = await IPFS.create()
+
+for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
+  console.log(file)
+}
+
+/*
+{
+  path: 'ipfs-logo.svg',
+  cid: CID('QmTqZhR6f7jzdhLgPArDPnsbZpvvgxzCZycXK7ywkLxSyU'),
+  size: 3243
+}
+*/
+```
+
+A great source of [examples][] can be found in the tests for this API.
 
 #### `cat`
 
@@ -357,11 +218,11 @@ console.log(result)
 
 `ipfsPath` can be of type:
 
-- [`cid`][cid] of type:
-  - a [CID](https://github.com/ipfs/js-cid) instance
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
+- [`CID`][cid] of type:
+  - `string` - the base encoded version of the CID
+  - [CID](https://github.com/ipfs/js-cid) - a CID instance
+  - [Buffer][b] - the raw Buffer of the CID
+- `string` - including the ipfs handler, a CID and a path to traverse to, e.g.
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
@@ -374,85 +235,16 @@ console.log(result)
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Buffer>` | A [`Buffer`][b] with the contents of `path` |
+| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
 
 **Example:**
 
 ```JavaScript
-const file = await ipfs.cat(ipfsPath) {
-console.log(file.toString('utf8'))
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-#### `catReadableStream`
-
-> Returns a [Readable Stream][rs] containing the contents of a file addressed by a valid IPFS Path.
-
-##### `ipfs.catReadableStream(ipfsPath, [options])` -> [Readable Stream][rs]
-
-`ipfsPath` can be of type:
-
-- [`cid`][cid] of type:
-  - a [CID](https://github.com/ipfs/js-cid) instance
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-`options` is an optional object that may contain the following keys:
-  - `offset` is an optional byte offset to start the stream at
-  - `length` is an optional number of bytes to read from the stream
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [Readable Stream][rs] with the contents of the file |
-
-**Example**
-
-```JavaScript
-const stream = ipfs.catReadableStream(ipfsPath)
-// stream will be a stream containing the data of the file requested
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-#### `catPullStream`
-
-> Returns a [Pull Stream][ps] containing the contents of a file addressed by a valid IPFS Path.
-
-##### `ipfs.catPullStream(ipfsPath, [options])` -> [Pull Stream][rs]
-
-`ipfsPath` can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-`options` is an optional object that may contain the following keys:
-  - `offset` is an optional byte offset to start the stream at
-  - `length` is an optional number of bytes to read from the stream
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [Pull Stream][ps] with the contents of the file |
-
-**Example**
-
-```JavaScript
-const stream = ipfs.catPullStream(ipfsPath)
-// stream will be a stream containing the data of the file requested
-})
+const chunks = []
+for await (const chunk of ipfs.cat(ipfsPath)) {
+  chunks.push(chunk)
+}
+console.log(Buffer.concat(chunks).toString())
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -463,12 +255,13 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.get(ipfsPath)`
 
-ipfsPath can be of type:
+`ipfsPath` can be of type:
 
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
+- [`CID`][cid] of type:
+  - `string` - the base encoded version of the CID
+  - [CID](https://github.com/ipfs/js-cid) - a CID instance
+  - [Buffer][b] - the raw Buffer of the CID
+- String, including the ipfs handler, a cid and a path to traverse to, e.g.
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
@@ -477,140 +270,37 @@ ipfsPath can be of type:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects representing the files |
+| `AsyncIterable<Object>` | An async iterable that yields objects representing the files |
 
-an array of objects is returned, each of the form:
+Each yielded object is of the form:
 
 ```js
 {
-  path: '/tmp/myfile.txt',
-  content: <data as a Buffer>
+  path: string,
+  content: <AsyncIterable<BufferList>>,
+  mode: number,
+  mtime: { secs: number, nsecs: number }
 }
 ```
 
-Here, each `path` corresponds to the name of a file, and `content` is a regular Readable stream with the raw contents of that file.
+Here, each `path` corresponds to the name of a file, and `content` is an async iterable with the file contents.
 
 **Example:**
 
 ```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+const BufferList = require('bl/BufferList')
+const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-const files = await ipfs.get(validCID)
-files.forEach((file) => {
+for await (const file of ipfs.get(cid)) {
   console.log(file.path)
-  console.log(file.content.toString('utf8'))
-})
-```
 
-A great source of [examples][] can be found in the tests for this API.
-
-#### `getReadableStream`
-
-> Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
-
-##### `ipfs.getReadableStream(ipfsPath)` -> [Readable Stream][rs]
-
-ipfsPath can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
-
-the yielded objects are of the form:
-
-```js
-{
-  path: '/tmp/myfile.txt',
-  content: <Readable stream>,
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
-}
-```
-
-**Example:**
-
-```JavaScript
-const validCID = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG'
-
-const stream = ipfs.getReadableStream(validCID)
-
-stream.on('data', (file) => {
-  // write the file's path and contents to standard out
-  console.log(file.path)
-  if(file.type !== 'dir') {
-    file.content.on('data', (data) => {
-      console.log(data.toString())
-    })
-    file.content.resume()
+  const content = new BufferList()
+  for await (const chunk of file.content) {
+    content.append(chunk)
   }
-})
-```
 
-A great source of [examples][] can be found in the tests for this API.
-
-#### `getPullStream`
-
-> Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded as Readable Streams.
-
-##### `ipfs.getPullStream(ipfsPath)` -> [Pull Stream][ps]
-
-ipfsPath can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [Pull Stream][ps] that will yield objects |
-
-the yielded objects are of the form:
-
-```js
-{
-  path: '/tmp/myfile.txt',
-  content: <Pull Stream>,
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
+  console.log(content.toString())
 }
-```
-
-**Example:**
-
-```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
-
-const stream = ipfs.getReadableStream(validCID)
-
-pull(
-  stream,
-  pull.collect((err, files) => {
-    if (err) {
-      throw err
-    }
-
-    files.forEach((file) => {
-      console.log(file.path)
-      console.log(file.path.toString())
-    })
-  })
-)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -621,14 +311,13 @@ A great source of [examples][] can be found in the tests for this API.
 
 ##### `ipfs.ls(ipfsPath)`
 
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
+`ipfsPath` can be of type:
 
-ipfsPath can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
+- [`CID`][cid] of type:
+  - `string` - the base encoded version of the CID
+  - [CID](https://github.com/ipfs/js-cid) - a CID instance
+  - [Buffer][b] - the raw Buffer of the CID
+- String, including the ipfs handler, a cid and a path to traverse to, e.g.
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
   - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
   - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
@@ -637,9 +326,9 @@ ipfsPath can be of type:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects representing the files |
+| `AsyncIterable<Object>` | An async iterable that yields objects representing the files |
 
-an array of objects is returned, each of the form:
+Each yielded object is of the form:
 
 ```js
 {
@@ -647,7 +336,7 @@ an array of objects is returned, each of the form:
   name: 'alice.txt',
   path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
   size: 11696,
-  hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
+  cid: CID('QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi'),
   type: 'file',
   mode: Number,
   mtime: { secs: Number, nsecs: Number }
@@ -657,133 +346,16 @@ an array of objects is returned, each of the form:
 **Example:**
 
 ```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
+const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
-const files = await ipfs.ls(validCID)
-files.forEach((file) => {
+for await (const file of ipfs.ls(cid)) {
   console.log(file.path)
-})
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-#### `lsReadableStream`
-
-> Lists a directory from IPFS that is addressed by a valid IPFS Path. The list will be yielded as Readable Streams.
-
-##### `ipfs.lsReadableStream(ipfsPath)` -> [Readable Stream][rs]
-
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
-
-ipfsPath can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
-
-the yielded objects are of the form:
-
-```js
-{
-  depth: 1,
-  name: 'alice.txt',
-  path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
-  size: 11696,
-  hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
-  type: 'file',
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
 }
 ```
 
-**Example:**
-
-```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
-
-const stream = ipfs.lsReadableStream(validCID)
-
-stream.on('data', (file) => {
-  // write the file's path and contents to standard out
-  console.log(file.path)
-})
-```
-
 A great source of [examples][] can be found in the tests for this API.
 
-#### `lsPullStream`
-
-> Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded through a Pull Stream.
-
-##### `ipfs.lsPullStream(ipfsPath)` -> [Pull Stream][ps]
-
-> **Note:** ipfs.files.ls is currently only for MFS directories. The goal is to converge both functionalities.
-
-
-ipfsPath can be of type:
-
-- [`cid`][cid] of type:
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [Pull Stream][ps] that will yield objects |
-
-the yielded objects are of the form:
-
-```js
-{
-  depth: 1,
-  name: 'alice.txt',
-  path: 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt',
-  size: 11696,
-  hash: 'QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi',
-  type: 'file',
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
-}
-```
-
-**Example:**
-
-```JavaScript
-const validCID = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
-
-const stream = ipfs.lsPullStream(validCID)
-
-pull(
-  stream,
-  pull.collect((err, files) => {
-    if (err) {
-      throw err
-    }
-
-    files.forEach((file) => console.log(file.path))
-  })
-)
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-------------------------------------------------------------------------
-------------------------------------------------------------------------
+---
 
 ## The Files API aka MFS (The Mutable File System)
 
@@ -920,7 +492,6 @@ Where:
   - `hash` is a Boolean value to return only the hash  (default: false)
   - `size` is a Boolean value to return only the size  (default: false)
   - `withLocal` is a Boolean value to compute the amount of the dag that is local, and if possible the total size  (default: false)
-  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
 
 **Returns**
 
@@ -930,7 +501,7 @@ Where:
 
 the returned object has the following keys:
 
-- `hash` is a string with the hash
+- `cid` a [CID][cid] instance
 - `size` is an integer with the file size in Bytes
 - `cumulativeSize` is an integer with the size of the DAGNodes making up the file in Bytes
 - `type` is a string that can be either `directory` or `file`
@@ -946,7 +517,7 @@ const stats = await ipfs.files.stat('/file.txt')
 console.log(stats)
 
 // {
-//   hash: 'QmXmJBmnYqXVuicUfn9uDCC8kxCEEzQpsAbeq1iJvLAmVs',
+//   hash: CID('QmXmJBmnYqXVuicUfn9uDCC8kxCEEzQpsAbeq1iJvLAmVs'),
 //   size: 60,
 //   cumulativeSize: 118,
 //   blocks: 1,
@@ -1023,7 +594,7 @@ await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
 
 #### `files.read`
 
-> Read a file into a [`Buffer`][b].
+> Read a file
 
 ##### `ipfs.files.read(path, [options])`
 
@@ -1041,81 +612,18 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Buffer>` | A [`Buffer`][b] with the contents of `path` |
-
-N.b. this method is likely to result in high memory usage, you should use [files.readReadableStream](#filesreadreadablestream) or [files.readPullStream](#filesreadpullstream) instead where possible.
+| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
 
 **Example:**
 
 ```JavaScript
-const buf = await ipfs.files.read('/hello-world')
-console.log(buf.toString('utf8'))
+const chunks = []
 
-// Hello, World!
-```
+for await (const chunk of ipfs.files.read('/hello-world')) {
+  chunks.push(chunk)
+}
 
-#### `files.readReadableStream`
-
-> Read a file into a [`ReadableStream`][rs].
-
-##### `ipfs.files.readReadableStream(path, [options])`
-
-Where:
-
-- `path` is the path of the file to read and must point to a file (and not a directory). It might be:
-  - An existing MFS path to a file (e.g. `/my-dir/a.txt`)
-  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
-  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
-- `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin reading from  (default: 0)
-  - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [Readable Stream][rs] with the contents of `path` |
-
-**Example:**
-
-```JavaScript
-const stream = ipfs.files.readReadableStream('/hello-world')
-stream.on('data', (buf) => console.log(buf.toString('utf8')))
-
-// Hello, World!
-```
-
-#### `files.readPullStream`
-
-> Read a file into a [`PullStream`][ps].
-
-##### `ipfs.files.readPullStream(path, [options])`
-
-Where:
-
-- `path` is the path of the file to read and must point to a file (and not a directory). It might be:
-  - An existing MFS path to a file (e.g. `/my-dir/a.txt`)
-  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
-  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
-- `options` is an optional Object that might contain the following keys:
-  - `offset` is an Integer with the byte offset to begin reading from (default: 0)
-  - `length` is an Integer with the maximum number of bytes to read (default: Read to the end of stream)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [`PullStream`][ps] with the contents of `path` |
-
-**Example:**
-
-```JavaScript
-pull(
-  ipfs.files.readPullStream('/hello-world'),
-  through(buf => console.log(buf.toString('utf8'))),
-  collect(err => {})
-)
-
+console.log(Buffer.concat(chunks).toString())
 // Hello, World!
 ```
 
@@ -1130,8 +638,7 @@ Where:
 - `path` is the path of the file to write
 - `content` can be:
   - a [`Buffer`][b]
-  - a [`PullStream`][ps]
-  - a [`ReadableStream`][rs]
+  - an `AsyncIterable` (note: Node.js readable streams are iterable)
   - a [`Blob`][blob] (caveat: will only work in the browser)
   - a string path to a file (caveat: will only work in Node.js)
 - `options` is an optional Object that might contain the following keys:
@@ -1235,133 +742,35 @@ Where:
   - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
   - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
 - `options` is an optional Object that might contain the following keys:
-  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
-  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
   - `sort` is a Boolean value. If true entries will be sorted by filename (default: false)
 
 **Returns**
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects representing the files |
+| `AsyncIterable<Object>` | An async iterable that yields objects representing the files |
 
-each object contains the following keys:
+Each object contains the following keys:
 
 - `name` which is the file's name
 - `type` which is the object's type (`directory` or `file`)
 - `size` the size of the file in bytes
-- `hash` the hash of the file
+- `cid` the hash of the file (A [CID][cid] instance)
 - `mode` the UnixFS mode as a Number
 - `mtime` an objects with numeric `secs` and `nsecs` properties
 
 **Example:**
 
 ```JavaScript
-const files = await ipfs.files.ls('/screenshots')
-
-files.forEach((file) => {
-	console.log(file.name)
-})
-
+for await (const file of ipfs.files.ls('/screenshots')) {
+  console.log(file.name)
+}
 // 2018-01-22T18:08:46.775Z.png
 // 2018-01-22T18:08:49.184Z.png
 ```
 
-#### `files.lsReadableStream`
-
-> Lists a directory from the local mutable namespace that is addressed by a valid IPFS Path. The list will be yielded as Readable Streams.
-
-##### `Go` **WIP**
-
-##### `JavaScript` - ipfs.files.lsReadableStream([path], [options]) -> [Readable Stream][rs]
-
-Where:
-
-- `path` is an optional string to show listing for (default: `/`). It might be:
-  - An existing MFS path to a directory (e.g. `/my-dir`)
-  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
-  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
-- `options` is an optional Object that might contain the following keys:
-  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
-  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [Readable Stream][rs] in [Object mode](https://nodejs.org/api/stream.html#stream_object_mode) that will yield objects |
-
-the yielded objects contain the following keys:
-
-- `name` which is the file's name
-- `type` which is the object's type (`directory` or `file`)
-- `size` the size of the file in bytes
-- `hash` the hash of the file
-- `mode` the UnixFS mode as a Number
-- `mtime` an object with numeric `secs` and `nsecs` properties
-
-**Example:**
-
-```JavaScript
-const stream = ipfs.lsReadableStream('/some-dir')
-
-stream.on('data', (file) => {
-  // write the file's path and contents to standard out
-  console.log(file.name)
-})
-```
-
-#### `files.lsPullStream`
-
-> Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path. The files will be yielded through a Pull Stream.
-
-##### `Go` **WIP**
-
-##### `JavaScript` - ipfs.lsPullStream([path], [options]) -> [Pull Stream][ps]
-
-Where:
-
-- `path` is an optional string to show listing for (default: `/`). It might be:
-  - An existing MFS path to a directory (e.g. `/my-dir`)
-  - An IPFS path (e.g. `/ipfs/QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks`)
-  - A [CID][cid] instance (e.g. `new CID('QmWGeRAEgtsHW3ec7U4qW2CyVy7eA2mFRVbk1nb24jFyks')`)
-- `options` is an optional Object that might contain the following keys:
-  - `long` is a Boolean value to decide whether or not to populate `type`, `size` and `hash` (default: false)
-  - `cidBase` is which number base to use to format hashes - e.g. `base32`, `base64` etc (default: `base58btc`)
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [Pull Stream][os] that will yield objects |
-
-the yielded objects contain the following keys:
-
-  - `name` which is the file's name
-  - `type` which is the object's type (`directory` or `file`)
-  - `size` the size of the file in bytes
-  - `hash` the hash of the file
-  - `mode` the UnixFS mode as a Number
-  - `mtime` an object with numeric `secs` and `nsecs` properties
-
-**Example:**
-
-```JavaScript
-pull(
-  ipfs.lsPullStream('/some-dir'),
-  pull.through(file => {
-    console.log(file.name)
-  })
-  pull.onEnd(...)
-)
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
 [examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/files-regular
 [b]: https://www.npmjs.com/package/buffer
-[rs]: https://www.npmjs.com/package/readable-stream
-[ps]: https://www.npmjs.com/package/pull-stream
 [file]: https://developer.mozilla.org/en-US/docs/Web/API/File
 [cid]: https://www.npmjs.com/package/cids
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob

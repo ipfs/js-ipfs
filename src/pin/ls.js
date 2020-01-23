@@ -3,6 +3,7 @@
 
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,13 +23,13 @@ module.exports = (common, options) => {
       ipfs = (await common.spawn()).api
       // two files wrapped in directories, only root CID pinned recursively
       const dir = fixtures.directory.files.map((file) => ({ path: file.path, content: file.data }))
-      await ipfs.add(dir, { pin: false, cidVersion: 0 })
+      await all(ipfs.add(dir, { pin: false, cidVersion: 0 }))
       await ipfs.pin.add(fixtures.directory.cid, { recursive: true })
       // a file (CID pinned recursively)
-      await ipfs.add(fixtures.files[0].data, { pin: false, cidVersion: 0 })
+      await all(ipfs.add(fixtures.files[0].data, { pin: false, cidVersion: 0 }))
       await ipfs.pin.add(fixtures.files[0].cid, { recursive: true })
       // a single CID (pinned directly)
-      await ipfs.add(fixtures.files[1].data, { pin: false, cidVersion: 0 })
+      await all(ipfs.add(fixtures.files[1].data, { pin: false, cidVersion: 0 }))
       await ipfs.pin.add(fixtures.files[1].cid, { recursive: false })
     })
 
@@ -36,118 +37,119 @@ module.exports = (common, options) => {
 
     // 1st, because ipfs.add pins automatically
     it('should list all recursive pins', async () => {
-      const pinset = await ipfs.pin.ls({ type: 'recursive' })
+      const pinset = (await all(ipfs.pin.ls({ type: 'recursive' })))
+        .map(p => ({ ...p, cid: p.cid.toString() }))
+
       expect(pinset).to.deep.include({
         type: 'recursive',
-        hash: fixtures.files[0].cid
+        cid: fixtures.files[0].cid
       })
       expect(pinset).to.deep.include({
         type: 'recursive',
-        hash: fixtures.directory.cid
+        cid: fixtures.directory.cid
       })
     })
 
     it('should list all indirect pins', async () => {
-      const pinset = await ipfs.pin.ls({ type: 'indirect' })
+      const pinset = (await all(ipfs.pin.ls({ type: 'indirect' })))
+        .map(p => ({ ...p, cid: p.cid.toString() }))
+
       expect(pinset).to.not.deep.include({
         type: 'recursive',
-        hash: fixtures.files[0].cid
+        cid: fixtures.files[0].cid
       })
       expect(pinset).to.not.deep.include({
         type: 'direct',
-        hash: fixtures.files[1].cid
+        cid: fixtures.files[1].cid
       })
       expect(pinset).to.not.deep.include({
         type: 'recursive',
-        hash: fixtures.directory.cid
+        cid: fixtures.directory.cid
       })
       expect(pinset).to.deep.include({
         type: 'indirect',
-        hash: fixtures.directory.files[0].cid
+        cid: fixtures.directory.files[0].cid
       })
       expect(pinset).to.deep.include({
         type: 'indirect',
-        hash: fixtures.directory.files[1].cid
+        cid: fixtures.directory.files[1].cid
       })
     })
 
     it('should list all types of pins', async () => {
-      const pinset = await ipfs.pin.ls()
+      const pinset = (await all(ipfs.pin.ls()))
+        .map(p => ({ ...p, cid: p.cid.toString() }))
+
       expect(pinset).to.not.be.empty()
       // check the three "roots"
       expect(pinset).to.deep.include({
         type: 'recursive',
-        hash: fixtures.directory.cid
+        cid: fixtures.directory.cid
       })
       expect(pinset).to.deep.include({
         type: 'recursive',
-        hash: fixtures.files[0].cid
+        cid: fixtures.files[0].cid
       })
       expect(pinset).to.deep.include({
         type: 'direct',
-        hash: fixtures.files[1].cid
+        cid: fixtures.files[1].cid
       })
       expect(pinset).to.deep.include({
         type: 'indirect',
-        hash: fixtures.directory.files[0].cid
+        cid: fixtures.directory.files[0].cid
       })
       expect(pinset).to.deep.include({
         type: 'indirect',
-        hash: fixtures.directory.files[1].cid
+        cid: fixtures.directory.files[1].cid
       })
     })
 
     it('should list all direct pins', async () => {
-      const pinset = await ipfs.pin.ls({ type: 'direct' })
+      const pinset = await all(ipfs.pin.ls({ type: 'direct' }))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset).to.deep.include({
-        type: 'direct',
-        hash: fixtures.files[1].cid
-      })
+      expect(pinset[0].type).to.equal('direct')
+      expect(pinset[0].cid.toString()).to.equal(fixtures.files[1].cid)
     })
 
     it('should list pins for a specific hash', async () => {
-      const pinset = await ipfs.pin.ls(fixtures.files[0].cid)
-      expect(pinset).to.deep.equal([{
-        type: 'recursive',
-        hash: fixtures.files[0].cid
-      }])
+      const pinset = await all(ipfs.pin.ls(fixtures.files[0].cid))
+      expect(pinset).to.have.lengthOf(1)
+      expect(pinset[0].type).to.equal('recursive')
+      expect(pinset[0].cid.toString()).to.equal(fixtures.files[0].cid)
     })
 
     it('should throw an error on missing direct pins for existing path', () => {
       // ipfs.txt is an indirect pin, so lookup for direct one should throw an error
-      return expect(ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/files/ipfs.txt`, { type: 'direct' }))
+      return expect(all(ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/files/ipfs.txt`, { type: 'direct' })))
         .to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.to.have.property('message', `path '/ipfs/${fixtures.directory.cid}/files/ipfs.txt' is not pinned`)
     })
 
     it('should throw an error on missing link for a specific path', () => {
-      return expect(ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/I-DONT-EXIST.txt`, { type: 'direct' }))
+      return expect(all(ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/I-DONT-EXIST.txt`, { type: 'direct' })))
         .to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.to.have.property('message', `no link named "I-DONT-EXIST.txt" under ${fixtures.directory.cid}`)
     })
 
     it('should list indirect pins for a specific path', async () => {
-      const pinset = await ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/files/ipfs.txt`, { type: 'indirect' })
-      expect(pinset).to.deep.include({
-        type: `indirect through ${fixtures.directory.cid}`,
-        hash: fixtures.directory.files[1].cid
-      })
+      const pinset = await all(ipfs.pin.ls(`/ipfs/${fixtures.directory.cid}/files/ipfs.txt`, { type: 'indirect' }))
+      expect(pinset).to.have.lengthOf(1)
+      expect(pinset[0].type).to.equal(`indirect through ${fixtures.directory.cid}`)
+      expect(pinset[0].cid.toString()).to.equal(fixtures.directory.files[1].cid)
     })
 
     it('should list recursive pins for a specific hash', async () => {
-      const pinset = await ipfs.pin.ls(fixtures.files[0].cid, { type: 'recursive' })
-      expect(pinset).to.deep.equal([{
-        type: 'recursive',
-        hash: fixtures.files[0].cid
-      }])
+      const pinset = await all(ipfs.pin.ls(fixtures.files[0].cid, { type: 'recursive' }))
+      expect(pinset).to.have.lengthOf(1)
+      expect(pinset[0].type).to.equal('recursive')
+      expect(pinset[0].cid.toString()).to.equal(fixtures.files[0].cid)
     })
 
     it('should list pins for multiple CIDs', async () => {
-      const pinset = await ipfs.pin.ls([fixtures.files[0].cid, fixtures.files[1].cid])
-      const cids = pinset.map(({ hash }) => hash)
+      const pinset = await all(ipfs.pin.ls([fixtures.files[0].cid, fixtures.files[1].cid]))
+      const cids = pinset.map(p => p.cid.toString())
       expect(cids).to.include(fixtures.files[0].cid)
       expect(cids).to.include(fixtures.files[1].cid)
     })

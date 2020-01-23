@@ -25,7 +25,8 @@ module.exports = (common, options) => {
 
     it('should list local addresses the node is listening on', async () => {
       const multiaddrs = await ipfs.swarm.localAddrs()
-      expect(multiaddrs).to.have.length.above(0)
+      // js-ipfs in the browser will have zero
+      expect(Array.isArray(multiaddrs)).to.be.true()
     })
   })
 }

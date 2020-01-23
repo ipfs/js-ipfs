@@ -13,7 +13,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   const invalidArg = 'this/Is/So/Invalid/'
-  const validIp4 = '/ip4/104.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+  const validIp4 = '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
 
   describe('.bootstrap.rm', function () {
     this.timeout(100 * 1000)

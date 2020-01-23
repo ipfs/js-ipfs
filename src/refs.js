@@ -1,25 +1,22 @@
 /* eslint-env mocha */
 'use strict'
 
-const pMapSeries = require('p-map-series')
-const pTimeout = require('p-timeout')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
- * @param {*} suiteName
- * @param {*} ipfsRefs
  * @param {Object} options
  */
-module.exports = (common, suiteName, ipfsRefs, options) => {
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe(suiteName, function () {
-    this.timeout(40 * 1000)
+  describe('.refs', function () {
+    this.timeout(60 * 1000)
 
     let ipfs, pbRootCb, dagRootCid
 
@@ -49,28 +46,28 @@ module.exports = (common, suiteName, ipfsRefs, options) => {
         const p = (path ? path(pbRootCb) : pbRootCb)
 
         if (expectTimeout) {
-          return expect(pTimeout(ipfsRefs(ipfs)(p, params), expectTimeout)).to.eventually.be.rejected
+          return expect(all(ipfs.refs(p, params))).to.eventually.be.rejected
             .and.be.an.instanceOf(Error)
             .and.to.have.property('name')
             .to.eql('TimeoutError')
         }
 
         if (expectError) {
-          return expect(ipfsRefs(ipfs)(p, params)).to.be.eventually.rejected.and.be.an.instanceOf(Error)
+          return expect(all(ipfs.refs(p, params))).to.be.eventually.rejected.and.be.an.instanceOf(Error)
         }
 
-        const refs = await ipfsRefs(ipfs)(p, params)
+        const refs = await all(ipfs.refs(p, params))
 
         // Check there was no error and the refs match what was expected
         expect(refs.map(r => r.ref)).to.eql(expected)
       })
     }
 
-    it('dag refs test', async function () {
+    it('should get refs with cbor links', async function () {
       this.timeout(20 * 1000)
 
       // Call out to IPFS
-      const refs = await ipfsRefs(ipfs)(`/ipfs/${dagRootCid}`, { recursive: true })
+      const refs = await all(ipfs.refs(`/ipfs/${dagRootCid}`, { recursive: true }))
       // Check the refs match what was expected
       expect(refs.map(r => r.ref).sort()).to.eql([
         'QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbSC',
@@ -113,7 +110,7 @@ function getMockObjects () {
 
 function getRefsTests () {
   return {
-    'prints added files': {
+    'should print added files': {
       params: {},
       expected: [
         'QmYEJ7qQNZUvBnv4SZ3rEbksagaan3sGvnUq948vSG8Z34',
@@ -123,7 +120,7 @@ function getRefsTests () {
       ]
     },
 
-    'prints files in edges format': {
+    'should print files in edges format': {
       params: { edges: true },
       expected: [
         'Qmd5MhNjx3NSZm3L2QKG1TFvqkTRbtZwGJinqEfqpfHH7s -> QmYEJ7qQNZUvBnv4SZ3rEbksagaan3sGvnUq948vSG8Z34',
@@ -133,7 +130,7 @@ function getRefsTests () {
       ]
     },
 
-    'prints files in custom format': {
+    'should print files in custom format': {
       params: { format: '<linkname>: <src> => <dst>' },
       expected: [
         'animals: Qmd5MhNjx3NSZm3L2QKG1TFvqkTRbtZwGJinqEfqpfHH7s => QmYEJ7qQNZUvBnv4SZ3rEbksagaan3sGvnUq948vSG8Z34',
@@ -143,7 +140,7 @@ function getRefsTests () {
       ]
     },
 
-    'follows a path, <hash>/<subdir>': {
+    'should follow a path, <hash>/<subdir>': {
       path: (cid) => `/ipfs/${cid}/animals`,
       params: { format: '<linkname>' },
       expected: [
@@ -152,7 +149,7 @@ function getRefsTests () {
       ]
     },
 
-    'follows a path, <hash>/<subdir>/<subdir>': {
+    'should follow a path, <hash>/<subdir>/<subdir>': {
       path: (cid) => `/ipfs/${cid}/animals/land`,
       params: { format: '<linkname>' },
       expected: [
@@ -162,7 +159,7 @@ function getRefsTests () {
       ]
     },
 
-    'follows a path with recursion, <hash>/<subdir>': {
+    'should follow a path with recursion, <hash>/<subdir>': {
       path: (cid) => `/ipfs/${cid}/animals`,
       params: { format: '<linkname>', recursive: true },
       expected: [
@@ -176,7 +173,7 @@ function getRefsTests () {
       ]
     },
 
-    'recursively follows folders, -r': {
+    'should recursively follows folders, -r': {
       params: { format: '<linkname>', recursive: true },
       expected: [
         'animals',
@@ -194,7 +191,7 @@ function getRefsTests () {
       ]
     },
 
-    'recursive with unique option': {
+    'should get refs with recursive and unique option': {
       params: { format: '<linkname>', recursive: true, unique: true },
       expected: [
         'animals',
@@ -211,7 +208,7 @@ function getRefsTests () {
       ]
     },
 
-    'max depth of 1': {
+    'should get refs with max depth of 1': {
       params: { format: '<linkname>', recursive: true, maxDepth: 1 },
       expected: [
         'animals',
@@ -221,7 +218,7 @@ function getRefsTests () {
       ]
     },
 
-    'max depth of 2': {
+    'should get refs with max depth of 2': {
       params: { format: '<linkname>', recursive: true, maxDepth: 2 },
       expected: [
         'animals',
@@ -234,7 +231,7 @@ function getRefsTests () {
       ]
     },
 
-    'max depth of 3': {
+    'should get refs with max depth of 3': {
       params: { format: '<linkname>', recursive: true, maxDepth: 3 },
       expected: [
         'animals',
@@ -252,12 +249,12 @@ function getRefsTests () {
       ]
     },
 
-    'max depth of 0': {
+    'should get refs with max depth of 0': {
       params: { recursive: true, maxDepth: 0 },
       expected: []
     },
 
-    'follows a path with max depth 1, <hash>/<subdir>': {
+    'should follow a path with max depth 1, <hash>/<subdir>': {
       path: (cid) => `/ipfs/${cid}/animals`,
       params: { format: '<linkname>', recursive: true, maxDepth: 1 },
       expected: [
@@ -266,7 +263,7 @@ function getRefsTests () {
       ]
     },
 
-    'follows a path with max depth 2, <hash>/<subdir>': {
+    'should follow a path with max depth 2, <hash>/<subdir>': {
       path: (cid) => `/ipfs/${cid}/animals`,
       params: { format: '<linkname>', recursive: true, maxDepth: 2 },
       expected: [
@@ -280,7 +277,7 @@ function getRefsTests () {
       ]
     },
 
-    'prints refs for multiple paths': {
+    'should print refs for multiple paths': {
       path: (cid) => [`/ipfs/${cid}/animals`, `/ipfs/${cid}/fruits`],
       params: { format: '<linkname>', recursive: true },
       expected: [
@@ -295,14 +292,15 @@ function getRefsTests () {
       ]
     },
 
-    'cannot specify edges and format': {
+    'should not be able to specify edges and format': {
       params: { format: '<linkname>', edges: true },
       expectError: true
     },
 
-    'prints nothing for non-existent hashes': {
+    'should print nothing for non-existent hashes': {
       path: () => 'QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2',
-      expectTimeout: 4000
+      params: { timeout: 2000 },
+      expectTimeout: true
     }
   }
 }
@@ -322,8 +320,8 @@ function loadPbContent (ipfs, node) {
 function loadDagContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const res = await ipfs.add(data)
-      return res[0].hash
+      const res = await all(ipfs.add(data))
+      return res[0].cid
     },
     putLinks: (links) => {
       const obj = {}
@@ -352,10 +350,12 @@ async function loadContent (ipfs, store, node) {
       return 0
     })
 
-    const res = await pMapSeries(sorted, async ([name, child]) => {
-      const cid = await loadContent(ipfs, store, child)
-      return { name, cid: cid && cid.toString() }
-    })
+    const res = await all((async function * () {
+      for (const [name, child] of sorted) {
+        const cid = await loadContent(ipfs, store, child)
+        yield { name, cid: cid && cid.toString() }
+      }
+    })())
 
     return store.putLinks(res)
   }

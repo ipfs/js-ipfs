@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const bs58 = require('bs58')
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
@@ -33,29 +32,7 @@ module.exports = (common, options) => {
 
       const nodeCid = await ipfs.object.put(testObj)
 
-      let data = await ipfs.object.data(nodeCid)
-      // because js-ipfs-api can't infer
-      // if the returned Data is Buffer or String
-      if (typeof data === 'string') {
-        data = Buffer.from(data)
-      }
-      expect(testObj.Data).to.deep.equal(data)
-    })
-
-    it('should get data by base58 encoded multihash', async () => {
-      const testObj = {
-        Data: Buffer.from(hat()),
-        Links: []
-      }
-
-      const nodeCid = await ipfs.object.put(testObj)
-
-      let data = await ipfs.object.data(bs58.encode(nodeCid.buffer), { enc: 'base58' })
-      // because js-ipfs-api can't infer
-      // if the returned Data is Buffer or String
-      if (typeof data === 'string') {
-        data = Buffer.from(data)
-      }
+      const data = await ipfs.object.data(nodeCid)
       expect(testObj.Data).to.deep.equal(data)
     })
 
@@ -67,12 +44,7 @@ module.exports = (common, options) => {
 
       const nodeCid = await ipfs.object.put(testObj)
 
-      let data = await ipfs.object.data(bs58.encode(nodeCid.buffer).toString(), { enc: 'base58' })
-      // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
-      if (typeof data === 'string') {
-        data = Buffer.from(data)
-      }
+      const data = await ipfs.object.data(nodeCid.toV0().toString(), { enc: 'base58' })
       expect(testObj.Data).to.eql(data)
     })
 

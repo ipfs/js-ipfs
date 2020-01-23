@@ -5,9 +5,6 @@
 * [block.rm](#blockrm)
 * [block.stat](#blockstat)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `block.get`
 
 > Get a raw IPFS block.
@@ -114,22 +111,32 @@ A great source of [examples][] can be found in the tests for this API.
 
 `options` is an Object that can contain the following properties:
 
-- force (boolean): Ignores nonexistent blocks.
-- quiet (boolean): write minimal output
+- `force` (boolean): Ignores nonexistent blocks.
+- `quiet` (boolean): write minimal output
 
 **Returns**
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of objects containing hash and (potentially) error strings |
+| `AsyncIterable<Object>` | An async iterable that yields objects containing hash and (potentially) error strings |
 
-Note: If an error string is present for a given object in the returned array, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
+Each object yielded is of the form:
+
+```js
+{
+  hash: string,
+  error: string
+}
+```
+
+Note: If an error string is present for a given object, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
 
 **Example:**
 
 ```JavaScript
-const result = await ipfs.block.rm(cid)
-console.log(result[0].hash)
+for await (const result of ipfs.block.rm(cid)) {
+  console.log(result.hash)
+}
 ```
 
 A great source of [examples][] can be found in the tests for this API.

@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const PeerInfo = require('peer-info')
+const CID = require('cids')
+const Multiaddr = require('multiaddr')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -31,7 +32,10 @@ module.exports = (common, options) => {
       const peerInfos = await ipfsA.swarm.addrs()
       expect(peerInfos).to.not.be.empty()
       expect(peerInfos).to.be.an('array')
-      peerInfos.forEach(m => expect(PeerInfo.isPeerInfo(m)).to.be.true())
+      peerInfos.forEach(m => {
+        expect(CID.isCID(m.id)).to.be.true()
+        m.addrs.forEach(addr => expect(Multiaddr.isMultiaddr(addr)).to.be.true())
+      })
     })
   })
 }

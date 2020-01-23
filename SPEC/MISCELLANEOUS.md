@@ -5,12 +5,7 @@
 * [dns](#dns)
 * [stop](#stop)
 * [ping](#ping)
-* [pingPullStream](#pingpullstream)
-* [pingReadableStream](#pingreadablestream)
 * [resolve](#resolve)
-
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
 
 #### `id`
 
@@ -116,9 +111,9 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Array>` | An array of ping response objects |
+| `AsyncIterable<Object>` | An async iterable that yields ping response objects |
 
-an array of objects is returned, each of the form:
+Each yielded object is of the form:
 
 ```js
 {
@@ -133,109 +128,13 @@ Note that not all ping response objects are "pongs". A "pong" message can be ide
 **Example:**
 
 ```JavaScript
-const responses = await ipfs.ping('Qmhash')
-responses.forEach((res) => {
+for await (const res of ipfs.ping('Qmhash')) {
   if (res.time) {
     console.log(`Pong received: time=${res.time} ms`)
   } else {
     console.log(res.text)
   }
-})
-```
-
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/src/ping) can be found in the tests for this API.
-
-#### `pingPullStream`
-
-> Stream echo request packets to IPFS hosts
-
-##### `ipfs.pingPullStream(peerId, [options])`
-
-Where:
-
-- `peerId` (string) ID of the peer to be pinged.
-- `options` is an optional object argument that might include the following properties:
-    - `count` (integer, default 10): the number of ping messages to send
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `PullStream` | A [`PullStream`][ps] of ping response objects |
-
-example of the returned objects:
-
-```js
-{
-  success: true,
-  time: 1234,
-  text: ''
 }
-```
-
-Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
-
-**Example:**
-
-```JavaScript
-const pull = require('pull-stream')
-
-pull(
-  ipfs.pingPullStream('Qmhash'),
-  pull.drain((res) => {
-    if (res.time) {
-      console.log(`Pong received: time=${res.time} ms`)
-    } else {
-      console.log(res.text)
-    }
-  })
-)
-```
-
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/src/ping) can be found in the tests for this API.
-
-#### `pingReadableStream`
-
-> Stream echo request packets to IPFS hosts
-
-##### `ipfs.pingReadableStream(peerId, [options])`
-
-Where:
-
-- `peerId` (string) ID of the peer to be pinged.
-- `options` is an optional object argument that might include the following properties:
-    - `count` (integer, default 10): the number of ping messages to send
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `ReadableStream` | A [`ReadableStream`][rs] of ping response objects |
-
-example of the returned objects:
-
-```js
-{
-  success: true,
-  time: 1234,
-  text: ''
-}
-```
-
-Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
-
-**Example:**
-
-```JavaScript
-const stream = ipfs.pingReadableStream('Qmhash')
-
-stream.on('data', (res) => {
-  if (res.time) {
-    console.log(`Pong received: time=${res.time} ms`)
-  } else {
-    console.log(res.text)
-  }
-})
 ```
 
 A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/src/ping) can be found in the tests for this API.

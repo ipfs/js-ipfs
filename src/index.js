@@ -1,7 +1,17 @@
 'use strict'
 
-exports.filesRegular = require('./files-regular')
-exports.filesMFS = require('./files-mfs')
+const { createSuite } = require('./utils/suite')
+
+exports.root = createSuite({
+  add: require('./add'),
+  cat: require('./cat'),
+  get: require('./get'),
+  ls: require('./ls'),
+  refs: require('./refs'),
+  refsLocal: require('./refs-local')
+})
+
+exports.files = require('./files')
 
 exports.bitswap = require('./bitswap')
 exports.block = require('./block')

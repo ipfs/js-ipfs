@@ -7,9 +7,6 @@
 * [key.export](#keyexport)
 * [key.import](#keyimport)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `key.gen`
 
 > Generate a new key

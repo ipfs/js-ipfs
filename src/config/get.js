@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const isPlainObject = require('is-plain-object')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,7 +24,6 @@ module.exports = (common, options) => {
       const config = await ipfs.config.get()
 
       expect(config).to.be.an('object')
-      expect(isPlainObject(config)).to.equal(true)
     })
 
     it('should retrieve a value through a key', async () => {

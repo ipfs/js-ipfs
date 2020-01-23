@@ -10,9 +10,6 @@ _Explore the DAG API through interactive coding challenges in our ProtoSchool tu
 - _[P2P data links with content addressing](https://proto.school/#/basics/) (beginner)_
 - _[Blogging on the Decentralized Web](https://proto.school/#/blog/) (intermediate)_
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `dag.put`
 
 > Store an IPLD format node

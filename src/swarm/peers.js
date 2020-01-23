@@ -2,8 +2,9 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const PeerId = require('peer-id')
+const CID = require('cids')
 const delay = require('delay')
+const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -41,7 +42,7 @@ module.exports = (common, options) => {
       expect(peer).to.have.a.property('addr')
       expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer')
-      expect(PeerId.isPeerId(peer.peer)).to.equal(true)
+      expect(CID.isCID(peer.peer)).to.equal(true)
       expect(peer).to.not.have.a.property('latency')
 
       /* TODO: These assertions must be uncommented as soon as
@@ -98,10 +99,10 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const configA = getConfig([
+      const configA = getConfig(isNode ? [ // browser nodes cannot listen
         '/ip4/127.0.0.1/tcp/16543',
         '/ip4/127.0.0.1/tcp/16544'
-      ])
+      ] : [])
       const configB = getConfig([
         '/ip4/127.0.0.1/tcp/26545/ws',
         '/ip4/127.0.0.1/tcp/26546/ws'

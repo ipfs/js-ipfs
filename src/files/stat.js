@@ -2,7 +2,8 @@
 'use strict'
 
 const hat = require('hat')
-const { fixtures } = require('../files-regular/utils')
+const all = require('it-all')
+const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -24,7 +25,8 @@ module.exports = (common, options) => {
         args: common.opts.type === 'go' ? [] : ['--enable-sharding-experiment']
       })).api
     })
-    before(async () => { await ipfs.add(fixtures.smallFile.data) })
+
+    before(async () => { await all(ipfs.add(fixtures.smallFile.data)) })
 
     after(() => common.clean())
 
@@ -41,12 +43,13 @@ module.exports = (common, options) => {
       await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
 
       const stat = await ipfs.files.stat(`${testDir}/b`)
+      stat.cid = stat.cid.toString()
 
       expect(stat).to.include({
         type: 'file',
         blocks: 1,
         size: 13,
-        hash: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T',
+        cid: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T',
         cumulativeSize: 71,
         withLocality: false
       })
@@ -96,6 +99,7 @@ module.exports = (common, options) => {
       await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true })
 
       const stat = await ipfs.files.stat(testDir)
+      stat.cid = stat.cid.toString()
 
       expect(stat).to.include({
         type: 'directory',
@@ -185,12 +189,13 @@ module.exports = (common, options) => {
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal file', async function () {
       const stat = await ipfs.files.stat('/test/b', { withLocal: true })
+      stat.cid = stat.cid.toString()
 
       expect(stat).to.eql({
         type: 'file',
         blocks: 1,
         size: 13,
-        hash: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T',
+        cid: 'QmcZojhwragQr5qhTeFAmELik623Z21e3jBTpJXoQ9si1T',
         cumulativeSize: 71,
         withLocality: true,
         local: true,
@@ -201,12 +206,13 @@ module.exports = (common, options) => {
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal dir', async function () {
       const stat = await ipfs.files.stat('/test', { withLocal: true })
+      stat.cid = stat.cid.toString()
 
       expect(stat).to.eql({
         type: 'directory',
         blocks: 2,
         size: 0,
-        hash: 'QmVrkkNurBCeJvPRohW5JTvJG4AxGrFg7FnmsZZUS6nJto',
+        cid: 'QmVrkkNurBCeJvPRohW5JTvJG4AxGrFg7FnmsZZUS6nJto',
         cumulativeSize: 216,
         withLocality: true,
         local: true,
@@ -216,12 +222,13 @@ module.exports = (common, options) => {
 
     it('should stat outside of mfs', async () => {
       const stat = await ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid)
+      stat.cid = stat.cid.toString()
 
       expect(stat).to.include({
         type: 'file',
         blocks: 0,
         size: 12,
-        hash: fixtures.smallFile.cid,
+        cid: fixtures.smallFile.cid,
         cumulativeSize: 20,
         withLocality: false
       })

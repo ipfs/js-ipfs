@@ -2,21 +2,20 @@
 'use strict'
 
 const { fixtures } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('./utils/mocha')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
- * @param {*} suiteName
- * @param {*} ipfsRefsLocal
  * @param {Object} options
  */
-module.exports = (common, suiteName, ipfsRefsLocal, options) => {
+module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe(suiteName, function () {
-    this.timeout(40 * 1000)
+  describe('.refs.local', function () {
+    this.timeout(60 * 1000)
 
     let ipfs
 
@@ -37,9 +36,9 @@ module.exports = (common, suiteName, ipfsRefsLocal, options) => {
         content('holmes.txt')
       ]
 
-      await ipfs.add(dirs)
+      await all(ipfs.add(dirs))
 
-      const refs = await ipfsRefsLocal(ipfs)
+      const refs = await all(ipfs.refs.local())
 
       const cids = refs.map(r => r.ref)
       expect(cids).to.include('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn')

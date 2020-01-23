@@ -11,11 +11,7 @@ const tests = {
   rm: require('./rm'),
   stat: require('./stat'),
   read: require('./read'),
-  readReadableStream: require('./read-readable-stream'),
-  readPullStream: require('./read-pull-stream'),
   ls: require('./ls'),
-  lsReadableStream: require('./ls-readable-stream'),
-  lsPullStream: require('./ls-pull-stream'),
   flush: require('./flush'),
   touch: require('./touch')
 }

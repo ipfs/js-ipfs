@@ -2,7 +2,9 @@
 'use strict'
 
 const hat = require('hat')
-const { fixtures } = require('../files-regular/utils')
+const all = require('it-all')
+const concat = require('it-concat')
+const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -51,13 +53,11 @@ module.exports = (common, options) => {
     })
 
     it('should copy from outside of mfs', async () => {
-      const [{
-        hash
-      }] = await ipfs.add(fixtures.smallFile.data)
+      const [{ cid }] = await all(ipfs.add(fixtures.smallFile.data))
       const testFilePath = `/${hat()}`
-      await ipfs.files.cp(`/ipfs/${hash}`, testFilePath)
-      const testFileData = await ipfs.files.read(testFilePath)
-      expect(testFileData).to.eql(fixtures.smallFile.data)
+      await ipfs.files.cp(`/ipfs/${cid}`, testFilePath)
+      const testFileData = await concat(ipfs.files.read(testFilePath))
+      expect(testFileData.slice()).to.eql(fixtures.smallFile.data)
     })
 
     it('should respect metadata when copying files', async function () {
@@ -118,13 +118,13 @@ module.exports = (common, options) => {
       }
 
       const [{
-        hash
-      }] = await ipfs.add({
+        cid
+      }] = await all(ipfs.add({
         content: fixtures.smallFile.data,
         mode,
         mtime
-      })
-      await ipfs.files.cp(`/ipfs/${hash}`, testDestPath)
+      }))
+      await ipfs.files.cp(`/ipfs/${cid}`, testDestPath)
 
       const stats = await ipfs.files.stat(testDestPath)
       expect(stats).to.have.deep.property('mtime', expectedMtime)

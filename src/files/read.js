@@ -2,7 +2,9 @@
 'use strict'
 
 const hat = require('hat')
-const { fixtures } = require('../files-regular/utils')
+const concat = require('it-concat')
+const all = require('it-all')
+const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -38,17 +40,15 @@ module.exports = (common, options) => {
       await ipfs.files.mkdir(testDir)
       await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true })
 
-      const buf = await ipfs.files.read(`${testDir}/a`)
+      const buf = await concat(ipfs.files.read(`${testDir}/a`))
 
-      expect(buf).to.eql(Buffer.from('Hello, world!'))
+      expect(buf.slice()).to.eql(Buffer.from('Hello, world!'))
     })
 
     it('should read from outside of mfs', async () => {
-      const [{
-        hash
-      }] = await ipfs.add(fixtures.smallFile.data)
-      const testFileData = await ipfs.files.read(`/ipfs/${hash}`)
-      expect(testFileData).to.eql(fixtures.smallFile.data)
+      const [{ cid }] = await all(ipfs.add(fixtures.smallFile.data))
+      const testFileData = await concat(ipfs.files.read(`/ipfs/${cid}`))
+      expect(testFileData.slice()).to.eql(fixtures.smallFile.data)
     })
   })
 }

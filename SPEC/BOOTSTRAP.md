@@ -4,14 +4,11 @@
   the addresses of the bootstrap nodes. These are the trusted peers from
   which to learn about other peers in the network.
 
-> Only edit this list if you understand the risks of adding or removing nodes from this list.
+> Only edit this list if you understand the risks of adding or removing nodes
 
 * [bootstrap.add](#bootstrapadd)
 * [bootstrap.list](#bootstraplist)
 * [bootstrap.rm](#bootstraprm)
-
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
 
 #### `bootstrap.add`
 

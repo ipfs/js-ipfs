@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -36,7 +37,7 @@ module.exports = (common, options) => {
       const subs = await ipfs.name.pubsub.subs()
       expect(subs).to.eql([]) // initally empty
 
-      await expect(ipfs.name.resolve(id)).to.be.rejected()
+      await expect(all(ipfs.name.resolve(id))).to.be.rejected()
 
       const res = await ipfs.name.pubsub.subs()
       expect(res).to.be.an('array').that.does.include(`/ipns/${id}`)

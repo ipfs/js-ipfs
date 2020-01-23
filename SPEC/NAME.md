@@ -6,9 +6,6 @@
 * [name.pubsub.subs](#namepubsubsubs)
 * [name.resolve](#nameresolve)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `name.publish`
 
 > Publish an IPNS name with a given value.
@@ -180,7 +177,7 @@ A great source of [examples][examples-pubsub] can be found in the tests for this
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<String>` | A string that contains the IPFS hash |
+| `AsyncIterable<String>` | An async iterable that yields strings that are increasingly more accurate resolved paths. |
 
 **Example:**
 
@@ -188,9 +185,10 @@ A great source of [examples][examples-pubsub] can be found in the tests for this
 // The IPNS address you want to resolve.
 const addr = '/ipns/ipfs.io'
 
-const name = await ipfs.name.resolve(addr)
-console.log(name)
-// /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
+for await (const name of ipfs.name.resolve(addr)) {
+  console.log(name)
+  // /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
+}
 ```
 
 A great source of [examples][] can be found in the tests for this API.

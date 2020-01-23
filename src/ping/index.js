@@ -2,9 +2,7 @@
 const { createSuite } = require('../utils/suite')
 
 const tests = {
-  ping: require('./ping'),
-  pingPullStream: require('./ping-pull-stream'),
-  pingReadableStream: require('./ping-readable-stream')
+  ping: require('./ping')
 }
 
 module.exports = createSuite(tests)

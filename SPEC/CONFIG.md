@@ -6,9 +6,6 @@
 * [config.profiles.list](#configprofileslist)
 * [config.profiles.apply](#configprofilesapply)
 
-### ⚠️ Note
-Although not listed in the documentation, all the following APIs that actually return a **promise** can also accept a **final callback** parameter.
-
 #### `config.get`
 
 > Returns the currently being used config. If the daemon is off, it returns the stored config.

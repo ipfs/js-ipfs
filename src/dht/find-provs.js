@@ -1,17 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const multihashing = require('multihashing-async')
-const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-
-async function fakeCid () {
-  const bytes = Buffer.from(`TEST${Date.now()}`)
-
-  const mh = await multihashing(bytes, 'sha2-256')
-
-  return new CID(0, 'dag-pb', mh)
-}
+const all = require('it-all')
+const { fakeCid } = require('./utils')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -52,16 +44,16 @@ module.exports = (common, options) => {
       providedCid = cids[0]
 
       await Promise.all([
-        nodeB.dht.provide(providedCid),
-        nodeC.dht.provide(providedCid)
+        all(nodeB.dht.provide(providedCid)),
+        all(nodeC.dht.provide(providedCid))
       ])
     })
 
     it('should be able to find providers', async function () {
       this.timeout(20 * 1000)
 
-      const provs = await nodeA.dht.findProvs(providedCid)
-      const providerIds = provs.map((p) => p.id.toB58String())
+      const provs = await all(nodeA.dht.findProvs(providedCid, { numProviders: 2 }))
+      const providerIds = provs.map((p) => p.id.toString())
 
       expect(providerIds).to.have.members([
         nodeB.peerId.id,
@@ -76,7 +68,7 @@ module.exports = (common, options) => {
 
       const cidV0 = await fakeCid()
 
-      await expect(nodeA.dht.findProvs(cidV0, options)).to.be.rejected()
+      await expect(all(nodeA.dht.findProvs(cidV0, options))).to.be.rejected()
     })
   })
 }
