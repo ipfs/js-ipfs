@@ -206,7 +206,9 @@ exports.add = {
             filesParsed = true
 
             yield {
-              path: entry.name
+              path: entry.name,
+              mode: entry.mode,
+              mtime: entry.mtime
             }
           }
         }
@@ -233,13 +235,19 @@ exports.add = {
       },
       async function (source) {
         for await (const file of source) {
-          output.write(JSON.stringify({
+          const entry = {
             Name: file.path,
             Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
             Size: file.size,
-            Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
-            Mtime: file.mtime
-          }) + '\n')
+            Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
+          }
+
+          if (file.mtime) {
+            entry.Mtime = file.mtime.secs
+            entry.MtimeNsecs = file.mtime.nsecs
+          }
+
+          output.write(JSON.stringify(entry) + '\n')
         }
       }
     )
