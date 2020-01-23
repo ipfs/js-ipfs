@@ -1,40 +1,197 @@
 'use strict'
 
-const callbackify = require('callbackify')
+const defer = require('p-defer')
+const { NotStartedError, AlreadyInitializedError } = require('../errors')
+const Components = require('./')
 
-module.exports = (self) => {
-  return callbackify(async () => {
-    self.log('stop')
+module.exports = ({
+  apiManager,
+  options: constructorOptions,
+  bitswap,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  ipns,
+  keychain,
+  libp2p,
+  mfsPreload,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) => async function stop () {
+  const stopPromise = defer()
+  const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
 
-    if (self.state.state() === 'stopped') {
-      throw new Error('Already stopped')
-    }
+  try {
+    blockService.unsetExchange()
+    bitswap.stop()
+    preload.stop()
 
-    if (self.state.state() !== 'running') {
-      throw new Error('Not able to stop from state: ' + self.state.state())
-    }
+    await Promise.all([
+      ipns.republisher.stop(),
+      mfsPreload.stop(),
+      libp2p.stop(),
+      repo.close()
+    ])
 
-    self.state.stop()
-    self._blockService.unsetExchange()
-    self._bitswap.stop()
-    self._preload.stop()
+    // Clear our addresses so we can start clean
+    peerInfo.multiaddrs.clear()
 
-    const libp2p = self.libp2p
-    self.libp2p = null
+    const api = createApi({
+      apiManager,
+      constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
 
-    try {
-      await Promise.all([
-        self._ipns.republisher.stop(),
-        self._mfsPreload.stop(),
-        libp2p.stop(),
-        self._repo.close()
-      ])
+    apiManager.update(api, () => { throw new NotStartedError() })
+  } catch (err) {
+    cancel()
+    stopPromise.reject(err)
+    throw err
+  }
 
-      self.state.stopped()
-      self.emit('stop')
-    } catch (err) {
-      self.emit('error', err)
-      throw err
-    }
-  })
+  stopPromise.resolve(apiManager.api)
+  return apiManager.api
+}
+
+function createApi ({
+  apiManager,
+  constructorOptions,
+  blockService,
+  gcLock,
+  initOptions,
+  ipld,
+  keychain,
+  peerInfo,
+  pinManager,
+  preload,
+  print,
+  repo
+}) {
+  const dag = {
+    get: Components.dag.get({ ipld, preload }),
+    resolve: Components.dag.resolve({ ipld, preload }),
+    tree: Components.dag.tree({ ipld, preload })
+  }
+  const object = {
+    data: Components.object.data({ ipld, preload }),
+    get: Components.object.get({ ipld, preload }),
+    links: Components.object.links({ dag }),
+    new: Components.object.new({ ipld, preload }),
+    patch: {
+      addLink: Components.object.patch.addLink({ ipld, gcLock, preload }),
+      appendData: Components.object.patch.appendData({ ipld, gcLock, preload }),
+      rmLink: Components.object.patch.rmLink({ ipld, gcLock, preload }),
+      setData: Components.object.patch.setData({ ipld, gcLock, preload })
+    },
+    put: Components.object.put({ ipld, gcLock, preload }),
+    stat: Components.object.stat({ ipld, preload })
+  }
+  const pin = {
+    add: Components.pin.add({ pinManager, gcLock, dag }),
+    ls: Components.pin.ls({ pinManager, dag }),
+    rm: Components.pin.rm({ pinManager, gcLock, dag })
+  }
+  // FIXME: resolve this circular dependency
+  dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+  const add = Components.add({ ipld, preload, pin, gcLock, options: constructorOptions })
+  const resolve = Components.resolve({ ipld })
+  const refs = Components.refs({ ipld, resolve, preload })
+  refs.local = Components.refs.local({ repo })
+
+  const notStarted = async () => { // eslint-disable-line require-await
+    throw new NotStartedError()
+  }
+
+  const api = {
+    add,
+    bitswap: {
+      stat: notStarted,
+      unwant: notStarted,
+      wantlist: notStarted
+    },
+    block: {
+      get: Components.block.get({ blockService, preload }),
+      put: Components.block.put({ blockService, gcLock, preload }),
+      rm: Components.block.rm({ blockService, gcLock, pinManager }),
+      stat: Components.block.stat({ blockService, preload })
+    },
+    bootstrap: {
+      add: Components.bootstrap.add({ repo }),
+      list: Components.bootstrap.list({ repo }),
+      rm: Components.bootstrap.rm({ repo })
+    },
+    cat: Components.cat({ ipld, preload }),
+    config: Components.config({ repo }),
+    dag,
+    dns: Components.dns(),
+    files: Components.files({ ipld, blockService, repo, preload, options: constructorOptions }),
+    get: Components.get({ ipld, preload }),
+    id: Components.id({ peerInfo }),
+    init: async () => { // eslint-disable-line require-await
+      throw new AlreadyInitializedError()
+    },
+    isOnline: Components.isOnline({}),
+    key: {
+      export: Components.key.export({ keychain }),
+      gen: Components.key.gen({ keychain }),
+      import: Components.key.import({ keychain }),
+      info: Components.key.info({ keychain }),
+      list: Components.key.list({ keychain }),
+      rename: Components.key.rename({ keychain }),
+      rm: Components.key.rm({ keychain })
+    },
+    ls: Components.ls({ ipld, preload }),
+    object,
+    pin,
+    refs,
+    repo: {
+      gc: Components.repo.gc({ gcLock, pin, pinManager, refs, repo }),
+      stat: Components.repo.stat({ repo }),
+      version: Components.repo.version({ repo })
+    },
+    resolve,
+    start: Components.start({
+      apiManager,
+      options: constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    }),
+    stats: {
+      bitswap: notStarted,
+      bw: notStarted,
+      repo: Components.repo.stat({ repo })
+    },
+    stop: () => apiManager.api,
+    swarm: {
+      addrs: notStarted,
+      connect: notStarted,
+      disconnect: notStarted,
+      localAddrs: Components.swarm.localAddrs({ peerInfo }),
+      peers: notStarted
+    },
+    version: Components.version({ repo })
+  }
+
+  return api
 }

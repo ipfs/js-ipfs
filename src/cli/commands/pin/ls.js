@@ -1,6 +1,7 @@
 'use strict'
 
 const multibase = require('multibase')
+const all = require('it-all')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -27,21 +28,36 @@ module.exports = {
       describe: 'Number base to display CIDs in.',
       type: 'string',
       choices: multibase.names
+    },
+    stream: {
+      type: 'boolean',
+      alias: 's',
+      default: false,
+      describe: 'Enable streaming of pins as they are discovered.'
     }
   },
 
-  handler: ({ getIpfs, print, ipfsPath, type, quiet, cidBase, resolve }) => {
+  handler: ({ getIpfs, print, ipfsPath, type, quiet, cidBase, stream, resolve }) => {
     resolve((async () => {
       const paths = ipfsPath
       const ipfs = await getIpfs()
-      const results = await ipfs.pin.ls(paths, { type })
-      results.forEach((res) => {
-        let line = cidToString(res.hash, { base: cidBase })
+
+      const printPin = res => {
+        let line = cidToString(res.cid, { base: cidBase })
         if (!quiet) {
           line += ` ${res.type}`
         }
         print(line)
-      })
+      }
+
+      if (!stream) {
+        const pins = await all(ipfs.pin.ls(paths, { type, stream: false }))
+        return pins.forEach(printPin)
+      }
+
+      for await (const res of ipfs.pin.ls(paths, { type })) {
+        printPin(res)
+      }
     })())
   }
 }

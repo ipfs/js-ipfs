@@ -22,12 +22,9 @@ describe('bitswap', () => runOn((thing) => {
     ipfs('block get ' + key1).catch(() => {})
   })
 
-  before(function (done) {
-    PeerId.create({ bits: 512 }, (err, peer) => {
-      expect(err).to.not.exist()
-      peerId = peer.toB58String()
-      done()
-    })
+  before(async function () {
+    const peer = await PeerId.create({ bits: 512 })
+    peerId = peer.toB58String()
   })
 
   before(async () => {

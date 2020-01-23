@@ -28,7 +28,7 @@ describe('id', () => {
 
     sinon
       .stub(cliUtils, 'getIPFS')
-      .callsArgWith(1, null, { id: fakeId })
+      .returns(Promise.resolve({ id: fakeId }))
 
     // TODO: the lines below shouldn't be necessary, cli needs refactor to simplify testability
     // Force the next require to not use require cache

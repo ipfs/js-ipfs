@@ -1,25 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-const { Buffer } = require('buffer')
-const { cidToString } = require('../../../utils/cid')
-
-const normalizePath = (path) => {
-  if (Buffer.isBuffer(path)) {
-    return new CID(path).toString()
-  }
-  if (CID.isCID(path)) {
-    return path.toString()
-  }
-  if (path.indexOf('/ipfs/') === 0) {
-    path = path.substring('/ipfs/'.length)
-  }
-  if (path.charAt(path.length - 1) === '/') {
-    path = path.substring(0, path.length - 1)
-  }
-  return path
-}
-
 /**
  * Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine
  *
@@ -98,39 +78,8 @@ const parseChunkSize = (str, name) => {
   return size
 }
 
-const mapFile = (file, options) => {
-  options = options || {}
-
-  const output = {
-    hash: cidToString(file.cid, { base: options.cidBase }),
-    path: file.path,
-    name: file.name,
-    depth: file.path.split('/').length,
-    size: 0,
-    type: 'dir'
-  }
-
-  if (file.unixfs) {
-    if (file.unixfs.type === 'file') {
-      output.size = file.unixfs.fileSize()
-      output.type = 'file'
-
-      if (options.includeContent) {
-        output.content = file.content
-      }
-    }
-
-    output.mode = file.unixfs.mode
-    output.mtime = file.unixfs.mtime
-  }
-
-  return output
-}
-
 module.exports = {
-  normalizePath,
   parseChunkSize,
   parseRabinString,
-  parseChunkerString,
-  mapFile
+  parseChunkerString
 }

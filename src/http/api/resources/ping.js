@@ -1,9 +1,10 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const pull = require('pull-stream')
-const ndjson = require('pull-ndjson')
-const { PassThrough } = require('readable-stream')
+const pipe = require('it-pipe')
+const { map } = require('streaming-iterables')
+const ndjson = require('iterable-ndjson')
+const streamResponse = require('../../utils/stream-response')
 
 module.exports = {
   validate: {
@@ -18,36 +19,17 @@ module.exports = {
       arg: Joi.string().required()
     }).unknown()
   },
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const peerId = request.query.arg
 
     // Default count to 10
     const count = request.query.n || request.query.count || 10
 
-    const responseStream = await new Promise((resolve, reject) => {
-      const stream = new PassThrough()
-
-      pull(
-        ipfs.pingPullStream(peerId, { count }),
-        pull.map((chunk) => ({
-          Success: chunk.success,
-          Time: chunk.time,
-          Text: chunk.text
-        })),
-        ndjson.serialize(),
-        pull.drain(chunk => {
-          stream.write(chunk)
-        }, err => {
-          if (err) return reject(err)
-          resolve(stream)
-          stream.end()
-        })
-      )
-    })
-
-    return h.response(responseStream)
-      .type('application/json')
-      .header('X-Chunked-Output', '1')
+    return streamResponse(request, h, () => pipe(
+      ipfs.ping(peerId, { count }),
+      map(pong => ({ Success: pong.success, Time: pong.time, Text: pong.text })),
+      ndjson.stringify
+    ))
   }
 }

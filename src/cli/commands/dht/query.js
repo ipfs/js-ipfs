@@ -1,20 +1,18 @@
 'use strict'
 
 module.exports = {
-  command: 'query <peerID>',
+  command: 'query <peerId>',
 
   describe: 'Find the closest Peer IDs to a given Peer ID by querying the DHT.',
 
   builder: {},
 
-  handler ({ getIpfs, print, peerID, resolve }) {
+  handler ({ getIpfs, print, peerId, resolve }) {
     resolve((async () => {
       const ipfs = await getIpfs()
-      const result = await ipfs.dht.query(peerID)
-
-      result.forEach((peerID) => {
-        print(peerID.id.toB58String())
-      })
+      for await (const result of ipfs.dht.query(peerId)) {
+        print(result.id.toString())
+      }
     })())
   }
 }

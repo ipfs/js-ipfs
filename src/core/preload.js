@@ -10,8 +10,8 @@ const preload = require('./runtime/preload-nodejs')
 const log = debug('ipfs:preload')
 log.error = debug('ipfs:preload:error')
 
-module.exports = self => {
-  const options = self._options.preload || {}
+module.exports = options => {
+  options = options || {}
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 

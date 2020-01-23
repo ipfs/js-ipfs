@@ -3,15 +3,11 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const series = require('async/series')
 const sinon = require('sinon')
-const waterfall = require('async/waterfall')
-const parallel = require('async/parallel')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
-
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
 
 // This gets replaced by `create-repo-browser.js` in the browser
@@ -24,12 +20,12 @@ describe('create node', function () {
     tempRepo = createTempRepo()
   })
 
-  afterEach((done) => tempRepo.teardown(done))
+  afterEach(() => tempRepo.teardown())
 
-  it('custom repoPath', function (done) {
+  it('should create a node with a custom repo path', async function () {
     this.timeout(80 * 1000)
 
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: path.join(os.tmpdir(), 'ipfs-repo-' + hat()),
       init: { bits: 512 },
       config: {
@@ -40,23 +36,15 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-
-      node.config.get((err, config) => {
-        expect(err).to.not.exist()
-
-        expect(config.Identity).to.exist()
-        node.once('stop', done)
-        node.stop()
-      })
-    })
+    const config = await node.config.get()
+    expect(config.Identity).to.exist()
+    await node.stop()
   })
 
-  it('custom repo', function (done) {
+  it('should create a node with a custom repo', async function () {
     this.timeout(80 * 1000)
 
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: { bits: 512 },
       config: {
@@ -67,48 +55,13 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      node.config.get((err, config) => {
-        expect(err).to.not.exist()
-
-        expect(config.Identity).to.exist()
-        node.once('stop', done)
-        node.stop()
-      })
-    })
+    const config = await node.config.get()
+    expect(config.Identity).to.exist()
+    await node.stop()
   })
 
-  it('IPFS.createNode', function (done) {
-    this.timeout(80 * 1000)
-
-    const node = IPFS.createNode({
-      repo: tempRepo,
-      init: { bits: 512 },
-      config: {
-        Addresses: {
-          Swarm: []
-        }
-      }
-    })
-
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      node.config.get((err, config) => {
-        expect(err).to.not.exist()
-
-        expect(config.Identity).to.exist()
-        // note: key length doesn't map to buffer length
-        expect(config.Identity.PrivKey.length).is.below(2048)
-
-        node.once('stop', done)
-        node.stop()
-      })
-    })
-  })
-
-  it('should resolve ready promise when initialized not started', async () => {
-    const ipfs = new IPFS({
+  it('should create and initialize but not start', async () => {
+    const ipfs = await IPFS.create({
       init: { bits: 512 },
       start: false,
       repo: tempRepo,
@@ -116,12 +69,10 @@ describe('create node', function () {
     })
 
     expect(ipfs.isOnline()).to.be.false()
-    await ipfs.ready
-    expect(ipfs.isOnline()).to.be.false()
   })
 
-  it('should resolve ready promise when not initialized and not started', async () => {
-    const ipfs = new IPFS({
+  it('should create but not initialize and not start', async () => {
+    const ipfs = await IPFS.create({
       init: false,
       start: false,
       repo: tempRepo,
@@ -129,73 +80,20 @@ describe('create node', function () {
     })
 
     expect(ipfs.isOnline()).to.be.false()
-    await ipfs.ready
-    expect(ipfs.isOnline()).to.be.false()
   })
 
-  it('should resolve ready promise when initialized and started', async () => {
-    const ipfs = new IPFS({
-      init: { bits: 512 },
-      start: true,
-      repo: tempRepo,
-      config: { Addresses: { Swarm: [] } }
-    })
-
-    expect(ipfs.isOnline()).to.be.false()
-    await ipfs.ready
-    expect(ipfs.isOnline()).to.be.true()
-    await ipfs.stop()
-  })
-
-  it('should resolve ready promise when already ready', async () => {
-    const ipfs = new IPFS({
-      repo: tempRepo,
-      init: { bits: 512 },
-      config: { Addresses: { Swarm: [] } }
-    })
-
-    expect(ipfs.isOnline()).to.be.false()
-    await ipfs.ready
-    expect(ipfs.isOnline()).to.be.true()
-    await ipfs.ready
-    expect(ipfs.isOnline()).to.be.true()
-    await ipfs.stop()
-  })
-
-  it('should reject ready promise on boot error', async () => {
-    const ipfs = new IPFS({
+  it('should throw on boot error', () => {
+    return expect(IPFS.create({
       repo: tempRepo,
       init: { bits: 256 }, // Too few bits will cause error on boot
       config: { Addresses: { Swarm: [] } }
-    })
-
-    expect(ipfs.isOnline()).to.be.false()
-
-    await expect(ipfs.ready)
-      .to.eventually.be.rejected()
-
-    expect(ipfs.isOnline()).to.be.false()
-
-    // After the error has occurred, it should still reject
-    await expect(ipfs.ready)
-      .to.eventually.be.rejected()
+    })).to.eventually.be.rejected()
   })
 
-  it('should create a ready node with IPFS.create', async () => {
-    const ipfs = await IPFS.create({
-      repo: tempRepo,
-      init: { bits: 512 },
-      config: { Addresses: { Swarm: [] } }
-    })
-
-    expect(ipfs.isOnline()).to.be.true()
-    await ipfs.stop()
-  })
-
-  it('init: { bits: 1024 }', function (done) {
+  it('should init with 1024 key bits', async function () {
     this.timeout(80 * 1000)
 
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: {
         bits: 1024
@@ -208,45 +106,21 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      node.config.get((err, config) => {
-        expect(err).to.not.exist()
-        expect(config.Identity).to.exist()
-        expect(config.Identity.PrivKey.length).is.below(1024)
-        node.once('stop', done)
-        node.stop()
-      })
-    })
+    const config = await node.config.get()
+    expect(config.Identity).to.exist()
+    expect(config.Identity.PrivKey.length).is.below(1024)
+    await node.stop()
   })
 
-  it('should be silent', function (done) {
+  it('should be silent', async function () {
     this.timeout(30 * 1000)
 
     sinon.spy(console, 'log')
 
-    const ipfs = new IPFS({
+    const ipfs = await IPFS.create({
       silent: true,
       repo: tempRepo,
       init: { bits: 512 },
-      preload: { enabled: false }
-    })
-
-    ipfs.on('ready', () => {
-      // eslint-disable-next-line no-console
-      expect(console.log.called).to.be.false()
-      // eslint-disable-next-line no-console
-      console.log.restore()
-      ipfs.stop(done)
-    })
-  })
-
-  it('init: false errors (start default: true) and errors only once', function (done) {
-    this.timeout(80 * 1000)
-
-    const node = new IPFS({
-      repo: tempRepo,
-      init: false,
       config: {
         Addresses: {
           Swarm: []
@@ -255,105 +129,18 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const shouldHappenOnce = () => {
-      let timeoutId = null
-
-      return (err) => {
-        expect(err).to.exist()
-
-        // Bad news, this handler has been executed before
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-          return done(new Error('error handler called multiple times'))
-        }
-
-        timeoutId = setTimeout(done, 100)
-      }
-    }
-
-    node.on('error', shouldHappenOnce())
+    // eslint-disable-next-line no-console
+    expect(console.log.called).to.be.false()
+    // eslint-disable-next-line no-console
+    console.log.restore()
+    await ipfs.stop()
   })
 
-  it('init: false, start: false', function (done) {
+  it('should allow configuration of swarm and bootstrap addresses', async function () {
     this.timeout(80 * 1000)
+    if (!isNode) return this.skip()
 
-    const node = new IPFS({
-      repo: tempRepo,
-      init: false,
-      start: false,
-      config: {
-        Addresses: {
-          Swarm: []
-        }
-      },
-      preload: { enabled: false }
-    })
-
-    let happened = false
-
-    function shouldNotHappen () {
-      happened = true
-    }
-
-    node.once('error', shouldNotHappen)
-    node.once('start', shouldNotHappen)
-    node.once('stop', shouldNotHappen)
-
-    setTimeout(() => {
-      expect(happened).to.equal(false)
-      done()
-    }, 250)
-  })
-
-  it('init: true, start: false', function (done) {
-    this.timeout(80 * 1000)
-
-    const node = new IPFS({
-      repo: tempRepo,
-      init: { bits: 512 },
-      start: false,
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
-      preload: { enabled: false }
-    })
-
-    node.once('error', done)
-    node.once('stop', done)
-    node.once('start', () => node.stop())
-
-    node.once('ready', () => node.start())
-  })
-
-  it('init: true, start: false, use callback', function (done) {
-    this.timeout(80 * 1000)
-
-    const node = new IPFS({
-      repo: tempRepo,
-      init: { bits: 512 },
-      start: false,
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
-      preload: { enabled: false }
-    })
-
-    node.once('error', done)
-    node.once('ready', () => node.start(() => node.stop(done)))
-  })
-
-  it('overload config', function (done) {
-    this.timeout(80 * 1000)
-
-    if (!isNode) { return done() }
-
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: { bits: 512 },
       config: {
@@ -365,25 +152,17 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      node.config.get((err, config) => {
-        expect(err).to.not.exist()
-
-        expect(config.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/9977'])
-        expect(config.Bootstrap).to.eql([])
-
-        node.stop(done)
-      })
-    })
+    const config = await node.config.get()
+    expect(config.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/9977'])
+    expect(config.Bootstrap).to.eql([])
+    await node.stop()
   })
 
-  it('disable pubsub', function (done) {
+  it('should allow pubsub to be disabled', async function () {
     this.timeout(80 * 1000)
+    if (!isNode) return this.skip()
 
-    if (!isNode) { return done() }
-
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: { bits: 512 },
       config: {
@@ -393,20 +172,17 @@ describe('create node', function () {
       }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      node.pubsub.peers('topic', (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_PUBSUB_DISABLED')
-        node.stop(done)
-      })
-    })
+    await expect(node.pubsub.peers('topic'))
+      .to.eventually.be.rejected()
+      .with.a.property('code').that.equals('ERR_NOT_ENABLED')
+
+    await node.stop()
   })
 
-  it('start and stop, start and stop', function (done) {
+  it('should start and stop, start and stop', async function () {
     this.timeout(80 * 1000)
 
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: { bits: 512 },
       config: {
@@ -418,81 +194,27 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    series([
-      (cb) => node.once('start', cb),
-      (cb) => node.stop(cb),
-      (cb) => node.start(cb),
-      (cb) => node.stop(cb)
-    ], done)
+    await node.stop()
+    await node.start()
+    await node.stop()
   })
 
-  it('stop as promised', function (done) {
-    this.timeout(80 * 1000)
-
-    const node = new IPFS({
-      repo: tempRepo,
-      init: { bits: 512 },
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
-      preload: { enabled: false }
-    })
-
-    node.once('ready', () => {
-      node.stop()
-        .then(done)
-        .catch(done)
-    })
-  })
-
-  it('can start node twice without crash', function (done) {
-    this.timeout(80 * 1000)
-
-    const options = {
-      repo: tempRepo,
-      init: { bits: 512 },
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
-      preload: { enabled: false }
-    }
-
-    let node = new IPFS(options)
-
-    series([
-      (cb) => node.once('start', cb),
-      (cb) => node.stop(cb),
-      (cb) => {
-        node = new IPFS(options)
-        node.once('error', cb)
-        node.once('start', cb)
-      },
-      (cb) => node.stop(cb)
-    ], done)
-  })
-
-  it('does not share identity with a simultaneously created node', function (done) {
+  it('should not share identity with a simultaneously created node', async function () {
     this.timeout(2 * 60 * 1000)
 
     let _nodeNumber = 0
     function createNode (repo) {
       _nodeNumber++
-      return new IPFS({
+      return IPFS.create({
         repo,
         init: { bits: 512, emptyRepo: true },
         config: {
           Addresses: {
             API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
             Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
-            Swarm: [
+            Swarm: isNode ? [
               `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`
-            ]
+            ] : []
           },
           Bootstrap: []
         },
@@ -500,59 +222,32 @@ describe('create node', function () {
       })
     }
 
-    let repoA
-    let repoB
-    let nodeA
-    let nodeB
+    const repoA = createTempRepo()
+    const repoB = createTempRepo()
+    const [nodeA, nodeB] = await Promise.all([createNode(repoA), createNode(repoB)])
+    const [idA, idB] = await Promise.all([nodeA.id(), nodeB.id()])
 
-    waterfall([
-      (cb) => {
-        repoA = createTempRepo()
-        repoB = createTempRepo()
-        nodeA = createNode(repoA)
-        nodeB = createNode(repoB)
-        cb()
-      },
-      (cb) => parallel([
-        (cb) => nodeA.once('start', cb),
-        (cb) => nodeB.once('start', cb)
-      ], cb),
-      (_, cb) => parallel([
-        (cb) => nodeA.id(cb),
-        (cb) => nodeB.id(cb)
-      ], cb),
-      ([idA, idB], cb) => {
-        expect(idA.id).to.not.equal(idB.id)
-        cb()
-      }
-    ], (error) => {
-      parallel([
-        (cb) => nodeA.stop(cb),
-        (cb) => nodeB.stop(cb)
-      ], (stopError) => {
-        parallel([
-          (cb) => repoA.teardown(cb),
-          (cb) => repoB.teardown(cb)
-        ], (teardownError) => {
-          done(error || stopError || teardownError)
-        })
-      })
-    })
+    expect(idA.id).to.not.equal(idB.id)
+
+    await Promise.all([nodeA.stop(), nodeB.stop()])
+    await Promise.all([repoA.teardown(), repoB.teardown()])
   })
 
-  it('ipld: { }', function (done) {
+  it('should not error with empty IPLD config', async function () {
     this.timeout(80 * 1000)
 
-    const node = new IPFS({
+    const node = await IPFS.create({
       repo: tempRepo,
       init: { bits: 512 },
+      config: {
+        Addresses: {
+          Swarm: []
+        }
+      },
       ipld: {},
       preload: { enabled: false }
     })
 
-    node.once('start', (err) => {
-      expect(err).to.not.exist()
-      done()
-    })
+    await node.stop()
   })
 })

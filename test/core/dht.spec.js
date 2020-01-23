@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
 
 const factory = require('../utils/factory')
 

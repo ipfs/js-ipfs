@@ -1,79 +1,34 @@
 'use strict'
 
-const callbackify = require('callbackify')
-const OFFLINE_ERROR = require('../utils').OFFLINE_ERROR
+const CID = require('cids')
 
-module.exports = function swarm (self) {
-  return {
-    peers: callbackify.variadic(async (opts) => { // eslint-disable-line require-await
-      opts = opts || {}
+module.exports = ({ libp2p }) => {
+  return async function peers (options) { // eslint-disable-line require-await
+    options = options || {}
 
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
-      }
+    const verbose = options.v || options.verbose
+    const peers = []
 
-      const verbose = opts.v || opts.verbose
-      // TODO: return latency and streams when verbose is set
-      // we currently don't have this information
-
-      const peers = []
-
-      Object.values(self._peerInfoBook.getAll()).forEach((peer) => {
-        const connectedAddr = peer.isConnected()
-
-        if (!connectedAddr) { return }
-
+    for (const [peerId, connections] of libp2p.connections) {
+      for (const connection of connections) {
         const tupple = {
-          addr: connectedAddr,
-          peer: peer.id
+          addr: connection.remoteAddr,
+          peer: new CID(peerId)
         }
+
+        if (verbose || options.direction) {
+          tupple.direction = connection.stat.direction
+        }
+
         if (verbose) {
+          tupple.muxer = connection.stat.multiplexer
           tupple.latency = 'n/a'
         }
 
         peers.push(tupple)
-      })
-
-      return peers
-    }),
-
-    // all the addrs we know
-    addrs: callbackify(async () => { // eslint-disable-line require-await
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
       }
+    }
 
-      const peers = Object.values(self._peerInfoBook.getAll())
-
-      return peers
-    }),
-
-    localAddrs: callbackify(async () => { // eslint-disable-line require-await
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
-      }
-
-      return self.libp2p.peerInfo.multiaddrs.toArray()
-    }),
-
-    connect: callbackify(async (maddr) => { // eslint-disable-line require-await
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
-      }
-
-      return self.libp2p.dial(maddr)
-    }),
-
-    disconnect: callbackify(async (maddr) => { // eslint-disable-line require-await
-      if (!self.isOnline()) {
-        throw new Error(OFFLINE_ERROR)
-      }
-
-      return self.libp2p.hangUp(maddr)
-    }),
-
-    filters: callbackify(async () => { // eslint-disable-line require-await
-      throw new Error('Not implemented')
-    })
+    return peers
   }
 }

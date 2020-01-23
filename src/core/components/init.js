@@ -1,164 +1,388 @@
 'use strict'
 
-const peerId = require('peer-id')
+const log = require('debug')('ipfs:components:init')
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
 const mergeOptions = require('merge-options')
-const callbackify = require('callbackify')
-const promisify = require('promisify-es6')
-const defaultConfig = require('../runtime/config-nodejs.js')
+const getDefaultConfig = require('../runtime/config-nodejs.js')
+const createRepo = require('../runtime/repo-nodejs')
 const Keychain = require('libp2p-keychain')
-const {
-  DAGNode
-} = require('ipld-dag-pb')
+const NoKeychain = require('./no-keychain')
+const mortice = require('mortice')
+const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
-
+const {
+  AlreadyInitializingError,
+  AlreadyInitializedError,
+  NotStartedError,
+  NotEnabledError
+} = require('../errors')
+const BlockService = require('ipfs-block-service')
+const Ipld = require('ipld')
+const getDefaultIpldOptions = require('../runtime/ipld-nodejs')
+const createPreloader = require('../preload')
+const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
+const initAssets = require('../runtime/init-assets-nodejs')
+const PinManager = require('./pin/pin-manager')
+const Components = require('./')
 
-const addDefaultAssets = require('./init-assets')
-const { profiles } = require('./config')
+module.exports = ({
+  apiManager,
+  print,
+  options: constructorOptions
+}) => async function init (options) {
+  const { cancel } = apiManager.update({ init: () => { throw new AlreadyInitializingError() } })
 
-function createPeerId (self, opts) {
-  if (opts.privateKey) {
-    self.log('using user-supplied private-key')
-    if (typeof opts.privateKey === 'object') {
-      return opts.privateKey
-    } else {
-      return promisify(peerId.createFromPrivKey)(Buffer.from(opts.privateKey, 'base64'))
+  try {
+    options = options || {}
+
+    if (typeof constructorOptions.init === 'object') {
+      options = mergeOptions(constructorOptions.init, options)
     }
-  } else {
-    // Generate peer identity keypair + transform to desired format + add to config.
-    opts.log(`generating ${opts.bits}-bit RSA keypair...`, false)
-    self.log('generating peer id: %s bits', opts.bits)
 
-    return promisify(peerId.create)({ bits: opts.bits })
+    options.pass = options.pass || constructorOptions.pass
+
+    if (constructorOptions.config) {
+      options.config = mergeOptions(options.config, constructorOptions.config)
+    }
+
+    options.repo = options.repo || constructorOptions.repo
+    options.repoAutoMigrate = options.repoAutoMigrate || constructorOptions.repoAutoMigrate
+
+    const repo = typeof options.repo === 'string' || options.repo == null
+      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate })
+      : options.repo
+
+    let isInitialized = true
+
+    if (repo.closed) {
+      try {
+        await repo.open()
+      } catch (err) {
+        if (err.code === ERR_REPO_NOT_INITIALIZED) {
+          isInitialized = false
+        } else {
+          throw err
+        }
+      }
+    }
+
+    if (!isInitialized && options.allowNew === false) {
+      throw new NotEnabledError('new repo initialization is not enabled')
+    }
+
+    const { peerId, keychain } = isInitialized
+      ? await initExistingRepo(repo, options)
+      : await initNewRepo(repo, { ...options, print })
+
+    log('peer created')
+    const peerInfo = new PeerInfo(peerId)
+    const blockService = new BlockService(repo)
+    const ipld = new Ipld(getDefaultIpldOptions(blockService, constructorOptions.ipld, log))
+
+    const preload = createPreloader(constructorOptions.preload)
+    await preload.start()
+
+    // Make sure GC lock is specific to repo, for tests where there are
+    // multiple instances of IPFS
+    const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner !== false })
+    const dag = {
+      get: Components.dag.get({ ipld, preload }),
+      resolve: Components.dag.resolve({ ipld, preload }),
+      tree: Components.dag.tree({ ipld, preload })
+    }
+    const object = {
+      data: Components.object.data({ ipld, preload }),
+      get: Components.object.get({ ipld, preload }),
+      links: Components.object.links({ dag }),
+      new: Components.object.new({ ipld, preload }),
+      patch: {
+        addLink: Components.object.patch.addLink({ ipld, gcLock, preload }),
+        appendData: Components.object.patch.appendData({ ipld, gcLock, preload }),
+        rmLink: Components.object.patch.rmLink({ ipld, gcLock, preload }),
+        setData: Components.object.patch.setData({ ipld, gcLock, preload })
+      },
+      put: Components.object.put({ ipld, gcLock, preload }),
+      stat: Components.object.stat({ ipld, preload })
+    }
+
+    const pinManager = new PinManager(repo, dag)
+    await pinManager.load()
+
+    const pin = {
+      add: Components.pin.add({ pinManager, gcLock, dag }),
+      ls: Components.pin.ls({ pinManager, dag }),
+      rm: Components.pin.rm({ pinManager, gcLock, dag })
+    }
+
+    // FIXME: resolve this circular dependency
+    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+
+    const add = Components.add({ ipld, preload, pin, gcLock, options: constructorOptions })
+
+    if (!isInitialized && !options.emptyRepo) {
+      // add empty unixfs dir object (go-ipfs assumes this exists)
+      const emptyDirCid = await addEmptyDir({ dag })
+
+      log('adding default assets')
+      await initAssets({ add, print })
+
+      log('initializing IPNS keyspace')
+      // Setup the offline routing for IPNS.
+      // This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
+      const offlineDatastore = new OfflineDatastore(repo)
+      const ipns = new IPNS(offlineDatastore, repo.datastore, peerInfo, keychain, { pass: options.pass })
+      await ipns.initializeKeyspace(peerId.privKey, emptyDirCid.toString())
+    }
+
+    const api = createApi({
+      add,
+      apiManager,
+      constructorOptions,
+      blockService,
+      dag,
+      gcLock,
+      initOptions: options,
+      ipld,
+      keychain,
+      object,
+      peerInfo,
+      pin,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
+
+    apiManager.update(api, () => { throw new NotStartedError() })
+  } catch (err) {
+    cancel()
+    throw err
   }
+
+  return apiManager.api
 }
 
-async function createRepo (self, opts) {
-  if (self.state.state() !== 'uninitialized') {
-    throw new Error('Not able to init from state: ' + self.state.state())
-  }
+async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, config, pass, print }) {
+  emptyRepo = emptyRepo || false
+  bits = bits == null ? 2048 : Number(bits)
 
-  self.state.init()
-  self.log('init')
-
-  // An initialized, open repo was passed, use this one!
-  if (opts.repo) {
-    self._repo = opts.repo
-
-    return
-  }
-
-  opts.emptyRepo = opts.emptyRepo || false
-  opts.bits = Number(opts.bits) || 2048
-  opts.log = opts.log || function () {}
-
-  const config = mergeOptions(defaultConfig(), self._options.config)
-
-  applyProfile(self, config, opts)
+  config = mergeOptions(applyProfiles(profiles, getDefaultConfig()), config)
 
   // Verify repo does not exist yet
-  const exists = await self._repo.exists()
-  self.log('repo exists?', exists)
+  const exists = await repo.exists()
+  log('repo exists?', exists)
+
   if (exists === true) {
-    throw Error('repo already exists')
+    throw new Error('repo already exists')
   }
 
-  const peerId = await createPeerId(self, opts)
+  const peerId = await createPeerId({ privateKey, bits, print })
+  let keychain = new NoKeychain()
 
-  self.log('identity generated')
+  log('identity generated')
 
   config.Identity = {
     PeerID: peerId.toB58String(),
     PrivKey: peerId.privKey.bytes.toString('base64')
   }
-  const privateKey = peerId.privKey
 
-  if (opts.pass) {
-    config.Keychain = Keychain.generateOptions()
+  privateKey = peerId.privKey
+
+  config.Keychain = Keychain.generateOptions()
+
+  log('peer identity: %s', config.Identity.PeerID)
+
+  await repo.init(config)
+  await repo.open()
+
+  log('repo opened')
+
+  if (pass) {
+    log('creating keychain')
+    const keychainOptions = { passPhrase: pass, ...config.Keychain }
+    keychain = new Keychain(repo.keys, keychainOptions)
+    await keychain.importPeer('self', { privKey: privateKey })
   }
 
-  opts.log('done')
-  opts.log('peer identity: ' + config.Identity.PeerID)
-
-  await self._repo.init(config)
-  await self._repo.open()
-
-  self.log('repo opened')
-
-  if (opts.pass) {
-    self.log('creating keychain')
-    const keychainOptions = Object.assign({ passPhrase: opts.pass }, config.Keychain)
-    self._keychain = new Keychain(self._repo.keys, keychainOptions)
-
-    await self._keychain.importPeer('self', { privKey: privateKey })
-  }
-
-  // Setup the offline routing for IPNS.
-  // This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
-  const offlineDatastore = new OfflineDatastore(self._repo)
-
-  self._ipns = new IPNS(offlineDatastore, self._repo.datastore, self._peerInfo, self._keychain, self._options)
-
-  // add empty unixfs dir object (go-ipfs assumes this exists)
-  return addRepoAssets(self, privateKey, opts)
+  return { peerId, keychain }
 }
 
-async function addRepoAssets (self, privateKey, opts) {
-  if (opts.emptyRepo) {
-    return
+async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
+  let config = await repo.config.get()
+
+  if (newConfig || profiles) {
+    if (profiles) {
+      config = applyProfiles(profiles, config)
+    }
+    if (newConfig) {
+      config = mergeOptions(config, newConfig)
+    }
+    await repo.config.set(config)
   }
 
-  self.log('adding assets')
+  let keychain = new NoKeychain()
 
+  if (pass) {
+    const keychainOptions = { passPhrase: pass, ...config.Keychain }
+    keychain = new Keychain(repo.keys, keychainOptions)
+    log('keychain constructed')
+  }
+
+  const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
+
+  // Import the private key as 'self', if needed.
+  if (pass) {
+    try {
+      await keychain.findKeyByName('self')
+    } catch (err) {
+      log('Creating "self" key')
+      await keychain.importPeer('self', peerId)
+    }
+  }
+
+  return { peerId, keychain }
+}
+
+function createPeerId ({ privateKey, bits, print }) {
+  if (privateKey) {
+    log('using user-supplied private-key')
+    return typeof privateKey === 'object'
+      ? privateKey
+      : PeerId.createFromPrivKey(Buffer.from(privateKey, 'base64'))
+  } else {
+    // Generate peer identity keypair + transform to desired format + add to config.
+    print('generating %s-bit RSA keypair...', bits)
+    return PeerId.create({ bits })
+  }
+}
+
+function addEmptyDir ({ dag }) {
   const node = new DAGNode(new UnixFs('directory').marshal())
-  const cid = await self.dag.put(node, {
+  return dag.put(node, {
     version: 0,
     format: multicodec.DAG_PB,
     hashAlg: multicodec.SHA2_256,
     preload: false
   })
-
-  await self._ipns.initializeKeyspace(privateKey, cid.toBaseEncodedString())
-
-  self.log('Initialised keyspace')
-
-  if (typeof addDefaultAssets === 'function') {
-    self.log('Adding default assets')
-    // addDefaultAssets is undefined on browsers.
-    // See package.json browser config
-    return addDefaultAssets(self, opts.log)
-  }
 }
 
-// Apply profiles (eg "server,lowpower") to config
-function applyProfile (self, config, opts) {
-  if (opts.profiles) {
-    for (const name of opts.profiles) {
-      const profile = profiles[name]
-
-      if (!profile) {
-        throw new Error(`Could not find profile with name '${name}'`)
-      }
-
-      self.log(`applying profile ${name}`)
-      profile.transform(config)
+// Apply profiles (e.g. ['server', 'lowpower']) to config
+function applyProfiles (profiles, config) {
+  return (profiles || []).reduce((config, name) => {
+    const profile = require('./config').profiles[name]
+    if (!profile) {
+      throw new Error(`Could not find profile with name '${name}'`)
     }
-  }
+    log('applying profile %s', name)
+    return profile.transform(config)
+  }, config)
 }
 
-module.exports = function init (self) {
-  return callbackify.variadic(async (opts) => {
-    opts = opts || {}
+function createApi ({
+  add,
+  apiManager,
+  constructorOptions,
+  blockService,
+  dag,
+  gcLock,
+  initOptions,
+  ipld,
+  keychain,
+  object,
+  peerInfo,
+  pin,
+  pinManager,
+  preload,
+  print,
+  repo
+}) {
+  const notStarted = async () => { // eslint-disable-line require-await
+    throw new NotStartedError()
+  }
 
-    await createRepo(self, opts)
-    self.log('Created repo')
+  const resolve = Components.resolve({ ipld })
+  const refs = Components.refs({ ipld, resolve, preload })
+  refs.local = Components.refs.local({ repo })
 
-    await self.preStart()
-    self.log('Done pre-start')
+  const api = {
+    add,
+    bitswap: {
+      stat: notStarted,
+      unwant: notStarted,
+      wantlist: notStarted
+    },
+    bootstrap: {
+      add: Components.bootstrap.add({ repo }),
+      list: Components.bootstrap.list({ repo }),
+      rm: Components.bootstrap.rm({ repo })
+    },
+    block: {
+      get: Components.block.get({ blockService, preload }),
+      put: Components.block.put({ blockService, gcLock, preload }),
+      rm: Components.block.rm({ blockService, gcLock, pinManager }),
+      stat: Components.block.stat({ blockService, preload })
+    },
+    cat: Components.cat({ ipld, preload }),
+    config: Components.config({ repo }),
+    dag,
+    dns: Components.dns(),
+    files: Components.files({ ipld, blockService, repo, preload, options: constructorOptions }),
+    get: Components.get({ ipld, preload }),
+    id: Components.id({ peerInfo }),
+    init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
+    isOnline: Components.isOnline({}),
+    key: {
+      export: Components.key.export({ keychain }),
+      gen: Components.key.gen({ keychain }),
+      import: Components.key.import({ keychain }),
+      info: Components.key.info({ keychain }),
+      list: Components.key.list({ keychain }),
+      rename: Components.key.rename({ keychain }),
+      rm: Components.key.rm({ keychain })
+    },
+    ls: Components.ls({ ipld, preload }),
+    object,
+    pin,
+    refs,
+    repo: {
+      gc: Components.repo.gc({ gcLock, pin, pinManager, refs, repo }),
+      stat: Components.repo.stat({ repo }),
+      version: Components.repo.version({ repo })
+    },
+    resolve,
+    start: Components.start({
+      apiManager,
+      options: constructorOptions,
+      blockService,
+      gcLock,
+      initOptions,
+      ipld,
+      keychain,
+      peerInfo,
+      pinManager,
+      preload,
+      print,
+      repo
+    }),
+    stats: {
+      bitswap: notStarted,
+      bw: notStarted,
+      repo: Components.repo.stat({ repo })
+    },
+    stop: () => apiManager.api,
+    swarm: {
+      addrs: notStarted,
+      connect: notStarted,
+      disconnect: notStarted,
+      localAddrs: Components.swarm.localAddrs({ peerInfo }),
+      peers: notStarted
+    },
+    version: Components.version({ repo })
+  }
 
-    self.state.initialized()
-    self.emit('init')
-  })
+  return api
 }

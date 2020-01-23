@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
 const hat = require('hat')
 const IPFS = require('../../src/core')
 
@@ -12,26 +12,26 @@ const privateKey = 'CAASqAkwggSkAgEAAoIBAQChVmiObYo6pkKrMSd3OzW1cTL+RDmX1rkETYGK
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
 
-describe('init', () => {
-  if (!isNode) { return }
+describe('init', function () {
+  if (!isNode) return
 
   let ipfs
   let repo
 
-  beforeEach(() => {
+  beforeEach(async () => {
     repo = createTempRepo()
 
-    ipfs = new IPFS({
-      repo: repo,
+    ipfs = await IPFS.create({
+      repo,
       init: false,
       start: false,
       preload: { enabled: false }
     })
   })
 
-  afterEach((done) => repo.teardown(done))
+  afterEach(() => repo.teardown())
 
-  it('basic', async () => {
+  it('should init successfully', async () => {
     await ipfs.init({ bits: 512, pass: hat() })
 
     const res = await repo.exists()
@@ -43,7 +43,7 @@ describe('init', () => {
     expect(config.Keychain).to.exist()
   })
 
-  it('set # of bits in key', async function () {
+  it('should set # of bits in key', async function () {
     this.timeout(40 * 1000)
 
     await ipfs.init({ bits: 1024, pass: hat() })
@@ -52,48 +52,37 @@ describe('init', () => {
     expect(config.Identity.PrivKey.length).is.above(256)
   })
 
-  it('pregenerated key is being used', async () => {
+  it('should allow a pregenerated key to be used', async () => {
     await ipfs.init({ privateKey })
 
     const config = await repo.config.get()
     expect(config.Identity.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
-  it('init docs are written', (done) => {
-    ipfs.init({ bits: 512, pass: hat() }, (err) => {
-      expect(err).to.not.exist()
-      const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+  it('should write init docs', async () => {
+    await ipfs.init({ bits: 512, pass: hat() })
+    const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
-      ipfs.object.get(multihash, { enc: 'base58' }, (err, node) => {
-        expect(err).to.not.exist()
-        expect(node.Links).to.exist()
-        done()
-      })
-    })
+    const node = await ipfs.object.get(multihash, { enc: 'base58' })
+    expect(node.Links).to.exist()
   })
 
-  it('empty repo', (done) => {
-    ipfs.init({ bits: 512, emptyRepo: true }, (err) => {
-      expect(err).to.not.exist()
+  it('should allow init with an empty repo', async () => {
+    await ipfs.init({ bits: 512, emptyRepo: true })
 
-      // Should not have default assets
-      const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
-
-      ipfs.object.get(multihash, {}, (err, node) => {
-        expect(err).to.exist()
-        done()
-      })
-    })
+    // Should not have default assets
+    const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+    await expect(ipfs.object.get(multihash, {})).to.eventually.be.rejected()
   })
 
-  it('profiles apply one', async () => {
+  it('should apply one profile', async () => {
     await ipfs.init({ profiles: ['test'] })
 
     const config = await repo.config.get()
     expect(config.Bootstrap).to.be.empty()
   })
 
-  it('profiles apply multiple', async () => {
+  it('should apply multiple profiles', async () => {
     await ipfs.init({ profiles: ['test', 'local-discovery'] })
 
     const config = await repo.config.get()

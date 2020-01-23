@@ -65,7 +65,7 @@ module.exports = {
       const IPFS = require('../../core')
       const Repo = require('ipfs-repo')
 
-      const node = new IPFS({
+      const node = await IPFS.create({
         repo: new Repo(path),
         init: false,
         start: false,

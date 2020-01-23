@@ -23,22 +23,16 @@ describe('key exchange', function () {
 
   after(() => df.clean())
 
-  it('exports', (done) => {
-    ipfs.key.export('self', passwordPem, (err, pem) => {
-      expect(err).to.not.exist()
-      expect(pem).to.exist()
-      selfPem = pem
-      done()
-    })
+  it('should export key', async () => {
+    const pem = await ipfs.key.export('self', passwordPem)
+    expect(pem).to.exist()
+    selfPem = pem
   })
 
-  it('imports', function (done) {
-    ipfs.key.import('clone', selfPem, passwordPem, (err, key) => {
-      expect(err).to.not.exist()
-      expect(key).to.exist()
-      expect(key).to.have.property('name', 'clone')
-      expect(key).to.have.property('id')
-      done()
-    })
+  it('should import key', async () => {
+    const key = await ipfs.key.import('clone', selfPem, passwordPem)
+    expect(key).to.exist()
+    expect(key).to.have.property('name', 'clone')
+    expect(key).to.have.property('id')
   })
 })

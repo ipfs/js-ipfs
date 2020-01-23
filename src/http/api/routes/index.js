@@ -13,7 +13,6 @@ module.exports = [
   require('./ping'),
   ...require('./swarm'),
   ...require('./bitswap'),
-  require('./file'),
   ...require('./files-regular'),
   ...require('ipfs-mfs/http'),
   ...require('./pubsub'),

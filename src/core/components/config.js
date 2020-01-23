@@ -1,17 +1,16 @@
 'use strict'
 
-const callbackify = require('callbackify')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
 const log = require('debug')('ipfs:core:config')
 
-module.exports = function config (self) {
+module.exports = ({ repo }) => {
   return {
-    get: callbackify.variadic(self._repo.config.get),
-    set: callbackify(self._repo.config.set),
-    replace: callbackify.variadic(self._repo.config.set),
+    get: repo.config.get,
+    set: repo.config.set,
+    replace: repo.config.set,
     profiles: {
-      apply: callbackify.variadic(applyProfile),
-      list: callbackify.variadic(listProfiles)
+      apply: applyProfile,
+      list: listProfiles
     }
   }
 
@@ -26,12 +25,12 @@ module.exports = function config (self) {
     }
 
     try {
-      const oldCfg = await self.config.get()
+      const oldCfg = await repo.config.get()
       let newCfg = JSON.parse(JSON.stringify(oldCfg)) // clone
       newCfg = profile.transform(newCfg)
 
       if (!dryRun) {
-        await self.config.replace(newCfg)
+        await repo.config.set(newCfg)
       }
 
       // Scrub private key from output
