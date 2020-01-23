@@ -24,6 +24,6 @@ module.exports = configure(({ ky }) => {
       searchParams
     }).json()
 
-    return res
+    return (res.Keys || []).map(k => new CID(k['/']))
   }
 })

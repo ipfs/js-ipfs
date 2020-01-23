@@ -64,12 +64,8 @@ describe('submodules', () => {
 
   it('ping', () => {
     const ping = require('../src')().ping
-    const pingPullStream = require('../src')().pingPullStream
-    const pingReadableStream = require('../src')().pingReadableStream
 
     expect(ping).to.be.a('function')
-    expect(pingPullStream).to.be.a('function')
-    expect(pingReadableStream).to.be.a('function')
   })
 
   it('log', () => {
@@ -164,26 +160,11 @@ describe('submodules', () => {
     const filesRegular = require('../src')()
 
     expect(filesRegular.add).to.be.a('function')
-    expect(filesRegular.addReadableStream).to.be.a('function')
-    expect(filesRegular.addPullStream).to.be.a('function')
-    expect(filesRegular.addFromStream).to.be.a('function')
-    expect(filesRegular.addFromFs).to.be.a('function')
-    expect(filesRegular.addFromURL).to.be.a('function')
     expect(filesRegular.get).to.be.a('function')
-    expect(filesRegular.getReadableStream).to.be.a('function')
-    expect(filesRegular.getPullStream).to.be.a('function')
     expect(filesRegular.cat).to.be.a('function')
-    expect(filesRegular.catReadableStream).to.be.a('function')
-    expect(filesRegular.catPullStream).to.be.a('function')
     expect(filesRegular.ls).to.be.a('function')
-    expect(filesRegular.lsReadableStream).to.be.a('function')
-    expect(filesRegular.lsPullStream).to.be.a('function')
     expect(filesRegular.refs).to.be.a('function')
-    expect(filesRegular.refsReadableStream).to.be.a('function')
-    expect(filesRegular.refsPullStream).to.be.a('function')
     expect(filesRegular.refs.local).to.be.a('function')
-    expect(filesRegular.refs.localReadableStream).to.be.a('function')
-    expect(filesRegular.refs.localPullStream).to.be.a('function')
   })
 
   it('files MFS API', () => {

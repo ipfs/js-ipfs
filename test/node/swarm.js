@@ -25,7 +25,7 @@ describe('.swarm.peers', function () {
     expect(res.length).to.equal(1)
     expect(res[0].error).to.not.exist()
     expect(res[0].addr.toString()).to.equal(response.Peers[0].Addr)
-    expect(res[0].peer.toB58String()).to.equal(response.Peers[0].Peer)
+    expect(res[0].peer.toString()).to.equal(response.Peers[0].Peer)
     expect(scope.isDone()).to.equal(true)
   })
 
@@ -43,7 +43,7 @@ describe('.swarm.peers', function () {
     expect(res.length).to.equal(1)
     expect(res[0].error).to.not.exist()
     expect(res[0].addr.toString()).to.equal(response.Peers[0].Addr)
-    expect(res[0].peer.toB58String()).to.equal(response.Peers[0].Peer)
+    expect(res[0].peer.toString()).to.equal(response.Peers[0].Peer)
     expect(scope.isDone()).to.equal(true)
   })
 

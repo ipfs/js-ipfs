@@ -5,6 +5,8 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const loadFixture = require('aegir/fixtures')
+const all = require('it-all')
+const concat = require('it-concat')
 
 const f = require('./utils/factory')
 
@@ -24,35 +26,37 @@ describe('.get (specific go-ipfs features)', function () {
 
   before(async () => {
     ipfs = (await f.spawn()).api
-    await ipfs.add(smallFile.data)
+    await all(ipfs.add(smallFile.data))
   })
 
   after(() => f.clean())
 
   it('no compression args', async () => {
-    const files = await ipfs.get(smallFile.cid)
+    const files = await all(ipfs.get(smallFile.cid))
 
     expect(files).to.be.length(1)
-    expect(files[0].content.toString()).to.contain(smallFile.data.toString())
+    const content = await concat(files[0].content)
+    expect(content.toString()).to.contain(smallFile.data.toString())
   })
 
   it('archive true', async () => {
-    const files = await ipfs.get(smallFile.cid, { archive: true })
+    const files = await all(ipfs.get(smallFile.cid, { archive: true }))
 
     expect(files).to.be.length(1)
-    expect(files[0].content.toString()).to.contain(smallFile.data.toString())
+    const content = await concat(files[0].content)
+    expect(content.toString()).to.contain(smallFile.data.toString())
   })
 
   it('err with out of range compression level', async () => {
-    await expect(ipfs.get(smallFile.cid, {
+    await expect(all(ipfs.get(smallFile.cid, {
       compress: true,
       compressionLevel: 10
-    })).to.be.rejectedWith('compression level must be between 1 and 9')
+    }))).to.be.rejectedWith('compression level must be between 1 and 9')
   })
 
   // TODO Understand why this test started failing
   it.skip('with compression level', async () => {
-    await ipfs.get(smallFile.cid, { compress: true, 'compression-level': 1 })
+    await all(ipfs.get(smallFile.cid, { compress: true, 'compression-level': 1 }))
   })
 
   it('add path containing "+"s (for testing get)', async () => {
@@ -60,17 +64,17 @@ describe('.get (specific go-ipfs features)', function () {
     const subdir = 'tmp/c++files'
     const expectedCid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
     const path = `${subdir}/${filename}`
-    const files = await ipfs.add([{
+    const files = await all(ipfs.add([{
       path,
       content: Buffer.from(path)
-    }])
+    }]))
 
-    expect(files[2].hash).to.equal(expectedCid)
+    expect(files[2].cid.toString()).to.equal(expectedCid)
   })
 
   it('get path containing "+"s', async () => {
     const cid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
-    const files = await ipfs.get(cid)
+    const files = await all(ipfs.get(cid))
 
     expect(files).to.be.an('array').with.lengthOf(3)
     expect(files[0]).to.have.property('path', cid)

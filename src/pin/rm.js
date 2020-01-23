@@ -1,5 +1,6 @@
 'use strict'
 
+const CID = require('cids')
 const configure = require('../lib/configure')
 
 module.exports = configure(({ ky }) => {
@@ -17,6 +18,6 @@ module.exports = configure(({ ky }) => {
       searchParams
     }).json()
 
-    return (res.Pins || []).map(hash => ({ hash }))
+    return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
   }
 })

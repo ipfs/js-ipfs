@@ -2,16 +2,12 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const isNode = require('detect-node')
+const { isNode } = require('ipfs-utils/src/env')
 const ipfsClient = require('../src/index.js')
-const ndjson = require('ndjson')
-const pump = require('pump')
 
 describe('\'deal with HTTP weirdness\' tests', () => {
-  it('does not crash if no content-type header is provided', (done) => {
-    if (!isNode) {
-      return done()
-    }
+  it('does not crash if no content-type header is provided', async function () {
+    if (!isNode) return this.skip()
 
     // go-ipfs always (currently) adds a content-type header, even if no content is present,
     // the standard behaviour for an http-api is to omit this header if no content is present
@@ -24,12 +20,10 @@ describe('\'deal with HTTP weirdness\' tests', () => {
       })
     })
 
-    server.listen(6001, () => {
-      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
-        expect(err).to.not.exist()
-        server.close(done)
-      })
-    })
+    await new Promise(resolve => server.listen(6001, resolve))
+    await ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json')
+
+    server.close()
   })
 })
 
@@ -39,12 +33,11 @@ describe('trailer headers', () => {
     if (!isNode) { return done() }
 
     const server = require('http').createServer((req, res) => {
-      const resStream = pump(res, ndjson.stringify())
       res.setHeader('x-chunked-output', '1')
       res.setHeader('content-type', 'application/json')
       res.setHeader('Trailer', 'X-Stream-Error')
       res.addTrailers({ 'X-Stream-Error': JSON.stringify({ Message: 'ups, something went wrong', Code: 500 }) })
-      resStream.write({ Bytes: 1 })
+      res.write(JSON.stringify({ Bytes: 1 }))
       res.end()
     })
 
@@ -64,7 +57,7 @@ describe('trailer headers', () => {
 })
 
 describe('error handling', () => {
-  it('should handle plain text error response', function (done) {
+  it('should handle plain text error response', async function () {
     if (!isNode) return this.skip()
 
     const server = require('http').createServer((req, res) => {
@@ -78,17 +71,16 @@ describe('error handling', () => {
       })
     })
 
-    server.listen(6001, () => {
-      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
-        expect(err).to.exist()
-        expect(err.response.status).to.equal(403)
-        expect(err.message).to.equal('ipfs method not allowed')
-        server.close(done)
-      })
-    })
+    await new Promise(resolve => server.listen(6001, resolve))
+
+    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+      .to.eventually.be.rejectedWith('ipfs method not allowed')
+      .and.to.have.nested.property('response.status').that.equals(403)
+
+    server.close()
   })
 
-  it('should handle JSON error response', function (done) {
+  it('should handle JSON error response', async function () {
     if (!isNode) return this.skip()
 
     const server = require('http').createServer((req, res) => {
@@ -102,17 +94,16 @@ describe('error handling', () => {
       })
     })
 
-    server.listen(6001, () => {
-      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
-        expect(err).to.exist()
-        expect(err.response.status).to.equal(400)
-        expect(err.message).to.equal('client error')
-        server.close(done)
-      })
-    })
+    await new Promise(resolve => server.listen(6001, resolve))
+
+    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+      .to.eventually.be.rejectedWith('client error')
+      .and.to.have.nested.property('response.status').that.equals(400)
+
+    server.close()
   })
 
-  it('should handle JSON error response with invalid JSON', function (done) {
+  it('should handle JSON error response with invalid JSON', async function () {
     if (!isNode) return this.skip()
 
     const server = require('http').createServer((req, res) => {
@@ -126,12 +117,12 @@ describe('error handling', () => {
       })
     })
 
-    server.listen(6001, () => {
-      ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json', (err) => {
-        expect(err).to.exist()
-        expect(err.message).to.include('Unexpected token M in JSON at position 2')
-        server.close(done)
-      })
-    })
+    await new Promise(resolve => server.listen(6001, resolve))
+
+    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+      .to.eventually.be.rejected()
+      .and.to.have.property('message').that.includes('Unexpected token M in JSON at position 2')
+
+    server.close()
   })
 })

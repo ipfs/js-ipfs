@@ -4,7 +4,7 @@ const configure = require('../lib/configure')
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
-const toIterable = require('../lib/stream-to-iterable')
+const toIterable = require('stream-to-it/source')
 const toCamel = require('../lib/object-to-camel')
 
 module.exports = config => {

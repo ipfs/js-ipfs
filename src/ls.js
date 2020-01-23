@@ -2,6 +2,8 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
+const ndjson = require('iterable-ndjson')
+const toIterable = require('stream-to-it/source')
 const configure = require('./lib/configure')
 
 module.exports = configure(({ ky }) => {
@@ -10,18 +12,11 @@ module.exports = configure(({ ky }) => {
 
     const searchParams = new URLSearchParams()
     searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
+    searchParams.set('stream', options.stream == null ? true : options.stream)
 
-    if (options.long !== undefined) {
-      searchParams.set('long', options.long)
-    }
-
-    if (options.unsorted !== undefined) {
-      searchParams.set('unsorted', options.unsorted)
-    }
-
-    if (options.recursive !== undefined) {
-      searchParams.set('recursive', options.recursive)
-    }
+    if (options.long != null) searchParams.set('long', options.long)
+    if (options.unsorted != null) searchParams.set('unsorted', options.unsorted)
+    if (options.recursive != null) searchParams.set('recursive', options.recursive)
 
     const res = await ky.post('ls', {
       timeout: options.timeout,
@@ -30,48 +25,49 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    let result = await res.json()
+    for await (let result of ndjson(toIterable(res.body))) {
+      result = result.Objects
 
-    result = result.Objects
-    if (!result) {
-      throw new Error('expected .Objects in results')
-    }
-
-    result = result[0]
-    if (!result) {
-      throw new Error('expected one array in results.Objects')
-    }
-
-    result = result.Links
-    if (!Array.isArray(result)) {
-      throw new Error('expected one array in results.Objects[0].Links')
-    }
-
-    for (const link of result) {
-      const entry = {
-        name: link.Name,
-        path: path + '/' + link.Name,
-        size: link.Size,
-        hash: link.Hash,
-        type: typeOf(link),
-        depth: link.Depth || 1
+      if (!result) {
+        throw new Error('expected .Objects in results')
       }
 
-      if (link.Mode) {
-        entry.mode = parseInt(link.Mode, 8)
+      result = result[0]
+      if (!result) {
+        throw new Error('expected one array in results.Objects')
       }
 
-      if (link.Mtime !== undefined && link.Mtime !== null) {
-        entry.mtime = {
-          secs: link.Mtime
+      result = result.Links
+      if (!Array.isArray(result)) {
+        throw new Error('expected one array in results.Objects[0].Links')
+      }
+
+      for (const link of result) {
+        const entry = {
+          name: link.Name,
+          path: path + '/' + link.Name,
+          size: link.Size,
+          cid: new CID(link.Hash),
+          type: typeOf(link),
+          depth: link.Depth || 1
         }
 
-        if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {
-          entry.mtime.nsecs = link.MtimeNsecs
+        if (link.Mode) {
+          entry.mode = parseInt(link.Mode, 8)
         }
-      }
 
-      yield entry
+        if (link.Mtime !== undefined && link.Mtime !== null) {
+          entry.mtime = {
+            secs: link.Mtime
+          }
+
+          if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {
+            entry.mtime.nsecs = link.MtimeNsecs
+          }
+        }
+
+        yield entry
+      }
     }
   }
 })

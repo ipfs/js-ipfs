@@ -3,7 +3,6 @@
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
-const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
   return async (cid, options) => {
@@ -23,6 +22,6 @@ module.exports = configure(({ ky }) => {
       searchParams
     }).json()
 
-    return toCamel(res)
+    return { cid: new CID(res.Key), size: res.Size }
   }
 })

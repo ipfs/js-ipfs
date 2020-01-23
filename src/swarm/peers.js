@@ -1,7 +1,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const PeerId = require('peer-id')
+const CID = require('cids')
 const configure = require('../lib/configure')
 
 module.exports = configure(({ ky }) => {
@@ -25,7 +25,7 @@ module.exports = configure(({ ky }) => {
       const info = {}
       try {
         info.addr = multiaddr(peer.Addr)
-        info.peer = PeerId.createFromB58String(peer.Peer)
+        info.peer = new CID(peer.Peer)
       } catch (error) {
         info.error = error
         info.rawPeerInfo = peer

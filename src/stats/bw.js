@@ -3,7 +3,7 @@
 const ndjson = require('iterable-ndjson')
 const Big = require('bignumber.js')
 const configure = require('../lib/configure')
-const toIterable = require('../lib/stream-to-iterable')
+const toIterable = require('stream-to-it/source')
 
 module.exports = configure(({ ky }) => {
   return async function * bw (options) {

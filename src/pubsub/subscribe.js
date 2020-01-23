@@ -1,12 +1,11 @@
 'use strict'
 
 const ndjson = require('iterable-ndjson')
-const explain = require('explain-error')
 const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const configure = require('../lib/configure')
-const toIterable = require('../lib/stream-to-iterable')
+const toIterable = require('stream-to-it/source')
 const SubscriptionTracker = require('./subscription-tracker')
 
 module.exports = configure((config) => {
@@ -71,7 +70,8 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
           topicIDs: msg.topicIDs
         })
       } catch (err) {
-        onError(explain(err, 'Failed to parse pubsub message'), false, msg) // Not fatal
+        err.message = `Failed to parse pubsub message: ${err.message}`
+        onError(err, false, msg) // Not fatal
       }
     }
   } catch (err) {

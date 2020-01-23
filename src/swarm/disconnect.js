@@ -8,7 +8,7 @@ module.exports = configure(({ ky }) => {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
-    addrs.forEach(addr => searchParams.append('arg', addr))
+    addrs.forEach(addr => searchParams.append('arg', `${addr}`))
 
     const res = await ky.post('swarm/disconnect', {
       timeout: options.timeout,

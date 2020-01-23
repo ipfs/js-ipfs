@@ -2,6 +2,7 @@
 
 const configure = require('../lib/configure')
 const Big = require('bignumber.js')
+const CID = require('cids')
 
 module.exports = configure(({ ky }) => {
   return async (options) => {
@@ -21,8 +22,8 @@ module.exports = configure(({ ky }) => {
 function toCoreInterface (res) {
   return {
     provideBufLen: res.ProvideBufLen,
-    wantlist: res.Wantlist || [],
-    peers: res.Peers || [],
+    wantlist: (res.Wantlist || []).map(k => new CID(k['/'])),
+    peers: (res.Peers || []).map(p => new CID(p)),
     blocksReceived: new Big(res.BlocksReceived),
     dataReceived: new Big(res.DataReceived),
     blocksSent: new Big(res.BlocksSent),

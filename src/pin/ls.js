@@ -1,9 +1,12 @@
 'use strict'
 
+const ndjson = require('iterable-ndjson')
+const CID = require('cids')
 const configure = require('../lib/configure')
+const toIterable = require('stream-to-it/source')
 
 module.exports = configure(({ ky }) => {
-  return async (path, options) => {
+  return async function * ls (path, options) {
     if (path && path.type) {
       options = path
       path = null
@@ -14,16 +17,25 @@ module.exports = configure(({ ky }) => {
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
+    searchParams.set('stream', options.stream == null ? true : options.stream)
     path.forEach(p => searchParams.append('arg', `${p}`))
     if (options.type) searchParams.set('type', options.type)
 
-    const { Keys } = await ky.post('pin/ls', {
+    const res = await ky.post('pin/ls', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
       searchParams
-    }).json()
+    })
 
-    return Object.keys(Keys).map(hash => ({ hash, type: Keys[hash].Type }))
+    for await (const pin of ndjson(toIterable(res.body))) {
+      if (pin.Keys) { // non-streaming response
+        for (const cid of Object.keys(pin.Keys)) {
+          yield { cid: new CID(cid), type: pin.Keys[cid].Type }
+        }
+        return
+      }
+      yield { cid: new CID(pin.Cid), type: pin.Type }
+    }
   }
 })

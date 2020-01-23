@@ -4,7 +4,7 @@ const configure = require('./lib/configure')
 const Tar = require('it-tar')
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const toIterable = require('./lib/stream-to-iterable')
+const toIterable = require('stream-to-it/source')
 
 module.exports = configure(({ ky }) => {
   return async function * get (path, options) {

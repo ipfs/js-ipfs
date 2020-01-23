@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
-const toIterable = require('../lib/stream-to-iterable')
+const toIterable = require('stream-to-it/source')
 const configure = require('../lib/configure')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 
@@ -17,9 +17,11 @@ module.exports = configure(({ ky }) => {
 
     const searchParams = new URLSearchParams(options.searchParams)
     searchParams.set('arg', CID.isCID(path) ? `/ipfs/${path}` : path)
-    searchParams.set('stream', true)
+    searchParams.set('stream', options.stream == null ? true : options.stream)
     if (options.cidBase) searchParams.set('cid-base', options.cidBase)
-    if (options.long != null) searchParams.set('long', options.long)
+    searchParams.set('long', options.long == null ? true : options.long)
+    // TODO: remove after go-ipfs 0.5 is released
+    searchParams.set('l', options.long == null ? true : options.long)
 
     const res = await ky.post('files/ls', {
       timeout: options.timeout,
@@ -32,12 +34,17 @@ module.exports = configure(({ ky }) => {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {
-          yield toCamelWithMetadata(entry)
+          yield toCoreInterface(toCamelWithMetadata(entry))
         }
-        return
+      } else {
+        yield toCoreInterface(toCamelWithMetadata(result))
       }
-
-      yield toCamelWithMetadata(result)
     }
   }
 })
+
+function toCoreInterface (entry) {
+  if (entry.hash) entry.cid = new CID(entry.hash)
+  delete entry.hash
+  return entry
+}
