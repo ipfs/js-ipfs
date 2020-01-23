@@ -61,10 +61,10 @@ describe('name-pubsub', () => {
         this.timeout(80 * 1000)
 
         const err = await ipfsB.fail(`name resolve ${nodeAId.id}`)
-        expect(err.all).to.include('was not found')
+        expect(err).to.exist()
 
         const ls = await ipfsB('pubsub ls')
-        expect(ls).to.have.string('/record/') // have a record ipns subscribtion
+        expect(ls).to.have.string('/record/') // have a record ipns subscription
 
         const subs = await ipfsB('name pubsub subs')
         expect(subs).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
@@ -103,7 +103,7 @@ describe('name-pubsub', () => {
       this.timeout(80 * 1000)
 
       node = await df.spawn()
-      ipfsA = ipfsExec(node.repoPath)
+      ipfsA = ipfsExec(node.path)
     })
 
     after(() => df.clean())

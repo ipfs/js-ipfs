@@ -4,7 +4,11 @@ const multibase = require('multibase')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
 const isIpfs = require('is-ipfs')
+const { map, reduce } = require('streaming-iterables')
+const pipe = require('it-pipe')
+const ndjson = require('iterable-ndjson')
 const { cidToString } = require('../../../utils/cid')
+const streamResponse = require('../../utils/stream-response')
 
 function parseArgs (request, h) {
   let { arg } = request.query
@@ -28,7 +32,8 @@ function parseArgs (request, h) {
 exports.ls = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      stream: Joi.boolean().default(false)
     }).unknown()
   },
 
@@ -53,20 +58,23 @@ exports.ls = {
     const { ipfs } = request.server.app
     const { path, type } = request.pre.args
 
-    let result
-    try {
-      result = await ipfs.pin.ls(path, { type })
-    } catch (err) {
-      throw Boom.boomify(err)
+    if (!request.query.stream) {
+      const res = await pipe(
+        ipfs.pin.ls(path, { type }),
+        reduce((res, { type, cid }) => {
+          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = { Type: type }
+          return res
+        }, { Keys: {} })
+      )
+
+      return h.response(res)
     }
 
-    return h.response({
-      Keys: result.reduce((acc, v) => {
-        const prop = cidToString(v.hash, { base: request.query['cid-base'] })
-        acc[prop] = { Type: v.type }
-        return acc
-      }, {})
-    })
+    return streamResponse(request, h, () => pipe(
+      ipfs.pin.ls(path, { type }),
+      map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: request.query['cid-base'] }) })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -94,7 +102,7 @@ exports.add = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
+      Pins: result.map(obj => cidToString(obj.cid, { base: request.query['cid-base'] }))
     })
   }
 }
@@ -120,7 +128,7 @@ exports.rm = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.hash, { base: request.query['cid-base'] }))
+      Pins: result.map(obj => cidToString(obj.cid, { base: request.query['cid-base'] }))
     })
   }
 }

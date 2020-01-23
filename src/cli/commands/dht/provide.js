@@ -14,13 +14,9 @@ module.exports = {
   },
 
   handler ({ getIpfs, key, recursive, resolve }) {
-    const opts = {
-      recursive
-    }
-
     resolve((async () => {
       const ipfs = await getIpfs()
-      await ipfs.dht.provide(key, opts)
+      await ipfs.dht.provide(key, { recursive })
     })())
   }
 }

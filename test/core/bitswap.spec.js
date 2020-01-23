@@ -7,6 +7,8 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Block = require('ipfs-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
+const all = require('it-all')
+const concat = require('it-concat')
 const factory = require('../utils/factory')
 
 const makeBlock = async () => {
@@ -68,15 +70,15 @@ describe('bitswap', function () {
       const proc = (await df.spawn({ type: 'proc' })).api
       proc.swarm.connect(remote.peerId.addresses[0])
 
-      const files = await remote.add([{ path: 'awesome.txt', content: file }])
-      const data = await proc.cat(files[0].hash)
-      expect(data).to.eql(file)
+      const files = await all(remote.add([{ path: 'awesome.txt', content: file }]))
+      const data = await concat(proc.cat(files[0].cid))
+      expect(data.slice()).to.eql(file)
       await df.clean()
     })
   })
 
   describe('unwant', () => {
-    it('should callback with error for invalid CID input', async () => {
+    it('should throw error for invalid CID input', async () => {
       const proc = (await df.spawn({ type: 'proc' })).api
       try {
         await proc.bitswap.unwant('INVALID CID')

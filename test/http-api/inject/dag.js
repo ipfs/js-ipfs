@@ -9,6 +9,7 @@ const Readable = require('stream').Readable
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const CID = require('cids')
+const all = require('it-all')
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()
@@ -270,9 +271,9 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(200)
 
         const cid = new CID(res.result.Cid['/'])
-        const pinset = await http.api._ipfs.pin.ls()
+        const pinset = await all(http.api._ipfs.pin.ls())
 
-        expect(pinset.map(pin => pin.hash)).to.contain(cid.toBaseEncodedString())
+        expect(pinset.map(pin => pin.cid.toString())).to.contain(cid.toString())
       })
 
       it('does not pin a node after adding', async () => {
@@ -290,9 +291,9 @@ module.exports = (http) => {
         expect(res.statusCode).to.equal(200)
 
         const cid = new CID(res.result.Cid['/'])
-        const pinset = await http.api._ipfs.pin.ls()
+        const pinset = await all(http.api._ipfs.pin.ls())
 
-        expect(pinset.map(pin => pin.hash)).to.not.contain(cid.toBaseEncodedString('base58btc'))
+        expect(pinset.map(pin => pin.cid.toString())).to.not.contain(cid.toString('base58btc'))
       })
     })
 

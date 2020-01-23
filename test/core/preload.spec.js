@@ -1,12 +1,9 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
 const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const pull = require('pull-stream')
-const CID = require('cids')
-
+const all = require('it-all')
 const MockPreloadNode = require('../utils/mock-preload-node')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')
@@ -18,6 +15,7 @@ describe('preload', () => {
   before(async function () {
     repo = createTempRepo()
     ipfs = await IPFS.create({
+      silent: true,
       repo,
       config: {
         Addresses: {
@@ -38,28 +36,28 @@ describe('preload', () => {
 
   it('should preload content added with add', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(hat()))
-    await MockPreloadNode.waitForCids(res[0].hash)
+    const res = await all(ipfs.add(Buffer.from(hat())))
+    await MockPreloadNode.waitForCids(res[0].cid)
   })
 
   it('should preload multiple content added with add', async function () {
     this.timeout(50 * 1000)
 
-    const res = await ipfs.add([{
+    const res = await all(ipfs.add([{
       content: Buffer.from(hat())
     }, {
       content: Buffer.from(hat())
     }, {
       content: Buffer.from(hat())
-    }])
+    }]))
 
-    await MockPreloadNode.waitForCids(res.map(file => file.hash))
+    await MockPreloadNode.waitForCids(res.map(file => file.cid))
   })
 
   it('should preload multiple content and intermediate dirs added with add', async function () {
     this.timeout(50 * 1000)
 
-    const res = await ipfs.add([{
+    const res = await all(ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -68,18 +66,18 @@ describe('preload', () => {
     }, {
       path: 'dir0/file2',
       content: Buffer.from(hat())
-    }])
+    }]))
 
     const rootDir = res.find(file => file.path === 'dir0')
     expect(rootDir).to.exist()
 
-    await MockPreloadNode.waitForCids(rootDir.hash)
+    await MockPreloadNode.waitForCids(rootDir.cid)
   })
 
   it('should preload multiple content and wrapping dir for content added with add and wrapWithDirectory option', async function () {
     this.timeout(50 * 1000)
 
-    const res = await ipfs.add([{
+    const res = await all(ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -88,32 +86,32 @@ describe('preload', () => {
     }, {
       path: 'dir0/file2',
       content: Buffer.from(hat())
-    }], { wrapWithDirectory: true })
+    }], { wrapWithDirectory: true }))
 
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
 
-    await MockPreloadNode.waitForCids(wrappingDir.hash)
+    await MockPreloadNode.waitForCids(wrappingDir.cid)
   })
 
   it('should preload content retrieved with cat', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(hat()), { preload: false })
-    await ipfs.cat(res[0].hash)
-    await MockPreloadNode.waitForCids(res[0].hash)
+    const res = await all(ipfs.add(Buffer.from(hat()), { preload: false }))
+    await all(ipfs.cat(res[0].cid))
+    await MockPreloadNode.waitForCids(res[0].cid)
   })
 
   it('should preload content retrieved with get', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(hat()), { preload: false })
-    await ipfs.get(res[0].hash)
-    await MockPreloadNode.waitForCids(res[0].hash)
+    const res = await all(ipfs.add(Buffer.from(hat()), { preload: false }))
+    await all(ipfs.get(res[0].cid))
+    await MockPreloadNode.waitForCids(res[0].cid)
   })
 
   it('should preload content retrieved with ls', async function () {
     this.timeout(50 * 1000)
 
-    const res = await ipfs.add([{
+    const res = await all(ipfs.add([{
       path: 'dir0/dir1/file0',
       content: Buffer.from(hat())
     }, {
@@ -122,7 +120,7 @@ describe('preload', () => {
     }, {
       path: 'dir0/file2',
       content: Buffer.from(hat())
-    }], { wrapWithDirectory: true })
+    }], { wrapWithDirectory: true }))
 
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
@@ -130,8 +128,8 @@ describe('preload', () => {
     // Adding these files with have preloaded wrappingDir.hash, clear it out
     await MockPreloadNode.clearPreloadCids()
 
-    await ipfs.ls(wrappingDir.hash)
-    MockPreloadNode.waitForCids(wrappingDir.hash)
+    await all(ipfs.ls(wrappingDir.cid))
+    MockPreloadNode.waitForCids(wrappingDir.cid)
   })
 
   it('should preload content added with object.new', async function () {
@@ -243,83 +241,33 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with files.ls', async () => {
-    const res = await ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) })
-    const dirCid = res[res.length - 1].hash
+    const res = await all(ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }))
+    const dirCid = res[res.length - 1].cid
     await MockPreloadNode.waitForCids(dirCid)
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.files.ls(`/ipfs/${dirCid}`)
+    await all(ipfs.files.ls(`/ipfs/${dirCid}`))
     await MockPreloadNode.waitForCids(`/ipfs/${dirCid}`)
   })
 
   it('should preload content retrieved with files.ls by CID', async () => {
-    const res = await ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) })
-    const dirCid = res[res.length - 1].hash
+    const res = await all(ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) }))
+    const dirCid = res[res.length - 1].cid
     await MockPreloadNode.waitForCids(dirCid)
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.files.ls(new CID(dirCid))
+    await all(ipfs.files.ls(dirCid))
     await MockPreloadNode.waitForCids(dirCid)
-  })
-
-  it('should preload content retrieved with files.lsReadableStream', async () => {
-    const res = await ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) })
-    const dirCid = res[res.length - 1].hash
-    await MockPreloadNode.waitForCids(dirCid)
-    await MockPreloadNode.clearPreloadCids()
-    await new Promise((resolve, reject) => {
-      ipfs.files.lsReadableStream(`/ipfs/${dirCid}`)
-        .on('data', () => {})
-        .on('error', reject)
-        .on('end', resolve)
-    })
-    await MockPreloadNode.waitForCids(`/ipfs/${dirCid}`)
-  })
-
-  it('should preload content retrieved with files.lsPullStream', async () => {
-    const res = await ipfs.add({ path: `/t/${hat()}`, content: Buffer.from(hat()) })
-    const dirCid = res[res.length - 1].hash
-    await MockPreloadNode.waitForCids(dirCid)
-    await MockPreloadNode.clearPreloadCids()
-    await new Promise((resolve, reject) => pull(
-      ipfs.files.lsPullStream(`/ipfs/${dirCid}`),
-      pull.onEnd(err => err ? reject(err) : resolve())
-    ))
-    await MockPreloadNode.waitForCids(`/ipfs/${dirCid}`)
   })
 
   it('should preload content retrieved with files.read', async () => {
-    const fileCid = (await ipfs.add(Buffer.from(hat())))[0].hash
+    const fileCid = (await all(ipfs.add(Buffer.from(hat()))))[0].cid
     await MockPreloadNode.waitForCids(fileCid)
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.read(`/ipfs/${fileCid}`)
     await MockPreloadNode.waitForCids(`/ipfs/${fileCid}`)
   })
 
-  it('should preload content retrieved with files.readReadableStream', async () => {
-    const fileCid = (await ipfs.add(Buffer.from(hat())))[0].hash
-    await MockPreloadNode.waitForCids(fileCid)
-    await MockPreloadNode.clearPreloadCids()
-    await new Promise((resolve, reject) => {
-      ipfs.files.readReadableStream(`/ipfs/${fileCid}`)
-        .on('data', () => {})
-        .on('error', reject)
-        .on('end', resolve)
-    })
-    await MockPreloadNode.waitForCids(`/ipfs/${fileCid}`)
-  })
-
-  it('should preload content retrieved with files.readPullStream', async () => {
-    const fileCid = (await ipfs.add(Buffer.from(hat())))[0].hash
-    await MockPreloadNode.waitForCids(fileCid)
-    await MockPreloadNode.clearPreloadCids()
-    await new Promise((resolve, reject) => pull(
-      ipfs.files.readPullStream(`/ipfs/${fileCid}`),
-      pull.onEnd(err => err ? reject(err) : resolve())
-    ))
-    await MockPreloadNode.waitForCids(`/ipfs/${fileCid}`)
-  })
-
   it('should preload content retrieved with files.stat', async () => {
-    const fileCid = (await ipfs.add(Buffer.from(hat())))[0].hash
+    const fileCid = (await all(ipfs.add(Buffer.from(hat()))))[0].cid
     await MockPreloadNode.waitForCids(fileCid)
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.stat(`/ipfs/${fileCid}`)
@@ -335,6 +283,7 @@ describe('preload disabled', function () {
   before(async () => {
     repo = createTempRepo()
     ipfs = await IPFS.create({
+      silent: true,
       repo,
       config: {
         Addresses: {
@@ -354,10 +303,10 @@ describe('preload disabled', function () {
   after(() => repo.teardown())
 
   it('should not preload if disabled', async () => {
-    const res = await ipfs.add(Buffer.from(hat()))
+    const res = await all(ipfs.add(Buffer.from(hat())))
 
-    return expect(MockPreloadNode.waitForCids(res[0].hash))
-      .to.eventually.be.rejected
+    return expect(MockPreloadNode.waitForCids(res[0].cid))
+      .to.eventually.be.rejected()
       .and.have.property('code')
       .that.equals('ERR_TIMEOUT')
   })

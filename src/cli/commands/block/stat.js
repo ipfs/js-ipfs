@@ -20,7 +20,7 @@ module.exports = {
     resolve((async () => {
       const ipfs = await getIpfs()
       const stats = await ipfs.block.stat(key)
-      print('Key: ' + cidToString(stats.key, { base: cidBase }))
+      print('Key: ' + cidToString(stats.cid, { base: cidBase }))
       print('Size: ' + stats.size)
     })())
   }

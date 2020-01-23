@@ -7,10 +7,10 @@ const fs = require('fs')
 const {
   DAGNode
 } = require('ipld-dag-pb')
+const all = require('it-all')
 const CID = require('cids')
 const IPFS = require('../../src/core')
 const createTempRepo = require('../utils/create-repo-nodejs')
-const expectTimeout = require('../utils/expect-timeout')
 
 // fixture structure:
 //  planets/
@@ -43,118 +43,95 @@ describe('pin', function () {
   let pin
   let repo
 
-  function expectPinned (hash, type = pinTypes.all, pinned = true) {
+  async function isPinnedWithType (path, type) {
+    try {
+      for await (const _ of pin.ls(path, { type })) { // eslint-disable-line no-unused-vars
+        return true
+      }
+      return false
+    } catch (err) {
+      return false
+    }
+  }
+
+  async function expectPinned (cid, type = pinTypes.all, pinned = true) {
     if (typeof type === 'boolean') {
       pinned = type
       type = pinTypes.all
     }
 
-    return pin.pinManager.isPinnedWithType(hash, type)
-      .then(result => {
-        expect(result.pinned).to.eql(pinned)
-        if (type === pinTypes.indirect) {
-          // indirect pins return a CID of recursively pinned root instead of 'indirect' string
-          expect(CID.isCID(result.reason)).to.be.true()
-        } else if (type !== pinTypes.all) {
-          expect(result.reason).to.eql(type)
-        }
-      })
+    const result = await isPinnedWithType(cid, type)
+    expect(result).to.eql(pinned)
   }
 
   async function clearPins () {
-    let ls = (await pin.ls()).filter(out => out.type === pinTypes.recursive)
-
-    for (let i = 0; i < ls.length; i++) {
-      await pin.rm(ls[i].hash)
+    for await (const { cid } of pin.ls({ type: pinTypes.recursive })) {
+      await pin.rm(cid)
     }
 
-    ls = (await pin.ls()).filter(out => out.type === pinTypes.direct)
-
-    for (let i = 0; i < ls.length; i++) {
-      await pin.rm(ls[i].hash)
+    for await (const { cid } of pin.ls({ type: pinTypes.direct })) {
+      await pin.rm(cid)
     }
   }
 
-  before(function (done) {
+  before(async function () {
     this.timeout(20 * 1000)
     repo = createTempRepo()
-    ipfs = new IPFS({
+    ipfs = await IPFS.create({
+      silent: true,
       repo,
-      config: {
-        Bootstrap: []
-      },
+      config: { Bootstrap: [] },
       preload: { enabled: false }
     })
-    ipfs.on('ready', () => {
-      pin = ipfs.pin
-      ipfs.add(fixtures, done)
-    })
+
+    pin = ipfs.pin
+    await all(ipfs.add(fixtures))
   })
 
-  after(function (done) {
+  after(function () {
     this.timeout(60 * 1000)
-    ipfs.stop(done)
+    return ipfs.stop()
   })
 
-  after((done) => repo.teardown(done))
+  after(() => repo.teardown())
 
-  describe('isPinnedWithType', function () {
-    beforeEach(function () {
-      return clearPins()
-        .then(() => pin.add(pins.root))
+  describe('pinned status', function () {
+    beforeEach(async () => {
+      await clearPins()
+      await pin.add(pins.root)
     })
 
-    it('when node is pinned', function () {
-      return pin.add(pins.solarWiki)
-        .then(() => pin.pinManager.isPinnedWithType(pins.solarWiki, pinTypes.all))
-        .then(pinned => expect(pinned.pinned).to.eql(true))
+    it('should be pinned when added', async () => {
+      await pin.add(pins.solarWiki)
+      return expectPinned(pins.solarWiki)
     })
 
-    it('when node is not in datastore', function () {
+    it('should not be pinned when not in datastore', () => {
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return pin.pinManager.isPinnedWithType(falseHash, pinTypes.all)
-        .then(pinned => {
-          expect(pinned.pinned).to.eql(false)
-          expect(pinned.reason).to.eql(undefined)
-        })
+      return expectPinned(falseHash, false)
     })
 
-    it('when node is in datastore but not pinned', function () {
-      return pin.rm(pins.root)
-        .then(() => expectPinned(pins.root, false))
+    it('should not be pinned when in datastore but not added', async () => {
+      await pin.rm(pins.root)
+      return expectPinned(pins.root, false)
     })
 
-    it('when pinned recursively', function () {
-      return pin.pinManager.isPinnedWithType(pins.root, pinTypes.recursive)
-        .then(result => {
-          expect(result.pinned).to.eql(true)
-          expect(result.reason).to.eql(pinTypes.recursive)
-        })
+    it('should be pinned recursively when added', () => {
+      return expectPinned(pins.root, pinTypes.recursive)
     })
 
-    it('when pinned indirectly', function () {
-      return pin.pinManager.isPinnedWithType(pins.mercuryWiki, pinTypes.indirect)
-        .then(result => {
-          expect(result.pinned).to.eql(true)
-          expect(result.reason.toBaseEncodedString()).to.eql(pins.root)
-        })
+    it('should be pinned indirectly', () => {
+      return expectPinned(pins.mercuryWiki, pinTypes.indirect)
     })
 
-    it('when pinned directly', function () {
-      return pin.add(pins.mercuryDir, { recursive: false })
-        .then(() => {
-          return pin.pinManager.isPinnedWithType(pins.mercuryDir, pinTypes.direct)
-            .then(result => {
-              expect(result.pinned).to.eql(true)
-              expect(result.reason).to.eql(pinTypes.direct)
-            })
-        })
+    it('should be pinned directly', async () => {
+      await pin.add(pins.mercuryDir, { recursive: false })
+      return expectPinned(pins.mercuryDir, pinTypes.direct)
     })
 
-    it('when not pinned', function () {
-      return clearPins()
-        .then(() => pin.pinManager.isPinnedWithType(pins.mercuryDir, pinTypes.direct))
-        .then(pin => expect(pin.pinned).to.eql(false))
+    it('should not be pinned when not in datastore or added', async () => {
+      await clearPins()
+      return expectPinned(pins.mercuryDir, pinTypes.direct, false)
     })
   })
 
@@ -163,284 +140,241 @@ describe('pin', function () {
       return clearPins()
     })
 
-    it('recursive', function () {
-      return pin.add(pins.root)
-        .then(() => {
-          expectPinned(pins.root, pinTypes.recursive)
-          const pinChecks = Object.values(pins)
-            .map(hash => expectPinned(hash))
+    it('should add recursively', async () => {
+      await pin.add(pins.root)
+      await expectPinned(pins.root, pinTypes.recursive)
 
-          return Promise.all(pinChecks)
-        })
+      const pinChecks = Object.values(pins).map(hash => expectPinned(hash))
+      return Promise.all(pinChecks)
     })
 
-    it('direct', function () {
-      return pin.add(pins.root, { recursive: false })
-        .then(() => Promise.all([
-          expectPinned(pins.root, pinTypes.direct),
-          expectPinned(pins.solarWiki, false)
-        ]))
+    it('should add directly', async () => {
+      await pin.add(pins.root, { recursive: false })
+      await Promise.all([
+        expectPinned(pins.root, pinTypes.direct),
+        expectPinned(pins.solarWiki, false)
+      ])
     })
 
-    it('recursive pin parent of direct pin', function () {
-      return pin.add(pins.solarWiki, { recursive: false })
-        .then(() => pin.add(pins.root))
-        .then(() => Promise.all([
-          // solarWiki is pinned both directly and indirectly o.O
-          expectPinned(pins.solarWiki, pinTypes.direct),
-          expectPinned(pins.solarWiki, pinTypes.indirect)
-        ]))
+    it('should recursively pin parent of direct pin', async () => {
+      await pin.add(pins.solarWiki, { recursive: false })
+      await pin.add(pins.root)
+      await Promise.all([
+        // solarWiki is pinned both directly and indirectly o.O
+        expectPinned(pins.solarWiki, pinTypes.direct),
+        expectPinned(pins.solarWiki, pinTypes.indirect)
+      ])
     })
 
-    it('directly pinning a recursive pin fails', function () {
-      return pin.add(pins.root)
-        .then(() => pin.add(pins.root, { recursive: false }))
-        .catch(err => expect(err).to.match(/already pinned recursively/))
+    it('should fail to directly pin a recursive pin', async () => {
+      await pin.add(pins.root)
+      return expect(pin.add(pins.root, { recursive: false }))
+        .to.eventually.be.rejected()
+        .with(/already pinned recursively/)
     })
 
-    it('can\'t pin item not in datastore', function () {
+    it('should fail to pin a hash not in datastore', function () {
       this.timeout(5 * 1000)
       const falseHash = `${pins.root.slice(0, -2)}ss`
-      return expectTimeout(pin.add(falseHash), 4000)
+      return expect(pin.add(falseHash, { timeout: '2s' }))
+        .to.eventually.be.rejected()
+        .with.a.property('code').that.equals('ERR_TIMEOUT')
     })
 
     // TODO block rm breaks subsequent tests
-    it.skip('needs all children in datastore to pin recursively', () => {
-      return ipfs.block.rm(pins.mercuryWiki)
-        .then(() => expectTimeout(pin.add(pins.root), 4000))
-    })
+    // it.skip('needs all children in datastore to pin recursively', () => {
+    //   return ipfs.block.rm(pins.mercuryWiki)
+    //     .then(() => expectTimeout(pin.add(pins.root), 4000))
+    // })
   })
 
   describe('ls', function () {
-    before(function () {
-      return clearPins()
-        .then(() => Promise.all([
-          pin.add(pins.root),
-          pin.add(pins.mercuryDir, { recursive: false })
-        ]))
+    before(async () => {
+      await clearPins()
+      await Promise.all([
+        pin.add(pins.root),
+        pin.add(pins.mercuryDir, { recursive: false })
+      ])
     })
 
-    it('lists pins of a particular hash', function () {
-      return pin.ls(pins.mercuryDir)
-        .then(out => expect(out[0].hash).to.eql(pins.mercuryDir))
+    it('should list pins of a particular CID', async () => {
+      const out = await all(pin.ls(pins.mercuryDir))
+      expect(out[0].cid.toString()).to.eql(pins.mercuryDir)
     })
 
-    it('indirect pins supersedes direct pins', function () {
-      return pin.ls()
-        .then(ls => {
-          const pinType = ls.find(out => out.hash === pins.mercuryDir).type
-          expect(pinType).to.eql(pinTypes.indirect)
-        })
+    it('should list indirect pins that supersede direct pins', async () => {
+      const ls = await all(pin.ls())
+      const pinType = ls.find(out => out.cid.toString() === pins.mercuryDir).type
+      expect(pinType).to.eql(pinTypes.indirect)
     })
 
-    describe('list pins of type', function () {
-      it('all', function () {
-        return pin.ls()
-          .then(out =>
-            expect(out).to.deep.include.members([
-              {
-                type: 'recursive',
-                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
-              },
-              {
-                type: 'indirect',
-                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG'
-              },
-              {
-                type: 'indirect',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
-              },
-              {
-                type: 'indirect',
-                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
-              }
-            ])
-          )
-      })
+    it('should list all pins', async () => {
+      const out = await all(pin.ls())
 
-      it('all direct', function () {
-        return pin.ls({ type: 'direct' })
-          .then(out =>
-            expect(out).to.deep.include.members([
-              {
-                type: 'direct',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
-              }
-            ])
-          )
-      })
+      expect(out).to.deep.include.members([
+        {
+          type: 'recursive',
+          cid: new CID('QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys')
+        },
+        {
+          type: 'indirect',
+          cid: new CID('QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG')
+        },
+        {
+          type: 'indirect',
+          cid: new CID('QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
+        },
+        {
+          type: 'indirect',
+          cid: new CID('QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi')
+        }
+      ])
+    })
 
-      it('all recursive', function () {
-        return pin.ls({ type: 'recursive' })
-          .then(out =>
-            expect(out).to.deep.include.members([
-              {
-                type: 'recursive',
-                hash: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
-              }
-            ])
-          )
-      })
+    it('should list all direct pins', async () => {
+      const out = await all(pin.ls({ type: 'direct' }))
 
-      it('all indirect', function () {
-        return pin.ls({ type: 'indirect' })
-          .then(out =>
-            expect(out).to.deep.include.members([
-              {
-                type: 'indirect',
-                hash: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG'
-              },
-              {
-                type: 'indirect',
-                hash: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
-              },
-              {
-                type: 'indirect',
-                hash: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
-              }
-            ])
-          )
-      })
+      expect(out).to.deep.include.members([
+        {
+          type: 'direct',
+          cid: new CID('QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
+        }
+      ])
+    })
 
-      it('direct for CID', function () {
-        return pin.ls(pins.mercuryDir, { type: 'direct' })
-          .then(out =>
-            expect(out).to.have.deep.members([
-              {
-                type: 'direct',
-                hash: pins.mercuryDir
-              }
-            ])
-          )
-      })
+    it('should list all recursive pins', async () => {
+      const out = await all(pin.ls({ type: 'recursive' }))
 
-      it('direct for path', function () {
-        return pin.ls(`/ipfs/${pins.root}/mercury/`, { type: 'direct' })
-          .then(out =>
-            expect(out).to.have.deep.members([
-              {
-                type: 'direct',
-                hash: pins.mercuryDir
-              }
-            ])
-          )
-      })
+      expect(out).to.deep.include.members([
+        {
+          type: 'recursive',
+          cid: new CID('QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys')
+        }
+      ])
+    })
 
-      it('direct for path (no match)', function (done) {
-        pin.ls(`/ipfs/${pins.root}/mercury/wiki.md`, { type: 'direct' }, (err, pinset) => {
-          expect(err).to.exist()
-          expect(pinset).to.not.exist()
-          done()
-        })
-      })
+    it('should list all indirect pins', async () => {
+      const out = await all(pin.ls({ type: 'indirect' }))
 
-      it('direct for CID (no match)', function (done) {
-        pin.ls(pins.root, { type: 'direct' }, (err, pinset) => {
-          expect(err).to.exist()
-          expect(pinset).to.not.exist()
-          done()
-        })
-      })
+      expect(out).to.deep.include.members([
+        {
+          type: 'indirect',
+          cid: new CID('QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG')
+        },
+        {
+          type: 'indirect',
+          cid: new CID('QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
+        },
+        {
+          type: 'indirect',
+          cid: new CID('QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi')
+        }
+      ])
+    })
 
-      it('recursive for CID', function () {
-        return pin.ls(pins.root, { type: 'recursive' })
-          .then(out =>
-            expect(out).to.have.deep.members([
-              {
-                type: 'recursive',
-                hash: pins.root
-              }
-            ])
-          )
-      })
+    it('should list direct pins for CID', async () => {
+      const out = await all(pin.ls(pins.mercuryDir, { type: 'direct' }))
 
-      it('recursive for CID (no match)', function (done) {
-        return pin.ls(pins.mercuryDir, { type: 'recursive' }, (err, pinset) => {
-          expect(err).to.exist()
-          expect(pinset).to.not.exist()
-          done()
-        })
-      })
+      expect(out).to.have.deep.members([
+        {
+          type: 'direct',
+          cid: new CID(pins.mercuryDir)
+        }
+      ])
+    })
 
-      it('indirect for CID', function () {
-        return pin.ls(pins.solarWiki, { type: 'indirect' })
-          .then(out =>
-            expect(out).to.have.deep.members([
-              {
-                type: `indirect through ${pins.root}`,
-                hash: pins.solarWiki
-              }
-            ])
-          )
-      })
+    it('should list direct pins for path', async () => {
+      const out = await all(pin.ls(`/ipfs/${pins.root}/mercury/`, { type: 'direct' }))
 
-      it('indirect for CID (no match)', function (done) {
-        pin.ls(pins.root, { type: 'indirect' }, (err, pinset) => {
-          expect(err).to.exist()
-          expect(pinset).to.not.exist()
-          done()
-        })
-      })
+      expect(out).to.have.deep.members([
+        {
+          type: 'direct',
+          cid: new CID(pins.mercuryDir)
+        }
+      ])
+    })
+
+    it('should list direct pins for path (no match)', () => {
+      return expect(all(pin.ls(`/ipfs/${pins.root}/mercury/wiki.md`, { type: 'direct' })))
+        .to.eventually.be.rejected()
+    })
+
+    it('should list direct pins for CID (no match)', () => {
+      return expect(all(pin.ls(pins.root, { type: 'direct' })))
+        .to.eventually.be.rejected()
+    })
+
+    it('should list recursive pins for CID', async () => {
+      const out = await all(pin.ls(pins.root, { type: 'recursive' }))
+
+      expect(out).to.have.deep.members([
+        {
+          type: 'recursive',
+          cid: new CID(pins.root)
+        }
+      ])
+    })
+
+    it('should list recursive pins for CID (no match)', () => {
+      return expect(all(pin.ls(pins.mercuryDir, { type: 'recursive' })))
+        .to.eventually.be.rejected()
+    })
+
+    it('should list indirect pins for CID', async () => {
+      const out = await all(pin.ls(pins.solarWiki, { type: 'indirect' }))
+
+      expect(out).to.have.deep.members([
+        {
+          type: `indirect through ${pins.root}`,
+          cid: new CID(pins.solarWiki)
+        }
+      ])
+    })
+
+    it('should list indirect pins for CID (no match)', () => {
+      return expect(all(pin.ls(pins.root, { type: 'indirect' })))
+        .to.eventually.be.rejected()
     })
   })
 
   describe('rm', function () {
-    beforeEach(function () {
-      return clearPins()
-        .then(() => pin.add(pins.root))
+    beforeEach(async () => {
+      await clearPins()
+      await pin.add(pins.root)
     })
 
-    it('a recursive pin', function () {
-      return pin.rm(pins.root)
-        .then(() => {
-          return Promise.all([
-            expectPinned(pins.root, false),
-            expectPinned(pins.mercuryWiki, false)
-          ])
-        })
+    it('should remove a recursive pin', async () => {
+      await pin.rm(pins.root)
+      await Promise.all([
+        expectPinned(pins.root, false),
+        expectPinned(pins.mercuryWiki, false)
+      ])
     })
 
-    it('a direct pin', function () {
-      return clearPins()
-        .then(() => pin.add(pins.mercuryDir, { recursive: false }))
-        .then(() => pin.rm(pins.mercuryDir))
-        .then(() => expectPinned(pins.mercuryDir, false))
+    it('should remove a direct pin', async () => {
+      await clearPins()
+      await pin.add(pins.mercuryDir, { recursive: false })
+      await pin.rm(pins.mercuryDir)
+      await expectPinned(pins.mercuryDir, false)
     })
 
-    it('fails to remove an indirect pin', function () {
-      return pin.rm(pins.solarWiki)
-        .catch(err => expect(err).to.match(/is pinned indirectly under/))
-        .then(() => expectPinned(pins.solarWiki))
+    it('should fail to remove an indirect pin', async () => {
+      await expect(pin.rm(pins.solarWiki))
+        .to.eventually.be.rejected()
+        .with(/is pinned indirectly under/)
+      await expectPinned(pins.solarWiki)
     })
 
-    it('fails when an item is not pinned', function () {
-      return pin.rm(pins.root)
-        .then(() => pin.rm(pins.root))
-        .catch(err => expect(err).to.match(/is not pinned/))
-    })
-  })
-
-  describe('flush', function () {
-    beforeEach(function () {
-      return pin.add(pins.root)
-    })
-
-    it('flushes', function () {
-      return pin.ls()
-        .then(ls => expect(ls.length).to.eql(4))
-        .then(() => {
-          // indirectly trigger a datastore flush by adding something
-          return clearPins()
-            .then(() => pin.add(pins.mercuryWiki))
-        })
-        .then(() => pin.pinManager.load())
-        .then(() => pin.ls())
-        .then(ls => expect(ls.length).to.eql(1))
+    it('should fail when an item is not pinned', async () => {
+      await pin.rm(pins.root)
+      await expect(pin.rm(pins.root))
+        .to.eventually.be.rejected()
+        .with(/is not pinned/)
     })
   })
 
   describe('non-dag-pb nodes', function () {
-    it('pins dag-cbor', async () => {
+    it('should pin dag-cbor', async () => {
       const cid = await ipfs.dag.put({}, {
         format: 'dag-cbor',
         hashAlg: 'sha2-256'
@@ -448,15 +382,15 @@ describe('pin', function () {
 
       await pin.add(cid)
 
-      const pins = await pin.ls()
+      const pins = await all(pin.ls())
 
       expect(pins).to.deep.include({
         type: 'recursive',
-        hash: cid.toString()
+        cid
       })
     })
 
-    it('pins raw', async () => {
+    it('should pin raw', async () => {
       const cid = await ipfs.dag.put(Buffer.alloc(0), {
         format: 'raw',
         hashAlg: 'sha2-256'
@@ -464,15 +398,15 @@ describe('pin', function () {
 
       await pin.add(cid)
 
-      const pins = await pin.ls()
+      const pins = await all(pin.ls())
 
       expect(pins).to.deep.include({
         type: 'recursive',
-        hash: cid.toString()
+        cid
       })
     })
 
-    it('pins dag-cbor with dag-pb child', async () => {
+    it('should pin dag-cbor with dag-pb child', async () => {
       const child = await ipfs.dag.put(new DAGNode(Buffer.alloc(0)), {
         format: 'dag-pb',
         hashAlg: 'sha2-256'
@@ -488,14 +422,14 @@ describe('pin', function () {
         recursive: true
       })
 
-      const pins = await pin.ls()
+      const pins = await all(pin.ls())
 
       expect(pins).to.deep.include({
-        hash: parent.toString(),
+        cid: parent,
         type: 'recursive'
       })
       expect(pins).to.deep.include({
-        hash: child.toString(),
+        cid: child,
         type: 'indirect'
       })
     })

@@ -3,7 +3,6 @@
 const PeerId = require('peer-id')
 const { Key, Errors } = require('interface-datastore')
 const errcode = require('err-code')
-const promisify = require('promisify-es6')
 const debug = require('debug')
 const log = debug('ipfs:ipns:publisher')
 log.error = debug('ipfs:ipns:publisher:error')
@@ -26,7 +25,7 @@ class IpnsPublisher {
       throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
     }
 
-    const peerId = await promisify(PeerId.createFromPrivKey)(privKey.bytes)
+    const peerId = await PeerId.createFromPrivKey(privKey.bytes)
     const record = await this._updateOrCreateRecord(privKey, value, lifetime, peerId)
 
     return this._putRecordToRouting(record, peerId)

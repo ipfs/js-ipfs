@@ -1,9 +1,8 @@
 'use strict'
 
-const bl = require('bl')
 const fs = require('fs')
 const multibase = require('multibase')
-const promisify = require('promisify-es6')
+const concat = require('it-concat')
 const { cidToString } = require('../../../utils/cid')
 
 module.exports = {
@@ -41,14 +40,9 @@ module.exports = {
       let data
 
       if (argv.block) {
-        data = await promisify(fs.readFile)(argv.block)
+        data = await fs.readFileSync(argv.block)
       } else {
-        data = await new Promise((resolve, reject) => {
-          argv.getStdin().pipe(bl((err, input) => {
-            if (err) return reject(err)
-            resolve(input)
-          }))
-        })
+        data = (await concat(argv.getStdin())).slice()
       }
 
       const ipfs = await argv.getIpfs()

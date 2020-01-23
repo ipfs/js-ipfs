@@ -1,35 +1,19 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('ipfs:http-gateway')
-log.error = debug('ipfs:http-gateway:error')
-
-const fileType = require('file-type')
-const mime = require('mime-types')
 const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
-const peek = require('buffer-peek-stream')
-
+const last = require('it-last')
 const multibase = require('multibase')
 const { resolver } = require('ipfs-http-response')
+const detectContentType = require('ipfs-http-response/src/utils/content-type')
+const isIPFS = require('is-ipfs')
+const toStream = require('it-to-stream')
 const PathUtils = require('../utils/path')
 const { cidToString } = require('../../../utils/cid')
-const isIPFS = require('is-ipfs')
 
-function detectContentType (path, chunk) {
-  let fileSignature
-
-  // try to guess the filetype based on the first bytes
-  // note that `file-type` doesn't support svgs, therefore we assume it's a svg if ref looks like it
-  if (!path.endsWith('.svg')) {
-    fileSignature = fileType(chunk)
-  }
-
-  // if we were unable to, fallback to the path which might contain the extension
-  const mimeType = mime.lookup(fileSignature ? fileSignature.ext : path)
-
-  return mime.contentType(mimeType)
-}
+const log = debug('ipfs:http-gateway')
+log.error = debug('ipfs:http-gateway:error')
 
 module.exports = {
 
@@ -42,7 +26,7 @@ module.exports = {
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
     let ipfsPath = decodeURI(path.startsWith('/ipns/')
-      ? await ipfs.name.resolve(path, { recursive: true })
+      ? await last(ipfs.name.resolve(path, { recursive: true }))
       : path)
 
     let directory = false
@@ -133,21 +117,14 @@ module.exports = {
       }
     }
 
-    const rawStream = ipfs.catReadableStream(data.cid, catOptions)
+    const { source, contentType } = await detectContentType(ipfsPath, ipfs.cat(data.cid, catOptions))
+    const responseStream = toStream.readable((async function * () {
+      for await (const chunk of source) {
+        yield chunk.slice() // Convert BufferList to Buffer
+      }
+    })())
 
-    // Pass-through Content-Type sniffing over initial bytes
-    const { peekedStream, contentType } = await new Promise((resolve, reject) => {
-      const peekBytes = fileType.minimumBytes
-      peek(rawStream, peekBytes, (err, streamHead, peekedStream) => {
-        if (err) {
-          log.error(err)
-          return reject(err)
-        }
-        resolve({ peekedStream, contentType: detectContentType(ipfsPath, streamHead) })
-      })
-    })
-
-    const res = h.response(peekedStream).code(rangeResponse ? 206 : 200)
+    const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
 
     // Etag maps directly to an identifier for a specific version of a resource
     // and enables smart client-side caching thanks to If-None-Match
@@ -214,5 +191,4 @@ module.exports = {
     }
     return h.continue
   }
-
 }

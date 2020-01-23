@@ -4,13 +4,11 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
-const parallel = require('async/parallel')
+const all = require('it-all')
+const concat = require('it-concat')
 
-const IPFSFactory = require('ipfsd-ctl')
-const f = IPFSFactory.create({
-  type: 'js',
-  IpfsClient: require('ipfs-http-client')
-})
+const factory = require('../utils/factory')
+const df = factory()
 
 const config = {
   Bootstrap: [],
@@ -24,7 +22,7 @@ const config = {
   }
 }
 
-const createNode = () => f.spawn({
+const createNode = () => df.spawn({
   exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
   config,
   initOptions: { bits: 512 },
@@ -38,71 +36,45 @@ describe.skip('kad-dht is routing content and peers correctly', () => {
   let addrB
   let addrC
 
-  let nodes
-  before(function (done) {
+  before(async function () {
     this.timeout(30 * 1000)
 
-    parallel([
-      (cb) => createNode(cb),
-      (cb) => createNode(cb),
-      (cb) => createNode(cb)
-    ], (err, _nodes) => {
-      expect(err).to.not.exist()
-      nodes = _nodes
-      nodeA = _nodes[0].api
-      nodeB = _nodes[1].api
-      nodeC = _nodes[2].api
-      parallel([
-        (cb) => nodeA.id(cb),
-        (cb) => nodeB.id(cb),
-        (cb) => nodeC.id(cb)
-      ], (err, ids) => {
-        expect(err).to.not.exist()
-        addrB = ids[1].addresses[0]
-        addrC = ids[2].addresses[0]
-        parallel([
-          (cb) => nodeA.swarm.connect(addrB, cb),
-          (cb) => nodeB.swarm.connect(addrC, cb)
-        ], done)
-      })
-    })
+    nodeA = (await createNode()).api
+    nodeB = (await createNode()).api
+    nodeC = (await createNode()).api
+
+    addrB = (await nodeB.id()).addresses[0]
+    addrC = (await nodeC.id()).addresses[0]
+
+    await nodeA.swarm.connect(addrB)
+    await nodeB.swarm.connect(addrC)
   })
 
-  after((done) => parallel(nodes.map((node) => (cb) => node.stop(cb)), done))
+  after(() => df.clean())
 
-  it('add a file in B, fetch in A', function (done) {
+  it('add a file in B, fetch in A', async function () {
     this.timeout(30 * 1000)
     const file = {
       path: 'testfile1.txt',
       content: Buffer.from('hello kad 1')
     }
 
-    nodeB.add(file, (err, filesAdded) => {
-      expect(err).to.not.exist()
+    const filesAdded = await all(nodeB.add(file))
+    const data = await concat(nodeA.cat(filesAdded[0].cid))
 
-      nodeA.cat(filesAdded[0].hash, (err, data) => {
-        expect(err).to.not.exist()
-        expect(data).to.eql(file.content)
-        done()
-      })
-    })
+    expect(data.slice()).to.eql(file.content)
   })
 
-  it('add a file in C, fetch through B in A', function (done) {
+  it('add a file in C, fetch through B in A', async function () {
     this.timeout(30 * 1000)
     const file = {
       path: 'testfile2.txt',
       content: Buffer.from('hello kad 2')
     }
 
-    nodeC.add(file, (err, filesAdded) => {
-      expect(err).to.not.exist()
+    const filesAdded = await all(nodeC.add(file))
+    const data = await concat(nodeA.cat(filesAdded[0].cid))
 
-      nodeA.cat(filesAdded[0].hash, (err, data) => {
-        expect(err).to.not.exist()
-        expect(data).to.eql(file.content)
-        done()
-      })
-    })
+    expect(data.slice()).to.eql(file.content)
   })
 })

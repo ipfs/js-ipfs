@@ -7,7 +7,7 @@ const defaultList = require('../../../src/core/runtime/config-nodejs.js')().Boot
 
 module.exports = (http) => {
   describe('/bootstrap', () => {
-    const validIp4 = '/ip4/101.236.176.52/tcp/4001/ipfs/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+    const validIp4 = '/ip4/101.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
     let api
 
     before(() => {

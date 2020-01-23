@@ -1,21 +1,18 @@
 'use strict'
 
-const callbackify = require('callbackify')
 const Big = require('bignumber.js')
-const Pushable = require('pull-pushable')
-const human = require('human-to-milliseconds')
-const toStream = require('pull-stream-to-stream')
+const parseDuration = require('parse-duration')
 const errCode = require('err-code')
 
-function bandwidthStats (self, opts) {
+function getBandwidthStats (libp2p, opts) {
   let stats
 
   if (opts.peer) {
-    stats = self.libp2p.stats.forPeer(opts.peer)
+    stats = libp2p.metrics.forPeer(opts.peer)
   } else if (opts.proto) {
-    stats = self.libp2p.stats.forProtocol(opts.proto)
+    stats = libp2p.metrics.forProtocol(opts.proto)
   } else {
-    stats = self.libp2p.stats.global
+    stats = libp2p.metrics.global
   }
 
   if (!stats) {
@@ -27,57 +24,42 @@ function bandwidthStats (self, opts) {
     }
   }
 
-  const snapshot = stats.snapshot
-  const movingAverages = stats.movingAverages
+  const { movingAverages, snapshot } = stats
 
   return {
     totalIn: snapshot.dataReceived,
     totalOut: snapshot.dataSent,
-    rateIn: new Big(movingAverages.dataReceived['60000'].movingAverage() / 60),
-    rateOut: new Big(movingAverages.dataSent['60000'].movingAverage() / 60)
+    rateIn: new Big(movingAverages.dataReceived[60000].movingAverage() / 60),
+    rateOut: new Big(movingAverages.dataSent[60000].movingAverage() / 60)
   }
 }
 
-module.exports = function stats (self) {
-  const _bwPullStream = (opts) => {
-    opts = opts || {}
-    let interval = null
-    const stream = Pushable(true, () => {
-      if (interval) {
-        clearInterval(interval)
-      }
-    })
+module.exports = ({ libp2p }) => {
+  return async function * (options) {
+    options = options || {}
 
-    if (opts.poll) {
-      let value
-      try {
-        value = human(opts.interval || '1s')
-      } catch (err) {
-        // Pull stream expects async work, so we need to simulate it.
-        process.nextTick(() => {
-          stream.end(errCode(err, 'ERR_INVALID_POLL_INTERVAL'))
-        })
-      }
-
-      interval = setInterval(() => {
-        stream.push(bandwidthStats(self, opts))
-      }, value)
-    } else {
-      stream.push(bandwidthStats(self, opts))
-      stream.end()
+    if (!options.poll) {
+      yield getBandwidthStats(libp2p, options)
+      return
     }
 
-    return stream.source
-  }
+    let interval = options.interval || 1000
+    try {
+      interval = typeof interval === 'string' ? parseDuration(interval) : interval
+      if (!interval || interval < 0) throw new Error('invalid poll interval')
+    } catch (err) {
+      throw errCode(err, 'ERR_INVALID_POLL_INTERVAL')
+    }
 
-  return {
-    bitswap: require('./bitswap')(self).stat,
-    repo: require('./repo')(self).stat,
-    bw: callbackify.variadic(async (opts) => { // eslint-disable-line require-await
-      opts = opts || {}
-      return bandwidthStats(self, opts)
-    }),
-    bwReadableStream: (opts) => toStream.source(_bwPullStream(opts)),
-    bwPullStream: _bwPullStream
+    let timeoutId
+    try {
+      while (true) {
+        yield getBandwidthStats(libp2p, options)
+        // eslint-disable-next-line no-loop-func
+        await new Promise(resolve => { timeoutId = setTimeout(resolve, interval) })
+      }
+    } finally {
+      clearTimeout(timeoutId)
+    }
   }
 }

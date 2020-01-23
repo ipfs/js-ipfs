@@ -7,11 +7,12 @@ const path = require('path')
 const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { repoVersion } = require('ipfs-repo')
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)
 const runOnAndOff = require('../utils/on-and-off')
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
+const { isWindows } = require('../utils/platforms')
 
 describe('general cli options', () => runOnAndOff.off((thing) => {
   it('should handle --silent flag', async () => {
@@ -77,20 +78,27 @@ describe('--migrate', () => {
 
     const daemon = ipfs('daemon --migrate')
     let stdout = ''
+    let killed = false
 
     daemon.stdout.on('data', data => {
       stdout += data.toString('utf8')
 
-      if (stdout.includes('Daemon is ready')) {
+      if (stdout.includes('Daemon is ready') && !killed) {
+        killed = true
         daemon.kill()
       }
     })
 
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
+    if (isWindows) {
+      await expect(daemon)
+        .to.eventually.be.rejected()
+        .and.to.include({ killed: true })
+        .and.to.have.a.property('stdout').that.includes('Daemon is ready')
+    } else {
+      await expect(daemon)
+        .to.eventually.include('Daemon is ready')
+        .and.to.include('Received interrupt signal, shutting down...')
+    }
 
     const version = await getRepoVersion()
     expect(version).to.equal(repoVersion) // Should have migrated to latest

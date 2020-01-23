@@ -1,20 +1,20 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const { normalizePath } = require('./utils')
+const { normalizeCidPath } = require('../utils')
 
-module.exports = function (self) {
-  return async function * catAsyncIterator (ipfsPath, options) {
+module.exports = function ({ ipld, preload }) {
+  return async function * cat (ipfsPath, options) {
     options = options || {}
 
-    ipfsPath = normalizePath(ipfsPath)
+    ipfsPath = normalizeCidPath(ipfsPath)
 
     if (options.preload !== false) {
       const pathComponents = ipfsPath.split('/')
-      self._preload(pathComponents[0])
+      preload(pathComponents[0])
     }
 
-    const file = await exporter(ipfsPath, self._ipld, options)
+    const file = await exporter(ipfsPath, ipld, options)
 
     // File may not have unixfs prop if small & imported with rawLeaves true
     if (file.unixfs && file.unixfs.type.includes('dir')) {

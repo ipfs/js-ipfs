@@ -6,13 +6,12 @@ const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const base64url = require('base64url')
 const { fromB58String } = require('multihashes')
-const peerId = require('peer-id')
-const isNode = require('detect-node')
+const PeerId = require('peer-id')
+const { isNode } = require('ipfs-utils/src/env')
 const ipns = require('ipns')
-const waitFor = require('../utils/wait-for')
 const delay = require('delay')
-const promisify = require('promisify-es6')
-
+const last = require('it-last')
+const waitFor = require('../utils/wait-for')
 const factory = require('../utils/factory')
 
 const namespace = '/record/'
@@ -20,10 +19,8 @@ const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
 describe('name-pubsub', function () {
   const df = factory()
-  // TODO make this work in the browser and between daemon and in-proc in nodess
-  if (!isNode) {
-    return
-  }
+  // TODO make this work in the browser and between daemon and in-proc in nodes
+  if (!isNode) return
 
   let nodes
   let nodeA
@@ -68,35 +65,23 @@ describe('name-pubsub', function () {
       return subscribed === true
     }
 
-    // Wait until a peer subscribes a topic
-    const waitForPeerToSubscribe = async (node, topic) => {
-      for (let i = 0; i < 5; i++) {
-        const res = await node.pubsub.peers(topic)
-
-        if (res && res.length) {
-          return
-        }
-
-        await delay(2000)
-      }
-
-      throw new Error(`Could not find subscription for topic ${topic}`)
-    }
-
     const keys = ipns.getIdKeys(fromB58String(idA.id))
     const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
 
-    await expect(nodeB.name.resolve(idA.id))
+    await expect(last(nodeB.name.resolve(idA.id)))
       .to.eventually.be.rejected()
       .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
 
-    await waitForPeerToSubscribe(nodeA, topic)
+    await waitFor(async () => {
+      const res = await nodeA.pubsub.peers(topic)
+      return res && res.length
+    }, { name: `node A to subscribe to ${topic}` })
     await nodeB.pubsub.subscribe(topic, checkMessage)
     await nodeA.name.publish(ipfsRef, { resolve: false })
     await waitFor(alreadySubscribed)
     await delay(1000) // guarantee record is written
 
-    const res = await nodeB.name.resolve(idA.id)
+    const res = await last(nodeB.name.resolve(idA.id))
 
     expect(res).to.equal(ipfsRef)
   })
@@ -104,12 +89,12 @@ describe('name-pubsub', function () {
   it('should self resolve, publish and then resolve correctly', async function () {
     this.timeout(6000)
     const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
-    const [{ path }] = await nodeA.add(Buffer.from('pubsub records'))
+    const { path } = await last(nodeA.add(Buffer.from('pubsub records')))
 
-    const resolvesEmpty = await nodeB.name.resolve(idB.id)
+    const resolvesEmpty = await last(nodeB.name.resolve(idB.id))
     expect(resolvesEmpty).to.be.eq(emptyDirCid)
 
-    await expect(nodeA.name.resolve(idB.id))
+    await expect(last(nodeA.name.resolve(idB.id)))
       .to.eventually.be.rejected()
       .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
 
@@ -119,10 +104,10 @@ describe('name-pubsub', function () {
       value: `/ipfs/${path}`
     })
 
-    const resolveB = await nodeB.name.resolve(idB.id)
+    const resolveB = await last(nodeB.name.resolve(idB.id))
     expect(resolveB).to.be.eq(`/ipfs/${path}`)
-    await delay(5000)
-    const resolveA = await nodeA.name.resolve(idB.id)
+    await delay(1000)
+    const resolveA = await last(nodeA.name.resolve(idB.id))
     expect(resolveA).to.be.eq(`/ipfs/${path}`)
   })
 
@@ -157,8 +142,8 @@ describe('name-pubsub', function () {
     await nodeB.pubsub.subscribe(topic, checkMessage)
     await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
     await waitFor(alreadySubscribed)
-    const messageKey = await promisify(peerId.createFromPubKey)(publishedMessage.key)
-    const pubKeyPeerId = await promisify(peerId.createFromPubKey)(publishedMessageData.pubKey)
+    const messageKey = await PeerId.createFromPubKey(publishedMessage.key)
+    const pubKeyPeerId = await PeerId.createFromPubKey(publishedMessageData.pubKey)
 
     expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
     expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)

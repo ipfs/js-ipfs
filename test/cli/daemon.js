@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
-const isWindows = require('../utils/platforms').isWindows
+const { isWindows } = require('../utils/platforms')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
@@ -12,26 +12,55 @@ const fs = require('fs')
 const tempWrite = require('temp-write')
 const pkg = require('../../package.json')
 
-const skipOnWindows = isWindows() ? it.skip : it
-const daemonReady = (daemon) => {
-  return new Promise((resolve, reject) => {
-    daemon.stdout.on('data', (data) => {
-      if (data.toString().includes('Daemon is ready')) {
+const daemonReady = async (daemon, options) => {
+  options = options || {}
+
+  let stdout = ''
+  let isReady = false
+
+  const readyPromise = new Promise((resolve, reject) => {
+    daemon.stdout.on('data', async data => {
+      stdout += data
+
+      if (stdout.includes('Daemon is ready') && !isReady) {
+        isReady = true
+
+        if (options.onReady) {
+          try {
+            await options.onReady(stdout)
+          } catch (err) {
+            return reject(err)
+          }
+        }
+
         resolve()
       }
     })
-    daemon.stderr.on('data', (data) => {
-      const line = data.toString('utf8')
 
-      if (!line.includes('ExperimentalWarning')) {
-        reject(new Error('Daemon didn\'t start ' + data.toString('utf8')))
+    daemon.stderr.on('data', (data) => {
+      if (!data.toString().includes('ExperimentalWarning')) {
+        reject(new Error('Daemon didn\'t start ' + data))
       }
     })
-
-    daemon.catch(err => {
-      reject(err)
-    })
   })
+
+  try {
+    await readyPromise
+    daemon.kill(options.killSignal)
+    await daemon
+    return stdout
+  } catch (err) {
+    // Windows does not support sending signals, but Node.js offers some
+    // emulation. Sending SIGINT, SIGTERM, and SIGKILL cause the unconditional
+    // termination of the target process.
+    // https://nodejs.org/dist/latest/docs/api/process.html#process_signal_events
+    // i.e. The process will exit with non-zero code (normally our signal
+    // handlers cleanly exit)
+    if (isWindows && isReady) {
+      return stdout
+    }
+    throw err
+  }
 }
 const checkLock = (repo) => {
   // skip on windows
@@ -46,32 +75,15 @@ const checkLock = (repo) => {
   }
 }
 
-async function testSignal (ipfs, sig) {
+async function testSignal (ipfs, killSignal) {
   await ipfs('init')
   await ipfs('config', 'Addresses', JSON.stringify({
     API: '/ip4/127.0.0.1/tcp/0',
     Gateway: '/ip4/127.0.0.1/tcp/0'
   }), '--json')
 
-  return new Promise((resolve, reject) => {
-    const daemon = ipfs('daemon')
-    let stdout = ''
-
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill(sig)
-        resolve()
-      }
-    })
-
-    daemon.catch((err) => {
-      if (!err.killed) {
-        reject(err)
-      }
-    })
-  })
+  const daemon = ipfs('daemon')
+  return daemonReady(daemon, { killSignal })
 }
 
 describe('daemon', () => {
@@ -85,7 +97,8 @@ describe('daemon', () => {
 
   afterEach(() => clean(repoPath))
 
-  skipOnWindows('do not crash if Addresses.Swarm is empty', async function () {
+  it('should not crash if Addresses.Swarm is empty', async function () {
+    if (isWindows) return this.skip()
     this.timeout(100 * 1000)
     // These tests are flaky, but retrying 3 times seems to make it work 99% of the time
     this.retries(3)
@@ -98,22 +111,7 @@ describe('daemon', () => {
     }), '--json')
 
     const daemon = ipfs('daemon')
-    let stdout = ''
-
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill()
-      }
-    })
-
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-      .and.to.have.property('stdout').that.includes('Daemon is ready')
+    await daemonReady(daemon)
   })
 
   it('should allow bind to multiple addresses for API and Gateway', async function () {
@@ -134,24 +132,10 @@ describe('daemon', () => {
     await ipfs(`config Addresses.Gateway ${JSON.stringify(gatewayAddrs)} --json`)
 
     const daemon = ipfs('daemon')
-    let stdout = ''
+    const stdout = await daemonReady(daemon)
 
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill()
-      }
-    })
-
-    const err = await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-
-    apiAddrs.forEach(addr => expect(err.stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
-    gatewayAddrs.forEach(addr => expect(err.stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
+    apiAddrs.forEach(addr => expect(stdout).to.include(`API listening on ${addr.slice(0, -2)}`))
+    gatewayAddrs.forEach(addr => expect(stdout).to.include(`Gateway (read only) listening on ${addr.slice(0, -2)}`))
   })
 
   it('should allow no bind addresses for API and Gateway', async function () {
@@ -162,25 +146,13 @@ describe('daemon', () => {
     await ipfs('config Addresses.Gateway [] --json')
 
     const daemon = ipfs('daemon')
-    let stdout = ''
+    const stdout = await daemonReady(daemon)
 
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill()
-      }
-    })
-
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-      .and.have.property('stdout').that.does.not.include(/(API|Gateway \(read only\)) listening on/g)
+    expect(stdout).to.not.include(/(API|Gateway \(read only\)) listening on/g)
   })
 
-  skipOnWindows('should handle SIGINT gracefully', async function () {
+  it('should handle SIGINT gracefully', async function () {
+    if (isWindows) return this.skip()
     this.timeout(100 * 1000)
 
     await testSignal(ipfs, 'SIGINT')
@@ -188,7 +160,8 @@ describe('daemon', () => {
     checkLock(repoPath)
   })
 
-  skipOnWindows('should handle SIGTERM gracefully', async function () {
+  it('should handle SIGTERM gracefully', async function () {
+    if (isWindows) return this.skip()
     this.timeout(100 * 1000)
 
     await testSignal(ipfs, 'SIGTERM')
@@ -196,7 +169,8 @@ describe('daemon', () => {
     checkLock(repoPath)
   })
 
-  skipOnWindows('should handle SIGHUP gracefully', async function () {
+  it('should handle SIGHUP gracefully', async function () {
+    if (isWindows) return this.skip()
     this.timeout(100 * 1000)
 
     await testSignal(ipfs, 'SIGHUP')
@@ -235,25 +209,11 @@ describe('daemon', () => {
     await ipfs('init')
 
     const daemon = ipfs('daemon')
-    let stdout = ''
+    const stdout = await daemonReady(daemon)
 
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill()
-      }
-    })
-
-    const err = await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
-
-    expect(err.stdout).to.include(`js-ipfs version: ${pkg.version}`)
-    expect(err.stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
-    expect(err.stdout).to.include(`Node.js version: ${process.versions.node}`)
+    expect(stdout).to.include(`js-ipfs version: ${pkg.version}`)
+    expect(stdout).to.include(`System version: ${os.arch()}/${os.platform()}`)
+    expect(stdout).to.include(`Node.js version: ${process.versions.node}`)
   })
 
   it('should init by default', async function () {
@@ -262,21 +222,7 @@ describe('daemon', () => {
     expect(fs.existsSync(repoPath)).to.be.false()
 
     const daemon = ipfs('daemon')
-    let stdout = ''
-
-    daemon.stdout.on('data', (data) => {
-      stdout += data.toString('utf8')
-
-      if (stdout.includes('Daemon is ready')) {
-        daemon.kill()
-      }
-    })
-
-    await expect(daemon)
-      .to.eventually.be.rejected()
-      .and.to.include({
-        killed: true
-      })
+    await daemonReady(daemon)
 
     expect(fs.existsSync(repoPath)).to.be.true()
   })
@@ -286,17 +232,23 @@ describe('daemon', () => {
     const configPath = tempWrite.sync('{"Addresses": {"API": "/ip4/127.0.0.1/tcp/9999"}}', 'config.json')
     const daemon = ipfs(`daemon --init-config ${configPath}`)
 
-    await daemonReady(daemon)
-    const out = await ipfs('config \'Addresses.API\'')
-    expect(out).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
+    await daemonReady(daemon, {
+      async onReady () {
+        const out = await ipfs('config \'Addresses.API\'')
+        expect(out).to.be.eq('/ip4/127.0.0.1/tcp/9999\n')
+      }
+    })
   })
 
   it('should init with profiles', async function () {
     this.timeout(100 * 1000)
     const daemon = ipfs('daemon --init-profile test')
 
-    await daemonReady(daemon)
-    const out = await ipfs('config Bootstrap')
-    expect(out).to.be.eq('[]\n')
+    await daemonReady(daemon, {
+      async onReady () {
+        const out = await ipfs('config Bootstrap')
+        expect(out).to.be.eq('[]\n')
+      }
+    })
   })
 })

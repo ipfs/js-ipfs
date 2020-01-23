@@ -5,18 +5,21 @@ const debug = require('debug')
 const tar = require('tar-stream')
 const log = debug('ipfs:http-api:files')
 log.error = debug('ipfs:http-api:files:error')
-const pull = require('pull-stream')
-const pushable = require('pull-pushable')
-const toStream = require('pull-stream-to-stream')
+const toIterable = require('stream-to-it')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
-const { PassThrough } = require('readable-stream')
+const { PassThrough } = require('stream')
 const multibase = require('multibase')
 const isIpfs = require('is-ipfs')
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const { cidToString } = require('../../../utils/cid')
-const { Format } = require('../../../core/components/files-regular/refs')
+const { Format } = require('../../../core/components/refs')
 const pipe = require('it-pipe')
+const all = require('it-all')
+const concat = require('it-concat')
+const ndjson = require('iterable-ndjson')
+const { map } = require('streaming-iterables')
+const streamResponse = require('../../utils/stream-response')
 
 function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
@@ -60,48 +63,17 @@ exports.cat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key, options } = request.pre.args
 
-    const stream = await new Promise((resolve, reject) => {
-      let pusher
-      let started = false
-
-      pull(
-        ipfs.catPullStream(key, options),
-        pull.drain(
-          chunk => {
-            if (!started) {
-              started = true
-              pusher = pushable()
-              resolve(toStream.source(pusher).pipe(new PassThrough()))
-            }
-            pusher.push(chunk)
-          },
-          err => {
-            if (err) {
-              log.error(err)
-
-              // We already started flowing, abort the stream
-              if (started) {
-                return pusher.end(err)
-              }
-
-              err.message = err.message === 'file does not exist'
-                ? err.message
-                : 'Failed to cat file: ' + err
-
-              return reject(err)
-            }
-
-            pusher.end()
-          }
-        )
-      )
+    return streamResponse(request, h, () => ipfs.cat(key, options), {
+      onError (err) {
+        err.message = err.message === 'file does not exist'
+          ? err.message
+          : 'Failed to cat file: ' + err.message
+      }
     })
-
-    return h.response(stream).header('X-Stream-Output', '1')
   }
 }
 
@@ -110,38 +82,32 @@ exports.get = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler (request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
+
     const pack = tar.pack()
-
-    let filesArray
-    try {
-      filesArray = await ipfs.get(key)
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to get key' })
-    }
-
     pack.entry = promisify(pack.entry.bind(pack))
 
-    Promise
-      .all(filesArray.map(file => {
-        const header = { name: file.path }
-
-        if (file.content) {
-          header.size = file.size
-          return pack.entry(header, file.content)
-        } else {
-          header.type = 'directory'
-          return pack.entry(header)
+    const streamFiles = async () => {
+      try {
+        for await (const file of ipfs.get(key)) {
+          if (file.content) {
+            const content = await concat(file.content)
+            pack.entry({ name: file.path, size: file.size }, content.slice())
+          } else {
+            pack.entry({ name: file.path, type: 'directory' })
+          }
         }
-      }))
-      .then(() => pack.finalize())
-      .catch(err => {
+        pack.finalize()
+      } catch (err) {
         log.error(err)
         pack.emit('error', err)
         pack.destroy()
-      })
+      }
+    }
+
+    streamFiles()
 
     // reply must be called right away so that tar-stream offloads its content
     // otherwise it will block in large files
@@ -214,10 +180,10 @@ exports.add = {
         }
       },
       function (source) {
-        return ipfs._addAsyncIterator(source, {
+        return ipfs.add(source, {
           cidVersion: request.query['cid-version'],
           rawLeaves: request.query['raw-leaves'],
-          progress: request.query.progress ? progressHandler : null,
+          progress: request.query.progress ? progressHandler : () => {},
           onlyHash: request.query['only-hash'],
           hashAlg: request.query.hash,
           wrapWithDirectory: request.query['wrap-with-directory'],
@@ -233,23 +199,23 @@ exports.add = {
           blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
-      async function (source) {
-        for await (const file of source) {
-          const entry = {
-            Name: file.path,
-            Hash: cidToString(file.hash, { base: request.query['cid-base'] }),
-            Size: file.size,
-            Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
-          }
-
-          if (file.mtime) {
-            entry.Mtime = file.mtime.secs
-            entry.MtimeNsecs = file.mtime.nsecs
-          }
-
-          output.write(JSON.stringify(entry) + '\n')
+      map(file => {
+        const entry = {
+          Name: file.path,
+          Hash: cidToString(file.cid, { base: request.query['cid-base'] }),
+          Size: file.size,
+          Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
         }
-      }
+
+        if (file.mtime) {
+          entry.Mtime = file.mtime.secs
+          entry.MtimeNsecs = file.mtime.nsecs
+        }
+
+        return entry
+      }),
+      ndjson.stringify,
+      toIterable.sink(output)
     )
       .then(() => {
         if (!filesParsed) {
@@ -282,7 +248,8 @@ exports.add = {
 exports.ls = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      stream: Joi.boolean()
     }).unknown()
   },
 
@@ -296,38 +263,43 @@ exports.ls = {
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    let files
-    try {
-      files = await ipfs.ls(key, { recursive })
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to list dir' })
+    const mapLink = link => {
+      const output = {
+        Name: link.name,
+        Hash: cidToString(link.cid, { base: cidBase }),
+        Size: link.size,
+        Type: toTypeCode(link.type),
+        Depth: link.depth,
+        Mode: link.mode.toString(8).padStart(4, '0')
+      }
+
+      if (link.mtime) {
+        output.Mtime = link.mtime.secs
+
+        if (link.mtime.nsecs !== null && link.mtime.nsecs !== undefined) {
+          output.MtimeNsecs = link.mtime.nsecs
+        }
+      }
+
+      return output
     }
 
-    return h.response({
-      Objects: [{
-        Hash: key,
-        Links: files.map((file) => {
-          const output = {
-            Name: file.name,
-            Hash: cidToString(file.hash, { base: cidBase }),
-            Size: file.size,
-            Type: toTypeCode(file.type),
-            Depth: file.depth,
-            Mode: file.mode.toString(8).padStart(4, '0')
-          }
+    if (!request.query.stream) {
+      let links
+      try {
+        links = await all(ipfs.ls(key, { recursive }))
+      } catch (err) {
+        throw Boom.boomify(err, { message: 'Failed to list dir' })
+      }
 
-          if (file.mtime) {
-            output.Mtime = file.mtime.secs
+      return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
+    }
 
-            if (file.mtime.nsecs !== null && file.mtime.nsecs !== undefined) {
-              output.MtimeNsecs = file.mtime.nsecs
-            }
-          }
-
-          return output
-        })
-      }]
-    })
+    return streamResponse(request, h, () => pipe(
+      ipfs.ls(key, { recursive }),
+      map(link => ({ Objects: [{ Hash: key, Links: [mapLink(link)] }] })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -369,22 +341,11 @@ exports.refs = {
       maxDepth: request.query['max-depth']
     }
 
-    // have to do this here otherwise the validation error appears in the stream tail and
-    // this doesn't work in browsers: https://github.com/ipfs/js-ipfs/issues/2519
-    if (options.edges && options.format !== Format.default) {
-      throw Boom.badRequest('Cannot set edges to true and also specify format')
-    }
-
-    return streamResponse(request, h, async (output) => {
-      for await (const ref of ipfs._refsAsyncIterator(key, options)) {
-        output.write(
-          JSON.stringify({
-            Ref: ref.ref,
-            Err: ref.err
-          }) + '\n'
-        )
-      }
-    })
+    return streamResponse(request, h, () => pipe(
+      ipfs.refs(key, options),
+      map(({ ref, err }) => ({ Ref: ref, Err: err })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -393,39 +354,10 @@ exports.refs.local = {
   handler (request, h) {
     const { ipfs } = request.server.app
 
-    return streamResponse(request, h, async (output) => {
-      for await (const ref of ipfs.refs._localAsyncIterator()) {
-        output.write(
-          JSON.stringify({
-            Ref: ref.ref,
-            Err: ref.err
-          }) + '\n'
-        )
-      }
-    })
+    return streamResponse(request, h, () => pipe(
+      ipfs.refs.local(),
+      map(({ ref, err }) => ({ Ref: ref, Err: err })),
+      ndjson.stringify
+    ))
   }
-}
-
-function streamResponse (request, h, fn) {
-  const output = new PassThrough()
-  const errorTrailer = 'X-Stream-Error'
-
-  Promise.resolve()
-    .then(() => fn(output))
-    .catch(err => {
-      request.raw.res.addTrailers({
-        [errorTrailer]: JSON.stringify({
-          Message: err.message,
-          Code: 0
-        })
-      })
-    })
-    .finally(() => {
-      output.end()
-    })
-
-  return h.response(output)
-    .header('x-chunked-output', '1')
-    .header('content-type', 'application/json')
-    .header('Trailer', errorTrailer)
 }
