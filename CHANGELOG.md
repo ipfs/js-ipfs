@@ -1,3 +1,8 @@
+<a name="42.0.0-pre.0"></a>
+# [42.0.0-pre.0](https://github.com/ipfs/js-ipfs-http-client/compare/v41.0.1...v42.0.0-pre.0) (2020-01-23)
+
+
+
 <a name="41.0.1"></a>
 ## [41.0.1](https://github.com/ipfs/js-ipfs-http-client/compare/v41.0.0...v41.0.1) (2020-01-23)
 
