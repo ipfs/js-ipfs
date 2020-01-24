@@ -268,8 +268,7 @@ function createApi ({
       localAddrs: Components.swarm.localAddrs({ peerInfo }),
       peers: Components.swarm.peers({ libp2p })
     },
-    version: Components.version({ repo }),
-    libp2p
+    version: Components.version({ repo })
   }
 
   return api
