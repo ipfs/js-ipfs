@@ -234,7 +234,7 @@ module.exports = (http) => {
         })
 
         expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys).to.include.all.keys(Object.values(pins))
+        expect(res.result.Keys).to.include.keys(Object.values(pins))
       })
 
       it('finds all pinned objects streaming', async () => {
