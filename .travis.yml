@@ -128,7 +128,7 @@ jobs:
     - stage: test
       name: external - ipfs-pubsub-room
       script:
-        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git --branch upgrade-to-latest-js-ipfs-rc
+        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
 
     - stage: test
       name: external - peer-base
