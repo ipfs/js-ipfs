@@ -30,7 +30,7 @@
   <br>
 </p>
 
-### Project status - `Alpha`
+### Project status - `Alpha` <!-- omit in toc -->
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉..
 
@@ -40,19 +40,16 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 [**`Weekly Core Implementations Call`**](https://github.com/ipfs/team-mgmt/issues/992)
 
-## Tech Lead
+## Tech Lead <!-- omit in toc -->
 
 [David Dias](https://github.com/daviddias)
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
 [Alan Shaw](https://github.com/alanshaw)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
-- [Tech Lead](#tech-lead)
-- [Lead Maintainer](#lead-maintainer)
-- [Table of Contents](#table-of-contents)
 - [Install](#install)
   - [npm](#npm)
   - [Use in Node.js](#use-in-nodejs)
@@ -66,6 +63,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [API](#api)
     - [IPFS Constructor](#ipfs-constructor)
       - [`options.repo`](#optionsrepo)
+      - [`options.repoAutoMigrate`](#optionsrepoautomigrate)
       - [`options.init`](#optionsinit)
       - [`options.start`](#optionsstart)
       - [`options.pass`](#optionspass)
@@ -1106,7 +1104,7 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 | [`ipfs-mfs`](//github.com/ipfs/js-ipfs-mfs) | [![npm](https://img.shields.io/npm/v/ipfs-mfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-mfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-mfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-mfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-mfs.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-mfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-mfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-mfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | [`ipfs-unixfs`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-unixfs.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-unixfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-unixfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-unixfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | **Repo** |
-| [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-repo) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-repo) | [Jacob Heun](mailto:jacobheun@gmail.com) |
+| [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-repo) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-repo) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | **Exchange** |
 | [`ipfs-block-service`](//github.com/ipfs/js-ipfs-block-service) | [![npm](https://img.shields.io/npm/v/ipfs-block-service.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block-service/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-block-service.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block-service) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-block-service.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-block-service) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-block-service/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-block-service) | [Volker Mische](mailto:volker.mische@gmail.com) |
 | [`ipfs-block`](//github.com/ipfs/js-ipfs-block) | [![npm](https://img.shields.io/npm/v/ipfs-block.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-block/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-block.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-block) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-block.svg?branch=master)](https://travis-ci.com/ipfs/js-ipfs-block) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-block/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-block) | [Volker Mische](mailto:volker.mische@gmail.com) |
