@@ -1,7 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-
 module.exports = ({ libp2p }) => {
   return async function addrs () { // eslint-disable-line require-await
     const peers = []
