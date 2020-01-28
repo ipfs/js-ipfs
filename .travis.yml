@@ -23,7 +23,6 @@ env:
   # This stops Windows builds from hanging
   # https://travis-ci.community/t/timeout-after-build-finished-and-succeeded/1336
   - YARN_GPG=no
-  - DEBUG=ipfs*
 
 addons:
   apt:
@@ -36,7 +35,7 @@ addons:
       - dpkg
   chrome: stable
 
-script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
+script: DEBUG=ipfs* npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
