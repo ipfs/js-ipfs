@@ -38,6 +38,11 @@ const daemonReady = async (daemon, options) => {
     })
 
     daemon.stderr.on('data', (data) => {
+      if (process && process.env && process.env.DEBUG) {
+        // causes data to be written out to stderr
+        return
+      }
+
       if (!data.toString().includes('ExperimentalWarning')) {
         reject(new Error('Daemon didn\'t start ' + data))
       }
