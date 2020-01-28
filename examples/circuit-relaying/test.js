@@ -66,7 +66,9 @@ async function runTest () {
 
   try {
     const id = await ipfsd.api.id()
-    const address = id.addresses.filter(addr => addr.includes('/ws/p2p/Qm')).pop()
+    const address = id.addresses
+      .map(ma => ma.toString())
+      .find(addr => addr.includes('/ws/p2p/Qm'))
 
     if (!address) {
       throw new Error(`Could not find web socket address in ${id.addresses}`)
@@ -146,7 +148,7 @@ module.exports[pkg.name] = function (browser) {
         .click('#send')
 
       browser.expect.element('#msgs').text.to.contain(`${remotePeerId.toString().substr(-4)}: hello`)
-      browser.expect.element('#msgs').text.to.contain(`${localPeerId.toString().substr(-4)}: hello`)
+      browser.expect.element('#msgs').text.to.contain(`${localPeerId.toString().substr(-4)}: hellos`)
     })
 
   browser.end()
