@@ -184,6 +184,8 @@ describe('daemon', () => {
   })
 
   it('should be silent', async function () {
+    if (process && process.env && process.env.DEBUG) return this.skip()
+
     this.timeout(100 * 1000)
     await ipfs('init')
 
