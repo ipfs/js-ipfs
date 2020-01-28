@@ -178,7 +178,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#return-peer-ids-as-strings",
     "ipfs-interop": "github:ipfs/interop#refactor/async-await",
-    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#feat/really-force-kill",
+    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#really-force-kill",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
     "p-map": "^3.0.0",
