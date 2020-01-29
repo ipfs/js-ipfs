@@ -158,7 +158,6 @@ describe('files', () => runOnAndOff((thing) => {
       .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
-  // TODO: FIXME bugs in it-glob
   it('add recursively test', async function () {
     this.timeout(60 * 1000)
 
@@ -166,7 +165,6 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
-  // TODO: FIXME bugs in it-glob
   it('add recursively including hidden files', async function () {
     this.timeout(60 * 1000)
 
@@ -174,7 +172,6 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.include('added QmdBd5zgdJQHsyaaAm9Vnth7NWwj23gj3Ew17r6bTvVkch recursive-get-dir/.hidden.txt')
   })
 
-  // TODO: FIXME bugs in it-glob
   it('add directory with trailing slash test', async function () {
     this.timeout(30 * 1000)
 
@@ -182,7 +179,6 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
-  // TODO: FIXME bugs in it-glob
   it('add directory with odd name', async function () {
     this.timeout(30 * 1000)
     const expected = [
@@ -442,7 +438,6 @@ describe('files', () => runOnAndOff((thing) => {
     rimraf(file)
   })
 
-  // TODO: FIXME bugs in it-glob
   // FIXME: tests that depend on output of other tests
   it('get recursively', async function () {
     this.timeout(20 * 1000)
