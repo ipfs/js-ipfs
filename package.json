@@ -168,7 +168,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "github:ipfs/aegir#make-unhandled-promise-rejections-fail-tests",
+    "aegir": "^20.5.1",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
@@ -178,7 +178,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#return-peer-ids-as-strings",
     "ipfs-interop": "github:ipfs/interop#refactor/async-await",
-    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#really-force-kill",
+    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#feat/force-kill",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
     "p-map": "^3.0.0",
