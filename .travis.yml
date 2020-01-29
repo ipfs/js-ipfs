@@ -81,6 +81,7 @@ jobs:
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
+        - npm install go-ipfs-dep
         - npx aegir test -t node --bail
 
     - stage: test
@@ -91,6 +92,7 @@ jobs:
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
+        - npm install go-ipfs-dep
         - npx aegir test -t browser --bail
 
     - stage: test
@@ -102,6 +104,7 @@ jobs:
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
+        - npm install go-ipfs-dep
         - npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
 
     - stage: test
@@ -113,6 +116,7 @@ jobs:
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
+        - npm install go-ipfs-dep
         - npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
 
     - stage: test
