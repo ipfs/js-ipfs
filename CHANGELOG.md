@@ -1,3 +1,30 @@
+<a name="0.130.0"></a>
+# [0.130.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.129.0...v0.130.0) (2020-01-29)
+
+
+### Code Refactoring
+
+* return peer ids as strings ([#581](https://github.com/ipfs/interface-ipfs-core/issues/581)) ([153fd24](https://github.com/ipfs/interface-ipfs-core/commit/153fd24))
+
+
+### BREAKING CHANGES
+
+* Where `PeerID`s were previously [CID]s, now they are Strings
+
+- `ipfs.bitswap.stat().peers[n]` is now a String (was a CID)
+- `ipfs.dht.findPeer().id` is now a String (was a CID)
+- `ipfs.dht.findProvs()[n].id` is now a String (was a CID)
+- `ipfs.dht.provide()[n].id` is now a String (was a CID)
+- `ipfs.dht.put()[n].id` is now a String (was a CID)
+- `ipfs.dht.query()[n].id` is now a String (was a CID)
+- `ipfs.id().id` is now a String (was a CID)
+- `ipfs.id().addresses[n]` are now [Multiaddr]s (were Strings)
+
+[CID]: https://www.npmjs.com/package/cids
+[Multiaddr]: https://www.npmjs.com/package/multiaddr
+
+
+
 <a name="0.129.0"></a>
 # [0.129.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.128.0...v0.129.0) (2020-01-23)
 
