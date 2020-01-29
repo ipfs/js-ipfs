@@ -6,7 +6,6 @@ const execa = require('execa')
 const os = require('os')
 const path = require('path')
 const hat = require('hat')
-const delay = require('delay')
 const {
   waitForOutput
 } = require('../utils')
@@ -59,9 +58,6 @@ async function startProgramaticNode () {
       Bootstrap: []
     }
   })
-
-  // https://github.com/ChainSafe/gossipsub-js/pull/59
-  await delay(5000)
 
   console.info('Stopping programmatic node')
   await node.stop()

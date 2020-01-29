@@ -4,7 +4,6 @@ const createNode = require('./create-node')
 const {
   DAGNode
 } = require('ipld-dag-pb')
-const delay = require('delay')
 
 async function main () {
   const ipfs = await createNode()

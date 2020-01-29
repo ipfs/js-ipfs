@@ -31,9 +31,9 @@ module.exports = (ipfs, peersSet) => {
 
     // send and receive messages
     room.on('message', (message) => {
-      console.log('got message from ' + message.from.toString() + ': ' + message.data.toString())
+      console.log('got message from ' + message.from + ': ' + message.data.toString())
       const node = document.createElement(`li`)
-      node.innerText = `${message.from.toString().substr(-4)}: ${message.data.toString()}`
+      node.innerText = `${message.from.substr(-4)}: ${message.data.toString()}`
       $msgs.appendChild(node)
     })
 

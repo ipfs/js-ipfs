@@ -3,6 +3,7 @@
 const IPFS = require('ipfs')
 const Repo = require('ipfs-repo')
 const fsLock = require('ipfs-repo/src/lock')
+const all = require('it-all')
 
 // Create our custom options
 const customRepositoryOptions = {
@@ -86,15 +87,11 @@ async function main () {
     // Log out the added files metadata and cat the file from IPFS
     console.log('\nAdded file:', file.path, file.cid)
 
-    const bufs = []
-
-    for await (const buf of node.cat(file.cid)) {
-      bufs.push(buf)
-    }
+    const data = Buffer.concat(await all(node.cat(file.cid)))
 
     // Print out the files contents to console
     console.log('\nFetched file content:')
-    process.stdout.write(Buffer.concat(bufs))
+    process.stdout.write(data)
   }
 
   // After everything is done, shut the node down

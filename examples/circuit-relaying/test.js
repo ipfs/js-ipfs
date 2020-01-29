@@ -147,8 +147,8 @@ module.exports[pkg.name] = function (browser) {
         .pause(1000)
         .click('#send')
 
-      browser.expect.element('#msgs').text.to.contain(`${remotePeerId.toString().substr(-4)}: hello`)
-      browser.expect.element('#msgs').text.to.contain(`${localPeerId.toString().substr(-4)}: hello`)
+      browser.expect.element('#msgs').text.to.contain(`${remotePeerId.substr(-4)}: hello`)
+      browser.expect.element('#msgs').text.to.contain(`${localPeerId.substr(-4)}: hello`)
     })
 
   browser.end()

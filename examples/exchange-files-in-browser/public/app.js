@@ -49,7 +49,8 @@ async function start () {
       config: {
         Addresses: {
           Swarm: [
-            //'/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+            // This is a public webrtc-star server
+            // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
             '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
           ]
         }
@@ -283,7 +284,7 @@ async function refreshPeerList () {
         if (addr.indexOf('/p2p/') >= 0) {
           return addr
         } else {
-          return addr + peer.peer.toString()
+          return addr + peer.peer
         }
       }
     })
