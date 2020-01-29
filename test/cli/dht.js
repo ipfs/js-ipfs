@@ -3,33 +3,12 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const path = require('path')
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'js',
-  IpfsClient: require('ipfs-http-client')
-})
-
+const factory = require('../utils/factory')
 const ipfsExec = require('../utils/ipfs-exec')
-
-const daemonOpts = {
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-  config: {
-    Bootstrap: [],
-    Discovery: {
-      MDNS: {
-        Enabled: false
-      },
-      webRTCStar: {
-        Enabled: false
-      }
-    }
-  },
-  initOptions: { bits: 512 }
-}
 
 // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
 describe.skip('dht', () => {
+  const df = factory({ type: 'js' })
   const nodes = []
   let ipfsA
   let ipfsB
@@ -41,11 +20,11 @@ describe.skip('dht', () => {
   before(async function () {
     this.timeout(80 * 1000)
 
-    const ipfsdA = await df.spawn(daemonOpts)
+    const ipfsdA = await df.spawn()
     ipfsA = ipfsExec(ipfsdA.repoPath)
     nodes.push(ipfsdA)
 
-    const ipfsdB = await df.spawn(daemonOpts)
+    const ipfsdB = await df.spawn()
     ipfsB = ipfsExec(ipfsdB.repoPath)
     nodes.push(ipfsdB)
   })
@@ -71,7 +50,7 @@ describe.skip('dht', () => {
     return nodes[0].api.swarm.connect(multiaddrB)
   })
 
-  after(() => Promise.all(nodes.map((node) => node.stop())))
+  after(() => df.clean())
 
   it('should be able to put a value to the dht and get it afterwards', async function () {
     this.timeout(60 * 1000)

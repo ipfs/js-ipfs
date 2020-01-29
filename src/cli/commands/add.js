@@ -1,6 +1,6 @@
 'use strict'
 
-const promisify = require('promisify-es6')
+const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
 const mh = require('multihashes')
@@ -49,9 +49,19 @@ module.exports = {
       default: false,
       describe: 'Only chunk and hash, do not write'
     },
+    'block-write-concurrency': {
+      type: 'integer',
+      default: 10,
+      describe: 'After a file has been chunked, this controls how many chunks to hash and add to the block store concurrently'
+    },
     chunker: {
       default: 'size-262144',
       describe: 'Chunking algorithm to use, formatted like [size-{size}, rabin, rabin-{avg}, rabin-{min}-{avg}-{max}]'
+    },
+    'file-import-concurrency': {
+      type: 'integer',
+      default: 50,
+      describe: 'How many files to import at once'
     },
     'enable-sharding-experiment': {
       type: 'boolean',
@@ -106,6 +116,56 @@ module.exports = {
       type: 'boolean',
       default: true,
       describe: 'Preload this object when adding'
+    },
+    hidden: {
+      alias: 'H',
+      type: 'boolean',
+      default: false,
+      describe: 'Include files that are hidden. Only takes effect on recursive add.'
+    },
+    'preserve-mode': {
+      type: 'boolean',
+      default: false,
+      describe: 'Apply permissions to created UnixFS entries'
+    },
+    'preserve-mtime': {
+      type: 'boolean',
+      default: false,
+      describe: 'Apply modification time to created UnixFS entries'
+    },
+    mode: {
+      type: 'string',
+      describe: 'File mode to apply to created UnixFS entries'
+    },
+    mtime: {
+      type: 'number',
+      coerce: (value) => {
+        value = parseInt(value)
+
+        if (isNaN(value)) {
+          throw new Error('mtime must be a number')
+        }
+
+        return value
+      },
+      describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+    },
+    'mtime-nsecs': {
+      type: 'number',
+      coerce: (value) => {
+        value = parseInt(value)
+
+        if (isNaN(value)) {
+          throw new Error('mtime-nsecs must be a number')
+        }
+
+        if (value < 0 || value > 999999999) {
+          throw new Error('mtime-nsecs must be in the range [0,999999999]')
+        }
+
+        return value
+      },
+      describe: 'Modification time fraction in nanoseconds'
     }
   },
 
@@ -124,7 +184,10 @@ module.exports = {
         wrapWithDirectory: argv.wrapWithDirectory,
         pin: argv.pin,
         chunker: argv.chunker,
-        preload: argv.preload
+        preload: argv.preload,
+        nonatomic: argv.nonatomic,
+        fileImportConcurrency: argv.fileImportConcurrency,
+        blockWriteConcurrency: argv.blockWriteConcurrency
       }
 
       if (options.enableShardingExperiment && argv.isDaemonOn()) {
@@ -152,24 +215,43 @@ module.exports = {
         }
       }
 
-      const source = argv.file
-        ? globSource(argv.file, { recursive: argv.recursive })
-        : process.stdin // Pipe directly to ipfs.add
+      let mtime
 
-      let finalHash
+      if (argv.mtime != null) {
+        mtime = {
+          secs: argv.mtime
+        }
+
+        if (argv.mtimeNsecs != null) {
+          mtime.nsecs = argv.mtimeNsecs
+        }
+      }
+
+      const source = argv.file
+        ? globSource(argv.file, {
+          recursive: argv.recursive,
+          hidden: argv.hidden,
+          preserveMode: argv.preserveMode,
+          preserveMtime: argv.preserveMtime,
+          mode: argv.mode,
+          mtime
+        })
+        : argv.getStdin() // Pipe directly to ipfs.add
+
+      let finalCid
 
       try {
-        for await (const file of ipfs._addAsyncIterator(source, options)) {
+        for await (const file of ipfs.add(source, options)) {
           if (argv.silent) {
             continue
           }
 
           if (argv.quieter) {
-            finalHash = file.hash
+            finalCid = file.cid
             continue
           }
 
-          const cid = cidToString(file.hash, { base: argv.cidBase })
+          const cid = cidToString(file.cid, { base: argv.cidBase })
           let message = cid
 
           if (!argv.quiet) {
@@ -184,7 +266,7 @@ module.exports = {
           bar.terminate()
         }
 
-        // Tweak the error message and add more relevant infor for the CLI
+        // Tweak the error message and add more relevant info for the CLI
         if (err.code === 'ERR_DIR_NON_RECURSIVE') {
           err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
         }
@@ -197,7 +279,7 @@ module.exports = {
       }
 
       if (argv.quieter) {
-        log(cidToString(finalHash, { base: argv.cidBase }))
+        log(cidToString(finalCid, { base: argv.cidBase }))
       }
     })())
   }

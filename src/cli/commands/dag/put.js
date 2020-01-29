@@ -4,6 +4,7 @@ const mh = require('multihashes')
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
+const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 
 const inputDecoders = {
@@ -78,7 +79,7 @@ module.exports = {
     }
   },
 
-  handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, getIpfs, print, resolve }) {
+  handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, getIpfs, print, resolve, getStdin }) {
     resolve((async () => {
       const ipfs = await getIpfs()
 
@@ -100,7 +101,7 @@ module.exports = {
         // pipe from stdin
         source = Buffer.alloc(0)
 
-        for await (const buf of process.stdin) {
+        for await (const buf of getStdin()) {
           source = Buffer.concat([source, buf])
         }
       } else {
@@ -108,6 +109,12 @@ module.exports = {
       }
 
       source = inputDecoders[inputEncoding](source)
+
+      // Support legacy { "/" : "<CID>" } format so dag put is actually useful
+      // on the command line: https://github.com/ipld/js-ipld-dag-cbor/issues/84
+      if (inputEncoding === 'json' && format === 'dag-cbor') {
+        source = objectSlashToCID(source)
+      }
 
       const cid = await ipfs.dag.put(source, {
         format,
@@ -121,4 +128,27 @@ module.exports = {
       print(cidToString(cid, { base: cidBase }))
     })())
   }
+}
+
+function objectSlashToCID (obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(objectSlashToCID)
+  }
+
+  if (obj && typeof obj === 'object') {
+    const keys = Object.keys(obj)
+    if (keys.length === 1 && '/' in obj) {
+      if (typeof obj['/'] !== 'string') {
+        throw new Error('link should have been a string')
+      }
+      return new CID(obj['/']) // throws if not a CID - consistent with go-ipfs
+    }
+
+    return keys.reduce((obj, key) => {
+      obj[key] = objectSlashToCID(obj[key])
+      return obj
+    }, obj)
+  }
+
+  return obj
 }

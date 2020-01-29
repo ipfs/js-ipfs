@@ -1,49 +1,44 @@
 'use strict'
 
 const debug = require('debug')
+const { cidToString } = require('../utils/cid')
 const log = debug('ipfs:mfs-preload')
 log.error = debug('ipfs:mfs-preload:error')
 
-module.exports = (self) => {
-  const options = self._options.preload || {}
+module.exports = ({ preload, files, options }) => {
+  options = options || {}
   options.interval = options.interval || 30 * 1000
 
   if (!options.enabled) {
     log('MFS preload disabled')
-    return {
-      start: async () => {},
-      stop: async () => {}
-    }
+    const noop = async () => {}
+    return { start: noop, stop: noop }
   }
 
-  let rootCid
-  let timeoutId
+  let rootCid, timeoutId
 
-  const preloadMfs = () => {
-    self.files.stat('/')
-      .then((stats) => {
-        if (rootCid !== stats.hash) {
-          log(`preloading updated MFS root ${rootCid} -> ${stats.hash}`)
+  const preloadMfs = async () => {
+    try {
+      const stats = await files.stat('/')
+      const nextRootCid = cidToString(stats.cid, { base: 'base32' })
 
-          return self._preload(stats.hash, (err) => {
-            timeoutId = setTimeout(preloadMfs, options.interval)
-            if (err) return log.error(`failed to preload MFS root ${stats.hash}`, err)
-            rootCid = stats.hash
-          })
-        }
-
-        timeoutId = setTimeout(preloadMfs, options.interval)
-      }, (err) => {
-        timeoutId = setTimeout(preloadMfs, options.interval)
-        log.error('failed to stat MFS root for preload', err)
-      })
+      if (rootCid !== nextRootCid) {
+        log(`preloading updated MFS root ${rootCid} -> ${stats.cid}`)
+        await preload(stats.cid)
+        rootCid = nextRootCid
+      }
+    } catch (err) {
+      log.error('failed to preload MFS root', err)
+    } finally {
+      timeoutId = setTimeout(preloadMfs, options.interval)
+    }
   }
 
   return {
     async start () {
-      const stats = await self.files.stat('/')
-      rootCid = stats.hash
-      log(`monitoring MFS root ${rootCid}`)
+      const stats = await files.stat('/')
+      rootCid = cidToString(stats.cid, { base: 'base32' })
+      log(`monitoring MFS root ${stats.cid}`)
       timeoutId = setTimeout(preloadMfs, options.interval)
     },
     stop () {

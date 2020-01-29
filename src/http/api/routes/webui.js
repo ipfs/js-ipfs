@@ -20,7 +20,7 @@ module.exports = [
         const address = multiaddr(gateway).nodeAddress()
 
         port = address.port
-        host = address.host
+        host = address.address
       } catch (err) {
         // may not have gateway configured
         log.error(err)
@@ -30,7 +30,7 @@ module.exports = [
         host = 'gateway.ipfs.io'
       }
 
-      return h.redirect(`${scheme}://${host}:${port}/ipfs/QmfNbSskgvTXYhuqP8tb9AKbCkyRcCy3WeiXwD9y5LeoqK`)
+      return h.redirect(`${scheme}://${host}:${port}/ipfs/Qmexhq2sBHnXQbvyP2GfUdbnY7HCagH2Mw5vUNSBn2nxip`)
     }
   }
 ]

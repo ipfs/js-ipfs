@@ -1,20 +1,19 @@
 'use strict'
 
-const debug = require('debug')
-
+const log = require('debug')('ipfs:daemon')
+const get = require('dlv')
+const set = require('just-safe-set')
+const Multiaddr = require('multiaddr')
+const WebRTCStar = require('libp2p-webrtc-star')
+const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
+const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 const IPFS = require('../core')
 const HttpApi = require('../http')
-const WStar = require('libp2p-webrtc-star')
-const TCP = require('libp2p-tcp')
-const MulticastDNS = require('libp2p-mdns')
-const WS = require('libp2p-websockets')
-const Bootstrap = require('libp2p-bootstrap')
+const createRepo = require('../core/runtime/repo-nodejs')
 
 class Daemon {
   constructor (options) {
     this._options = options || {}
-    this._log = debug('ipfs:daemon')
-    this._log.error = debug('ipfs:daemon:error')
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection
@@ -27,46 +26,15 @@ class Daemon {
   }
 
   async start () {
-    this._log('starting')
+    log('starting')
 
-    const libp2p = { modules: {}, config: {} }
-
-    // Attempt to use any of the WebRTC versions available globally
-    let electronWebRTC
-    let wrtc
-    try {
-      electronWebRTC = require('electron-webrtc')()
-    } catch (err) {
-      this._log('failed to load optional electron-webrtc dependency')
-    }
-    try {
-      wrtc = require('wrtc')
-    } catch (err) {
-      this._log('failed to load optional webrtc dependency')
-    }
-
-    if (wrtc || electronWebRTC) {
-      const using = wrtc ? 'wrtc' : 'electron-webrtc'
-      this._log(`Using ${using} for webrtc support`)
-      const wstar = new WStar({ wrtc: (wrtc || electronWebRTC) })
-      libp2p.modules.transport = [TCP, WS, wstar]
-      libp2p.modules.peerDiscovery = [MulticastDNS, Bootstrap, wstar.discovery]
-    }
+    const repo = typeof this._options.repo === 'string' || this._options.repo == null
+      ? createRepo({ path: this._options.repo, autoMigrate: this._options.repoAutoMigrate })
+      : this._options.repo
 
     // start the daemon
-    const ipfsOpts = Object.assign({ }, { init: true, start: true, libp2p }, this._options)
-    const ipfs = new IPFS(ipfsOpts)
-
-    await new Promise((resolve, reject) => {
-      ipfs.once('error', err => {
-        this._log('error starting core', err)
-        err.code = 'ENOENT'
-        reject(err)
-      })
-      ipfs.once('start', resolve)
-    })
-
-    this._ipfs = ipfs
+    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p: getLibp2p }, this._options, { repo })
+    const ipfs = this._ipfs = await IPFS.create(ipfsOpts)
 
     // start HTTP servers (if API or Gateway is enabled in options)
     const httpApi = new HttpApi(ipfs, ipfsOpts)
@@ -74,22 +42,70 @@ class Daemon {
 
     // for the CLI to know the where abouts of the API
     if (this._httpApi._apiServers.length) {
-      await ipfs._repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
+      await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
-    this._log('started')
+    log('started')
     return this
   }
 
   async stop () {
-    this._log('stopping')
+    log('stopping')
     await Promise.all([
       this._httpApi && this._httpApi.stop(),
       this._ipfs && this._ipfs.stop()
     ])
-    this._log('stopped')
+    log('stopped')
     return this
   }
+}
+
+function getLibp2p ({ libp2pOptions, options, config, peerInfo }) {
+  // Attempt to use any of the WebRTC versions available globally
+  let electronWebRTC
+  let wrtc
+  try {
+    electronWebRTC = require('electron-webrtc')()
+  } catch (err) {
+    log('failed to load optional electron-webrtc dependency')
+  }
+  try {
+    wrtc = require('wrtc')
+  } catch (err) {
+    log('failed to load optional webrtc dependency')
+  }
+
+  if (wrtc || electronWebRTC) {
+    log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
+    set(libp2pOptions, 'config.transport.webRTCStar.wrtc', wrtc || electronWebRTC)
+    libp2pOptions.modules.transport.push(WebRTCStar)
+  }
+
+  // Set up Delegate Routing based on the presence of Delegates in the config
+  const delegateHosts = get(options, 'config.Addresses.Delegates',
+    get(config, 'Addresses.Delegates', [])
+  )
+
+  if (delegateHosts.length > 0) {
+    // Pick a random delegate host
+    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
+    const delegateAddr = Multiaddr(delegateString).toOptions()
+    const delegatedApiOptions = {
+      host: delegateAddr.host,
+      // port is a string atm, so we need to convert for the check
+      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
+      port: delegateAddr.port
+    }
+
+    libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
+    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerInfo.id, delegatedApiOptions))
+
+    libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
+    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegatedApiOptions))
+  }
+
+  const Libp2p = require('libp2p')
+  return new Libp2p(libp2pOptions)
 }
 
 module.exports = Daemon

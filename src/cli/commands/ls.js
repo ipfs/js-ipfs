@@ -3,6 +3,8 @@
 const multibase = require('multibase')
 const { rightpad } = require('../utils')
 const { cidToString } = require('../../utils/cid')
+const formatMode = require('ipfs-utils/src/files/format-mode')
+const formatMtime = require('ipfs-utils/src/files/format-mtime')
 
 module.exports = {
   command: 'ls <key>',
@@ -36,22 +38,10 @@ module.exports = {
 
   handler ({ getIpfs, print, key, recursive, headers, cidBase, resolve }) {
     resolve((async () => {
-      const ipfs = await getIpfs()
-      let links = await ipfs.ls(key, { recursive })
-
-      links = links.map(file => Object.assign(file, { hash: cidToString(file.hash, { base: cidBase }) }))
-
-      if (headers) {
-        links = [{ hash: 'Hash', size: 'Size', name: 'Name' }].concat(links)
-      }
-
-      const multihashWidth = Math.max.apply(null, links.map((file) => file.hash.length))
-      const sizeWidth = Math.max.apply(null, links.map((file) => String(file.size).length))
-
       // replace multiple slashes
       key = key.replace(/\/(\/+)/g, '/')
 
-      // strip trailing flash
+      // strip trailing slash
       if (key.endsWith('/')) {
         key = key.replace(/(\/+)$/, '')
       }
@@ -62,18 +52,46 @@ module.exports = {
         pathParts = pathParts.slice(2)
       }
 
-      links.forEach(link => {
-        const fileName = link.type === 'dir' ? `${link.name || ''}/` : link.name
+      const ipfs = await getIpfs()
+      let first = true
 
+      let maxWidths = []
+      const getMaxWidths = (...args) => {
+        maxWidths = args.map((v, i) => Math.max(maxWidths[i] || 0, v.length))
+        return maxWidths
+      }
+
+      const printLink = (mode, mtime, cid, size, name, depth = 0) => {
+        const widths = getMaxWidths(mode, mtime, cid, size, name)
         // todo: fix this by resolving https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24
-        const padding = Math.max(link.depth - pathParts.length, 0)
-
+        const padding = Math.max(depth - pathParts.length, 0)
         print(
-          rightpad(link.hash, multihashWidth + 1) +
-          rightpad(link.size || '-', sizeWidth + 1) +
-          '  '.repeat(padding) + fileName
+          rightpad(mode, widths[0] + 1) +
+          rightpad(mtime, widths[1] + 1) +
+          rightpad(cid, widths[2] + 1) +
+          rightpad(size, widths[3] + 1) +
+          '  '.repeat(padding) + name
         )
-      })
+      }
+
+      for await (const link of ipfs.ls(key, { recursive })) {
+        const mode = formatMode(link.mode, link.type === 'dir')
+        const mtime = formatMtime(link.mtime)
+        const cid = cidToString(link.cid, { base: cidBase })
+        const size = link.size ? String(link.size) : '-'
+        const name = link.type === 'dir' ? `${link.name || ''}/` : link.name
+
+        if (first) {
+          first = false
+          if (headers) {
+            // Seed max widths for the first item
+            getMaxWidths(mode, mtime, cid, size, name)
+            printLink('Mode', 'Mtime', 'Hash', 'Size', 'Name')
+          }
+        }
+
+        printLink(mode, mtime, cid, size, name, link.depth)
+      }
     })())
   }
 }

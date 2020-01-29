@@ -42,7 +42,8 @@ async function installDeps (dir) {
   }
 
   const proc = execa.command('npm install', {
-    cwd: dir
+    cwd: dir,
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -76,7 +77,8 @@ async function build (dir) {
   }
 
   const proc = execa('npm', ['run', build], {
-    cwd: dir
+    cwd: dir,
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -92,12 +94,13 @@ async function runBrowserTest (dir) {
 
   console.info('Running tests at', server.url)
 
-  const proc = execa('nightwatch', [ path.join(dir, 'test.js') ], {
+  const proc = execa('nightwatch', [path.join(dir, 'test.js')], {
     cwd: __dirname,
     env: {
       ...process.env,
       IPFS_EXAMPLE_TEST_URL: server.url
-    }
+    },
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)

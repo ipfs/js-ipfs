@@ -9,7 +9,7 @@ const multipart = require('ipfs-multipart')
 const Boom = require('@hapi/boom')
 const Joi = require('@hapi/joi')
 const { profiles } = require('../../../core/components/config')
-const all = require('async-iterator-all')
+const all = require('it-all')
 
 exports.getOrSet = {
   // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`

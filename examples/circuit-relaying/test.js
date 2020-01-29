@@ -5,11 +5,16 @@ const os = require('os')
 const path = require('path')
 const execa = require('execa')
 const delay = require('delay')
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'js',
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-  IpfsClient: require('ipfs-http-client')
+const { createFactory } = require('ipfsd-ctl')
+const df = createFactory({
+  ipfsModule: {
+    path: require.resolve('../../src'),
+    ref: require('../../src')
+  },
+  ipfsHttpModule: {
+    path: require.resolve('ipfs-http-client'),
+    ref: require('ipfs-http-client')
+  }
 })
 const {
   startServer
@@ -17,7 +22,7 @@ const {
 const pkg = require('./package.json')
 
 async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
-  const proc = execa('nightwatch', [ path.join(__dirname, 'test.js') ], {
+  const proc = execa('nightwatch', [path.join(__dirname, 'test.js')], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,
@@ -26,7 +31,8 @@ async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
       IPFS_RELAY_ADDRESS: relay,
       IPFS_LOCAL_PEER_ID_FILE: localPeerIdFile,
       IPFS_REMOTE_PEER_ID_FILE: remotePeerIdFile
-    }
+    },
+    all: true
   })
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -37,18 +43,20 @@ async function testUI (url, relay, localPeerIdFile, remotePeerIdFile) {
 
 async function runTest () {
   const ipfsd = await df.spawn({
-    initOptions: { bits: 512 },
-    config: {
-      Addresses: {
-        Swarm: [
-          `/ip4/127.0.0.1/tcp/0/ws`
-        ]
-      },
-      Bootstrap: [],
+    type: 'proc',
+    test: true,
+    ipfsOptions: {
       relay: {
         enabled: true,
         hop: {
           enabled: true
+        }
+      },
+      config: {
+        Addresses: {
+          Swarm: [
+            '/ip4/127.0.0.1/tcp/0/ws'
+          ]
         }
       }
     }
@@ -115,7 +123,7 @@ module.exports[pkg.name] = function (browser) {
 
           break
         } catch (err) {
-
+          // ignore
         }
 
         await delay(1000)

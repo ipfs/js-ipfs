@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
 const fromB58String = require('multihashes').fromB58String
+const all = require('it-all')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -109,31 +110,32 @@ describe('utils', () => {
     let node
     let repo
 
-    before(done => {
+    before(async () => {
       repo = createTempRepo()
-      node = new IPFS({
+      node = await IPFS.create({
+        silent: true,
         repo,
         config: {
           Bootstrap: []
         },
         preload: { enabled: false }
       })
-      node.once('ready', () => node.add(fixtures, done))
+      await all(node.add(fixtures))
     })
 
-    after(done => node.stop(done))
+    after(() => node.stop())
 
-    after(done => repo.teardown(done))
+    after(() => repo.teardown())
 
     it('handles base58 hash format', async () => {
-      const hashes = await utils.resolvePath(node.object, rootHash)
+      const hashes = await utils.resolvePath(node.dag, rootHash)
 
       expect(hashes.length).to.equal(1)
       expect(hashes[0].buffer).to.deep.equal(rootMultihash)
     })
 
     it('handles multihash format', async () => {
-      const hashes = await utils.resolvePath(node.object, aboutMultihash)
+      const hashes = await utils.resolvePath(node.dag, aboutMultihash)
 
       expect(hashes.length).to.equal(1)
       expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
@@ -141,7 +143,7 @@ describe('utils', () => {
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      const hashes = await utils.resolvePath(node.object, aboutPath)
+      const hashes = await utils.resolvePath(node.dag, aboutPath)
 
       expect(hashes.length).to.equal(1)
       expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
@@ -149,7 +151,7 @@ describe('utils', () => {
 
     it('handles an array', async () => {
       const paths = [rootHash, rootPath, rootMultihash]
-      const hashes = await utils.resolvePath(node.object, paths)
+      const hashes = await utils.resolvePath(node.dag, paths)
 
       expect(hashes.length).to.equal(3)
       expect(hashes[0].buffer).to.deep.equal(rootMultihash)
@@ -158,12 +160,12 @@ describe('utils', () => {
     })
 
     it('should error on invalid hashes', () => {
-      return expect(utils.resolvePath(node.object, '/ipfs/asdlkjahsdfkjahsdfd'))
+      return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
         .to.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
-      return expect(utils.resolvePath(node.object, `${aboutPath}/fusion`))
+      return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
         .to.be.rejected()
         .and.eventually.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')

@@ -4,31 +4,16 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const ipfsExec = require('../utils/ipfs-exec')
-const path = require('path')
-const addrsCommand = require('../../src/cli/commands/swarm/addrs')
-
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
+const ipfsExec = require('../utils/ipfs-exec')
 const PeerId = require('peer-id')
+const addrsCommand = require('../../src/cli/commands/swarm/addrs')
+const factory = require('../utils/factory')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'js',
-  IpfsClient: require('ipfs-http-client')
-})
-
-const config = {
-  Bootstrap: [],
-  Discovery: {
-    MDNS: {
-      Enabled:
-        false
-    }
-  }
-}
-
-describe('swarm', () => {
+// TODO: libp2p integration
+describe.skip('swarm', () => {
+  const df = factory({ type: 'js' })
   afterEach(() => {
     sinon.restore()
   })
@@ -39,31 +24,21 @@ describe('swarm', () => {
     let bMultiaddr
     let ipfsA
 
-    const nodes = []
     before(async function () {
       // CI takes longer to instantiate the daemon, so we need to increase the
       // timeout for the before step
       this.timeout(80 * 1000)
 
       const res = await Promise.all([
-        df.spawn({
-          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-          config,
-          initOptions: { bits: 512 }
-        }),
-        df.spawn({
-          exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-          config,
-          initOptions: { bits: 512 }
-        })
+        df.spawn(),
+        df.spawn()
       ])
-      ipfsA = ipfsExec(res[0].repoPath)
+      ipfsA = ipfsExec(res[0].path)
       const id = await res[1].api.id()
       bMultiaddr = id.addresses[0]
-      nodes.push(...res)
     })
 
-    after(() => Promise.all(nodes.map((node) => node.stop())))
+    after(() => df.clean())
 
     it('connect', async () => {
       const out = await ipfsA(`swarm connect ${bMultiaddr}`)
@@ -109,12 +84,9 @@ describe('swarm', () => {
     }
 
     describe('addrs', () => {
-      before((done) => {
-        PeerId.create({ bits: 512 }, (err, peerId) => {
-          if (err) return done(err)
-          peerInfo = new PeerInfo(peerId)
-          done()
-        })
+      before(async () => {
+        const peerId = await PeerId.create({ bits: 512 })
+        peerInfo = new PeerInfo(peerId)
       })
 
       it('should return addresses for all peers', (done) => {

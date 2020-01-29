@@ -24,7 +24,7 @@ async function testAll () {
       continue
     }
 
-    await waitForOutput('npm info ok', 'npm', ['test', '--', dir], {
+    await waitForOutput('npm info ok', 'npm', ['test', '--verbose', '--', dir], {
       cwd: __dirname
     })
   }

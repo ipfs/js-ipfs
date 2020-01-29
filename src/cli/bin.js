@@ -26,6 +26,7 @@ if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
 const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
 const debug = require('debug')('ipfs:cli')
+const { errors: { InvalidRepoVersionError } } = require('ipfs-repo')
 const parser = require('./parser')
 const commandAlias = require('./command-alias')
 const { print } = require('./utils')
@@ -36,32 +37,22 @@ updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
 const cli = new YargsPromise(parser)
 
-let getIpfs = null
-
 // Apply command aliasing (eg `refs local` -> `refs-local`)
 const args = commandAlias(process.argv.slice(2))
 cli
   .parse(args)
   .then(({ data, argv }) => {
-    getIpfs = argv.getIpfs
     if (data) {
       print(data)
     }
   })
   .catch(({ error, argv }) => {
-    getIpfs = argv && argv.getIpfs
-    if (error.message) {
-      print(error.message)
-      debug(error)
-    } else {
-      print('Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
-      debug(error)
+    if (error.code === InvalidRepoVersionError.code) {
+      error.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
     }
+
+    print(error.message || 'Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
+    debug(error)
+
     process.exit(1)
-  })
-  .finally(() => {
-    if (getIpfs && getIpfs.instance) {
-      const cleanup = getIpfs.rest[0]
-      return cleanup()
-    }
   })

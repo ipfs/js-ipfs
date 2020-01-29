@@ -1,7 +1,5 @@
 'use strict'
 
-const log = require('why-is-node-running')
-
 const IPFS = require('ipfs')
 const Repo = require('ipfs-repo')
 const fsLock = require('ipfs-repo/src/lock')

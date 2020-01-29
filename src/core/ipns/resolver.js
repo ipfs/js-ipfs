@@ -4,7 +4,6 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-
 const debug = require('debug')
 const log = debug('ipfs:ipns:resolver')
 log.error = debug('ipfs:ipns:resolver:error')
@@ -74,7 +73,7 @@ class IpnsResolver {
 
   // resolve ipns entries from the provided routing
   async _resolveName (name) {
-    const peerId = PeerId.createFromB58String(name)
+    const peerId = PeerId.createFromCID(name)
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 

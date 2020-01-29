@@ -14,7 +14,7 @@ module.exports = {
       }
       const ipfs = await argv.getIpfs()
       const res = await ipfs.swarm.connect(argv.address)
-      argv.print(res.Strings[0])
+      res.forEach(msg => argv.print(msg))
     })())
   }
 }

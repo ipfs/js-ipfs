@@ -1,30 +1,23 @@
 'use strict'
 
-const setImmediate = require('async/setImmediate')
-const retry = require('async/retry')
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
 const shuffle = require('array-shuffle')
+const AbortController = require('abort-controller')
 const preload = require('./runtime/preload-nodejs')
 
 const log = debug('ipfs:preload')
 log.error = debug('ipfs:preload:error')
 
-const noop = (err) => { if (err) log.error(err) }
-
-module.exports = self => {
-  const options = self._options.preload || {}
+module.exports = options => {
+  options = options || {}
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 
   if (!options.enabled || !options.addresses.length) {
     log('preload disabled')
-    const api = (_, callback) => {
-      if (callback) {
-        setImmediate(() => callback())
-      }
-    }
+    const api = () => {}
     api.start = () => {}
     api.stop = () => {}
     return api
@@ -34,41 +27,40 @@ module.exports = self => {
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
-  const api = (path, callback) => {
-    callback = callback || noop
+  const api = async path => {
+    try {
+      if (stopped) throw new Error(`preload ${path} but preloader is not started`)
 
-    if (typeof path !== 'string') {
-      try {
-        path = new CID(path).toBaseEncodedString()
-      } catch (err) {
-        return setImmediate(() => callback(err))
+      if (typeof path !== 'string') {
+        path = new CID(path).toString()
       }
+
+      const fallbackApiUris = shuffle(apiUris)
+      let success = false
+      const now = Date.now()
+
+      for (const uri of fallbackApiUris) {
+        if (stopped) throw new Error(`preload aborted for ${path}`)
+        let controller
+
+        try {
+          controller = new AbortController()
+          requests = requests.concat(controller)
+          await preload(`${uri}/api/v0/refs?r=true&arg=${encodeURIComponent(path)}`, { signal: controller.signal })
+          success = true
+        } catch (err) {
+          if (err.type !== 'aborted') log.error(err)
+        } finally {
+          requests = requests.filter(r => r !== controller)
+        }
+
+        if (success) break
+      }
+
+      log(`${success ? '' : 'un'}successfully preloaded ${path} in ${Date.now() - now}ms`)
+    } catch (err) {
+      log.error(err)
     }
-
-    const fallbackApiUris = shuffle(apiUris)
-    let request
-    const now = Date.now()
-
-    retry({ times: fallbackApiUris.length }, (cb) => {
-      if (stopped) return cb(new Error(`preload aborted for ${path}`))
-
-      // Remove failed request from a previous attempt
-      requests = requests.filter(r => r !== request)
-
-      const apiUri = fallbackApiUris.shift()
-
-      request = preload(`${apiUri}/api/v0/refs?r=true&arg=${encodeURIComponent(path)}`, cb)
-      requests = requests.concat(request)
-    }, (err) => {
-      requests = requests.filter(r => r !== request)
-
-      if (err) {
-        return callback(err)
-      }
-
-      log(`preloaded ${path} in ${Date.now() - now}ms`)
-      callback()
-    })
   }
 
   api.start = () => {
@@ -77,8 +69,8 @@ module.exports = self => {
 
   api.stop = () => {
     stopped = true
-    log(`canceling ${requests.length} pending preload request(s)`)
-    requests.forEach(r => r.cancel())
+    log(`aborting ${requests.length} pending preload request(s)`)
+    requests.forEach(r => r.abort())
     requests = []
   }
 

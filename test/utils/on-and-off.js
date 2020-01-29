@@ -5,13 +5,9 @@ const hat = require('hat')
 
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
+const factory = require('./factory')
 const os = require('os')
 
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  IpfsClient: require('ipfs-http-client')
-})
-const path = require('path')
 const origLocale = process.env.LC_ALL
 
 function off (tests) {
@@ -46,6 +42,7 @@ function off (tests) {
 function on (tests) {
   describe('daemon on (through http-api)', function () {
     this.timeout(60 * 1000)
+    const df = factory({ type: 'js' })
     const thing = {
       on: true
     }
@@ -59,22 +56,14 @@ function on (tests) {
       // before step
       this.timeout(60 * 1000)
 
-      ipfsd = await df.spawn({
-        type: 'js',
-        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-        initOptions: { bits: 512 },
-        config: { Bootstrap: [] }
-      })
-      thing.ipfs = ipfsExec(ipfsd.repoPath)
-      thing.ipfs.repoPath = ipfsd.repoPath
+      ipfsd = await df.spawn()
+      thing.ipfs = ipfsExec(ipfsd.path)
+      thing.ipfs.repoPath = ipfsd.path
     })
 
     after(function () {
       resetLocaleToSystem()
-      if (ipfsd) {
-        this.timeout(15 * 1000)
-        return ipfsd.stop()
-      }
+      df.clean()
     })
 
     tests(thing)

@@ -9,7 +9,6 @@
   ],
   "rows": [
     "Files",
-    ["ipfs/js-ipfs-unixfs-engine", "ipfs-unixfs-engine"],
     ["ipfs/js-ipfs-unixfs-exporter", "ipfs-unixfs-exporter"],
     ["ipfs/js-ipfs-unixfs-importer", "ipfs-unixfs-importer"],
     ["ipfs/js-ipfs-mfs", "ipfs-mfs"],
@@ -44,6 +43,7 @@
     ["libp2p/js-libp2p-keychain", "libp2p-keychain"],
     ["libp2p/js-libp2p-circuit", "libp2p-circuit"],
     ["libp2p/js-libp2p-floodsub", "libp2p-floodsub"],
+    ["ChainSafe/gossipsub-js", "libp2p-gossipsub"],
     ["libp2p/js-libp2p-kad-dht", "libp2p-kad-dht"],
     ["libp2p/js-libp2p-mdns", "libp2p-mdns"],
     ["libp2p/js-libp2p-bootstrap", "libp2p-bootstrap"],

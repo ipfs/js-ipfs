@@ -11,9 +11,51 @@ const debug = require('debug')
 const {
   cidToString
 } = require('../../../utils/cid')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
+
+const IpldFormats = {
+  get [multicodec.RAW] () {
+    return require('ipld-raw')
+  },
+  get [multicodec.DAG_PB] () {
+    return require('ipld-dag-pb')
+  },
+  get [multicodec.DAG_CBOR] () {
+    return require('ipld-dag-cbor')
+  },
+  get [multicodec.BITCOIN_BLOCK] () {
+    return require('ipld-bitcoin')
+  },
+  get [multicodec.ETH_ACCOUNT_SNAPSHOT] () {
+    return require('ipld-ethereum').ethAccountSnapshot
+  },
+  get [multicodec.ETH_BLOCK] () {
+    return require('ipld-ethereum').ethBlock
+  },
+  get [multicodec.ETH_BLOCK_LIST] () {
+    return require('ipld-ethereum').ethBlockList
+  },
+  get [multicodec.ETH_STATE_TRIE] () {
+    return require('ipld-ethereum').ethStateTrie
+  },
+  get [multicodec.ETH_STORAGE_TRIE] () {
+    return require('ipld-ethereum').ethStorageTrie
+  },
+  get [multicodec.ETH_TX] () {
+    return require('ipld-ethereum').ethTx
+  },
+  get [multicodec.ETH_TX_TRIE] () {
+    return require('ipld-ethereum').ethTxTrie
+  },
+  get [multicodec.GIT_RAW] () {
+    return require('ipld-git')
+  },
+  get [multicodec.ZCASH_BLOCK] () {
+    return require('ipld-zcash')
+  }
+}
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (argument = 'Argument', name = 'key', quote = "'") => {
@@ -181,12 +223,9 @@ exports.put = {
         throw Boom.badRequest('Failed to parse the JSON: ' + err)
       }
     } else {
-      const { ipfs } = request.server.app
-
-      // IPLD expects the format and hashAlg as constants
-      const codecConstant = format.toUpperCase().replace(/-/g, '_')
-      const ipldFormat = await ipfs._ipld._getFormat(multicodec[codecConstant])
-      node = await ipldFormat.util.deserialize(data)
+      const codec = multicodec[format.toUpperCase().replace(/-/g, '_')]
+      if (!IpldFormats[codec]) throw new Error(`Missing IPLD format "${codec}"`)
+      node = await IpldFormats[codec].util.deserialize(data)
     }
 
     return {
@@ -248,7 +287,7 @@ exports.resolve = {
       let lastRemainderPath = path
 
       if (path) {
-        const result = ipfs._ipld.resolve(lastCid, path)
+        const result = ipfs.dag.resolve(lastCid, path)
         while (true) {
           const resolveResult = (await result.next()).value
           if (!CID.isCID(resolveResult.value)) {

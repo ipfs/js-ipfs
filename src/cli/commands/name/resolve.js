@@ -17,6 +17,12 @@ module.exports = {
       alias: 'r',
       describe: 'Resolve until the result is not an IPNS name. Default: true.',
       default: true
+    },
+    stream: {
+      type: 'boolean',
+      alias: 's',
+      describe: 'Stream entries as they are found.',
+      default: false
     }
   },
 
@@ -28,9 +34,14 @@ module.exports = {
       }
 
       const ipfs = await argv.getIpfs()
-      const result = await ipfs.name.resolve(argv.name, opts)
+      let bestValue
 
-      argv.print(result)
+      for await (const value of ipfs.name.resolve(argv.name, opts)) {
+        bestValue = value
+        if (argv.stream) argv.print(value)
+      }
+
+      if (!argv.stream) argv.print(bestValue)
     })())
   }
 }

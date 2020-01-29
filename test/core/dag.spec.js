@@ -3,59 +3,39 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const IPFSFactory = require('ipfsd-ctl')
-const IPFS = require('../../src/core')
+const all = require('it-all')
+const factory = require('../utils/factory')
 
 describe('dag', function () {
   this.timeout(10 * 1000)
-  let ipfsd, ipfs
+  const df = factory()
+  let ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config: { Bootstrap: [] },
-      preload: { enabled: false }
-    })
-    ipfs = ipfsd.api
+    ipfs = (await df.spawn()).api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('get', () => {
-    it('should callback with error for invalid string CID input', (done) => {
-      ipfs.dag.get('INVALID CID', (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_CID')
-        done()
-      })
+    it('should throw error for invalid string CID input', () => {
+      return expect(ipfs.dag.get('INVALID CID'))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
     })
 
-    it('should callback with error for invalid buffer CID input', (done) => {
-      ipfs.dag.get(Buffer.from('INVALID CID'), (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_CID')
-        done()
-      })
+    it('should throw error for invalid buffer CID input', () => {
+      return expect(ipfs.dag.get(Buffer.from('INVALID CID')))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
     })
   })
 
   describe('tree', () => {
-    it('should callback with error for invalid CID input', (done) => {
-      ipfs.dag.tree('INVALID CID', (err) => {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_CID')
-        done()
-      })
+    it('should throw error for invalid CID input', () => {
+      return expect(all(ipfs.dag.tree('INVALID CID')))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
     })
   })
 })

@@ -22,12 +22,9 @@ describe('bitswap', () => runOn((thing) => {
     ipfs('block get ' + key1).catch(() => {})
   })
 
-  before(function (done) {
-    PeerId.create({ bits: 512 }, (err, peer) => {
-      expect(err).to.not.exist()
-      peerId = peer.toB58String()
-      done()
-    })
+  before(async function () {
+    const peer = await PeerId.create({ bits: 512 })
+    peerId = peer.toB58String()
   })
 
   before(async () => {
@@ -67,17 +64,38 @@ describe('bitswap', () => runOn((thing) => {
     this.timeout(20 * 1000)
 
     const out = await ipfs('bitswap stat')
-    expect(out).to.include([
-      'bitswap status',
-      '  blocks received: 0',
-      '  dup blocks received: 0',
-      '  dup data received: 0B',
-      // We sometimes pick up partners while the tests run and the order of
-      // wanted keys is not defined so our assertion ends here.
-      '  wantlist [2 keys]'
-    ].join('\n'))
+
+    expect(out).to.include('bitswap status')
+    expect(out).to.match(/provides buffer:\s\d+$/m)
+    expect(out).to.match(/blocks received:\s\d+$/m)
+    expect(out).to.match(/blocks sent:\s\d+$/m)
+    expect(out).to.match(/data received:\s\d+$/m)
+    expect(out).to.match(/data sent:\s\d+$/m)
+    expect(out).to.match(/dup blocks received:\s\d+$/m)
+    expect(out).to.match(/dup data received:\s\d+$/m)
+    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
     expect(out).to.include(key0)
     expect(out).to.include(key1)
+    expect(out).to.match(/partners\s\[\d+\]$/m)
+  })
+
+  it('stat --human', async function () {
+    this.timeout(20 * 1000)
+
+    const out = await ipfs('bitswap stat --human')
+
+    expect(out).to.include('bitswap status')
+    expect(out).to.match(/provides buffer:\s\d+$/m)
+    expect(out).to.match(/blocks received:\s\d+$/m)
+    expect(out).to.match(/blocks sent:\s\d+$/m)
+    expect(out).to.match(/data received:\s+[\d.]+\s[PTGMK]?B$/m)
+    expect(out).to.match(/data sent:\s+[\d.]+\s[PTGMK]?B$/m)
+    expect(out).to.match(/dup blocks received:\s\d+$/m)
+    expect(out).to.match(/dup data received:\s+[\d.]+\s[PTGMK]?B$/m)
+    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
+    expect(out).to.not.include(key0)
+    expect(out).to.not.include(key1)
+    expect(out).to.match(/partners\s\[\d+\]$/m)
   })
 
   it('should get stats with wantlist CIDs encoded in specified base', async function () {

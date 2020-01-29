@@ -1,7 +1,6 @@
 'use strict'
 
 const IPFSFactory = require('ipfsd-ctl')
-const parallel = require('async/parallel')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 
@@ -10,7 +9,7 @@ const preloadNode = MockPreloadNode.createNode()
 const echoServer = EchoServer.createServer()
 
 module.exports = {
-  bundlesize: { maxSize: '685kB' },
+  bundlesize: { maxSize: '652kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main'],
@@ -28,39 +27,26 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: (cb) => {
-        parallel([
-          (cb) => preloadNode.start(cb),
-          (cb) => echoServer.start(cb)
-        ], cb)
+      pre: async () => {
+        await preloadNode.start(),
+        await echoServer.start()
       },
-      post: (cb) => {
-        parallel([
-          (cb) => preloadNode.stop(cb),
-          (cb) => echoServer.stop(cb)
-        ], cb)
+      post: async () => {
+        await preloadNode.stop(),
+        await echoServer.stop()
+
       }
     },
     browser: {
-      pre: (cb) => {
-        parallel([
-          (cb) => {
-            ipfsdServer.start()
-            cb()
-          },
-          (cb) => preloadNode.start(cb),
-          (cb) => echoServer.start(cb)
-        ], cb)
+      pre: async () => {
+          await ipfsdServer.start()
+          await preloadNode.start()
+          await echoServer.start()
       },
-      post: (cb) => {
-        parallel([
-          (cb) => {
-            ipfsdServer.stop()
-            cb()
-          },
-          (cb) => preloadNode.stop(cb),
-          (cb) => echoServer.stop(cb)
-        ], cb)
+      post: async () => {
+          await ipfsdServer.stop()
+          await preloadNode.stop()
+          await echoServer.stop()
       }
     }
   }

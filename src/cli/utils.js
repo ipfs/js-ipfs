@@ -4,13 +4,9 @@ const fs = require('fs')
 const os = require('os')
 const multiaddr = require('multiaddr')
 const path = require('path')
-const debug = require('debug')
-const log = debug('cli')
-log.error = debug('cli:error')
+const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
 const byteman = require('byteman')
-const promisify = require('promisify-es6')
-const callbackify = require('callbackify')
 
 exports.isDaemonOn = isDaemonOn
 function isDaemonOn () {
@@ -38,33 +34,20 @@ function getAPICtl (apiAddr) {
   return APIctl(apiAddr)
 }
 
-exports.getIPFS = (argv, callback) => {
+exports.getIPFS = argv => {
   if (argv.api || isDaemonOn()) {
-    return callback(null, getAPICtl(argv.api), promisify((cb) => cb()))
+    return getAPICtl(argv.api)
   }
 
   // Required inline to reduce startup time
   const IPFS = require('../core')
-  const node = new IPFS({
+  return IPFS.create({
     silent: argv.silent,
+    repoAutoMigrate: argv.migrate,
     repo: exports.getRepoPath(),
-    init: false,
+    init: { allowNew: false },
     start: false,
     pass: argv.pass
-  })
-
-  const cleanup = callbackify(async () => {
-    if (node && node._repo && !node._repo.closed) {
-      await node._repo.close()
-    }
-  })
-
-  node.on('error', (err) => {
-    throw err
-  })
-
-  node.once('ready', () => {
-    callback(null, node, cleanup)
   })
 }
 
@@ -116,16 +99,15 @@ exports.ipfsPathHelp = 'ipfs uses a repository in the local file system. By defa
   'export IPFS_PATH=/path/to/ipfsrepo\n'
 
 exports.singleton = create => {
-  const requests = []
-  const getter = promisify(cb => {
-    if (getter.instance) return cb(null, getter.instance, ...getter.rest)
-    requests.push(cb)
-    if (requests.length > 1) return
-    create((err, instance, ...rest) => {
-      getter.instance = instance
-      getter.rest = rest
-      while (requests.length) requests.pop()(err, instance, ...rest)
-    })
-  })
-  return getter
+  let promise
+  return function getter () {
+    if (!promise) {
+      promise = (async () => {
+        const instance = await create()
+        getter.instance = instance
+        return instance
+      })()
+    }
+    return promise
+  }
 }

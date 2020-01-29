@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const runOnAndOff = require('../utils/on-and-off')
 
-describe('refs-local', () => runOnAndOff((thing) => {
+describe('refs local', () => runOnAndOff((thing) => {
   let ipfs
 
   before(() => {
@@ -15,7 +15,7 @@ describe('refs-local', () => runOnAndOff((thing) => {
   it('prints CID of all blocks', async function () {
     this.timeout(20 * 1000)
 
-    const out = await ipfs('refs-local')
+    const out = await ipfs('refs local')
     const lines = out.split('\n')
 
     expect(lines.includes('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN')).to.eql(true)

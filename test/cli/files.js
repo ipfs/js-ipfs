@@ -158,6 +158,7 @@ describe('files', () => runOnAndOff((thing) => {
       .to.eql('added QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB readme\n')
   })
 
+  // TODO: FIXME bugs in it-glob
   it('add recursively test', async function () {
     this.timeout(60 * 1000)
 
@@ -165,6 +166,15 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
+  // TODO: FIXME bugs in it-glob
+  it('add recursively including hidden files', async function () {
+    this.timeout(60 * 1000)
+
+    const out = await ipfs('add -r -H test/fixtures/test-data/recursive-get-dir')
+    expect(out).to.include('added QmdBd5zgdJQHsyaaAm9Vnth7NWwj23gj3Ew17r6bTvVkch recursive-get-dir/.hidden.txt')
+  })
+
+  // TODO: FIXME bugs in it-glob
   it('add directory with trailing slash test', async function () {
     this.timeout(30 * 1000)
 
@@ -172,6 +182,7 @@ describe('files', () => runOnAndOff((thing) => {
     expect(out).to.equal(recursiveGetDirResults.join('\n') + '\n')
   })
 
+  // TODO: FIXME bugs in it-glob
   it('add directory with odd name', async function () {
     this.timeout(30 * 1000)
     const expected = [
@@ -335,6 +346,30 @@ describe('files', () => runOnAndOff((thing) => {
     await clean(filePath)
   })
 
+  it('add with mtime', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mtime 5 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added Qmd7enmVy7ZZnSMQnsCKnMkLXfCYq11naCTiqXqHKe6YRg readme\n')
+  })
+
+  it('add with mtime-nsecs', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mtime 5 --mtime-nsecs 100 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmXbVCG5go62V1g7UQtyrJ3svYArc53stCxLx9CNtv1GGT readme\n')
+  })
+
+  it('add with mode', async function () {
+    this.timeout(30 * 1000)
+
+    const out = await ipfs('add --mode 0655 src/init-files/init-docs/readme')
+    expect(out)
+      .to.eql('added QmUkGGwA3MvnutubCDQmW9MUC9oSHbZw58PcJERy4bNnDW readme\n')
+  })
+
   HASH_ALGS.forEach((name) => {
     it(`add with hash=${name} and raw-leaves=false`, async function () {
       this.timeout(30 * 1000)
@@ -407,15 +442,17 @@ describe('files', () => runOnAndOff((thing) => {
     rimraf(file)
   })
 
+  // TODO: FIXME bugs in it-glob
+  // FIXME: tests that depend on output of other tests
   it('get recursively', async function () {
     this.timeout(20 * 1000)
 
-    const outDir = path.join(process.cwd(), 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    const outDir = path.join(process.cwd(), 'QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9')
     rimraf(outDir)
 
-    const out = await ipfs('get Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    const out = await ipfs('get QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9')
     expect(out).to.eql(
-      'Saving file(s) Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n'
+      'Saving file(s) QmTCaAvZ5dquoa2jrgTRa3gn9n4Ymrz8mEdePP8jiaTvf9\n'
     )
 
     const expectedDir = path.join(process.cwd(), 'test', 'fixtures', 'test-data', 'recursive-get-dir')

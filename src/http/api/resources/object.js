@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const multipart = require('ipfs-multipart')
-const all = require('async-iterator-all')
+const all = require('it-all')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB
 const Joi = require('@hapi/joi')
@@ -83,32 +83,24 @@ exports.get = {
 
     let node, cid
     try {
-      node = await ipfs.object.get(key, { enc: enc })
+      node = await ipfs.object.get(key, { enc })
       cid = await dagPB.util.cid(dagPB.util.serialize(node))
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get object' })
     }
 
-    const nodeJSON = node.toJSON()
-
-    if (Buffer.isBuffer(node.data)) {
-      nodeJSON.data = node.data.toString(request.query['data-encoding'] || undefined)
-    }
-
-    const answer = {
-      Data: nodeJSON.data,
+    return h.response({
+      Data: node.Data.toString(request.query['data-encoding'] || undefined),
       Hash: cidToString(cid, { base: request.query['cid-base'], upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Size: node.size,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: request.query['cid-base'], upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: cidToString(l.Hash, { base: request.query['cid-base'], upgrade: false })
         }
       })
-    }
-
-    return h.response(answer)
+    })
   }
 }
 

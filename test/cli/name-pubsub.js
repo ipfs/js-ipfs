@@ -3,34 +3,12 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const path = require('path')
+const factory = require('../utils/factory')
 const ipfsExec = require('../utils/ipfs-exec')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'js',
-  IpfsClient: require('ipfs-http-client')
-})
-
-const spawnDaemon = () => df.spawn({
-  exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-  args: ['--enable-namesys-pubsub'],
-  initOptions: { bits: 512 },
-  config: {
-    Bootstrap: [],
-    Discovery: {
-      MDNS: {
-        Enabled: false
-      },
-      webRTCStar: {
-        Enabled: false
-      }
-    }
-  }
-})
 
 describe('name-pubsub', () => {
   describe('enabled', () => {
+    const df = factory({ type: 'js', args: ['--enable-namesys-pubsub'] })
     let ipfsA
     let ipfsB
     let nodeAId
@@ -44,12 +22,12 @@ describe('name-pubsub', () => {
       // timeout for the before step
       this.timeout(80 * 1000)
 
-      const nodeA = await spawnDaemon()
-      ipfsA = ipfsExec(nodeA.repoPath)
+      const nodeA = await df.spawn()
+      ipfsA = ipfsExec(nodeA.path)
       nodes.push(nodeA)
 
-      const nodeB = await spawnDaemon()
-      ipfsB = ipfsExec(nodeB.repoPath)
+      const nodeB = await df.spawn()
+      ipfsB = ipfsExec(nodeB.path)
       nodes.push(nodeB)
     })
 
@@ -71,7 +49,7 @@ describe('name-pubsub', () => {
       expect(out).to.eql(`connect ${bMultiaddr} success\n`)
     })
 
-    after(() => Promise.all(nodes.map((node) => node.stop())))
+    after(() => df.clean())
 
     describe('pubsub commands', () => {
       it('should get enabled state of pubsub', async function () {
@@ -83,10 +61,10 @@ describe('name-pubsub', () => {
         this.timeout(80 * 1000)
 
         const err = await ipfsB.fail(`name resolve ${nodeAId.id}`)
-        expect(err.all).to.include('was not found')
+        expect(err).to.exist()
 
         const ls = await ipfsB('pubsub ls')
-        expect(ls).to.have.string('/record/') // have a record ipns subscribtion
+        expect(ls).to.have.string('/record/') // have a record ipns subscription
 
         const subs = await ipfsB('name pubsub subs')
         expect(subs).to.have.string(`/ipns/${nodeAId.id}`) // have subscription
@@ -114,6 +92,7 @@ describe('name-pubsub', () => {
   })
 
   describe('disabled', () => {
+    const df = factory({ type: 'js' })
     let ipfsA
     let node
 
@@ -123,19 +102,11 @@ describe('name-pubsub', () => {
       // timeout for the before step
       this.timeout(80 * 1000)
 
-      node = await df.spawn({
-        exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-        config: {},
-        initOptions: { bits: 512 }
-      })
-      ipfsA = ipfsExec(node.repoPath)
+      node = await df.spawn()
+      ipfsA = ipfsExec(node.path)
     })
 
-    after(() => {
-      if (node) {
-        return node.stop()
-      }
-    })
+    after(() => df.clean())
 
     it('should get disabled state of pubsub', async function () {
       const res = await ipfsA('name pubsub state')

@@ -135,5 +135,30 @@ describe('dag', () => runOnAndOff.off((thing) => {
       const out = await ipfs('pin ls')
       expect(out).to.include(cid)
     })
+
+    it('puts a cbor node with a legacy { "/": "<CID>" } links', async function () {
+      this.timeout(20 * 1000)
+
+      const input = `dag api rulz ${Date.now()}`
+
+      const linkedCid = (await ipfs('dag put', {
+        input: Buffer.from(`"${input}"`)
+      })).trim()
+
+      const cid = (await ipfs('dag put', {
+        input: Buffer.from(JSON.stringify({
+          link: { '/': linkedCid },
+          arrayLink: [{ '/': linkedCid }],
+          data: { test: Date.now() },
+          noData: null
+        }))
+      })).trim()
+
+      const out0 = (await ipfs(`dag get ${cid}/link`)).trim()
+      expect(out0).to.equal(input)
+
+      const out1 = (await ipfs(`dag get ${cid}/arrayLink/0`)).trim()
+      expect(out1).to.equal(input)
+    })
   })
 }))

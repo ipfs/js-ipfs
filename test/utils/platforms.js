@@ -4,13 +4,7 @@ const os = require('os')
 const current = os.platform()
 
 module.exports = {
-  isWindows: () => {
-    return current === 'win32'
-  },
-  isMacOS: () => {
-    return current === 'darwin'
-  },
-  isLinux: () => {
-    return current === 'linux'
-  }
+  isWindows: current === 'win32',
+  isMacOS: current === 'darwin',
+  isLinux: current === 'linux'
 }

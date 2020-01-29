@@ -7,7 +7,10 @@ const multibase = require('multibase')
 const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
-const all = require('async-iterator-all')
+const all = require('it-all')
+const pipe = require('it-pipe')
+const { map } = require('streaming-iterables')
+const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 const log = debug('ipfs:http-api:block')
 log.error = debug('ipfs:http-api:block:error')
@@ -129,22 +132,13 @@ exports.rm = {
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler (request, h) {
     const { arg, force, quiet } = request.pre.args
+    const { ipfs } = request.server.app
 
-    return streamResponse(request, h, async (output) => {
-      try {
-        for await (const result of request.server.app.ipfs.block._rmAsyncIterator(arg, {
-          force,
-          quiet
-        })) {
-          output.write(JSON.stringify({
-            Hash: result.hash,
-            Error: result.error
-          }) + '\n')
-        }
-      } catch (err) {
-        throw Boom.boomify(err, { message: 'Failed to delete block' })
-      }
-    })
+    return streamResponse(request, h, () => pipe(
+      ipfs.block.rm(arg, { force, quiet }),
+      map(({ cid, error }) => ({ Hash: cid.toString(), Error: error ? error.message : undefined })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -170,7 +164,7 @@ exports.stat = {
     }
 
     return h.response({
-      Key: cidToString(stats.key, { base: request.query['cid-base'] }),
+      Key: cidToString(stats.cid, { base: request.query['cid-base'] }),
       Size: stats.size
     })
   }

@@ -1,71 +1,29 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
-const series = require('async/series')
+const hat = require('hat')
 const ipfsExec = require('../utils/ipfs-exec')
-const IPFS = require('../../src')
-const path = require('path')
-const DaemonFactory = require('ipfsd-ctl')
-
-const config = {
-  Bootstrap: [],
-  Discovery: {
-    MDNS: {
-      Enabled:
-        false
-    }
-  }
-}
+const factory = require('../utils/factory')
 
 describe('pubsub', function () {
   this.timeout(80 * 1000)
-
-  let node
+  const df = factory()
   let ipfsdA
   let ipfsdB
   let cli
-  let httpApi
 
-  const topicA = 'nonscentsA'
-  const topicB = 'nonscentsB'
-  const topicC = 'nonscentsC'
+  const topicA = hat()
+  const topicB = hat()
+  const topicC = hat()
 
   before(async function () {
-    this.timeout(60 * 1000)
-
-    const df = DaemonFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-    ipfsdA = await df.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config
-    })
-    node = ipfsdA.api
-  })
-
-  after(() => {
-    if (ipfsdB) {
-      return ipfsdB.stop()
-    }
+    ipfsdA = await df.spawn({ type: 'proc' })
   })
 
   before(async () => {
-    const df = DaemonFactory.create({
-      type: 'js',
-      IpfsClient: require('ipfs-http-client')
-    })
-    ipfsdB = await df.spawn({
-      initOptions: { bits: 512 },
-      exec: path.resolve(`${__dirname}/../../src/cli/bin.js`),
-      config
-    })
-    httpApi = ipfsdB.api
-    httpApi.repoPath = ipfsdB.repoPath
+    ipfsdB = await df.spawn({ type: 'js' })
   })
 
   after(() => {
@@ -73,98 +31,95 @@ describe('pubsub', function () {
       return ipfsdA.stop()
     }
   })
+
   after(() => {
     if (ipfsdB) {
       return ipfsdB.stop()
     }
   })
 
-  before((done) => {
-    cli = ipfsExec(httpApi.repoPath)
-    done()
+  before(() => {
+    cli = ipfsExec(ipfsdB.path)
   })
 
-  it('subscribe and publish', () => {
+  it('subscribe and publish', async () => {
     const sub = cli(`pubsub sub ${topicA}`)
 
-    sub.stdout.on('data', (c) => {
-      expect(c.toString().trim()).to.be.eql('world')
-      sub.kill()
-    })
+    try {
+      const msgPromise = new Promise(resolve => sub.stdout.on('data', resolve))
+      await delay(1000)
 
-    return Promise.all([
-      sub.catch(ignoreKill),
-      delay(1000)
-        .then(() => cli(`pubsub pub ${topicA} world`))
-        .then((out) => {
-          expect(out).to.be.eql('')
-        })
-    ])
-  })
+      const out = await cli(`pubsub pub ${topicA} world`)
+      expect(out).to.be.eql('')
 
-  it('ls', function () {
-    this.timeout(80 * 1000)
-    let sub
-
-    return new Promise((resolve, reject) => {
-      sub = cli(`pubsub sub ${topicB}`)
-      sub.stdout.once('data', d => resolve(d.toString().trim()))
-      delay(200).then(() => cli(`pubsub pub ${topicB} world`))
-    })
-      .then(data => expect(data).to.be.eql('world'))
-      .then(() => cli('pubsub ls'))
-      .then(out => {
-        expect(out.trim()).to.be.eql(topicB)
-        sub.kill()
-        return sub.catch(ignoreKill)
-      })
-  })
-
-  it('peers', (done) => {
-    let sub
-    let instancePeerId
-    let peerAddress
-    const handler = (msg) => {
-      expect(msg.data.toString()).to.be.eql('world')
-      cli(`pubsub peers ${topicC}`)
-        .then((out) => {
-          expect(out.trim()).to.be.eql(instancePeerId)
-          sub.kill()
-          node.pubsub.unsubscribe(topicC, handler)
-          done()
-        })
+      const data = await msgPromise
+      expect(data.toString().trim()).to.be.eql('world')
+    } finally {
+      await kill(sub)
     }
+  })
 
-    series([
-      (cb) => httpApi.id((err, peerInfo) => {
-        expect(err).to.not.exist()
-        peerAddress = peerInfo.addresses[0]
-        expect(peerAddress).to.exist()
-        cb()
-      }),
-      (cb) => node.id((err, peerInfo) => {
-        expect(err).to.not.exist()
-        instancePeerId = peerInfo.id.toString()
-        cb()
-      }),
-      (cb) => node.swarm.connect(peerAddress, cb),
-      (cb) => node.pubsub.subscribe(topicC, handler, cb)
-    ],
-    (err) => {
-      expect(err).to.not.exist()
-      sub = cli(`pubsub sub ${topicC}`)
+  it('ls', async function () {
+    this.timeout(80 * 1000)
+    const sub = cli(`pubsub sub ${topicB}`)
 
-      return Promise.all([
-        sub.catch(ignoreKill),
-        delay(1000)
-          .then(() => cli(`pubsub pub ${topicC} world`))
-      ])
+    try {
+      const msgPromise = new Promise(resolve => sub.stdout.on('data', resolve))
+      await delay(200)
+
+      await cli(`pubsub pub ${topicB} world`)
+
+      const data = await msgPromise
+      expect(data.toString().trim()).to.be.eql('world')
+
+      const out = await cli('pubsub ls')
+      expect(out.toString().trim()).to.be.eql(topicB)
+    } finally {
+      await kill(sub)
+    }
+  })
+
+  it('peers', async () => {
+    let handler
+    const handlerMsgPromise = new Promise(resolve => {
+      handler = msg => resolve(msg)
     })
+
+    const bId = await ipfsdB.api.id()
+    const bAddr = bId.addresses[0]
+
+    const aId = await ipfsdA.api.id()
+    const aPeerId = aId.id.toString()
+
+    await ipfsdA.api.swarm.connect(bAddr)
+    await ipfsdA.api.pubsub.subscribe(topicC, handler)
+
+    await delay(1000)
+
+    const sub = cli(`pubsub sub ${topicC}`)
+
+    try {
+      await cli(`pubsub pub ${topicC} world`)
+
+      const msg = await handlerMsgPromise
+      expect(msg.data.toString()).to.be.eql('world')
+
+      const out = await cli(`pubsub peers ${topicC}`)
+      expect(out.trim()).to.be.eql(aPeerId)
+    } finally {
+      await kill(sub)
+      await ipfsdA.api.pubsub.unsubscribe(topicC, handler)
+    }
   })
 })
 
-function ignoreKill (err) {
-  if (!err.killed) {
-    throw err
+async function kill (proc) {
+  try {
+    proc.kill()
+    await proc
+  } catch (err) {
+    if (!err.killed) {
+      throw err
+    }
   }
 }

@@ -12,16 +12,22 @@ log.error = debug('ipfs:preload:error')
 // we don't want preload calls to exhaust the limit (~6)
 const httpQueue = new PQueue({ concurrency: 4 })
 
-module.exports = function preload (url, callback) {
+module.exports = function preload (url, options) {
   log(url)
+  options = options || {}
 
-  const controller = new AbortController()
-  const signal = controller.signal
-  const cb = () => setImmediate(callback) // https://github.com/ipfs/js-ipfs/pull/2304#discussion_r320700893
+  return httpQueue.add(async () => {
+    const res = await ky.get(url, { signal: options.signal })
+    const reader = res.body.getReader()
 
-  httpQueue.add(() => ky.get(url, { signal })).then(cb, cb)
-
-  return {
-    cancel: () => controller.abort()
-  }
+    try {
+      while (true) {
+        const { done } = await reader.read()
+        if (done) return
+        // Read to completion but do not cache
+      }
+    } finally {
+      reader.releaseLock()
+    }
+  })
 }

@@ -10,6 +10,7 @@ const path = require('path')
 const hat = require('hat')
 const fileType = require('file-type')
 const CID = require('cids')
+const all = require('it-all')
 
 const bigFile = loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
 const directoryContent = {
@@ -64,27 +65,27 @@ describe('HTTP Gateway', function () {
     gateway = http.api._httpApi._gatewayServers[0]
 
     // QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi
-    await http.api._ipfs.add([
+    await all(http.api._ipfs.add([
       content('index.html'),
       emptyDir('empty-folder'),
       content('nested-folder/hello.txt'),
       content('nested-folder/ipfs.txt'),
       content('nested-folder/nested.html'),
       emptyDir('nested-folder/empty')
-    ])
+    ]))
     // Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq
-    await http.api._ipfs.add(bigFile)
+    await all(http.api._ipfs.add(bigFile))
     // QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o
-    await http.api._ipfs.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 })
+    await all(http.api._ipfs.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 }))
     // QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ
-    await http.api._ipfs.add([content('cat-folder/cat.jpg')])
+    await all(http.api._ipfs.add([content('cat-folder/cat.jpg')]))
     // QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F
-    await http.api._ipfs.add([
+    await all(http.api._ipfs.add([
       content('unsniffable-folder/hexagons-xml.svg'),
       content('unsniffable-folder/hexagons.svg')
-    ])
+    ]))
     // QmaRdtkDark8TgXPdDczwBneadyF44JvFGbrKLTkmTUhHk
-    await http.api._ipfs.add([content('utf8/cat-with-óąśśł-and-أعظم._.jpg')])
+    await all(http.api._ipfs.add([content('utf8/cat-with-óąśśł-and-أعظم._.jpg')]))
     // Publish QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ to IPNS using self key
     await http.api._ipfs.name.publish('QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ', { resolve: false })
   })

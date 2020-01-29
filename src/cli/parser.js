@@ -19,6 +19,11 @@ const parser = yargs
     type: 'string',
     default: ''
   })
+  .option('migrate', {
+    desc: 'Enable/disable automatic repo migrations',
+    type: 'boolean',
+    default: false
+  })
   .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .fail((msg, err, yargs) => {
@@ -30,7 +35,8 @@ const parser = yargs
   })
   .commandDir('commands')
   .middleware(argv => Object.assign(argv, {
-    getIpfs: utils.singleton(cb => utils.getIPFS(argv, cb)),
+    getIpfs: utils.singleton(() => utils.getIPFS(argv)),
+    getStdin: () => process.stdin,
     print: utils.print,
     isDaemonOn: utils.isDaemonOn,
     getRepoPath: utils.getRepoPath

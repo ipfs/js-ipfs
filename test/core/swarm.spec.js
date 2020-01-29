@@ -1,42 +1,23 @@
-/* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const IPFSFactory = require('ipfsd-ctl')
-const IPFS = require('../../src/core')
+const factory = require('../utils/factory')
 
 describe('swarm', function () {
+  const df = factory()
   this.timeout(10 * 1000)
   let ipfsd, ipfs
 
   before(async () => {
-    const factory = IPFSFactory.create({
-      type: 'proc',
-      IpfsClient: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      exec: IPFS,
-      initOptions: { bits: 512 },
-      config: { Bootstrap: [] },
-      preload: { enabled: false }
-    })
+    ipfsd = await df.spawn()
     ipfs = ipfsd.api
   })
 
-  after(() => {
-    if (ipfsd) {
-      return ipfsd.stop()
-    }
-  })
+  after(() => df.clean())
 
   describe('peers', () => {
-    it('should not error when passed null options', (done) => {
-      ipfs.swarm.peers(null, (err) => {
-        expect(err).to.not.exist()
-        done()
-      })
+    it('should not error when passed null options', async () => {
+      await ipfs.swarm.peers(null)
     })
   })
 })

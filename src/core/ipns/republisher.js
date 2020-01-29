@@ -4,7 +4,6 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-const promisify = require('promisify-es6')
 
 const debug = require('debug')
 const log = debug('ipfs:ipns:republisher')
@@ -22,11 +21,11 @@ class IpnsRepublisher {
     this._datastore = datastore
     this._peerInfo = peerInfo
     this._keychain = keychain
-    this._options = options
+    this._options = options || {}
     this._republishHandle = null
   }
 
-  start () {
+  async start () { // eslint-disable-line require-await
     if (this._republishHandle) {
       throw errcode(new Error('republisher is already running'), 'ERR_REPUBLISH_ALREADY_RUNNING')
     }
@@ -67,19 +66,15 @@ class IpnsRepublisher {
     const { pass } = this._options
     let firstRun = true
 
-    republishHandle._task = async () => {
-      await this._republishEntries(privKey, pass)
+    republishHandle._task = () => this._republishEntries(privKey, pass)
 
-      return defaultBroadcastInterval
-    }
     republishHandle.runPeriodically(() => {
       if (firstRun) {
         firstRun = false
-
-        return minute
+        return this._options.initialBroadcastInterval || minute
       }
 
-      return defaultBroadcastInterval
+      return this._options.broadcastInterval || defaultBroadcastInterval
     })
 
     this._republishHandle = republishHandle
@@ -132,7 +127,7 @@ class IpnsRepublisher {
     }
 
     try {
-      const peerId = await promisify(PeerId.createFromPrivKey)(privateKey.bytes)
+      const peerId = await PeerId.createFromPrivKey(privateKey.bytes)
       const value = await this._getPreviousValue(peerId)
       await this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime)
     } catch (err) {

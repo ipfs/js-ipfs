@@ -21,11 +21,12 @@ describe('name', () => {
   })
 
   it('resolve', async () => {
-    const resolveFake = sinon.fake()
+    // eslint-disable-next-line require-await
+    const resolveFake = sinon.fake.returns((async function * () { yield '/ipfs/QmTest' })())
 
     sinon
       .stub(cliUtils, 'getIPFS')
-      .callsArgWith(1, null, { name: { resolve: resolveFake } })
+      .returns(Promise.resolve({ name: { resolve: resolveFake } }))
 
     // TODO: the lines below shouldn't be necessary, cli needs refactor to simplify testability
     // Force the next require to not use require cache
@@ -41,7 +42,7 @@ describe('name', () => {
 
     sinon
       .stub(cliUtils, 'getIPFS')
-      .callsArgWith(1, null, { name: { publish: publishFake } })
+      .returns(Promise.resolve({ name: { publish: publishFake } }))
 
     // TODO: the lines below shouldn't be necessary, cli needs refactor to simplify testability
     // Force the next require to not use require cache

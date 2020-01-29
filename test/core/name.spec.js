@@ -1,444 +1,310 @@
-/* eslint max-nested-callbacks: ["error", 7] */
 /* eslint-env mocha */
 'use strict'
 
 const hat = require('hat')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const parallel = require('async/parallel')
-const series = require('async/series')
-const IPFS = require('../../src')
-const ipnsPath = require('../../src/core/ipns/path')
-const ipnsRouting = require('../../src/core/ipns/routing/config')
+const delay = require('delay')
+const { Key } = require('interface-datastore')
+const last = require('it-last')
+const PeerId = require('peer-id')
+const errCode = require('err-code')
+const PeerInfo = require('peer-info')
+const getIpnsRoutingConfig = require('../../src/core/ipns/routing/config')
+const IpnsPublisher = require('../../src/core/ipns/publisher')
+const IpnsRepublisher = require('../../src/core/ipns/republisher')
+const IpnsResolver = require('../../src/core/ipns/resolver')
 const OfflineDatastore = require('../../src/core/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../../src/core/ipns/routing/pubsub-datastore')
-const { Key, Errors } = require('interface-datastore')
-
-const DaemonFactory = require('ipfsd-ctl')
-const df = DaemonFactory.create({
-  type: 'proc',
-  IpfsClient: require('ipfs-http-client')
-})
+const factory = require('../utils/factory')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
-const publishAndResolve = (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts, callback) => {
-  series([
-    (cb) => publisher.name.publish(ipfsRef, publishOpts, cb),
-    (cb) => resolver.name.resolve(nodeId, resolveOpts, cb)
-  ], (err, res) => {
-    expect(err).to.not.exist()
-    expect(res[0]).to.exist()
-    expect(res[1]).to.exist()
-    expect(res[1]).to.equal(ipfsRef)
-    callback()
-  })
+const publishAndResolve = async (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts) => {
+  await publisher.name.publish(ipfsRef, publishOpts)
+  const value = await last(resolver.name.resolve(nodeId, resolveOpts))
+  expect(value).to.equal(ipfsRef)
 }
 
 describe('name', function () {
+  const df = factory()
+
   describe('republisher', function () {
     this.timeout(40 * 1000)
-    let node
-    let ipfsd
+    let republisher
 
-    before(async function () {
-      ipfsd = await df.spawn({
-        exec: IPFS,
-        args: [`--pass ${hat()}`, '--offline'],
-        config: { Bootstrap: [] },
-        preload: { enabled: false }
+    afterEach(async () => {
+      if (republisher) {
+        await republisher.stop()
+        republisher = null
+      }
+    })
+
+    it('should republish entries', async function () {
+      republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), sinon.stub(), {
+        initialBroadcastInterval: 500,
+        broadcastInterval: 1000
       })
-      node = ipfsd.api
+      republisher._republishEntries = sinon.stub()
+
+      await republisher.start()
+
+      expect(republisher._republishEntries.calledOnce).to.equal(false)
+
+      // Initial republish should happen after ~500ms
+      await delay(750)
+      expect(republisher._republishEntries.calledOnce).to.equal(true)
+
+      // Subsequent republishes should happen after ~1500ms
+      await delay(1000)
+      expect(republisher._republishEntries.calledTwice).to.equal(true)
     })
 
-    afterEach(() => {
-      sinon.restore()
-    })
+    it('should error if run republish again', async () => {
+      republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), sinon.stub(), {
+        initialBroadcastInterval: 50,
+        broadcastInterval: 100
+      })
+      republisher._republishEntries = sinon.stub()
 
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
+      await republisher.start()
 
-    it('should republish entries after 60 seconds', function (done) {
-      this.timeout(120 * 1000)
-      sinon.spy(node._ipns.republisher, '_republishEntries')
-
-      setTimeout(function () {
-        expect(node._ipns.republisher._republishEntries.calledOnce).to.equal(true)
-        done()
-      }, 60 * 1000)
-    })
-
-    it('should error if run republish again', function (done) {
-      this.timeout(120 * 1000)
-      sinon.spy(node._ipns.republisher, '_republishEntries')
-
-      try {
-        node._ipns.republisher.start()
-      } catch (err) {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_REPUBLISH_ALREADY_RUNNING') // already runs when starting
-        done()
-      }
+      await expect(republisher.start())
+        .to.eventually.be.rejected()
+        .with.a.property('code').that.equals('ERR_REPUBLISH_ALREADY_RUNNING')
     })
   })
 
   // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
-  describe.skip('work with dht', () => {
-    let nodes
+  describe.skip('publish and resolve over DHT', () => {
     let nodeA
     let nodeB
     let nodeC
-    let idA
 
-    const createNode = (callback) => {
-      df.spawn({
-        exec: IPFS,
-        args: [`--pass ${hat()}`],
-        config: {
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          }
-        }
-      }, callback)
-    }
+    const createNode = () => df.spawn({ ipfsOptions: { pass: hat() } })
 
-    before(function (done) {
+    before(async function () {
       this.timeout(70 * 1000)
 
-      parallel([
-        (cb) => createNode(cb),
-        (cb) => createNode(cb),
-        (cb) => createNode(cb)
-      ], (err, _nodes) => {
-        expect(err).to.not.exist()
+      nodeA = (await createNode()).api
+      nodeB = (await createNode()).api
+      nodeC = (await createNode()).api
 
-        nodes = _nodes
-        nodeA = _nodes[0].api
-        nodeB = _nodes[1].api
-        nodeC = _nodes[2].api
-
-        parallel([
-          (cb) => nodeA.id(cb),
-          (cb) => nodeB.id(cb)
-        ], (err, ids) => {
-          expect(err).to.not.exist()
-
-          idA = ids[0]
-          parallel([
-            (cb) => nodeC.swarm.connect(ids[0].addresses[0], cb), // C => A
-            (cb) => nodeC.swarm.connect(ids[1].addresses[0], cb), // C => B
-            (cb) => nodeA.swarm.connect(ids[1].addresses[0], cb) // A => B
-          ], done)
-        })
-      })
+      nodeC.swarm.connect(nodeA.peerId.addresses[0]) // C => A
+      nodeC.swarm.connect(nodeB.peerId.addresses[0]) // C => B
+      nodeA.swarm.connect(nodeB.peerId.addresses[0]) // A => B
     })
 
-    after(function (done) {
-      this.timeout(80 * 1000)
+    after(() => df.clean())
 
-      parallel(nodes.map((node) => (cb) => node.stop(cb)), done)
-    })
-
-    it('should publish and then resolve correctly with the default options', function (done) {
+    it('should publish and then resolve correctly with the default options', function () {
       this.timeout(380 * 1000)
-      publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, idA.id, {}, done)
+      return publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, nodeA.peerId.id, {})
     })
 
-    it('should recursively resolve to an IPFS hash', function (done) {
+    it('should recursively resolve to an IPFS hash', async function () {
       this.timeout(360 * 1000)
       const keyName = hat()
 
-      nodeA.key.gen(keyName, { type: 'rsa', size: 2048 }, function (err, key) {
-        expect(err).to.not.exist()
-        series([
-          (cb) => nodeA.name.publish(ipfsRef, { resolve: false }, cb),
-          (cb) => nodeA.name.publish(`/ipns/${idA.id}`, { resolve: false, key: keyName }, cb),
-          (cb) => nodeB.name.resolve(key.id, { recursive: true }, cb)
-        ], (err, res) => {
-          expect(err).to.not.exist()
-          expect(res[2]).to.exist()
-          expect(res[2]).to.equal(ipfsRef)
-          done()
-        })
-      })
+      const key = await nodeA.key.gen(keyName, { type: 'rsa', size: 2048 })
+
+      await nodeA.name.publish(ipfsRef, { resolve: false })
+      await nodeA.name.publish(`/ipns/${nodeA.peerId.id}`, { resolve: false, key: keyName })
+      const res = await last(nodeB.name.resolve(key.id, { recursive: true }))
+
+      expect(res).to.equal(ipfsRef)
     })
   })
 
-  describe('errors', function () {
-    let node
-    let nodeId
-    let ipfsd
-
-    before(async function () {
-      this.timeout(40 * 1000)
-      ipfsd = await df.spawn({
-        exec: IPFS,
-        args: [`--pass ${hat()}`],
-        config: {
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
-      })
-      node = ipfsd.api
-
-      const res = await node.id()
-      nodeId = res.id
-    })
-
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
-
-    it('should error to publish if does not receive private key', function () {
-      return expect(node._ipns.publisher.publish(null, ipfsRef))
+  describe('publisher', () => {
+    it('should fail to publish if does not receive private key', () => {
+      const publisher = new IpnsPublisher()
+      return expect(publisher.publish(null, ipfsRef))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_PRIVATE_KEY')
     })
 
-    it('should error to publish if an invalid private key is received', function () {
-      return expect(node._ipns.publisher.publish({ bytes: 'not that valid' }, ipfsRef))
+    it('should fail to publish if an invalid private key is received', () => {
+      const publisher = new IpnsPublisher()
+      return expect(publisher.publish({ bytes: 'not that valid' }, ipfsRef))
         .to.eventually.be.rejected()
         // .that.eventually.has.property('code', 'ERR_INVALID_PRIVATE_KEY') TODO: libp2p-crypto needs to throw err-code
     })
 
-    it('should error to publish if _updateOrCreateRecord fails', async function () {
+    it('should fail to publish if _updateOrCreateRecord fails', async () => {
+      const publisher = new IpnsPublisher()
       const err = new Error('error')
-      const stub = sinon.stub(node._ipns.publisher, '_updateOrCreateRecord').rejects(err)
+      const peerId = await PeerId.create()
 
-      await expect(node.name.publish(ipfsRef, { resolve: false }))
+      sinon.stub(publisher, '_updateOrCreateRecord').rejects(err)
+
+      return expect(publisher.publish(peerId.privKey, ipfsRef))
         .to.eventually.be.rejectedWith(err)
-
-      stub.restore()
     })
 
-    it('should error to publish if _putRecordToRouting receives an invalid peer id', function () {
-      return expect(node._ipns.publisher._putRecordToRouting(undefined, undefined))
+    it('should fail to publish if _putRecordToRouting receives an invalid peer id', () => {
+      const publisher = new IpnsPublisher()
+      return expect(publisher._putRecordToRouting(undefined, undefined))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_PEER_ID')
     })
 
-    it('should error to publish if receives an invalid datastore key', async function () {
+    it('should fail to publish if receives an invalid datastore key', async () => {
+      const routing = {
+        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND'))
+      }
+      const datastore = {
+        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND')),
+        put: sinon.stub().resolves()
+      }
+      const publisher = new IpnsPublisher(routing, datastore)
+      const peerId = await PeerId.create()
+
       const stub = sinon.stub(Key, 'isKey').returns(false)
 
-      await expect(node.name.publish(ipfsRef, { resolve: false }))
+      await expect(publisher.publish(peerId.privKey, ipfsRef))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_DATASTORE_KEY')
 
       stub.restore()
     })
 
-    it('should error to publish if we receive a unexpected error getting from datastore', async function () {
-      const stub = sinon.stub(node._ipns.publisher._datastore, 'get').throws(new Error('error-unexpected'))
+    it('should fail to publish if we receive a unexpected error getting from datastore', async () => {
+      const routing = {}
+      const datastore = {
+        get: sinon.stub().rejects(new Error('boom'))
+      }
+      const publisher = new IpnsPublisher(routing, datastore)
+      const peerId = await PeerId.create()
 
-      await expect(node.name.publish(ipfsRef, { resolve: false }))
+      await expect(publisher.publish(peerId.privKey, ipfsRef))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_DETERMINING_PUBLISHED_RECORD')
-
-      stub.restore()
     })
 
-    it('should error to publish if we receive a unexpected error putting to datastore', async function () {
-      const stub = sinon.stub(node._ipns.publisher._datastore, 'put').throws(new Error('error-unexpected'))
+    it('should fail to publish if we receive a unexpected error putting to datastore', async () => {
+      const routing = {
+        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND'))
+      }
+      const datastore = {
+        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND')),
+        put: sinon.stub().rejects(new Error('error-unexpected'))
+      }
+      const publisher = new IpnsPublisher(routing, datastore)
+      const peerId = await PeerId.create()
 
-      await expect(node.name.publish(ipfsRef, { resolve: false }))
+      await expect(publisher.publish(peerId.privKey, ipfsRef))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_STORING_IN_DATASTORE')
-
-      stub.restore()
     })
+  })
 
-    it('should error to resolve if the received name is not a string', function () {
-      return expect(node._ipns.resolver.resolve(false))
+  describe('resolver', () => {
+    it('should fail to resolve if the received name is not a string', () => {
+      const resolver = new IpnsResolver()
+      return expect(resolver.resolve(false))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_NAME')
     })
 
-    it('should error to resolve if receives an invalid ipns path', function () {
-      return expect(node._ipns.resolver.resolve('ipns/<cid>'))
+    it('should fail to resolve if receives an invalid ipns path', () => {
+      const resolver = new IpnsResolver()
+      return expect(resolver.resolve('ipns/<cid>'))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_NAME')
     })
 
-    it('should publish and then fail to resolve if receive error getting from datastore', async function () {
-      const stub = sinon.stub(node._ipns.resolver._routing, 'get').throws(new Error('error-unexpected'))
+    it('should fail to resolve if receive error getting from datastore', async () => {
+      const routing = {
+        get: sinon.stub().rejects(new Error('boom'))
+      }
+      const resolver = new IpnsResolver(routing)
+      const peerId = await PeerId.create()
 
-      await node.name.publish(ipfsRef, { resolve: false })
-
-      await expect(node.name.resolve(nodeId, { nocache: true }))
+      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
-
-      stub.restore()
     })
 
-    it('should publish and then fail to resolve if does not find the record', async function () {
-      const stub = sinon.stub(node._ipns.resolver._routing, 'get').throws(Errors.notFoundError())
+    it('should fail to resolve if does not find the record', async () => {
+      const routing = {
+        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND'))
+      }
+      const resolver = new IpnsResolver(routing)
+      const peerId = await PeerId.create()
 
-      await node.name.publish(ipfsRef, { resolve: false })
-
-      await expect(node.name.resolve(nodeId, { nocache: true }))
+      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_NO_RECORD_FOUND')
-
-      stub.restore()
     })
 
-    it('should publish and then fail to resolve if does not receive a buffer', async function () {
-      const stub = sinon.stub(node._ipns.resolver._routing, 'get').resolves('not-a-buffer')
+    it('should fail to resolve if does not receive a buffer', async () => {
+      const routing = {
+        get: sinon.stub().resolves('not-a-buffer')
+      }
+      const resolver = new IpnsResolver(routing)
+      const peerId = await PeerId.create()
 
-      await node.name.publish(ipfsRef, { resolve: false })
-
-      await expect(node.name.resolve(nodeId, { nocache: true }))
+      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_RECORD_RECEIVED')
-
-      stub.restore()
     })
   })
 
-  describe('ipns.path', function () {
-    const fixture = {
-      path: 'test/fixtures/planets/solar-system.md',
-      content: Buffer.from('ipns.path')
-    }
-
-    let node
-    let ipfsd
-    let nodeId
-
-    before(async function () {
-      this.timeout(40 * 1000)
-      ipfsd = await df.spawn({
-        exec: IPFS,
-        args: [`--pass ${hat()}`, '--offline'],
-        config: {
-          Bootstrap: [],
-          Discovery: {
-            MDNS: {
-              Enabled: false
-            },
-            webRTCStar: {
-              Enabled: false
-            }
-          }
-        },
-        preload: { enabled: false }
+  describe('routing config', function () {
+    it('should use only the offline datastore by default', () => {
+      const config = getIpnsRoutingConfig({
+        libp2p: sinon.stub(),
+        repo: sinon.stub(),
+        peerInfo: sinon.stub(),
+        options: {}
       })
-      node = ipfsd.api
-
-      const res = await node.id()
-      nodeId = res.id
-    })
-
-    after(() => {
-      if (ipfsd) {
-        return ipfsd.stop()
-      }
-    })
-
-    it('should resolve an ipfs path correctly', async function () {
-      const res = await node.add(fixture)
-
-      await node.name.publish(`/ipfs/${res[0].hash}`)
-
-      const value = await ipnsPath.resolvePath(node, `/ipfs/${res[0].hash}`)
-
-      expect(value).to.exist()
-    })
-
-    it('should resolve an ipns path correctly', async function () {
-      const res = await node.add(fixture)
-      await node.name.publish(`/ipfs/${res[0].hash}`)
-      const value = await ipnsPath.resolvePath(node, `/ipns/${nodeId}`)
-
-      expect(value).to.exist()
-    })
-  })
-
-  describe('ipns.routing', function () {
-    it('should use only the offline datastore by default', function (done) {
-      const ipfs = {}
-      const config = ipnsRouting(ipfs)
 
       expect(config.stores).to.have.lengthOf(1)
       expect(config.stores[0] instanceof OfflineDatastore).to.eql(true)
-
-      done()
     })
 
-    it('should use only the offline datastore if offline', function (done) {
-      const ipfs = {
-        _options: {
+    it('should use only the offline datastore if offline', () => {
+      const config = getIpnsRoutingConfig({
+        libp2p: sinon.stub(),
+        repo: sinon.stub(),
+        peerInfo: sinon.stub(),
+        options: {
           offline: true
         }
-      }
-      const config = ipnsRouting(ipfs)
+      })
 
       expect(config.stores).to.have.lengthOf(1)
       expect(config.stores[0] instanceof OfflineDatastore).to.eql(true)
-
-      done()
     })
 
-    it('should use the pubsub datastore if enabled', function (done) {
-      const ipfs = {
-        libp2p: {
-          pubsub: {}
-        },
-        _peerInfo: {
-          id: {}
-        },
-        _repo: {
-          datastore: {}
-        },
-        _options: {
+    it('should use the pubsub datastore if enabled', async () => {
+      const peerId = await PeerId.create()
+
+      const config = getIpnsRoutingConfig({
+        libp2p: { pubsub: sinon.stub() },
+        repo: { datastore: sinon.stub() },
+        peerInfo: new PeerInfo(peerId),
+        options: {
           EXPERIMENTAL: {
             ipnsPubsub: true
           }
         }
-      }
-      const config = ipnsRouting(ipfs)
+      })
 
       expect(config.stores).to.have.lengthOf(2)
       expect(config.stores[0] instanceof PubsubDatastore).to.eql(true)
       expect(config.stores[1] instanceof OfflineDatastore).to.eql(true)
-
-      done()
     })
 
-    it('should use the dht if enabled', function (done) {
-      const dht = {}
+    it('should use the dht if enabled', () => {
+      const dht = sinon.stub()
 
-      const ipfs = {
-        libp2p: {
-          dht
-        },
-        _peerInfo: {
-          id: {}
-        },
-        _repo: {
-          datastore: {}
-        },
-        _options: {
+      const config = getIpnsRoutingConfig({
+        libp2p: { dht },
+        repo: sinon.stub(),
+        peerInfo: sinon.stub(),
+        options: {
           libp2p: {
             config: {
               dht: {
@@ -447,14 +313,10 @@ describe('name', function () {
             }
           }
         }
-      }
-
-      const config = ipnsRouting(ipfs)
+      })
 
       expect(config.stores).to.have.lengthOf(1)
       expect(config.stores[0]).to.eql(dht)
-
-      done()
     })
   })
 })

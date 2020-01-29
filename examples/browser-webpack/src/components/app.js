@@ -30,11 +30,18 @@ class App extends React.Component {
 
     this.setState({ id, agentVersion, protocolVersion })
 
-    const [{ hash }] = await node.add(stringToUse)
-    this.setState({ addedFileHash: hash })
+    for await (const { cid } of node.add(stringToUse)) {
+      this.setState({ addedFileHash: cid.toString() })
 
-    const data = await node.cat(hash)
-    this.setState({ addedFileContents: data.toString() })
+      let bufs = []
+
+      for await (const buf of node.cat(cid)) {
+        bufs.push(buf)
+      }
+
+      const data = Buffer.concat(bufs)
+      this.setState({ addedFileContents: data.toString('utf8') })
+    }
   }
 
   render () {

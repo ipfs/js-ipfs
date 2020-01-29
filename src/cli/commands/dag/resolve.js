@@ -19,10 +19,9 @@ module.exports = {
       const options = {}
 
       try {
-        const result = await ipfs.dag.resolve(ref, options)
         let lastCid
 
-        for (const res of result) {
+        for await (const res of ipfs.dag.resolve(ref, options)) {
           if (CID.isCID(res.value)) {
             lastCid = res.value
           }

@@ -2,7 +2,6 @@
 
 const execa = require('execa')
 const path = require('path')
-const _ = require('lodash')
 
 // This is our new test utility to easily check and execute ipfs cli commands.
 //
@@ -15,7 +14,7 @@ const _ = require('lodash')
 // The `.fail` variation asserts that the command exited with `Code > 0`
 // and returns a promise that resolves to `stderr`.
 module.exports = (repoPath, opts) => {
-  const env = _.clone(process.env)
+  const env = { ...process.env }
   env.IPFS_PATH = repoPath
 
   const config = Object.assign({}, {
@@ -38,18 +37,18 @@ module.exports = (repoPath, opts) => {
   }
 
   const execute = (exec, args, options) => {
+    options = options || {}
+
     const cp = exec(args, options)
     const res = cp.then((res) => {
       // We can't escape the os.tmpdir warning due to:
       // https://github.com/shelljs/shelljs/blob/master/src/tempdir.js#L43
       // expect(res.stderr).to.be.eql('')
       return res.stdout
-    }, (err) => {
-      if (process.env.DEBUG) {
-        // print the error output if we are debugging
+    }, err => {
+      if (!options.disableErrorLog) {
         console.error(err.stderr) // eslint-disable-line no-console
       }
-
       throw err
     })
 
@@ -80,7 +79,7 @@ module.exports = (repoPath, opts) => {
    *                    rejects if it was successful.
    */
   ipfs.fail = function ipfsFail (command, options) {
-    return ipfs(command, options)
+    return ipfs(command, { disableErrorLog: true, ...(options || {}) })
       .then(() => {
         throw new Error(`jsipfs expected to fail during command: jsipfs ${command}`)
       }, (err) => {
