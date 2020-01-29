@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.129.0",
+  "version": "0.130.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
@@ -69,6 +69,7 @@
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
+    "Alex Potsides <alex@achingbrain.net>",
     "Andrey <muzzzy@gmail.com>",
     "Dan Ordille <dordille@gmail.com>",
     "Dan Shields <35669742+NukeManDan@users.noreply.github.com>",
@@ -118,7 +119,6 @@
     "Vasco Santos <vasco.santos@ua.pt>",
     "Volker Mische <volker.mische@gmail.com>",
     "Vutsal Singhal <vutsalsinghal@gmail.com>",
-    "achingbrain <alex@achingbrain.net>",
     "dirkmc <dirkmdev@gmail.com>",
     "greenkeeper[bot] <23040076+greenkeeper[bot]@users.noreply.github.com>",
     "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
