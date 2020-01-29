@@ -19,14 +19,14 @@ Where `peerId` is a Peer ID in `String`, [`CID`](https://github.com/multiformats
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<{ id: CID, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a [`CID`](https://github.com/multiformats/js-cid) - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
+| `Promise<{ id: String, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
 **Example:**
 
 ```JavaScript
 const info = await ipfs.dht.findPeer('QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt')
 
-console.log(info.id.toString())
+console.log(info.id)
 /*
 QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
 */
@@ -60,7 +60,7 @@ Note that if `options.numProviders` are not found an error will be thrown.
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<{ id: CID, addrs: Multiaddr[] }>` | A async iterable that yields objects with `id` and `addrs`. `id` is a [`CID`](https://github.com/multiformats/js-cid) - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
+| `AsyncIterable<{ id: String, addrs: Multiaddr[] }>` | A async iterable that yields objects with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
 **Example:**
 
@@ -127,7 +127,7 @@ Prints objects like:
 
 {
   extra: 'dial backoff',
-  id: CID(QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z),
+  id: 'QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z',
   responses: [
     {
       addrs: [
@@ -135,7 +135,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: CID(QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8)
+      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
     }
   ],
   type: 1
@@ -181,7 +181,7 @@ Prints objects like:
 
 {
   extra: 'dial backoff',
-  id: CID(QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z),
+  id: 'QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z',
   responses: [
     {
       addrs: [
@@ -189,7 +189,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: CID(QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8)
+      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
     }
   ],
   type: 1
@@ -235,7 +235,7 @@ Prints objects like:
 
 {
   extra: 'dial backoff',
-  id: CID(QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z),
+  id: 'QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z',
   responses: [
     {
       addrs: [
@@ -243,7 +243,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: CID(QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8)
+      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
     }
   ],
   type: 1

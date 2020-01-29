@@ -32,9 +32,12 @@ module.exports = (common, options) => {
       const peerInfos = await ipfsA.swarm.addrs()
       expect(peerInfos).to.not.be.empty()
       expect(peerInfos).to.be.an('array')
-      peerInfos.forEach(m => {
-        expect(CID.isCID(m.id)).to.be.true()
-        m.addrs.forEach(addr => expect(Multiaddr.isMultiaddr(addr)).to.be.true())
+
+      expect(peerInfos).to.all.satisfy(peerInfo => {
+        expect(CID.isCID(new CID(peerInfo.id))).to.be.true()
+        expect(peerInfo).to.have.a.property('addrs').that.is.an('array').and.all.satisfy(ma => Multiaddr.isMultiaddr(ma))
+
+        return true
       })
     })
   })

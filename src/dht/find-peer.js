@@ -27,14 +27,15 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should find other peers', async () => {
-      const res = await nodeA.dht.findPeer(nodeB.peerId.id)
-
+      const nodeBId = await nodeB.id()
+      const res = await nodeA.dht.findPeer(nodeBId.id)
       const id = res.id.toString()
-      const nodeAddresses = nodeB.peerId.addresses.map((addr) => addr.split('/ipfs/')[0]) // remove '/ipfs/'
-      const peerAddresses = res.addrs.map(ma => ma.toString().split('/ipfs/')[0])
+
+      const nodeAddresses = nodeBId.addresses.map((addr) => addr.nodeAddress())
+      const peerAddresses = res.addrs.map(ma => ma.nodeAddress())
 
       expect(id).to.be.eql(nodeB.peerId.id)
-      expect(nodeAddresses).to.include(peerAddresses[0])
+      expect(peerAddresses).to.deep.include(nodeAddresses[0])
     })
 
     it('should fail to find other peer if peer does not exist', () => {

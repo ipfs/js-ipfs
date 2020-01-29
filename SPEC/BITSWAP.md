@@ -47,7 +47,7 @@ The returned object contains the following keys:
 
 - `provideBufLen` is an integer.
 - `wantlist` (array of [CID][cid]s)
-- `peers` (array of peer IDs as [CID][cid] instances)
+- `peers` (array of peer IDs as Strings)
 - `blocksReceived` is a [BigNumber Int][1]
 - `dataReceived` is a [BigNumber Int][1]
 - `blocksSent` is a [BigNumber Int][1]
@@ -64,9 +64,9 @@ console.log(stats)
 //   provideBufLen: 0,
 //   wantlist: [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM') ],
 //   peers:
-//    [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM'),
-//      CID('QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu'),
-//      CID('QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd') ],
+//    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+//      'QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
+//      'QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd' ],
 //   blocksReceived: 0,
 //   dataReceived: 0,
 //   blocksSent: 0,

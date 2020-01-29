@@ -18,7 +18,7 @@
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<{ id: CID, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a [`CID`](https://github.com/multiformats/js-cid) - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
+| `Promise<{ id: String, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
 **Example:**
 
@@ -26,7 +26,7 @@
 const peerInfos = await ipfs.swarm.addrs()
 
 peerInfos.forEach(info => {
-  console.log(info.id.toString())
+  console.log(info.id)
   /*
   QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
   */
@@ -131,7 +131,7 @@ A great source of [examples][] can be found in the tests for this API.
 The returned array has the following form:
 
 - `addr: Multiaddr`
-- `peer: CID`
+- `peer: String`
 - `latency: String` - Only if `verbose: true`  was passed
 - `muxer: String` - The type of stream muxer the peer is usng
 - `streams: string[]` - Only if `verbose: true`, a list of currently open streams

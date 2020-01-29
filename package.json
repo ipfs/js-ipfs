@@ -40,6 +40,7 @@
   "dependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "chai-things": "^0.2.0",
     "cids": "~0.7.1",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",

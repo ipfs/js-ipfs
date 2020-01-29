@@ -153,7 +153,9 @@ module.exports = (common, options) => {
           ipfs2.pubsub.setMaxListeners(100)
         }
 
-        const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
+        const ipfs2Addr = ipfs2.peerId.addresses
+          .find(ma => ma.nodeAddress().address === '127.0.0.1')
+
         return ipfs1.swarm.connect(ipfs2Addr)
       })
 

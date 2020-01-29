@@ -19,6 +19,14 @@
 | -------- | -------- |
 | `Promise<Object>` | An object with the Peer identity |
 
+The Peer identity has the following properties:
+
+- `id: String` - the Peer ID
+- `publicKey: String` - the public key of the peer as a base64 encoded string
+- `addresses: Multiaddr[]` - A list of multiaddrs this node is listening on
+- `agentVersion: String` - The agent version
+- `protocolVersion: String` - The supported protocol version
+
 **Example:**
 
 ```JavaScript

@@ -26,8 +26,10 @@ module.exports = (common, options) => {
       ipfs2 = (await common.spawn({ type: 'go' })).api
       ipfs3 = (await common.spawn({ type: 'go' })).api
 
-      const ipfs2Addr = ipfs2.peerId.addresses.find((a) => a.includes('127.0.0.1'))
-      const ipfs3Addr = ipfs3.peerId.addresses.find((a) => a.includes('127.0.0.1'))
+      const ipfs2Addr = ipfs2.peerId.addresses
+        .find(ma => ma.nodeAddress().address === '127.0.0.1')
+      const ipfs3Addr = ipfs3.peerId.addresses
+        .find(ma => ma.nodeAddress().address === '127.0.0.1')
 
       await ipfs1.swarm.connect(ipfs2Addr)
       await ipfs1.swarm.connect(ipfs3Addr)
