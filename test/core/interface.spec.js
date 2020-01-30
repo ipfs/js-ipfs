@@ -4,7 +4,7 @@
 const tests = require('interface-ipfs-core')
 const merge = require('merge-options')
 const { createFactory } = require('ipfsd-ctl')
-const { isNode } = require('ipfs-utils/src/env')
+const { isNode, isBrowser } = require('ipfs-utils/src/env')
 const IPFS = require('../../src')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
@@ -23,7 +23,16 @@ describe('interface-ipfs-core tests', function () {
       ref: require('ipfs-http-client')
     },
     ipfsOptions: {
-      pass: 'ipfs-is-awesome-software'
+      pass: 'ipfs-is-awesome-software',
+      ...(isBrowser ? {
+        config: {
+          Addresses: {
+            Swarm: [
+              '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+            ]
+          }
+        }
+      } : {})
     }
   }
   const overrides = {

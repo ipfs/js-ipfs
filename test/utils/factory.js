@@ -1,6 +1,7 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
+const { isBrowser } = require('ipfs-utils/src/env')
 
 const factory = (options, overrides) => createFactory(
   merge({
@@ -18,6 +19,19 @@ const factory = (options, overrides) => createFactory(
   merge({
     js: {
       ipfsBin: './src/cli/bin.js'
+    },
+    proc: {
+      ...(isBrowser ? {
+        ipfsOptions: {
+          config: {
+            Addresses: {
+              Swarm: [
+                '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+              ]
+            }
+          }
+        }
+      } : {})
     }
   }, overrides)
 )

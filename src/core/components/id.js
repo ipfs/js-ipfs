@@ -12,7 +12,17 @@ module.exports = ({ peerInfo }) => {
       publicKey: peerInfo.id.pubKey.bytes.toString('base64'),
       addresses: peerInfo.multiaddrs
         .toArray()
-        .map(ma => `${ma}/p2p/${id}`)
+        .map(ma => {
+          const str = ma.toString()
+
+          // some relay-style transports add our peer id to the ma for us
+          // so don't double-add
+          if (str.endsWith(`/p2p/${id}`)) {
+            return str
+          }
+
+          return `${str}/p2p/${id}`
+        })
         .sort()
         .map(ma => multiaddr(ma)),
       agentVersion: `js-ipfs/${pkgversion}`,
