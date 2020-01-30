@@ -179,7 +179,7 @@
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.129.0",
     "ipfs-interop": "github:ipfs/interop#refactor/async-await",
-    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl",
+    "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#only-require-http-client-if-not-specified",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
     "p-map": "^3.0.0",
