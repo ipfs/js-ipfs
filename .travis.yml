@@ -35,7 +35,7 @@ addons:
       - dpkg
   chrome: stable
 
-script: DEBUG=ipfs* npx nyc -s npx aegir test -t node --timeout 10000 --bail
+script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
