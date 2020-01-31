@@ -52,7 +52,7 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npx aegir test -t browser -t webworker
+        - DEBUG=libp2p*,ipfs* npx aegir test -t browser -t webworker
 
     - stage: test
       name: firefox
