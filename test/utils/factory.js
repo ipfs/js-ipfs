@@ -26,7 +26,7 @@ const factory = (options, overrides) => createFactory(
           config: {
             Addresses: {
               Swarm: [
-                '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+                '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
               ]
             }
           }
