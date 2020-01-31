@@ -4,7 +4,7 @@
 const multiaddr = require('multiaddr')
 const CID = require('cids')
 const delay = require('delay')
-const { isNode } = require('ipfs-utils/src/env')
+const { isNode, isBrowser } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -103,19 +103,24 @@ module.exports = (common, options) => {
         '/ip4/127.0.0.1/tcp/16543',
         '/ip4/127.0.0.1/tcp/16544'
       ] : [
-        '/ip4/127.0.0.1/tcp/14578/wss/p2p-webrtc-star',
-        '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+        '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
+        '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ])
       const configB = getConfig(isNode || (common.opts && common.opts.type === 'go') ? [
         '/ip4/127.0.0.1/tcp/26545/ws',
         '/ip4/127.0.0.1/tcp/26546/ws'
       ] : [
-        '/ip4/127.0.0.1/tcp/14578/wss/p2p-webrtc-star',
-        '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+        '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
+        '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ])
       const nodeA = (await common.spawn({ ipfsOptions: { config: configA } })).api
       const nodeB = (await common.spawn({ ipfsOptions: { config: configB } })).api
-      await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+
+      // TODO: the webrtc-star transport only keeps the last listened on address around
+      // so the browser has to use 1 as the array index
+      // await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+      await nodeA.swarm.connect(nodeB.peerId.addresses[isBrowser ? 1 : 0])
+
       await delay(1000)
       const peersA = await nodeA.swarm.peers()
       const peersB = await nodeB.swarm.peers()
