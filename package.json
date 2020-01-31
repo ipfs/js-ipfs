@@ -176,7 +176,7 @@
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "hat": "0.0.3",
-    "interface-ipfs-core": "^0.129.0",
+    "interface-ipfs-core": "^0.131.0",
     "ipfs-interop": "github:ipfs/interop#refactor/async-await",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#feat/force-kill",
     "ncp": "^2.0.0",
