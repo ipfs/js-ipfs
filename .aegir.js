@@ -6,7 +6,7 @@ const server = createServer()
 const echoServer = EchoServer.createServer()
 
 module.exports = {
-  bundlesize: { maxSize: '246kB' },
+  bundlesize: { maxSize: '90kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main']
