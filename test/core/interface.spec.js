@@ -17,7 +17,9 @@ describe('interface-ipfs-core tests', function () {
     }]
   })
 
-  tests.bitswap(commonFactory)
+  tests.bitswap(commonFactory, {
+    only: true
+  })
 
   tests.block(commonFactory)
 
