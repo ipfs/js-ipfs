@@ -1,3 +1,13 @@
+<a name="0.131.0"></a>
+# [0.131.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.130.0...v0.131.0) (2020-01-31)
+
+
+### Bug Fixes
+
+* do not assume certain implementations of ipfs are present ([#584](https://github.com/ipfs/interface-ipfs-core/issues/584)) ([3d24911](https://github.com/ipfs/interface-ipfs-core/commit/3d24911))
+
+
+
 <a name="0.130.0"></a>
 # [0.130.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.129.0...v0.130.0) (2020-01-29)
 
