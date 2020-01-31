@@ -1,39 +1,51 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
-const { isBrowser } = require('ipfs-utils/src/env')
+const { isNode, isBrowser } = require('ipfs-utils/src/env')
 
-const factory = (options, overrides) => createFactory(
-  merge({
-    test: true,
-    type: 'proc',
-    ipfsModule: {
-      path: require.resolve('../../src'),
-      ref: require('../../src')
-    },
-    ipfsHttpModule: {
-      path: require.resolve('ipfs-http-client'),
-      ref: require('ipfs-http-client')
-    }
-  }, options),
-  merge({
-    js: {
+const commonOptions = {
+  test: true,
+  type: 'proc',
+  ipfsHttpModule: {
+    path: require.resolve('ipfs-http-client'),
+    ref: require('ipfs-http-client')
+  },
+  ipfsModule: {
+    path: require.resolve('../../src'),
+    ref: require('../../src')
+  },
+  ipfsOptions: {
+    pass: 'ipfs-is-awesome-software'
+  }
+}
+
+const commonOverrides = {
+  js: {
+    ...(isNode ? {
       ipfsBin: './src/cli/bin.js'
-    },
-    proc: {
-      ...(isBrowser ? {
-        ipfsOptions: {
-          config: {
-            Addresses: {
-              Swarm: [
-                '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
-              ]
-            }
+    } : {}),
+    ...(isBrowser ? {
+      remote: true
+    } : {})
+  },
+  proc: {
+    ...(isBrowser ? {
+      ipfsOptions: {
+        config: {
+          Addresses: {
+            Swarm: [
+              '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+            ]
           }
         }
-      } : {})
-    }
-  }, overrides)
+      }
+    } : {})
+  }
+}
+
+const factory = (options = {}, overrides = {}) => createFactory(
+  merge(commonOptions, options),
+  merge(commonOverrides, overrides)
 )
 
 module.exports = factory

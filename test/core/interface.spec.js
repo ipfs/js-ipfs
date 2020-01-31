@@ -2,45 +2,13 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const merge = require('merge-options')
-const { createFactory } = require('ipfsd-ctl')
-const { isNode, isBrowser } = require('ipfs-utils/src/env')
-const IPFS = require('../../src')
+const { isNode } = require('ipfs-utils/src/env')
+const factory = require('../utils/factory')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
-  /** @type ControllerOptions */
-  const commonOptions = {
-    test: true,
-    type: 'proc',
-    ipfsModule: {
-      path: require.resolve('../../src'),
-      ref: IPFS
-    },
-    ipfsHttpModule: {
-      path: require.resolve('ipfs-http-client'),
-      ref: require('ipfs-http-client')
-    },
-    ipfsOptions: {
-      pass: 'ipfs-is-awesome-software',
-      ...(isBrowser ? {
-        config: {
-          Addresses: {
-            Swarm: [
-              '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
-            ]
-          }
-        }
-      } : {})
-    }
-  }
-  const overrides = {
-    js: {
-      ipfsBin: './src/cli/bin.js'
-    }
-  }
-  const commonFactory = createFactory(commonOptions, overrides)
+  const commonFactory = factory()
 
   tests.root(commonFactory, {
     skip: isNode ? null : [{
@@ -82,19 +50,19 @@ describe('interface-ipfs-core tests', function () {
 
   tests.miscellaneous(commonFactory)
 
-  tests.name(createFactory(merge(commonOptions, {
+  tests.name(factory({
     ipfsOptions: {
       offline: true
     }
-  }), overrides))
+  }))
 
-  tests.namePubsub(createFactory(merge(commonOptions, {
+  tests.namePubsub(factory({
     ipfsOptions: {
       EXPERIMENTAL: {
         ipnsPubsub: true
       }
     }
-  }), overrides))
+  }))
 
   tests.object(commonFactory)
 
@@ -102,11 +70,11 @@ describe('interface-ipfs-core tests', function () {
 
   tests.ping(commonFactory)
 
-  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+  tests.pubsub(factory({}, {
     go: {
       args: ['--enable-pubsub-experiment']
     }
-  })), {
+  }), {
     skip: isNode ? null : [
       {
         name: 'should receive messages from a different node',
