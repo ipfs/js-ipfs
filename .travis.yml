@@ -79,6 +79,7 @@ jobs:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_JS_MODULE=`pwd`
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
         - npx aegir test -t node --bail
@@ -89,6 +90,7 @@ jobs:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_JS_MODULE=`pwd`
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
         - npx aegir test -t browser --bail
@@ -100,6 +102,7 @@ jobs:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_JS_MODULE=`pwd`
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
         - npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
@@ -111,6 +114,7 @@ jobs:
         - mkdir -p node_modules/ipfs-interop/node_modules
         - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
         - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
+        - export IPFS_JS_MODULE=`pwd`
         - export IPFS_REUSEPORT=false
         - cd node_modules/ipfs-interop
         - npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000

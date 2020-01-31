@@ -47,7 +47,7 @@
     "test:node:cli": "aegir test -t node -f test/cli/index.js",
     "test:node:interface": "aegir test -t node -f test/core/interface.spec.js",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
-    "test:interop": "IPFS_JS_EXEC=$PWD/src/cli/bin.js ipfs-interop",
+    "test:interop": "IPFS_JS_EXEC=$PWD/src/cli/bin.js IPFS_JS_MODULE=$PWD ipfs-interop",
     "test:external": "aegir test-external",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
