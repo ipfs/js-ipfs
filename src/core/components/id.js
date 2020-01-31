@@ -1,7 +1,6 @@
 'use strict'
 
 const pkgversion = require('../../../package.json').version
-const multiaddr = require('multiaddr')
 
 module.exports = ({ peerInfo }) => {
   return async function id () { // eslint-disable-line require-await
@@ -23,8 +22,7 @@ module.exports = ({ peerInfo }) => {
 
           return `${str}/p2p/${id}`
         })
-        .sort()
-        .map(ma => multiaddr(ma)),
+        .sort(),
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
     }
