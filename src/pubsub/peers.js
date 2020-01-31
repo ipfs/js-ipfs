@@ -23,8 +23,8 @@ module.exports = (common, options) => {
     let subscribedTopics = []
     before(async () => {
       ipfs1 = (await common.spawn()).api
-      ipfs2 = (await common.spawn({ type: 'go' })).api
-      ipfs3 = (await common.spawn({ type: 'go' })).api
+      ipfs2 = (await common.spawn()).api
+      ipfs3 = (await common.spawn()).api
 
       const ipfs2Addr = ipfs2.peerId.addresses
         .find(ma => ma.nodeAddress().address === '127.0.0.1')

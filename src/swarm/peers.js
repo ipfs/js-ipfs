@@ -24,7 +24,7 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfsA = (await common.spawn()).api
-      ipfsB = (await common.spawn({ type: 'go' })).api
+      ipfsB = (await common.spawn()).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
       /* TODO: Seen if we still need this after this is fixed
          https://github.com/ipfs/js-ipfs/issues/2601 gets resolved */
@@ -88,7 +88,7 @@ module.exports = (common, options) => {
 
     it('should list peers only once', async () => {
       const nodeA = (await common.spawn()).api
-      const nodeB = (await common.spawn({ type: 'go' })).api
+      const nodeB = (await common.spawn()).api
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()
@@ -99,16 +99,22 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const configA = getConfig(isNode ? [ // browser nodes cannot listen
+      const configA = getConfig(isNode || (common.opts && common.opts.type === 'go') ? [
         '/ip4/127.0.0.1/tcp/16543',
         '/ip4/127.0.0.1/tcp/16544'
-      ] : [])
-      const configB = getConfig([
+      ] : [
+        '/ip4/127.0.0.1/tcp/14578/wss/p2p-webrtc-star',
+        '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
+      ])
+      const configB = getConfig(isNode || (common.opts && common.opts.type === 'go') ? [
         '/ip4/127.0.0.1/tcp/26545/ws',
         '/ip4/127.0.0.1/tcp/26546/ws'
+      ] : [
+        '/ip4/127.0.0.1/tcp/14578/wss/p2p-webrtc-star',
+        '/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star'
       ])
       const nodeA = (await common.spawn({ ipfsOptions: { config: configA } })).api
-      const nodeB = (await common.spawn({ type: 'js', ipfsOptions: { config: configB } })).api
+      const nodeB = (await common.spawn({ ipfsOptions: { config: configB } })).api
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

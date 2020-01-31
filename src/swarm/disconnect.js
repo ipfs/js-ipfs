@@ -20,7 +20,7 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfsA = (await common.spawn()).api
-      ipfsB = (await common.spawn({ type: 'js' })).api
+      ipfsB = (await common.spawn()).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 

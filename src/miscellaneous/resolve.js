@@ -82,7 +82,7 @@ module.exports = (common, options) => {
 
     it('should resolve IPNS link recursively', async function () {
       this.timeout(20 * 1000)
-      const node = (await common.spawn({ type: 'go' })).api
+      const node = (await common.spawn()).api
       await ipfs.swarm.connect(node.peerId.addresses[0])
       const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive === true')))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })

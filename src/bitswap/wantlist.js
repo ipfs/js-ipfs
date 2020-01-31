@@ -21,7 +21,7 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfsA = (await common.spawn()).api
-      ipfsB = (await common.spawn({ type: 'go' })).api
+      ipfsB = (await common.spawn()).api
       // Add key to the wantlist for ipfsB
       ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
