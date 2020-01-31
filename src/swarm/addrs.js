@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
 
@@ -16,7 +15,7 @@ module.exports = configure(({ ky }) => {
     }).json()
 
     return Object.keys(res.Addrs).map(id => ({
-      id: new CID(id),
+      id,
       addrs: (res.Addrs[id] || []).map(a => multiaddr(a))
     }))
   }

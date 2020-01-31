@@ -26,7 +26,7 @@ module.exports = configure(({ ky }) => {
       message = toCamel(message)
       message.id = new CID(message.id)
       message.responses = (message.responses || []).map(({ ID, Addrs }) => ({
-        id: new CID(ID),
+        id: ID,
         addrs: (Addrs || []).map(a => multiaddr(a))
       }))
       yield message

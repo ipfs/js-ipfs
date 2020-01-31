@@ -2,6 +2,7 @@
 
 const configure = require('./lib/configure')
 const toCamel = require('./lib/object-to-camel')
+const multiaddr = require('multiaddr')
 
 module.exports = configure(({ ky }) => {
   return async options => {
@@ -14,6 +15,12 @@ module.exports = configure(({ ky }) => {
       searchParams: options.searchParams
     }).json()
 
-    return toCamel(res)
+    const output = toCamel(res)
+
+    if (output.addresses) {
+      output.addresses = output.addresses.map(ma => multiaddr(ma))
+    }
+
+    return output
   }
 })

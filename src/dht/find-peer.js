@@ -37,7 +37,7 @@ module.exports = configure(({ ky }) => {
         // https://github.com/ipfs/go-ipfs/blob/eb11f569b064b960d1aba4b5b8ca155a3bd2cb21/core/commands/dht.go#L395-L396
         for (const { ID, Addrs } of message.Responses) {
           return {
-            id: new CID(ID),
+            id: ID,
             addrs: (Addrs || []).map(a => multiaddr(a))
           }
         }

@@ -35,7 +35,7 @@ module.exports = configure(({ ky }) => {
       if (message.Type === 4 && message.Responses) {
         for (const { ID, Addrs } of message.Responses) {
           yield {
-            id: new CID(ID),
+            id: ID,
             addrs: (Addrs || []).map(a => multiaddr(a))
           }
         }

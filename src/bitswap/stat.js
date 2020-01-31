@@ -23,7 +23,7 @@ function toCoreInterface (res) {
   return {
     provideBufLen: res.ProvideBufLen,
     wantlist: (res.Wantlist || []).map(k => new CID(k['/'])),
-    peers: (res.Peers || []).map(p => new CID(p)),
+    peers: (res.Peers || []),
     blocksReceived: new Big(res.BlocksReceived),
     dataReceived: new Big(res.DataReceived),
     blocksSent: new Big(res.BlocksSent),
