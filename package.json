@@ -162,7 +162,7 @@
     "pretty-bytes": "^5.3.0",
     "progress": "^2.0.1",
     "protons": "^1.0.1",
-    "semver": "^6.3.0",
+    "semver": "^7.1.2",
     "stream-to-it": "^0.2.0",
     "streaming-iterables": "^4.1.1",
     "tar-stream": "^2.0.0",
