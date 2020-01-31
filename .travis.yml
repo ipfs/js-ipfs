@@ -76,48 +76,24 @@ jobs:
     - stage: test
       name: interop - node
       script:
-        - mkdir -p node_modules/ipfs-interop/node_modules
-        - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
-        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
-        - export IPFS_JS_MODULE=`pwd`
-        - export IPFS_REUSEPORT=false
-        - cd node_modules/ipfs-interop
-        - npx aegir test -t node --bail
+        - npm run test:interop:node -- --bail
 
     - stage: test
       name: interop - browser
       script:
-        - mkdir -p node_modules/ipfs-interop/node_modules
-        - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
-        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
-        - export IPFS_JS_MODULE=`pwd`
-        - export IPFS_REUSEPORT=false
-        - cd node_modules/ipfs-interop
-        - npx aegir test -t browser --bail
+        - npm run test:interop:browser -- --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - mkdir -p node_modules/ipfs-interop/node_modules
-        - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
-        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
-        - export IPFS_JS_MODULE=`pwd`
-        - export IPFS_REUSEPORT=false
-        - cd node_modules/ipfs-interop
-        - npx aegir test -t electron-main -f ./test/node.js --bail --timeout 10000
+        - npm run test:interop:electron-main -- --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - mkdir -p node_modules/ipfs-interop/node_modules
-        - ln -s `pwd` node_modules/ipfs-interop/node_modules/ipfs
-        - export IPFS_JS_EXEC=`pwd`/src/cli/bin.js
-        - export IPFS_JS_MODULE=`pwd`
-        - export IPFS_REUSEPORT=false
-        - cd node_modules/ipfs-interop
-        - npx aegir test -t electron-renderer -f ./test/browser.js --bail --timeout 10000
+        - npm run test:interop:electron-renderer -- --bail --timeout 10000
 
     - stage: test
       name: external - ipfs-companion
