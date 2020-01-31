@@ -1,3 +1,13 @@
+<a name="0.131.1"></a>
+## [0.131.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.0...v0.131.1) (2020-01-31)
+
+
+### Bug Fixes
+
+* fix up peer test ([0b80a20](https://github.com/ipfs/interface-ipfs-core/commit/0b80a20))
+
+
+
 <a name="0.131.0"></a>
 # [0.131.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.130.0...v0.131.0) (2020-01-31)
 
