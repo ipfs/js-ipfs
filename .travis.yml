@@ -52,14 +52,28 @@ jobs:
       addons:
         chrome: stable
       script:
-        - DEBUG=libp2p*,ipfs* npx aegir test -t browser -t webworker --bail
+        - npx aegir test -t browser --bail
+
+    - stage: test
+      name: chrome webworker
+      addons:
+        chrome: stable
+      script:
+        - npx aegir test -t webworker --bail
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npx aegir test -t browser -t webworker --bail -- --browsers FirefoxHeadless
+        - npx aegir test -t browser --bail -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: firefox webworker
+      addons:
+        firefox: latest
+      script:
+        - npx aegir test -t webworker --bail -- --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
