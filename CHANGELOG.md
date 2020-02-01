@@ -1,3 +1,13 @@
+<a name="0.131.2"></a>
+## [0.131.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.1...v0.131.2) (2020-02-01)
+
+
+### Bug Fixes
+
+* fix swarm peer tests for electron ([ac7cedf](https://github.com/ipfs/interface-ipfs-core/commit/ac7cedf))
+
+
+
 <a name="0.131.1"></a>
 ## [0.131.1](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.0...v0.131.1) (2020-01-31)
 
