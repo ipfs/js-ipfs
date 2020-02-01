@@ -4,7 +4,7 @@
 const multiaddr = require('multiaddr')
 const CID = require('cids')
 const delay = require('delay')
-const { isNode, isBrowser } = require('ipfs-utils/src/env')
+const { isNode, isBrowser, isElectron } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -99,14 +99,14 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const configA = getConfig(isNode || (common.opts && common.opts.type === 'go') ? [
+      const configA = getConfig(isNode || isElectron || (common.opts && common.opts.type === 'go') ? [
         '/ip4/127.0.0.1/tcp/16543',
         '/ip4/127.0.0.1/tcp/16544'
       ] : [
         '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
         '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ])
-      const configB = getConfig(isNode || (common.opts && common.opts.type === 'go') ? [
+      const configB = getConfig(isNode || isElectron || (common.opts && common.opts.type === 'go') ? [
         '/ip4/127.0.0.1/tcp/26545/ws',
         '/ip4/127.0.0.1/tcp/26546/ws'
       ] : [
