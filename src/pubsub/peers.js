@@ -25,8 +25,8 @@ module.exports = (common, options) => {
     before(async () => {
       ipfs1 = (await common.spawn()).api
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      ipfs3 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfs2 = (await common.spawn({ type: isWebWorker ? 'js' : undefined })).api
+      ipfs3 = (await common.spawn({ type: isWebWorker ? 'js' : undefined })).api
 
       const ipfs2Addr = ipfs2.peerId.addresses
         .find(ma => ma.nodeAddress().address === '127.0.0.1')
