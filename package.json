@@ -172,7 +172,7 @@
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
-    "dir-compare": "^1.7.3",
+    "dir-compare": "^2.2.0",
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "hat": "0.0.3",
