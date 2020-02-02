@@ -184,7 +184,7 @@
     "form-data": "^3.0.0",
     "go-ipfs-dep": "^0.4.23",
     "hat": "0.0.3",
-    "interface-ipfs-core": "^0.131.3",
+    "interface-ipfs-core": "^0.131.4",
     "ipfs-interop": "^0.2.1",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#remove-option-normalisation",
     "ncp": "^2.0.0",
