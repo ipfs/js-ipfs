@@ -4,7 +4,7 @@
 const multiaddr = require('multiaddr')
 const CID = require('cids')
 const delay = require('delay')
-const { isNode, isBrowser, isElectron } = require('ipfs-utils/src/env')
+const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -24,7 +24,7 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfsA = (await common.spawn()).api
-      ipfsB = (await common.spawn()).api
+      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
       /* TODO: Seen if we still need this after this is fixed
          https://github.com/ipfs/js-ipfs/issues/2601 gets resolved */
@@ -88,7 +88,7 @@ module.exports = (common, options) => {
 
     it('should list peers only once', async () => {
       const nodeA = (await common.spawn()).api
-      const nodeB = (await common.spawn()).api
+      const nodeB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()
@@ -99,22 +99,40 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const configA = getConfig(isNode || isElectron || (common.opts && common.opts.type === 'go') ? [
-        '/ip4/127.0.0.1/tcp/16543',
-        '/ip4/127.0.0.1/tcp/16544'
-      ] : [
+      let addresses
+
+      if (isBrowser) {
+        addresses = [
+          '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
+          '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+        ]
+      } else if (isWebWorker) {
+        // webworkers are not dialable (no webrtc available) until stardust is async/await
+        // https://github.com/libp2p/js-libp2p-stardust/pull/14
+        addresses = []
+      } else {
+        addresses = [
+          '/ip4/127.0.0.1/tcp/26543/ws',
+          '/ip4/127.0.0.1/tcp/26544/ws'
+        ]
+      }
+
+      const configA = getConfig(addresses)
+      const configB = getConfig(isBrowser ? [
         '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
         '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
-      ])
-      const configB = getConfig(isNode || isElectron || (common.opts && common.opts.type === 'go') ? [
+      ] : [
         '/ip4/127.0.0.1/tcp/26545/ws',
         '/ip4/127.0.0.1/tcp/26546/ws'
-      ] : [
-        '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
-        '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ])
+
       const nodeA = (await common.spawn({ ipfsOptions: { config: configA } })).api
-      const nodeB = (await common.spawn({ ipfsOptions: { config: configB } })).api
+      const nodeB = (await common.spawn({
+        type: isWebWorker ? 'go' : undefined,
+        ipfsOptions: {
+          config: configB
+        }
+      })).api
 
       // TODO: the webrtc-star transport only keeps the last listened on address around
       // so the browser has to use 1 as the array index

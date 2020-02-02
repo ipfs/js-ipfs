@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,8 +26,14 @@ module.exports = (common, options) => {
 
     it('should list local addresses the node is listening on', async () => {
       const multiaddrs = await ipfs.swarm.localAddrs()
-      // js-ipfs in the browser will have zero
-      expect(Array.isArray(multiaddrs)).to.be.true()
+
+      expect(multiaddrs).to.be.an.instanceOf(Array)
+
+      if (isWebWorker) {
+        expect(multiaddrs).to.have.lengthOf(0)
+      } else {
+        expect(multiaddrs).to.not.be.empty()
+      }
     })
   })
 }

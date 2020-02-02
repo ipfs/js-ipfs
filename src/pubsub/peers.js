@@ -4,6 +4,7 @@
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
+const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,8 +24,9 @@ module.exports = (common, options) => {
     let subscribedTopics = []
     before(async () => {
       ipfs1 = (await common.spawn()).api
-      ipfs2 = (await common.spawn()).api
-      ipfs3 = (await common.spawn()).api
+      // webworkers are not dialable because webrtc is not available
+      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfs3 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
 
       const ipfs2Addr = ipfs2.peerId.addresses
         .find(ma => ma.nodeAddress().address === '127.0.0.1')

@@ -4,6 +4,7 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { expectIsPingResponse, isPong } = require('./utils')
 const all = require('it-all')
+const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,7 +23,8 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfsA = (await common.spawn()).api
-      ipfsB = (await common.spawn()).api
+      // webworkers are not dialable because webrtc is not available
+      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 

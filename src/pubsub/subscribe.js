@@ -6,6 +6,7 @@ const all = require('it-all')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
+const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -28,7 +29,9 @@ module.exports = (common, options) => {
       ipfs1 = (await common.spawn()).api
       // TODO 'multiple connected nodes' tests fails with go in Firefox
       // and JS is flaky everywhere
-      ipfs2 = (await common.spawn()).api
+
+      // webworkers are not dialable because webrtc is not available
+      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
     })
 
     beforeEach(() => {
