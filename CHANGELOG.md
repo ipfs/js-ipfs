@@ -1,3 +1,13 @@
+<a name="0.131.3"></a>
+## [0.131.3](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.2...v0.131.3) (2020-02-02)
+
+
+### Bug Fixes
+
+* spawn dialable nodes when testing with webworkers ([df7cb3a](https://github.com/ipfs/interface-ipfs-core/commit/df7cb3a))
+
+
+
 <a name="0.131.2"></a>
 ## [0.131.2](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.1...v0.131.2) (2020-02-01)
 
