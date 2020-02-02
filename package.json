@@ -121,7 +121,7 @@
     "jsondiffpatch": "~0.3.11",
     "just-safe-set": "^2.1.0",
     "ky": "^0.15.0",
-    "ky-universal": "~0.3.0",
+    "ky-universal": "~0.4.0",
     "libp2p": "github:libp2p/js-libp2p#refactor/async-await",
     "libp2p-bootstrap": "^0.10.2",
     "libp2p-crypto": "^0.17.1",
