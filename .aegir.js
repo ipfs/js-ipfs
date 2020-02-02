@@ -67,6 +67,7 @@ module.exports = {
           host: '127.0.0.1',
           port: 43134
         }, {
+          type: 'js',
           ipfsModule: {
             path: __dirname,
             ref: require(__dirname)
@@ -75,7 +76,16 @@ module.exports = {
             path: require.resolve('ipfs-http-client'),
             ref: require('ipfs-http-client')
           },
-          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js')
+          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
+          ipfsOptions: {
+            config: {
+              libp2p: {
+                dialer: {
+                  dialTimeout: 60e3 // increase timeout because travis is slow
+                }
+              }
+            }
+          }
         }).start()
       },
       post: async () => {
