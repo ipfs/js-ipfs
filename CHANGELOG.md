@@ -1,3 +1,13 @@
+<a name="0.131.6"></a>
+## [0.131.6](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.5...v0.131.6) (2020-02-03)
+
+
+### Bug Fixes
+
+* use go for webworker tests ([3a96093](https://github.com/ipfs/interface-ipfs-core/commit/3a96093))
+
+
+
 <a name="0.131.5"></a>
 ## [0.131.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.4...v0.131.5) (2020-02-03)
 
