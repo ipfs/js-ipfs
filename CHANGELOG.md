@@ -1,3 +1,13 @@
+<a name="0.131.7"></a>
+## [0.131.7](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.6...v0.131.7) (2020-02-03)
+
+
+### Bug Fixes
+
+* only expect no multiaddrs if node is in-proc webworker ([4e25b4f](https://github.com/ipfs/interface-ipfs-core/commit/4e25b4f))
+
+
+
 <a name="0.131.6"></a>
 ## [0.131.6](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.5...v0.131.6) (2020-02-03)
 
