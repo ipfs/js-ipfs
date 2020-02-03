@@ -185,7 +185,7 @@
     "go-ipfs-dep": "^0.4.23",
     "hat": "0.0.3",
     "interface-ipfs-core": "^0.131.7",
-    "ipfs-interop": "^0.2.1",
+    "ipfs-interop": "github:ipfs/interop#refactor/async-await",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#remove-option-normalisation",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
