@@ -101,7 +101,7 @@ module.exports = (common, options) => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
       let addresses
 
-      if (isBrowser) {
+      if (isBrowser && common.opts.type !== 'go') {
         addresses = [
           '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
           '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
@@ -118,7 +118,7 @@ module.exports = (common, options) => {
       }
 
       const configA = getConfig(addresses)
-      const configB = getConfig(isBrowser ? [
+      const configB = getConfig(isBrowser && common.opts.type !== 'go' ? [
         '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
         '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ] : [
