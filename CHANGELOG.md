@@ -1,3 +1,13 @@
+<a name="0.131.5"></a>
+## [0.131.5](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.4...v0.131.5) (2020-02-03)
+
+
+### Bug Fixes
+
+* do not spawn go nodes with webrtc swarm addresses ([c633d08](https://github.com/ipfs/interface-ipfs-core/commit/c633d08))
+
+
+
 <a name="0.131.4"></a>
 ## [0.131.4](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.3...v0.131.4) (2020-02-02)
 
