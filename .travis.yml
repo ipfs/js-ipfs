@@ -40,6 +40,15 @@ after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
+  allow_failures:
+    - name: external - ipfs-companion
+    - name: external - npm-on-ipfs
+    - name: external - ipfs-pubsub-room
+    - name: external - peer-base
+    - name: external - service-worker-gateway
+    - name: external - orbit-db
+    - name: external - ipfs-log
+    - name: external - sidetree
   include:
     - stage: check
       script:
