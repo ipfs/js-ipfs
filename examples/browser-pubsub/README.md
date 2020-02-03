@@ -64,7 +64,7 @@ jsipfs init
 # Configure CORS to allow ipfs-http-client to access this IPFS node
 jsipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://127.0.0.1:8888"]'
 # Start the IPFS node, enabling pubsub
-jsipfs daemon --enable-pubsub-experiment
+jsipfs daemon
 ```
 
 ### Install and start the Go IPFS node
