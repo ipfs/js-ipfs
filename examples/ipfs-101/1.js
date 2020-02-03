@@ -1,6 +1,7 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const all = require('it-all')
 
 async function main () {
   const node = await IPFS.create()
@@ -8,16 +9,16 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  for await (const file of await node.add({
     path: 'hello.txt',
     content: Buffer.from('Hello World 101')
-  })
+  })) {
+    console.log('Added file:', file.path, file.cid.toString())
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+    const data = Buffer.concat(await all(node.cat(file.cid)))
 
-  const fileBuffer = await node.cat(filesAdded[0].hash)
-
-  console.log('Added file contents:', fileBuffer.toString())
+    console.log('Added file contents:', data.toString())
+  }
 }
 
 main()

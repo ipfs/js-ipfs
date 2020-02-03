@@ -77,7 +77,7 @@ module.exports = ({ libp2p, repo }) => {
 
       for await (const peerInfo of libp2p._dht.findProviders(key, options)) {
         yield {
-          id: new CID(peerInfo.id.toB58String()),
+          id: peerInfo.id.toB58String(),
           addrs: peerInfo.multiaddrs.toArray()
         }
       }
@@ -97,7 +97,7 @@ module.exports = ({ libp2p, repo }) => {
       const peerInfo = await libp2p._dht.findPeer(peerId)
 
       return {
-        id: new CID(peerInfo.id.toB58String()),
+        id: peerInfo.id.toB58String(),
         addrs: peerInfo.multiaddrs.toArray()
       }
     },
@@ -153,7 +153,7 @@ module.exports = ({ libp2p, repo }) => {
 
       for await (const closerPeerId of libp2p._dht.getClosestPeers(peerId.toBytes())) {
         yield {
-          id: new CID(closerPeerId.toB58String()),
+          id: closerPeerId.toB58String(),
           addrs: [] // TODO: get addrs?
         }
       }

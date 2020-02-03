@@ -1,7 +1,5 @@
 'use strict'
 
-const CID = require('cids')
-
 module.exports = ({ libp2p }) => {
   return async function peers (options) { // eslint-disable-line require-await
     options = options || {}
@@ -13,7 +11,7 @@ module.exports = ({ libp2p }) => {
       for (const connection of connections) {
         const tupple = {
           addr: connection.remoteAddr,
-          peer: new CID(peerId)
+          peer: peerId
         }
 
         if (verbose || options.direction) {

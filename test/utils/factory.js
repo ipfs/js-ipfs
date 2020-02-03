@@ -1,25 +1,56 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
+const { isNode, isBrowser } = require('ipfs-utils/src/env')
 
-const factory = (options, overrides) => createFactory(
-  merge({
-    test: true,
-    type: 'proc',
-    ipfsModule: {
-      path: require.resolve('../../src'),
-      ref: require('../../src')
-    },
-    ipfsHttpModule: {
-      path: require.resolve('ipfs-http-client'),
-      ref: require('ipfs-http-client')
+const commonOptions = {
+  test: true,
+  type: 'proc',
+  ipfsHttpModule: {
+    path: require.resolve('ipfs-http-client'),
+    ref: require('ipfs-http-client')
+  },
+  ipfsModule: {
+    path: require.resolve('../../src'),
+    ref: require('../../src')
+  },
+  ipfsOptions: {
+    pass: 'ipfs-is-awesome-software',
+    libp2p: {
+      dialer: {
+        dialTimeout: 60e3 // increase timeout because travis is slow
+      }
     }
-  }, options),
-  merge({
-    js: {
+  }
+}
+
+const commonOverrides = {
+  js: {
+    ...(isNode ? {
       ipfsBin: './src/cli/bin.js'
-    }
-  }, overrides)
+    } : {}),
+    ...(isBrowser ? {
+      remote: true
+    } : {})
+  },
+  proc: {
+    ...(isBrowser ? {
+      ipfsOptions: {
+        config: {
+          Addresses: {
+            Swarm: [
+              '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+            ]
+          }
+        }
+      }
+    } : {})
+  }
+}
+
+const factory = (options = {}, overrides = {}) => createFactory(
+  merge(commonOptions, options),
+  merge(commonOverrides, overrides)
 )
 
 module.exports = factory

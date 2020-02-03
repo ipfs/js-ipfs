@@ -2,7 +2,6 @@
 
 /* global Hls Ipfs HlsjsIpfsLoader */
 /* eslint-env browser */
-
 document.addEventListener('DOMContentLoaded', async () => {
   const testHash = 'QmdpAidwAsBGptFB3b6A9Pyi5coEbgjHrL3K2Qrsutmj9K'
   const repoPath = 'ipfs-' + Math.random()

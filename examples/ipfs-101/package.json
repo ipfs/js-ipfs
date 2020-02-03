@@ -9,6 +9,7 @@
   "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "dependencies": {
-    "ipfs": "file:../../"
+    "ipfs": "file:../../",
+    "it-all": "^1.0.1"
   }
 }

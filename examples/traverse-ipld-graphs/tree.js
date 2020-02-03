@@ -29,9 +29,11 @@ async function main () {
     hashAlg: 'sha3-512'
   })
 
-  const paths = await ipfs.dag.tree(cborNodeCid, { recursive: true })
+  for await (const path of ipfs.dag.tree(cborNodeCid, { recursive: true })) {
+    console.log(path)
+  }
 
-  console.log(paths)
+  await ipfs.stop()
 }
 
 main()

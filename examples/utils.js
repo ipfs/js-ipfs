@@ -125,27 +125,47 @@ async function waitForOutput (expectedOutput, command, args = [], opts = {}) {
   let output = ''
   const time = 120000
 
-  const timeout = setTimeout(() => {
-    throw new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}" after ${time / 1000}s`)
-  }, time)
+  let foundExpectedOutput = false
+  let cancelTimeout
+  const timeoutPromise = new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}" after ${time / 1000}s`))
+
+      setTimeout(() => {
+        proc.kill()
+      }, 100)
+    }, time)
+
+    cancelTimeout = () => {
+      clearTimeout(timeout)
+      resolve()
+    }
+  })
 
   proc.all.on('data', (data) => {
     process.stdout.write(data)
-
     output += data.toString('utf8')
 
     if (output.includes(expectedOutput)) {
-      clearTimeout(timeout)
+      foundExpectedOutput = true
       proc.kill()
+      cancelTimeout()
     }
   })
 
   try {
-    await proc
+    await Promise.race([
+      proc,
+      timeoutPromise
+    ])
   } catch (err) {
     if (!err.killed) {
       throw err
     }
+  }
+
+  if (!foundExpectedOutput) {
+    throw new Error(`Did not see "${expectedOutput}" in output from "${[command].concat(args).join(' ')}"`)
   }
 }
 

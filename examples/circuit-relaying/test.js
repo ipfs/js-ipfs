@@ -66,7 +66,9 @@ async function runTest () {
 
   try {
     const id = await ipfsd.api.id()
-    const address = id.addresses.filter(addr => addr.includes('/ws/ipfs/Qm')).pop()
+    const address = id.addresses
+      .map(ma => ma.toString())
+      .find(addr => addr.includes('/ws/p2p/Qm'))
 
     if (!address) {
       throw new Error(`Could not find web socket address in ${id.addresses}`)

@@ -19,12 +19,12 @@ const df = createFactory({
   js: {
     ipfsBin: path.resolve(`${__dirname}/../../src/cli/bin.js`)
   }
-}
-)
+})
 const {
   startServer
 } = require('../utils')
 const pkg = require('./package.json')
+const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 
 async function testUI (env) {
   const proc = execa('nightwatch', [path.join(__dirname, 'test.js')], {
@@ -44,7 +44,13 @@ async function testUI (env) {
 }
 
 async function runTest () {
-  const ipfsd = await df.spawn({
+  const sigServer = await webRTCStarSigServer.start({
+    host: '127.0.0.1',
+    port: 13579
+  })
+
+  const relay = await df.spawn({
+    type: 'js',
     ipfsOptions: {
       config: {
         Addresses: {
@@ -56,15 +62,20 @@ async function runTest () {
     }
   })
 
-  const [{
-    hash: cid
-  }] = await ipfsd.api.add('A file with some content')
+  let cid
+
+  for await (const imported of relay.api.add('A file with some content')) {
+    cid = imported.cid
+  }
+
   const server1 = await startServer(__dirname)
   const server2 = await startServer(__dirname)
 
   try {
-    const id = await ipfsd.api.id()
-    const address = id.addresses.filter(addr => addr.includes('/ws/ipfs/Qm')).pop()
+    const id = await relay.api.id()
+    const address = id.addresses
+      .map(ma => ma.toString())
+      .find(addr => addr.includes('/ws/p2p'))
 
     if (!address) {
       throw new Error(`Could not find web socket address in ${id.addresses}`)
@@ -74,10 +85,12 @@ async function runTest () {
     const peerA = path.join(os.tmpdir(), `test-${Date.now()}-a.txt`)
     const peerB = path.join(os.tmpdir(), `test-${Date.now()}-b.txt`)
 
+    console.info('Relay address', address)
+
     await Promise.all([
       testUI({
         IPFS_EXAMPLE_TEST_URL: server1.url,
-        IPFS_RELAY_ADDRESS: id.addresses[0],
+        IPFS_RELAY_ADDRESS: address,
         IPFS_CID: cid,
         IPFS_WORKSPACE_NAME: workspaceName,
         IPFS_ADD_FILE: true,
@@ -86,7 +99,7 @@ async function runTest () {
       }),
       testUI({
         IPFS_EXAMPLE_TEST_URL: server1.url,
-        IPFS_RELAY_ADDRESS: id.addresses[0],
+        IPFS_RELAY_ADDRESS: address,
         IPFS_CID: cid,
         IPFS_WORKSPACE_NAME: workspaceName,
         IPFS_LOCAL_PEER_ID_FILE: peerB,
@@ -94,9 +107,10 @@ async function runTest () {
       })
     ])
   } finally {
-    await ipfsd.stop()
-    await server1.stop()
     await server2.stop()
+    await server1.stop()
+    await relay.stop()
+    await sigServer.stop()
   }
 }
 
@@ -108,7 +122,7 @@ module.exports[pkg.name] = function (browser) {
 
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)
-    .waitForElementVisible('.node-addresses li pre')
+    .waitForElementVisible('#connected-peers tr td')
     .pause(1000)
 
   console.info('dialling relay', process.env.IPFS_RELAY_ADDRESS)

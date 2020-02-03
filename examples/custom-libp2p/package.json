@@ -9,18 +9,16 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ipfs": "file:../../",
-    "libp2p": "^0.26.2",
-    "libp2p-bootstrap": "~0.9.7",
-    "libp2p-kad-dht": "~0.16.0",
-    "libp2p-mdns": "~0.12.2",
-    "libp2p-secio": "~0.11.1",
-    "libp2p-spdy": "~0.13.3",
-    "libp2p-tcp": "~0.13.0",
-    "libp2p-websocket-star": "~0.10.2",
-    "pull-mplex": "~0.1.0"
+    "libp2p": "^0.27.0-rc.0",
+    "libp2p-bootstrap": "^0.10.3",
+    "libp2p-kad-dht": "^0.18.3",
+    "libp2p-mdns": "^0.13.1",
+    "libp2p-mplex": "^0.9.3",
+    "libp2p-secio": "^0.12.2",
+    "libp2p-spdy": "^0.13.3",
+    "libp2p-tcp": "^0.14.3"
   },
   "devDependencies": {
-    "execa": "^3.2.0"
+    "execa": "^4.0.0"
   }
 }

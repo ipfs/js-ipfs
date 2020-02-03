@@ -15,7 +15,7 @@ const mkRoomName = (name) => {
 
 module.exports = (ipfs, peersSet) => {
   const createRoom = (name) => {
-    const room = Room(ipfs, mkRoomName(name))
+    const room = new Room(ipfs, mkRoomName(name))
 
     room.on('peer joined', (peer) => {
       console.log('peer ' + peer + ' joined')

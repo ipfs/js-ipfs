@@ -1,7 +1,7 @@
 /* global location */
 'use strict'
 
-const IPFS = require('ipfs')
+const IPFS = require('../../../dist')
 const { Buffer } = IPFS
 
 // Node
@@ -31,7 +31,7 @@ const $workspaceInput = document.querySelector('#workspace-input')
 const $workspaceBtn = document.querySelector('#workspace-btn')
 
 let FILES = []
-let workspace = location.hash
+let workspace = (location.hash || 'default-workspace').replace(/^#/, '')
 
 let fileSize = 0
 
@@ -44,20 +44,30 @@ let info
 
 async function start () {
   if (!node) {
-    const options = {
+    node = await IPFS.create({
       repo: 'ipfs-' + Math.random(),
       config: {
         Addresses: {
-          Swarm: ['/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star']
+          Swarm: [
+            // This is a public webrtc-star server
+            // '/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star'
+            '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
+          ]
         }
       }
-    }
-
-    node = await IPFS.create(options)
+    })
 
     try {
       info = await node.id()
-      updateView('ready', node)
+
+      const addressesHtml = info.addresses.map((address) => {
+        return `<li><pre>${address}</pre></li>`
+      }).join('')
+      $nodeId.innerText = info.id
+      $nodeAddresses.innerHTML = addressesHtml
+      $allDisabledButtons.forEach(b => { b.disabled = false })
+      $allDisabledInputs.forEach(b => { b.disabled = false })
+      $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
     } catch (err) {
       return onError(err)
     }
@@ -114,7 +124,7 @@ async function start () {
    =========================================================================== */
 
 const messageHandler = (message) => {
-  const myNode = info.id
+  const myNode = info.id.toString()
   const hash = message.data.toString()
   const messageSender = message.from
 
@@ -127,7 +137,7 @@ const messageHandler = (message) => {
 
 const subscribeToWorkpsace = async () => {
   await node.pubsub.subscribe(workspace, messageHandler)
-  const msg = `Subscribed to workspace ${workspace}`
+  const msg = `Subscribed to workspace '${workspace}'`
   $logs.innerHTML = msg
 }
 
@@ -138,7 +148,7 @@ const workspaceUpdated = async () => {
   FILES = []
   $fileHistory.innerHTML = ''
 
-  workspace = location.hash
+  workspace = location.hash.replace(/^#/, '')
   await subscribeToWorkpsace()
 }
 
@@ -207,15 +217,13 @@ async function getFile () {
 
   FILES.push(hash)
 
-  const files = await node.get(hash)
-
-  return Promise.all(files.map(async (file) => {
+  for await (const file of node.get(hash)) {
     if (file.content) {
       await appendFile(file.name, hash, file.size, file.content)
       onSuccess(`The ${file.name} file was added.`)
       $emptyRow.style.display = 'none'
     }
-  }))
+  }
 }
 
 /* Drag & Drop
@@ -272,10 +280,11 @@ async function refreshPeerList () {
     .map((peer) => {
       if (peer.addr) {
         const addr = peer.addr.toString()
-        if (addr.indexOf('ipfs') >= 0) {
+
+        if (addr.indexOf('/p2p/') >= 0) {
           return addr
         } else {
-          return addr + peer.peer.id.toB58String()
+          return addr + peer.peer
         }
       }
     })
@@ -321,31 +330,6 @@ function onError (err) {
 }
 
 window.onerror = onError
-
-/* ===========================================================================
-   App states
-   =========================================================================== */
-
-const states = {
-  ready: () => {
-    const addressesHtml = info.addresses.map((address) => {
-      return `<li><pre>${address}</pre></li>`
-    }).join('')
-    $nodeId.innerText = info.id
-    $nodeAddresses.innerHTML = addressesHtml
-    $allDisabledButtons.forEach(b => { b.disabled = false })
-    $allDisabledInputs.forEach(b => { b.disabled = false })
-    $allDisabledElements.forEach(el => { el.classList.remove('disabled') })
-  }
-}
-
-function updateView (state, ipfs) {
-  if (states[state] !== undefined) {
-    states[state]()
-  } else {
-    throw new Error('Could not find state "' + state + '"')
-  }
-}
 
 /* ===========================================================================
    Boot the app

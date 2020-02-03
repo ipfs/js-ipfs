@@ -2,7 +2,7 @@
 
 This tutorial will help you exchange files between browser nodes and go-ipfs or js-ipfs nodes!
 
-**Note:** As `js-ipfs@0.33.x` currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
+**Note:** As `js-ipfs@0.41.x` currently doesn't support DHT peer discovery, the peer from which you are fetching data should be within the reach (local or in public IP) of the browser node.
 
 That being said, we will explain how to circumvent these caveats and once they are fixed, we'll update the tutorial as well.
 
@@ -35,9 +35,10 @@ Here's what we are going to be doing:
 
 1. Install a `go-ipfs` or `js-ipfs` node in your machine
 2. Make your daemons listen on WebSockets
-3. Start the app
-4. Dial to a node using WebSockets (your desktop ones)
-5. Transfer files between all of your nodes!
+3. Start a `libp2p-webrtc-star` signaling server
+4. Start the app
+5. Dial to a node using WebSockets (your desktop ones)
+6. Transfer files between all of your nodes!
 
 Just follow the instructions below and it will be up and running in no time!
 
@@ -121,7 +122,25 @@ Daemon is ready
 
 Check the `/ws` in line 5, that means it is listening. Cool.
 
-### 3. Start the app
+### 3. Start a `libp2p-webrtc-star` signaling server
+
+This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions.
+
+First install the `libp2p-webrtc-star` module globally:
+
+```sh
+> npm install -g libp2p-webrtc-star
+```
+
+This will give you the `webrtc-star` command.  Use this to start a signaling server:
+
+```sh
+> webrtc-star
+```
+
+By default it will listen to all incoming connections on port 13579.  Override this with the `--host` and/or `--port` options.
+
+### 4. Start the app
 
 Make sure you're in `js-ipfs/examples/exchange-files-in-browser`.
 
@@ -147,7 +166,7 @@ Hit CTRL-C to stop the server
 
 Now go to http://127.0.0.1:12345 in a modern browser and you're on!
 
-### 4. Dial to a node using WebSockets (your desktop ones)
+### 5. Dial to a node using WebSockets (your desktop ones)
 
 Make sure you have a daemon running. If you don't, run:
 
@@ -179,7 +198,7 @@ Check that you got connected:
 
 [js-libp2p-crypto#105]: https://github.com/libp2p/js-libp2p-crypto/issues/105
 
-### 5. Transfer files between all of your nodes!
+### 6. Transfer files between all of your nodes!
 
 Now you can add files through the CLI with:
 

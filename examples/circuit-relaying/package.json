@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "ipfs": "file:../../",
-    "ipfs-pubsub-room": "^1.4.0"
+    "ipfs-pubsub-room": "^2.0.1"
   },
   "devDependencies": {
     "aegir": "^20.0.0",
