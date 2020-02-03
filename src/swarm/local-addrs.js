@@ -29,7 +29,7 @@ module.exports = (common, options) => {
 
       expect(multiaddrs).to.be.an.instanceOf(Array)
 
-      if (isWebWorker) {
+      if (isWebWorker && common.opts.type === 'proc') {
         expect(multiaddrs).to.have.lengthOf(0)
       } else {
         expect(multiaddrs).to.not.be.empty()
