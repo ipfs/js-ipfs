@@ -70,7 +70,12 @@ describe('interface-ipfs-core tests', function () {
 
   tests.ping(commonFactory)
 
-  tests.pubsub(commonFactory, {
+  tests.pubsub(factory({}, {
+    go: {
+      args: ['--enable-pubsub-experiment']
+    }
+  }), {
+    only: true,
     skip: isNode ? null : [
       {
         name: 'should receive messages from a different node',
