@@ -31,7 +31,7 @@ module.exports = (common, options) => {
       // and JS is flaky everywhere
 
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await common.spawn({ type: isWebWorker ? 'js' : undefined })).api
+      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
     })
 
     beforeEach(() => {
