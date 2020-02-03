@@ -89,7 +89,7 @@ module.exports = {
           }
         }, {
           go: {
-            ipfsBin: require.resolve('go-ipfs-dep/go-ipfs/ipfs' + (os.platform() === 'win32' ? '.exe' : ''))
+            ipfsBin: require.resolve(`go-ipfs-dep/go-ipfs/ipfs${os.platform() === 'win32' ? '.exe' : ''}`)
           }
         }).start()
       },
