@@ -98,11 +98,7 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }]
   })
 
-  tests.pubsub(createFactory(commonOptions, merge(overrides, {
-    go: {
-      args: ['--enable-pubsub-experiment']
-    }
-  })))
+  tests.pubsub(commonFactory)
 
   tests.repo(commonFactory)
 
