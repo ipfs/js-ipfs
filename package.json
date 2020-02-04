@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "42.0.0-pre.2",
+  "version": "42.0.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -83,6 +83,7 @@
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Alan Shaw <alan@tableflip.io>",
     "Alex Mingoia <talk@alexmingoia.com>",
+    "Alex Potsides <alex@achingbrain.net>",
     "Antonio Tenorio-Fornés <antoniotenorio@ucm.es>",
     "Bruno Barbieri <bbarbieri@delivery.com>",
     "Clemo <flipflopsimsommer@users.noreply.github.com>",
@@ -160,7 +161,6 @@
     "Victor Bjelkholm <victor@typeform.com>",
     "Volker Mische <volker.mische@gmail.com>",
     "Zhiyuan Lin <edsgerlin@gmail.com>",
-    "achingbrain <alex@achingbrain.net>",
     "dirkmc <dirkmdev@gmail.com>",
     "dmitriy ryajov <dryajov@dmitriys-MacBook-Pro.local>",
     "elsehow <yes@cosmopol.is>",
