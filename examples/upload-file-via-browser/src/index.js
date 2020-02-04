@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict'
 const React = require('react')
 const ReactDOM = require('react-dom')

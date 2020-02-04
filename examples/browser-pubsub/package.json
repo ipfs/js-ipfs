@@ -5,16 +5,17 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && npm run serve",
-    "build": "browserify index.js > bundle.js",
-    "serve": "http-server -a 127.0.0.1 -p 8888",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html"
   },
   "author": "Alan Shaw",
   "license": "MIT",
   "dependencies": {
-    "browserify": "^16.5.0",
-    "http-server": "^0.11.1",
     "ipfs-http-client": "../../"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ],
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
   }
 }

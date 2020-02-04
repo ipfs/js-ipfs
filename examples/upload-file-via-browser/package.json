@@ -3,33 +3,22 @@
   "version": "1.0.0",
   "description": "Upload file to IPFS via browser using js-ipfs-http-client with Webpack",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "parcel index.html"
   },
   "author": "Harlan T Wood <code@harlantwood.net>",
   "contributors": [
     "Victor Bjelkholm <victor@ipfs.io>"
   ],
   "license": "MIT",
+  "dependencies": {
+    "ipfs-http-client": "../.."
+  },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/preset-env": "^7.3.1",
-    "@babel/preset-react": "^7.0.0",
-    "eslint": "^5.16.0",
-    "eslint-plugin-react": "^7.11.1",
     "react": "~16.6.3",
     "react-dom": "~16.6.3",
-    "webpack": "~4.30.0",
-    "webpack-dev-server": "~3.3.1"
+    "parcel-bundler": "^1.12.4"
   },
-  "eslintConfig" : {
-    "extends": "standard",
-    "rules": {
-      "react/jsx-uses-react": 2,
-      "react/jsx-uses-vars": 2,
-      "react/react-in-jsx-scope": 2
-    },
-    "plugins": [
-      "react"
-    ]
-  }
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
 }

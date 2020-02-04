@@ -2,7 +2,7 @@
 const React = require('react')
 const ipfsClient = require('ipfs-http-client')
 
-const ipfs = ipfsClient('localhost', '5001')
+const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
 const stringToUse = 'hello world from webpacked IPFS'
 
 class App extends React.Component {
@@ -16,24 +16,27 @@ class App extends React.Component {
       added_file_contents: null
     }
   }
-  componentDidMount () {
-    ipfs.id((err, res) => {
-      if (err) throw err
-      this.setState({
-        id: res.id,
-        version: res.agentVersion,
-        protocol_version: res.protocolVersion
-      })
+  async componentDidMount () {
+    const id = await ipfs.id()
+    this.setState({
+      id: id.id,
+      version: id.agentVersion,
+      protocol_version: id.protocolVersion
     })
-    ipfs.add([Buffer.from(stringToUse)], (err, res) => {
-      if (err) throw err
-      const hash = res[0].hash
+
+    const source = ipfs.add(stringToUse)
+    for await (const file of source) {
+      console.log("TCL: App -> forawait -> file", file)
+      const hash = file.path
       this.setState({ added_file_hash: hash })
-      ipfs.cat(hash, (err, data) => {
-        if (err) throw err
-        this.setState({ added_file_contents: data.toString() })
-      })
-    })
+
+      const source = ipfs.cat(hash)
+      const data = []
+      for await (const chunk of source) {
+        data.push(chunk)
+      }
+      this.setState({ added_file_contents: Buffer.concat(data).toString() })
+    }
   }
   render () {
     return <div style={{ textAlign: 'center' }}>

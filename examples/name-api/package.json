@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "browserify index.js > bundle.js && extatic --host 127.0.0.1 -p 8888"
+    "start": "parcel index.html"
   },
   "author": "Tara Vancil <tbvanc@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "extatic": "^4.1.3"
-  }
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "ipfs-http-client": "../.."
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
 }

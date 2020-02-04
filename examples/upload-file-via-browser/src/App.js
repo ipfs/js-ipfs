@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 'use strict'
 const React = require('react')
-const ipfsClient = require('../../../src')
+const ipfsClient = require('ipfs-http-client')
 
 class App extends React.Component {
   constructor () {
@@ -8,7 +9,7 @@ class App extends React.Component {
     this.state = {
       added_file_hash: null
     }
-    this.ipfs = ipfsClient('localhost', '58041')
+    this.ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
 
     // bind methods
     this.captureFile = this.captureFile.bind(this)
@@ -28,24 +29,27 @@ class App extends React.Component {
 
   // Example #1
   // Add file to IPFS and return a CID
-  saveToIpfs (files) {
-    let ipfsId
-    this.ipfs.add([...files], { progress: (prog) => console.log(`received: ${prog}`) })
-      .then((response) => {
-        console.log(response)
-        ipfsId = response[0].hash
-        console.log(ipfsId)
-        this.setState({ added_file_hash: ipfsId })
-      }).catch((err) => {
-        console.error(err)
-      })
+  async saveToIpfs (files) {
+    const source = this.ipfs.add(
+      [...files],
+      {
+        progress: (prog) => console.log(`received: ${prog}`)
+      }
+    )
+    try {
+      for await (const file of source) {
+        console.log(file)
+        this.setState({ added_file_hash: file.path })
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   // Example #2
   // Add file to IPFS and wrap it in a directory to keep the original filename
-  saveToIpfsWithFilename (files) {
+  async saveToIpfsWithFilename (files) {
     const file = [...files][0]
-    let ipfsId
     const fileDetails = {
       path: file.name,
       content: file
@@ -54,16 +58,16 @@ class App extends React.Component {
       wrapWithDirectory: true,
       progress: (prog) => console.log(`received: ${prog}`)
     }
-    this.ipfs.add(fileDetails, options)
-      .then((response) => {
-        console.log(response)
-        // CID of wrapping directory is returned last
-        ipfsId = response[response.length - 1].hash
-        console.log(ipfsId)
-        this.setState({ added_file_hash: ipfsId })
-      }).catch((err) => {
-        console.error(err)
-      })
+
+    const source = this.ipfs.add(fileDetails, options)
+    try {
+      for await (const file of source) {
+        console.log(file)
+        this.setState({ added_file_hash: file.cid.toString() })
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   handleSubmit (event) {

@@ -21,9 +21,6 @@
     "webpack-dev-server": "~3.3.1"
   },
   "browserslist": [
-    ">1%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
+    "last 2 versions and not dead and > 2%"
   ]
 }
