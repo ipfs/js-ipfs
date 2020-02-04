@@ -1,3 +1,13 @@
+<a name="42.0.0"></a>
+# [42.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v42.0.0-pre.2...v42.0.0) (2020-02-04)
+
+
+### Bug Fixes
+
+* interface tests ([#1233](https://github.com/ipfs/js-ipfs-http-client/issues/1233)) ([d3eee0d](https://github.com/ipfs/js-ipfs-http-client/commit/d3eee0d))
+
+
+
 <a name="42.0.0-pre.0"></a>
 # [42.0.0-pre.0](https://github.com/ipfs/js-ipfs-http-client/compare/v41.0.1...v42.0.0-pre.0) (2020-01-23)
 
