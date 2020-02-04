@@ -1,10 +1,120 @@
 <a name="42.0.0"></a>
 # [42.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v42.0.0-pre.2...v42.0.0) (2020-02-04)
 
+There are significant and breaking API changes in this release. Please see the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26).
 
 ### Bug Fixes
 
 * interface tests ([#1233](https://github.com/ipfs/js-ipfs-http-client/issues/1233)) ([d3eee0d](https://github.com/ipfs/js-ipfs-http-client/commit/d3eee0d))
+
+### Features
+
+* `add` results now include `mode` and `mtime` properties if they were set.
+
+* `files.chmod` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileschmod) for info.
+
+*  `files.flush` now returns the root CID for the path that was flushed (`/` by default)
+
+* `files.ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+
+* `files.mkdir` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir) for more info.
+
+* `files.stat` result now includes `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesstat) for more info.
+
+* `files.touch` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filestouch) for info.
+
+* `files.write` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileswrite) for more info.
+
+* `object.get` now accepts a `timeout` option. It will cause the method to throw with a `TimeoutError` if no data is received within the timeout window. It can be passed as a `number` or a `string`. If a `number` is passed it is interpreted as milliseconds, if a string is passed it is interpreted as a [human readable duration](https://www.npmjs.com/package/parse-duration).
+
+* `pin.add` now accepts a `timeout` option. It will cause the method to throw with a `TimeoutError` if no data is received within the timeout window. It can be passed as a `number` or a `string`. If a `number` is passed it is interpreted as milliseconds, if a string is passed it is interpreted as a [human readable duration](https://www.npmjs.com/package/parse-duration).
+
+* `refs` now accepts a `timeout` option. It will cause the method to throw with a `TimeoutError` if no data is received within the timeout window. It can be passed as a `number` or a `string`. If a `number` is passed it is interpreted as milliseconds, if a string is passed it is interpreted as a [human readable duration](https://www.npmjs.com/package/parse-duration).
+
+### BREAKING CHANGES
+
+* Callbacks are no longer supported on any API methods. Please use a utility such as [`callbackify`](https://www.npmjs.com/package/callbackify) on API methods that return Promises to emulate previous behaviour. See the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26#migrating-from-callbacks) for more info.
+
+* `add` now returns an async iterable.
+
+* `add` now accepts `mode` and `mtime` options on inputs to allow setting mode and mtime metadata for added files. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#add) for more info.
+
+* `add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
+
+* `addReadableStream`, `addPullStream` have been removed. Please see the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26#migrating-to-async-iterables) for more info.
+
+* `addFromStream` has been removed. Use `add` instead.
+
+* `addFromFs` has been removed. Please use the exported `globSource` utility and pass the result to `add`. See the [glob source documentation](https://github.com/ipfs/js-ipfs-http-client#glob-source) for more details and an example.
+
+* `addFromURL` has been removed. Please use the exported `urlSource` utility and pass the result to `add`. See the [URL source documentation](https://github.com/ipfs/js-ipfs-http-client#url-source) for more details and an example.
+
+* `bitswap.stat` result has changed - `wantlist` and values are now an array of [CID](https://github.com/multiformats/js-cid) instances and `peers` is now a `string[]` of peer IDs.
+
+* `bitswap.wantlist` now returns an array of [CID](https://github.com/multiformats/js-cid) instances.
+
+* `block.rm` now returns an async iterable.
+
+* `block.rm` now yields objects of `{ cid: CID, error: Error }`.
+
+* `block.stat` result now contains a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `key` property.
+
+* `dht.findProvs`, `dht.provide`, `dht.put` and `dht.query` now all return an async iterable.
+
+* `dht.findPeer`, `dht.findProvs`, `dht.provide`, `dht.put` and `dht.query` now yield/return an object `{ id: string, addrs: Multiaddr[] }` instead of a `PeerInfo` instance(s).
+
+* `files.lsPullStream` and `files.lsReadableStream` have been removed. Please see the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26#migrating-to-async-iterables) for more info.
+
+* `files.ls` now returns an async iterable.
+
+* `files.ls` results now contain a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `hash` property.
+
+* `files.ls` no longer takes a `long` option (in core) - you will receive all data by default.
+
+* `files.readPullStream` and `files.readReadableStream` have been removed. Please see the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26#migrating-to-async-iterables) for more info.
+
+* `files.read` now returns an async iterable.
+
+* `files.stat` result now contains a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `hash` property.
+
+* `get` now returns an async iterable. The `content` property value for objects yielded from the iterator is now an async iterable that yields [`BufferList`](https://github.com/rvagg/bl) objects.
+
+* `id` result has changed, the `addresses` property is now a `Multiaddr[]`
+
+* `name.resolve` now returns an async iterable. It yields increasingly more accurate resolved values as they are discovered until the best value is selected from the quorum of 16. The "best" resolved value is the last item yielded from the iterator. If you are interested only in this best value you could use `it-last` to extract it like so:
+
+    ```js
+    const last = require('it-last')
+    await last(ipfs.name.resolve('/ipns/QmHash'))
+    ```
+
+* `ls` now returns an async iterable.
+
+* `ls` results now contain a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `hash` property.
+
+* `ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+
+* `pin.add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
+
+* `pin.ls` now returns an async iterable.
+
+* `pin.ls` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
+
+* `pin.rm` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
+
+* `ping` now returns an async iterable.
+
+* `refs` and `refs.local` now return an async iterable.
+
+* `repo.gc` now returns an async iterable.
+
+* `stats.bw` now returns an async iterable.
+
+* `swarm.peers` now returns an array of objects with a `peer` property that is a `string`, instead of a `PeerId` instance.
+
+* `swarm.addrs` now returns an array of objects `{ id: string, addrs: Multiaddr[] }` instead of `PeerInfo` instances.
+
+* The protocol _name_ for peer IDs in multiaddrs has changed from 'ipfs' to 'p2p'. There's no changes to data on the wire but this change is seen when multiaddrs are converted to strings.
 
 
 
