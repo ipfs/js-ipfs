@@ -320,6 +320,27 @@ module.exports = (common, options) => {
         .and.to.have.property('name').that.equals('TimeoutError')
     })
 
+    it('should add a directory with only-hash=true', async function () {
+      this.slow(10 * 1000)
+      const content = String(Math.random() + Date.now())
+
+      const files = await all(ipfs.add([{
+        path: '/foo/bar.txt',
+        content: Buffer.from(content)
+      }, {
+        path: '/foo/baz.txt',
+        content: Buffer.from(content)
+      }], { onlyHash: true }))
+      expect(files).to.have.length(3)
+
+      await Promise.all(
+        files.map(file => expect(ipfs.object.get(file.cid, { timeout: 4000 }))
+          .to.eventually.be.rejected()
+          .and.to.have.property('name').that.equals('TimeoutError')
+        )
+      )
+    })
+
     it('should add with mode as string', async function () {
       this.slow(10 * 1000)
       const mode = '0777'
