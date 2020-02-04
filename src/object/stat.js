@@ -66,7 +66,7 @@ module.exports = (common, options) => {
         expect(err.message).to.equal('failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
       }
 
-      expect(timeForRequest).to.not.lessThan(timeout)
+      expect(timeForRequest).to.not.lessThan(timeout - 0.1)
       expect(timeForRequest).to.not.greaterThan(timeout + 1)
     })
 
