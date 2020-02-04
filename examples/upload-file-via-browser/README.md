@@ -26,9 +26,6 @@ Once the daemon is on, run the following commands within this folder:
 > npm install
 > npm start
 ```
-
-Now open your browser at `http://localhost:3000`
-
 After uploading a file (left screen), and opening the uploaded file (right screen), you should see something like:
 
 > ![App Screenshot](https://github.com/ipfs/js-ipfs-http-client/raw/master/examples/upload-file-via-browser/screenshot.png)

@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 'use strict'
-
-const ipfs = window.IpfsHttpClient('/ip4/127.0.0.1/tcp/5001')
+const ipfsHttp = require('ipfs-http-client')
+const ipfs = ipfsHttp('/ip4/127.0.0.1/tcp/5001')
 
 const DOM = {
   status: document.getElementById('status'),
@@ -30,7 +31,7 @@ const showStatus = (text, bg) => {
 }
 
 const enableForms = () => {
-  for (let btn of DOM.buttons) {
+  for (const btn of DOM.buttons) {
     btn.disabled = false
   }
 }
@@ -48,31 +49,30 @@ const init = () => {
 }
 
 // Adds a new file to IPFS and publish it
-const addAndPublish = (e) => {
+const addAndPublish = async (e) => {
   e.preventDefault()
 
-  let input = e.target.elements['text']
-  let buffer = Buffer.from(input.value)
+  const input = e.target.elements.text
+  const buffer = Buffer.from(input.value)
 
   showStatus('adding to IPFS...', COLORS.active)
+  try {
+    for await (const file of ipfs.add(buffer)) {
+      showStatus('success!', COLORS.success)
 
-  ipfs.add(buffer)
-    .then(res => {
-      showStatus(`success!`, COLORS.success)
-
-      publish(res[0].path)
+      publish(file.path)
 
       input.value = ''
-    })
-    .catch(err => {
-      showStatus('failed to add the data', COLORS.error)
-      console.error(err)
-    })
+    }
+  } catch (err) {
+    showStatus('failed to add the data', COLORS.error)
+    console.error(err)
+  }
 }
 
 // Publishes an IPFS file or directory under your node's identity
 const publish = (path) => {
-  showStatus(`publishing...`, COLORS.active)
+  showStatus('publishing...', COLORS.active)
   DOM.publishResultsDiv.classList.add('hidden')
 
   ipfs.name.publish(path)
@@ -90,21 +90,20 @@ const publish = (path) => {
 }
 
 // Resolves an IPNS name
-const resolve = (name) => {
-  showStatus(`resolving...`, COLORS.active)
+const resolve = async (name) => {
+  showStatus('resolving...', COLORS.active)
   DOM.resolveResultsDiv.classList.add('hidden')
-
-  ipfs.name.resolve(name)
-    .then(path => {
+  try {
+    for await (const path of ipfs.name.resolve(name)) {
       showStatus('success!', COLORS.success)
       DOM.resolveResultsDiv.classList.remove('hidden')
       DOM.resolveResult.innerText = path
       DOM.resolveGatewayLink.href = `${IPFS_DOMAIN}${path}`
-    })
-    .catch(err => {
-      showStatus(`error resolving ${name}`, COLORS.error)
-      console.error(err)
-    })
+    }
+  } catch (err) {
+    showStatus(`error resolving ${name}`, COLORS.error)
+    console.error(err)
+  }
 }
 
 // Event listeners
@@ -112,14 +111,14 @@ DOM.publishNew.onsubmit = addAndPublish
 
 DOM.publishPath.onsubmit = (e) => {
   e.preventDefault()
-  let input = e.target.elements['path']
+  const input = e.target.elements.path
   publish(input.value)
   input.value = ''
 }
 
 DOM.resolveName.onsubmit = (e) => {
   e.preventDefault()
-  let input = e.target.elements['name']
+  const input = e.target.elements.name
   resolve(input.value)
   input.value = ''
 }

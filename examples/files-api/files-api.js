@@ -1,14 +1,21 @@
+/* eslint-disable no-console */
 'use strict'
 
-const ipfs = require('../../src')('localhost', 5001)
+// Run `ipfs daemon` in your terminal to start the IPFS daemon
+// Look for `API server listening on /ip4/127.0.0.1/tcp/5001`
+const ipfs = require('../../src')('/ip4/127.0.0.1/tcp/5001')
 
-ipfs.files.ls('/folder1', function (err, res) {
-  if (err) {
-    return console.log('got an error', err)
+const run = async () => {
+  await ipfs.files.write(
+    '/temp/hello-world',
+    Buffer.from('Hello, world!'),
+    { create: true, parents: true }
+  )
+  const source = ipfs.files.ls('/temp')
+
+  for await (const file of source) {
+    console.log(file)
   }
-  if (res.readable) {
-    res.pipe(process.stdout)
-  } else {
-    console.log(res)
-  }
-})
+}
+
+run()
