@@ -143,7 +143,7 @@
     "libp2p-record": "~0.7.0",
     "libp2p-secio": "^0.12.1",
     "libp2p-tcp": "^0.14.2",
-    "libp2p-webrtc-star": "^0.17.5",
+    "libp2p-webrtc-star": "^0.17.6",
     "libp2p-websockets": "^0.13.0",
     "mafmt": "^7.0.0",
     "merge-options": "^2.0.0",
