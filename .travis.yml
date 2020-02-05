@@ -1,4 +1,5 @@
 language: node_js
+cache: npm
 
 branches:
   only:
@@ -50,6 +51,9 @@ jobs:
     - name: external - ipfs-log
     - name: external - sidetree
   include:
+    - os: windows
+      cache: false
+
     - stage: check
       script:
         - npx aegir build --bundlesize
