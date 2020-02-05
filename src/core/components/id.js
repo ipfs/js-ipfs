@@ -3,15 +3,20 @@
 const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
 
-module.exports = ({ peerInfo }) => {
+module.exports = ({ peerInfo, libp2p }) => {
   return async function id () { // eslint-disable-line require-await
     const id = peerInfo.id.toB58String()
+    let addresses = []
+
+    if (libp2p) {
+      // only available while the node is running
+      addresses = libp2p.transportManager.getAddrs()
+    }
 
     return {
       id,
       publicKey: peerInfo.id.pubKey.bytes.toString('base64'),
-      addresses: peerInfo.multiaddrs
-        .toArray()
+      addresses: addresses
         .map(ma => {
           const str = ma.toString()
 
