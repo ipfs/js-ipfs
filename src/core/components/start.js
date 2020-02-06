@@ -208,7 +208,7 @@ function createApi ({
     dns,
     files,
     get: Components.get({ ipld, preload }),
-    id: Components.id({ peerInfo }),
+    id: Components.id({ peerInfo, libp2p }),
     init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
     isOnline,
     key: {
