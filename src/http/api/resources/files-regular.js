@@ -94,18 +94,16 @@ exports.get = {
       ipfs.get(key),
       async function * (source) {
         for await (const file of source) {
+          const header = {
+            name: file.path,
+            mtime: file.mtime ? new Date(file.mtime.secs * 1000) : null,
+            mode: file.mode
+          }
+
           if (file.content) {
-            yield {
-              header: {
-                name: file.path,
-                size: file.size,
-                mtime: file.mtime ? new Date(file.mtime.secs * 1000) : null,
-                mode: file.mode
-              },
-              body: toBuffer(file.content)
-            }
+            yield { header: { ...header, size: file.size }, body: toBuffer(file.content) }
           } else {
-            yield { header: { name: file.path, type: 'directory' } }
+            yield { header: { ...header, type: 'directory' } }
           }
         }
       },
