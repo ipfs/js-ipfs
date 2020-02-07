@@ -1811,13 +1811,6 @@ abort-controller@^3.0.0:
   dependencies:
     event-target-shim "^5.0.0"
 
-abortable-iterator@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/abortable-iterator/-/abortable-iterator-2.1.0.tgz#f1385d5465817de2bd33a52bc97f5ea106be1ff1"
-  integrity sha512-5G9dgRoN7EUR3QTMo9A/iEQ58nD2vFJl8xV8lZvX3hWELLc6AXGxUVvjv2dGBHUXa77hT45bzmoo3XGeAgAFXg==
-  dependencies:
-    get-iterator "^1.0.2"
-
 abortable-iterator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/abortable-iterator/-/abortable-iterator-3.0.0.tgz#8ea796a237286b7fbe98d97e2505a15cdd81c0ac"
@@ -3639,16 +3632,15 @@ code-point-at@^1.0.0:
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
 codecov@^3.3.0:
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/codecov/-/codecov-3.6.4.tgz#c993a58704ad5f15dcdd6aa3c3af22070c69eb18"
-  integrity sha512-R9zEcTR5/IDLepdGUHAkRMZOIKhBE1NRGS1N2H96zhBOskhdW9Q22GtYYyecbZL1aheU00D2F21nNBGRISui0A==
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/codecov/-/codecov-3.6.5.tgz#d73ce62e8a021f5249f54b073e6f2d6a513f172a"
+  integrity sha512-v48WuDMUug6JXwmmfsMzhCHRnhUf8O3duqXvltaYJKrO1OekZWpB/eH6iIoaxMl8Qli0+u3OxptdsBOYiD7VAQ==
   dependencies:
     argv "0.0.2"
     ignore-walk "3.0.3"
     js-yaml "3.13.1"
     teeny-request "6.0.1"
     urlgrey "0.4.4"
-    validator "12.2.0"
 
 collapse-white-space@^1.0.0, collapse-white-space@^1.0.2:
   version "1.0.6"
@@ -8410,14 +8402,15 @@ it-to-stream@^0.1.1:
     p-fifo "^1.0.0"
     readable-stream "^3.4.0"
 
-"it-ws@github:vasco-santos/it-ws#v2.1.1-rc.1":
-  version "2.1.0"
-  resolved "https://codeload.github.com/vasco-santos/it-ws/tar.gz/499a2c8deb64a24b030f47ad9f690b97ccaa3f80"
+it-ws@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/it-ws/-/it-ws-3.0.0.tgz#b130440328f43cb70b68e734bc9476ebc81219c3"
+  integrity sha512-9qPAgBPA4yyu8XC71ugOhTOrEDpmSqVeEoJeAaNmtQIOu4sByzO8rsLq1GFKChaEhf8nbtK6jxr3e7LmpjMqmQ==
   dependencies:
+    buffer "^5.4.3"
     event-iterator "^1.2.0"
     relative-url "^1.0.2"
-    safe-buffer "^5.1.2"
-    ws "^6.2.1"
+    ws "^7.2.1"
 
 iterable-ndjson@^1.1.0:
   version "1.1.0"
@@ -9336,16 +9329,16 @@ libp2p-webrtc-star@^0.17.3, libp2p-webrtc-star@^0.17.6:
     streaming-iterables "^4.1.0"
     webrtcsupport "github:ipfs/webrtcsupport"
 
-libp2p-websockets@^0.13.0:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/libp2p-websockets/-/libp2p-websockets-0.13.2.tgz#03788819f7743c2b8eff2cddde3a0ab7c7cbc3e2"
-  integrity sha512-TanT8iJM1cgggkSGq2nXdfKDyNoKwGujiqYvcSuhKKUrlBNK9xzhHjh1aPC5L7baN5mAhgLNPRSJ6WUzzximCA==
+libp2p-websockets@^0.13.3:
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/libp2p-websockets/-/libp2p-websockets-0.13.3.tgz#eeb83552811db1c0a80f2a7e13f5a4f3d0badb8e"
+  integrity sha512-WGS41fZKA9bwrAsR7M9nrRly+QiBxNuXOYtw16wDRQ8RSJ2YtFxshKOL4hFivlUlZq0L4+K8+TYR4RHJWvL6iQ==
   dependencies:
-    abortable-iterator "^2.1.0"
+    abortable-iterator "^3.0.0"
     class-is "^1.1.0"
     debug "^4.1.1"
     err-code "^2.0.0"
-    it-ws vasco-santos/it-ws#v2.1.1-rc.1
+    it-ws "^3.0.0"
     libp2p-utils "~0.1.0"
     mafmt "^7.0.0"
     multiaddr "^7.1.0"
@@ -14881,11 +14874,6 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-validator@12.2.0:
-  version "12.2.0"
-  resolved "https://registry.yarnpkg.com/validator/-/validator-12.2.0.tgz#660d47e96267033fd070096c3b1a6f2db4380a0a"
-  integrity sha512-jJfE/DW6tIK1Ek8nCfNFqt8Wb3nzMoAbocBF6/Icgg1ZFSBpObdnwVY2jQj6qUqzhx5jc71fpvBWyLGO7Xl+nQ==
-
 value-or-function@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/value-or-function/-/value-or-function-3.0.0.tgz#1c243a50b595c1be54a754bfece8563b9ff8d813"
@@ -15326,14 +15314,14 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^6.0.0, ws@^6.2.1:
+ws@^6.0.0:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-6.2.1.tgz#442fdf0a47ed64f59b6a5d8ff130f4748ed524fb"
   integrity sha512-GIyAXC2cB7LjvpgMt9EKS2ldqr0MTrORaleiOno6TweZ6r3TKtoFQWay/2PceJ3RuBasOHzXNn5Lrw1X0bEjqA==
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7.1.2:
+ws@^7.1.2, ws@^7.2.1:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.2.1.tgz#03ed52423cd744084b2cf42ed197c8b65a936b8e"
   integrity sha512-sucePNSafamSKoOqoNfBd8V0StlkzJKL2ZAhGQinCfNQ+oacw+Pk7lcdAElecBF2VkLNZRiIb5Oi1Q5lVUVt2A==
