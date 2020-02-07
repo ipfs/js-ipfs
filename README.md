@@ -96,7 +96,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
     - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
     - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
     - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
-    - [Is there a more stable alternative to webrtc-star that offers a similar functionality?](#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality)
     - [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
     - [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
     - [Have more questions?](#have-more-questions)
@@ -1071,24 +1070,6 @@ const node = await IPFS.create({
 ```
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
-
-#### Is there a more stable alternative to webrtc-star that offers a similar functionality?
-
-Yes, websocket-star! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
-
-```JavaScript
-const node = await IPFS.create({
-  config: {
-    Addresses: {
-      Swarm: [
-        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-      ]
-    }
-  }
-})
-
-// your instance with websocket-star is ready
-```
 
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 
