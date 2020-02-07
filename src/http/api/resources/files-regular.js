@@ -2,7 +2,7 @@
 
 const multipart = require('ipfs-multipart')
 const debug = require('debug')
-const tar = require('tar-stream')
+const tar = require('it-tar')
 const log = debug('ipfs:http-api:files')
 log.error = debug('ipfs:http-api:files:error')
 const toIterable = require('stream-to-it')
@@ -11,15 +11,19 @@ const Boom = require('@hapi/boom')
 const { PassThrough } = require('stream')
 const multibase = require('multibase')
 const isIpfs = require('is-ipfs')
-const { promisify } = require('util')
 const { cidToString } = require('../../../utils/cid')
 const { Format } = require('../../../core/components/refs')
 const pipe = require('it-pipe')
 const all = require('it-all')
-const concat = require('it-concat')
 const ndjson = require('iterable-ndjson')
 const { map } = require('streaming-iterables')
 const streamResponse = require('../../utils/stream-response')
+
+const toBuffer = async function * (source) {
+  for await (const chunk of source) {
+    yield chunk.slice()
+  }
+}
 
 function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
@@ -86,32 +90,28 @@ exports.get = {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
 
-    const pack = tar.pack()
-    pack.entry = promisify(pack.entry.bind(pack))
-
-    const streamFiles = async () => {
-      try {
-        for await (const file of ipfs.get(key)) {
+    return streamResponse(request, h, () => pipe(
+      ipfs.get(key),
+      async function * (source) {
+        for await (const file of source) {
           if (file.content) {
-            const content = await concat(file.content)
-            pack.entry({ name: file.path, size: file.size }, content.slice())
+            yield {
+              header: {
+                name: file.path,
+                size: file.size,
+                mtime: file.mtime ? new Date(file.mtime.secs * 1000) : null,
+                mode: file.mode
+              },
+              body: toBuffer(file.content)
+            }
           } else {
-            pack.entry({ name: file.path, type: 'directory' })
+            yield { header: { name: file.path, type: 'directory' } }
           }
         }
-        pack.finalize()
-      } catch (err) {
-        log.error(err)
-        pack.emit('error', err)
-        pack.destroy()
-      }
-    }
-
-    streamFiles()
-
-    // reply must be called right away so that tar-stream offloads its content
-    // otherwise it will block in large files
-    return h.response(pack).header('X-Stream-Output', '1')
+      },
+      tar.pack(),
+      toBuffer
+    ))
   }
 }
 
