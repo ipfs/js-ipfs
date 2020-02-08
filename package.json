@@ -123,7 +123,7 @@
     "it-glob": "0.0.7",
     "it-last": "^1.0.1",
     "it-pipe": "^1.1.0",
-    "it-tar": "^1.2.0",
+    "it-tar": "^1.2.1",
     "it-to-stream": "^0.1.1",
     "iterable-ndjson": "^1.1.0",
     "jsondiffpatch": "~0.3.11",
