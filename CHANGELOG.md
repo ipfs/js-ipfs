@@ -1,3 +1,13 @@
+<a name="0.132.0"></a>
+# [0.132.0](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.7...v0.132.0) (2020-02-09)
+
+
+### Bug Fixes
+
+* add object.stat timeout leeway ([#586](https://github.com/ipfs/interface-ipfs-core/issues/586)) ([8b45ad0](https://github.com/ipfs/interface-ipfs-core/commit/8b45ad0))
+
+
+
 <a name="0.131.7"></a>
 ## [0.131.7](https://github.com/ipfs/interface-ipfs-core/compare/v0.131.6...v0.131.7) (2020-02-03)
 
