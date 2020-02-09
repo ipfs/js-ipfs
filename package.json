@@ -184,7 +184,7 @@
     "form-data": "^3.0.0",
     "go-ipfs-dep": "^0.4.23",
     "hat": "0.0.3",
-    "interface-ipfs-core": "github:ipfs/interface-js-ipfs-core#test/block-put-cid-string",
+    "interface-ipfs-core": "^0.132.0",
     "ipfs-interop": "github:ipfs/interop#refactor/async-await",
     "ipfsd-ctl": "github:ipfs/js-ipfsd-ctl#remove-option-normalisation",
     "ncp": "^2.0.0",
