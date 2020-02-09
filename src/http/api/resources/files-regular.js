@@ -95,7 +95,9 @@ exports.get = {
       async function * (source) {
         for await (const file of source) {
           const header = {
-            name: file.path
+            name: file.path,
+            mtime: file.mtime ? new Date(file.mtime.secs * 1000) : null,
+            mode: file.mode
           }
 
           if (file.content) {

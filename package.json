@@ -98,7 +98,7 @@
     "ipfs-bitswap": "^0.27.0",
     "ipfs-block": "~0.8.1",
     "ipfs-block-service": "~0.16.0",
-    "ipfs-http-client": "^42.0.0",
+    "ipfs-http-client": "github:ipfs/js-ipfs-http-client#feat/meta-for-get",
     "ipfs-http-response": "^0.5.0",
     "ipfs-mfs": "^1.0.0",
     "ipfs-multipart": "^0.3.0",
