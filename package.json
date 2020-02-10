@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.41.0-rc.0",
+  "version": "0.41.0-rc.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
