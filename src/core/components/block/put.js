@@ -3,6 +3,7 @@
 const Block = require('ipfs-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
+const isIPFS = require('is-ipfs')
 
 module.exports = ({ blockService, gcLock, preload }) => {
   return async function put (block, options) {
@@ -13,8 +14,8 @@ module.exports = ({ blockService, gcLock, preload }) => {
     }
 
     if (!Block.isBlock(block)) {
-      if (options.cid && CID.isCID(options.cid)) {
-        block = new Block(block, options.cid)
+      if (options.cid && isIPFS.cid(options.cid)) {
+        block = new Block(block, CID.isCID(options.cid) ? options.cid : new CID(options.cid))
       } else {
         const mhtype = options.mhtype || 'sha2-256'
         const format = options.format || 'dag-pb'
