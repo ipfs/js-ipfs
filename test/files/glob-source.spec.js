@@ -25,7 +25,7 @@ function findMode (file) {
 }
 
 function findMtime (file) {
-  return parseInt(fs.statSync(fixture(file)).mtimeMs / 1000)
+  return fs.statSync(fixture(file)).mtime
 }
 
 describe('glob-source', () => {
@@ -193,17 +193,17 @@ describe('glob-source', () => {
 
     expect(result).to.have.lengthOf(6)
     expect(result).to.have.nested.property('[0].path', '/dir')
-    expect(result).to.have.nested.property('[0].mtime', findMtime('/dir'))
+    expect(result).to.have.deep.nested.property('[0].mtime', findMtime('/dir'))
     expect(result).to.have.nested.property('[1].path', '/dir/file-1.txt')
-    expect(result).to.have.nested.property('[1].mtime', findMtime('/dir/file-1.txt'))
+    expect(result).to.have.deep.nested.property('[1].mtime', findMtime('/dir/file-1.txt'))
     expect(result).to.have.nested.property('[2].path', '/dir/file-2.js')
-    expect(result).to.have.nested.property('[2].mtime', findMtime('/dir/file-2.js'))
+    expect(result).to.have.deep.nested.property('[2].mtime', findMtime('/dir/file-2.js'))
     expect(result).to.have.nested.property('[3].path', '/dir/file-3.css')
-    expect(result).to.have.nested.property('[3].mtime', findMtime('/dir/file-3.css'))
+    expect(result).to.have.deep.nested.property('[3].mtime', findMtime('/dir/file-3.css'))
     expect(result).to.have.nested.property('[4].path', '/dir/nested-dir')
-    expect(result).to.have.nested.property('[4].mtime', findMtime('/dir/nested-dir'))
+    expect(result).to.have.deep.nested.property('[4].mtime', findMtime('/dir/nested-dir'))
     expect(result).to.have.nested.property('[5].path', '/dir/nested-dir/other.txt')
-    expect(result).to.have.nested.property('[5].mtime', findMtime('/dir/nested-dir/other.txt'))
+    expect(result).to.have.deep.nested.property('[5].mtime', findMtime('/dir/nested-dir/other.txt'))
   })
 
   it('overrides mtime for directories', async function () {
@@ -213,21 +213,21 @@ describe('glob-source', () => {
 
     const result = await all(globSource(fixture('/dir'), {
       recursive: true,
-      mtime: 5
+      mtime: new Date(5)
     }))
 
     expect(result).to.have.lengthOf(6)
     expect(result).to.have.nested.property('[0].path', '/dir')
-    expect(result).to.have.nested.property('[0].mtime', 5)
+    expect(result).to.have.deep.nested.property('[0].mtime', new Date(5))
     expect(result).to.have.nested.property('[1].path', '/dir/file-1.txt')
-    expect(result).to.have.nested.property('[1].mtime', 5)
+    expect(result).to.have.deep.nested.property('[1].mtime', new Date(5))
     expect(result).to.have.nested.property('[2].path', '/dir/file-2.js')
-    expect(result).to.have.nested.property('[2].mtime', 5)
+    expect(result).to.have.deep.nested.property('[2].mtime', new Date(5))
     expect(result).to.have.nested.property('[3].path', '/dir/file-3.css')
-    expect(result).to.have.nested.property('[3].mtime', 5)
+    expect(result).to.have.deep.nested.property('[3].mtime', new Date(5))
     expect(result).to.have.nested.property('[4].path', '/dir/nested-dir')
-    expect(result).to.have.nested.property('[4].mtime', 5)
+    expect(result).to.have.deep.nested.property('[4].mtime', new Date(5))
     expect(result).to.have.nested.property('[5].path', '/dir/nested-dir/other.txt')
-    expect(result).to.have.nested.property('[5].mtime', 5)
+    expect(result).to.have.deep.nested.property('[5].mtime', new Date(5))
   })
 })

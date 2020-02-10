@@ -59,7 +59,7 @@ module.exports = async function * globSource (paths, options) {
     let mtime = options.mtime
 
     if (options.preserveMtime) {
-      mtime = parseInt(stat.mtimeMs / 1000)
+      mtime = stat.mtime
     }
 
     if (stat.isDirectory()) {
@@ -122,7 +122,7 @@ async function * toGlobSource ({ path, type, prefix, mode, mtime, preserveMode, 
       }
 
       if (preserveMtime) {
-        mtime = parseInt(stat.mtimeMs / 1000)
+        mtime = stat.mtime
       }
     }
 
