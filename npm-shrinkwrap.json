@@ -12286,9 +12286,9 @@
       }
     },
     "ipfs-utils": {
-      "version": "0.7.1",
-      "resolved": "https://registry.npmjs.org/ipfs-utils/-/ipfs-utils-0.7.1.tgz",
-      "integrity": "sha512-oAZrlv3z92951hA28ZSsvPgoe70/SDRi48CaCXp+EhJbvvdBYkxR2FJBRI1T1sV0Lvu7F0xpo6Nv5lGMRNy8KA==",
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/ipfs-utils/-/ipfs-utils-0.7.2.tgz",
+      "integrity": "sha512-fxsOdat+liS7KjU8JALWClBbvbbZuoc17qIXxXC17FeJzOTeAR0grrWyoExhWV3hPKDH6gm5/5vQP6y/AwExxg==",
       "requires": {
         "buffer": "^5.2.1",
         "err-code": "^2.0.0",
