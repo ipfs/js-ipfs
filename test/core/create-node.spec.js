@@ -168,6 +168,10 @@ describe('create node', function () {
       repo: tempRepo,
       init: { bits: 512 },
       config: {
+        Addresses: {
+          Swarm: []
+        },
+        Bootstrap: [],
         Pubsub: {
           Enabled: false
         }

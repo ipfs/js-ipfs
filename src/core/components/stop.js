@@ -1,7 +1,10 @@
 'use strict'
 
-const defer = require('p-defer')
-const { NotStartedError, AlreadyInitializedError } = require('../errors')
+const {
+  NotStartedError,
+  AlreadyInitializedError,
+  AlreadyStoppingError
+} = require('../errors')
 const Components = require('./')
 
 module.exports = ({
@@ -22,8 +25,11 @@ module.exports = ({
   print,
   repo
 }) => async function stop () {
-  const stopPromise = defer()
-  const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
+  const { cancel } = apiManager.update({
+    stop: () => {
+      throw new AlreadyStoppingError()
+    }
+  })
 
   try {
     blockService.unsetExchange()
@@ -58,11 +64,9 @@ module.exports = ({
     apiManager.update(api, () => { throw new NotStartedError() })
   } catch (err) {
     cancel()
-    stopPromise.reject(err)
     throw err
   }
 
-  stopPromise.resolve(apiManager.api)
   return apiManager.api
 }
 
@@ -182,7 +186,7 @@ function createApi ({
       bw: notStarted,
       repo: Components.repo.stat({ repo })
     },
-    stop: () => apiManager.api,
+    stop: notStarted,
     swarm: {
       addrs: notStarted,
       connect: notStarted,

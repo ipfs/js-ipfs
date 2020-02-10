@@ -3,10 +3,14 @@
 const Bitswap = require('ipfs-bitswap')
 const multiaddr = require('multiaddr')
 const get = require('dlv')
-const defer = require('p-defer')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
-const { AlreadyInitializedError, NotEnabledError } = require('../errors')
+const {
+  AlreadyInitializedError,
+  AlreadyStartingError,
+  AlreadyStartedError,
+  NotEnabledError
+} = require('../errors')
 const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
 
@@ -24,8 +28,11 @@ module.exports = ({
   print,
   repo
 }) => async function start () {
-  const startPromise = defer()
-  const { cancel } = apiManager.update({ start: () => startPromise.promise })
+  const { cancel } = apiManager.update({
+    start: () => {
+      throw new AlreadyStartingError()
+    }
+  })
 
   try {
     // The repo may be closed if previously stopped
@@ -97,14 +104,12 @@ module.exports = ({
       repo
     })
 
-    apiManager.update(api, () => undefined)
+    apiManager.update(api)
   } catch (err) {
     cancel()
-    startPromise.reject(err)
     throw err
   }
 
-  startPromise.resolve(apiManager.api)
   return apiManager.api
 }
 
@@ -234,7 +239,7 @@ function createApi ({
       version: Components.repo.version({ repo })
     },
     resolve,
-    start: () => apiManager.api,
+    start: async () => { throw new AlreadyStartedError() }, // eslint-disable-line require-await
     stats: {
       bitswap: Components.bitswap.stat({ bitswap }),
       bw: libp2p.metrics

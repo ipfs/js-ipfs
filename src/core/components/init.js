@@ -5,7 +5,6 @@ const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
-const createRepo = require('../runtime/repo-nodejs')
 const Keychain = require('libp2p-keychain')
 const NoKeychain = require('./no-keychain')
 const mortice = require('mortice')
@@ -13,16 +12,14 @@ const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
 const {
-  AlreadyInitializingError,
   AlreadyInitializedError,
-  NotStartedError,
-  NotEnabledError
+  AlreadyInitializingError,
+  NotStartedError
 } = require('../errors')
 const BlockService = require('ipfs-block-service')
 const Ipld = require('ipld')
 const getDefaultIpldOptions = require('../runtime/ipld-nodejs')
 const createPreloader = require('../preload')
-const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const IPNS = require('../ipns')
 const OfflineDatastore = require('../ipns/routing/offline-datastore')
 const initAssets = require('../runtime/init-assets-nodejs')
@@ -32,9 +29,14 @@ const Components = require('./')
 module.exports = ({
   apiManager,
   print,
-  options: constructorOptions
+  options: constructorOptions,
+  repo
 }) => async function init (options) {
-  const { cancel } = apiManager.update({ init: () => { throw new AlreadyInitializingError() } })
+  const { cancel } = apiManager.update({
+    init: () => {
+      throw new AlreadyInitializingError()
+    }
+  })
 
   try {
     options = options || {}
@@ -49,30 +51,9 @@ module.exports = ({
       options.config = mergeOptions(options.config, constructorOptions.config)
     }
 
-    options.repo = options.repo || constructorOptions.repo
     options.repoAutoMigrate = options.repoAutoMigrate || constructorOptions.repoAutoMigrate
 
-    const repo = typeof options.repo === 'string' || options.repo == null
-      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate })
-      : options.repo
-
-    let isInitialized = true
-
-    if (repo.closed) {
-      try {
-        await repo.open()
-      } catch (err) {
-        if (err.code === ERR_REPO_NOT_INITIALIZED) {
-          isInitialized = false
-        } else {
-          throw err
-        }
-      }
-    }
-
-    if (!isInitialized && options.allowNew === false) {
-      throw new NotEnabledError('new repo initialization is not enabled')
-    }
+    const isInitialized = await repo.isInitialized()
 
     const { peerId, keychain } = isInitialized
       ? await initExistingRepo(repo, options)
@@ -212,6 +193,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 }
 
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
+  await repo.open()
   let config = await repo.config.get()
 
   if (newConfig || profiles) {

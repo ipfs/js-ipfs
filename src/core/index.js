@@ -16,9 +16,10 @@ const multibase = require('multibase')
 const multicodec = require('multicodec')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const { NotInitializedError } = require('./errors')
+const { NotInitializedError, NotEnabledError } = require('./errors')
 const Components = require('./components')
 const ApiManager = require('./api-manager')
+const createRepo = require('./runtime/repo-nodejs')
 
 const getDefaultOptions = () => ({
   init: true,
@@ -30,7 +31,8 @@ const getDefaultOptions = () => ({
       '/dns4/node0.preload.ipfs.io/https',
       '/dns4/node1.preload.ipfs.io/https'
     ]
-  }
+  },
+  repoAutoMigrate: false
 })
 
 async function create (options) {
@@ -38,26 +40,39 @@ async function create (options) {
 
   // eslint-disable-next-line no-console
   const print = options.silent ? log : console.log
+  const repo = typeof options.repo === 'string' || options.repo == null
+    ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate })
+    : options.repo
 
   const apiManager = new ApiManager()
-
   const { api } = apiManager.update({
-    init: Components.init({ apiManager, print, options }),
+    init: Components.init({
+      apiManager,
+      print,
+      options,
+      repo
+    }),
     dns: Components.dns(),
     isOnline: Components.isOnline({})
   }, async () => { throw new NotInitializedError() }) // eslint-disable-line require-await
 
-  if (!options.init) {
-    return api
+  if (await repo.isInitialized()) {
+    // FIXME: the repo is already initialised so we are only calling init
+    // here for the side effect of it updating the available api operations
+    await api.init()
+  } else if (options.init.allowNew === false) {
+    throw new NotEnabledError('new repo initialization is not enabled')
   }
 
-  await api.init()
-
-  if (!options.start) {
-    return api
+  if (options.init && !(await repo.isInitialized())) {
+    await api.init()
   }
 
-  return api.start()
+  if (options.start) {
+    return api.start()
+  }
+
+  return api
 }
 
 module.exports = {

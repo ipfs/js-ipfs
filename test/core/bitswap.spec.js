@@ -22,6 +22,8 @@ describe('bitswap', function () {
   this.timeout(60 * 1000)
   const df = factory()
 
+  afterEach(() => df.clean())
+
   describe('transfer a block between', () => {
     it('2 peers', async function () {
       const remote = (await df.spawn({ type: 'js' })).api
@@ -33,7 +35,6 @@ describe('bitswap', function () {
       const b = await remote.block.get(block.cid)
 
       expect(b.data).to.eql(block.data)
-      await df.clean()
     })
 
     it('3 peers', async () => {
@@ -57,7 +58,6 @@ describe('bitswap', function () {
         expect(await remote2.block.get(block.cid)).to.eql(block)
         expect(await proc.block.get(block.cid)).to.eql(block)
       }, { concurrency: 3 })
-      await df.clean()
     })
   })
 
@@ -66,6 +66,7 @@ describe('bitswap', function () {
       // TODO make this test more interesting (10Mb file)
       // TODO remove randomness from the test
       const file = Buffer.from(`I love IPFS <3 ${hat()}`)
+
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
       await proc.swarm.connect(remote.peerId.addresses[0])
@@ -73,7 +74,6 @@ describe('bitswap', function () {
       const files = await all(remote.add([{ path: 'awesome.txt', content: file }]))
       const data = await concat(proc.cat(files[0].cid))
       expect(data.slice()).to.eql(file)
-      await df.clean()
     })
   })
 
@@ -85,8 +85,6 @@ describe('bitswap', function () {
       } catch (err) {
         expect(err).to.exist()
         expect(err.code).to.equal('ERR_INVALID_CID')
-      } finally {
-        await df.clean()
       }
     })
   })
