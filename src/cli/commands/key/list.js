@@ -6,7 +6,8 @@ module.exports = {
   describe: 'List all local keys',
 
   async handler (argv) {
-    const keys = await argv.ipfs.api.key.list()
-    keys.forEach((ki) => argv.print(`${ki.id} ${ki.name}`))
+    const { ipfs, print } = argv.ctx
+    const keys = await ipfs.key.list()
+    keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
   }
 }

@@ -6,6 +6,6 @@ module.exports = {
   describe: 'Shut down the ipfs daemon',
 
   handler (argv) {
-    return argv.ipfs.api.shutdown()
+    return argv.ctx.ipfs.shutdown()
   }
 }

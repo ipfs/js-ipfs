@@ -66,28 +66,26 @@ const ipfsPathHelp = 'ipfs uses a repository in the local file system. By defaul
   'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
   'export IPFS_PATH=/path/to/ipfsrepo\n'
 
-async function getAPI (argv) {
-  let endpoint = null
+async function getIpfs (argv) {
   if (!argv.api && !isDaemonOn()) {
-    const api = await IPFS.create({
+    const ipfs = await IPFS.create({
       silent: argv.silent,
       repoAutoMigrate: argv.migrate,
       repo: getRepoPath(),
-      init: false,
+      init: { allowNew: false },
       start: false,
       pass: argv.pass
     })
     return {
-      daemon: false,
-      api,
+      isDaemon: false,
+      ipfs,
       cleanup: async () => {
-        if (api && api._repo && !api._repo.closed) {
-          await api._repo.close()
-        }
+        await ipfs.stop()
       }
     }
   }
 
+  let endpoint = null
   if (!argv.api) {
     const apiPath = path.join(getRepoPath(), 'api')
     endpoint = fs.readFileSync(apiPath).toString()
@@ -97,14 +95,14 @@ async function getAPI (argv) {
   // Required inline to reduce startup time
   const APIctl = require('ipfs-http-client')
   return {
-    daemon: true,
-    api: APIctl(endpoint),
+    isDaemon: true,
+    ipfs: APIctl(endpoint),
     cleanup: async () => { }
   }
 }
 
 module.exports = {
-  getAPI,
+  getIpfs,
   isDaemonOn,
   getRepoPath,
   disablePrinting,

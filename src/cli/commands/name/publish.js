@@ -32,7 +32,8 @@ module.exports = {
   },
 
   async handler (argv) {
-    const result = await argv.ipfs.api.name.publish(argv.ipfsPath, argv)
-    argv.print(`Published to ${result.name}: ${result.value}`)
+    const { ipfs, print } = argv.ctx
+    const result = await ipfs.name.publish(argv.ipfsPath, argv)
+    print(`Published to ${result.name}: ${result.value}`)
   }
 }

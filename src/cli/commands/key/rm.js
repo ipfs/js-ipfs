@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Remove a key',
 
   async handler (argv) {
-    const key = await argv.ipfs.api.key.rm(argv.name)
-    argv.print(`${key.id} ${key.name}`)
+    const { ipfs, print } = argv.ctx
+    const key = await ipfs.key.rm(argv.name)
+    print(`${key.id} ${key.name}`)
   }
 }

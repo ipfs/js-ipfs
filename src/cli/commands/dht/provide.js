@@ -14,7 +14,8 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, key, recursive }) {
+  async handler ({ ctx, key, recursive }) {
+    const { ipfs } = ctx
     await ipfs.dht.provide(key, { recursive })
   }
 }

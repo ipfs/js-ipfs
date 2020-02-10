@@ -15,8 +15,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, human, print }) {
-    const stats = await ipfs.api.repo.stat()
+  async handler ({ ctx, human }) {
+    const { ipfs, print } = ctx
+    const stats = await ipfs.repo.stat()
 
     if (human) {
       stats.numObjects = stats.numObjects.toNumber()

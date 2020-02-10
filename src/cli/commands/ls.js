@@ -36,7 +36,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, key, recursive, headers, cidBase }) {
+  async handler ({ ctx, key, recursive, headers, cidBase }) {
+    const { ipfs, print } = ctx
+
     // replace multiple slashes
     key = key.replace(/\/(\/+)/g, '/')
 
@@ -72,7 +74,7 @@ module.exports = {
       )
     }
 
-    for await (const link of ipfs.api.ls(key, { recursive })) {
+    for await (const link of ipfs.ls(key, { recursive })) {
       const mode = formatMode(link.mode, link.type === 'dir')
       const mtime = formatMtime(link.mtime)
       const cid = cidToString(link.cid, { base: cidBase })

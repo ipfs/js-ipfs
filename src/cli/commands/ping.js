@@ -13,8 +13,10 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, count, peerId }) {
-    for await (const pong of ipfs.api.ping(peerId, { count })) {
+  async handler ({ ctx, count, peerId }) {
+    const { ipfs, print } = ctx
+
+    for await (const pong of ipfs.ping(peerId, { count })) {
       const { success, time, text } = pong
       // Check if it's a pong
       if (success && !text) {

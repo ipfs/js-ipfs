@@ -6,7 +6,7 @@ const cli = require('../../src/cli/parser')
 
 describe('name', () => {
   it('resolve', (done) => {
-    const resolveFake = sinon.fake.resolves('result')
+    const resolveFake = sinon.fake.returns(['result'])
     const printFake = sinon.fake()
     cli
       .onFinishCommand(() => {
@@ -14,7 +14,12 @@ describe('name', () => {
         sinon.assert.calledWith(resolveFake, 'test', { nocache: false, recursive: true })
         done()
       })
-      .parse('name resolve test', { print: printFake, ipfs: { api: { name: { resolve: resolveFake } } } })
+      .parse('name resolve test', {
+        ctx: {
+          print: printFake,
+          ipfs: { name: { resolve: resolveFake } }
+        }
+      })
   })
 
   it('publish', (done) => {
@@ -32,6 +37,11 @@ describe('name', () => {
         }))
         done()
       })
-      .parse('name publish test --silent', { print: printFake, ipfs: { api: { name: { publish: publishFake } } } })
+      .parse('name publish test --silent', {
+        ctx: {
+          print: printFake,
+          ipfs: { name: { publish: publishFake } }
+        }
+      })
   })
 })

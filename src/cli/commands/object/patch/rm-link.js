@@ -16,8 +16,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, root, link, cidBase }) {
-    const cid = await ipfs.api.object.patch.rmLink(root, { name: link }, {
+  async handler ({ ctx, root, link, cidBase }) {
+    const { ipfs, print } = ctx
+    const cid = await ipfs.object.patch.rmLink(root, { name: link }, {
       enc: 'base58'
     })
 

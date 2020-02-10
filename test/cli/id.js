@@ -17,6 +17,6 @@ describe('id', () => {
         done()
       })
       .fail((msg, err) => done(err))
-      .parse('id', { ipfs: { api: { id: fakeId } } })
+      .parse('id', { ctx: { ipfs: { id: fakeId } } })
   })
 })

@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Subscribe to a topic',
 
   async handler (argv) {
-    const handler = msg => argv.print(msg.data.toString())
-    await argv.ipfs.api.pubsub.subscribe(argv.topic, handler)
+    const { ipfs, print } = argv.ctx
+    const handler = msg => print(msg.data.toString())
+    await ipfs.pubsub.subscribe(argv.topic, handler)
   }
 }

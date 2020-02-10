@@ -5,8 +5,9 @@ module.exports = {
 
   describe: 'Find the closest Peer IDs to a given Peer ID by querying the DHT.',
 
-  async handler ({ ipfs, print, peerId }) {
-    for await (const result of ipfs.api.dht.query(peerId)) {
+  async handler ({ ctx, peerId }) {
+    const { ipfs, print } = ctx
+    for await (const result of ipfs.dht.query(peerId)) {
       print(result.id.toString())
     }
   }

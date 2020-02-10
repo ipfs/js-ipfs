@@ -7,8 +7,9 @@ module.exports = {
 
   builder: {},
 
-  async handler ({ ipfs, print, key }) {
-    const block = await ipfs.api.block.get(key)
+  async handler ({ ctx, key }) {
+    const { ipfs, print } = ctx
+    const block = await ipfs.block.get(key)
     if (block) {
       print(block.data, false)
     } else {

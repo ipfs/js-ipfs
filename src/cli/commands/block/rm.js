@@ -20,10 +20,12 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, hash, force, quiet }) {
+  async handler ({ ctx, hash, force, quiet }) {
+    const { ipfs, print } = ctx
+
     let errored = false
 
-    for await (const result of ipfs.api.block.rm(hash, {
+    for await (const result of ipfs.block.rm(hash, {
       force,
       quiet
     })) {

@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Get all peers subscribed to a topic',
 
   async handler (argv) {
-    const peers = await argv.ipfs.api.pubsub.peers(argv.topic)
-    peers.forEach(peer => argv.print(peer))
+    const { ipfs, print } = argv.ctx
+    const peers = await ipfs.pubsub.peers(argv.topic)
+    peers.forEach(peer => print(peer))
   }
 }

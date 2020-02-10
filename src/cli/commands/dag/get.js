@@ -14,7 +14,8 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, cidpath, localResolve }) {
+  async handler ({ ctx, cidpath, localResolve }) {
+    const { ipfs, print } = ctx
     const refParts = cidpath.split('/')
     const cidString = refParts[0]
     const path = refParts.slice(1).join('/')
@@ -27,7 +28,7 @@ module.exports = {
     let result
 
     try {
-      result = await ipfs.api.dag.get(cid, path, options)
+      result = await ipfs.dag.get(cid, path, options)
     } catch (err) {
       return print(`dag get failed: ${err}`)
     }

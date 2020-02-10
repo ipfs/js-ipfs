@@ -14,8 +14,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, key, print, numProviders }) {
-    for await (const prov of ipfs.api.dht.findProvs(key, { numProviders })) {
+  async handler ({ ctx, key, numProviders }) {
+    const { ipfs, print } = ctx
+    for await (const prov of ipfs.dht.findProvs(key, { numProviders })) {
       print(prov.id.toString())
     }
   }

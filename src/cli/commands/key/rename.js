@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Rename a key',
 
   async handler (argv) {
-    const res = await argv.ipfs.api.key.rename(argv.name, argv.newName)
-    argv.print(`renamed to ${res.id} ${res.now}`)
+    const { ipfs, print } = argv.ctx
+    const res = await ipfs.key.rename(argv.name, argv.newName)
+    print(`renamed to ${res.id} ${res.now}`)
   }
 }

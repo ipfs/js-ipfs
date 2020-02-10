@@ -8,12 +8,13 @@ module.exports = {
 
   describe: 'List peers with open connections',
 
-  async handler (argv) {
-    if (!argv.ipfs.daemon) {
+  async handler ({ ctx }) {
+    const { print, ipfs, isDaemon } = ctx
+    if (!isDaemon) {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }
 
-    const result = await argv.ipfs.api.swarm.peers()
+    const result = await ipfs.swarm.peers()
 
     result.forEach((item) => {
       let ma = multiaddr(item.addr.toString())
@@ -21,7 +22,7 @@ module.exports = {
         ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
       }
       const addr = ma.toString()
-      argv.print(addr)
+      print(addr)
     })
   }
 }

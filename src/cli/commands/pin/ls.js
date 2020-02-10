@@ -37,7 +37,8 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, ipfsPath, type, quiet, cidBase, stream }) {
+  async handler ({ ctx, ipfsPath, type, quiet, cidBase, stream }) {
+    const { ipfs, print } = ctx
     const paths = ipfsPath
 
     const printPin = res => {
@@ -49,11 +50,11 @@ module.exports = {
     }
 
     if (!stream) {
-      const pins = await all(ipfs.api.pin.ls(paths, { type, stream: false }))
+      const pins = await all(ipfs.pin.ls(paths, { type, stream: false }))
       return pins.forEach(printPin)
     }
 
-    for await (const res of ipfs.api.pin.ls(paths, { type })) {
+    for await (const res of ipfs.pin.ls(paths, { type })) {
       printPin(res)
     }
   }

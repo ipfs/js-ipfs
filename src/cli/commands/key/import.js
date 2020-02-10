@@ -23,7 +23,8 @@ module.exports = {
   },
 
   async handler (argv) {
-    const key = await argv.ipfs.api.key.import(argv.name, argv.input, argv.passin)
-    argv.print(`imported ${key.id} ${key.name}`)
+    const { ipfs, print } = argv.ctx
+    const key = await ipfs.key.import(argv.name, argv.input, argv.passin)
+    print(`imported ${key.id} ${key.name}`)
   }
 }

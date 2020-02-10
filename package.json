@@ -100,7 +100,7 @@
     "ipfs-block-service": "~0.16.0",
     "ipfs-http-client": "^42.0.0",
     "ipfs-http-response": "^0.5.0",
-    "ipfs-mfs": "^1.0.0",
+    "ipfs-mfs": "ipfs/js-ipfs-mfs#fix/improve-cli",
     "ipfs-multipart": "^0.3.0",
     "ipfs-repo": "^0.30.0",
     "ipfs-unixfs": "^0.3.0",

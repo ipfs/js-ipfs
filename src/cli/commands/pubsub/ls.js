@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Get your list of subscriptions',
 
   async handler (argv) {
-    const subscriptions = await argv.ipfs.api.pubsub.ls()
-    subscriptions.forEach(sub => argv.print(sub))
+    const { ipfs, print } = argv.ctx
+    const subscriptions = await ipfs.pubsub.ls()
+    subscriptions.forEach(sub => print(sub))
   }
 }

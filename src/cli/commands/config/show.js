@@ -9,8 +9,9 @@ module.exports = {
 
   describe: 'Outputs the content of the config file',
 
-  async handler ({ ipfs, print }) {
-    const config = await ipfs.api.config.get()
+  async handler ({ ctx }) {
+    const { ipfs, print } = ctx
+    const config = await ipfs.config.get()
     print(JSON.stringify(config, null, 4))
   }
 }

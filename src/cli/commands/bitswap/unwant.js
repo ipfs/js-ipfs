@@ -20,8 +20,9 @@ module.exports = {
       choices: multibase.names
     }
   },
-  async handler ({ ipfs, print, key, cidBase }) {
-    await ipfs.api.bitswap.unwant(key)
+  async handler ({ ctx, key, cidBase }) {
+    const { ipfs, print } = ctx
+    await ipfs.bitswap.unwant(key)
     print(`Key ${cidToString(key, { base: cidBase, upgrade: false })} removed from wantlist`)
   }
 }

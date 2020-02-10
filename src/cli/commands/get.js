@@ -19,7 +19,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, ipfsPath, output }) {
+  async handler ({ ctx, ipfsPath, output }) {
+    const { ipfs, print } = ctx
+
     print(`Saving file(s) ${ipfsPath}`)
 
     for await (const file of ipfs.get(ipfsPath)) {

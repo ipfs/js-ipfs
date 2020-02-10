@@ -12,8 +12,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs }) {
-    const id = await ipfs.api.id()
+  async handler ({ ctx }) {
+    const { ipfs } = ctx
+    const id = await ipfs.id()
     return JSON.stringify(id, '', 2)
   }
 }

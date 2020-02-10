@@ -22,8 +22,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, name, passout, output }) {
-    const pem = await ipfs.api.key.export(name, passout)
+  async handler ({ ctx, name, passout, output }) {
+    const { ipfs } = ctx
+    const pem = await ipfs.key.export(name, passout)
     if (output === 'stdout') {
       process.stdout.write(pem)
     } else {

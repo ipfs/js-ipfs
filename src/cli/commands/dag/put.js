@@ -80,7 +80,8 @@ module.exports = {
     }
   },
 
-  async handler ({ data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, ipfs, print }) {
+  async handler ({ ctx, data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash }) {
+    const { ipfs, print, getStdin } = ctx
     if (inputEncoding === 'cbor') {
       format = 'dag-cbor'
     } else if (inputEncoding === 'protobuf') {
@@ -97,7 +98,7 @@ module.exports = {
 
     if (!source) {
       // pipe from stdin
-      source = await concat(process.stdin)
+      source = (await concat(getStdin())).slice()
     } else {
       source = Buffer.from(source)
     }
@@ -110,7 +111,7 @@ module.exports = {
       source = objectSlashToCID(source)
     }
 
-    const cid = await ipfs.api.dag.put(source, {
+    const cid = await ipfs.dag.put(source, {
       format,
       hashAlg,
       version: cidVersion,

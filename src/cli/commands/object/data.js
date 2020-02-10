@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Outputs the raw bytes in an IPFS object',
 
   async handler (argv) {
-    const data = await argv.ipfs.api.object.data(argv.key, { enc: 'base58' })
-    argv.print(data, false)
+    const { ipfs, print } = argv.ctx
+    const data = await ipfs.object.data(argv.key, { enc: 'base58' })
+    print(data, false)
   }
 }

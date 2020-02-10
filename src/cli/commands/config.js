@@ -20,10 +20,12 @@ module.exports = {
       })
   },
 
-  async handler ({ value, bool, json, key, ipfs, print }) {
+  async handler ({ ctx, value, bool, json, key }) {
+    const { ipfs, print } = ctx
+
     if (!value) {
       // Get the value of a given key
-      value = await ipfs.api.config.get(key)
+      value = await ipfs.config.get(key)
 
       if (typeof value === 'object') {
         print(JSON.stringify(value, null, 2))
@@ -43,7 +45,7 @@ module.exports = {
         }
       }
 
-      await ipfs.api.config.set(key, value)
+      await ipfs.config.set(key, value)
     }
   }
 }

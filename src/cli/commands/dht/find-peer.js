@@ -5,8 +5,9 @@ module.exports = {
 
   describe: 'Find the multiaddresses associated with a Peer ID.',
 
-  async handler ({ ipfs, print, peerId }) {
-    const peer = await ipfs.api.dht.findPeer(peerId)
+  async handler ({ ctx, peerId }) {
+    const { ipfs, print } = ctx
+    const peer = await ipfs.dht.findPeer(peerId)
     peer.addrs.forEach(addr => print(`${addr}`))
   }
 }

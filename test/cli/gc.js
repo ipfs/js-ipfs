@@ -7,7 +7,7 @@ const cli = require('../../src/cli/parser')
 
 describe('gc', () => {
   it('gc with no flags prints errors and outputs hashes', (done) => {
-    const methodFake = sinon.fake.resolves([
+    const methodFake = sinon.fake.returns([
       { cid: new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u') },
       { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
       { err: new Error('some err') }
@@ -22,13 +22,15 @@ describe('gc', () => {
         done()
       })
       .parse('repo gc', {
-        print: printFake,
-        ipfs: { api: { repo: { gc: methodFake } } }
+        ctx: {
+          print: printFake,
+          ipfs: { repo: { gc: methodFake } }
+        }
       })
   })
 
   it('gc with --quiet prints hashes only', (done) => {
-    const methodFake = sinon.fake.resolves([
+    const methodFake = sinon.fake.returns([
       { cid: new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u') },
       { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
       { err: new Error('some err') }
@@ -43,13 +45,15 @@ describe('gc', () => {
         done()
       })
       .parse('repo gc --quiet', {
-        print: printFake,
-        ipfs: { api: { repo: { gc: methodFake } } }
+        ctx: {
+          print: printFake,
+          ipfs: { repo: { gc: methodFake } }
+        }
       })
   })
 
   it('gc with --stream-errors=false does not print errors', (done) => {
-    const methodFake = sinon.fake.resolves([
+    const methodFake = sinon.fake.returns([
       { cid: new CID('QmVc6zuAneKJzicnJpfrqCH9gSy6bz54JhcypfJYhGUFQu') },
       { err: new Error('some err') }
     ])
@@ -62,8 +66,10 @@ describe('gc', () => {
         done()
       })
       .parse('repo gc --stream-errors=false', {
-        print: printFake,
-        ipfs: { api: { repo: { gc: methodFake } } }
+        ctx: {
+          print: printFake,
+          ipfs: { repo: { gc: methodFake } }
+        }
       })
   })
 })

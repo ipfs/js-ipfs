@@ -11,7 +11,8 @@ module.exports = {
   },
 
   async handler (argv) {
-    const res = await argv.ipfs.api.swarm.addrs()
+    const { ipfs, print } = argv.ctx
+    const res = await ipfs.swarm.addrs()
 
     const output = res.map((peer) => {
       const count = peer.multiaddrs.size
@@ -33,6 +34,6 @@ module.exports = {
     })
 
     // Return the output for printing
-    argv.print(output.join('\n'))
+    print(output.join('\n'))
   }
 }

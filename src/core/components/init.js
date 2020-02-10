@@ -71,6 +71,8 @@ module.exports = ({
     }
 
     if (!isInitialized && options.allowNew === false) {
+      console.log('TCL: init -> options.allowNew', options.allowNew)
+      console.log('TCL: init -> isInitialized', isInitialized)
       throw new NotEnabledError('new repo initialization is not enabled')
     }
 

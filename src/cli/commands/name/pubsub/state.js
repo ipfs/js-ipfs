@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Query the state of IPNS pubsub.',
 
   async handler (argv) {
-    const result = await argv.ipfs.api.name.pubsub.state()
-    argv.print(result.enabled ? 'enabled' : 'disabled')
+    const { ipfs, print } = argv.ctx
+    const result = await ipfs.name.pubsub.state()
+    print(result.enabled ? 'enabled' : 'disabled')
   }
 }

@@ -44,6 +44,7 @@ module.exports = {
   },
 
   async handler (argv) {
+    const { print, repoPath } = argv.ctx
     let config = {}
     // read and parse config file
     if (argv.defaultConfig) {
@@ -56,14 +57,14 @@ module.exports = {
       }
     }
 
-    argv.print(`initializing ipfs node at ${argv.repoPath}`)
+    print(`initializing ipfs node at ${repoPath}`)
 
     // Required inline to reduce startup time
     const IPFS = require('../../core')
     const Repo = require('ipfs-repo')
 
-    const node = new IPFS({
-      repo: new Repo(argv.repoPath),
+    const node = await IPFS.create({
+      repo: new Repo(repoPath),
       init: false,
       start: false,
       config
@@ -76,7 +77,7 @@ module.exports = {
         emptyRepo: argv.emptyRepo,
         profiles: argv.profile,
         pass: argv.pass,
-        log: argv.print
+        log: print
       })
     } catch (err) {
       if (err.code === 'EACCES') {

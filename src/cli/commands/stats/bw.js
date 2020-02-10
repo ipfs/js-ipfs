@@ -24,8 +24,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, peer, proto, poll, interval }) {
-    for await (const chunk of ipfs.api.stats.bw({ peer, proto, poll, interval })) {
+  async handler ({ ctx, peer, proto, poll, interval }) {
+    const { ipfs, print } = ctx
+    for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval })) {
       print(`bandwidth status
   total in: ${chunk.totalIn}B
   total out: ${chunk.totalOut}B

@@ -13,13 +13,14 @@ module.exports = {
     }
   },
 
-  async handler ({ ref, ipfs, print }) {
+  async handler ({ ctx, ref }) {
+    const { ipfs, print } = ctx
     const options = {}
 
     try {
       let lastCid
 
-      for await (const res of ipfs.api.dag.resolve(ref, options)) {
+      for await (const res of ipfs.dag.resolve(ref, options)) {
         if (CID.isCID(res.value)) {
           lastCid = res.value
         }

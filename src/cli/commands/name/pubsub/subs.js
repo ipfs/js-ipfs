@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Show current name subscriptions.',
 
   async handler (argv) {
-    const result = await argv.ipfs.api.name.pubsub.subs()
-    result.forEach(s => argv.print(s))
+    const { ipfs, print } = argv.ctx
+    const result = await ipfs.name.pubsub.subs()
+    result.forEach(s => print(s))
   }
 }

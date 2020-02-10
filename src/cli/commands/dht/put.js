@@ -5,7 +5,8 @@ module.exports = {
 
   describe: 'Write a key/value pair to the routing system.',
 
-  async handler ({ ipfs, key, value }) {
-    await ipfs.api.dht.put(key, value)
+  async handler ({ ctx, key, value }) {
+    const { ipfs } = ctx
+    await ipfs.dht.put(key, value)
   }
 }

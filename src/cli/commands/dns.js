@@ -17,8 +17,10 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, domain, recursive, format }) {
-    const path = await ipfs.api.dns(domain, { recursive, format })
+  async handler ({ ctx, domain, recursive, format }) {
+    const { ipfs, print } = ctx
+
+    const path = await ipfs.dns(domain, { recursive, format })
     print(path)
   }
 }

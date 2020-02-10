@@ -21,8 +21,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, peer, cidBase }) {
-    const list = await ipfs.api.bitswap.wantlist(peer)
+  async handler ({ ctx, peer, cidBase }) {
+    const { ipfs, print } = ctx
+    const list = await ipfs.bitswap.wantlist(peer)
     list.forEach(cid => print(cidToString(cid, { base: cidBase, upgrade: false })))
   }
 }

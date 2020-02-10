@@ -20,8 +20,10 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, name, recursive, cidBase }) {
-    const res = await ipfs.api.resolve(name, { recursive, cidBase })
+  async handler ({ ctx, name, recursive, cidBase }) {
+    const { ipfs } = ctx
+
+    const res = await ipfs.resolve(name, { recursive, cidBase })
     return res
   }
 }

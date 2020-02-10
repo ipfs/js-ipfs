@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Shows IPFS repo version information',
 
   async handler (argv) {
-    const version = await argv.ipfs.api.repo.version()
-    argv.print(version)
+    const { ipfs, print } = argv.ctx
+    const version = await ipfs.repo.version()
+    print(version)
   }
 }

@@ -32,8 +32,8 @@ module.exports = {
   },
 
   async handler (argv) {
-    const { print, ipfs } = argv
-    const data = await ipfs.api.version()
+    const { print, ipfs } = argv.ctx
+    const data = await ipfs.version()
 
     const withCommit = argv.all || argv.commit
     const parsedVersion = `${data.version}${withCommit ? `-${data.commit}` : ''}`

@@ -26,7 +26,8 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, nocache, recursive, name, print, stream }) {
+  async handler ({ ctx, nocache, recursive, name, stream }) {
+    const { ipfs, print } = ctx
     let bestValue
 
     for await (const value of ipfs.name.resolve(name, { nocache, recursive })) {

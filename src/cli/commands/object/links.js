@@ -16,8 +16,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, key, cidBase }) {
-    const links = await ipfs.api.object.links(key, { enc: 'base58' })
+  async handler ({ ctx, key, cidBase }) {
+    const { ipfs, print } = ctx
+    const links = await ipfs.object.links(key, { enc: 'base58' })
 
     links.forEach((link) => {
       const cidStr = cidToString(link.Hash, { base: cidBase, upgrade: false })

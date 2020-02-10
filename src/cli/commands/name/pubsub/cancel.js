@@ -6,7 +6,8 @@ module.exports = {
   describe: 'Cancel a name subscription.',
 
   async handler (argv) {
-    const result = await argv.ipfs.api.name.pubsub.cancel(argv.name)
-    argv.print(result.canceled ? 'canceled' : 'no subscription')
+    const { ipfs, print } = argv.ctx
+    const result = await ipfs.name.pubsub.cancel(argv.name)
+    print(result.canceled ? 'canceled' : 'no subscription')
   }
 }

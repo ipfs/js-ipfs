@@ -20,8 +20,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, key, dataEncoding, cidBase }) {
-    const node = await ipfs.api.object.get(key, { enc: 'base58' })
+  async handler ({ ctx, key, dataEncoding, cidBase }) {
+    const { ipfs, print } = ctx
+    const node = await ipfs.object.get(key, { enc: 'base58' })
     let data = node.Data || ''
 
     if (Buffer.isBuffer(data)) {

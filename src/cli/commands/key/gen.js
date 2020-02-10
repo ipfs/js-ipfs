@@ -20,11 +20,12 @@ module.exports = {
   },
 
   async handler (argv) {
+    const { ipfs, print } = argv.ctx
     const opts = {
       type: argv.type,
       size: argv.size
     }
-    const key = await argv.ipfs.api.key.gen(argv.name, opts)
-    argv.print(`generated ${key.id} ${key.name}`)
+    const key = await ipfs.key.gen(argv.name, opts)
+    print(`generated ${key.id} ${key.name}`)
   }
 }

@@ -19,18 +19,19 @@ module.exports = {
   },
 
   async handler (argv) {
+    const { ipfs, print, getStdin } = argv.ctx
     let data
 
     if (argv.data) {
       data = fs.readFileSync(argv.data)
     } else {
-      data = await concat(process.stdin)
+      data = (await concat(getStdin())).slice()
     }
 
-    const cid = await argv.ipfs.api.object.patch.appendData(argv.root, data, {
+    const cid = await ipfs.object.patch.appendData(argv.root, data, {
       enc: 'base58'
     })
 
-    argv.print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
+    print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
   }
 }

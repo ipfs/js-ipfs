@@ -21,8 +21,9 @@ module.exports = {
     }
   },
 
-  async handler ({ ipfs, print, cidBase, human }) {
-    const stats = await ipfs.api.bitswap.stat()
+  async handler ({ ctx, cidBase, human }) {
+    const { ipfs, print } = ctx
+    const stats = await ipfs.bitswap.stat()
 
     if (human) {
       stats.blocksReceived = stats.blocksReceived.toNumber()

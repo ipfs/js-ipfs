@@ -171,7 +171,7 @@ module.exports = {
   },
 
   async handler (argv) {
-    const ipfs = argv.ipfs
+    const { ipfs, print, isDaemon, getStdin } = argv.ctx
     const options = {
       trickle: argv.trickle,
       shardSplitThreshold: argv.enableShardingExperiment
@@ -190,12 +190,12 @@ module.exports = {
       blockWriteConcurrency: argv.blockWriteConcurrency
     }
 
-    if (options.enableShardingExperiment && argv.api.daemon) {
+    if (options.enableShardingExperiment && isDaemon) {
       throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
 
     let bar
-    let log = argv.print
+    let log = print
 
     if (argv.quieter || argv.quiet || argv.silent) {
       argv.progress = false
@@ -235,7 +235,7 @@ module.exports = {
         mode: argv.mode,
         mtime
       })
-      : argv.getStdin() // Pipe directly to ipfs.add
+      : getStdin() // Pipe directly to ipfs.add
 
     let finalCid
 
