@@ -1,6 +1,6 @@
 {
   "name": "ipfs-utils",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Package to aggregate shared logic and dependencies for the IPFS ecosystem",
   "main": "src/index.js",
   "author": "Hugo Dias <hugomrdias@gmail.com>",
