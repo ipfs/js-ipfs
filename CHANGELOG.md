@@ -1,3 +1,19 @@
+<a name="0.41.0-rc.1"></a>
+# [0.41.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.0...v0.41.0-rc.1) (2020-02-10)
+
+
+### Bug Fixes
+
+* block put with CID as string ([#2760](https://github.com/ipfs/js-ipfs/issues/2760)) ([cc9a933](https://github.com/ipfs/js-ipfs/commit/cc9a933))
+* report correct swarm addresses after listening on new addrs ([#2749](https://github.com/ipfs/js-ipfs/issues/2749)) ([41a7e55](https://github.com/ipfs/js-ipfs/commit/41a7e55)), closes [#2508](https://github.com/ipfs/js-ipfs/issues/2508)
+
+
+### Features
+
+* use it-tar ([#2758](https://github.com/ipfs/js-ipfs/issues/2758)) ([eb33a63](https://github.com/ipfs/js-ipfs/commit/eb33a63))
+
+
+
 <a name="0.41.0-rc.0"></a>
 # [0.41.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0...v0.41.0-rc.0) (2020-02-03)
 
