@@ -156,7 +156,7 @@ Prints out objects like:
 
 Now [ipfs.io/ipfs/Qm...WW](https://ipfs.io/ipfs/QmNz1UBzpdd4HfZ3qir3aPiRdX5a93XwTuDNyXRc6PKhWW) returns the "ABC" string.
 
-**Importing files from the file system:**
+###### Importing files from the file system
 
 Both js-ipfs and js-ipfs-http-client export a utility to make importing files from the file system easier (Note: it not available in the browser).
 
@@ -185,7 +185,7 @@ for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
 */
 ```
 
-**Importing a file from a URL:**
+###### Importing a file from a URL
 
 Both js-ipfs and js-ipfs-http-client export a utility to make importing a file from a URL easier.
 
@@ -208,7 +208,7 @@ for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.sv
 */
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/add.js) can be found in the tests for this API.
 
 #### `cat`
 
@@ -247,7 +247,7 @@ for await (const chunk of ipfs.cat(ipfsPath)) {
 console.log(Buffer.concat(chunks).toString())
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/cat.js) can be found in the tests for this API.
 
 #### `get`
 
@@ -303,7 +303,7 @@ for await (const file of ipfs.get(cid)) {
 }
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/get.js) can be found in the tests for this API.
 
 #### `ls`
 
@@ -353,7 +353,7 @@ for await (const file of ipfs.ls(cid)) {
 }
 ```
 
-A great source of [examples][] can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/ls.js) can be found in the tests for this API.
 
 ---
 
@@ -769,7 +769,6 @@ for await (const file of ipfs.files.ls('/screenshots')) {
 // 2018-01-22T18:08:49.184Z.png
 ```
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/files-regular
 [b]: https://www.npmjs.com/package/buffer
 [file]: https://developer.mozilla.org/en-US/docs/Web/API/File
 [cid]: https://www.npmjs.com/package/cids
