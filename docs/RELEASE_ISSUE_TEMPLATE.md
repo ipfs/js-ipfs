@@ -32,7 +32,6 @@
       - [ ] ~~[ipfs-desktop](https://github.com/ipfs-shipyard/ipfs-desktop)~~ (Does not depend on `js-ipfs` or `js-ipfs-http-client`)
       - [ ] [ipfs-companion](https://github.com/ipfs-shipyard/ipfs-companion)
       - [ ] [npm-on-ipfs](https://github.com/ipfs-shipyard/npm-on-ipfs)
-      - [ ] [ipfs-pubsub-room](https://github.com/ipfs-shipyard/ipfs-pubsub-room)
       - [ ] [peer-base](https://github.com/peer-base/peer-base)
       - [ ] [service-worker-gateway](https://github.com/ipfs-shipyard/service-worker-gateway)
     - [ ] Third party application testing
