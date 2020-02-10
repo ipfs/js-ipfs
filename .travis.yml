@@ -43,7 +43,6 @@ jobs:
   allow_failures:
     - name: external - ipfs-companion
     - name: external - npm-on-ipfs
-    - name: external - ipfs-pubsub-room
     - name: external - peer-base
     - name: external - service-worker-gateway
     - name: external - orbit-db
@@ -127,11 +126,6 @@ jobs:
       name: external - npm-on-ipfs
       script:
         - npm run test:external -- npm-on-ipfs https://github.com/ipfs-shipyard/npm-on-ipfs.git
-
-    - stage: test
-      name: external - ipfs-pubsub-room
-      script:
-        - npm run test:external -- ipfs-pubsub-room https://github.com/ipfs-shipyard/ipfs-pubsub-room.git
 
     - stage: test
       name: external - peer-base
