@@ -3,7 +3,7 @@
 
 const multiaddr = require('multiaddr')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 const ipfsClient = require('../src/index.js')
 
 describe('ipfs-http-client constructor tests', () => {

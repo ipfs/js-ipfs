@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 describe('.repo', function () {
   this.timeout(50 * 1000) // slow CI

@@ -8,7 +8,7 @@ const loadFixture = require('aegir/fixtures')
 const all = require('it-all')
 const concat = require('it-concat')
 
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 describe('.get (specific go-ipfs features)', function () {
   this.timeout(60 * 1000)

@@ -6,7 +6,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const CID = require('cids')
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 let ipfs
 

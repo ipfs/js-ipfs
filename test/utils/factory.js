@@ -1,15 +1,24 @@
 'use strict'
-const { createFactory } = require('ipfsd-ctl')
-const { findBin } = require('ipfsd-ctl/src/utils')
 
-const factory = createFactory({
+const { createFactory } = require('ipfsd-ctl')
+const merge = require('merge-options')
+const { isNode } = require('ipfs-utils/src/env')
+
+const commonOptions = {
   test: 'true',
   type: 'go',
-  ipfsBin: findBin('go'),
-  ipfsHttpModule: {
-    path: require.resolve('../../src'),
-    ref: require('../../src')
+  ipfsHttpModule: require('../../src')
+}
+
+const commonOverrides = {
+  go: {
+    ipfsBin: isNode ? require('go-ipfs-dep').path() : undefined
   }
-})
+}
+
+const factory = (options = {}, overrides = {}) => createFactory(
+  merge(commonOptions, options),
+  merge(commonOverrides, overrides)
+)
 
 module.exports = factory

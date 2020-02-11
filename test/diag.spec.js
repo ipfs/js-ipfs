@@ -3,7 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const platform = require('browser-process-platform')
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 describe('.diag', function () {
   this.timeout(50 * 1000)

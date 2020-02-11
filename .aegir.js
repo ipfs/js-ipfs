@@ -2,7 +2,14 @@
 
 const createServer = require('ipfsd-ctl').createServer
 const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
-const server = createServer()
+const server = createServer({
+  host: '127.0.0.1',
+  port: 43134
+}, {
+  type: 'go',
+  ipfsHttpModule: require('./'),
+  ipfsBin: require('go-ipfs-dep').path()
+})
 const echoServer = EchoServer.createServer()
 
 module.exports = {

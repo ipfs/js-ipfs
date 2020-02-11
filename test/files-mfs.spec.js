@@ -9,7 +9,7 @@ const all = require('it-all')
 const pipe = require('it-pipe')
 const { TimeoutError } = require('ky-universal')
 
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 const testfile = loadFixture('test/fixtures/testfile.txt')
 

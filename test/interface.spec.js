@@ -2,27 +2,13 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const merge = require('merge-options')
-const { createFactory } = require('ipfsd-ctl')
-const { findBin } = require('ipfsd-ctl/src/utils')
+const factory = require('./utils/factory')
 const isWindows = process.platform && process.platform === 'win32'
 
 /** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
 
 describe('interface-ipfs-core tests', () => {
-  /** @type ControllerOptions */
-  const commonOptions = {
-    test: true,
-    ipfsHttpModule: {
-      path: require.resolve('../src'),
-      ref: require('../src')
-    },
-    ipfsOptions: {
-      pass: 'ipfs-is-awesome-software'
-    },
-    ipfsBin: findBin('go')
-  }
-  const commonFactory = createFactory(commonOptions)
+  const commonFactory = factory()
 
   tests.root(commonFactory, {
     skip: [
@@ -320,13 +306,13 @@ describe('interface-ipfs-core tests', () => {
 
   tests.miscellaneous(commonFactory)
 
-  tests.name(createFactory(merge(commonOptions,
+  tests.name(factory(
     {
       ipfsOptions: {
         offline: true
       }
     }
-  )), {
+  ), {
     skip: [
       {
         name: 'should resolve a record from peerid as cidv1 in base32',
@@ -335,7 +321,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.namePubsub(createFactory(merge(commonOptions,
+  tests.namePubsub(factory(
     {
       ipfsOptions: {
         EXPERIMENTAL: {
@@ -343,7 +329,7 @@ describe('interface-ipfs-core tests', () => {
         }
       }
     }
-  )), {
+  ), {
     skip: [
       // name.pubsub.cancel
       {
@@ -371,7 +357,7 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.pubsub(createFactory(commonOptions, {
+  tests.pubsub(factory({}, {
     go: {
       args: ['--enable-pubsub-experiment']
     }

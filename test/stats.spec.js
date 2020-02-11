@@ -3,7 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
-const f = require('./utils/factory')
+const f = require('./utils/factory')()
 
 describe('stats', function () {
   this.timeout(50 * 1000) // slow CI
