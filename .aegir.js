@@ -6,7 +6,6 @@ const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
 const webpack = require('webpack')
-const os = require('os')
 
 const preloadNode = MockPreloadNode.createNode()
 const echoServer = EchoServer.createServer()
@@ -69,14 +68,8 @@ module.exports = {
           port: 43134
         }, {
           type: 'js',
-          ipfsModule: {
-            path: __dirname,
-            ref: require(__dirname)
-          },
-          ipfsHttpModule: {
-            path: require.resolve('ipfs-http-client'),
-            ref: require('ipfs-http-client')
-          },
+          ipfsModule: require(__dirname),
+          ipfsHttpModule: require('ipfs-http-client'),
           ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
           ipfsOptions: {
             config: {
@@ -89,7 +82,7 @@ module.exports = {
           }
         }, {
           go: {
-            ipfsBin: require.resolve(`go-ipfs-dep/go-ipfs/ipfs${os.platform() === 'win32' ? '.exe' : ''}`)
+            ipfsBin: require('go-ipfs-dep').path()
           }
         }).start()
       },
