@@ -1,8 +1,10 @@
 # Bundle js-ipfs with Browserify!
 
-> In this example, you will find a boilerplate you can use to guide yourself into bundling js-ipfs with browserify, so that you can use it in your own web app!
+In this example, you will find a boilerplate you can use to guide yourself into bundling js-ipfs with [browserify](http://browserify.org/), so that you can use it in your own web app!
 
 ## Run this example
+
+First install dependencies in the project root directory with `npm install`, then build the browser bundle with `npm run build`. Then in this directory run:
 
 ```bash
 > npm install
