@@ -118,6 +118,11 @@ jobs:
         - npm run test:interop:electron-renderer -- --bail --timeout 10000
 
     - stage: test
+      name: external - ipfs-webui
+      script:
+        - E2E_IPFSD_TYPE=js npm run test:external -- ipfs-webui https://github.com/ipfs-shipyard/ipfs-webui.git
+
+    - stage: test
       name: external - ipfs-companion
       script:
         - npm run test:external -- ipfs-companion https://github.com/ipfs-shipyard/ipfs-companion.git
