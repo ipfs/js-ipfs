@@ -32,6 +32,7 @@ const libp2pBundle = (opts) => {
   const bootstrapList = opts.config.Bootstrap
 
   // Build and return our libp2p node
+  // n.b. for full configuration options, see https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md
   return new Libp2p({
     peerInfo,
     peerBook,
@@ -91,6 +92,17 @@ const libp2pBundle = (opts) => {
       pubsub: {
         enabled: true
       }
+    },
+    metrics: {
+      enabled: true,
+      computeThrottleMaxQueueSize: 1000,  // How many messages a stat will queue before processing
+      computeThrottleTimeout: 2000,       // Time in milliseconds a stat will wait, after the last item was added, before processing
+      movingAverageIntervals: [           // The moving averages that will be computed
+        60 * 1000, // 1 minute
+        5 * 60 * 1000, // 5 minutes
+        15 * 60 * 1000 // 15 minutes
+      ],
+      maxOldPeersRetention: 50            // How many disconnected peers we will retain stats for
     }
   })
 }
