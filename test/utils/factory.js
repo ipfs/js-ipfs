@@ -6,14 +6,8 @@ const { isNode, isBrowser } = require('ipfs-utils/src/env')
 const commonOptions = {
   test: true,
   type: 'proc',
-  ipfsHttpModule: {
-    path: require.resolve('ipfs-http-client'),
-    ref: require('ipfs-http-client')
-  },
-  ipfsModule: {
-    path: require.resolve('../../src'),
-    ref: require('../../src')
-  },
+  ipfsHttpModule: require('ipfs-http-client'),
+  ipfsModule: require('../../src'),
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
     libp2p: {
