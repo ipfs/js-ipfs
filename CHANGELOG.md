@@ -1,3 +1,88 @@
+<a name="0.41.0"></a>
+# [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
+
+
+### Bug Fixes
+
+* await on things that need awaiting on ([#2773](https://github.com/ipfs/js-ipfs/issues/2773)) ([b94fe54](https://github.com/ipfs/js-ipfs/commit/b94fe54))
+
+
+
+<a name="0.41.0-rc.2"></a>
+# [0.41.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.1...v0.41.0-rc.2) (2020-02-11)
+
+
+
+<a name="0.41.0-rc.1"></a>
+# [0.41.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.0...v0.41.0-rc.1) (2020-02-10)
+
+
+### Bug Fixes
+
+* block put with CID as string ([#2760](https://github.com/ipfs/js-ipfs/issues/2760)) ([cc9a933](https://github.com/ipfs/js-ipfs/commit/cc9a933))
+* report correct swarm addresses after listening on new addrs ([#2749](https://github.com/ipfs/js-ipfs/issues/2749)) ([41a7e55](https://github.com/ipfs/js-ipfs/commit/41a7e55)), closes [#2508](https://github.com/ipfs/js-ipfs/issues/2508)
+
+
+### Features
+
+* use it-tar ([#2758](https://github.com/ipfs/js-ipfs/issues/2758)) ([eb33a63](https://github.com/ipfs/js-ipfs/commit/eb33a63))
+
+
+
+<a name="0.41.0-rc.0"></a>
+# [0.41.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0...v0.41.0-rc.0) (2020-02-03)
+
+
+### Bug Fixes
+
+* bad merge ([714e540](https://github.com/ipfs/js-ipfs/commit/714e540))
+* correct redirect when it loads webui ([#2697](https://github.com/ipfs/js-ipfs/issues/2697)) ([#2698](https://github.com/ipfs/js-ipfs/issues/2698)) ([3516bb8](https://github.com/ipfs/js-ipfs/commit/3516bb8))
+* ipfs-repo version ([f08758e](https://github.com/ipfs/js-ipfs/commit/f08758e))
+* limit SW registration to content root ([#2682](https://github.com/ipfs/js-ipfs/issues/2682)) ([feba661](https://github.com/ipfs/js-ipfs/commit/feba661)), closes [/github.com/ipfs/go-ipfs/issues/4025#issuecomment-342250616](https://github.com//github.com/ipfs/go-ipfs/issues/4025/issues/issuecomment-342250616)
+* repo gc error key name ([#2618](https://github.com/ipfs/js-ipfs/issues/2618)) ([5a1d266](https://github.com/ipfs/js-ipfs/commit/5a1d266)), closes [/docs.ipfs.io/reference/api/http/#api-v0](https://github.com//docs.ipfs.io/reference/api/http//issues/api-v0)
+* support legacy links in cbor data ([#2631](https://github.com/ipfs/js-ipfs/issues/2631)) ([f98023b](https://github.com/ipfs/js-ipfs/commit/f98023b))
+
+
+### Code Refactoring
+
+* return peer IDs as strings not CIDs ([#2729](https://github.com/ipfs/js-ipfs/issues/2729)) ([16d540c](https://github.com/ipfs/js-ipfs/commit/16d540c))
+
+
+### Features
+
+* add --hidden flag to cli add command ([#2649](https://github.com/ipfs/js-ipfs/issues/2649)) ([ed886f4](https://github.com/ipfs/js-ipfs/commit/ed886f4))
+* add alias for `ipfs repo stat --human`. ([#2609](https://github.com/ipfs/js-ipfs/issues/2609)) ([f81086c](https://github.com/ipfs/js-ipfs/commit/f81086c))
+* add bitswap stat human option in CLI ([#2619](https://github.com/ipfs/js-ipfs/issues/2619)) ([6a2ea52](https://github.com/ipfs/js-ipfs/commit/6a2ea52))
+* add human flag to repo stat cli command ([#2630](https://github.com/ipfs/js-ipfs/issues/2630)) ([39bc5b4](https://github.com/ipfs/js-ipfs/commit/39bc5b4))
+* pass libp2pOptions to the bundle function ([#2591](https://github.com/ipfs/js-ipfs/issues/2591)) ([e8e9b91](https://github.com/ipfs/js-ipfs/commit/e8e9b91))
+* return CID of flushed path from ipfs.files.flush ([#2715](https://github.com/ipfs/js-ipfs/issues/2715)) ([5db7c29](https://github.com/ipfs/js-ipfs/commit/5db7c29))
+* support -X special permissions arg to files.chmod ([#2719](https://github.com/ipfs/js-ipfs/issues/2719)) ([d6ece05](https://github.com/ipfs/js-ipfs/commit/d6ece05))
+* support UnixFSv1.5 metadata ([#2621](https://github.com/ipfs/js-ipfs/issues/2621)) ([acbda68](https://github.com/ipfs/js-ipfs/commit/acbda68)), closes [ipfs/js-datastore-pubsub#20](https://github.com/ipfs/js-datastore-pubsub/issues/20)
+* web ui 2.7.1 ([#2599](https://github.com/ipfs/js-ipfs/issues/2599)) ([06340ec](https://github.com/ipfs/js-ipfs/commit/06340ec))
+* web ui 2.7.2 ([#2651](https://github.com/ipfs/js-ipfs/issues/2651)) ([7a87d8f](https://github.com/ipfs/js-ipfs/commit/7a87d8f))
+
+
+### Performance Improvements
+
+* expose importer concurrency controls when adding files ([#2637](https://github.com/ipfs/js-ipfs/issues/2637)) ([1d19c4f](https://github.com/ipfs/js-ipfs/commit/1d19c4f))
+
+
+### BREAKING CHANGES
+
+* Where `PeerID`s were previously [CID](https://www.npmjs.com/package/cids)s, now they are Strings
+
+- `ipfs.bitswap.stat().peers[n]` is now a String (was a CID)
+- `ipfs.dht.findPeer().id` is now a String (was a CID)
+- `ipfs.dht.findProvs()[n].id` is now a String (was a CID)
+- `ipfs.dht.provide()[n].id` is now a String (was a CID)
+- `ipfs.dht.put()[n].id` is now a String (was a CID)
+- `ipfs.dht.query()[n].id` is now a String (was a CID)
+- `ipfs.id().id` is now a String (was a CID)
+- `ipfs.id().addresses[n]` are now [Multiaddr](https://www.npmjs.com/package/multiaddr)s (were Strings)
+* Removes all `codec`/`format` options, everything is `dag-pb` now.
+
+
+
 <a name="0.40.0"></a>
 # [0.40.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.1...v0.40.0) (2019-12-02)
 

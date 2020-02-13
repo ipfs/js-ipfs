@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -218,6 +218,7 @@
     "Arkadiy Kukarkin <parkan@users.noreply.github.com>",
     "Arpit Agarwal <93arpit@gmail.com>",
     "Arpit Agarwal <atvanguard@users.noreply.github.com>",
+    "Ayush Mahajan <mahajan.ayush2306@gmail.com>",
     "Bernard Mordan <bernard@tableflip.io>",
     "Brian Vander Schaaf <bvs330@gmail.com>",
     "Bruno Zell <bruno.zzell@gmail.com>",
@@ -245,6 +246,7 @@
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Francisco Baio Dias <francisco@typeform.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Gabriel Garrido Calvo <gabriel.garrido.work@gmail.com>",
     "Gar <gar+gh@danger.computer>",
     "Georgios Rassias <georassias@gmail.com>",
     "Gorka Ludlow <gorka@aquigorka.com>",
@@ -267,6 +269,7 @@
     "Jon Schlinkert <dev@sellside.com>",
     "Jonathan <jkrone@vt.edu>",
     "Jonybang <Jonybange@gmail.com>",
+    "Jorropo <jorropo.pgm@gmail.com>",
     "João Antunes <j.goncalo.antunes@gmail.com>",
     "João Santos <joaosantos15@users.noreply.github.com>",
     "Kevin Wang <kevin@fossa.io>",
@@ -292,6 +295,8 @@
     "Pascal Precht <pascal.precht@googlemail.com>",
     "Pau Ramon Revilla <masylum@gmail.com>",
     "Paulo Rodrigues <me@paulogr.com>",
+    "Pedro Santos <pedro.santos@moxy.studio>",
+    "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
     "Pedro Teixeira <i@pgte.me>",
     "Portia Burton <plburton@gmail.com>",
     "Prabhakar Poudel <yuvrajzohan@gmail.com>",
@@ -308,6 +313,7 @@
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Stephen Whitmore <noffle@users.noreply.github.com>",
     "Steven Allen <steven@stebalien.com>",
+    "Tapasweni Pathak <tapaswenipathak@gmail.com>",
     "Terence Pae <terencepae@gmail.com>",
     "Teri Chadbourne <terichadbourne@users.noreply.github.com>",
     "Travis CI <travis@travis-ci.org>",
