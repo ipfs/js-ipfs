@@ -57,7 +57,7 @@ module.exports = ({
 
     await libp2p.start()
 
-    peerInfo.multiaddrs.forEach(ma => print('Swarm listening on', ma.toString()))
+    peerInfo.multiaddrs.forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerInfo.id.toB58String()}`))
 
     const ipnsRouting = routingConfig({ libp2p, repo, peerInfo, options: constructorOptions })
     const ipns = new IPNS(ipnsRouting, repo.datastore, peerInfo, keychain, { pass: initOptions.pass })
