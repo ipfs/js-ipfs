@@ -1,3 +1,13 @@
+<a name="0.41.0"></a>
+# [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
+
+
+### Bug Fixes
+
+* await on things that need awaiting on ([#2773](https://github.com/ipfs/js-ipfs/issues/2773)) ([b94fe54](https://github.com/ipfs/js-ipfs/commit/b94fe54))
+
+
+
 <a name="0.41.0-rc.2"></a>
 # [0.41.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.1...v0.41.0-rc.2) (2020-02-11)
 
