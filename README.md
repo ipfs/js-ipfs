@@ -77,10 +77,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
       - [`options.ipld`](#optionsipld)
       - [`options.libp2p`](#optionslibp2p)
       - [`options.connectionManager`](#optionsconnectionmanager)
-    - [Events](#events)
-    - [`node.ready`](#nodeready)
-    - [`node.start()`](#nodestart)
-    - [`node.stop()`](#nodestop)
     - [Core API](#core-api)
     - [Files](#files)
     - [Graph](#graph)
@@ -154,6 +150,8 @@ npm install ipfs --global
 ```
 
 The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the [Go implementation](https://github.com/ipfs/go-ipfs).
+
+Once installed, please follow the [Getting Started Guide](https://docs.ipfs.io/introduction/usage/) to learn how to initialize your node and run the daemon.
 
 ### Use in the browser
 
@@ -248,23 +246,6 @@ const node = await IPFS.create([options])
 ```
 
 Creates and returns a ready to use instance of an IPFS node.
-
-<details><summary>Alternative method to construct an IPFS node</summary>
-
-The recommended method of creating a new IPFS node is to use the `IPFS.create` method. However, IPFS is a `class`, and can also be constructed using the `new` keyword:
-
-```js
-const node = new IPFS([options])
-```
-
-At this point, your node has been created but is **not** ready to use. You must either attach a listener for the "ready" event _or_ wait for the `node.ready` promise to resolve:
-
-```js
-node.on('ready', () => { /* Node is now ready to use */ })
-// OR
-await node.ready
-```
-</details>
 
 Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
 
@@ -585,43 +566,6 @@ You can see the bundle in action in the [custom libp2p example](examples/custom-
 
 Configure the libp2p connection manager.
 
-#### Events
-
-IPFS instances are Node.js [EventEmitters](https://nodejs.org/dist/latest-v8.x/docs/api/events.html#events_class_eventemitter). You can listen for events by calling `node.on('event', handler)`:
-
-```js
-const node = await IPFS.create({ repo: '/var/ipfs/data' })
-node.on('error', errorObject => console.error(errorObject))
-```
-
-- `error` is always accompanied by an `Error` object with information about the error that occurred.
-
-    ```js
-    node.on('error', error => {
-      console.error(error.message)
-    })
-    ```
-
-- `init` is emitted after a new repo has been initialized. It will not be emitted if you set the `init: false` option on the constructor.
-
-- `ready` is emitted when a node is ready to use. This is the final event you will receive when creating a node (after `init` and `start`).
-
-    When creating a new IPFS node, you should almost always wait for the `ready` event before calling methods or interacting with the node.
-
-- `start` is emitted when a node has started listening for connections. It will not be emitted if you set the `start: false` option on the constructor.
-
-- `stop` is emitted when a node has closed all connections and released access to its repo. This is usually the result of calling [`node.stop()`](#nodestop).
-
-#### `node.ready`
-
-A promise that resolves when the node is ready to use. Should be used when constructing an IPFS node using `new`. You don't need to use this if you're using [`await IPFS.create`](#ipfs-constructor). e.g.
-
-```js
-const node = new IPFS()
-await node.ready
-// Ready to use!
-```
-
 #### `node.start()`
 
 Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `IPFS.create()` will automatically do it for you.
@@ -640,48 +584,6 @@ try {
 }
 ```
 
-<details><summary>Starting using callbacks and events</summary>
-
-If you pass a function to this method, it will be called when the node is started (Note: this method will **not** return a promise if you use a callback function).
-
-```js
-// Note: you can use the class constructor style for more
-// idiomatic callback/events style code
-const node = new IPFS({ start: false })
-
-node.on('ready', () => {
-  console.log('Node is ready to use but not started!')
-
-  node.start(error => {
-    if (error) {
-      return console.error('Node failed to start!', error)
-    }
-    console.log('Node started!')
-  })
-})
-```
-
-Alternatively you can listen for the [`start` event](#events):
-
-```js
-// Note: you can use the class constructor style for more
-// idiomatic callback/events style code
-const node = new IPFS({ start: false })
-
-node.on('ready', () => {
-  console.log('Node is ready to use but not started!')
-  node.start()
-})
-
-node.on('error', error => {
-  console.error('Something went terribly wrong!', error)
-})
-
-node.on('start', () => console.log('Node started!'))
-```
-
-</details>
-
 #### `node.stop()`
 
 Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
@@ -699,45 +601,6 @@ try {
   console.error('Node failed to stop!', error)
 }
 ```
-
-<details><summary>Stopping using callbacks and events</summary>
-
-If you pass a function to this method, it will be called when the node is stopped (Note: this method will **not** return a promise if you use a callback function).
-
-```js
-// Note: you can use the class constructor style for more
-// idiomatic callback/events style code
-const node = new IPFS()
-
-node.on('ready', () => {
-  console.log('Node is ready to use!')
-
-  node.stop(error => {
-    if (error) {
-      return console.error('Node failed to stop cleanly!', error)
-    }
-    console.log('Node stopped!')
-  })
-})
-```
-
-Alternatively you can listen for the [`stop` event](#events).
-
-```js
-const node = new IPFS()
-
-node.on('ready', () => {
-  console.log('Node is ready to use!')
-  node.stop()
-})
-
-node.on('error', error => {
-  console.error('Something went terribly wrong!', error)
-})
-
-node.on('stop', () => console.log('Node stopped!'))
-```
-</details>
 
 #### Core API
 
