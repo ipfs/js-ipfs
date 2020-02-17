@@ -1,3 +1,13 @@
+<a name="0.41.1"></a>
+## [0.41.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0...v0.41.1) (2020-02-17)
+
+
+### Bug Fixes
+
+* remove events and callbacks info from the README ([#2776](https://github.com/ipfs/js-ipfs/issues/2776)) ([e2c2ba3](https://github.com/ipfs/js-ipfs/commit/e2c2ba3))
+
+
+
 <a name="0.41.0"></a>
 # [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
 
