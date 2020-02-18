@@ -67,7 +67,7 @@
     "release-major": "aegir release --type major -t node -t browser --no-docs"
   },
   "dependencies": {
-    "@hapi/ammo": "^4.0.0",
+    "@hapi/ammo": "^3.1.2",
     "@hapi/boom": "^7.4.3",
     "@hapi/hapi": "^18.3.2",
     "@hapi/joi": "^15.0.0",
