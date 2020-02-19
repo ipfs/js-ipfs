@@ -175,7 +175,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "github:ipfs/aegir#test-dependants",
+    "aegir": "^21.1.0",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "delay": "^4.1.0",
