@@ -121,42 +121,42 @@ jobs:
     - stage: test
       name: external - ipfs-webui
       script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - ipfs-companion
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - npm-on-ipfs
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - peer-base
       script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - service-worker-gateway
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@github:ipfs/js-ipfs#"$TRAVIS_COMMIT"
+        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@github:ipfs/js-ipfs#"$TRAVIS_BRANCH"
 
     - stage: test
       name: external - orbit-db
       script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - ipfs-log
       script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: external - sidetree
       script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_COMMIT
+        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@github:ipfs/js-ipfs#$TRAVIS_BRANCH
 
     - stage: test
       name: example - browser-add-readable-stream
