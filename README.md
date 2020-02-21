@@ -53,6 +53,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [Run tests](#run-tests)
   - [Lint](#lint)
   - [Build a dist version](#build-a-dist-version)
+  - [Publishing new versions](#publishing-new-versions)
+  - [Using prerelease versions](#using-prerelease-versions)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
@@ -75,14 +77,17 @@ This project is broken into several modules, their purposes are:
 > npm install
 ```
 
+This will install [lerna](https://www.npmjs.com/package/lerna) and bootstrap the various packages, dedpuing and hoisting dependencies into the root folder.
+
+If later you wish to remove all the `node_modules`/`dist` folders and start again, run `npm run reset && npm install` from the root.
+
+See the scripts section of the root [`package.json`](./package.json) for more commands.
+
 ### Run tests
 
 ```sh
 # run all the unit tests
 > npm test
-
-# run individual tests (findprovs)
-> npm run test -- --grep findprovs
 
 # run just IPFS tests in Node.js
 > npm run test:node
@@ -100,7 +105,7 @@ Please see the `package.json` in each submodule for available commands.
 
 ### Lint
 
-**Conforming to linting rules is a prerequisite to commit to js-ipfs.**
+Please run the linter before submitting a PR, the build will not pass if it fails:
 
 ```sh
 > npm run lint
@@ -111,6 +116,15 @@ Please see the `package.json` in each submodule for available commands.
 ```sh
 > npm run build
 ```
+
+### Publishing new versions
+
+1. Ensure you have a `GH_TOKEN` env var containing a GitHub [Personal Access Token](https://github.com/settings/tokens) with `public_repo` permissions
+2. From the root of this repo run `npm run release` and follow the on screen prompts.  It will use [conventional commits](https://www.conventionalcommits.org) to work out the new package version
+
+### Using prerelease versions
+
+Any changed packages from each successful build of master are published to npm as canary builds under the npm tag `next`.
 
 ## Contribute
 
@@ -124,6 +138,8 @@ IPFS implementation in JavaScript is a work in progress. As such, there's a few 
 ### Want to hack on IPFS?
 
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
+
+Check out [ipfs/community/CONTRIBUTING_JS.md](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for details on coding standards, commit messages and other project conventions
 
 ## License
 
