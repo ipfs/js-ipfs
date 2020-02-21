@@ -1,0 +1,71 @@
+language: node_js
+cache: npm
+
+branches:
+  only:
+  - master
+  - /^release\/.*$/
+
+stages:
+  - check
+  - test
+  - cov
+
+node_js:
+  - '12'
+  - '10'
+
+os:
+  - linux
+  - osx
+  - windows
+
+script: npx nyc -s npm run test:node -- --bail
+after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+
+jobs:
+  include:
+    - stage: check
+      script:
+        - npx aegir build --bundlesize
+        - npx aegir dependency-check
+        - npm run lint
+
+    - stage: test
+      name: chrome
+      addons:
+        chrome: stable
+      script: npx aegir test -t browser
+
+    - stage: test
+      name: chrome webworker
+      addons:
+        chrome: stable
+      script: npx aegir test -t webworker
+
+    - stage: test
+      name: firefox
+      addons:
+        firefox: latest
+      script: npx aegir test -t browser -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: firefox webworker
+      addons:
+        firefox: latest
+      script: npx aegir test -t webworker -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: electron-main
+      os: osx
+      script:
+        - npx aegir test -t electron-main --bail
+
+    - stage: test
+      name: electron-renderer
+      os: osx
+      script:
+        - npx aegir test -t electron-renderer --bail
+
+notifications:
+  email: false

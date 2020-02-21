@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <title>Pubsub in the browser</title>
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css">
+</head>
+<body class="sans-serif">
+  <header class="pv3 ph2 ph3-l bg-navy cf mb4">
+    <a href="https://ipfs.io/" title="ipfs.io">
+      <img src="https://ipfs.io/images/ipfs-logo.svg" class="v-mid" style="height:50px">
+    </a>
+    <h1 class="aqua fw2 montserrat dib ma0 pv2 ph1 v-mid fr f3 lh-copy">Pubsub</h1>
+  </header>
+  <div class="ph3 mb3">
+    <div class="fw2 tracked ttu f6 teal-muted mb2">API Addr</div>
+    <input id="api-url" value="/ip4/127.0.0.1/tcp/5001" class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box" placeholder="e.g. /ip4/127.0.0.1/tcp/5001" />
+    <button id="node-connect" class="dib ph3 pv2 input-reset ba b--black-20 border-box">Connect</button>
+  </div>
+  <div class="ph3 mb3">
+    <div class="fw2 tracked ttu f6 teal-muted mb2">Connect to peer</div>
+    <input id="peer-addr" class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box" placeholder="e.g. /ip4/127.0.0.1/tcp/4002/ipfs/QmPeerId" />
+    <button id="peer-connect" class="dib ph3 pv2 input-reset ba b--black-20 border-box">Connect</button>
+  </div>
+  <div class="ph3 mb3">
+    <div class="fw2 tracked ttu f6 teal-muted mb2">Subscribe to pubsub topic</div>
+    <input id="topic" class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box" placeholder="e.g. books" />
+    <button id="subscribe" class="dib ph3 pv2 input-reset ba b--black-20 border-box">Subscribe</button>
+  </div>
+  <div class="ph3 mb3">
+    <div class="fw2 tracked ttu f6 teal-muted mb2">Send pubsub message</div>
+    <input id="message" class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box" />
+    <button id="send" class="dib ph3 pv2 input-reset ba b--black-20 border-box">Send</button>
+  </div>
+  <div class="ph3 mb3">
+    <div class="fw2 tracked ttu f6 teal-muted mb2">Console</div>
+    <div id="console" class="f7 db w-100 ph1 pv2 monospace input-reset ba b--black-20 border-box overflow-scroll" style="height: 300px">
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

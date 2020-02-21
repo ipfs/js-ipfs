@@ -38,3 +38,16 @@ node_modules
 # Dignified.js builds
 dist
 lib
+
+docs
+
+**/node_modules
+**/*.log
+test/setup/tmp-disposable-nodes-addrs.json
+dist
+coverage
+.nyc_output
+**/*.swp
+examples/sub-module/**/bundle.js
+examples/sub-module/**/*-minified.js
+examples/sub-module/*-bundle.js
