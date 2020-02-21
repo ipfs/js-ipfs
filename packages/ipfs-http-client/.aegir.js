@@ -10,11 +10,11 @@ const server = createServer({
   ipfsHttpModule: require('./'),
   ipfsBin: require('go-ipfs-dep').path()
 })
-const echoServer = EchoServer.createServer()
+let echoServer
 const webpack = require('webpack')
 
 module.exports = {
-  bundlesize: { maxSize: '90kB' },
+  bundlesize: { maxSize: '94kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main']
@@ -37,11 +37,17 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => echoServer.start(),
+      pre: () => {
+        echoServer = EchoServer.createServer()
+
+        return echoServer.start()
+      },
       post: () => echoServer.stop()
     },
     browser: {
       pre: () => {
+        echoServer = EchoServer.createServer()
+
         return Promise.all([
           server.start(),
           echoServer.start()

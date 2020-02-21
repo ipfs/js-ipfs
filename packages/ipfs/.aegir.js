@@ -7,8 +7,8 @@ const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
 const webpack = require('webpack')
 
-const preloadNode = MockPreloadNode.createNode()
-const echoServer = EchoServer.createServer()
+let preloadNode
+let echoServer
 
 // the second signalling server is needed for the inferface test 'should list peers only once even if they have multiple addresses'
 let sigServerA
@@ -40,17 +40,22 @@ module.exports = {
   hooks: {
     node: {
       pre: async () => {
+        preloadNode = MockPreloadNode.createNode()
+        echoServer = EchoServer.createServer()
+
         await preloadNode.start(),
         await echoServer.start()
       },
       post: async () => {
         await preloadNode.stop(),
         await echoServer.stop()
-
       }
     },
     browser: {
       pre: async () => {
+        preloadNode = MockPreloadNode.createNode()
+        echoServer = EchoServer.createServer()
+
         await preloadNode.start()
         await echoServer.start()
         sigServerA = await webRTCStarSigServer.start({

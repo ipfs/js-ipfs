@@ -24,7 +24,8 @@
     "lint": "aegir lint",
     "build": "aegir build",
     "test": "aegir test -t node",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "@hapi/content": "^4.1.0",

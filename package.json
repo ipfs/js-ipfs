@@ -18,7 +18,7 @@
     "build": "lerna run --parallel build",
     "clean": "lerna run --parallel clean",
     "lint": "lerna run --parallel lint",
-    "depcheck": "lerna run --parallel depcheck",
+    "dep-check": "lerna run --parallel dep-check",
     "release": "npm run update-contributors && lerna publish",
     "release:rc": "lerna publish --canary --preid rc --dist-tag next",
     "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"

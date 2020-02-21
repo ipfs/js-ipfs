@@ -60,7 +60,8 @@
     "test:interop:electron-renderer": "IPFS_JS_EXEC=$PWD/src/cli/bin.js IPFS_JS_MODULE=$PWD IPFS_REUSEPORT=false ipfs-interop -- -t electron-renderer -f ./test/browser.js",
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "@hapi/ammo": "^3.1.2",

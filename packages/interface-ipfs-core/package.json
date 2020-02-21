@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "aegir lint",
     "clean": "rm -rf ./dist",
-    "test": "exit 0"
+    "test": "exit 0",
+    "dep-check": "aegir dep-check"
   },
   "files": [
     "src/",

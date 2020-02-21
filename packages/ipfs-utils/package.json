@@ -23,7 +23,8 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir lint",
     "build": "aegir build",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "dep-check": "aegir dep-check"
   },
   "license": "MIT",
   "dependencies": {
