@@ -1,0 +1,54 @@
+{
+  "name": "ipfs-utils",
+  "version": "0.7.2",
+  "description": "Package to aggregate shared logic and dependencies for the IPFS ecosystem",
+  "main": "src/index.js",
+  "author": "Hugo Dias <hugomrdias@gmail.com>",
+  "homepage": "https://github.com/ipfs/js-ipfs-utils",
+  "bugs": "https://github.com/ipfs/js-ipfs-utils/issues",
+  "leadMaintainer": "Hugo Dias <hugomrdias@gmail.com>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "repository": "github:ipfs/js-ipfs-utils",
+  "scripts": {
+    "test": "aegir test",
+    "test:browser": "aegir test -t browser",
+    "test:node": "aegir test -t node",
+    "test:electron": "aegir test -t electron-main",
+    "test:electron-renderer": "aegir test -t electron-renderer",
+    "lint": "aegir lint",
+    "release": "aegir release --docs",
+    "release-minor": "aegir release --type minor --docs",
+    "release-major": "aegir release --type major --docs",
+    "build": "aegir build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "buffer": "^5.2.1",
+    "err-code": "^2.0.0",
+    "fs-extra": "^8.1.0",
+    "is-electron": "^2.2.0",
+    "it-glob": "0.0.7",
+    "ky": "^0.15.0",
+    "ky-universal": "^0.3.0",
+    "stream-to-it": "^0.2.0"
+  },
+  "devDependencies": {
+    "aegir": "^20.4.1",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "dirty-chai": "^2.0.1",
+    "it-all": "^1.0.1"
+  },
+  "contributors": [
+    "Alan Shaw <alan.shaw@protocol.ai>",
+    "Alex Potsides <alex@achingbrain.net>",
+    "Hugo Dias <hugomrdias@gmail.com>",
+    "Marcin Rataj <lidel@lidel.org>"
+  ],
+  "browser": {
+    "fs-extra": false
+  }
+}
