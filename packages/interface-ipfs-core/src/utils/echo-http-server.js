@@ -4,13 +4,15 @@
 const http = require('http')
 const URL = require('url').URL || self.URL
 
-const defaultPort = 11080
-
 // Create a mock of remote HTTP server that can return arbitrary text in response
 // or redirect to other URL. Used in tests of ipfs.addFromURL etc
 // It needs to be available to tests run in browsers:
 // start it from Node via .aegir.js/hooks/browser/pre|post (example in js-ipfs)
 module.exports.createServer = () => {
+  if (!process.env.ECHO_SERVER_PORT) {
+    throw new Error('ECHO_SERVER_PORT env var is required')
+  }
+
   const handler = (req, res) => {
     // Relaxed CORS to enable use in tests in web browser with fetch
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -45,7 +47,7 @@ module.exports.createServer = () => {
 
   server.start = (opts) => new Promise((resolve, reject) => {
     server.once('error', reject)
-    server.listen(Object.assign({ port: defaultPort, host: '127.0.0.1' }, opts), () => {
+    server.listen(Object.assign({ port: process.env.ECHO_SERVER_PORT, host: '127.0.0.1' }, opts), () => {
       server.removeListener('error', reject)
       resolve()
     })
@@ -62,7 +64,6 @@ module.exports.createServer = () => {
   return server
 }
 
-module.exports.defaultPort = defaultPort
-module.exports.url = `http://127.0.0.1:${module.exports.defaultPort}`
+module.exports.url = `http://127.0.0.1:${process.env.ECHO_SERVER_PORT}`
 module.exports.echoUrl = (text) => `${module.exports.url}/echo/${encodeURIComponent(text)}`
 module.exports.redirectUrl = (url) => `${module.exports.url}/302/${encodeURI(url)}`

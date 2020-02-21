@@ -13,7 +13,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "test": "exit 0"
   },
   "files": [
     "src/",

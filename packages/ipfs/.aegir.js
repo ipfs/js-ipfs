@@ -24,7 +24,7 @@ module.exports = {
     },
     ...(process.env.NODE_ENV === 'test' ? {
       plugins: [
-        new webpack.EnvironmentPlugin(['DEBUG'])
+        new webpack.EnvironmentPlugin(['DEBUG', 'ECHO_SERVER_PORT'])
       ]
     } : {})
   },

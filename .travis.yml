@@ -8,7 +8,8 @@ branches:
 stages:
   - check
   - test
-  - tag
+  - release-rc
+  - test-external
 
 node_js:
   - '10'
@@ -34,6 +35,10 @@ addons:
       # https://stackoverflow.com/questions/57903415/travis-ci-chrome-62-instead-of-77
       - dpkg
   chrome: stable
+
+before_install:
+  # prevents windows error: npm ERR! ... git-sh-setup: file not found
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
 
 script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
 after_success:
@@ -117,46 +122,6 @@ jobs:
       os: osx
       script:
         - npm run test:interop:electron-renderer -- --bail --timeout 10000
-
-    - stage: test
-      name: external - ipfs-webui
-      script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - ipfs-companion
-      script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - npm-on-ipfs
-      script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - peer-base
-      script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - service-worker-gateway
-      script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - orbit-db
-      script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - ipfs-log
-      script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-
-    - stage: test
-      name: external - sidetree
-      script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
 
     - stage: test
       name: example - browser-add-readable-stream
@@ -302,15 +267,51 @@ jobs:
         - npm install
         - npm run test -- traverse-ipld-graphs
 
-    - stage: tag
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: update-last-successful-build
+    - stage: release-rc
+      name: release rc
       script:
-        - git config --global user.email "travis@travis-ci.org"
-        - git config --global user.name "Travis CI"
-        - git remote set-url origin https://$TRAVIS_GITHUB_USER:$TRAVIS_GITHUB_TOKEN@github.com/ipfs/js-ipfs.git
-        - npx aegir update-last-successful-build
+        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        - npm run release:rc -- --yes
+
+    - stage: test-external
+      name: external - ipfs-webui
+      script:
+        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - ipfs-companion
+      script:
+        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - npm-on-ipfs
+      script:
+        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - peer-base
+      script:
+        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - service-worker-gateway
+      script:
+        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - orbit-db
+      script:
+        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - ipfs-log
+      script:
+        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+    - stage: test-external
+      name: external - sidetree
+      script:
+        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
 
 notifications:
   email: false

@@ -10,7 +10,7 @@ const expect = chai.expect
 
 describe('format-mtime', function () {
   it('formats mtime', function () {
-    expect(formatMtime({ secs: 100, nsecs: 0 })).to.include('Jan 1, 1970')
+    expect(formatMtime({ secs: 15768000, nsecs: 0 })).to.include('1970')
   })
 
   it('formats empty mtime', function () {

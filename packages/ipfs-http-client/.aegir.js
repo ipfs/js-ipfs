@@ -11,13 +11,19 @@ const server = createServer({
   ipfsBin: require('go-ipfs-dep').path()
 })
 const echoServer = EchoServer.createServer()
+const webpack = require('webpack')
 
 module.exports = {
   bundlesize: { maxSize: '90kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main']
-    }
+    },
+    ...(process.env.NODE_ENV === 'test' ? {
+      plugins: [
+        new webpack.EnvironmentPlugin(['DEBUG', 'ECHO_SERVER_PORT'])
+      ]
+    } : {})
   },
   karma: {
     files: [{
