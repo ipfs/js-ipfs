@@ -14,11 +14,11 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "ipfs-http-client": "../../",
-    "react": "~16.8.6",
-    "react-dom": "~16.8.6",
-    "react-hot-loader": "~4.8.4",
-    "webpack": "~4.31.0",
-    "webpack-dev-server": "~3.3.1"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.8.4",
+    "webpack": "^4.31.0",
+    "webpack-dev-server": "^3.3.1"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"

@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "buffer": "^5.2.1",
+    "buffer": "^5.4.2",
     "err-code": "^2.0.0",
     "fs-extra": "^8.1.0",
     "is-electron": "^2.2.0",
@@ -37,7 +37,7 @@
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "^20.4.1",
+    "aegir": "^21.3.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",

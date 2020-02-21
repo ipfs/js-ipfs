@@ -10,7 +10,7 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "execa": "^3.2.0",
-    "http-server": "~0.11.1"
+    "http-server": "^0.11.1"
   },
   "dependencies": {
     "ipfs": "file:../../"

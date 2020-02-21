@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
-    "http-server": "~0.11.1",
+    "http-server": "^0.11.1",
     "terser-webpack-plugin": "^1.2.1",
     "webpack": "^4.28.4"
   },

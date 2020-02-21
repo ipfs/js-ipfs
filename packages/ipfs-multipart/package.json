@@ -31,7 +31,7 @@
     "it-multipart": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^20.0.0",
+    "aegir": "^21.3.0",
     "chai": "^4.2.0",
     "ipfs-http-client": "^40.2.0",
     "request": "^2.88.0"
