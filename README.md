@@ -31,9 +31,9 @@
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉.
 
-**Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+**Want to get started?** Check our [examples folder](/packages/ipfs/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
-**Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
+🚨 **Please read this** 🚨 The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
 
 [**`Weekly Core Implementations Call`**](https://github.com/ipfs/team-mgmt/issues/992)
 

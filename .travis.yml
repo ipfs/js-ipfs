@@ -66,66 +66,67 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npx aegir test -t browser --bail
+        - npm run test:browser -- -- -- --bail
 
     - stage: test
       name: chrome webworker
       addons:
         chrome: stable
       script:
-        - npx aegir test -t webworker --bail
+        - npm run test:webworker -- -- -- --bail
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npx aegir test -t browser --bail -- --browsers FirefoxHeadless
+        - npm run test:browser -- -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: firefox webworker
       addons:
         firefox: latest
       script:
-        - npx aegir test -t webworker --bail -- --browsers FirefoxHeadless
+        - npm run test:webworker -- -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npx aegir test -t electron-main --bail --timeout 10000
+        - npm run test:electron-main -- -- -- --bail
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npx aegir test -t electron-renderer --bail --timeout 10000
+        - npm run test:electron-renderer -- -- -- --bail
 
     - stage: test
       name: interop - node
       script:
-        - npm run test:interop:node -- --bail
+        - npm run test:interop:node -- -- -- --bail
 
     - stage: test
       name: interop - browser
       script:
-        - npm run test:interop:browser -- --bail
+        - npm run test:interop:browser -- -- -- --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - npm run test:interop:electron-main -- --bail --timeout 10000
+        - npm run test:interop:electron-main -- -- -- --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run test:interop:electron-renderer -- --bail --timeout 10000
+        - npm run test:interop:electron-renderer -- -- -- --bail --timeout 10000
 
     - stage: test
       name: example - browser-add-readable-stream
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -134,6 +135,7 @@ jobs:
     - stage: test
       name: example - browser-browserify
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -142,6 +144,7 @@ jobs:
     - stage: test
       name: example - browser-create-react-app
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -150,6 +153,7 @@ jobs:
     - stage: test
       name: example - browser-mfs
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -158,6 +162,7 @@ jobs:
     - stage: test
       name: example - browser-parceljs
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -166,6 +171,7 @@ jobs:
     - stage: test
       name: example - browser-readablestream
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -174,6 +180,7 @@ jobs:
     - stage: test
       name: example - browser-script-tag
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -182,6 +189,7 @@ jobs:
     - stage: test
       name: example - browser-video-streaming
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -190,6 +198,7 @@ jobs:
     - stage: test
       name: example - browser-vue
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -198,6 +207,7 @@ jobs:
     - stage: test
       name: example - browser-webpack
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -206,6 +216,7 @@ jobs:
     - stage: test
       name: example - circuit-relaying
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -214,6 +225,7 @@ jobs:
     - stage: test
       name: example - custom-ipfs-repo
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -222,6 +234,7 @@ jobs:
     - stage: test
       name: example - custom-libp2p
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -230,6 +243,7 @@ jobs:
     - stage: test
       name: example - exchange-files-in-browser
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -238,6 +252,7 @@ jobs:
     - stage: test
       name: example - explore-ethereum-blockchain
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -246,6 +261,7 @@ jobs:
     - stage: test
       name: example - ipfs-101
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -254,6 +270,7 @@ jobs:
     - stage: test
       name: example - running-multiple-nodes
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
@@ -262,56 +279,75 @@ jobs:
     - stage: test
       name: example - traverse-ipld-graphs
       script:
+        - cd packages/ipfs
         - npm run build
         - cd examples
         - npm install
         - npm run test -- traverse-ipld-graphs
 
     - stage: release-rc
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: release rc
       script:
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - ipfs-webui
       script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - ipfs-companion
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - npm-on-ipfs
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - peer-base
       script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - service-worker-gateway
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next"
 
     - stage: test-external
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
       name: external - sidetree
       script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@github:ipfs/js-ipfs#"${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next"
 
 notifications:
   email: false
