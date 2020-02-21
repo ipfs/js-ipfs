@@ -66,6 +66,9 @@ This project is broken into several modules, their purposes are:
 * [`/packages/ipfs`](./packages/ipfs) The core implementation
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
 * [`/packages/interface-ipfs-core`](./packages/interface-ipfs-core) Tests to ensure adherance of an implementation to the spec
+* [`/packages/ipfs-utils`](./packages/ipfs-utils) Helpers and utilities common to core and the HTTP RPC API client
+* [`/packages/ipfs-mfs`](./packages/ipfs-mfs) The mfs implementation
+* [`/packages/ipfs-multipart`](./packages/ipfs-multipart) A module that handles adding files via multipart HTTP requests for core and the mfs
 
 ## Development
 
