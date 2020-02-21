@@ -4,22 +4,16 @@
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
+  "homepage": "https://github.com/ipfs/js-ipfs",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "browser": {
     "fs": false,
     "os": false,
     "ipfs-utils/src/files/glob-source": false
   },
   "scripts": {
-    "test": "exit 0",
-    "test:node": "exit 0",
-    "test:browser": "exit 0",
-    "test:webworker": "exit 0",
     "lint": "aegir lint",
-    "release": "aegir release -t node --no-docs --no-build --no-test",
-    "release-minor": "aegir release -t node --type minor --no-docs --no-build --no-test",
-    "release-major": "aegir release -t node --type major --no-docs --no-build --no-test",
-    "coverage": "exit 0",
-    "coverage-publish": "exit 0"
+    "clean": "rm -rf ./dist"
   },
   "files": [
     "src/",
@@ -27,16 +21,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ipfs/interface-ipfs-core.git"
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "keywords": [
     "IPFS"
   ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ipfs/interface-ipfs-core/issues"
-  },
-  "homepage": "https://github.com/ipfs/interface-ipfs-core#readme",
   "dependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

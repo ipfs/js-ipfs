@@ -4,14 +4,17 @@
   "description": "Package to aggregate shared logic and dependencies for the IPFS ecosystem",
   "main": "src/index.js",
   "author": "Hugo Dias <hugomrdias@gmail.com>",
-  "homepage": "https://github.com/ipfs/js-ipfs-utils",
-  "bugs": "https://github.com/ipfs/js-ipfs-utils/issues",
+  "homepage": "https://github.com/ipfs/js-ipfs",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Hugo Dias <hugomrdias@gmail.com>",
   "files": [
     "src",
     "dist"
   ],
-  "repository": "github:ipfs/js-ipfs-utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
   "scripts": {
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
@@ -19,10 +22,8 @@
     "test:electron": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir lint",
-    "release": "aegir release --docs",
-    "release-minor": "aegir release --type minor --docs",
-    "release-major": "aegir release --type major --docs",
-    "build": "aegir build"
+    "build": "aegir build",
+    "clean": "rm -rf ./dist"
   },
   "license": "MIT",
   "dependencies": {

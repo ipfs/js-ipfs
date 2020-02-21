@@ -1,0 +1,51 @@
+{
+  "name": "js-ipfs",
+  "version": "1.0.0",
+  "description": "JavaScript implementation of the IPFS specification",
+  "scripts": {
+    "postinstall": "lerna bootstrap",
+    "reset": "lerna run --parallel clean && rm -rf packages/*/node_modules node_modules",
+    "test": "lerna run --parallel test",
+    "test:node": "lerna run --parallel test:node",
+    "test:browser": "lerna run --parallel test:browser",
+    "test:webworker": "lerna run --parallel test:webworker",
+    "coverage": "lerna run --parallel coverage",
+    "build": "lerna run --parallel build",
+    "clean": "lerna run --parallel clean",
+    "lint": "lerna run --parallel lint",
+    "depcheck": "lerna run --parallel depcheck",
+    "release": "npm run update-contributors && lerna publish",
+    "release:rc": "lerna publish --canary --preid rc --dist-tag next",
+    "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"
+  },
+  "devDependencies": {
+    "lerna": "^3.20.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "private": true,
+  "contributors": [
+    "achingbrain <alex@achingbrain.net>",
+    "David Dias <daviddias.p@gmail.com>",
+    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Stephen Whitmore <stephen.whitmore@gmail.com>",
+    "Alan Shaw <alan@tableflip.io>",
+    "Pedro Teixeira <i@pgte.me>",
+    "nginnever <ginneversource@gmail.com>",
+    "Volker Mische <volker.mische@gmail.com>",
+    "Dan Ordille <dordille@gmail.com>",
+    "Richard Schneider <makaretu@gmail.com>",
+    "ᴠɪᴄᴛᴏʀ ʙᴊᴇʟᴋʜᴏʟᴍ <victorbjelkholm@gmail.com>",
+    "Hugo Dias <hugomrdias@gmail.com>",
+    "JGAntunes <j.goncalo.antunes@gmail.com>",
+    "Marcin Rataj <lidel@lidel.org>",
+    "Richard Littauer <richard.littauer@gmail.com>",
+    "Mithgol <getgit@mithgol.ru>",
+    "Francisco Baio Dias <xicombd@gmail.com>",
+    "Diogo Silva <fsdiogo@gmail.com>",
+    "jbenet <juan@benet.ai>",
+    "Bernard Mordan <bernard@tableflip.io>"
+  ]
+}

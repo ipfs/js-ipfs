@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "JavaScript implementation of the IPFS Mutable File System",
   "leadMaintainer": "Alex Potsides <alex.potsides@protocol.ai>",
+  "homepage": "https://github.com/ipfs/js-ipfs",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "main": "src/index.js",
   "browser": {
     "@hapi/joi": "joi-browser",
@@ -18,28 +20,22 @@
     "test:webworker": "aegir test -t webworker",
     "build": "aegir build",
     "lint": "aegir lint",
-    "release": "aegir release",
-    "release-minor": "aegir release --type minor",
-    "release-major": "aegir release --type major",
     "coverage": "nyc --reporter=text --reporter=lcov --reporter=html npm run test:node",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check",
+    "clean": "rm -rf ./dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs-mfs.git"
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "keywords": [
     "IPFS"
   ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ipfs/js-ipfs-mfs/issues"
-  },
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=3.0.0"
   },
-  "homepage": "https://github.com/ipfs/js-ipfs-mfs#readme",
   "devDependencies": {
     "@hapi/hapi": "^18.4.0",
     "aegir": "^20.0.0",

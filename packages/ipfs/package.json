@@ -5,7 +5,7 @@
   "keywords": [
     "IPFS"
   ],
-  "homepage": "https://js.ipfs.io",
+  "homepage": "https://github.com/ipfs/js-ipfs",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
@@ -33,7 +33,10 @@
   "bin": {
     "jsipfs": "src/cli/bin.js"
   },
-  "repository": "github:ipfs/js-ipfs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
   "scripts": {
     "lint": "aegir lint",
     "build": "aegir build",
@@ -57,14 +60,7 @@
     "test:interop:electron-renderer": "IPFS_JS_EXEC=$PWD/src/cli/bin.js IPFS_JS_MODULE=$PWD IPFS_REUSEPORT=false ipfs-interop -- -t electron-renderer -f ./test/browser.js",
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
-    "benchmark": "echo \"Error: no benchmarks yet\" && exit 1",
-    "benchmark:node": "echo \"Error: no benchmarks yet\" && exit 1",
-    "benchmark:node:core": "echo \"Error: no benchmarks yet\" && exit 1",
-    "benchmark:node:http": "echo \"Error: no benchmarks yet\" && exit 1",
-    "benchmark:browser": "echo \"Error: no benchmarks yet\" && exit 1",
-    "release": "aegir release -t node -t browser --no-docs",
-    "release-minor": "aegir release --type minor -t node -t browser --no-docs",
-    "release-major": "aegir release --type major -t node -t browser --no-docs"
+    "clean": "rm -rf ./dist"
   },
   "dependencies": {
     "@hapi/ammo": "^3.1.2",
