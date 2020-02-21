@@ -103,7 +103,7 @@
     "ipfs-mfs": "^1.0.0",
     "ipfs-multipart": "^0.3.0",
     "ipfs-repo": "^0.30.0",
-    "ipfs-unixfs": "^0.3.0",
+    "ipfs-unixfs": "^1.0.0",
     "ipfs-unixfs-exporter": "^0.41.0",
     "ipfs-unixfs-importer": "^0.44.0",
     "ipfs-utils": "^0.7.2",
