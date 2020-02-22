@@ -1,6 +1,6 @@
 * text=auto
-test/** text eol=lf
-src/init-files/** text eol=lf
+*/test/fixtures/** text eol=lf
+*/src/init-files/** text eol=lf
 
 *.data binary
 *.png binary
