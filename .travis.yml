@@ -40,7 +40,7 @@ before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
 
-script: npx nyc -s npm run test:node -- -- -- --timeout 10000 --bail
+script: npx nyc -s npm run test:node -- --concurrency 1 -- -- --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
@@ -57,71 +57,71 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- -- -- --bundlesize
-        - npm run dep-check -- -- -- -- -i wrtc -i electron-webrtc
-        - npm run lint
+        - npm run build -- --concurrency 1 -- -- --bundlesize
+        - npm run dep-check -- --concurrency 1 -- -- -- -i wrtc -i electron-webrtc
+        - npm run lint -- --concurrency 1
 
     - stage: test
       name: chrome
       addons:
         chrome: stable
       script:
-        - npm run test:browser -- -- -- --bail
+        - npm run test:browser -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: chrome webworker
       addons:
         chrome: stable
       script:
-        - npm run test:webworker -- -- -- --bail
+        - npm run test:webworker -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npm run test:browser -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:browser -- --concurrency 1 -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: firefox webworker
       addons:
         firefox: latest
       script:
-        - npm run test:webworker -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:webworker -- --concurrency 1 -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npm run test:electron-main -- -- -- --bail
+        - npm run test:electron-main -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npm run test:electron-renderer -- -- -- --bail
+        - npm run test:electron-renderer -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: interop - node
       script:
-        - npm run test:interop:node -- -- -- --bail
+        - npm run test:interop:node -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: interop - browser
       script:
-        - npm run test:interop:browser -- -- -- --bail
+        - npm run test:interop:browser -- --concurrency 1 -- -- --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - npm run test:interop:electron-main -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-main -- --concurrency 1 -- -- --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run test:interop:electron-renderer -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-renderer -- --concurrency 1 -- -- --bail --timeout 10000
 
     - stage: test
       name: example - browser-add-readable-stream
