@@ -11,6 +11,7 @@ const fs = require('fs')
 const request = require('request')
 const parser = require('../src')
 const os = require('os')
+const drain = require('it-drain')
 
 const isWindows = os.platform() === 'win32'
 
@@ -164,7 +165,7 @@ describe('parser', () => {
     it('parses ctl.add correctly', async () => {
       const contents = readDir(dirPath, 'fixtures')
 
-      await ctl.add(contents, { recursive: true, followSymlinks: false })
+      await drain(ctl.add(contents, { recursive: true, followSymlinks: false }))
 
       if (isWindows) {
         return
@@ -182,7 +183,7 @@ describe('parser', () => {
     it('parses ctl.add with metadata correctly', async () => {
       const contents = readDir(dirPath, 'fixtures', true)
 
-      await ctl.add(contents, { recursive: true, followSymlinks: false })
+      await drain(ctl.add(contents, { recursive: true, followSymlinks: false }))
 
       if (isWindows) {
         return
@@ -245,7 +246,7 @@ describe('parser', () => {
     })
 
     it('parses ctl.add buffer correctly', async () => {
-      await ctl.add(Buffer.from('hello world'))
+      await drain(ctl.add(Buffer.from('hello world')))
 
       expect(files.length).to.equal(1)
       expect(files[0].name).to.equal('')
