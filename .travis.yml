@@ -40,7 +40,7 @@ before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
 
-script: npx nyc -s npx aegir test -t node --timeout 10000 --bail
+script: npx nyc -s npm run test:node -- -- -- --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
