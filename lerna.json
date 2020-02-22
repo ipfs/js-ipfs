@@ -6,7 +6,10 @@
   "version": "independent",
   "command": {
     "bootstrap": {
-      "hoist": true
+      "hoist": true,
+      "nohoist": [
+        "ipfs-interop"
+      ]
     },
     "run": {
       "stream": true
