@@ -15,7 +15,8 @@ const commonOptions = {
         dialTimeout: 60e3 // increase timeout because travis is slow
       }
     }
-  }
+  },
+  endpoint: 'http://localhost:57483'
 }
 
 const commonOverrides = {

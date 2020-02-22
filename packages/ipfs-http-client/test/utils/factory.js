@@ -7,7 +7,8 @@ const { isNode } = require('ipfs-utils/src/env')
 const commonOptions = {
   test: 'true',
   type: 'go',
-  ipfsHttpModule: require('../../src')
+  ipfsHttpModule: require('../../src'),
+  endpoint: 'http://localhost:48372'
 }
 
 const commonOverrides = {

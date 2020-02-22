@@ -70,7 +70,7 @@ module.exports = {
         })
         ipfsdServer = await createServer({
           host: '127.0.0.1',
-          port: 43134
+          port: 57483
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
