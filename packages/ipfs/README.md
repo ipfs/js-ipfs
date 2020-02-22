@@ -79,6 +79,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
       - [`options.ipld`](#optionsipld)
       - [`options.libp2p`](#optionslibp2p)
       - [`options.connectionManager`](#optionsconnectionmanager)
+    - [`node.start()`](#nodestart)
+    - [`node.stop()`](#nodestop)
     - [Core API](#core-api)
     - [Files](#files)
     - [Graph](#graph)
@@ -89,7 +91,11 @@ We've come a long way, but this project is still in Alpha, lots of development i
     - [Node Management](#node-management)
     - [Static types and utils](#static-types-and-utils)
       - [Glob source](#glob-source)
+        - [`globSource(path, [options])`](#globsourcepath-options)
+        - [Example](#example)
       - [URL source](#url-source)
+        - [`urlSource(url)`](#urlsourceurl)
+        - [Example](#example-1)
 - [FAQ](#faq)
     - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
     - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
@@ -1077,7 +1083,7 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 > npm run test:node:http
 
 # run just IPFS CLI tests
-> npm run test:node:cli
+> npm run test:cli
 
 # run just IPFS core tests in the Browser (Chrome)
 > npm run test:browser

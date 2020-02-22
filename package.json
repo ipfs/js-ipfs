@@ -12,6 +12,7 @@
     "test:electron": "lerna run --parallel test:electron",
     "test:electron-main": "lerna run --parallel test:electron-main",
     "test:electron-renderer": "lerna run --parallel test:electron-renderer",
+    "test:cli": "lerna run --parallel test:cli",
     "test:interop:node": "lerna run --parallel test:interop:node",
     "test:interop:browser": "lerna run --parallel test:interop:browser",
     "test:interop:electron-main": "lerna run --parallel test:interop:electron-main",
