@@ -17,7 +17,7 @@ describe('bitswap', () => runOn((thing) => {
     ipfs = thing.ipfs
   })
 
-  before(() => {
+  before(async () => {
     await ipfs('block get ' + key0).catch(() => {})
     await ipfs('block get ' + key1).catch(() => {})
   })
