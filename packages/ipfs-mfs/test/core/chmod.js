@@ -11,8 +11,12 @@ describe('chmod', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   async function testChmod (initialMode, modification, expectedFinalMode) {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
 
     await mfs.write(path, Buffer.from('Hello world'), {
       create: true,
@@ -28,7 +32,7 @@ describe('chmod', () => {
   }
 
   it('should update the mode for a file', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
 
     await mfs.write(path, Buffer.from('Hello world'), {
       create: true,
@@ -45,7 +49,7 @@ describe('chmod', () => {
   })
 
   it('should update the mode for a directory', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
 
     await mfs.mkdir(path)
     const originalMode = (await mfs.stat(path)).mode
@@ -59,7 +63,7 @@ describe('chmod', () => {
   })
 
   it('should update the mode for a hamt-sharded-directory', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
 
     await mfs.mkdir(path)
     await mfs.write(`${path}/foo.txt`, Buffer.from('Hello world'), {
@@ -160,7 +164,7 @@ describe('chmod', () => {
   })
 
   it('should apply special execute permissions to world', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
     const sub = `${path}/sub`
     const file = `${path}/sub/foo.txt`
     const bin = `${path}/sub/bar`
@@ -197,7 +201,7 @@ describe('chmod', () => {
   })
 
   it('should apply special execute permissions to user', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
     const sub = `${path}/sub`
     const file = `${path}/sub/foo.txt`
     const bin = `${path}/sub/bar`
@@ -234,7 +238,7 @@ describe('chmod', () => {
   })
 
   it('should apply special execute permissions to user and group', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
     const sub = `${path}/sub`
     const file = `${path}/sub/foo.txt`
     const bin = `${path}/sub/bar`
@@ -271,7 +275,7 @@ describe('chmod', () => {
   })
 
   it('should apply special execute permissions to sharded directories', async () => {
-    const path = `/foo-${Date.now()}`
+    const path = `/foo-${Math.random()}`
     const sub = `${path}/sub`
     const file = `${path}/sub/foo.txt`
     const bin = `${path}/sub/bar`

@@ -19,6 +19,10 @@ describe('rm', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('refuses to remove files without arguments', async () => {
     try {
       await mfs.rm()

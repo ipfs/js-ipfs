@@ -10,7 +10,7 @@ const Repo = require('ipfs-repo')
 const BlockService = require('ipfs-block-service')
 
 const createMfs = async () => {
-  const repo = new Repo(`test-repo-${Date.now()}`, {
+  const repo = new Repo(`test-repo-${Math.random()}`, {
     lock: 'memory',
     storageBackends: {
       root: MemoryDatastore,

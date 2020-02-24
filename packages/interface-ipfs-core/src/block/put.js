@@ -56,7 +56,7 @@ module.exports = (common, options) => {
     })
 
     it('should put a buffer, using options', async () => {
-      const blob = Buffer.from(`TEST${Date.now()}`)
+      const blob = Buffer.from(`TEST${Math.random()}`)
 
       const block = await ipfs.block.put(blob, {
         format: 'raw',

@@ -46,7 +46,7 @@ module.exports = (common, options) => {
     })
 
     it('should get a file added as CIDv0 with a CIDv1', async () => {
-      const input = Buffer.from(`TEST${Date.now()}`)
+      const input = Buffer.from(`TEST${Math.random()}`)
 
       const res = await all(ipfs.add(input, { cidVersion: 0 }))
 
@@ -60,7 +60,7 @@ module.exports = (common, options) => {
     })
 
     it('should get a file added as CIDv1 with a CIDv0', async () => {
-      const input = Buffer.from(`TEST${Date.now()}`)
+      const input = Buffer.from(`TEST${Math.random()}`)
 
       const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
 

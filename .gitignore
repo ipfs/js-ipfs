@@ -23,3 +23,6 @@ docs
 
 # Deployment files
 .npmrc
+
+# Editor files
+.vscode

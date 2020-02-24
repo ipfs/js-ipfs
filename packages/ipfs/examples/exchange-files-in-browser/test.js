@@ -75,7 +75,7 @@ async function runTest () {
       throw new Error(`Could not find web socket address in ${id.addresses}`)
     }
 
-    const workspaceName = `test-${Date.now()}`
+    const workspaceName = `test-${Math.random()}`
     const peerA = path.join(os.tmpdir(), `test-${Date.now()}-a.txt`)
     const peerB = path.join(os.tmpdir(), `test-${Date.now()}-b.txt`)
 
