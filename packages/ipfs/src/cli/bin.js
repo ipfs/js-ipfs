@@ -31,6 +31,17 @@ const parser = require('./parser')
 const commandAlias = require('./command-alias')
 const { print } = require('./utils')
 
+const SegfaultHandler = require('segfault-handler')
+/*
+SegfaultHandler.registerHandler('/tmp/crash.log', function (signal, address, stack) {
+  console.error('========= SEGFAULT =========') // eslint-disable-line no-console
+  console.error('signal', signal) // eslint-disable-line no-console
+  console.error('address', address) // eslint-disable-line no-console
+  console.error('stack', stack) // eslint-disable-line no-console
+})
+*/
+SegfaultHandler.registerHandler('/tmp/crash.log')
+
 // Check if an update is available and notify
 const oneWeek = 1000 * 60 * 60 * 24 * 7
 updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()

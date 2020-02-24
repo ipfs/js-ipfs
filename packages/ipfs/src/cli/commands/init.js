@@ -61,10 +61,6 @@ module.exports = {
 
       argv.print(`initializing ipfs node at ${path}`)
 
-      const SegfaultHandler = require('segfault-handler')
-
-      SegfaultHandler.registerHandler('/tmp/crash.log')
-
       // Required inline to reduce startup time
       const IPFS = require('../../core')
       const Repo = require('ipfs-repo')
