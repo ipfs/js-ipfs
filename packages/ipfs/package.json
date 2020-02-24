@@ -160,6 +160,7 @@
     "pretty-bytes": "^5.3.0",
     "progress": "^2.0.1",
     "protons": "^1.0.1",
+    "segfault-handler": "^1.3.0",
     "semver": "^7.1.2",
     "stream-to-it": "^0.2.0",
     "streaming-iterables": "^4.1.1",
