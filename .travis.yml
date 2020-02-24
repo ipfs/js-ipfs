@@ -35,5 +35,8 @@ script: npx nyc -s npm run test:node -- -- -- --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 after_failure:
+  - echo ./
+  - ls -la
+  - echo /tmp
   - ls -l /tmp
   - cat /tmp/crash.log
