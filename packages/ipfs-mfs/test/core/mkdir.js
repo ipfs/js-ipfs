@@ -17,6 +17,10 @@ describe('mkdir', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('requires a directory', async () => {
     try {
       await mfs.mkdir('')

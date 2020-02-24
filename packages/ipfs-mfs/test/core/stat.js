@@ -21,6 +21,10 @@ describe('stat', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('refuses to stat files with an empty path', async () => {
     try {
       await mfs.stat('')
@@ -130,8 +134,8 @@ describe('stat', () => {
 
     expect(child.Hash.codec).to.equal('raw')
 
-    const dir = `/dir-with-raw-${Date.now()}`
-    const path = `${dir}/raw-${Date.now()}`
+    const dir = `/dir-with-raw-${Math.random()}`
+    const path = `${dir}/raw-${Math.random()}`
 
     await mfs.mkdir(dir)
     await mfs.cp(`/ipfs/${child.Hash}`, path)

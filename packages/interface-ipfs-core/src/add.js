@@ -458,7 +458,7 @@ module.exports = (common, options) => {
     })
 
     it('should add from a HTTP URL', async () => {
-      const text = `TEST${Date.now()}`
+      const text = `TEST${Math.random()}`
       const url = echoUrl(text)
 
       const [result, expectedResult] = await Promise.all([
@@ -474,7 +474,7 @@ module.exports = (common, options) => {
     })
 
     it('should add from a HTTP URL with redirection', async () => {
-      const text = `TEST${Date.now()}`
+      const text = `TEST${Math.random()}`
       const url = echoUrl(text) + '?foo=bar#buzz'
 
       const [result, expectedResult] = await Promise.all([
@@ -490,7 +490,7 @@ module.exports = (common, options) => {
     })
 
     it('should add from a URL with only-hash=true', async function () {
-      const text = `TEST${Date.now()}`
+      const text = `TEST${Math.random()}`
       const url = echoUrl(text)
 
       const res = await all(ipfs.add(urlSource(url), { onlyHash: true }))

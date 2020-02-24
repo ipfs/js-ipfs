@@ -139,7 +139,7 @@ describe('dag', () => runOnAndOff.off((thing) => {
     it('puts a cbor node with a legacy { "/": "<CID>" } links', async function () {
       this.timeout(20 * 1000)
 
-      const input = `dag api rulz ${Date.now()}`
+      const input = `dag api rulz ${Math.random()}`
 
       const linkedCid = (await ipfs('dag put', {
         input: Buffer.from(`"${input}"`)

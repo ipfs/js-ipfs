@@ -20,6 +20,10 @@ describe('cp', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('refuses to copy files without arguments', async () => {
     try {
       await mfs.cp()
