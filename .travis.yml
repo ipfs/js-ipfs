@@ -37,6 +37,8 @@ after_success:
 after_failure:
   - echo ./
   - ls -la
+  - echo ./packages/ipfs
+  - ls -la ./packages/ipfs
   - echo /tmp
   - ls -l /tmp
   - cat /tmp/crash.log
