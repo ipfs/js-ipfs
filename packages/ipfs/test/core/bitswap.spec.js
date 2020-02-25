@@ -26,7 +26,7 @@ describe('bitswap', function () {
     it('2 peers', async function () {
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
-      await pproc.swarm.connect(remote.peerId.addresses[0])
+      await proc.swarm.connect(remote.peerId.addresses[0])
       const block = await makeBlock()
 
       await proc.block.put(block)
@@ -41,9 +41,9 @@ describe('bitswap', function () {
       const remote1 = (await df.spawn({ type: 'js' })).api
       const remote2 = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
-      await pproc.swarm.connect(remote1.peerId.addresses[0])
-      await pproc.swarm.connect(remote2.peerId.addresses[0])
-      await premote1.swarm.connect(remote2.peerId.addresses[0])
+      await proc.swarm.connect(remote1.peerId.addresses[0])
+      await proc.swarm.connect(remote2.peerId.addresses[0])
+      await remote1.swarm.connect(remote2.peerId.addresses[0])
 
       await remote1.block.put(blocks[0])
       await remote1.block.put(blocks[1])

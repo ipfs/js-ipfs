@@ -16,10 +16,6 @@ describe('mv', () => {
     mfs = await createMfs()
   })
 
-  after(async () => {
-    await mfs.repo.close()
-  })
-
   it('refuses to move files without arguments', async () => {
     try {
       await mfs.mv()

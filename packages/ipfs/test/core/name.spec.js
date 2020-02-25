@@ -90,9 +90,9 @@ describe('name', function () {
       nodeB = (await createNode()).api
       nodeC = (await createNode()).api
 
-      await nodeC.swarm.connect(nodeA.peerId.addresses[0]) // C => A
-      await nodeC.swarm.connect(nodeB.peerId.addresses[0]) // C => B
-      await nodeA.swarm.connect(nodeB.peerId.addresses[0]) // A => B
+      nodeC.swarm.connect(nodeA.peerId.addresses[0]) // C => A
+      nodeC.swarm.connect(nodeB.peerId.addresses[0]) // C => B
+      nodeA.swarm.connect(nodeB.peerId.addresses[0]) // A => B
     })
 
     after(() => df.clean())

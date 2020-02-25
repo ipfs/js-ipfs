@@ -13,12 +13,8 @@ describe('touch', () => {
     mfs = await createMfs()
   })
 
-  after(async () => {
-    await mfs.repo.close()
-  })
-
   it('should update the mtime for a file', async () => {
-    const path = `/foo-${Math.random()}`
+    const path = `/foo-${Date.now()}`
 
     await mfs.write(path, Buffer.from('Hello world'), {
       create: true,
@@ -35,7 +31,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime for a directory', async () => {
-    const path = `/foo-${Math.random()}`
+    const path = `/foo-${Date.now()}`
 
     await mfs.mkdir(path, {
       mtime: new Date()
@@ -51,7 +47,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime for a hamt-sharded-directory', async () => {
-    const path = `/foo-${Math.random()}`
+    const path = `/foo-${Date.now()}`
 
     await mfs.mkdir(path, {
       mtime: new Date()
@@ -71,7 +67,7 @@ describe('touch', () => {
   })
 
   it('should create an empty file', async () => {
-    const path = `/foo-${Math.random()}`
+    const path = `/foo-${Date.now()}`
 
     await mfs.touch(path, {
       flush: true
