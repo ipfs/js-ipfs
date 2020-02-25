@@ -19,16 +19,14 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, quiet, streamErrors, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      for await (const r of ipfs.repo.gc()) {
-        if (r.err) {
-          streamErrors && print(r.err.message, true, true)
-        } else {
-          print((quiet ? '' : 'removed ') + r.cid)
-        }
+  async handler ({ ctx, quiet, streamErrors }) {
+    const { ipfs, print } = ctx
+    for await (const r of ipfs.repo.gc()) {
+      if (r.err) {
+        streamErrors && print(r.err.message, true, true)
+      } else {
+        print((quiet ? '' : 'removed ') + r.cid)
       }
-    })())
+    }
   }
 }

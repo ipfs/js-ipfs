@@ -55,8 +55,7 @@
     "sinon": "^8.0.4",
     "stream-to-promise": "^2.2.0",
     "temp-write": "^4.0.0",
-    "yargs": "^15.0.2",
-    "yargs-promise": "^1.1.0"
+    "yargs": "^15.1.0"
   },
   "dependencies": {
     "@hapi/boom": "^7.4.3",

@@ -12,12 +12,9 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const id = await ipfs.id()
-
-      return JSON.stringify(id, '', 2)
-    })())
+  async handler ({ ctx }) {
+    const { ipfs } = ctx
+    const id = await ipfs.id()
+    return JSON.stringify(id, '', 2)
   }
 }

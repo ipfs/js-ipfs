@@ -76,14 +76,14 @@ describe('init', function () {
   })
 
   it('should apply one profile', async () => {
-    await ipfs.init({ bits: 512, profiles: ['test'] })
+    await ipfs.init({ profiles: ['test'] })
 
     const config = await repo.config.get()
     expect(config.Bootstrap).to.be.empty()
   })
 
   it('should apply multiple profiles', async () => {
-    await ipfs.init({ bits: 512, profiles: ['test', 'local-discovery'] })
+    await ipfs.init({ profiles: ['test', 'local-discovery'] })
 
     const config = await repo.config.get()
     expect(config.Bootstrap).to.be.empty()

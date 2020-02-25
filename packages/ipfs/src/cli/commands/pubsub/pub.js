@@ -5,13 +5,9 @@ module.exports = {
 
   describe: 'Publish data to a topic',
 
-  builder: {},
-
-  handler (argv) {
-    argv.resolve((async () => {
-      const data = Buffer.from(String(argv.data))
-      const ipfs = await argv.getIpfs()
-      await ipfs.pubsub.publish(argv.topic, data)
-    })())
+  async handler (argv) {
+    const { ipfs } = argv.ctx
+    const data = Buffer.from(String(argv.data))
+    await ipfs.pubsub.publish(argv.topic, data)
   }
 }

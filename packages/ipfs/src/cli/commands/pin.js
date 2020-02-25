@@ -8,8 +8,5 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir('pin')
-  },
-
-  handler (argv) {
   }
 }

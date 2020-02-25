@@ -19,15 +19,13 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const opts = {
-        type: argv.type,
-        size: argv.size
-      }
-      const ipfs = await argv.getIpfs()
-      const key = await ipfs.key.gen(argv.name, opts)
-      argv.print(`generated ${key.id} ${key.name}`)
-    })())
+  async handler (argv) {
+    const { ipfs, print } = argv.ctx
+    const opts = {
+      type: argv.type,
+      size: argv.size
+    }
+    const key = await ipfs.key.gen(argv.name, opts)
+    print(`generated ${key.id} ${key.name}`)
   }
 }

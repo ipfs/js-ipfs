@@ -14,8 +14,5 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir(cidCommandsPath)
-  },
-
-  handler (argv) {
   }
 }

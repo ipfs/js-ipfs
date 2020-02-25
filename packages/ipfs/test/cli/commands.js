@@ -15,6 +15,6 @@ describe('commands', () => runOnAndOff((thing) => {
 
   it('list the commands', async () => {
     const out = await ipfs('commands')
-    expect(out.split('\n')).to.have.length(commandCount + 1)
+    expect(out.split('\n')).to.have.length(commandCount)
   })
 }))

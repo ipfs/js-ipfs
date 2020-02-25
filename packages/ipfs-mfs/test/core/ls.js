@@ -21,10 +21,6 @@ describe('ls', () => {
     mfs = await createMfs()
   })
 
-  after(async () => {
-    await mfs.repo.close()
-  })
-
   it('lists the root directory by default', async () => {
     const fileName = `small-file-${Math.random()}.txt`
     const content = Buffer.from('Hello world')
@@ -149,8 +145,8 @@ describe('ls', () => {
 
     expect(child.Hash.codec).to.equal('raw')
 
-    const dir = `/dir-with-raw-${Math.random()}`
-    const path = `${dir}/raw-${Math.random()}`
+    const dir = `/dir-with-raw-${Date.now()}`
+    const path = `${dir}/raw-${Date.now()}`
 
     await mfs.mkdir(dir)
     await mfs.cp(`/ipfs/${child.Hash}`, path)

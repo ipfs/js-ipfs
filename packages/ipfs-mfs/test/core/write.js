@@ -62,10 +62,6 @@ describe('write', () => {
     mfs = await createMfs()
   })
 
-  after(async () => {
-    await mfs.repo.close()
-  })
-
   it('explodes if it cannot convert content to a pull stream', async () => {
     try {
       await mfs.write('/foo', -1, {
@@ -831,7 +827,7 @@ describe('write', () => {
   it('results in the same hash as a sharded directory created by the importer when causing a subshard of a subshard to be created', async function () {
     this.timeout(60000)
 
-    const dir = `/some-dir-${Math.random()}`
+    const dir = `/some-dir-${Date.now()}`
 
     const nodeGrContent = Buffer.from([0, 1, 2, 3, 4])
     const superModuleContent = Buffer.from([5, 6, 7, 8, 9])
@@ -880,7 +876,7 @@ describe('write', () => {
   it('adds files that cause sub-sub-shards to be created', async function () {
     // this.timeout(60000)
 
-    const dir = `/updated-dir-${Math.random()}`
+    const dir = `/updated-dir-${Date.now()}`
     const buf = Buffer.from([0, 1, 2, 3, 4])
 
     const dirCid = await createShard(mfs.ipld, [{
@@ -902,7 +898,7 @@ describe('write', () => {
   it('removes files that cause sub-sub-shards to be removed', async function () {
     this.timeout(60000)
 
-    const dir = `/imported-dir-${Math.random()}`
+    const dir = `/imported-dir-${Date.now()}`
     const buf = Buffer.from([0, 1, 2, 3, 4])
 
     const dirCid = await createShard(mfs.ipld, [{

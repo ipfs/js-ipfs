@@ -14,8 +14,14 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
   const commonOptions = {
     test: true,
     type: 'js',
-    ipfsModule: IPFS,
-    ipfsHttpModule: require('ipfs-http-client'),
+    ipfsModule: {
+      path: require.resolve('../../src'),
+      ref: IPFS
+    },
+    ipfsHttpModule: {
+      path: require.resolve('ipfs-http-client'),
+      ref: require('ipfs-http-client')
+    },
     ipfsOptions: {
       pass: 'ipfs-is-awesome-software'
     }

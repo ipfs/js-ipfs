@@ -2,7 +2,7 @@
 'use strict'
 
 const IPFS = require('..')
-const { createFactory } = require('ipfsd-ctl')
+const IPFSFactory = require('ipfsd-ctl')
 const bootstrapList = require('../src/core/runtime/config-browser.js')().Bootstrap
 const waitFor = require('./utils/wait-for')
 
@@ -12,15 +12,14 @@ const waitFor = require('./utils/wait-for')
  */
 describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
   let ipfsd
-  let factory
 
-  before(async function () {
+  before(async () => {
     this.timeout(30 * 1000)
 
-    factory = createFactory({
+    const factory = IPFSFactory.create({
       type: 'proc',
-      ipfsModule: IPFS,
-      ipfsHttpModule: require('ipfs-http-client')
+      exec: IPFS,
+      IpfsClient: require('ipfs-http-client')
     })
 
     ipfsd = await factory.spawn({
@@ -32,22 +31,25 @@ describe('Check that a js-ipfs node can indeed contact the bootstrappers', () =>
     })
   })
 
-  after(() => factory.clean())
+  after(() => ipfsd.stop())
 
-  it('a node connects to bootstrappers', async function () {
+  it('a node connects to bootstrappers', function (done) {
     this.timeout(2 * 60 * 1000)
 
-    const test = async () => {
-      const peers = await ipfsd.api.swarm.peers()
-      const peerList = peers.map((peer) => peer.addr.toString())
+    const test = (cb) => {
+      ipfsd.api.swarm.peers((err, peers) => {
+        if (err) return cb(err)
 
-      if (peerList.length !== bootstrapList.length) {
-        return false
-      }
+        const peerList = peers.map((peer) => peer.addr.toString())
 
-      return bootstrapList.every(addr => peerList.includes(addr))
+        if (peerList.length !== bootstrapList.length) {
+          return cb(null, false)
+        }
+
+        cb(null, bootstrapList.every(addr => peerList.includes(addr)))
+      })
     }
 
-    await waitFor(test, { name: 'connect to all bootstrap nodes', timeout: 60 * 1000 })
+    waitFor(test, { name: 'connect to all bootstrap nodes', timeout: 60 * 1000 }, done)
   })
 })

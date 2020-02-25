@@ -2,16 +2,19 @@
 
 const fs = require('fs')
 const os = require('os')
-const multiaddr = require('multiaddr')
 const path = require('path')
 const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
 const byteman = require('byteman')
+const IPFS = require('../core/index')
 
-exports.isDaemonOn = isDaemonOn
-function isDaemonOn () {
+const getRepoPath = () => {
+  return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
+}
+
+const isDaemonOn = () => {
   try {
-    fs.readFileSync(path.join(exports.getRepoPath(), 'api'))
+    fs.readFileSync(path.join(getRepoPath(), 'api'))
     log('daemon is on')
     return true
   } catch (err) {
@@ -20,45 +23,10 @@ function isDaemonOn () {
   }
 }
 
-exports.getAPICtl = getAPICtl
-function getAPICtl (apiAddr) {
-  if (!apiAddr && !isDaemonOn()) {
-    throw new Error('daemon is not on')
-  }
-  if (!apiAddr) {
-    const apiPath = path.join(exports.getRepoPath(), 'api')
-    apiAddr = multiaddr(fs.readFileSync(apiPath).toString()).toString()
-  }
-  // Required inline to reduce startup time
-  const APIctl = require('ipfs-http-client')
-  return APIctl(apiAddr)
-}
-
-exports.getIPFS = argv => {
-  if (argv.api || isDaemonOn()) {
-    return getAPICtl(argv.api)
-  }
-
-  // Required inline to reduce startup time
-  const IPFS = require('../core')
-  return IPFS.create({
-    silent: argv.silent,
-    repoAutoMigrate: argv.migrate,
-    repo: exports.getRepoPath(),
-    init: { allowNew: false },
-    start: false,
-    pass: argv.pass
-  })
-}
-
-exports.getRepoPath = () => {
-  return process.env.IPFS_PATH || os.homedir() + '/.jsipfs'
-}
-
 let visible = true
-exports.disablePrinting = () => { visible = false }
+const disablePrinting = () => { visible = false }
 
-exports.print = (msg, newline, isError = false) => {
+const print = (msg, newline, isError = false) => {
   if (newline === undefined) {
     newline = true
   }
@@ -73,7 +41,11 @@ exports.print = (msg, newline, isError = false) => {
   }
 }
 
-exports.createProgressBar = (totalBytes) => {
+print.error = (msg, newline) => {
+  print(msg, newline, true)
+}
+
+const createProgressBar = (totalBytes) => {
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`
 
@@ -86,7 +58,7 @@ exports.createProgressBar = (totalBytes) => {
   })
 }
 
-exports.rightpad = (val, n) => {
+const rightpad = (val, n) => {
   let result = String(val)
   for (let i = result.length; i < n; ++i) {
     result += ' '
@@ -94,20 +66,52 @@ exports.rightpad = (val, n) => {
   return result
 }
 
-exports.ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
+const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
   'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
   'export IPFS_PATH=/path/to/ipfsrepo\n'
 
-exports.singleton = create => {
-  let promise
-  return function getter () {
-    if (!promise) {
-      promise = (async () => {
-        const instance = await create()
-        getter.instance = instance
-        return instance
-      })()
+async function getIpfs (argv) {
+  if (!argv.api && !isDaemonOn()) {
+    const ipfs = await IPFS.create({
+      silent: argv.silent,
+      repoAutoMigrate: argv.migrate,
+      repo: getRepoPath(),
+      init: { allowNew: false },
+      start: false,
+      pass: argv.pass
+    })
+    return {
+      isDaemon: false,
+      ipfs,
+      cleanup: async () => {
+        await ipfs.stop()
+      }
     }
-    return promise
   }
+
+  let endpoint = null
+  if (!argv.api) {
+    const apiPath = path.join(getRepoPath(), 'api')
+    endpoint = fs.readFileSync(apiPath).toString()
+  } else {
+    endpoint = argv.api
+  }
+  // Required inline to reduce startup time
+  const APIctl = require('ipfs-http-client')
+  return {
+    isDaemon: true,
+    ipfs: APIctl(endpoint),
+    cleanup: async () => { }
+  }
+}
+
+module.exports = {
+  getIpfs,
+  isDaemonOn,
+  getRepoPath,
+  disablePrinting,
+  print,
+  createProgressBar,
+  rightpad,
+  ipfsPathHelp
 }

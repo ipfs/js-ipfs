@@ -2,27 +2,20 @@
 
 const path = require('path')
 const fs = require('fs')
-const utils = require('../../utils')
 
 module.exports = {
   command: 'replace <file>',
 
   describe: 'Replaces the config with <file>',
 
-  builder: {},
+  handler ({ ctx, file }) {
+    const { ipfs, isDaemon } = ctx
 
-  handler (argv) {
-    argv.resolve((async () => {
-      if (argv._handled) return
-      argv._handled = true
+    const filePath = path.resolve(process.cwd(), file)
 
-      const filePath = path.resolve(process.cwd(), argv.file)
+    const config = isDaemon
+      ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
-      const config = utils.isDaemonOn()
-        ? filePath : JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-      const ipfs = await argv.getIpfs()
-      return ipfs.config.replace(config)
-    })())
+    return ipfs.config.replace(config)
   }
 }

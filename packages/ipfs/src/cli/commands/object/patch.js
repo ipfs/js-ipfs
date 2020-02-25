@@ -8,8 +8,6 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir('patch')
-  },
-
-  handler (argv) {
   }
+
 }

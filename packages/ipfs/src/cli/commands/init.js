@@ -43,50 +43,47 @@ module.exports = {
       })
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const path = argv.getRepoPath()
-
-      let config = {}
-      // read and parse config file
-      if (argv.defaultConfig) {
-        try {
-          const raw = fs.readFileSync(argv.defaultConfig)
-          config = JSON.parse(raw)
-        } catch (error) {
-          debug(error)
-          throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
-        }
-      }
-
-      argv.print(`initializing ipfs node at ${path}`)
-
-      // Required inline to reduce startup time
-      const IPFS = require('../../core')
-      const Repo = require('ipfs-repo')
-
-      const node = await IPFS.create({
-        repo: new Repo(path),
-        init: false,
-        start: false,
-        config
-      })
-
+  async handler (argv) {
+    const { print, repoPath } = argv.ctx
+    let config = {}
+    // read and parse config file
+    if (argv.defaultConfig) {
       try {
-        await node.init({
-          bits: argv.bits,
-          privateKey: argv.privateKey,
-          emptyRepo: argv.emptyRepo,
-          profiles: argv.profile,
-          pass: argv.pass,
-          log: argv.print
-        })
-      } catch (err) {
-        if (err.code === 'EACCES') {
-          err.message = 'EACCES: permission denied, stat $IPFS_PATH/version'
-        }
-        throw err
+        const raw = fs.readFileSync(argv.defaultConfig)
+        config = JSON.parse(raw)
+      } catch (error) {
+        debug(error)
+        throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
       }
-    })())
+    }
+
+    print(`initializing ipfs node at ${repoPath}`)
+
+    // Required inline to reduce startup time
+    const IPFS = require('../../core')
+    const Repo = require('ipfs-repo')
+
+    const node = await IPFS.create({
+      repo: new Repo(repoPath),
+      init: false,
+      start: false,
+      config
+    })
+
+    try {
+      await node.init({
+        bits: argv.bits,
+        privateKey: argv.privateKey,
+        emptyRepo: argv.emptyRepo,
+        profiles: argv.profile,
+        pass: argv.pass,
+        log: print
+      })
+    } catch (err) {
+      if (err.code === 'EACCES') {
+        err.message = 'EACCES: permission denied, stat $IPFS_PATH/version'
+      }
+      throw err
+    }
   }
 }

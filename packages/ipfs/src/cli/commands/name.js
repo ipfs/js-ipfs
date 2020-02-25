@@ -13,8 +13,5 @@ module.exports = {
 
   builder (yargs) {
     return yargs.commandDir('name')
-  },
-
-  handler (argv) {
   }
 }
