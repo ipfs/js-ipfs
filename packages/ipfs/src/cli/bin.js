@@ -75,7 +75,7 @@ parser
     if (msg) {
       yargs.showHelp()
       print.error('\n')
-      print.error('Error:', msg)
+      print.error(`Error: ${msg}`)
     }
 
     // Handle commands handler errors
