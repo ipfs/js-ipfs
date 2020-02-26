@@ -1,3 +1,8 @@
+<a name="0.41.2"></a>
+## [0.41.2](https://github.com/ipfs/js-ipfs/compare/v0.41.1...v0.41.2) (2020-02-26)
+
+
+
 <a name="0.41.1"></a>
 ## [0.41.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0...v0.41.1) (2020-02-17)
 
