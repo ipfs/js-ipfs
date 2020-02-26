@@ -13,6 +13,10 @@ describe('flush', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('flushes the root node', async () => {
     const cid = await mfs.flush()
 

@@ -17,6 +17,10 @@ describe('read', () => {
     mfs = await createMfs()
   })
 
+  after(async () => {
+    await mfs.repo.close()
+  })
+
   it('reads a small file', async () => {
     const filePath = '/small-file.txt'
 
