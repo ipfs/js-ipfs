@@ -14,17 +14,11 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
   const commonOptions = {
     test: true,
     type: 'js',
-    ipfsModule: {
-      path: require.resolve('../../src'),
-      ref: IPFS
-    },
-    ipfsHttpModule: {
-      path: require.resolve('ipfs-http-client'),
-      ref: require('ipfs-http-client')
-    },
+    ipfsHttpModule: require('ipfs-http-client'),
     ipfsOptions: {
       pass: 'ipfs-is-awesome-software'
-    }
+    },
+    ipfsBin: path.resolve(path.join(__dirname, '../../src/cli/bin.js'))
   }
   const overrides = {
     js: {
