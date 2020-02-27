@@ -206,7 +206,7 @@ module.exports = {
       const totalBytes = await getTotalBytes(argv.file)
       bar = createProgressBar(totalBytes, print)
 
-      if (process.stdout.isTTY) {
+      if (print.isTTY) {
         // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs
         log = bar.interrupt.bind(bar)
       }

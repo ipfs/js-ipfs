@@ -53,6 +53,9 @@ print.error = (msg, newline) => {
   print(msg, newline, true)
 }
 
+// used by ipfs.add to interrupt the progress bar
+print.isTTY = process.stdout.isTTY
+
 const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`

@@ -28,6 +28,8 @@ const output = () => {
 
     return ''
   }
+  // used by ipfs.add to interrupt the progress bar
+  print.isTTY = true
 
   return print
 }
