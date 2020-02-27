@@ -177,7 +177,6 @@
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
     "delay": "^4.3.0",
-    "dir-compare": "^1.7.3",
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
@@ -192,6 +191,7 @@
     "rimraf": "^3.0.0",
     "sinon": "^8.0.4",
     "stream-to-promise": "^2.2.0",
+    "string-argv": "^0.3.1",
     "temp-write": "^4.0.0"
   },
   "optionalDependencies": {

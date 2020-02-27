@@ -1,20 +1,31 @@
 'use strict'
 
-const command = {
-  command: 'files <command>',
+const parser = require('./parser')
+const commandAlias = require('./command-alias')
+const errCode = require('err-code')
 
-  description: 'Operations over mfs files (ls, mkdir, rm, etc)',
+module.exports = (command, ctxMiddleware) => {
+  // Apply command aliasing (eg `refs local` -> `refs-local`)
+  command = commandAlias(command)
 
-  builder (yargs) {
-    return yargs.commandDir('.')
-  },
+  return new Promise((resolve, reject) => {
+    try {
+      parser
+        .middleware(ctxMiddleware)
+        .onFinishCommand((data) => {
+          resolve(data)
+        })
+        .fail((msg, err, yargs) => {
+          // Handle yargs errors
+          if (msg) {
+            return reject(errCode(new Error(msg), 'ERR_YARGS', { yargs }))
+          }
 
-  handler (argv) {
-    argv.print('Type `jsipfs files --help` for more instructions')
-  }
-}
-
-module.exports = (yargs) => {
-  return yargs
-    .command(command)
+          reject(err)
+        })
+        .parse(command)
+    } catch (err) {
+      return reject(err)
+    }
+  })
 }

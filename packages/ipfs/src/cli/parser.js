@@ -1,6 +1,6 @@
 'use strict'
 
-const yargs = require('yargs')
+const yargs = require('yargs/yargs')(process.argv.slice(2))
 const mfs = require('ipfs-mfs/cli')
 const utils = require('./utils')
 

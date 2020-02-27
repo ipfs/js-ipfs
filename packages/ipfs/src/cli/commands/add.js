@@ -187,7 +187,8 @@ module.exports = {
       preload: argv.preload,
       nonatomic: argv.nonatomic,
       fileImportConcurrency: argv.fileImportConcurrency,
-      blockWriteConcurrency: argv.blockWriteConcurrency
+      blockWriteConcurrency: argv.blockWriteConcurrency,
+      progress: () => {}
     }
 
     if (options.enableShardingExperiment && isDaemon) {
@@ -203,7 +204,7 @@ module.exports = {
 
     if (argv.progress && argv.file) {
       const totalBytes = await getTotalBytes(argv.file)
-      bar = createProgressBar(totalBytes)
+      bar = createProgressBar(totalBytes, print)
 
       if (process.stdout.isTTY) {
         // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs

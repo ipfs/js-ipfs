@@ -9,22 +9,26 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { repoVersion } = require('ipfs-repo')
 const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)
-const runOnAndOff = require('../utils/on-and-off')
 const ipfsExec = require('../utils/ipfs-exec')
 const clean = require('../utils/clean')
 const { isWindows } = require('../utils/platforms')
+const cli = require('../utils/cli')
+const sinon = require('sinon')
 
-describe('general cli options', () => runOnAndOff.off((thing) => {
-  it('should handle --silent flag', async () => {
-    const out = await thing.ipfs('version --silent')
-    expect(out).to.be.empty()
+describe('general cli options', () => {
+  let ipfs
+
+  beforeEach(() => {
+    ipfs = {
+      version: sinon.stub()
+    }
   })
 
   it('should handle unknown arguments correctly', async () => {
-    const out = await thing.ipfs.fail('random --again')
-    expect(out.all).to.include('Unknown arguments: again, random')
+    const out = await cli.fail('random --again', { ipfs })
+    expect(out).to.include('Unknown arguments: again, random')
   })
-}))
+})
 
 describe('--migrate', () => {
   let ipfs, repoPath

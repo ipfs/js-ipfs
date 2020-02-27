@@ -2,23 +2,34 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const runOnAndOff = require('../utils/on-and-off')
+const cli = require('../utils/cli')
+const sinon = require('sinon')
 
-describe('refs local', () => runOnAndOff((thing) => {
+describe('refs local', () => {
   let ipfs
 
-  before(() => {
-    ipfs = thing.ipfs
-    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
+  beforeEach(() => {
+    ipfs = {
+      refs: {
+        local: sinon.stub()
+      }
+    }
   })
 
-  it('prints CID of all blocks', async function () {
-    this.timeout(20 * 1000)
+  it('prints CID of all blocks', async () => {
+    const ref = 'ref'
+    const err = 'err'
 
-    const out = await ipfs('refs local')
+    ipfs.refs.local.returns([{
+      ref
+    }, {
+      err
+    }])
+
+    const out = await cli('refs local', { ipfs })
     const lines = out.split('\n')
 
-    expect(lines.includes('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN')).to.eql(true)
-    expect(lines.includes('QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU')).to.eql(true)
+    expect(lines.includes(ref)).to.be.true()
+    expect(lines.includes(err)).to.be.true()
   })
-}))
+})

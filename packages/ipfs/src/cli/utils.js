@@ -26,26 +26,34 @@ const isDaemonOn = () => {
 let visible = true
 const disablePrinting = () => { visible = false }
 
-const print = (msg, newline, isError = false) => {
-  if (newline === undefined) {
-    newline = true
-  }
-
+const print = (msg, includeNewline = true, isError = false) => {
   if (visible) {
     if (msg === undefined) {
       msg = ''
     }
-    msg = newline ? msg + '\n' : msg
+    msg = includeNewline ? msg + '\n' : msg
     const outStream = isError ? process.stderr : process.stdout
     outStream.write(msg)
   }
+}
+
+print.clearLine = () => {
+  return process.stdout.clearLine()
+}
+
+print.cursorTo = (pos) => {
+  process.stdout.cursorTo(pos)
+}
+
+print.write = (data) => {
+  process.stdout.write(data)
 }
 
 print.error = (msg, newline) => {
   print(msg, newline, true)
 }
 
-const createProgressBar = (totalBytes) => {
+const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`
 
@@ -53,7 +61,7 @@ const createProgressBar = (totalBytes) => {
   return new Progress(barFormat, {
     incomplete: ' ',
     clear: true,
-    stream: process.stdout,
+    stream: output,
     total: totalBytes
   })
 }
