@@ -163,7 +163,7 @@ Once installed, please follow the [Getting Started Guide](https://docs.ipfs.io/i
 
 ### Use in the browser
 
-Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
+Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples) folder.
 
 You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN **or** the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make an `Ipfs` object available in the global namespace.
 
@@ -340,7 +340,7 @@ Prevents all logging output from the IPFS node.
 |------|---------|
 | object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples/circuit-relaying) to learn more).
 
 - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
@@ -381,7 +381,7 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/config-browser.js) in browsers |
+| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js) in browsers |
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](docs/config.md).
 
@@ -406,7 +406,7 @@ Available delegate multiaddrs are:
 
  | Type | Default |
 |------|---------|
-| object |  [`ipld-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/src/core/runtime/ipld-browser.js) in browsers |
+| object |  [`ipld-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js) in browsers |
 
  Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
 
