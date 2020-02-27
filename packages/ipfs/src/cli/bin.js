@@ -16,19 +16,20 @@ process.once('unhandledRejection', (err) => {
 })
 
 const semver = require('semver')
-const updateNotifier = require('update-notifier')
-const { InvalidRepoVersionError } = require('ipfs-repo/src/errors/index')
-const { NotEnabledError } = require('../core/errors')
-const { print, getIpfs, getRepoPath } = require('./utils')
-const debug = require('debug')('ipfs:cli')
 const pkg = require('../../package.json')
-const cli = require('./')
 
 // Check for node version
 if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
   console.error(`Please update your Node.js version to ${pkg.engines.node}`)
   process.exit(1)
 }
+
+const updateNotifier = require('update-notifier')
+const { InvalidRepoVersionError } = require('ipfs-repo/src/errors/index')
+const { NotEnabledError } = require('../core/errors')
+const { print, getIpfs, getRepoPath } = require('./utils')
+const debug = require('debug')('ipfs:cli')
+const cli = require('./')
 
 // Check if an update is available and notify
 const oneWeek = 1000 * 60 * 60 * 24 * 7
