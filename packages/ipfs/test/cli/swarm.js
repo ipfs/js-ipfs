@@ -3,108 +3,107 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const cli = require('../utils/cli')
 const sinon = require('sinon')
-const multiaddr = require('multiaddr')
-const PeerInfo = require('peer-info')
-const ipfsExec = require('../utils/ipfs-exec')
-const PeerId = require('peer-id')
-const factory = require('../utils/factory')
-const cli = require('../../src/cli/parser')
+const ma = require('multiaddr')
 
-// TODO: libp2p integration
-describe.skip('swarm', () => {
-  const df = factory({ type: 'js' })
-  afterEach(() => {
-    sinon.restore()
+describe('swarm', () => {
+  let ipfs
+
+  beforeEach(() => {
+    ipfs = {
+      swarm: {
+        connect: sinon.stub(),
+        peers: sinon.stub(),
+        addrs: sinon.stub(),
+        localAddrs: sinon.stub(),
+        disconnect: sinon.stub()
+      }
+    }
   })
 
-  describe('daemon on (through http-api)', function () {
-    this.timeout(60 * 1000)
+  it('connect online', async () => {
+    const multiaddr = 'multiaddr'
+    const result = 'result'
 
-    let bMultiaddr
-    let ipfsA
+    ipfs.swarm.connect.withArgs(multiaddr).resolves([result])
 
-    before(async function () {
-      // CI takes longer to instantiate the daemon, so we need to increase the
-      // timeout for the before step
-      this.timeout(80 * 1000)
-
-      const res = await Promise.all([
-        df.spawn(),
-        df.spawn()
-      ])
-      ipfsA = ipfsExec(res[0].path)
-      const id = await res[1].api.id()
-      bMultiaddr = id.addresses[0]
-    })
-
-    after(() => df.clean())
-
-    it('connect', async () => {
-      const out = await ipfsA(`swarm connect ${bMultiaddr}`)
-      expect(out).to.eql(`connect ${bMultiaddr} success\n`)
-    })
-
-    it('peers', async () => {
-      const out = await ipfsA('swarm peers')
-      expect(out).to.eql(bMultiaddr + '\n')
-    })
-
-    it('addrs', async () => {
-      const out = await ipfsA('swarm addrs')
-      expect(out).to.have.length.above(1)
-    })
-
-    it('addrs local', async () => {
-      const out = await ipfsA('swarm addrs local')
-      expect(out).to.have.length.above(1)
-    })
-
-    it('disconnect', async () => {
-      const out = await ipfsA(`swarm disconnect ${bMultiaddr}`)
-      expect(out).to.eql(
-        `disconnect ${bMultiaddr} success\n`
-      )
-    })
-
-    it('`peers` should not throw after `disconnect`', async () => {
-      const out = await ipfsA('swarm peers')
-      expect(out).to.be.empty()
-    })
+    const out = await cli(`swarm connect ${multiaddr}`, { ipfs, isDaemon: true })
+    expect(out).to.equal(`${result}\n`)
   })
 
-  describe('handlers', () => {
-    let peerInfo
+  it('connect offline', async () => {
+    const multiaddr = 'multiaddr'
 
-    describe('addrs', () => {
-      before(async () => {
-        const peerId = await PeerId.create({ bits: 512 })
-        peerInfo = new PeerInfo(peerId)
-      })
+    const out = await cli.fail(`swarm connect ${multiaddr}`, { ipfs, isDaemon: false })
+    expect(out).to.include('This command must be run in online mode')
 
-      it('should return addresses for all peers', (done) => {
-        sinon.stub(peerInfo.multiaddrs, '_multiaddrs').value([
-          multiaddr('/ip4/127.0.0.1/tcp/4001'),
-          multiaddr(`/ip4/127.0.0.1/tcp/4001/ws/ipfs/${peerInfo.id.toB58String()}`)
-        ])
-        const methodFake = sinon.fake.resolves([peerInfo])
-        const printFake = sinon.fake()
-        cli
-          .onFinishCommand(() => {
-            sinon.assert.calledWith(printFake, [
-              `${peerInfo.id.toB58String()} (2)\n` +
-                '\t/ip4/127.0.0.1/tcp/4001\n' +
-                '\t/ip4/127.0.0.1/tcp/4001/ws'
-            ].join('\n'))
+    expect(ipfs.swarm.connect.called).to.be.false()
+  })
 
-            sinon.assert.called(methodFake)
-            done()
-          })
-          .parse('swarm addrs', {
-            print: printFake,
-            ipfs: { api: { swarm: { addrs: methodFake } } }
-          })
-      })
-    })
+  it('peers online', async () => {
+    ipfs.swarm.peers.resolves([{
+      peer: { toB58String: () => 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z' },
+      addr: '/ip4/192.0.0.1/tcp/5001'
+    }, {
+      addr: '/ip4/192.0.0.2/tcp/5002/p2p/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5a'
+    }])
+
+    const out = await cli('swarm peers', { ipfs, isDaemon: true })
+    expect(out).to.equal('/ip4/192.0.0.1/tcp/5001/p2p/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z\n/ip4/192.0.0.2/tcp/5002/p2p/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5a\n')
+  })
+
+  it('peers offline', async () => {
+    const out = await cli.fail('swarm peers', { ipfs, isDaemon: false })
+    expect(out).to.include('This command must be run in online mode')
+
+    expect(ipfs.swarm.peers.called).to.be.false()
+  })
+
+  it('addrs', async () => {
+    const peer = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
+    const addr = `/ip4/192.0.0.2/tcp/5002/p2p/${peer}`
+
+    ipfs.swarm.addrs.resolves([{
+      id: { toB58String: () => peer },
+      multiaddrs: {
+        size: 1,
+        toArray: () => [
+          ma(addr)
+        ]
+      }
+    }])
+
+    const out = await cli('swarm addrs', { ipfs })
+    expect(out).to.equal(`${peer} (1)\n\t${addr}\n`)
+  })
+
+  it('addrs local', async () => {
+    const addr = 'addr'
+
+    ipfs.swarm.localAddrs.resolves([
+      addr
+    ])
+
+    const out = await cli('swarm addrs local', { ipfs, isDaemon: true })
+    expect(out).to.equal(`${addr}\n`)
+  })
+
+  it('addrs local offline', async () => {
+    const out = await cli.fail('swarm addrs local', { ipfs, isDaemon: false })
+    expect(out).to.include('This command must be run in online mode')
+  })
+
+  it('disconnect', async () => {
+    const addr = 'addr'
+    ipfs.swarm.disconnect.withArgs(addr).resolves([addr])
+    const out = await cli(`swarm disconnect ${addr}`, { ipfs, isDaemon: true })
+    expect(out).to.equal(`${addr}\n`)
+  })
+
+  it('disconnect offline', async () => {
+    const addr = 'addr'
+    const out = await cli.fail(`swarm disconnect ${addr}`, { ipfs, isDaemon: false })
+    expect(out).to.include('This command must be run in online mode')
   })
 })

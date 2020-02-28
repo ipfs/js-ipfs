@@ -2,55 +2,75 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const runOnAndOff = require('../utils/on-and-off')
-const isIPFS = require('is-ipfs')
+const cli = require('../utils/cli')
+const sinon = require('sinon')
 
-describe('dns', () => runOnAndOff((thing) => {
+describe('dns', () => {
   let ipfs
 
-  before(function () {
-    this.timeout(60 * 1000)
-    ipfs = thing.ipfs
+  beforeEach(() => {
+    ipfs = {
+      dns: sinon.stub()
+    }
   })
 
-  it('recursively resolve ipfs.io dns', async function () {
-    this.timeout(60 * 1000)
+  it('resolves ipfs.io dns', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
 
-    const res = await ipfs('dns ipfs.io')
-    expect(res.substr(0, 6)).to.eql('/ipfs/')
-    const resultingDomainOrCid = res.split('/')[2].trim()
-    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
+    ipfs.dns.withArgs(domain, {
+      recursive: true,
+      format: undefined
+    }).returns(path)
+
+    const out = await cli('dns ipfs.io', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
   })
 
-  it('recursively resolve _dnslink.ipfs.io dns', async function () {
-    this.timeout(60 * 1000)
+  it('resolves ipfs.io dns non-recursively', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
 
-    const res = await ipfs('dns _dnslink.ipfs.io')
-    expect(res.substr(0, 6)).to.eql('/ipfs/')
-    const resultingDomainOrCid = res.split('/')[2].trim()
-    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(true)
+    ipfs.dns.withArgs(domain, {
+      recursive: false,
+      format: undefined
+    }).returns(path)
+
+    const out = await cli('dns ipfs.io --recursive=false', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
   })
 
-  it('non-recursive resolve ipfs.io', async function () {
-    this.timeout(60 * 1000)
+  it('resolves ipfs.io dns recursively (short option)', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
 
-    const res = await ipfs('dns --recursive false ipfs.io')
-    expect(res.substr(0, 6)).to.eql('/ipns/')
-    const resultingDomainOrCid = res.split('/')[2].trim()
-    expect(isIPFS.cid(resultingDomainOrCid)).to.eql(false)
+    ipfs.dns.withArgs(domain, {
+      recursive: false,
+      format: undefined
+    }).returns(path)
+
+    const out = await cli('dns ipfs.io -r false', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
   })
 
-  it('resolve subdomain docs.ipfs.io dns', async function () {
-    this.timeout(60 * 1000)
+  it('resolves ipfs.io dns with a format', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
 
-    const res = await ipfs('dns docs.ipfs.io')
-    expect(res.substr(0, 6)).to.eql('/ipfs/')
+    ipfs.dns.withArgs(domain, {
+      recursive: true,
+      format: 'derp'
+    }).returns(path)
+
+    const out = await cli('dns ipfs.io --format derp', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
   })
-
-  it('resolve subdomain _dnslink.docs.ipfs.io dns', async function () {
-    this.timeout(60 * 1000)
-
-    const res = await ipfs('dns _dnslink.docs.ipfs.io')
-    expect(res.substr(0, 6)).to.eql('/ipfs/')
-  })
-}))
+})

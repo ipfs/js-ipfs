@@ -10,7 +10,8 @@ module.exports = {
   builder: {
     'dry-run': {
       type: 'boolean',
-      describe: 'print difference between the current config and the config that would be generated.'
+      describe: 'print difference between the current config and the config that would be generated.',
+      default: false
     }
   },
 

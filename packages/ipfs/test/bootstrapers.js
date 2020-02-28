@@ -34,7 +34,7 @@ describe('Check that a js-ipfs node can indeed contact the bootstrappers', () =>
 
   after(() => factory.clean())
 
-  it('a node connects to bootstrappers', function (done) {
+  it('a node connects to bootstrappers', async function () {
     this.timeout(2 * 60 * 1000)
 
     const test = async () => {

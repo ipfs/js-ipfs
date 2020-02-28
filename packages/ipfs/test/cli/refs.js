@@ -2,45 +2,141 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const runOnAndOff = require('../utils/on-and-off')
+const CID = require('cids')
+const cli = require('../utils/cli')
+const sinon = require('sinon')
+
+const defaultRefsArgs = (overrides = {}) => {
+  return {
+    recursive: false,
+    format: '<dst>',
+    edges: false,
+    unique: false,
+    maxDepth: undefined,
+    ...overrides
+  }
+}
 
 // Note: There are more comprehensive tests in interface-js-ipfs-core
-describe('refs', () => runOnAndOff((thing) => {
+describe('refs', () => {
   let ipfs
+  const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+  const err = 'err'
+  const ref = 'ref'
 
-  before(() => {
-    ipfs = thing.ipfs
-    return ipfs('add -r test/fixtures/test-data/recursive-get-dir')
+  beforeEach(() => {
+    ipfs = {
+      refs: sinon.stub()
+    }
   })
 
-  it('prints added files', async function () {
-    this.timeout(20 * 1000)
+  it('prints refs', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs()).returns([{
+      err
+    }, {
+      ref
+    }])
 
-    const out = await ipfs('refs Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+    const out = await cli(`refs ${cid}`, { ipfs })
     expect(out).to.eql(
-      'QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT\n' +
-      'QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN\n' +
-      'QmUqyZtPmsRy1U5Mo8kz2BAMmk1hfJ7yW1KAFTMB2odsFv\n' +
-      'QmUhUuiTKkkK8J6JZ9zmj8iNHPuNfGYcszgRumzhHBxEEU\n' +
-      'QmR56UJmAaZLXLdTT1ALrE9vVqV8soUEekm9BMd4FnuYqV\n'
+      `${err}\n` +
+      `${ref}\n`
     )
   })
 
-  it('follows a path with recursion, <hash>/<subdir>', async function () {
-    this.timeout(20 * 1000)
+  it('prints refs with recursion', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      recursive: true
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
 
-    const out = await ipfs('refs -r --format="<linkname>" /ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/init-docs')
+    const out = await cli(`refs --recursive ${cid}`, { ipfs })
     expect(out).to.eql(
-      'about\n' +
-      'contact\n' +
-      'docs\n' +
-      'index\n' +
-      'help\n' +
-      'quick-start\n' +
-      'readme\n' +
-      'security-notes\n' +
-      'tour\n' +
-      '0.0-intro\n'
+      `${err}\n` +
+      `${ref}\n`
     )
   })
-}))
+
+  it('prints refs with recursion (short option)', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      recursive: true
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
+
+    const out = await cli(`refs -r ${cid}`, { ipfs })
+    expect(out).to.eql(
+      `${err}\n` +
+      `${ref}\n`
+    )
+  })
+
+  it('prints refs with format', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      format: '<src> <dst>'
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
+
+    const out = await cli(`refs --format '<src> <dst>' ${cid}`, { ipfs })
+    expect(out).to.eql(
+      `${err}\n` +
+      `${ref}\n`
+    )
+  })
+
+  it('prints refs with unique', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      unique: true
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
+
+    const out = await cli(`refs --unique ${cid}`, { ipfs })
+    expect(out).to.eql(
+      `${err}\n` +
+      `${ref}\n`
+    )
+  })
+
+  it('prints refs with unique (short option)', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      unique: true
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
+
+    const out = await cli(`refs -u ${cid}`, { ipfs })
+    expect(out).to.eql(
+      `${err}\n` +
+      `${ref}\n`
+    )
+  })
+
+  it('prints refs with max-depth', async () => {
+    ipfs.refs.withArgs([cid.toString()], defaultRefsArgs({
+      maxDepth: 4
+    })).returns([{
+      err
+    }, {
+      ref
+    }])
+
+    const out = await cli(`refs --max-depth 4 ${cid}`, { ipfs })
+    expect(out).to.eql(
+      `${err}\n` +
+      `${ref}\n`
+    )
+  })
+})
