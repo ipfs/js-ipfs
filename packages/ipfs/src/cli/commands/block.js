@@ -8,8 +8,5 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir('block')
-  },
-
-  handler (argv) {
   }
 }

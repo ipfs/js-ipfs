@@ -17,11 +17,10 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, domain, resolve, recursive, format }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      const path = await ipfs.dns(domain, { recursive, format })
-      print(path)
-    })())
+  async handler ({ ctx, domain, recursive, format }) {
+    const { ipfs, print } = ctx
+
+    const path = await ipfs.dns(domain, { recursive, format })
+    print(path)
   }
 }

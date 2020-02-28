@@ -61,8 +61,8 @@ describe('config', () => runOnAndOff((thing) => {
     })
 
     it('call config with no arguments', async () => {
-      const out = await ipfs('config')
-      expect(out).to.include('Not enough non-option arguments: got 0, need at least 1')
+      const out = await ipfs.fail('config')
+      expect(out.all).to.include('Not enough non-option arguments: got 0, need at least 1')
     })
   })
 

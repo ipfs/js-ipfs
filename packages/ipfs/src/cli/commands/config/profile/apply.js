@@ -14,22 +14,20 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const diff = await ipfs.config.profiles.apply(argv.profile, { dryRun: argv.dryRun })
-      const delta = JSONDiff.diff(diff.original, diff.updated)
-      const res = JSONDiff.formatters.console.format(delta, diff.original)
+  async handler ({ ctx, profile, dryRun }) {
+    const { print, ipfs, isDaemon } = ctx
+    const diff = await ipfs.config.profiles.apply(profile, { dryRun })
+    const delta = JSONDiff.diff(diff.original, diff.updated)
+    const res = JSONDiff.formatters.console.format(delta, diff.original)
 
-      if (res) {
-        argv.print(res)
+    if (res) {
+      print(res)
 
-        if (argv.isDaemonOn()) {
-          argv.print('\nThe IPFS daemon is running in the background, you may need to restart it for changes to take effect.')
-        }
-      } else {
-        argv.print(`IPFS config already contains the settings from the '${argv.profile}' profile`)
+      if (isDaemon) {
+        print('\nThe IPFS daemon is running in the background, you may need to restart it for changes to take effect.')
       }
-    })())
+    } else {
+      print(`IPFS config already contains the settings from the '${profile}' profile`)
+    }
   }
 }

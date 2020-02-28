@@ -52,9 +52,9 @@ module.exports = {
 
   handler (argv) {
     const {
+      ctx: { ipfs },
       source,
       dest,
-      getIpfs,
       parents,
       recursive,
       cidVersion,
@@ -63,17 +63,13 @@ module.exports = {
       shardSplitThreshold
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-
-      return ipfs.files.mv(source, dest, {
-        parents,
-        recursive,
-        cidVersion,
-        hashAlg,
-        flush,
-        shardSplitThreshold
-      })
-    })())
+    return ipfs.files.mv(source, dest, {
+      parents,
+      recursive,
+      cidVersion,
+      hashAlg,
+      flush,
+      shardSplitThreshold
+    })
   }
 }

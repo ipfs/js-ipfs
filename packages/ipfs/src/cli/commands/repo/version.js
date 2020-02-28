@@ -5,13 +5,9 @@ module.exports = {
 
   describe: 'Shows IPFS repo version information',
 
-  builder: {},
-
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const version = await ipfs.repo.version()
-      argv.print(version)
-    })())
+  async handler (argv) {
+    const { ipfs, print } = argv.ctx
+    const version = await ipfs.repo.version()
+    print(version)
   }
 }

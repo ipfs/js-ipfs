@@ -26,22 +26,15 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const opts = {
-        nocache: argv.nocache,
-        recursive: argv.recursive
-      }
+  async handler ({ ctx, nocache, recursive, name, stream }) {
+    const { ipfs, print } = ctx
+    let bestValue
 
-      const ipfs = await argv.getIpfs()
-      let bestValue
+    for await (const value of ipfs.name.resolve(name, { nocache, recursive })) {
+      bestValue = value
+      if (stream) print(value)
+    }
 
-      for await (const value of ipfs.name.resolve(argv.name, opts)) {
-        bestValue = value
-        if (argv.stream) argv.print(value)
-      }
-
-      if (!argv.stream) argv.print(bestValue)
-    })())
+    if (!stream) print(bestValue)
   }
 }

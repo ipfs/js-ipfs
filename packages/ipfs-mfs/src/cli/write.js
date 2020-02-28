@@ -96,11 +96,10 @@ module.exports = {
     }
   },
 
-  handler (argv) {
+  async handler (argv) {
     const {
+      ctx: { ipfs, getStdin },
       path,
-      getIpfs,
-      getStdin,
       offset,
       length,
       create,
@@ -118,26 +117,22 @@ module.exports = {
       mtime
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-
-      await ipfs.files.write(path, getStdin(), {
-        offset,
-        length,
-        create,
-        truncate,
-        rawLeaves,
-        reduceSingleLeafToSelf,
-        cidVersion,
-        hashAlg,
-        parents,
-        progress,
-        strategy,
-        flush,
-        shardSplitThreshold,
-        mode,
-        mtime
-      })
-    })())
+    await ipfs.files.write(path, getStdin(), {
+      offset,
+      length,
+      create,
+      truncate,
+      rawLeaves,
+      reduceSingleLeafToSelf,
+      cidVersion,
+      hashAlg,
+      parents,
+      progress,
+      strategy,
+      flush,
+      shardSplitThreshold,
+      mode,
+      mtime
+    })
   }
 }

@@ -24,17 +24,14 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, peer, proto, poll, interval, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-
-      for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval })) {
-        print(`bandwidth status
+  async handler ({ ctx, peer, proto, poll, interval }) {
+    const { ipfs, print } = ctx
+    for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval })) {
+      print(`bandwidth status
   total in: ${chunk.totalIn}B
   total out: ${chunk.totalOut}B
   rate in: ${chunk.rateIn}B/s
   rate out: ${chunk.rateOut}B/s`)
-      }
-    })())
+    }
   }
 }

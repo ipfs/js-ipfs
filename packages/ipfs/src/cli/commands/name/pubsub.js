@@ -11,8 +11,6 @@ module.exports = {
 
   builder (yargs) {
     return yargs.commandDir('pubsub')
-  },
-
-  handler (argv) {
   }
+
 }
