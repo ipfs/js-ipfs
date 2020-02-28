@@ -99,4 +99,6 @@ async function runNodeTest (dir) {
   const runTest = require(path.join(dir, 'test.js'))
 
   await runTest()
+
+  process.exit(0)
 }
