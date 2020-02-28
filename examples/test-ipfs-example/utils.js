@@ -156,8 +156,6 @@ async function waitForOutput (expectedOutput, command, args = [], opts = {}) {
       foundExpectedOutput = true
       proc.kill()
       cancelTimeout()
-    } else {
-      console.info(expectedOutput, 'not in', output)
     }
   })
 
