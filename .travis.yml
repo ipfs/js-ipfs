@@ -57,7 +57,7 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- -- -- --bundlesize
+        - npm run build -- --scope={ipfs,ipfs-http-client} -- -- --bundlesize
         - npm run dep-check -- -- -- -- -i wrtc -i electron-webrtc
         - npm run lint -- --concurrency 1
 
