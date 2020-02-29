@@ -49,6 +49,7 @@ after_success:
 
 jobs:
   allow_failures:
+    - name: external - ipfs-webui
     - name: external - ipfs-companion
     - name: external - npm-on-ipfs
     - name: external - peer-base
@@ -56,7 +57,6 @@ jobs:
     - name: external - orbit-db
     - name: external - ipfs-log
     - name: external - sidetree
-    - name: external - webui
   include:
     - stage: check
       script:
@@ -145,56 +145,56 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-webui
       script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next"
+        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-companion
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - npm-on-ipfs
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - peer-base
       script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next"
+        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - service-worker-gateway
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - sidetree
       script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false
