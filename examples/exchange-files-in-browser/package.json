@@ -1,0 +1,26 @@
+{
+  "name": "example-exchange-files-in-browser",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf public/bundle.js",
+    "bundle": "browserify public/app.js > public/bundle.js",
+    "start": "http-server -c-1 -p 12345 public",
+    "dev": "npm run bundle && npm run start",
+    "test": "test-ipfs-example"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "execa": "^3.2.0",
+    "http-server": "^0.11.1",
+    "ipfs-http-client": "^42.0.0"
+  },
+  "dependencies": {
+    "ipfs": "^0.41.0",
+    "test-ipfs-example": "^1.0.0"
+  },
+  "browser": {
+    "ipfs": "ipfs/dist"
+  }
+}

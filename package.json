@@ -4,7 +4,7 @@
   "description": "JavaScript implementation of the IPFS specification",
   "scripts": {
     "postinstall": "lerna bootstrap",
-    "reset": "lerna run clean && rm -rf packages/*/node_modules node_modules",
+    "reset": "lerna run clean && rm -rf examples/*/node_modules && rm -rf packages/*/node_modules node_modules",
     "test": "lerna run test",
     "test:node": "lerna run test:node",
     "test:browser": "lerna run test:browser",
