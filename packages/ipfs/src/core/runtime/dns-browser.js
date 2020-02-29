@@ -3,7 +3,7 @@
 
 const TLRU = require('../../utils/tlru')
 const { default: PQueue } = require('p-queue')
-const { default: ky } = require('ky-universal')
+const HTTP = require('ipfs-utils/src/http')
 
 // Avoid sending multiple queries for the same hostname by caching results
 const cache = new TLRU(1000)
@@ -15,21 +15,6 @@ const ttl = 60 * 1000
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)
 const httpQueue = new PQueue({ concurrency: 4 })
-
-// Delegated HTTP resolver sending DNSLink queries to ipfs.io
-// TODO: replace hardcoded host with configurable DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
-const api = ky.create({
-  prefixUrl: 'https://ipfs.io/api/v0/',
-  hooks: {
-    afterResponse: [
-      async (input, options, response) => {
-        const query = new URL(response.url).search.slice(1)
-        const json = await response.json()
-        cache.set(query, json, ttl)
-      }
-    ]
-  }
-})
 
 const ipfsPath = (response) => {
   if (response.Path) return response.Path
@@ -51,7 +36,16 @@ module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
     }
 
     // fallback to delegated DNS resolver
-    const response = await httpQueue.add(() => api.get('dns', { searchParams }).json())
+    const response = await httpQueue.add(async () => {
+      // Delegated HTTP resolver sending DNSLink queries to ipfs.io
+      // TODO: replace hardcoded host with configurable DNS over HTTPS: https://github.com/ipfs/js-ipfs/issues/2212
+      const res = await HTTP.get('https://ipfs.io/api/v0/dns', { searchParams })
+      const query = new URL(res.url).search.slice(1)
+      const json = await res.json()
+      cache.set(query, json, ttl)
+
+      return json
+    })
     return ipfsPath(response)
   }
 

@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const cli = require('../utils/cli')
 
-const commandCount = 98
+const commandCount = 110
 
 describe('commands', () => {
   it('list the commands', async () => {

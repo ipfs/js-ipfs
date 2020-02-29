@@ -28,14 +28,13 @@
   },
   "license": "MIT",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "buffer": "^5.4.2",
     "err-code": "^2.0.0",
     "fs-extra": "^8.1.0",
     "is-electron": "^2.2.0",
     "iso-url": "^0.4.7",
     "it-glob": "0.0.7",
-    "ky": "^0.15.0",
-    "ky-universal": "^0.3.0",
     "merge-options": "^2.0.0",
     "node-fetch": "^2.6.0",
     "stream-to-it": "^0.2.0"

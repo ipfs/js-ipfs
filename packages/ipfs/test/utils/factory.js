@@ -14,6 +14,9 @@ const commonOptions = {
       dialer: {
         dialTimeout: 60e3 // increase timeout because travis is slow
       }
+    },
+    EXPERIMENTAL: {
+      sharding: true
     }
   },
   endpoint: 'http://localhost:57483'

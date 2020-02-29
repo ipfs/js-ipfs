@@ -14,7 +14,7 @@ module.exports = [
   ...require('./swarm'),
   ...require('./bitswap'),
   ...require('./files-regular'),
-  ...require('ipfs-mfs/http'),
+  ...require('./files'),
   ...require('./pubsub'),
   require('./debug'),
   ...require('./webui'),

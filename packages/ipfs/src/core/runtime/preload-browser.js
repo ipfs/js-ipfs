@@ -2,7 +2,7 @@
 'use strict'
 
 const { default: PQueue } = require('p-queue')
-const { default: ky } = require('ky-universal')
+const HTTP = require('ipfs-utils/src/http')
 const debug = require('debug')
 
 const log = debug('ipfs:preload')
@@ -17,7 +17,7 @@ module.exports = function preload (url, options) {
   options = options || {}
 
   return httpQueue.add(async () => {
-    const res = await ky.get(url, { signal: options.signal })
+    const res = await HTTP.get(url, { signal: options.signal })
     const reader = res.body.getReader()
 
     try {

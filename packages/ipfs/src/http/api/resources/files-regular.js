@@ -123,6 +123,7 @@ exports.add = {
         'wrap-with-directory': Joi.boolean(),
         'file-import-concurrency': Joi.number().integer().min(0).default(50),
         'block-write-concurrency': Joi.number().integer().min(0).default(10),
+        'shard-split-threshold': Joi.number().integer().min(0).default(1000),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
         preload: Joi.boolean().default(true),
@@ -190,6 +191,7 @@ exports.add = {
           chunker: request.query.chunker,
           trickle: request.query.trickle,
           preload: request.query.preload,
+          shardSplitThreshold: request.query['shard-split-threshold'],
 
           // this has to be hardcoded to 1 because we can only read one file
           // at a time from a http request and we have to consume it completely

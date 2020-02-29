@@ -11,7 +11,7 @@ module.exports = configure(api => {
     searchParams.append('arg', path)
     if (mtime) {
       searchParams.set('mtime', mtime.secs)
-      searchParams.set('mtimeNsecs', mtime.nsecs)
+      searchParams.set('mtime-nsecs', mtime.nsecs)
     }
     searchParams.set('hash', options.hashAlg)
     searchParams.set('hashAlg', null)

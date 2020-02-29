@@ -4,6 +4,7 @@
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
+const concat = require('it-concat')
 
 module.exports = (common, options) => {
   const describe = getDescribe(options)
@@ -88,6 +89,38 @@ module.exports = (common, options) => {
 
       const stat2 = await ipfs.files.stat(testPath)
       expect(stat2).to.have.nested.property('mtime.secs').that.is.greaterThan(seconds)
+    })
+
+    it('should update the mtime for a hamt-sharded-directory', async () => {
+      const path = `/foo-${Math.random()}`
+
+      await ipfs.files.mkdir(path, {
+        mtime: new Date()
+      })
+      await ipfs.files.write(`${path}/foo.txt`, Buffer.from('Hello world'), {
+        create: true,
+        shardSplitThreshold: 0
+      })
+      const originalMtime = (await ipfs.files.stat(path)).mtime
+      await delay(1000)
+      await ipfs.files.touch(path, {
+        flush: true
+      })
+
+      const updatedMtime = (await ipfs.files.stat(path)).mtime
+      expect(updatedMtime.secs).to.be.greaterThan(originalMtime.secs)
+    })
+
+    it('should create an empty file', async () => {
+      const path = `/foo-${Math.random()}`
+
+      await ipfs.files.touch(path, {
+        flush: true
+      })
+
+      const buffer = await concat(ipfs.files.read(path))
+
+      expect(buffer.slice()).to.deep.equal(Buffer.from([]))
     })
 
     it('should set mtime as Date', async function () {

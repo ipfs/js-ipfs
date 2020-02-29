@@ -223,7 +223,7 @@ function toAsyncIterable (input) {
     })()
   }
 
-  throw errCode(new Error(`Unexpected input: ${input}`, 'ERR_UNEXPECTED_INPUT'))
+  throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
 }
 
 function toBuffer (chunk) {

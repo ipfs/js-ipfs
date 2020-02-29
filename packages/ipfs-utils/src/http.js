@@ -7,7 +7,7 @@ const { URL, URLSearchParams } = require('iso-url')
 const global = require('./globalthis')
 const TextDecoder = require('./text-encoder')
 const Request = global.Request
-const AbortController = global.AbortController
+const AbortController = require('abort-controller')
 
 class TimeoutError extends Error {
   constructor () {
@@ -33,9 +33,7 @@ const timeout = (promise, ms, abortController) => {
     const timeoutID = setTimeout(() => {
       reject(new TimeoutError())
 
-      if (AbortController) {
-        abortController.abort()
-      }
+      abortController.abort()
     }, ms)
 
     promise
@@ -79,16 +77,15 @@ class HTTP {
     this.opts = merge(defaults, options)
 
     // connect internal abort to external
-    if (AbortController) {
-      this.abortController = new AbortController()
-      if (this.opts.signal) {
-        this.opts.signal.addEventListener('abort', () => {
-          this.abortController.abort()
-        })
-      }
+    this.abortController = new AbortController()
 
-      this.opts.signal = this.abortController.signal
+    if (this.opts.signal) {
+      this.opts.signal.addEventListener('abort', () => {
+        this.abortController.abort()
+      })
     }
+
+    this.opts.signal = this.abortController.signal
   }
 
   /**
@@ -126,6 +123,18 @@ class HTTP {
       url.search = opts.transformSearchParams(new URLSearchParams(opts.searchParams))
     }
 
+    let bodyErr
+
+    if (opts.body && (opts.body.on || opts.body.addEventListener)) {
+      const on = (opts.body.on || opts.body.addEventListener).bind(opts.body)
+
+      // TODO: not sure this will work after the high water mark is hit and the request
+      // starts streaming
+      on('error', (err) => {
+        bodyErr = err
+      })
+    }
+
     const response = await timeout(fetch(url, opts), opts.timeout, this.abortController)
 
     if (!response.ok && opts.throwHttpErrors) {
@@ -134,6 +143,11 @@ class HTTP {
       }
       throw new HTTPError(response)
     }
+
+    if (bodyErr) {
+      throw bodyErr
+    }
+
     return response
   }
 
@@ -292,3 +306,38 @@ HTTP.ndjson = ndjson
 HTTP.streamToAsyncIterator = streamToAsyncIterator
 
 module.exports = HTTP
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+module.exports.post = (resource, options) => new HTTP().post(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+module.exports.get = (resource, options) => new HTTP().get(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+module.exports.put = (resource, options) => new HTTP().put(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+module.exports.delete = (resource, options) => new HTTP().delete(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+module.exports.options = (resource, options) => new HTTP().options(resource, options)
