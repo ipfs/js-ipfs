@@ -39,17 +39,6 @@ describe('files', function () {
       }))
 
       expect(files.length).to.equal(1)
-      expect(files[0].cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(files[0].size).to.equal(3)
-    })
-
-    it('should add a file with a v1 CID and not raw leaves', async () => {
-      const files = await all(ipfs.add(Buffer.from([0, 1, 2]), {
-        cidVersion: 1,
-        rawLeaves: false
-      }))
-
-      expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
       expect(files[0].size).to.equal(11)
     })

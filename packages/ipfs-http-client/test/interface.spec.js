@@ -43,6 +43,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should ls with metadata',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should override raw leaves when file is smaller than one block',
+        reason: 'TODO not implemented in go-ipfs yet https://github.com/ipfs/go-ipfs/issues/6940'
       }
     ]
   })

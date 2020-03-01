@@ -532,5 +532,17 @@ module.exports = (common, options) => {
     it('should not add from an invalid url', () => {
       return expect(all(ipfs.add(urlSource('123http://invalid')))).to.eventually.be.rejected()
     })
+
+    it('should override raw leaves when file is smaller than one block', async () => {
+      const files = await all(ipfs.add(Buffer.from([0, 1, 2]), {
+        cidVersion: 1,
+        rawLeaves: true
+      }))
+
+      expect(files.length).to.equal(1)
+      expect(files[0].cid.toString()).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
+      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].size).to.equal(11)
+    })
   })
 }
