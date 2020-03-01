@@ -6,9 +6,6 @@
   "bin": {
     "test-ipfs-example": "./test.js"
   },
-  "scripts": {
-    "test": "node ./test.js"
-  },
   "license": "MIT",
   "dependencies": {
     "chromedriver": "^79.0.0",
