@@ -83,7 +83,7 @@ function kebabCase (str) {
   })
 }
 
-function ipfsClient (config) {
+function ipfsClient (config = {}) {
   const api = new API({
     timeout: config.timeout || 60000 * 20,
     signal: config.signal,

@@ -16,7 +16,8 @@ module.exports = api => {
       options,
       {
         'stream-channels': true,
-        progress: Boolean(progressFn)
+        progress: Boolean(progressFn),
+        hash: options.hashAlg // TODO fix this either is hash or hashAlg
       }
     )
 
