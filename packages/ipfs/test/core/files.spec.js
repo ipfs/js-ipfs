@@ -6,7 +6,6 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const hat = require('hat')
 const all = require('it-all')
 const factory = require('../utils/factory')
-const CID = require('cids')
 
 describe('files', function () {
   this.timeout(10 * 1000)
