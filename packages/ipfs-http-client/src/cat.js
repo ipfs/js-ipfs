@@ -2,12 +2,11 @@
 
 const CID = require('cids')
 const { Buffer } = require('buffer')
-// const configure = require('./lib/configure')
 const toIterable = require('stream-to-it/source')
 const merge = require('merge-options')
 
 module.exports = api => {
-  return async function * cat (path, options = {}, fetchOptions = {}) {
+  return async function * cat (path, options = {}) {
     options = merge(
       options,
       {
@@ -15,9 +14,8 @@ module.exports = api => {
       }
     )
     const res = await api.post('cat', {
-      timeout: fetchOptions.timeout,
-      signal: fetchOptions.signal,
-      headers: fetchOptions.headers,
+      timeout: options.timeout,
+      signal: options.signal,
       searchParams: options
     })
 

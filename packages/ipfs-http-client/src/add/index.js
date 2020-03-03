@@ -2,14 +2,13 @@
 
 const ndjson = require('iterable-ndjson')
 const CID = require('cids')
-// const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
 const { toFormData } = require('./form-data')
 const toCamel = require('../lib/object-to-camel')
 const merge = require('merge-options')
 
 module.exports = api => {
-  return async function * add (input, options = {}, fetchOptions = {}) {
+  return async function * add (input, options = {}) {
     // extract functions here
     const progressFn = options.progress
     // default or mutate/force options here
@@ -18,19 +17,14 @@ module.exports = api => {
       {
         'stream-channels': true,
         progress: Boolean(progressFn)
-        // to force remove a key:value just set it to null
-        // mtime: null,
-        // mtimeNsecs: mtime.nsecs
-
       }
     )
 
     const res = await api.post('add', {
       searchParams: options,
       body: await toFormData(input),
-      timeout: fetchOptions.timeout,
-      signal: fetchOptions.signal,
-      headers: fetchOptions.headers
+      timeout: options.timeout,
+      signal: options.signal
     })
 
     for await (let file of ndjson(toIterable(res.body))) {

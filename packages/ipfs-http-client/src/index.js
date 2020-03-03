@@ -96,7 +96,12 @@ function ipfsClient (config) {
       const out = {}
 
       for (const [key, value] of obj) {
-        if (value !== 'undefined' && value !== 'null') {
+        if (
+          value !== 'undefined' &&
+          value !== 'null' &&
+          key !== 'signal' &&
+          key !== 'timeout'
+        ) {
           out[kebabCase(key)] = value
         }
       }
