@@ -63,6 +63,7 @@
     "multibase": "^0.6.0",
     "multicodec": "^1.0.0",
     "multihashes": "^0.4.14",
+    "node-fetch": "^2.6.0",
     "parse-duration": "^0.1.2",
     "stream-to-it": "^0.2.0"
   },
