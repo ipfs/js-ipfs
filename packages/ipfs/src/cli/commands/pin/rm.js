@@ -24,9 +24,9 @@ module.exports = {
 
   async handler ({ ctx, ipfsPath, recursive, cidBase }) {
     const { ipfs, print } = ctx
-    const results = await ipfs.pin.rm(ipfsPath, { recursive })
-    results.forEach((res) => {
+
+    for await (const res of ipfs.pin.rm(ipfsPath, { recursive })) {
       print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
-    })
+    }
   }
 }

@@ -229,7 +229,7 @@ function createApi ({
     pubsub,
     refs,
     repo: {
-      gc: Components.repo.gc({ gcLock, pin, pinManager, refs, repo }),
+      gc: Components.repo.gc({ gcLock, pin, refs, repo }),
       stat: Components.repo.stat({ repo }),
       version: Components.repo.version({ repo })
     },

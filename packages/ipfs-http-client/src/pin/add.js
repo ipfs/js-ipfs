@@ -4,7 +4,7 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 
 module.exports = configure(({ ky }) => {
-  return async (paths, options) => {
+  return async function * (paths, options) {
     paths = Array.isArray(paths) ? paths : [paths]
     options = options || {}
 
@@ -19,6 +19,6 @@ module.exports = configure(({ ky }) => {
       searchParams
     }).json()
 
-    return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
+    yield * (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
   }
 })

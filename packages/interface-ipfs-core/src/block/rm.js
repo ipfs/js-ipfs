@@ -4,6 +4,8 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const hat = require('hat')
 const all = require('it-all')
+const last = require('it-last')
+const drain = require('it-drain')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -142,13 +144,12 @@ module.exports = (common, options) => {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
-      await ipfs.pin.add(cid.toString())
+      await drain(ipfs.pin.add(cid))
 
-      const result = await all(ipfs.block.rm(cid))
+      const result = await last(ipfs.block.rm(cid))
 
-      expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0]).to.have.property('error')
-      expect(result[0].error.message).to.include('pinned')
+      expect(result).to.have.property('error').that.is.an('Error')
+        .with.property('message').that.includes('pinned')
     })
   })
 }

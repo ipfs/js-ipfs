@@ -8,11 +8,11 @@
 
 > Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
 
-##### `ipfs.pin.add(hash, [options])`
+##### `ipfs.pin.add(source, [options])`
 
 Where:
 
-- `hash` is an IPFS multihash.
+- `source` is a [CID], an array of CIDs or an (async) iterable that yields CIDs
 - `options` is an object that can contain the following keys
   - `recursive` (`boolean`) - Recursively pin the object linked. Type: bool. Default: `true`
   - `timeout` (`number`|`string`) - Throw an error if the request does not complete within the specified milliseconds timeout. If `timeout` is a string, the value is parsed as a [human readable duration](https://www.npmjs.com/package/parse-duration). There is no timeout by default.
@@ -21,9 +21,9 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<{ cid: CID }>` | An array of objects that represent the files that were pinned |
+| `AsyncIterable<CID>` | An async iterable that yields objects containing the CIDs that were pinned |
 
-an array of objects is returned, each of the form:
+Each yielded object has the form:
 
 ```JavaScript
 {
@@ -77,10 +77,10 @@ A great source of [examples][] can be found in the tests for this API.
 
 > Remove a hash from the pinset
 
-##### `ipfs.pin.rm(hash, [options])`
+##### `ipfs.pin.rm(source, [options])`
 
 Where:
-- `hash` is a multihash.
+- `source` is a [CID], an array of CIDs or an (async) iterable that yields CIDs
 - `options` is an object that can contain the following keys
   - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `true`
 
@@ -88,15 +88,16 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<{ cid: CID }>` | An array of unpinned objects |
+| `AsyncIterable<{ cid: CID }>` | An async iterable that yields objects containing the CIDs that were unpinned |
 
 **Example:**
 
 ```JavaScript
-const pinset = await ipfs.pin.rm('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-console.log(pinset)
+for await (const unpinned of ipfs.pin.rm(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
+  console.log(unpinned)
+}
 // prints the hashes that were unpinned
-// [ { cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u') } ]
+// { cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u') }
 ```
 
 A great source of [examples][] can be found in the tests for this API.

@@ -110,7 +110,6 @@ module.exports = ({
     }
 
     const pinManager = new PinManager(repo, dag)
-    await pinManager.load()
 
     const pin = {
       add: Components.pin.add({ pinManager, gcLock, dag }),

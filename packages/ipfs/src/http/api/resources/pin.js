@@ -9,6 +9,7 @@ const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const { cidToString } = require('../../../utils/cid')
 const streamResponse = require('../../utils/stream-response')
+const all = require('it-all')
 
 function parseArgs (request, h) {
   let { arg } = request.query
@@ -93,7 +94,7 @@ exports.add = {
 
     let result
     try {
-      result = await ipfs.pin.add(path, { recursive })
+      result = await all(ipfs.pin.add(path, { recursive }))
     } catch (err) {
       if (err.message.includes('already pinned recursively')) {
         throw Boom.boomify(err, { statusCode: 400 })
@@ -122,7 +123,7 @@ exports.rm = {
 
     let result
     try {
-      result = await ipfs.pin.rm(path, { recursive })
+      result = await all(ipfs.pin.rm(path, { recursive }))
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to remove pin' })
     }

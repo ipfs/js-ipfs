@@ -14,6 +14,7 @@ const {
 const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
+const drain = require('it-drain')
 
 const IpldFormats = {
   get [multicodec.RAW] () {
@@ -252,7 +253,7 @@ exports.put = {
     }
 
     if (request.query.pin) {
-      await ipfs.pin.add(cid)
+      await drain(ipfs.pin.add(cid))
     }
 
     return h.response({

@@ -4,6 +4,7 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
+const drain = require('it-drain')
 
 module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
@@ -111,10 +112,10 @@ function pinFile (pin, opts) {
       if (shouldPin) {
         // Note: addAsyncIterator() has already taken a GC lock, so tell
         // pin.add() not to take a (second) GC lock
-        await pin.add(file.cid, {
+        await drain(pin.add(file.cid, {
           preload: false,
           lock: false
-        })
+        }))
       }
 
       yield file

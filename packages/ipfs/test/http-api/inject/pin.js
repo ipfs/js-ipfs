@@ -52,7 +52,14 @@ module.exports = (http) => {
       })
 
       it('unpins recursive pins', async () => {
-        const res = await api.inject({
+        let res = await api.inject({
+          method: 'POST',
+          url: `/api/v0/pin/add?arg=${pins.root1}`
+        })
+
+        expect(res.statusCode).to.equal(200)
+
+        res = await api.inject({
           method: 'POST',
           url: `/api/v0/pin/rm?arg=${pins.root1}`
         })

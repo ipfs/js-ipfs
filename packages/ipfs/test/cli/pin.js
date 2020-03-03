@@ -33,7 +33,7 @@ describe('pin', () => {
 
   describe('rm', function () {
     it('recursively (default)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -42,7 +42,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -51,7 +51,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -60,7 +60,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -72,7 +72,7 @@ describe('pin', () => {
 
   describe('add', function () {
     it('recursively (default)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], { recursive: true }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -81,7 +81,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], { recursive: false }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -90,7 +90,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], { recursive: false }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -99,7 +99,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], { recursive: true }).returns([{
         cid: new CID(pins.root)
       }])
 
