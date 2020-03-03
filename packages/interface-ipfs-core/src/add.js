@@ -533,16 +533,35 @@ module.exports = (common, options) => {
       return expect(all(ipfs.add(urlSource('123http://invalid')))).to.eventually.be.rejected()
     })
 
-    it('should override raw leaves when file is smaller than one block', async () => {
+    it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {
       const files = await all(ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1,
         rawLeaves: true
       }))
 
       expect(files.length).to.equal(1)
-      expect(files[0].cid.toString()).to.equal('bafybeide2caf5we5a7izifzwzz5ds2gla67vsfgrzvbzpnyyirnfzgwf5e')
+      expect(files[0].cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
+      expect(files[0].cid.codec).to.equal('raw')
+      expect(files[0].size).to.equal(3)
+    })
+
+    it('should override raw leaves when file is smaller than one block and metadata is present', async () => {
+      const files = await all(ipfs.add({
+        content: Buffer.from([0, 1, 2]),
+        mode: 0o123,
+        mtime: {
+          secs: 1000,
+          nsecs: 0
+        }
+      }, {
+        cidVersion: 1,
+        rawLeaves: true
+      }))
+
+      expect(files.length).to.equal(1)
+      expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
       expect(files[0].cid.codec).to.equal('dag-pb')
-      expect(files[0].size).to.equal(11)
+      expect(files[0].size).to.equal(18)
     })
   })
 }

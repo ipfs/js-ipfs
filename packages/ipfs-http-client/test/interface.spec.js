@@ -45,8 +45,8 @@ describe('interface-ipfs-core tests', () => {
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should override raw leaves when file is smaller than one block',
-        reason: 'TODO not implemented in go-ipfs yet https://github.com/ipfs/go-ipfs/issues/6940'
+        name: 'should override raw leaves when file is smaller than one block and metadata is present',
+        reason: 'TODO not implemented in go-ipfs yet'
       }
     ]
   })
