@@ -4,7 +4,7 @@
 const fetch = require('./fetch')
 const merge = require('merge-options')
 const { URL, URLSearchParams } = require('iso-url')
-const global = globalThis
+const global = require('ipfs-utils/src/globalthis')
 const Request = global.Request
 const AbortController = global.AbortController
 

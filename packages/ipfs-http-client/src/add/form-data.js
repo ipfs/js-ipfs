@@ -4,7 +4,6 @@ const FormData = require('form-data')
 const { Buffer } = require('buffer')
 const toStream = require('it-to-stream')
 const normaliseInput = require('ipfs-utils/src/files/normalise-input')
-const { isElectronRenderer } = require('ipfs-utils/src/env')
 const mtimeToObject = require('../lib/mtime-to-object')
 
 exports.toFormData = async input => {
@@ -59,10 +58,3 @@ exports.toFormData = async input => {
 
   return formData
 }
-
-// TODO remove this when upstream fix for ky-universal is merged
-// https://github.com/sindresorhus/ky-universal/issues/9
-// also this should only be necessary when nodeIntegration is false in electron renderer
-// if (isElectronRenderer) {
-//   exports.toFormData = require('./form-data.browser').toFormData
-// }
