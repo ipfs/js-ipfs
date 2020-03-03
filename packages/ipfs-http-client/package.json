@@ -51,6 +51,7 @@
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.2",
     "ipld-raw": "^4.0.1",
+    "iso-url": "^0.4.6",
     "it-tar": "^1.2.1",
     "it-to-stream": "^0.1.1",
     "iterable-ndjson": "^1.1.0",

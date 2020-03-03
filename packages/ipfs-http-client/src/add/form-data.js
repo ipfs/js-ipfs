@@ -63,6 +63,6 @@ exports.toFormData = async input => {
 // TODO remove this when upstream fix for ky-universal is merged
 // https://github.com/sindresorhus/ky-universal/issues/9
 // also this should only be necessary when nodeIntegration is false in electron renderer
-if (isElectronRenderer) {
-  exports.toFormData = require('./form-data.browser').toFormData
-}
+// if (isElectronRenderer) {
+//   exports.toFormData = require('./form-data.browser').toFormData
+// }
