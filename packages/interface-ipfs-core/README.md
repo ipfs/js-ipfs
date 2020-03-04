@@ -43,7 +43,7 @@ Send in a PR if you find or write one!
 
 Include this badge in your readme if you make a new module that implements interface-ipfs-core API.
 
-![](/img/badge.svg)
+![](img/badge.svg)
 
 ```md
 [![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/interface-ipfs-core)
