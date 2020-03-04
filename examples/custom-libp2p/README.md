@@ -15,4 +15,4 @@ Running this example should result in metrics being logged out to the console ev
 
 With the metrics for peers and bandwidth stats being logged out, try playing around with the nodes configuration to see what kind of metrics you can get. How many peers are you getting? What does your bandwidth look like?
 
-This is also a good opportunity to explore the various stats that ipfs offers! Not seeing a statistic you think would be useful? We'd love to have you [contribute](https://github.com/ipfs/js-ipfs/blob/master/CONTRIBUTING.md)!
+This is also a good opportunity to explore the various stats that ipfs offers! Not seeing a statistic you think would be useful? We'd love to have you [contribute](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md)!
