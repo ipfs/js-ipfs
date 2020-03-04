@@ -40,7 +40,7 @@ Clone this repo to explore these tutorials on your local machine:
 
 In this section, you will find explanations to different pieces of IPFS Architecture and how `js-ipfs` implements them.
 
-![](../img/architecture.png)
+![](/packages/ipfs/img/architecture.png)
 
 [Annotated version](https://user-images.githubusercontent.com/1211152/47606420-b6265780-da13-11e8-923b-b365a8534e0e.png)
 
