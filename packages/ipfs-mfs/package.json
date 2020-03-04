@@ -48,7 +48,7 @@
     "form-data": "^3.0.0",
     "ipfs-block": "^0.8.1",
     "ipfs-block-service": "^0.16.0",
-    "ipfs-repo": "github:ipfs/js-ipfs-repo#store-pins-in-datastore",
+    "ipfs-repo": "^0.30.1",
     "ipld": "^0.25.0",
     "memdown": "^5.1.0",
     "nyc": "^15.0.0",
