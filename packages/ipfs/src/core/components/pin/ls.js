@@ -5,14 +5,14 @@ const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 
-function toPin (type, cid, name) {
+function toPin (type, cid, comments) {
   const output = {
     type,
     cid
   }
 
-  if (name) {
-    output.name = name
+  if (comments) {
+    output.comments = comments
   }
 
   return output
@@ -80,8 +80,8 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     if (type === PinTypes.recursive || type === PinTypes.all) {
-      for await (const { cid, name } of pinManager.recursiveKeys()) {
-        yield toPin(PinTypes.recursive, cid, name)
+      for await (const { cid, comments } of pinManager.recursiveKeys()) {
+        yield toPin(PinTypes.recursive, cid, comments)
       }
     }
 
@@ -95,8 +95,8 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     if (type === PinTypes.direct || type === PinTypes.all) {
-      for await (const { cid, name } of pinManager.directKeys()) {
-        yield toPin(PinTypes.direct, cid, name)
+      for await (const { cid, comments } of pinManager.directKeys()) {
+        yield toPin(PinTypes.direct, cid, comments)
       }
     }
   }

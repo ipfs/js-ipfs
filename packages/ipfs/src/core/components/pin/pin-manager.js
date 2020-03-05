@@ -62,30 +62,11 @@ class PinManager {
     return this.repo.pins.put(toKey(cid), cbor.encode({
       cid: cid.buffer,
       type: PinTypes.direct,
-      name: options.name
+      comments: options.comments
     }))
   }
 
-  async unpin (cid) {
-    if (typeof cid === 'string' || cid instanceof String) {
-      // find pin with passed name
-      const result = await first(this.repo.pins.query({
-        filters: [entry => {
-          const pin = cbor.decode(entry.value)
-
-          return pin.name === cid
-        }],
-        limit: 1
-      }))
-
-      if (!result) {
-        // no pin with this name
-        return
-      }
-
-      cid = new CID(cbor.decode(result.value).cid)
-    }
-
+  async unpin (cid) { // eslint-disable-line require-await
     return this.repo.pins.delete(toKey(cid))
   }
 
@@ -95,7 +76,7 @@ class PinManager {
     await this.repo.pins.put(toKey(cid), cbor.encode({
       cid: cid.buffer,
       type: PinTypes.recursive,
-      name: options.name
+      comments: options.comments
     }))
   }
 
@@ -111,7 +92,7 @@ class PinManager {
 
       yield {
         cid: new CID(pin.cid),
-        name: pin.name
+        comments: pin.comments
       }
     }
   }
@@ -128,7 +109,7 @@ class PinManager {
 
       yield {
         cid: new CID(pin.cid),
-        name: pin.name
+        comments: pin.comments
       }
     }
   }

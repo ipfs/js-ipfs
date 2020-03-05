@@ -62,8 +62,8 @@ exports.ls = {
     if (!request.query.stream) {
       const res = await pipe(
         ipfs.pin.ls(path, { type }),
-        reduce((res, { type, cid }) => {
-          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = { Type: type }
+        reduce((res, { type, cid, comments }) => {
+          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = { Type: type, Comments: comments }
           return res
         }, { Keys: {} })
       )
@@ -73,7 +73,7 @@ exports.ls = {
 
     return streamResponse(request, h, () => pipe(
       ipfs.pin.ls(path, { type }),
-      map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: request.query['cid-base'] }) })),
+      map(({ type, cid, comments }) => ({ Type: type, Cid: cidToString(cid, { base: request.query['cid-base'] }), Comments: comments })),
       ndjson.stringify
     ))
   }

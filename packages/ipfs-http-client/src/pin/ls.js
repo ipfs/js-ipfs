@@ -5,6 +5,19 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
 
+function toPin (type, cid, comments) {
+  const pin = {
+    type,
+    cid: new CID(cid)
+  }
+
+  if (comments) {
+    pin.comments = comments
+  }
+
+  return pin
+}
+
 module.exports = configure(({ ky }) => {
   return async function * ls (path, options) {
     if (path && path.type) {
@@ -31,11 +44,11 @@ module.exports = configure(({ ky }) => {
     for await (const pin of ndjson(toIterable(res.body))) {
       if (pin.Keys) { // non-streaming response
         for (const cid of Object.keys(pin.Keys)) {
-          yield { cid: new CID(cid), type: pin.Keys[cid].Type }
+          yield toPin(pin.Keys[cid].Type, cid, pin.Keys[cid].Comments)
         }
         return
       }
-      yield { cid: new CID(pin.Cid), type: pin.Type }
+      yield toPin(pin.Type, pin.Cid, pin.Comments)
     }
   }
 })

@@ -21,7 +21,7 @@ Where:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<CID>` | An async iterable that yields objects containing the CIDs that were pinned |
+| `AsyncIterable<{ cid: CID }>` | An async iterable that yields objects containing the CIDs that were pinned |
 
 Each yielded object has the form:
 
@@ -34,10 +34,10 @@ Each yielded object has the form:
 **Example:**
 
 ```JavaScript
-const pinset = await ipfs.pin.add('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-console.log(pinset)
-// Logs:
-// [ { cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u') } ]
+for await (const pin of ipfs.pin.add('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')) {
+  console.log(pinset)
+}
+// { cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u') }
 ```
 
 A great source of [examples][] can be found in the tests for this API.

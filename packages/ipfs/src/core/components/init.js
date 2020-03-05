@@ -28,6 +28,7 @@ const OfflineDatastore = require('../ipns/routing/offline-datastore')
 const initAssets = require('../runtime/init-assets-nodejs')
 const PinManager = require('./pin/pin-manager')
 const Components = require('./')
+const drain = require('it-drain')
 
 module.exports = ({
   apiManager,
@@ -124,7 +125,7 @@ module.exports = ({
 
     if (!isInitialized && !options.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
-      const emptyDirCid = await addEmptyDir({ dag })
+      const emptyDirCid = await addEmptyDir({ dag, pin })
 
       log('adding default assets')
       await initAssets({ add, print })
@@ -259,14 +260,17 @@ function createPeerId ({ privateKey, bits, print }) {
   }
 }
 
-function addEmptyDir ({ dag }) {
+async function addEmptyDir ({ dag, pin }) {
   const node = new DAGNode(new UnixFs('directory').marshal())
-  return dag.put(node, {
+  const cid = await dag.put(node, {
     version: 0,
     format: multicodec.DAG_PB,
     hashAlg: multicodec.SHA2_256,
     preload: false
   })
+  await drain(pin.add(cid))
+
+  return cid
 }
 
 // Apply profiles (e.g. ['server', 'lowpower']) to config
