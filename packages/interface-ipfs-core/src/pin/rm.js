@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { fixtures } = require('./utils')
+const { fixtures, expectPinned, clearPins } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
@@ -21,31 +21,65 @@ module.exports = (common, options) => {
     let ipfs
     before(async () => {
       ipfs = (await common.spawn()).api
-      await drain(ipfs.add(fixtures.files[0].data, { pin: false }))
-      await drain(ipfs.pin.add(fixtures.files[0].cid, { recursive: true }))
-      await drain(ipfs.add(fixtures.files[1].data, { pin: false }))
-      await drain(ipfs.pin.add(fixtures.files[1].cid, { recursive: false }))
+
+      await Promise.all(fixtures.files.map(file => {
+        return all(ipfs.add(file.data, { pin: false }))
+      }))
+
+      await all(
+        ipfs.add(fixtures.directory.files.map(
+          file => ({
+            path: file.path,
+            content: file.data
+          })
+        ), {
+          pin: false
+        })
+      )
     })
 
     after(() => common.clean())
 
+    beforeEach(() => {
+      return clearPins(ipfs)
+    })
+
     it('should remove a recursive pin', async () => {
-      const removedPinset = await all(ipfs.pin.rm(fixtures.files[0].cid, { recursive: true }))
-      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.files[0].cid])
+      await drain(ipfs.pin.add(fixtures.directory.cid))
+
+      const removedPinset = await all(ipfs.pin.rm(fixtures.directory.cid, { recursive: true }))
+      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.directory.cid])
 
       const pinset = await all(ipfs.pin.ls({ type: 'recursive' }))
       expect(pinset).to.not.deep.include({
-        cid: fixtures.files[0].cid,
+        cid: fixtures.directory.cid,
         type: 'recursive'
       })
     })
 
     it('should remove a direct pin', async () => {
-      const removedPinset = await all(ipfs.pin.rm(fixtures.files[1].cid, { recursive: false }))
-      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.files[1].cid])
+      await drain(ipfs.pin.add(fixtures.directory.cid, { recursive: false }))
+
+      const removedPinset = await all(ipfs.pin.rm(fixtures.directory.cid, { recursive: false }))
+      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.directory.cid])
 
       const pinset = await all(ipfs.pin.ls({ type: 'direct' }))
-      expect(pinset.map(p => p.cid)).to.not.deep.include(fixtures.files[1].cid)
+      expect(pinset.map(p => p.cid)).to.not.deep.include(fixtures.directory.cid)
+    })
+
+    it('should fail to remove an indirect pin', async () => {
+      await drain(ipfs.pin.add(fixtures.directory.cid))
+
+      await expect(drain(ipfs.pin.rm(fixtures.directory.files[0].cid)))
+        .to.eventually.be.rejected()
+        .with(/is pinned indirectly under/)
+      await expectPinned(ipfs, fixtures.directory.files[0].cid)
+    })
+
+    it('should fail when an item is not pinned', async () => {
+      await expect(drain(ipfs.pin.rm(fixtures.directory.cid)))
+        .to.eventually.be.rejected()
+        .with(/is not pinned/)
     })
   })
 }

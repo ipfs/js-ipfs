@@ -1,9 +1,18 @@
 'use strict'
 
+const { expect } = require('../utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
+const drain = require('it-drain')
 
-exports.fixtures = Object.freeze({
+const pinTypes = {
+  direct: 'direct',
+  recursive: 'recursive',
+  indirect: 'indirect',
+  all: 'all'
+}
+
+const fixtures = Object.freeze({
   // NOTE: files under 'directory' need to be different than standalone ones in 'files'
   directory: Object.freeze({
     cid: new CID('QmY8KdYQSYKFU5hM7F5ioZ5yYSgV5VZ1kDEdqfRL3rFgcd'),
@@ -25,3 +34,42 @@ exports.fixtures = Object.freeze({
     cid: new CID('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
   })])
 })
+
+const clearPins = async (ipfs) => {
+  for await (const { cid } of ipfs.pin.ls({ type: pinTypes.recursive })) {
+    await drain(ipfs.pin.rm(cid))
+  }
+
+  for await (const { cid } of ipfs.pin.ls({ type: pinTypes.direct })) {
+    await drain(ipfs.pin.rm(cid))
+  }
+}
+
+const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
+  if (typeof type === 'boolean') {
+    pinned = type
+    type = pinTypes.all
+  }
+
+  const result = await isPinnedWithType(ipfs, cid, type)
+  expect(result).to.eql(pinned)
+}
+
+async function isPinnedWithType (ipfs, path, type) {
+  try {
+    for await (const _ of ipfs.pin.ls(path, { type })) { // eslint-disable-line no-unused-vars
+      return true
+    }
+    return false
+  } catch (err) {
+    return false
+  }
+}
+
+module.exports = {
+  fixtures,
+  clearPins,
+  expectPinned,
+  isPinnedWithType,
+  pinTypes
+}
