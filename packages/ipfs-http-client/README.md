@@ -134,7 +134,6 @@ Instead of a local installation (and browserification) you may request a remote 
 
 To always request the latest version, use one of the following examples:
 
-````html
 ```html
 <!-- loading the minified version using jsDelivr -->
 <script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
