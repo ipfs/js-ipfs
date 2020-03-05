@@ -11,6 +11,22 @@ const { cidToString } = require('../../../utils/cid')
 const streamResponse = require('../../utils/stream-response')
 const all = require('it-all')
 
+function toPin (type, cid, comments) {
+  const output = {
+    Type: type
+  }
+
+  if (cid) {
+    output.Cid = cid
+  }
+
+  if (comments) {
+    output.Comments = comments
+  }
+
+  return output
+}
+
 function parseArgs (request, h) {
   let { arg } = request.query
 
@@ -63,7 +79,7 @@ exports.ls = {
       const res = await pipe(
         ipfs.pin.ls(path, { type }),
         reduce((res, { type, cid, comments }) => {
-          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = { Type: type, Comments: comments }
+          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = toPin(type, null, comments)
           return res
         }, { Keys: {} })
       )
@@ -73,7 +89,7 @@ exports.ls = {
 
     return streamResponse(request, h, () => pipe(
       ipfs.pin.ls(path, { type }),
-      map(({ type, cid, comments }) => ({ Type: type, Cid: cidToString(cid, { base: request.query['cid-base'] }), Comments: comments })),
+      map(({ type, cid, comments }) => toPin(type, cidToString(cid, { base: request.query['cid-base'] }), comments)),
       ndjson.stringify
     ))
   }
