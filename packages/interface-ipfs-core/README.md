@@ -149,7 +149,7 @@ tests.repo(createCommon, { only: ['should do a thing'] })
 
 ## API
 
-In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](/SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
+In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
 
 - **Files**
   - [files](/SPEC/FILES.md)
