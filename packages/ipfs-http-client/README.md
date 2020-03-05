@@ -135,12 +135,12 @@ Instead of a local installation (and browserification) you may request a remote 
 To always request the latest version, use one of the following examples:
 
 ````html
-<!-- loading the minified version using unpkg -->
-<script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
+```html
+<!-- loading the minified version using jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
 
-<!-- loading the human-readable (not minified) version using unpkg -->
-<script src="https://unpkg.com/ipfs-http-client/dist/index.js"></script>
-```
+<!-- loading the human-readable (not minified) version jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.js"></script>
 
 
 For maximum security you may also decide to:
