@@ -27,6 +27,8 @@
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat"></a>
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat" /></a>
   <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat" /></a>
+  <a href="https://www.npmjs.com/package/ipfs"><img src="https://img.shields.io/npm/dm/ipfs.svg" /></a>
+  <a href="https://www.jsdelivr.com/package/npm/ipfs"><img src="https://data.jsdelivr.com/v1/package/npm/ipfs/badge"/></a>
   <br>
 </p>
 
@@ -165,16 +167,8 @@ Once installed, please follow the [Getting Started Guide](https://docs.ipfs.io/i
 
 Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples) folder.
 
-You can also load it using a `<script>` using the [unpkg](https://unpkg.com) CDN **or** the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make an `Ipfs` object available in the global namespace.
+You can also load it using a `<script>` using the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make an `Ipfs` object available in the global namespace.
 
-```html
-<!-- loading the minified version using unpkg -->
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
-
-<!-- loading the human-readable (not minified) version using unpkg -->
-<script src="https://unpkg.com/ipfs/dist/index.js"></script>
-```
-**OR THIS:**
 
 ```html
 <!-- loading the minified version using jsDelivr -->

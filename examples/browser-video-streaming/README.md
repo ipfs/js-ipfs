@@ -17,9 +17,9 @@ The fact that HLS content is just "a bunch of files" makes it a good choice for 
 The hls.js library ships with an HTTP based content loader only, but it's fortunately possible to configure custom content loaders as well, which is what makes IPFS streaming possible in this case. A loader implementation that fetches content using js-ipfs can be found [here](https://www.npmjs.com/package/hlsjs-ipfs-loader), and is easy to use on a regular HTML page:
 
 ```html
-<script src="https://unpkg.com/ipfs/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="https://unpkg.com/hlsjs-ipfs-loader@0.1.2/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hlsjs-ipfs-loader@0.1.2"></script>
 ```
 
 ## Generating HLS content
