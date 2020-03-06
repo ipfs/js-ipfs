@@ -18,7 +18,7 @@ Navigate into this directory:
 $ cd js-ipfs/examples/browser-mfs
 ```
 
-In this directory:
+In this directory run:
 
 ```
 $ npm start
