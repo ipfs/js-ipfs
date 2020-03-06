@@ -128,35 +128,22 @@ describe('utils', () => {
     after(() => repo.teardown())
 
     it('handles base58 hash format', async () => {
-      const hashes = await utils.resolvePath(node.dag, rootHash)
+      const hash = await utils.resolvePath(node.dag, rootHash)
 
-      expect(hashes.length).to.equal(1)
-      expect(hashes[0].buffer).to.deep.equal(rootMultihash)
+      expect(hash).to.have.property('buffer').that.deep.equals(rootMultihash)
     })
 
     it('handles multihash format', async () => {
-      const hashes = await utils.resolvePath(node.dag, aboutMultihash)
+      const hash = await utils.resolvePath(node.dag, aboutMultihash)
 
-      expect(hashes.length).to.equal(1)
-      expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
+      expect(hash).to.have.property('buffer').that.deep.equals(aboutMultihash)
     })
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      const hashes = await utils.resolvePath(node.dag, aboutPath)
+      const hash = await utils.resolvePath(node.dag, aboutPath)
 
-      expect(hashes.length).to.equal(1)
-      expect(hashes[0].buffer).to.deep.equal(aboutMultihash)
-    })
-
-    it('handles an array', async () => {
-      const paths = [rootHash, rootPath, rootMultihash]
-      const hashes = await utils.resolvePath(node.dag, paths)
-
-      expect(hashes.length).to.equal(3)
-      expect(hashes[0].buffer).to.deep.equal(rootMultihash)
-      expect(hashes[1].buffer).to.deep.equal(rootMultihash)
-      expect(hashes[2].buffer).to.deep.equal(rootMultihash)
+      expect(hash).to.have.property('buffer').that.deep.equals(aboutMultihash)
     })
 
     it('should error on invalid hashes', () => {
