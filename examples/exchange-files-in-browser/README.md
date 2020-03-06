@@ -144,11 +144,9 @@ By default it will listen to all incoming connections on port 13579.  Override t
 
 Make sure you're in `js-ipfs/examples/exchange-files-in-browser`.
 
-We'll need to install and bundle the dependencies to run the app. Let's do it:
+We'll need to bundle the dependencies to run the app. Let's do it:
 
 ```sh
-> npm install
-...
 > npm run bundle
 ...
 > npm start

@@ -4,10 +4,9 @@
 
 ## Run this example
 
-Once the daemon is on, run the following commands within this folder:
+Once the daemon is on, run the following command within this folder:
 
 ```bash
-> npm install
 > npm start
 ```
 

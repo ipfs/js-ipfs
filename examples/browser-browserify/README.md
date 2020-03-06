@@ -4,10 +4,9 @@ In this example, you will find a boilerplate you can use to guide yourself into 
 
 ## Run this example
 
-First install dependencies in the project root directory with `npm install`, then build the browser bundle with `npm run build`. Then in this directory run:
+First install dependencies in the project root directory with `npm install`. Then in this directory run:
 
 ```bash
-> npm install
 > npm start
 ```
 
