@@ -39,7 +39,8 @@ module.exports = ({
       config.Addresses.Swarm.forEach(addr => {
         let ma = multiaddr(addr)
 
-        if (ma.getPeerId()) {
+        const maId = ma.getPeerId()
+        if (maId && maId !== peerInfo.id.toB58String()) {
           ma = ma.encapsulate(`/p2p/${peerInfo.id.toB58String()}`)
         }
 
