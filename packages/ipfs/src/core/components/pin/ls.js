@@ -1,9 +1,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
+const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
+const { resolvePath } = require('../../utils')
 
 function toPin (type, cid, comments) {
   const output = {
@@ -19,14 +20,14 @@ function toPin (type, cid, comments) {
 }
 
 module.exports = ({ pinManager, dag }) => {
-  return async function * ls (paths, options) {
+  return async function * ls (source, options) {
     options = options || {}
 
     let type = PinTypes.all
 
-    if (paths && paths.type) {
-      options = paths
-      paths = null
+    if (source && source.type) {
+      options = source
+      source = null
     }
 
     if (options.type) {
@@ -40,35 +41,27 @@ module.exports = ({ pinManager, dag }) => {
       options.type = PinTypes.all
     }
 
-    if (paths) {
-      paths = Array.isArray(paths) ? paths : [paths]
-
+    if (source) {
       // check the pinned state of specific hashes
-      const cids = await resolvePath(dag, paths, { signal: options.signal })
       let noMatch = true
 
-      for (const cid of cids) {
-        const { reason, pinned, parent } = await pinManager.isPinnedWithType(cid, type)
+      for await (const { path } of normaliseInput(source)) {
+        const cid = await resolvePath(dag, path)
+        const { reason, pinned, parent, comments } = await pinManager.isPinnedWithType(cid, type)
 
         if (!pinned) {
-          throw new Error(`path '${paths}' is not pinned`)
+          throw new Error(`path '${path}' is not pinned`)
         }
 
         switch (reason) {
           case PinTypes.direct:
           case PinTypes.recursive:
             noMatch = false
-            yield {
-              type: reason,
-              cid
-            }
+            yield toPin(reason, cid, comments)
             break
           default:
             noMatch = false
-            yield {
-              type: `${PinTypes.indirect} through ${parent}`,
-              cid
-            }
+            yield toPin(`${PinTypes.indirect} through ${parent}`, cid, comments)
         }
       }
 
@@ -87,10 +80,7 @@ module.exports = ({ pinManager, dag }) => {
 
     if (type === PinTypes.indirect || type === PinTypes.all) {
       for await (const cid of pinManager.indirectKeys(options)) {
-        yield {
-          type: PinTypes.indirect,
-          cid
-        }
+        yield toPin(PinTypes.indirect, cid)
       }
     }
 

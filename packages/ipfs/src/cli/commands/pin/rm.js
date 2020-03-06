@@ -6,7 +6,7 @@ const { cidToString } = require('../../../utils/cid')
 module.exports = {
   command: 'rm <ipfsPath...>',
 
-  describe: 'Removes the pinned object from local storage.',
+  describe: 'Unpins the corresponding block making it available for garbage collection',
 
   builder: {
     recursive: {
@@ -25,7 +25,7 @@ module.exports = {
   async handler ({ ctx, ipfsPath, recursive, cidBase }) {
     const { ipfs, print } = ctx
 
-    for await (const res of ipfs.pin.rm(ipfsPath, { recursive })) {
+    for await (const res of ipfs.pin.rm(ipfsPath.map(path => ({ path, recursive })))) {
       print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
     }
   }

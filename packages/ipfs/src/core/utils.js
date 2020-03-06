@@ -23,6 +23,10 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  * @throws on an invalid @param ipfsPath
  */
 function parseIpfsPath (ipfsPath) {
+  if (!ipfsPath) {
+    throw new Error('invalid ipfs ref path')
+  }
+
   ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
   const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
   if (!matched) {
@@ -83,55 +87,44 @@ const normalizeCidPath = (path) => {
  *  - <base58 string>/link/to/venus
  *  - /ipfs/<base58 string>/link/to/pluto
  *  - multihash Buffer
- *  - Arrays of the above
  *
  * @param {Dag} dag The IPFS dag api
- * @param {Array<CID|string>} ipfsPaths A single or collection of ipfs-paths
+ * @param {CID|String} ipfsPath A CID or IPFS path
  * @param {Object} [options] Optional options passed directly to dag.resolve
- * @return {Promise<Array<CID>>}
+ * @return {CID}
  */
-const resolvePath = async function (dag, ipfsPaths, options) {
+const resolvePath = async function (dag, ipfsPath, options) {
   options = options || {}
 
-  if (!Array.isArray(ipfsPaths)) {
-    ipfsPaths = [ipfsPaths]
+  if (isIpfs.cid(ipfsPath)) {
+    return new CID(ipfsPath)
   }
 
-  const cids = []
+  const { hash, links } = parseIpfsPath(ipfsPath)
 
-  for (const path of ipfsPaths) {
-    if (isIpfs.cid(path)) {
-      cids.push(new CID(path))
-      continue
-    }
-
-    const { hash, links } = parseIpfsPath(path)
-
-    if (!links.length) {
-      cids.push(new CID(hash))
-      continue
-    }
-
-    let cid = new CID(hash)
-    try {
-      for await (const { value } of dag.resolve(path, options)) {
-        if (CID.isCID(value)) {
-          cid = value
-        }
-      }
-    } catch (err) {
-      // TODO: add error codes to IPLD
-      if (err.message.startsWith('Object has no property')) {
-        const linkName = err.message.replace('Object has no property \'', '').slice(0, -1)
-        err.message = `no link named "${linkName}" under ${cid}`
-        err.code = 'ERR_NO_LINK'
-      }
-      throw err
-    }
-    cids.push(cid)
+  if (!links.length) {
+    return new CID(hash)
   }
 
-  return cids
+  let cid = new CID(hash)
+
+  try {
+    for await (const { value } of dag.resolve(ipfsPath, options)) {
+      if (CID.isCID(value)) {
+        cid = value
+      }
+    }
+  } catch (err) {
+    // TODO: add error codes to IPLD
+    if (err.message.startsWith('Object has no property')) {
+      const linkName = err.message.replace('Object has no property \'', '').slice(0, -1)
+      err.message = `no link named "${linkName}" under ${cid}`
+      err.code = 'ERR_NO_LINK'
+    }
+    throw err
+  }
+
+  return cid
 }
 
 const mapFile = (file, options) => {

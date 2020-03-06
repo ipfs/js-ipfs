@@ -55,9 +55,9 @@ const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
   expect(result).to.eql(pinned)
 }
 
-async function isPinnedWithType (ipfs, path, type) {
+async function isPinnedWithType (ipfs, cid, type) {
   try {
-    for await (const _ of ipfs.pin.ls(path, { type })) { // eslint-disable-line no-unused-vars
+    for await (const _ of ipfs.pin.ls(cid, { type })) { // eslint-disable-line no-unused-vars
       return true
     }
     return false

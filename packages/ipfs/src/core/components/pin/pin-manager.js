@@ -164,7 +164,8 @@ class PinManager {
         return {
           cid,
           pinned: true,
-          reason: pin.type
+          reason: pin.type,
+          comments: pin.comments
         }
       }
     }

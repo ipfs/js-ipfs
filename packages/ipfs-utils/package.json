@@ -29,6 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^5.4.2",
+    "cids": "^0.7.3",
     "err-code": "^2.0.0",
     "fs-extra": "^8.1.0",
     "is-electron": "^2.2.0",

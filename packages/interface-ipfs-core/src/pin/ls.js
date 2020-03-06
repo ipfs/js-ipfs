@@ -5,6 +5,7 @@ const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,13 +26,16 @@ module.exports = (common, options) => {
       // two files wrapped in directories, only root CID pinned recursively
       const dir = fixtures.directory.files.map((file) => ({ path: file.path, content: file.data }))
       await drain(ipfs.add(dir, { pin: false, cidVersion: 0 }))
-      await drain(ipfs.pin.add(fixtures.directory.cid, { recursive: true }))
+      await drain(ipfs.pin.add(fixtures.directory.cid))
       // a file (CID pinned recursively)
       await drain(ipfs.add(fixtures.files[0].data, { pin: false, cidVersion: 0 }))
-      await drain(ipfs.pin.add(fixtures.files[0].cid, { recursive: true }))
+      await drain(ipfs.pin.add(fixtures.files[0].cid))
       // a single CID (pinned directly)
       await drain(ipfs.add(fixtures.files[1].data, { pin: false, cidVersion: 0 }))
-      await drain(ipfs.pin.add(fixtures.files[1].cid, { recursive: false }))
+      await drain(ipfs.pin.add({
+        cid: fixtures.files[1].cid,
+        recursive: false
+      }))
     })
 
     after(() => common.clean())
@@ -114,10 +118,10 @@ module.exports = (common, options) => {
     it('should list pins for a specific hash', async () => {
       const pinset = await all(ipfs.pin.ls(fixtures.files[0].cid))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset).to.deep.include({
+      expect(pinset).to.have.deep.members([{
         type: 'recursive',
         cid: fixtures.files[0].cid
-      })
+      }])
     })
 
     it('should throw an error on missing direct pins for existing path', () => {
@@ -172,6 +176,28 @@ module.exports = (common, options) => {
         .to.eventually.be.rejected()
         // TODO: go-ipfs does not return error codes
         // .with.property('code').that.equals('ERR_INVALID_PIN_TYPE')
+    })
+
+    it('should list pins with comments', async () => {
+      const { cid } = await last(ipfs.add(`data-${Math.random()}`, {
+        pin: false
+      }))
+
+      const comments = 'hello world'
+
+      await drain(ipfs.pin.add({
+        cid: cid,
+        recursive: false,
+        comments
+      }))
+
+      const pinset = await all(ipfs.pin.ls(cid))
+
+      expect(pinset).to.have.deep.members([{
+        type: 'direct',
+        cid: cid,
+        comments
+      }])
     })
   })
 }

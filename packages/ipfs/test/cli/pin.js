@@ -33,7 +33,7 @@ describe('pin', () => {
 
   describe('rm', function () {
     it('recursively (default)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).returns([{
+      ipfs.pin.rm.withArgs([{ path: pins.root, recursive: true }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -42,7 +42,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).returns([{
+      ipfs.pin.rm.withArgs([{ path: pins.root, recursive: false }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -51,7 +51,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).returns([{
+      ipfs.pin.rm.withArgs([{ path: pins.root, recursive: false }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -60,7 +60,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).returns([{
+      ipfs.pin.rm.withArgs([{ path: pins.root, recursive: true }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -72,7 +72,7 @@ describe('pin', () => {
 
   describe('add', function () {
     it('recursively (default)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).returns([{
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: undefined }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -81,7 +81,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).returns([{
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: false, comments: undefined }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -90,7 +90,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).returns([{
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: false, comments: undefined }]).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -98,8 +98,26 @@ describe('pin', () => {
       expect(out).to.equal(`pinned ${pins.root} directly\n`)
     })
 
+    it('with a comment', async () => {
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: 'hello world' }]).returns([{
+        cid: new CID(pins.root)
+      }])
+
+      const out = await cli(`pin add --comments 'hello world' ${pins.root}`, { ipfs })
+      expect(out).to.equal(`pinned ${pins.root} recursively\n`)
+    })
+
+    it('with a comment (short option)', async () => {
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: 'hello world' }]).returns([{
+        cid: new CID(pins.root)
+      }])
+
+      const out = await cli(`pin add -c 'hello world' ${pins.root}`, { ipfs })
+      expect(out).to.equal(`pinned ${pins.root} recursively\n`)
+    })
+
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).returns([{
+      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: undefined }]).returns([{
         cid: new CID(pins.root)
       }])
 

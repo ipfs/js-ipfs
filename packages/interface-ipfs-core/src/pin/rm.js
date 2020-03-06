@@ -81,5 +81,13 @@ module.exports = (common, options) => {
         .to.eventually.be.rejected()
         .with(/is not pinned/)
     })
+
+    it('should pipe the output of ls to rm', async () => {
+      await drain(ipfs.pin.add(fixtures.directory.cid))
+
+      await drain(ipfs.pin.rm(ipfs.pin.ls({ type: 'recursive' })))
+
+      await expect(all(ipfs.pin.ls())).to.eventually.have.lengthOf(0)
+    })
   })
 }

@@ -3,7 +3,6 @@
 const multibase = require('multibase')
 const Joi = require('@hapi/joi')
 const Boom = require('@hapi/boom')
-const isIpfs = require('is-ipfs')
 const { map, reduce } = require('streaming-iterables')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
@@ -28,7 +27,7 @@ function toPin (type, cid, comments) {
 }
 
 function parseArgs (request, h) {
-  let { arg } = request.query
+  let { arg, comments, recursive } = request.query
 
   if (!arg) {
     throw Boom.badRequest("Argument 'arg' is required")
@@ -36,14 +35,13 @@ function parseArgs (request, h) {
 
   arg = Array.isArray(arg) ? arg : [arg]
 
-  arg.forEach(path => {
-    if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
-      throw Boom.badRequest('invalid ipfs ref path')
+  return arg.map(arg => {
+    return {
+      path: arg,
+      comments,
+      recursive: Boolean(recursive !== 'false')
     }
   })
-
-  const recursive = request.query.recursive !== 'false'
-  return { path: arg, recursive }
 }
 
 exports.ls = {
@@ -54,30 +52,27 @@ exports.ls = {
     }).unknown()
   },
 
-  parseArgs (request, h) {
-    let { arg } = request.query
+  parseArgs: (request) => {
+    let { arg, type } = request.query
 
     if (arg) {
       arg = Array.isArray(arg) ? arg : [arg]
-
-      arg.forEach(path => {
-        if (!isIpfs.ipfsPath(path) && !isIpfs.cid(path)) {
-          throw Boom.badRequest('invalid ipfs ref path')
-        }
-      })
+      arg = arg.map(arg => arg)
     }
 
-    const type = request.query.type || 'all'
-    return { path: request.query.arg, type }
+    return {
+      source: arg,
+      type: type || 'all'
+    }
   },
 
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { path, type } = request.pre.args
+    const { source, type } = request.pre.args
 
     if (!request.query.stream) {
       const res = await pipe(
-        ipfs.pin.ls(path, { type }),
+        ipfs.pin.ls(source, { type }),
         reduce((res, { type, cid, comments }) => {
           res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = toPin(type, null, comments)
           return res
@@ -88,7 +83,7 @@ exports.ls = {
     }
 
     return streamResponse(request, h, () => pipe(
-      ipfs.pin.ls(path, { type }),
+      ipfs.pin.ls(source, { type }),
       map(({ type, cid, comments }) => toPin(type, cidToString(cid, { base: request.query['cid-base'] }), comments)),
       ndjson.stringify
     ))
@@ -106,11 +101,11 @@ exports.add = {
 
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { path, recursive } = request.pre.args
+    const source = request.pre.args
 
     let result
     try {
-      result = await all(ipfs.pin.add(path, { recursive }))
+      result = await all(ipfs.pin.add(source))
     } catch (err) {
       if (err.message.includes('already pinned recursively')) {
         throw Boom.boomify(err, { statusCode: 400 })
@@ -135,11 +130,11 @@ exports.rm = {
 
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { path, recursive } = request.pre.args
+    const source = request.pre.args
 
     let result
     try {
-      result = await all(ipfs.pin.rm(path, { recursive }))
+      result = await all(ipfs.pin.rm(source))
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to remove pin' })
     }

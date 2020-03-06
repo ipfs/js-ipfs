@@ -47,9 +47,86 @@ module.exports = (common, options) => {
       return clearPins(ipfs)
     })
 
-    it('should add a pin and return the added CID', async () => {
-      const pinset = await all(ipfs.pin.add(fixtures.files[0].cid, { recursive: false }))
+    async function testAddInput (source) {
+      const pinset = await all(ipfs.pin.add(source))
+
+      expect(pinset.map(p => p.cid)).to.have.deep.members([
+        fixtures.files[0].cid,
+        fixtures.files[1].cid
+      ])
+    }
+
+    it('should add a CID and return the added CID', async () => {
+      const pinset = await all(ipfs.pin.add(fixtures.files[0].cid))
       expect(pinset.map(p => p.cid)).to.deep.include(fixtures.files[0].cid)
+    })
+
+    it('should add a pin with options and return the added CID', async () => {
+      const pinset = await all(ipfs.pin.add({
+        cid: fixtures.files[0].cid,
+        recursive: false
+      }))
+      expect(pinset.map(p => p.cid)).to.deep.include(fixtures.files[0].cid)
+    })
+
+    it('should add an array of CIDs', () => {
+      return testAddInput([
+        fixtures.files[0].cid,
+        fixtures.files[1].cid
+      ])
+    })
+
+    it('should add a generator of CIDs', () => {
+      return testAddInput(function * () {
+        yield fixtures.files[0].cid
+        yield fixtures.files[1].cid
+      }())
+    })
+
+    it('should add an async generator of CIDs', () => {
+      return testAddInput(async function * () { // eslint-disable-line require-await
+        yield fixtures.files[0].cid
+        yield fixtures.files[1].cid
+      }())
+    })
+
+    it('should add an array of pins with options', () => {
+      return testAddInput([
+        {
+          cid: fixtures.files[0].cid,
+          recursive: false
+        },
+        {
+          cid: fixtures.files[1].cid,
+          recursive: true
+        }
+      ])
+    })
+
+    it('should add a generator of pins with options', () => {
+      return testAddInput(function * () {
+        yield {
+          cid: fixtures.files[0].cid,
+          recursive: false
+        }
+        yield {
+          cid: fixtures.files[1].cid,
+          recursive: true
+        }
+      }())
+    })
+
+    it('should add an async generator of pins with options', () => {
+      return testAddInput(async function * () { // eslint-disable-line require-await
+        yield {
+          cid: fixtures.files[0].cid,
+          recursive: false
+        }
+        yield {
+          cid: fixtures.files[1].cid,
+          recursive: true
+        }
+      }())
     })
 
     it('should add recursively', async () => {
@@ -61,7 +138,10 @@ module.exports = (common, options) => {
     })
 
     it('should add directly', async () => {
-      await drain(ipfs.pin.add(fixtures.directory.cid, { recursive: false }))
+      await drain(ipfs.pin.add({
+        cid: fixtures.directory.cid,
+        recursive: false
+      }))
       await Promise.all([
         expectPinned(ipfs, fixtures.directory.cid, pinTypes.direct),
         expectPinned(ipfs, fixtures.directory.files[0].cid, false)
@@ -69,7 +149,10 @@ module.exports = (common, options) => {
     })
 
     it('should recursively pin parent of direct pin', async () => {
-      await drain(ipfs.pin.add(fixtures.directory.files[0].cid, { recursive: false }))
+      await drain(ipfs.pin.add({
+        cid: fixtures.directory.files[0].cid,
+        recursive: false
+      }))
       await drain(ipfs.pin.add(fixtures.directory.cid))
       await Promise.all([
         // file is pinned both directly and indirectly o.O
@@ -80,7 +163,10 @@ module.exports = (common, options) => {
 
     it('should fail to directly pin a recursive pin', async () => {
       await drain(ipfs.pin.add(fixtures.directory.cid))
-      return expect(drain(ipfs.pin.add(fixtures.directory.cid, { recursive: false })))
+      return expect(drain(ipfs.pin.add({
+        cid: fixtures.directory.cid,
+        recursive: false
+      })))
         .to.eventually.be.rejected()
         .with(/already pinned recursively/)
     })

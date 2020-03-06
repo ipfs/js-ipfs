@@ -12,9 +12,8 @@
 
 Where:
 
-- `source` is a [CID], an array of CIDs or an (async) iterable that yields CIDs
+- `source` is a [CID], an IPFS path or an object of the form `{ cid: CID, recursive: Boolean, comments: String }` or `{ path: String, recursive: Boolean, comments: String }` or an array or (async) iterable that yields any of the previous types
 - `options` is an object that can contain the following keys
-  - `recursive` (`boolean`) - Recursively pin the object linked. Type: bool. Default: `true`
   - `timeout` (`number`|`string`) - Throw an error if the request does not complete within the specified milliseconds timeout. If `timeout` is a string, the value is parsed as a [human readable duration](https://www.npmjs.com/package/parse-duration). There is no timeout by default.
 
 **Returns**
@@ -34,7 +33,7 @@ Each yielded object has the form:
 **Example:**
 
 ```JavaScript
-for await (const pin of ipfs.pin.add('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')) {
+for await (const pin of ipfs.pin.add(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
   console.log(pinset)
 }
 // { cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u') }
@@ -80,9 +79,8 @@ A great source of [examples][] can be found in the tests for this API.
 ##### `ipfs.pin.rm(source, [options])`
 
 Where:
-- `source` is a [CID], an array of CIDs or an (async) iterable that yields CIDs
+- `source` is a [CID], an IPFS path or an object of the form `{ cid: CID, recursive: Boolean}` or `{ path: String, recursive: Boolean }` or an array or (async) iterable that yields any of the previous types
 - `options` is an object that can contain the following keys
-  - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `true`
 
 **Returns**
 

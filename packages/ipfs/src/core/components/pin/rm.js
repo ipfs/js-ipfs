@@ -1,20 +1,19 @@
 'use strict'
 
-const { resolvePath } = require('../../utils')
+const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
 const { PinTypes } = require('./pin-manager')
+const { resolvePath } = require('../../utils')
 
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return async function * rm (paths, options) {
+  return async function * rm (source, options) {
     options = options || {}
-
-    const recursive = options.recursive == null ? true : options.recursive
-    const cids = await resolvePath(dag, paths, { signal: options.signal })
 
     const release = await gcLock.readLock()
 
     try {
       // verify that each hash can be unpinned
-      for (const cid of cids) {
+      for await (const { path, recursive } of normaliseInput(source)) {
+        const cid = await resolvePath(dag, path)
         const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 
         if (!pinned) {
