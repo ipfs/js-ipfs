@@ -6,6 +6,7 @@ const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
 const parseDuration = require('parse-duration')
 const { TimeoutError } = require('./errors')
+const errCode = require('err-code')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
@@ -24,13 +25,13 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
  */
 function parseIpfsPath (ipfsPath) {
   if (!ipfsPath) {
-    throw new Error('invalid ipfs ref path')
+    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
   }
 
   ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
   const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
   if (!matched) {
-    throw new Error('invalid ipfs ref path')
+    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
   }
 
   const [hash, ...links] = matched[1].split('/')
@@ -39,7 +40,7 @@ function parseIpfsPath (ipfsPath) {
   if (isIpfs.cid(hash)) {
     return { hash, links }
   } else {
-    throw new Error('invalid ipfs ref path')
+    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
   }
 }
 
@@ -57,7 +58,7 @@ const normalizePath = (pathStr) => {
   } else if (isIpfs.path(pathStr)) {
     return pathStr
   } else {
-    throw Object.assign(new Error(`invalid path: ${pathStr}`), { code: ERR_BAD_PATH })
+    throw errCode(new Error(`invalid path: ${pathStr}`), ERR_BAD_PATH)
   }
 }
 

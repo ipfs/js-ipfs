@@ -71,15 +71,23 @@ exports.ls = {
     const { source, type } = request.pre.args
 
     if (!request.query.stream) {
-      const res = await pipe(
-        ipfs.pin.ls(source, { type }),
-        reduce((res, { type, cid, comments }) => {
-          res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = toPin(type, null, comments)
-          return res
-        }, { Keys: {} })
-      )
+      try {
+        const res = await pipe(
+          ipfs.pin.ls(source, { type }),
+          reduce((res, { type, cid, comments }) => {
+            res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = toPin(type, null, comments)
+            return res
+          }, { Keys: {} })
+        )
 
-      return h.response(res)
+        return h.response(res)
+      } catch (err) {
+        if (err.code === 'ERR_BAD_PATH') {
+          throw Boom.boomify(err, { statusCode: 400 })
+        }
+
+        throw Boom.boomify(err, { message: 'Failed to list pins' })
+      }
     }
 
     return streamResponse(request, h, () => pipe(
@@ -107,9 +115,14 @@ exports.add = {
     try {
       result = await all(ipfs.pin.add(source))
     } catch (err) {
+      if (err.code === 'ERR_BAD_PATH') {
+        throw Boom.boomify(err, { statusCode: 400 })
+      }
+
       if (err.message.includes('already pinned recursively')) {
         throw Boom.boomify(err, { statusCode: 400 })
       }
+
       throw Boom.boomify(err, { message: 'Failed to add pin' })
     }
 
@@ -136,6 +149,10 @@ exports.rm = {
     try {
       result = await all(ipfs.pin.rm(source))
     } catch (err) {
+      if (err.code === 'ERR_BAD_PATH') {
+        throw Boom.boomify(err, { statusCode: 400 })
+      }
+
       throw Boom.boomify(err, { message: 'Failed to remove pin' })
     }
 
