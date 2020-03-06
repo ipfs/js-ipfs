@@ -8,7 +8,7 @@ That being said, we will explain how to circumvent these caveats and once they a
 
 ## Application diagram
 
-The goal of this tutorial is to create a simple application with an IPFS node that dials to other instances using WebRTC, and at the same time dial and transfer files from a browser IPFS node using WebSockets as the transport.
+The goal of this tutorial is to create a simple application with an IPFS node that dials to other instances using WebRTC (or [libp2p/js-libp2p-stardust](https://github.com/libp2p/js-libp2p-stardust)), and at the same time dial and transfer files from a browser IPFS node using WebSockets as the transport.
 
 ```
 ┌──────────────┐                ┌──────────────┐
@@ -35,7 +35,7 @@ Here's what we are going to be doing:
 
 1. Install a `go-ipfs` or `js-ipfs` node in your machine
 2. Make your daemons listen on WebSockets
-3. Start a `libp2p-webrtc-star` signaling server
+3. Start a signaling server ([js-libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) or [js-libp2p-stardust](https://github.com/libp2p/js-libp2p-stardust))
 4. Start the app
 5. Dial to a node using WebSockets (your desktop ones)
 6. Transfer files between all of your nodes!
@@ -122,23 +122,29 @@ Daemon is ready
 
 Check the `/ws` in line 5, that means it is listening. Cool.
 
-### 3. Start a `libp2p-webrtc-star` signaling server
+#### 3. Start a signaling server
 
-This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions.
+#### 3a. Start a `libp2p-webrtc-star` signaling server
 
-First install the `libp2p-webrtc-star` module globally:
+This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions using the `webrtc-star`protocol.
 
-```sh
-> npm install -g libp2p-webrtc-star
-```
-
-This will give you the `webrtc-star` command.  Use this to start a signaling server:
+This example already installs `libp2p-webrtc-star`. It comes with a runnable binary called `star-signal`, which you can run through:
 
 ```sh
-> webrtc-star
+> npm run server-ws
 ```
 
-By default it will listen to all incoming connections on port 13579.  Override this with the `--host` and/or `--port` options.
+By default it will listen to all incoming connections on port 9090. Override this with the `--host` and/or `--port` options.
+
+#### 3b. Start a `libp2p-stardust` signaling server
+
+This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions using the `stardust`protocol.
+
+This example already installs `libp2p-stardust`. It comes with a runnable binary called `stardust-server`, which you can run through:
+
+```sh
+> npm run server-stardust
+```
 
 ### 4. Start the app
 

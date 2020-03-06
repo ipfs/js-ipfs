@@ -1,6 +1,7 @@
 'use strict'
 
 const WS = require('libp2p-websockets')
+const Stardust = require('libp2p-stardust')
 const WebRTCStar = require('libp2p-webrtc-star')
 const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
@@ -18,7 +19,8 @@ module.exports = () => {
     modules: {
       transport: [
         WS,
-        WebRTCStar
+        WebRTCStar,
+        Stardust
       ],
       streamMuxer: [
         Multiplex

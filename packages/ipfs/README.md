@@ -942,6 +942,29 @@ const node = await IPFS.create({
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
 
+**Note:** We host a signalling server at star-signal.cloud.ipfs.team that can be used for practical demos and experimentation, it should not be used for apps in production. A libp2p-webrtc-star address, using the signalling server we provide, looks like:
+
+/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star/p2p/<your-peer-id>
+
+Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
+
+#### Is there a more stable alternative to webrtc-star that offers a similar functionality?
+
+Yes, stardust! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
+
+```JavaScript
+const node = await IPFS.create({
+  config: {
+    Addresses: { 
+      Swarm: [
+        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+      ]
+    }
+  }
+})
+// your instance with stardust is ready
+```
+
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 
 Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https://github.com/ipfs/js-ipfs/issues/611), it cuts freezes the execution of any background tab, turning an IPFS node that was running on that webpage into a vegetable state.

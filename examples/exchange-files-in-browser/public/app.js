@@ -44,6 +44,7 @@ let info
 
 async function start () {
   if (!node) {
+    const stardustServerId = 'QmRUUUKTBLHchdSMcBHdM5oKgVLrYKmGthhfLZWretK3DL'
     node = await IPFS.create({
       repo: 'ipfs-' + Math.random(),
       config: {
@@ -51,7 +52,10 @@ async function start () {
           Swarm: [
             // This is a public webrtc-star server
             // '/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star'
-            '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
+            '/ip4/127.0.0.1/tcp/9090/wss/p2p-webrtc-star',
+            // This is a public stardust server
+            // '/dns4/star-signal.cloud.ipfs.team/wss/p2p-stardust'
+            `/ip4/0.0.0.0/tcp/5892/ws/p2p-stardust/p2p/${stardustServerId}`
           ]
         }
       }

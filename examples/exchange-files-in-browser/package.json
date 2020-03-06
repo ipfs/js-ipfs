@@ -7,14 +7,18 @@
     "bundle": "browserify public/app.js > public/bundle.js",
     "start": "http-server -c-1 -p 12345 public",
     "dev": "npm run bundle && npm run start",
-    "test": "test-ipfs-example"
+    "test": "test-ipfs-example",
+    "server-ws": "star-signal",
+    "server-stardust": "stardust-server"
   },
   "license": "MIT",
   "devDependencies": {
     "browserify": "^16.2.3",
     "execa": "^3.2.0",
     "http-server": "^0.11.1",
-    "ipfs-http-client": "^42.0.0"
+    "ipfs-http-client": "^42.0.0",
+    "libp2p-stardust": "libp2p/js-libp2p-stardust#refactor/async-await",
+    "libp2p-webrtc-star": "^0.17.7"
   },
   "dependencies": {
     "ipfs": "^0.41.0",

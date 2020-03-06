@@ -140,6 +140,7 @@
     "libp2p-mplex": "^0.9.3",
     "libp2p-record": "^0.7.0",
     "libp2p-secio": "^0.12.1",
+    "libp2p-stardust": "libp2p/js-libp2p-stardust#refactor/async-await",
     "libp2p-tcp": "^0.14.2",
     "libp2p-webrtc-star": "^0.17.6",
     "libp2p-websockets": "^0.13.3",
