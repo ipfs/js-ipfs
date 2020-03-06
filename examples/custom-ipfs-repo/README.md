@@ -10,7 +10,6 @@ You can find full details on customization in the [IPFS Repo Docs](https://githu
 ## Run this example
 
 ```
-> npm install
 > npm start
 ```
 

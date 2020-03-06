@@ -21,7 +21,6 @@ $ cd js-ipfs/examples/browser-mfs
 In this directory:
 
 ```
-$ npm install
 $ npm start
 ```
 

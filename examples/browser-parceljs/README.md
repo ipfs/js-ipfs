@@ -10,7 +10,6 @@ that you can follow it for creating Parcel.js bundled js-ipfs DApps.
 want to serve the example over IPFS)
 1. Open a new terminal
 1. `cd` into this folder
-1. Run `npm install`
 
 ## Running this example in development mode with auto-reloading
 

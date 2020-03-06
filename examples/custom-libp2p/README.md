@@ -7,7 +7,6 @@ This example shows you how to make full use of the ipfs configuration to create 
 Running this example should result in metrics being logged out to the console every few seconds.
 
 ```
-> npm install
 > npm start
 ```
 

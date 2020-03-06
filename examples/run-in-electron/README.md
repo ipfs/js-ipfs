@@ -5,6 +5,5 @@
 To try it by yourself, do:
 
 ```
-> npm install
 > npm start
 ```

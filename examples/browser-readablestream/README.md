@@ -9,7 +9,6 @@ Take a look at [`index.js`](./index.js) to see a working example.
 In this directory:
 
 ```
-$ npm install
 $ npm start
 ```
 
