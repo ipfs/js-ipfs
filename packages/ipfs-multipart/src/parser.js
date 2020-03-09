@@ -1,7 +1,7 @@
 'use strict'
 
 const Content = require('@hapi/content')
-const multipart = require('it-multipart')
+const multipart = require('./it-multipart')
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
@@ -46,6 +46,14 @@ const ignore = async (stream) => {
 
 async function * parseEntry (stream, options) {
   for await (const part of stream) {
+    console.log('########')
+    console.log({ part })
+
+    // Just for logging
+    for await (const parseEntryChunk of part.body) {
+      console.log({ parseEntryChunk })
+    }
+    // end of extra logging code
     if (!part.headers['content-type']) {
       throw new Error('No content-type in multipart part')
     }
@@ -92,6 +100,7 @@ async function * parseEntry (stream, options) {
 
     const disposition = parseDisposition(part.headers['content-disposition'])
 
+    console.log({ disposition })
     entry.name = decodeURIComponent(disposition.filename)
     entry.body = part.body
 
@@ -100,7 +109,11 @@ async function * parseEntry (stream, options) {
 }
 
 async function * parser (stream, options) {
+  // console.log({ stream });
+  console.log('boundary', options.boundary)
   for await (const entry of parseEntry(multipart(stream, options.boundary), options)) {
+    console.log('*********')
+    console.log({ entry })
     if (entry.type === 'directory') {
       yield {
         type: 'directory',
