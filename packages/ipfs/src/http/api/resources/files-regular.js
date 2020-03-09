@@ -157,8 +157,7 @@ exports.add = {
       output.write(JSON.stringify({
         Name: currentFileName,
         Bytes: bytes
-      }) + '\n'
-      )
+      }) + '\n')
     }
 
     pipe(
@@ -315,13 +314,11 @@ exports.ls = {
       return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
     }
 
-    return streamResponse(request, h, () =>
-      pipe(
-        ipfs.ls(key, { recursive }),
-        map(link => ({ Objects: [{ Hash: key, Links: [mapLink(link)] }] })),
-        ndjson.stringify
-      )
-    )
+    return streamResponse(request, h, () => pipe(
+      ipfs.ls(key, { recursive }),
+      map(link => ({ Objects: [{ Hash: key, Links: [mapLink(link)] }] })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -363,13 +360,11 @@ exports.refs = {
       maxDepth: request.query['max-depth']
     }
 
-    return streamResponse(request, h, () =>
-      pipe(
-        ipfs.refs(key, options),
-        map(({ ref, err }) => ({ Ref: ref, Err: err })),
-        ndjson.stringify
-      )
-    )
+    return streamResponse(request, h, () => pipe(
+      ipfs.refs(key, options),
+      map(({ ref, err }) => ({ Ref: ref, Err: err })),
+      ndjson.stringify
+    ))
   }
 }
 
@@ -378,12 +373,10 @@ exports.refs.local = {
   handler (request, h) {
     const { ipfs } = request.server.app
 
-    return streamResponse(request, h, () =>
-      pipe(
-        ipfs.refs.local(),
-        map(({ ref, err }) => ({ Ref: ref, Err: err })),
-        ndjson.stringify
-      )
-    )
+    return streamResponse(request, h, () => pipe(
+      ipfs.refs.local(),
+      map(({ ref, err }) => ({ Ref: ref, Err: err })),
+      ndjson.stringify
+    ))
   }
 }
