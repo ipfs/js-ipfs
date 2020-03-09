@@ -39,23 +39,20 @@ module.exports = {
 
   handler (argv) {
     const {
+      ctx: { ipfs },
       source,
       dest,
-      getIpfs,
       parents,
       flush,
       hashAlg,
       shardSplitThreshold
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-      return ipfs.files.cp(source, dest, {
-        parents,
-        flush,
-        hashAlg,
-        shardSplitThreshold
-      })
-    })())
+    return ipfs.files.cp(source, dest, {
+      parents,
+      flush,
+      hashAlg,
+      shardSplitThreshold
+    })
   }
 }

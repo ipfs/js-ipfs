@@ -1,0 +1,36 @@
+{
+  "name": "example-circuit-relaying",
+  "version": "0.0.1",
+  "description": "IPFS quick msg",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "parcel build index.html --public-url '.'",
+    "start": "parcel index.html",
+    "deploy": "ipfs add -r --quieter dist",
+    "lint": "aegir lint",
+    "test": "test-ipfs-example"
+  },
+  "author": "Dmitriy Ryajov <dryajov@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ipfs": "^0.41.0",
+    "ipfs-pubsub-room": "^2.0.1"
+  },
+  "devDependencies": {
+    "aegir": "^21.3.0",
+    "execa": "^3.2.0",
+    "ipfs-css": "^0.13.1",
+    "ipfs-http-client": "^42.0.0",
+    "parcel-bundler": "^1.6.2",
+    "tachyons": "^4.9.1",
+    "test-ipfs-example": "^1.0.0"
+  },
+  "browserslist": [
+    ">1%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

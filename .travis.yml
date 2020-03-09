@@ -1,5 +1,8 @@
 language: node_js
 
+services:
+  - xvfb
+
 branches:
   only:
   - master
@@ -46,6 +49,7 @@ after_success:
 
 jobs:
   allow_failures:
+    - name: external - ipfs-webui
     - name: external - ipfs-companion
     - name: external - npm-on-ipfs
     - name: external - peer-base
@@ -53,11 +57,10 @@ jobs:
     - name: external - orbit-db
     - name: external - ipfs-log
     - name: external - sidetree
-    - name: external - webui
   include:
     - stage: check
       script:
-        - npm run build -- -- -- --bundlesize
+        - npm run build -- --scope={ipfs,ipfs-http-client} -- -- --bundlesize
         - npm run dep-check -- -- -- -- -i wrtc -i electron-webrtc
         - npm run lint -- --concurrency 1
 
@@ -124,166 +127,10 @@ jobs:
         - npm run test:interop:electron-renderer -- -- -- --bail --timeout 10000
 
     - stage: test
-      name: example - browser-add-readable-stream
+      name: examples
       script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-add-readable-stream
-
-    - stage: test
-      name: example - browser-browserify
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-browserify
-
-    - stage: test
-      name: example - browser-create-react-app
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-create-react-app
-
-    - stage: test
-      name: example - browser-mfs
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-mfs
-
-    - stage: test
-      name: example - browser-parceljs
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-parceljs
-
-    - stage: test
-      name: example - browser-readablestream
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-readablestream
-
-    - stage: test
-      name: example - browser-script-tag
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-script-tag
-
-    - stage: test
-      name: example - browser-video-streaming
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-video-streaming
-
-    - stage: test
-      name: example - browser-vue
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-vue
-
-    - stage: test
-      name: example - browser-webpack
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- browser-webpack
-
-    - stage: test
-      name: example - circuit-relaying
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- circuit-relaying
-
-    - stage: test
-      name: example - custom-ipfs-repo
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- custom-ipfs-repo
-
-    - stage: test
-      name: example - custom-libp2p
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- custom-libp2p
-
-    - stage: test
-      name: example - exchange-files-in-browser
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- exchange-files-in-browser
-
-    - stage: test
-      name: example - explore-ethereum-blockchain
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- explore-ethereum-blockchain
-
-    - stage: test
-      name: example - ipfs-101
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- ipfs-101
-
-    - stage: test
-      name: example - running-multiple-nodes
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- running-multiple-nodes
-
-    - stage: test
-      name: example - traverse-ipld-graphs
-      script:
-        - cd packages/ipfs
-        - npm run build
-        - cd examples
-        - npm install
-        - npm run test -- traverse-ipld-graphs
+        - npm run build -- --scope={ipfs,ipfs-http-client}
+        - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
       # only run on changes to master
@@ -298,56 +145,56 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-webui
       script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next"
+        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-companion
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - npm-on-ipfs
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - peer-base
       script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next"
+        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - service-worker-gateway
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - sidetree
       script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next"
+        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false

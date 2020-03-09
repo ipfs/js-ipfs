@@ -9,20 +9,20 @@ module.exports = {
 
   describe: 'List all available commands',
 
-  handler ({ print, resolve }) {
-    resolve((async () => {
-      const commandsPath = path.resolve(__dirname, '..', 'commands')
+  async handler ({ ctx }) {
+    const { print } = ctx
 
-      // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78
-      const files = await all(glob(commandsPath, '**/*.js'))
-      const cmds = files.map((p) => {
-        return p
-          .replace(/\\/g, '/')
-          .replace(/\//g, ' ')
-          .replace('.js', '')
-      }).sort().map((cmd) => `ipfs ${cmd}`)
+    const commandsPath = path.resolve(__dirname, '..', 'commands')
 
-      print(['ipfs'].concat(cmds).join('\n'))
-    })())
+    // modeled after https://github.com/vdemedes/ronin/blob/master/lib/program.js#L78
+    const files = await all(glob(commandsPath, '**/*.js'))
+    const cmds = files.map((p) => {
+      return p
+        .replace(/\\/g, '/')
+        .replace(/\//g, ' ')
+        .replace('.js', '')
+    }).sort().map((cmd) => `ipfs ${cmd}`)
+
+    print(['ipfs'].concat(cmds).join('\n'))
   }
 }

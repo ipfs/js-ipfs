@@ -35,42 +35,37 @@ module.exports = {
     }
   },
 
-  handler (argv) {
+  async handler (argv) {
     const {
+      ctx: { ipfs, print },
       path,
-      getIpfs,
       long,
       sort,
-      cidBase,
-      print
+      cidBase
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-
-      const printListing = file => {
-        if (long) {
-          print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.cid.toString(cidBase)}\t${file.size}`)
-        } else {
-          print(file.name)
-        }
+    const printListing = file => {
+      if (long) {
+        print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${file.name}\t${file.cid.toString(cidBase)}\t${file.size}`)
+      } else {
+        print(file.name)
       }
+    }
 
-      // https://github.com/ipfs/go-ipfs/issues/5181
-      if (sort) {
-        let files = await all(ipfs.files.ls(path || FILE_SEPARATOR))
+    // https://github.com/ipfs/go-ipfs/issues/5181
+    if (sort) {
+      let files = await all(ipfs.files.ls(path || FILE_SEPARATOR))
 
-        files = files.sort((a, b) => {
-          return a.name.localeCompare(b.name)
-        })
+      files = files.sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      })
 
-        files.forEach(printListing)
-        return
-      }
+      files.forEach(printListing)
+      return
+    }
 
-      for await (const file of ipfs.files.ls(path || FILE_SEPARATOR)) {
-        printListing(file)
-      }
-    })())
+    for await (const file of ipfs.files.ls(path || FILE_SEPARATOR)) {
+      printListing(file)
+    }
   }
 }

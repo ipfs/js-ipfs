@@ -5,17 +5,10 @@ module.exports = {
 
   describe: 'List available config profiles',
 
-  builder: {},
-
-  handler (argv) {
-    argv.resolve(
-      (async () => {
-        const ipfs = await argv.getIpfs()
-
-        for (const profile of await ipfs.config.profiles.list()) {
-          argv.print(`${profile.name}:\n ${profile.description}`)
-        }
-      })()
-    )
+  async handler (argv) {
+    const { ipfs, print } = argv.ctx
+    for (const profile of await ipfs.config.profiles.list()) {
+      print(`${profile.name}:\n ${profile.description}`)
+    }
   }
 }

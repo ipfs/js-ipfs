@@ -68,7 +68,7 @@ describe('bitswap', function () {
       const file = Buffer.from(`I love IPFS <3 ${hat()}`)
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
-      await proc.swarm.connect(remote.peerId.addresses[0])
+      proc.swarm.connect(remote.peerId.addresses[0])
 
       const files = await all(remote.add([{ path: 'awesome.txt', content: file }]))
       const data = await concat(proc.cat(files[0].cid))

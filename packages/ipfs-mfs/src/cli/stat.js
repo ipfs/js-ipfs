@@ -52,9 +52,8 @@ Mtime: <mtime>`,
 
   handler (argv) {
     const {
+      ctx: { ipfs, print },
       path,
-      getIpfs,
-      print,
       format,
       hash,
       size,
@@ -62,31 +61,27 @@ Mtime: <mtime>`,
       cidBase
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
+    return ipfs.files.stat(path, {
+      withLocal
+    })
+      .then((stats) => {
+        if (hash) {
+          return print(stats.cid.toString(cidBase))
+        }
 
-      return ipfs.files.stat(path, {
-        withLocal
+        if (size) {
+          return print(stats.size)
+        }
+
+        print(format
+          .replace('<hash>', stats.cid.toString(cidBase))
+          .replace('<size>', stats.size)
+          .replace('<cumulsize>', stats.cumulativeSize)
+          .replace('<childs>', stats.blocks)
+          .replace('<type>', stats.type)
+          .replace('<mode>', formatMode(stats.mode, stats.type === 'directory'))
+          .replace('<mtime>', formatMtime(stats.mtime))
+        )
       })
-        .then((stats) => {
-          if (hash) {
-            return print(stats.cid.toString(cidBase))
-          }
-
-          if (size) {
-            return print(stats.size)
-          }
-
-          print(format
-            .replace('<hash>', stats.cid.toString(cidBase))
-            .replace('<size>', stats.size)
-            .replace('<cumulsize>', stats.cumulativeSize)
-            .replace('<childs>', stats.blocks)
-            .replace('<type>', stats.type)
-            .replace('<mode>', formatMode(stats.mode, stats.type === 'directory'))
-            .replace('<mtime>', formatMtime(stats.mtime))
-          )
-        })
-    })())
   }
 }

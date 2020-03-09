@@ -55,8 +55,7 @@
     "sinon": "^8.0.4",
     "stream-to-promise": "^2.2.0",
     "temp-write": "^4.0.0",
-    "yargs": "^15.0.2",
-    "yargs-promise": "^1.1.0"
+    "yargs": "^15.1.0"
   },
   "dependencies": {
     "@hapi/boom": "^7.4.3",
@@ -67,9 +66,9 @@
     "hamt-sharding": "^1.0.0",
     "interface-datastore": "^0.8.0",
     "ipfs-multipart": "^0.3.0",
-    "ipfs-unixfs": "^0.3.0",
-    "ipfs-unixfs-exporter": "^0.41.0",
-    "ipfs-unixfs-importer": "^0.44.0",
+    "ipfs-unixfs": "^1.0.0",
+    "ipfs-unixfs-exporter": "^1.0.1",
+    "ipfs-unixfs-importer": "^1.0.1",
     "ipfs-utils": "^0.7.0",
     "ipld-dag-pb": "^0.18.2",
     "it-all": "^1.0.1",

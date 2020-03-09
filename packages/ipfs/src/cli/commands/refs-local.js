@@ -5,17 +5,15 @@ module.exports = {
 
   describe: 'List all local references.',
 
-  handler ({ getIpfs, print, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
+  async handler ({ ctx }) {
+    const { ipfs, print } = ctx
 
-      for await (const ref of ipfs.refs.local()) {
-        if (ref.err) {
-          print(ref.err, true, true)
-        } else {
-          print(ref.ref)
-        }
+    for await (const ref of ipfs.refs.local()) {
+      if (ref.err) {
+        print(ref.err, true, true)
+      } else {
+        print(ref.ref)
       }
-    })())
+    }
   }
 }

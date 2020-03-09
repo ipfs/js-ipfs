@@ -46,8 +46,8 @@ module.exports = {
 
   handler (argv) {
     const {
+      ctx: { ipfs },
       path,
-      getIpfs,
       flush,
       cidVersion,
       hashAlg,
@@ -55,16 +55,12 @@ module.exports = {
       mtime
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-
-      return ipfs.files.touch(path, {
-        mtime,
-        flush,
-        cidVersion,
-        hashAlg,
-        shardSplitThreshold
-      })
-    })())
+    return ipfs.files.touch(path, {
+      mtime,
+      flush,
+      cidVersion,
+      hashAlg,
+      shardSplitThreshold
+    })
   }
 }

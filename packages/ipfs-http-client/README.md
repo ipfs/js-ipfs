@@ -120,11 +120,11 @@ const list = await bitswap.wantlist(key)
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/bundle-browserify) to get a boilerplate.
+See the example in the [examples folder](/examples/browser-browserify) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](/examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
@@ -456,7 +456,6 @@ The js-ipfs-http-client is a work in progress. As such, there's a few things you
 - **[Check out the existing issues](https://github.com/ipfs/js-ipfs-http-client/issues)**!
 - **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
 - **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/interface-ipfs-core/tree/master/js/src).
-- **Contribute to the [FAQ repository](https://github.com/ipfs/faq/issues)** with any questions you have about IPFS or any of the relevant technology. A good example would be asking, 'What is a merkledag tree?'. If you don't know a term, odds are, someone else doesn't either. Eventually, we should have a good understanding of where we need to improve communications and teaching together to make IPFS and IPNS better.
 
 **Want to hack on IPFS?**
 

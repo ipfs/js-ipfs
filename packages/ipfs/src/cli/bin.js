@@ -17,42 +17,88 @@ process.once('unhandledRejection', (err) => {
 
 const semver = require('semver')
 const pkg = require('../../package.json')
+
 // Check for node version
 if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
   console.error(`Please update your Node.js version to ${pkg.engines.node}`)
   process.exit(1)
 }
 
-const YargsPromise = require('yargs-promise')
 const updateNotifier = require('update-notifier')
+const { InvalidRepoVersionError } = require('ipfs-repo/src/errors/index')
+const { NotEnabledError } = require('../core/errors')
+const { print, getIpfs, getRepoPath } = require('./utils')
 const debug = require('debug')('ipfs:cli')
-const { errors: { InvalidRepoVersionError } } = require('ipfs-repo')
-const parser = require('./parser')
-const commandAlias = require('./command-alias')
-const { print } = require('./utils')
+const cli = require('./')
 
 // Check if an update is available and notify
 const oneWeek = 1000 * 60 * 60 * 24 * 7
 updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 
-const cli = new YargsPromise(parser)
+async function main () {
+  let exitCode = 0
+  let ctx = {
+    print,
+    getStdin: () => process.stdin,
+    repoPath: getRepoPath(),
+    cleanup: () => {}
+  }
 
-// Apply command aliasing (eg `refs local` -> `refs-local`)
-const args = commandAlias(process.argv.slice(2))
-cli
-  .parse(args)
-  .then(({ data, argv }) => {
+  const command = process.argv.slice(2)
+
+  try {
+    const data = await cli(command, async (argv) => {
+      if (!['daemon', 'init'].includes(command[0])) {
+        const { ipfs, isDaemon, cleanup } = await getIpfs(argv)
+
+        ctx = {
+          ...ctx,
+          ipfs,
+          isDaemon,
+          cleanup
+        }
+      }
+
+      argv.ctx = ctx
+
+      return argv
+    })
+
     if (data) {
       print(data)
     }
-  })
-  .catch(({ error, argv }) => {
-    if (error.code === InvalidRepoVersionError.code) {
-      error.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
+  } catch (err) {
+    if (err.code === InvalidRepoVersionError.code) {
+      err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
     }
 
-    print(error.message || 'Unknown error, please re-run the command with DEBUG=ipfs:cli to see debug output')
-    debug(error)
+    if (err.code === NotEnabledError.code) {
+      err.message = `no IPFS repo found in ${ctx.repoPath}.\nplease run: 'ipfs init'`
+    }
 
-    process.exit(1)
-  })
+    // Handle yargs errors
+    if (err.code === 'ERR_YARGS') {
+      err.yargs.showHelp()
+      ctx.print.error('\n')
+      ctx.print.error(`Error: ${err.message}`)
+    } else if (debug.enabled) {
+      // Handle commands handler errors
+      debug(err)
+    } else {
+      ctx.print.error(err.message)
+    }
+
+    exitCode = 1
+  } finally {
+    await ctx.cleanup()
+  }
+
+  if (command[0] === 'daemon' && exitCode === 0) {
+    // don't shut down the daemon process
+    return
+  }
+
+  process.exit(exitCode)
+}
+
+main()

@@ -9,8 +9,8 @@
   ],
   "rows": [
     "Files",
-    ["ipfs/js-ipfs-unixfs-exporter", "ipfs-unixfs-exporter"],
-    ["ipfs/js-ipfs-unixfs-importer", "ipfs-unixfs-importer"],
+    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs-exporter"],
+    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs-importer"],
     ["ipfs/js-ipfs-mfs", "ipfs-mfs"],
     ["ipfs/js-ipfs-unixfs", "ipfs-unixfs"],
 
@@ -23,14 +23,14 @@
     ["ipfs/js-ipfs-bitswap", "ipfs-bitswap"],
 
     "IPNS",
-    ["ipfs/js-ipfs-name", "js-ipfs-name"],
+    ["ipfs/js-ipfs-name", "ipfs-name"],
 
     "Generics/Utils",
-    ["ipfs/js-ipfs-utils", "ipfs-utils"],
-    ["ipfs/js-ipfs-http-client", "ipfs-http-client"],
+    ["ipfs/js-ipfs", "ipfs-utils"],
+    ["ipfs/js-ipfs", "ipfs-http-client"],
     ["ipfs/js-ipfs-http-response", "ipfs-http-response"],
     ["ipfs/js-ipfsd-ctl", "ipfsd-ctl"],
-    ["ipfs/js-ipfs-multipart", "ipfs-multipart"],
+    ["ipfs/js-ipfs", "ipfs-multipart"],
     ["ipfs/is-ipfs", "is-ipfs"],
     ["ipfs/aegir", "aegir"],
     ["ipfs/js-ipfs-repo-migrations", "ipfs-repo-migrations"],

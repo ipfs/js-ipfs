@@ -12,16 +12,14 @@ module.exports = {
     }
   },
 
-  handler (argv) {
-    argv.resolve((async () => {
-      const ipfs = await argv.getIpfs()
-      const stats = await ipfs.stats.repo({ human: argv.human })
-      argv.print(`repo status
+  async handler (argv) {
+    const { ipfs, print } = argv.ctx
+    const stats = await ipfs.stats.repo({ human: argv.human })
+    print(`repo status
   number of objects: ${stats.numObjects}
   repo size: ${stats.repoSize}
   repo path: ${stats.repoPath}
   version: ${stats.version}
   maximum storage: ${stats.storageMax}`)
-    })())
   }
 }

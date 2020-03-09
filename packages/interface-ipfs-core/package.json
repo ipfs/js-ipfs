@@ -38,7 +38,7 @@
     "dirty-chai": "^2.0.1",
     "hat": "0.0.3",
     "ipfs-block": "^0.8.1",
-    "ipfs-unixfs": "^0.3.0",
+    "ipfs-unixfs": "^1.0.0",
     "ipfs-utils": "^0.7.2",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.2",

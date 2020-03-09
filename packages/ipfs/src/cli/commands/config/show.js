@@ -9,16 +9,9 @@ module.exports = {
 
   describe: 'Outputs the content of the config file',
 
-  builder: {},
-
-  handler (argv) {
-    argv.resolve((async () => {
-      if (argv._handled) return
-      argv._handled = true
-
-      const ipfs = await argv.getIpfs()
-      const config = await ipfs.config.get()
-      argv.print(JSON.stringify(config, null, 4))
-    })())
+  async handler ({ ctx }) {
+    const { ipfs, print } = ctx
+    const config = await ipfs.config.get()
+    print(JSON.stringify(config, null, 4))
   }
 }

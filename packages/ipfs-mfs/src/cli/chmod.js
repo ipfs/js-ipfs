@@ -49,24 +49,20 @@ module.exports = {
 
   handler (argv) {
     const {
+      ctx: { ipfs },
       path,
       mode,
-      getIpfs,
       recursive,
       hashAlg,
       flush,
       shardSplitThreshold
     } = argv
 
-    argv.resolve((async () => {
-      const ipfs = await getIpfs()
-
-      return ipfs.files.chmod(path, mode, {
-        recursive,
-        hashAlg,
-        flush,
-        shardSplitThreshold
-      })
-    })())
+    return ipfs.files.chmod(path, mode, {
+      recursive,
+      hashAlg,
+      flush,
+      shardSplitThreshold
+    })
   }
 }

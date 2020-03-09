@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.41.0",
+  "version": "0.41.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -100,9 +100,9 @@
     "ipfs-mfs": "^1.0.0",
     "ipfs-multipart": "file:/Users/paulcowgill/Code/contract-work/3box/js-ipfs/packages/ipfs/.connect-deps-cache/ipfs-multipart-0.3.0-1583254040397.tgz",
     "ipfs-repo": "^0.30.1",
-    "ipfs-unixfs": "^0.3.0",
-    "ipfs-unixfs-exporter": "^0.41.0",
-    "ipfs-unixfs-importer": "^0.44.0",
+    "ipfs-unixfs": "^1.0.0",
+    "ipfs-unixfs-exporter": "^1.0.1",
+    "ipfs-unixfs-importer": "^1.0.1",
     "ipfs-utils": "^0.7.2",
     "ipld": "^0.25.0",
     "ipld-bitcoin": "^0.3.0",
@@ -168,7 +168,7 @@
     "update-notifier": "^4.0.0",
     "uri-to-multiaddr": "^3.0.2",
     "varint": "^5.0.0",
-    "yargs": "^15.0.2",
+    "yargs": "^15.1.0",
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
@@ -177,7 +177,6 @@
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
     "delay": "^4.3.0",
-    "dir-compare": "^1.7.3",
     "execa": "^3.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
@@ -185,6 +184,7 @@
     "interface-ipfs-core": "^0.132.0",
     "ipfs-interop": "^1.0.0",
     "ipfsd-ctl": "^3.0.0",
+    "it-first": "^1.0.1",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
     "p-map": "^3.0.0",
@@ -192,6 +192,7 @@
     "rimraf": "^3.0.0",
     "sinon": "^8.0.4",
     "stream-to-promise": "^2.2.0",
+    "string-argv": "^0.3.1",
     "temp-write": "^4.0.0"
   },
   "optionalDependencies": {

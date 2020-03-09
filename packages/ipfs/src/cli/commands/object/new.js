@@ -16,11 +16,9 @@ module.exports = {
     }
   },
 
-  handler ({ getIpfs, print, template, cidBase, resolve }) {
-    resolve((async () => {
-      const ipfs = await getIpfs()
-      const cid = await ipfs.object.new(template)
-      print(cidToString(cid, { base: cidBase, upgrade: false }))
-    })())
+  async handler ({ ctx, template, cidBase }) {
+    const { ipfs, print } = ctx
+    const cid = await ipfs.object.new(template)
+    print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }
