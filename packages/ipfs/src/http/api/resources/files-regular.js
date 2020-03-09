@@ -351,7 +351,7 @@ exports.refs = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler(request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
 
@@ -375,7 +375,7 @@ exports.refs = {
 
 exports.refs.local = {
   // main route handler
-  handler(request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
 
     return streamResponse(request, h, () =>
