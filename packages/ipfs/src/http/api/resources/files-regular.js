@@ -90,29 +90,24 @@ exports.get = {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
 
-    return streamResponse(request, h, () =>
-      pipe(
-        ipfs.get(key),
-        async function * (source) {
-          for await (const file of source) {
-            const header = {
-              name: file.path
-            }
-
-            if (file.content) {
-              yield {
-                header: { ...header, size: file.size },
-                body: toBuffer(file.content)
-              }
-            } else {
-              yield { header: { ...header, type: 'directory' } }
-            }
+    return streamResponse(request, h, () => pipe(
+      ipfs.get(key),
+      async function * (source) {
+        for await (const file of source) {
+          const header = {
+            name: file.path
           }
-        },
-        tar.pack(),
-        toBuffer
-      )
-    )
+
+          if (file.content) {
+            yield { header: { ...header, size: file.size }, body: toBuffer(file.content) }
+          } else {
+            yield { header: { ...header, type: 'directory' } }
+          }
+        }
+      },
+      tar.pack(),
+      toBuffer
+    ))
   }
 }
 
