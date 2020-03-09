@@ -19,7 +19,7 @@ const ndjson = require('iterable-ndjson')
 const { map } = require('streaming-iterables')
 const streamResponse = require('../../utils/stream-response')
 
-const toBuffer = async function*(source) {
+const toBuffer = async function * (source) {
   for await (const chunk of source) {
     yield chunk.slice()
   }
@@ -67,12 +67,12 @@ exports.cat = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler(request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key, options } = request.pre.args
 
     return streamResponse(request, h, () => ipfs.cat(key, options), {
-      onError(err) {
+      onError (err) {
         err.message = err.message === 'file does not exist'
           ? err.message
           : 'Failed to cat file: ' + err.message
@@ -86,7 +86,7 @@ exports.get = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  handler(request, h) {
+  handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
 
@@ -136,7 +136,7 @@ exports.add = {
       .options({ allowUnknown: true })
   },
 
-  handler(request, h) {
+  handler (request, h) {
     if (!request.payload) {
       throw Boom.badRequest('Array, Buffer, or String is required.')
     }
@@ -219,7 +219,7 @@ exports.add = {
           blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
-      map((file) => {
+      map(file => {
         const entry = {
           Name: file.path,
           Hash: cidToString(file.cid, { base: request.query['cid-base'] }),
@@ -283,7 +283,7 @@ exports.ls = {
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    const mapLink = links => {
+    const mapLink = link => {
       const output = {
         Name: link.name,
         Hash: cidToString(link.cid, { base: cidBase }),
@@ -318,9 +318,7 @@ exports.ls = {
     return streamResponse(request, h, () =>
       pipe(
         ipfs.ls(key, { recursive }),
-        map((link) => ({
-          Objects: [{ Hash: key, Links: [mapLink(link)] }]
-        })),
+        map(link => ({ Objects: [{ Hash: key, Links: [mapLink(link)] }] })),
         ndjson.stringify
       )
     )
@@ -345,9 +343,7 @@ exports.refs = {
       format: Joi.string().default(Format.default),
       edges: Joi.boolean().default(false),
       unique: Joi.boolean().default(false),
-      'max-depth': Joi.number()
-        .integer()
-        .min(-1)
+      'max-depth': Joi.number().integer().min(-1)
     }).unknown()
   },
 

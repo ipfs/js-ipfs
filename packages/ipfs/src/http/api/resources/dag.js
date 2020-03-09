@@ -8,7 +8,9 @@ const multibase = require('multibase')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
 const debug = require('debug')
-const { cidToString } = require('../../../utils/cid')
+const {
+  cidToString
+} = require('../../../utils/cid')
 const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
@@ -120,9 +122,7 @@ const encodeBufferKeys = (obj, encoding) => {
 exports.get = {
   validate: {
     query: Joi.object().keys({
-      'data-encoding': Joi.string()
-        .valid('text', 'base64', 'hex')
-        .default('text'),
+      'data-encoding': Joi.string().valid('text', 'base64', 'hex').default('text'),
       'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
@@ -181,7 +181,7 @@ exports.put = {
 
   // pre request handler that parses the args and returns `node`
   // which is assigned to `request.pre.args`
-  async parsePargs (request, h) {
+  async parseArgs (request, h) {
     if (!request.payload) {
       throw Boom.badRequest("File argument 'object data' is required")
     }
