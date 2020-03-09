@@ -17,7 +17,7 @@
     "execa": "^3.2.0",
     "http-server": "^0.11.1",
     "ipfs-http-client": "^42.0.0",
-    "libp2p-stardust": "libp2p/js-libp2p-stardust#refactor/async-await",
+    "libp2p-stardust": "^0.2.0-rc.0",
     "libp2p-webrtc-star": "^0.17.7"
   },
   "dependencies": {
