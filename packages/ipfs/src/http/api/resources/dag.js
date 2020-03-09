@@ -52,12 +52,12 @@ const IpldFormats = {
   },
   get [multicodec.ZCASH_BLOCK]() {
     return require('ipld-zcash')
-  },
+  }
 }
 
 // common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
 exports.parseKey = (argument = 'Argument', name = 'key', quote = "'") => {
-  return request => {
+  return (request) => {
     if (!request.query.arg) {
       // for compatibility with go error messages
       throw Boom.badRequest(`${argument} ${quote}${name}${quote} is required`)
@@ -84,7 +84,7 @@ exports.parseKey = (argument = 'Argument', name = 'key', quote = "'") => {
     try {
       return {
         [name]: new CID(key),
-        path,
+        path
       }
     } catch (err) {
       log.error(err)
@@ -102,7 +102,7 @@ const encodeBufferKeys = (obj, encoding) => {
     return obj.toString(encoding)
   }
 
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (Buffer.isBuffer(obj)) {
       obj[key] = obj[key].toString(encoding)
 
@@ -124,9 +124,9 @@ exports.get = {
         'data-encoding': Joi.string()
           .valid('text', 'base64', 'hex')
           .default('text'),
-        'cid-base': Joi.string().valid(...multibase.names),
+        'cid-base': Joi.string().valid(...multibase.names)
       })
-      .unknown(),
+      .unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -164,7 +164,7 @@ exports.get = {
     }
 
     return h.response(result.value)
-  },
+  }
 }
 
 exports.put = {
@@ -177,9 +177,9 @@ exports.put = {
         hash: Joi.string()
           .valid(...Object.keys(mh.names))
           .default('sha2-256'),
-        'cid-base': Joi.string().valid(...multibase.names),
+        'cid-base': Joi.string().valid(...multibase.names)
       })
-      .unknown(),
+      .unknown()
   },
 
   // pre request handler that parses the args and returns `node`
@@ -234,7 +234,7 @@ exports.put = {
     return {
       node,
       format,
-      hashAlg: request.query.hash,
+      hashAlg: request.query.hash
     }
   },
 
@@ -255,7 +255,7 @@ exports.put = {
     try {
       cid = await ipfs.dag.put(node, {
         format: format,
-        hashAlg: hashAlg,
+        hashAlg: hashAlg
       })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to put node' })
@@ -268,20 +268,20 @@ exports.put = {
     return h.response({
       Cid: {
         '/': cidToString(cid, {
-          base: request.query['cid-base'],
-        }),
-      },
+          base: request.query['cid-base']
+        })
+      }
     })
-  },
+  }
 }
 
 exports.resolve = {
   validate: {
     query: Joi.object()
       .keys({
-        'cid-base': Joi.string().valid(...multibase.names),
+        'cid-base': Joi.string().valid(...multibase.names)
       })
-      .unknown(),
+      .unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -314,13 +314,13 @@ exports.resolve = {
       return h.response({
         Cid: {
           '/': cidToString(lastCid, {
-            base: request.query['cid-base'],
-          }),
+            base: request.query['cid-base']
+          })
         },
-        RemPath: lastRemainderPath || '',
+        RemPath: lastRemainderPath || ''
       })
     } catch (err) {
       throw Boom.boomify(err)
     }
-  },
+  }
 }
