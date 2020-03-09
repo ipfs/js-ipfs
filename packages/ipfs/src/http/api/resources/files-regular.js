@@ -120,24 +120,14 @@ exports.add = {
   validate: {
     query: Joi.object()
       .keys({
-        'cid-version': Joi.number()
-          .integer()
-          .min(0)
-          .max(1)
-          .default(0),
+        'cid-version': Joi.number().integer().min(0).max(1).default(0),
         'cid-base': Joi.string().valid(...multibase.names),
         'raw-leaves': Joi.boolean(),
         'only-hash': Joi.boolean(),
         pin: Joi.boolean().default(true),
         'wrap-with-directory': Joi.boolean(),
-        'file-import-concurrency': Joi.number()
-          .integer()
-          .min(0)
-          .default(50),
-        'block-write-concurrency': Joi.number()
-          .integer()
-          .min(0)
-          .default(10),
+        'file-import-concurrency': Joi.number().integer().min(0).default(50),
+        'block-write-concurrency': Joi.number().integer().min(0).default(10),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
         preload: Joi.boolean().default(true)
@@ -163,12 +153,11 @@ exports.add = {
     let filesParsed = false
     let currentFileName
     const output = new PassThrough()
-    const progressHandler = (bytes) => {
-      output.write(
-        JSON.stringify({
-          Name: currentFileName,
-          Bytes: bytes
-        }) + '\n'
+    const progressHandler = bytes => {
+      output.write(JSON.stringify({
+        Name: currentFileName,
+        Bytes: bytes
+      }) + '\n'
       )
     }
 
@@ -210,7 +199,7 @@ exports.add = {
           }
         }
       },
-      function(source) {
+      function (source) {
         return ipfs.add(source, {
           cidVersion: request.query['cid-version'],
           rawLeaves: request.query['raw-leaves'],
@@ -233,9 +222,7 @@ exports.add = {
       map((file) => {
         const entry = {
           Name: file.path,
-          Hash: cidToString(file.cid, {
-            base: request.query['cid-base']
-          }),
+          Hash: cidToString(file.cid, { base: request.query['cid-base'] }),
           Size: file.size,
           Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
         }
@@ -255,7 +242,7 @@ exports.add = {
           throw new Error("File argument 'data' is required.")
         }
       })
-      .catch((err) => {
+      .catch(err => {
         if (!filesParsed) {
           output.write(' ')
         }
@@ -271,8 +258,7 @@ exports.add = {
         output.end()
       })
 
-    return h
-      .response(output)
+    return h.response(output)
       .header('x-chunked-output', '1')
       .header('content-type', 'application/json')
       .header('Trailer', 'X-Stream-Error')
@@ -281,12 +267,10 @@ exports.add = {
 
 exports.ls = {
   validate: {
-    query: Joi.object()
-      .keys({
-        'cid-base': Joi.string().valid(...multibase.names),
-        stream: Joi.boolean()
-      })
-      .unknown()
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(...multibase.names),
+      stream: Joi.boolean()
+    }).unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -299,7 +283,7 @@ exports.ls = {
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    const mapLink = (link) => {
+    const mapLink = links => {
       const output = {
         Name: link.name,
         Hash: cidToString(link.cid, { base: cidBase }),
@@ -328,9 +312,7 @@ exports.ls = {
         throw Boom.boomify(err, { message: 'Failed to list dir' })
       }
 
-      return h.response({
-        Objects: [{ Hash: key, Links: links.map(mapLink) }]
-      })
+      return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
     }
 
     return streamResponse(request, h, () =>
@@ -345,7 +327,7 @@ exports.ls = {
   }
 }
 
-function toTypeCode(type) {
+function toTypeCode (type) {
   switch (type) {
     case 'dir':
       return 1
@@ -358,17 +340,15 @@ function toTypeCode(type) {
 
 exports.refs = {
   validate: {
-    query: Joi.object()
-      .keys({
-        recursive: Joi.boolean().default(false),
-        format: Joi.string().default(Format.default),
-        edges: Joi.boolean().default(false),
-        unique: Joi.boolean().default(false),
-        'max-depth': Joi.number()
-          .integer()
-          .min(-1)
-      })
-      .unknown()
+    query: Joi.object().keys({
+      recursive: Joi.boolean().default(false),
+      format: Joi.string().default(Format.default),
+      edges: Joi.boolean().default(false),
+      unique: Joi.boolean().default(false),
+      'max-depth': Joi.number()
+        .integer()
+        .min(-1)
+    }).unknown()
   },
 
   // uses common parseKey method that returns a `key`
