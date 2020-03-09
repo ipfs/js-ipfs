@@ -32,9 +32,9 @@ module.exports = configure(({ ky }) => {
     if (options.preload != null) searchParams.set('preload', options.preload)
     if (options.fileImportConcurrency != null) searchParams.set('file-import-concurrency', options.fileImportConcurrency)
     if (options.blockWriteConcurrency != null) searchParams.set('block-write-concurrency', options.blockWriteConcurrency)
-    
+
     const formData = await toFormData(input)
-    
+
     const res = await ky.post('add', {
       timeout: options.timeout,
       signal: options.signal,
