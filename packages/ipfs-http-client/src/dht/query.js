@@ -3,7 +3,7 @@
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const multiaddr = require('multiaddr')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
 
@@ -22,7 +22,7 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    for await (let message of ndjson(toIterable(res.body))) {
+    for await (let message of ndjson(toAsyncIterable(res))) {
       message = toCamel(message)
       message.id = new CID(message.id)
       message.responses = (message.responses || []).map(({ ID, Addrs }) => ({

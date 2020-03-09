@@ -3,7 +3,7 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('./lib/stream-to-async-iterable')
 const configure = require('./lib/configure')
 
 module.exports = configure(({ ky }) => {
@@ -25,7 +25,7 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    for await (let result of ndjson(toIterable(res.body))) {
+    for await (let result of ndjson(toAsyncIterable(res))) {
       result = result.Objects
 
       if (!result) {

@@ -4,7 +4,7 @@ const CID = require('cids')
 const multiaddr = require('multiaddr')
 const ndjson = require('iterable-ndjson')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 
 module.exports = configure(({ ky }) => {
   return async function * findProvs (cid, options) {
@@ -22,7 +22,7 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    for await (const message of ndjson(toIterable(res.body))) {
+    for await (const message of ndjson(toAsyncIterable(res))) {
       // 3 = QueryError
       // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L18
       // https://github.com/libp2p/go-libp2p-kad-dht/blob/master/routing.go#L525-L526

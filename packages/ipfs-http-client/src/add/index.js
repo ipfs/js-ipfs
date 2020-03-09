@@ -3,7 +3,7 @@
 const ndjson = require('iterable-ndjson')
 const CID = require('cids')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 const { toFormData } = require('./form-data')
 const toCamel = require('../lib/object-to-camel')
 
@@ -32,16 +32,18 @@ module.exports = configure(({ ky }) => {
     if (options.preload != null) searchParams.set('preload', options.preload)
     if (options.fileImportConcurrency != null) searchParams.set('file-import-concurrency', options.fileImportConcurrency)
     if (options.blockWriteConcurrency != null) searchParams.set('block-write-concurrency', options.blockWriteConcurrency)
-
+    
+    const formData = await toFormData(input)
+    
     const res = await ky.post('add', {
       timeout: options.timeout,
       signal: options.signal,
       headers: options.headers,
       searchParams,
-      body: await toFormData(input)
+      body: formData
     })
 
-    for await (let file of ndjson(toIterable(res.body))) {
+    for await (let file of ndjson(toAsyncIterable(res))) {
       file = toCamel(file)
 
       if (options.progress && file.bytes) {

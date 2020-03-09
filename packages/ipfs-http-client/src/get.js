@@ -4,7 +4,7 @@ const configure = require('./lib/configure')
 const Tar = require('it-tar')
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('./lib/stream-to-async-iterable')
 
 module.exports = configure(({ ky }) => {
   return async function * get (path, options) {
@@ -38,7 +38,7 @@ module.exports = configure(({ ky }) => {
 
     const extractor = Tar.extract()
 
-    for await (const { header, body } of extractor(toIterable(res.body))) {
+    for await (const { header, body } of extractor(toAsyncIterable(res))) {
       if (header.type === 'directory') {
         yield {
           path: header.name

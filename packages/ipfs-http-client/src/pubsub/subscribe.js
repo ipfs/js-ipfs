@@ -5,7 +5,7 @@ const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 const SubscriptionTracker = require('./subscription-tracker')
 
 module.exports = configure((config) => {
@@ -49,7 +49,7 @@ module.exports = configure((config) => {
 
     clearTimeout(ffWorkaround)
 
-    readMessages(ndjson(toIterable(res.body)), {
+    readMessages(ndjson(toAsyncIterable(res)), {
       onMessage: handler,
       onEnd: () => subsTracker.unsubscribe(topic, handler),
       onError: options.onError

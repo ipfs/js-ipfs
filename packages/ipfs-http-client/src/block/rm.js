@@ -3,7 +3,7 @@
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 
 module.exports = configure(({ ky }) => {
   return async function * rm (cid, options) {
@@ -29,7 +29,7 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    for await (const removed of ndjson(toIterable(res.body))) {
+    for await (const removed of ndjson(toAsyncIterable(res))) {
       yield toCoreInterface(removed)
     }
   }

@@ -3,7 +3,7 @@
 const ndjson = require('iterable-ndjson')
 const CID = require('cids')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toAsyncIterable = require('../lib/stream-to-async-iterable')
 
 module.exports = configure(({ ky }) => {
   return async function * ls (path, options) {
@@ -28,7 +28,7 @@ module.exports = configure(({ ky }) => {
       searchParams
     })
 
-    for await (const pin of ndjson(toIterable(res.body))) {
+    for await (const pin of ndjson(toAsyncIterable(res))) {
       if (pin.Keys) { // non-streaming response
         for (const cid of Object.keys(pin.Keys)) {
           yield { cid: new CID(cid), type: pin.Keys[cid].Type }
