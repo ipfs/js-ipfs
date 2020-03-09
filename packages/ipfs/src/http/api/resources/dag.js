@@ -14,43 +14,43 @@ const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
 
 const IpldFormats = {
-  get [multicodec.RAW]() {
+  get [multicodec.RAW] () {
     return require('ipld-raw')
   },
-  get [multicodec.DAG_PB]() {
+  get [multicodec.DAG_PB] () {
     return require('ipld-dag-pb')
   },
-  get [multicodec.DAG_CBOR]() {
+  get [multicodec.DAG_CBOR] () {
     return require('ipld-dag-cbor')
   },
-  get [multicodec.BITCOIN_BLOCK]() {
+  get [multicodec.BITCOIN_BLOCK] () {
     return require('ipld-bitcoin')
   },
-  get [multicodec.ETH_ACCOUNT_SNAPSHOT]() {
+  get [multicodec.ETH_ACCOUNT_SNAPSHOT] () {
     return require('ipld-ethereum').ethAccountSnapshot
   },
-  get [multicodec.ETH_BLOCK]() {
+  get [multicodec.ETH_BLOCK] () {
     return require('ipld-ethereum').ethBlock
   },
-  get [multicodec.ETH_BLOCK_LIST]() {
+  get [multicodec.ETH_BLOCK_LIST] () {
     return require('ipld-ethereum').ethBlockList
   },
-  get [multicodec.ETH_STATE_TRIE]() {
+  get [multicodec.ETH_STATE_TRIE] () {
     return require('ipld-ethereum').ethStateTrie
   },
-  get [multicodec.ETH_STORAGE_TRIE]() {
+  get [multicodec.ETH_STORAGE_TRIE] () {
     return require('ipld-ethereum').ethStorageTrie
   },
-  get [multicodec.ETH_TX]() {
+  get [multicodec.ETH_TX] () {
     return require('ipld-ethereum').ethTx
   },
-  get [multicodec.ETH_TX_TRIE]() {
+  get [multicodec.ETH_TX_TRIE] () {
     return require('ipld-ethereum').ethTxTrie
   },
-  get [multicodec.GIT_RAW]() {
+  get [multicodec.GIT_RAW] () {
     return require('ipld-git')
   },
-  get [multicodec.ZCASH_BLOCK]() {
+  get [multicodec.ZCASH_BLOCK] () {
     return require('ipld-zcash')
   }
 }
@@ -102,7 +102,7 @@ const encodeBufferKeys = (obj, encoding) => {
     return obj.toString(encoding)
   }
 
-  Object.keys(obj).forEach((key) => {
+  Object.keys(obj).forEach(key => {
     if (Buffer.isBuffer(obj)) {
       obj[key] = obj[key].toString(encoding)
 
@@ -119,14 +119,12 @@ const encodeBufferKeys = (obj, encoding) => {
 
 exports.get = {
   validate: {
-    query: Joi.object()
-      .keys({
-        'data-encoding': Joi.string()
-          .valid('text', 'base64', 'hex')
-          .default('text'),
-        'cid-base': Joi.string().valid(...multibase.names)
-      })
-      .unknown()
+    query: Joi.object().keys({
+      'data-encoding': Joi.string()
+        .valid('text', 'base64', 'hex')
+        .default('text'),
+      'cid-base': Joi.string().valid(...multibase.names)
+    }).unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -134,7 +132,10 @@ exports.get = {
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const { key, path } = request.pre.args
+    const {
+      key,
+      path
+    } = request.pre.args
     const { ipfs } = request.server.app
 
     let dataEncoding = request.query['data-encoding']
@@ -173,16 +174,14 @@ exports.put = {
       format: Joi.string().default('cbor'),
       'input-enc': Joi.string().default('json'),
       pin: Joi.boolean(),
-      hash: Joi.string()
-        .valid(...Object.keys(mh.names))
-        .default('sha2-256'),
+      hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
       'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },
 
   // pre request handler that parses the args and returns `node`
   // which is assigned to `request.pre.args`
-  async  (request, h) {
+  async parsePargs (request, h) {
     if (!request.payload) {
       throw Boom.badRequest("File argument 'object data' is required")
     }

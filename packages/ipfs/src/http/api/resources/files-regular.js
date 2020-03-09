@@ -73,8 +73,9 @@ exports.cat = {
 
     return streamResponse(request, h, () => ipfs.cat(key, options), {
       onError(err) {
-        err.message =
-          err.message === 'file does not exist' ? err.message : 'Failed to cat file: ' + err.message
+        err.message = err.message === 'file does not exist'
+          ? err.message
+          : 'Failed to cat file: ' + err.message
       }
     })
   }
@@ -92,7 +93,7 @@ exports.get = {
     return streamResponse(request, h, () =>
       pipe(
         ipfs.get(key),
-        async function*(source) {
+        async function * (source) {
           for await (const file of source) {
             const header = {
               name: file.path
@@ -292,7 +293,7 @@ exports.ls = {
   parseArgs: exports.parseKey,
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler(request, h) {
+  async handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
     const recursive = request.query && request.query.recursive === 'true'
