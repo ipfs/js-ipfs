@@ -8,6 +8,8 @@ const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
 
+const isBrowser = require('is-browser')
+
 class DummyTransport {
   get [Symbol.toStringTag] () {
     return 'DummyTransport'
@@ -156,7 +158,8 @@ describe('libp2p customization', function () {
         }
       })
       const transports = Array.from(libp2p.transportManager.getTransports())
-      expect(transports).to.have.length(3)
+      const expectedLength = !isBrowser ? 3 : 4
+      expect(transports).to.have.length(expectedLength)
     })
 
     it('should allow for overriding via options', async () => {

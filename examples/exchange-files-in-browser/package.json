@@ -8,8 +8,8 @@
     "start": "http-server -c-1 -p 12345 public",
     "dev": "npm run bundle && npm run start",
     "test": "test-ipfs-example",
-    "server-ws": "star-signal",
-    "server-stardust": "stardust-server"
+    "webrtc-star": "star-signal -p 13579",
+    "stardust": "stardust-server"
   },
   "license": "MIT",
   "devDependencies": {

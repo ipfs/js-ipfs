@@ -128,10 +128,10 @@ Check the `/ws` in line 5, that means it is listening. Cool.
 
 This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions using the `webrtc-star`protocol.
 
-This example already installs `libp2p-webrtc-star`. It comes with a runnable binary called `star-signal`, which you can run through:
+This example already installs `libp2p-webrtc-star`. It comes with a runnable binary called `webrtc-star`, which you can run through:
 
 ```sh
-> npm run server-ws
+> npm run webrtc-star
 ```
 
 By default it will listen to all incoming connections on port 9090. Override this with the `--host` and/or `--port` options.
@@ -140,10 +140,10 @@ By default it will listen to all incoming connections on port 9090. Override thi
 
 This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions using the `stardust`protocol.
 
-This example already installs `libp2p-stardust`. It comes with a runnable binary called `stardust-server`, which you can run through:
+This example already installs `libp2p-stardust`. It comes with a runnable binary called `stardust`, which you can run through:
 
 ```sh
-> npm run server-stardust
+> npm run stardust
 ```
 
 ### 4. Start the app

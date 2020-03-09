@@ -18,10 +18,16 @@ const {
   startServer
 } = require('test-ipfs-example/utils')
 const pkg = require('./package.json')
+
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 
+const PeerId = require('peer-id')
+const PeerInfo = require('peer-info')
+const StardustSigServer = require('libp2p-stardust/src/server')
+const IDJSON = require('./fixture.json')
+
 async function testUI (env) {
-  const proc = execa(require.resolve('test-ipfs-example/node_modules/.bin/nightwatch'), [ '--config', require.resolve('test-ipfs-example/nightwatch.conf.js'),  path.join(__dirname, 'test.js') ], {
+  const proc = execa(require.resolve('test-ipfs-example/node_modules/.bin/nightwatch'), ['--config', require.resolve('test-ipfs-example/nightwatch.conf.js'), path.join(__dirname, 'test.js')], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,
@@ -38,6 +44,14 @@ async function testUI (env) {
 }
 
 async function runTest () {
+  const peerId = await PeerId.createFromJSON(IDJSON)
+  const peerInfo = await PeerInfo.create(peerId)
+
+  const stardustSigServer = new StardustSigServer({
+    peerInfo
+  })
+  await stardustSigServer.start()
+
   const sigServer = await webRTCStarSigServer.start({
     host: '127.0.0.1',
     port: 13579

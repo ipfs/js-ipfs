@@ -185,6 +185,7 @@
     "interface-ipfs-core": "^0.132.0",
     "ipfs-interop": "^1.0.0",
     "ipfsd-ctl": "^3.0.0",
+    "is-browser": "^2.1.0",
     "it-first": "^1.0.1",
     "ncp": "^2.0.0",
     "p-event": "^4.1.0",
