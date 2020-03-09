@@ -1,3 +1,7 @@
+.DS_Store
+.connect-deps-cache/
+.connect-deps.json
+
 # Dependency tools
 package-lock.json
 yarn.lock
