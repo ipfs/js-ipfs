@@ -1,6 +1,7 @@
 .DS_Store
 .connect-deps-cache/
 .connect-deps.json
+prettier.config.js
 
 # Dependency tools
 package-lock.json
