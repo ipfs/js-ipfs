@@ -133,7 +133,7 @@ exports.get = {
   parseArgs: exports.parseKey(),
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler(request, h) {
+  async handler (request, h) {
     const { key, path } = request.pre.args
     const { ipfs } = request.server.app
 
@@ -169,22 +169,20 @@ exports.get = {
 
 exports.put = {
   validate: {
-    query: Joi.object()
-      .keys({
-        format: Joi.string().default('cbor'),
-        'input-enc': Joi.string().default('json'),
-        pin: Joi.boolean(),
-        hash: Joi.string()
-          .valid(...Object.keys(mh.names))
-          .default('sha2-256'),
-        'cid-base': Joi.string().valid(...multibase.names)
-      })
-      .unknown()
+    query: Joi.object().keys({
+      format: Joi.string().default('cbor'),
+      'input-enc': Joi.string().default('json'),
+      pin: Joi.boolean(),
+      hash: Joi.string()
+        .valid(...Object.keys(mh.names))
+        .default('sha2-256'),
+      'cid-base': Joi.string().valid(...multibase.names)
+    }).unknown()
   },
 
   // pre request handler that parses the args and returns `node`
   // which is assigned to `request.pre.args`
-  async parseArgs(request, h) {
+  async  (request, h) {
     if (!request.payload) {
       throw Boom.badRequest("File argument 'object data' is required")
     }
@@ -239,7 +237,7 @@ exports.put = {
   },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler(request, h) {
+  async handler (request, h) {
     console.log('========')
     console.log('========')
     console.log('========')
@@ -277,18 +275,16 @@ exports.put = {
 
 exports.resolve = {
   validate: {
-    query: Joi.object()
-      .keys({
-        'cid-base': Joi.string().valid(...multibase.names)
-      })
-      .unknown()
+    query: Joi.object().keys({
+      'cid-base': Joi.string().valid(...multibase.names)
+    }).unknown()
   },
 
   // uses common parseKey method that returns a `key`
   parseArgs: exports.parseKey('argument', 'ref', '"'),
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
-  async handler(request, h) {
+  async handler (request, h) {
     const { ref, path } = request.pre.args
     const { ipfs } = request.server.app
 

@@ -25,7 +25,7 @@ const toBuffer = async function*(source) {
   }
 }
 
-function numberFromQuery(query, key) {
+function numberFromQuery (query, key) {
   if (query && query[key] !== undefined) {
     const value = parseInt(query[key], 10)
 
@@ -48,11 +48,7 @@ exports.parseKey = (request, h) => {
   const isArray = Array.isArray(arg)
   const args = isArray ? arg : [arg]
   for (const arg of args) {
-    if (
-      !isIpfs.ipfsPath(arg) &&
-      !isIpfs.cid(arg) &&
-      !isIpfs.ipfsPath('/ipfs/' + arg)
-    ) {
+    if (!isIpfs.ipfsPath(arg) && !isIpfs.cid(arg) && !isIpfs.ipfsPath('/ipfs/' + arg)) {
       throw Boom.badRequest(`invalid ipfs ref path '${arg}'`)
     }
   }
@@ -61,8 +57,8 @@ exports.parseKey = (request, h) => {
     key: isArray ? args : arg,
     options: {
       offset: numberFromQuery(request.query, 'offset'),
-      length: numberFromQuery(request.query, 'length'),
-    },
+      length: numberFromQuery(request.query, 'length')
+    }
   }
 }
 
@@ -78,12 +74,10 @@ exports.cat = {
     return streamResponse(request, h, () => ipfs.cat(key, options), {
       onError(err) {
         err.message =
-          err.message === 'file does not exist'
-            ? err.message
-            : 'Failed to cat file: ' + err.message
-      },
+          err.message === 'file does not exist' ? err.message : 'Failed to cat file: ' + err.message
+      }
     })
-  },
+  }
 }
 
 exports.get = {
@@ -101,13 +95,13 @@ exports.get = {
         async function*(source) {
           for await (const file of source) {
             const header = {
-              name: file.path,
+              name: file.path
             }
 
             if (file.content) {
               yield {
                 header: { ...header, size: file.size },
-                body: toBuffer(file.content),
+                body: toBuffer(file.content)
               }
             } else {
               yield { header: { ...header, type: 'directory' } }
@@ -118,7 +112,7 @@ exports.get = {
         toBuffer
       )
     )
-  },
+  }
 }
 
 exports.add = {
@@ -145,10 +139,10 @@ exports.add = {
           .default(10),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
-        preload: Joi.boolean().default(true),
+        preload: Joi.boolean().default(true)
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
-      .options({ allowUnknown: true }),
+      .options({ allowUnknown: true })
   },
 
   handler(request, h) {
@@ -168,18 +162,18 @@ exports.add = {
     let filesParsed = false
     let currentFileName
     const output = new PassThrough()
-    const progressHandler = bytes => {
+    const progressHandler = (bytes) => {
       output.write(
         JSON.stringify({
           Name: currentFileName,
-          Bytes: bytes,
+          Bytes: bytes
         }) + '\n'
       )
     }
 
     pipe(
       multipart(request),
-      async function*(source) {
+      async function * (source) {
         console.log('-------')
         console.log({ source })
         for await (const entry of source) {
@@ -200,7 +194,7 @@ exports.add = {
               path: entry.name,
               content: entry.content,
               mode: entry.mode,
-              mtime: entry.mtime,
+              mtime: entry.mtime
             }
           }
 
@@ -210,7 +204,7 @@ exports.add = {
             yield {
               path: entry.name,
               mode: entry.mode,
-              mtime: entry.mtime,
+              mtime: entry.mtime
             }
           }
         }
@@ -232,20 +226,17 @@ exports.add = {
           // at a time from a http request and we have to consume it completely
           // before we can read the next file
           fileImportConcurrency: 1,
-          blockWriteConcurrency: request.query['block-write-concurrency'],
+          blockWriteConcurrency: request.query['block-write-concurrency']
         })
       },
-      map(file => {
+      map((file) => {
         const entry = {
           Name: file.path,
           Hash: cidToString(file.cid, {
-            base: request.query['cid-base'],
+            base: request.query['cid-base']
           }),
           Size: file.size,
-          Mode:
-            file.mode === undefined
-              ? undefined
-              : file.mode.toString(8).padStart(4, '0'),
+          Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
         }
 
         if (file.mtime) {
@@ -263,7 +254,7 @@ exports.add = {
           throw new Error("File argument 'data' is required.")
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (!filesParsed) {
           output.write(' ')
         }
@@ -271,8 +262,8 @@ exports.add = {
         request.raw.res.addTrailers({
           'X-Stream-Error': JSON.stringify({
             Message: err.message,
-            Code: 0,
-          }),
+            Code: 0
+          })
         })
       })
       .then(() => {
@@ -284,7 +275,7 @@ exports.add = {
       .header('x-chunked-output', '1')
       .header('content-type', 'application/json')
       .header('Trailer', 'X-Stream-Error')
-  },
+  }
 }
 
 exports.ls = {
@@ -292,9 +283,9 @@ exports.ls = {
     query: Joi.object()
       .keys({
         'cid-base': Joi.string().valid(...multibase.names),
-        stream: Joi.boolean(),
+        stream: Joi.boolean()
       })
-      .unknown(),
+      .unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -307,14 +298,14 @@ exports.ls = {
     const recursive = request.query && request.query.recursive === 'true'
     const cidBase = request.query['cid-base']
 
-    const mapLink = link => {
+    const mapLink = (link) => {
       const output = {
         Name: link.name,
         Hash: cidToString(link.cid, { base: cidBase }),
         Size: link.size,
         Type: toTypeCode(link.type),
         Depth: link.depth,
-        Mode: link.mode.toString(8).padStart(4, '0'),
+        Mode: link.mode.toString(8).padStart(4, '0')
       }
 
       if (link.mtime) {
@@ -337,20 +328,20 @@ exports.ls = {
       }
 
       return h.response({
-        Objects: [{ Hash: key, Links: links.map(mapLink) }],
+        Objects: [{ Hash: key, Links: links.map(mapLink) }]
       })
     }
 
     return streamResponse(request, h, () =>
       pipe(
         ipfs.ls(key, { recursive }),
-        map(link => ({
-          Objects: [{ Hash: key, Links: [mapLink(link)] }],
+        map((link) => ({
+          Objects: [{ Hash: key, Links: [mapLink(link)] }]
         })),
         ndjson.stringify
       )
     )
-  },
+  }
 }
 
 function toTypeCode(type) {
@@ -374,9 +365,9 @@ exports.refs = {
         unique: Joi.boolean().default(false),
         'max-depth': Joi.number()
           .integer()
-          .min(-1),
+          .min(-1)
       })
-      .unknown(),
+      .unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -392,7 +383,7 @@ exports.refs = {
       format: request.query.format,
       edges: request.query.edges,
       unique: request.query.unique,
-      maxDepth: request.query['max-depth'],
+      maxDepth: request.query['max-depth']
     }
 
     return streamResponse(request, h, () =>
@@ -402,7 +393,7 @@ exports.refs = {
         ndjson.stringify
       )
     )
-  },
+  }
 }
 
 exports.refs.local = {
@@ -417,5 +408,5 @@ exports.refs.local = {
         ndjson.stringify
       )
     )
-  },
+  }
 }
