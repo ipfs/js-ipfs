@@ -8,6 +8,7 @@ const toFormData = require('../lib/buffer-to-form-data')
 
 module.exports = configure(({ ky }) => {
   return async (dagNode, options) => {
+    console.log("Using monorepo version")
     options = options || {}
 
     if (options.hash) {

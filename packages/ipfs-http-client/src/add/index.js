@@ -9,6 +9,7 @@ const toCamel = require('../lib/object-to-camel')
 
 module.exports = configure(({ ky }) => {
   return async function * add (input, options) {
+    console.log("Add called");
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
@@ -33,7 +34,12 @@ module.exports = configure(({ ky }) => {
     if (options.fileImportConcurrency != null) searchParams.set('file-import-concurrency', options.fileImportConcurrency)
     if (options.blockWriteConcurrency != null) searchParams.set('block-write-concurrency', options.blockWriteConcurrency)
 
+    console.log({ input })
     const formData = await toFormData(input)
+
+    // console.log({ options })
+    // console.log({ searchParams })
+    console.log({ formData })
 
     const res = await ky.post('add', {
       timeout: options.timeout,
@@ -43,12 +49,27 @@ module.exports = configure(({ ky }) => {
       body: formData
     })
 
-    for await (let file of ndjson(toAsyncIterable(res))) {
+    console.log({ res });
+
+    const resAsyncIterable = toAsyncIterable(res);
+
+    console.log({ resAsyncIterable });
+
+    const ndjsonResAsyncIterable = ndjson(resAsyncIterable)
+
+    console.log({ ndjsonResAsyncIterable });
+
+    for await (let file of ndjsonResAsyncIterable) {
+      console.log({ file });
       file = toCamel(file)
 
+      console.log("toCamelifiedFile", file);
+
       if (options.progress && file.bytes) {
+        console.log("options.progress && file.bytes");
         options.progress(file.bytes)
       } else {
+        console.log("else");
         yield toCoreInterface(file)
       }
     }

@@ -62,6 +62,7 @@ module.exports = function normaliseInput (input) {
   // Buffer|ArrayBuffer|TypedArray
   // Blob|File
   if (isBytes(input) || isBloby(input)) {
+    console.log('Bytes or blob')
     return (async function * () { // eslint-disable-line require-await
       yield toFileObject(input)
     })()
@@ -152,6 +153,7 @@ module.exports = function normaliseInput (input) {
 }
 
 function toFileObject (input) {
+  console.log('toFileObject input', input)
   const obj = {
     path: input.path || '',
     mode: input.mode,
@@ -159,10 +161,14 @@ function toFileObject (input) {
   }
 
   if (input.content) {
+    console.log('input.content', input.content)
     obj.content = toAsyncIterable(input.content)
   } else if (!input.path) { // Not already a file object with path or content prop
+    console.log('Not file object yet')
     obj.content = toAsyncIterable(input)
   }
+
+  console.log('obj.content', obj.content)
 
   return obj
 }
@@ -170,6 +176,7 @@ function toFileObject (input) {
 function toAsyncIterable (input) {
   // Bytes | String
   if (isBytes(input) || typeof input === 'string') {
+    console.log('bytes')
     return (async function * () { // eslint-disable-line require-await
       yield toBuffer(input)
     })()
@@ -177,8 +184,11 @@ function toAsyncIterable (input) {
 
   // Bloby
   if (isBloby(input)) {
+    console.log('bloby')
     return blobToAsyncGenerator(input)
   }
+
+  console.log('other')
 
   // Browser stream
   if (typeof input.getReader === 'function') {

@@ -8,6 +8,7 @@ const { isElectronRenderer } = require('ipfs-utils/src/env')
 const mtimeToObject = require('../lib/mtime-to-object')
 
 exports.toFormData = async input => {
+  console.log("toFormData regular NOT USED IN REACT NATIVE");
   const files = normaliseInput(input)
   const formData = new FormData()
   let i = 0
