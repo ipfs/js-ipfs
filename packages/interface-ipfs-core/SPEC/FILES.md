@@ -208,7 +208,7 @@ for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.sv
 */
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/add.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/add.js) can be found in the tests for this API.
 
 #### `cat`
 
@@ -247,7 +247,7 @@ for await (const chunk of ipfs.cat(ipfsPath)) {
 console.log(Buffer.concat(chunks).toString())
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/cat.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/cat.js) can be found in the tests for this API.
 
 #### `get`
 
@@ -303,7 +303,7 @@ for await (const file of ipfs.get(cid)) {
 }
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/get.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/get.js) can be found in the tests for this API.
 
 #### `ls`
 
@@ -353,7 +353,7 @@ for await (const file of ipfs.ls(cid)) {
 }
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-js-ipfs-core/blob/master/src/ls.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/ls.js) can be found in the tests for this API.
 
 ---
 

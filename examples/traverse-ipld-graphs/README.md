@@ -3,7 +3,7 @@ Resolve through IPLD graphs with the dag API
 
 IPLD stands for [`InterPlanetary Linked-Data`](https://ipld.io/), it is the data model of the content-addressable web. It gives IPFS the ability to resolve through any kind of content-addressed graph, as long as the [adapter for the format is available](https://github.com/ipld/interface-ipld-format#modules-that-implement-the-interface).
 
-This tutorial goes through several operations over IPLD graphs using the [DAG API](https://github.com/ipfs/interface-ipfs-core/tree/master/API/dag).
+This tutorial goes through several operations over IPLD graphs using the [DAG API](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/API/dag).
 
 ## [create nodes to build a graph](./put.js)
 

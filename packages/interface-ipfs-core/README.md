@@ -46,7 +46,7 @@ Include this badge in your readme if you make a new module that implements inter
 ![](/img/badge.svg)
 
 ```md
-[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/interface-ipfs-core)
+[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
 ```
 
 ## Install
@@ -175,7 +175,7 @@ In order to be considered "valid", an IPFS core implementation must expose the A
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/interface-ipfs-core/issues)!
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs/issues)!
 
 This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 

@@ -34,7 +34,7 @@ const identity = await ipfs.id()
 console.log(identity)
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/id.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/id.js) can be found in the tests for this API.
 
 #### `version`
 
@@ -55,7 +55,7 @@ const version = await ipfs.version()
 console.log(version)
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/version.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/version.js) can be found in the tests for this API.
 
 #### `dns`
 
@@ -81,7 +81,7 @@ const path = await ipfs.dns('ipfs.io')
 console.log(path)
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/dns.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/dns.js) can be found in the tests for this API.
 
 #### `stop`
 
@@ -101,7 +101,7 @@ A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/ma
 await ipfs.stop()
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/stop.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/stop.js) can be found in the tests for this API.
 
 #### `ping`
 
@@ -145,7 +145,7 @@ for await (const res of ipfs.ping('Qmhash')) {
 }
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/tree/master/src/ping) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/src/ping) can be found in the tests for this API.
 
 #### `resolve`
 
@@ -204,8 +204,8 @@ const res = await ipfs.resolve(name)
 console.log(res) // /ipfs/QmYRMjyvAiHKN9UTi8Bzt1HUspmSRD8T8DwxfSMzLgBon1
 ```
 
-A great source of [examples](https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous/resolve.js) can be found in the tests for this API.
+A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/resolve.js) can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/miscellaneous
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream

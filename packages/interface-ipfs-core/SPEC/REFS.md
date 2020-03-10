@@ -90,7 +90,7 @@ for await (const ref of ipfs.refs.local()) {
 }
 ```
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/files-regular
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/files-regular
 [b]: https://www.npmjs.com/package/buffer
 [cid]: https://www.npmjs.com/package/cids
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob

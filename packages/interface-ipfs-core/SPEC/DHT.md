@@ -256,4 +256,4 @@ https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b9
 
 A great source of [examples][] can be found in the tests for this API.
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/dht
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dht
