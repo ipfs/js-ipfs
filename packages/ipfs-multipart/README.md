@@ -66,7 +66,7 @@ http.createServer(async (req, res) => {
 
 ## Contribute
 
-See [the contribute file](https://github.com/ipfs/community/blob/master/contributing.md) and our [code of conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md)!
+See [the contribute file](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) and our [code of conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md)!
 
 PRs accepted.
 

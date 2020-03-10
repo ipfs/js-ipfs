@@ -6,12 +6,6 @@ A minimal demonstration of how to use `js-ipfs` with `Vue`.
 
 This project was bootstrapped with [Vue CLI](https://cli.vuejs.org/).
 
-## Project setup
-
-```bash
-npm install
-```
-
 ### Compiles and hot-reloads for development
 
 ```bash
