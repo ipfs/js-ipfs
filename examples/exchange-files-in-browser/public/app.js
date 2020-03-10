@@ -2,6 +2,8 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const all = require('it-all')
+const last = require('it-last')
 const { Buffer } = IPFS
 
 // Node
@@ -53,7 +55,9 @@ async function start () {
             // '/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star'
             '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
           ]
-        }
+        },
+        // If you want to connect to the public bootstrap nodes, remove the next line
+        Bootstrap: []
       }
     })
 
@@ -219,7 +223,9 @@ async function getFile () {
 
   for await (const file of node.get(hash)) {
     if (file.content) {
-      await appendFile(file.name, hash, file.size, file.content)
+      const content = Buffer.concat(await all(file.content))
+
+      await appendFile(file.name, hash, file.size, content)
       onSuccess(`The ${file.name} file was added.`)
       $emptyRow.style.display = 'none'
     }
@@ -242,14 +248,17 @@ async function onDrop (event) {
   for (const file of files) {
     fileSize = file.size // Note: fileSize is used by updateProgress
 
-    const filesAdded = await node.add({
+    const fileAdded = await last(node.add({
       path: file.name,
       content: file
-    }, { wrapWithDirectory: true, progress: updateProgress })
+    }, {
+      wrapWithDirectory: true,
+      progress: updateProgress
+    }))
 
     // As we are wrapping the content we use that hash to keep
     // the original file name when adding it to the table
-    $cidInput.value = filesAdded[1].hash
+    $cidInput.value = fileAdded.cid.toString()
 
     resetProgress()
     await getFile()
