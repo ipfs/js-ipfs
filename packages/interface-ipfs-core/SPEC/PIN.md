@@ -13,6 +13,10 @@
 Where:
 
 - `source` is a [CID], an IPFS path or an object of the form `{ cid: CID, recursive: Boolean, comments: String }` or `{ path: String, recursive: Boolean, comments: String }` or an array or (async) iterable that yields any of the previous types
+  - Where this is an object, the fields mean the following:
+    - `cid`: The CID to pin
+    - `recursive`: Where the block that the CID resolves to contains links to other blocks, pin those too
+    - `comments`: A human readable string that can be used to add context to a pin
 - `options` is an object that can contain the following keys
   - `timeout` (`number`|`string`) - Throw an error if the request does not complete within the specified milliseconds timeout. If `timeout` is a string, the value is parsed as a [human readable duration](https://www.npmjs.com/package/parse-duration). There is no timeout by default.
 

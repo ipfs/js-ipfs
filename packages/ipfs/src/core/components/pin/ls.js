@@ -43,7 +43,7 @@ module.exports = ({ pinManager, dag }) => {
 
     if (source) {
       // check the pinned state of specific hashes
-      let noMatch = true
+      let matched = false
 
       for await (const { path } of normaliseInput(source)) {
         const cid = await resolvePath(dag, path)
@@ -56,16 +56,16 @@ module.exports = ({ pinManager, dag }) => {
         switch (reason) {
           case PinTypes.direct:
           case PinTypes.recursive:
-            noMatch = false
+            matched = true
             yield toPin(reason, cid, comments)
             break
           default:
-            noMatch = false
+            matched = true
             yield toPin(`${PinTypes.indirect} through ${parent}`, cid, comments)
         }
       }
 
-      if (noMatch) {
+      if (!matched) {
         throw new Error('No match found')
       }
 
