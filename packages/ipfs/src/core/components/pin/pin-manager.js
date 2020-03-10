@@ -147,11 +147,11 @@ class PinManager {
       const result = await first(this.repo.pins.query({
         prefix: toKey(cid),
         filters: [entry => {
-          const pin = cbor.decode(entry.value)
-
           if (all) {
             return true
           }
+
+          const pin = cbor.decode(entry.value)
 
           return types.includes(pin.type)
         }],
