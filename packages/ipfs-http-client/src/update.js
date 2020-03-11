@@ -2,15 +2,12 @@
 
 const configure = require('./lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return options => {
-    options = options || {}
-
-    return ky.post('update', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    return (await api.post('update', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams: options.searchParams
-    }).text()
+      searchParams: options
+    })).text()
   }
 })

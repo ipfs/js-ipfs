@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 'use strict'
+const { Buffer } = require('buffer')
 const ipfsHttp = require('ipfs-http-client')
 const ipfs = ipfsHttp('/ip4/127.0.0.1/tcp/5001')
 

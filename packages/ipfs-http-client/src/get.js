@@ -1,44 +1,24 @@
 'use strict'
 
-const configure = require('./lib/configure')
 const Tar = require('it-tar')
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const toIterable = require('stream-to-it/source')
+const configure = require('./lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async function * get (path, options) {
-    options = options || {}
+module.exports = configure(api => {
+  return async function * get (path, options = {}) {
+    options.arg = `${Buffer.isBuffer(path) ? new CID(path) : path}`
 
-    const searchParams = new URLSearchParams()
-    searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
-
-    if (options.compress !== undefined) {
-      searchParams.set('compress', options.compress)
-    }
-
-    if (options.compressionLevel !== undefined) {
-      searchParams.set('compression-level', options.compressionLevel)
-    }
-
-    if (options.offset) {
-      searchParams.set('offset', options.offset)
-    }
-
-    if (options.length) {
-      searchParams.set('length', options.length)
-    }
-
-    const res = await ky.post('get', {
+    const res = await api.iterator('get', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: options
     })
 
     const extractor = Tar.extract()
 
-    for await (const { header, body } of extractor(toIterable(res.body))) {
+    for await (const { header, body } of extractor(res)) {
       if (header.type === 'directory') {
         yield {
           path: header.name

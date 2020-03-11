@@ -14,7 +14,7 @@ let echoServer
 const webpack = require('webpack')
 
 module.exports = {
-  bundlesize: { maxSize: '94kB' },
+  bundlesize: { maxSize: '89kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main']

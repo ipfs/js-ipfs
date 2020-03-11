@@ -2,32 +2,25 @@
 
 const CID = require('cids')
 const { Buffer } = require('buffer')
+const merge = require('merge-options')
 const configure = require('./lib/configure')
-const toIterable = require('stream-to-it/source')
 
-module.exports = configure(({ ky }) => {
-  return async function * cat (path, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-
-    if (typeof path === 'string') {
-      searchParams.set('arg', path)
-    } else {
-      searchParams.set('arg', new CID(path).toString())
-    }
-
-    if (options.offset) searchParams.set('offset', options.offset)
-    if (options.length) searchParams.set('length', options.length)
-
-    const res = await ky.post('cat', {
+module.exports = configure(api => {
+  return async function * cat (path, options = {}) {
+    options = merge(
+      options,
+      {
+        arg: typeof path === 'string' ? path : new CID(path).toString()
+      }
+    )
+    const res = await api.iterator('cat', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: options
     })
 
-    for await (const chunk of toIterable(res.body)) {
+    for await (const chunk of res) {
       yield Buffer.from(chunk)
     }
   }

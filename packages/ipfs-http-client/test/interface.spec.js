@@ -348,7 +348,38 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.object(commonFactory)
+  tests.object(commonFactory, {
+    skip: [
+      {
+        name: 'should get data by base58 encoded multihash string',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should get object by base58 encoded multihash',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should get object by base58 encoded multihash',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should get object by base58 encoded multihash string',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should get links by base58 encoded multihash',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should get links by base58 encoded multihash string',
+        reason: 'FIXME go-ipfs throws invalid encoding: base58'
+      },
+      {
+        name: 'should put a Protobuf encoded Buffer',
+        reason: 'FIXME go-ipfs throws invalid encoding: protobuf'
+      }
+    ]
+  })
 
   tests.pin(commonFactory)
 

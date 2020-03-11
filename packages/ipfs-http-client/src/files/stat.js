@@ -1,34 +1,28 @@
 'use strict'
 
 const CID = require('cids')
-const configure = require('../lib/configure')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
+module.exports = configure(api => {
+  return async (path, options = {}) => {
     if (typeof path !== 'string') {
-      options = path
+      options = path || {}
       path = '/'
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', path)
-    if (options.cidBase) searchParams.set('cid-base', options.cidBase)
-    if (options.hash != null) searchParams.set('hash', options.hash)
-    if (options.size != null) searchParams.set('size', options.size)
-    if (options.withLocal != null) searchParams.set('with-local', options.withLocal)
 
-    const res = await ky.post('files/stat', {
+    const res = await api.post('files/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })
+    const data = await res.json()
 
-    res.WithLocality = res.WithLocality || false
-    return toCoreInterface(toCamelWithMetadata(res))
+    data.WithLocality = data.WithLocality || false
+    return toCoreInterface(toCamelWithMetadata(data))
   }
 })
 

@@ -152,15 +152,13 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      const filesAdded = await all(ipfs.add(file))
-
-      filesAdded.forEach(async (file) => {
-        if (file.path === 'a') {
-          const files = await all(ipfs.get(`/ipfs/${file.cid}/testfile.txt`))
+      for await (const fileAdded of ipfs.add(file)) {
+        if (fileAdded.path === 'a') {
+          const files = await all(ipfs.get(`/ipfs/${fileAdded.cid.toString()}/testfile.txt`))
           expect(files).to.be.length(1)
           expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
         }
-      })
+      }
     })
 
     it('should get with ipfs path, as array and nested value', async () => {

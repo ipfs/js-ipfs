@@ -1,6 +1,8 @@
 'use strict'
 
 const CID = require('cids')
+const multihash = require('multihashes')
+const codecs = require('multicodec/src/base-table.json')
 const multipart = require('ipfs-multipart')
 const Joi = require('@hapi/joi')
 const multibase = require('multibase')
@@ -51,11 +53,14 @@ exports.get = {
     return h.response(block.data).header('X-Stream-Output', '1')
   }
 }
-
 exports.put = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      format: Joi.string().valid(...Object.keys(codecs)),
+      mhtype: Joi.string().valid(...Object.keys(multihash.names)),
+      mhlen: Joi.number().default(-1),
+      pin: Joi.bool().default(false)
     }).unknown()
   },
 
@@ -110,7 +115,8 @@ exports.rm = {
     query: Joi.object().keys({
       arg: Joi.array().items(Joi.string()).single().required(),
       force: Joi.boolean().default(false),
-      quiet: Joi.boolean().default(false)
+      quiet: Joi.boolean().default(false),
+      'stream-channels': Joi.boolean().default(true)
     }).unknown()
   },
 
@@ -145,6 +151,7 @@ exports.rm = {
 exports.stat = {
   validate: {
     query: Joi.object().keys({
+      arg: Joi.string(),
       'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
   },

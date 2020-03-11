@@ -13,7 +13,7 @@ module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe('.dht.get', function () {
+  describe.skip('.dht.get', function () {
     this.timeout(80 * 1000)
 
     let nodeA

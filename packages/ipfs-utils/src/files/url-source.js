@@ -1,15 +1,13 @@
 'use strict'
 
-const { default: ky } = require('ky-universal')
-const toIterable = require('stream-to-it/source')
+const Http = require('../http')
 
 module.exports = async function * urlSource (url, options) {
   options = options || {}
-
-  const { body } = await ky.get(url)
+  const http = new Http()
 
   yield {
     path: decodeURIComponent(new URL(url).pathname.split('/').pop() || ''),
-    content: toIterable(body)
+    content: await http.iterator(url, { method: 'get' })
   }
 }

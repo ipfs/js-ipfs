@@ -1,25 +1,23 @@
 'use strict'
 
 const CID = require('cids')
-const configure = require('../lib/configure')
 const { findSources } = require('./utils')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return (...args) => {
+module.exports = configure(api => {
+  return async (...args) => {
     const { sources, options } = findSources(args)
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     sources.forEach(src => searchParams.append('arg', CID.isCID(src) ? `/ipfs/${src}` : src))
-    if (options.flush != null) searchParams.set('flush', options.flush)
     if (options.hashAlg) searchParams.set('hash', options.hashAlg)
-    if (options.parents != null) searchParams.set('parents', options.parents)
-    if (options.shardSplitThreshold != null) searchParams.set('shardSplitThreshold', options.shardSplitThreshold)
 
-    return ky.post('files/mv', {
+    const res = await api.post('files/mv', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).text()
+    })
+
+    return res.text()
   }
 })

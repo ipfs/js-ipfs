@@ -3,16 +3,13 @@
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
-
-    const res = await ky.post('swarm/addrs', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    const res = await (await api.post('swarm/addrs', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams: options.searchParams
-    }).json()
+    })).json()
 
     return Object.keys(res.Addrs).map(id => ({
       id,

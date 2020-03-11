@@ -3,6 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
+const { Buffer } = require('buffer')
 const ipfsClient = require('../src/index.js')
 
 describe('\'deal with HTTP weirdness\' tests', () => {

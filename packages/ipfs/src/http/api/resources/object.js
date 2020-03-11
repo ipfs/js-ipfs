@@ -107,7 +107,8 @@ exports.get = {
 exports.put = {
   validate: {
     query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
+      'cid-base': Joi.string().valid(...multibase.names),
+      enc: Joi.string()
     }).unknown()
   },
 
@@ -118,7 +119,7 @@ exports.put = {
       throw Boom.badRequest("File argument 'data' is required")
     }
 
-    const enc = request.query.inputenc
+    const enc = request.query.enc
     let data
 
     for await (const part of multipart(request)) {
