@@ -1,5 +1,6 @@
 'use strict'
 
+const http = require('http')
 const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
@@ -19,6 +20,8 @@ const {
 } = require('test-ipfs-example/utils')
 const pkg = require('./package.json')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
+
+const FILE_CONTENT = 'A file with some content'
 
 async function testUI (env) {
   const proc = execa(require.resolve('test-ipfs-example/node_modules/.bin/nightwatch'), [ '--config', require.resolve('test-ipfs-example/nightwatch.conf.js'),  path.join(__dirname, 'test.js') ], {
@@ -58,7 +61,7 @@ async function runTest () {
 
   let cid
 
-  for await (const imported of relay.api.add('A file with some content')) {
+  for await (const imported of relay.api.add(FILE_CONTENT)) {
     cid = imported.cid
   }
 
@@ -185,6 +188,20 @@ module.exports[pkg.name] = function (browser) {
 
   // but should both see the added file
   browser.expect.element('#file-history').text.to.contain(process.env.IPFS_CID)
+
+  if (!process.env.IPFS_ADD_FILE) {
+    // download the file from the other browser
+    browser
+      .getAttribute(`a[download=${process.env.IPFS_CID}]`, 'href', ({ value: url }) => {
+        browser.executeAsync(function (url, done) {
+          fetch(url)
+            .then(res => res.text())
+            .then(done, done)
+        }, [ url ], ({ value: contents }) => {
+          browser.expect(contents.toString('utf8')).to.equal(FILE_CONTENT)
+        })
+      })
+  }
 
   browser.end()
 }
