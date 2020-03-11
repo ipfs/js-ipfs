@@ -10,6 +10,7 @@ const toCamel = require('../lib/object-to-camel')
 module.exports = configure(({ ky }) => {
   return async function * add (input, options) {
     console.log("Add called");
+    console.log("Using monorepo version")
     options = options || {}
 
     const searchParams = new URLSearchParams(options.searchParams)
