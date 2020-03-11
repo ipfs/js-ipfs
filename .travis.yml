@@ -43,7 +43,10 @@ before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
 
-script: npx nyc -s npm run test:node -- -- -- --timeout 10000 --bail
+  # only run jobs in packages that have changed since master in PR builds
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' fi'
+
+script: npx nyc -s npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 after_success:
   - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
@@ -60,77 +63,77 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- --scope={ipfs,ipfs-http-client} -- -- --bundlesize
-        - npm run dep-check -- -- -- -- -i wrtc -i electron-webrtc
-        - npm run lint -- --concurrency 1
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client} -- -- --bundlesize
+        - npm run dep-check -- $RUN_SINCE -- -- -- -i wrtc -i electron-webrtc
+        - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
       name: chrome
       addons:
         chrome: stable
       script:
-        - npm run test:browser -- -- -- --bail
+        - npm run test:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: chrome webworker
       addons:
         chrome: stable
       script:
-        - npm run test:webworker -- -- -- --bail
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npm run test:browser -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: firefox webworker
       addons:
         firefox: latest
       script:
-        - npm run test:webworker -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npm run test:electron-main -- -- -- --bail
+        - npm run test:electron-main -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npm run test:electron-renderer -- -- -- --bail
+        - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - node
       script:
-        - npm run test:interop:node -- -- -- --bail
+        - npm run test:interop:node -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - browser
       script:
-        - npm run test:interop:browser -- -- -- --bail
+        - npm run test:interop:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - npm run test:interop:electron-main -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run test:interop:electron-renderer -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
 
     - stage: test
       name: examples
       script:
         - npm run build -- --scope={ipfs,ipfs-http-client}
-        - npm run test -- --scope=example* --concurrency=1
+        - npm run test -- $RUN_SINCE --scope=example* --concurrency=1
 
     - stage: release-rc
       # only run on changes to master
