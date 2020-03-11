@@ -235,6 +235,7 @@ class HTTP {
  * @returns {AsyncGenerator<Object, void, any>}
  */
 const ndjson = async function * (source) {
+  const TextDecoder = globalThis.TextDecoder || require('util').TextDecoder
   const decoder = new TextDecoder()
   let buf = ''
 

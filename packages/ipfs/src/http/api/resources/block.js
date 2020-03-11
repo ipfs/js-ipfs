@@ -56,6 +56,7 @@ exports.get = {
 exports.put = {
   validate: {
     query: Joi.object().keys({
+      'cid-base': Joi.string().valid(...multibase.names),
       format: Joi.string().valid(...Object.keys(codecs)),
       mhtype: Joi.string().valid(...Object.keys(multihash.names)),
       mhlen: Joi.number().default(-1),
@@ -116,7 +117,7 @@ exports.rm = {
       force: Joi.boolean().default(false),
       quiet: Joi.boolean().default(false),
       'stream-channels': Joi.boolean().default(true)
-    })
+    }).unknown()
   },
 
   parseArgs: (request, h) => {
@@ -152,7 +153,7 @@ exports.stat = {
     query: Joi.object().keys({
       arg: Joi.string(),
       'cid-base': Joi.string().valid(...multibase.names)
-    })
+    }).unknown()
   },
 
   // uses common parseKey method that returns a `key`

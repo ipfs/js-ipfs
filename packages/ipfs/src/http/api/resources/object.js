@@ -107,8 +107,9 @@ exports.get = {
 exports.put = {
   validate: {
     query: Joi.object().keys({
+      'cid-base': Joi.string().valid(...multibase.names),
       enc: Joi.string()
-    })
+    }).unknown()
   },
 
   // pre request handler that parses the args and returns `node`
