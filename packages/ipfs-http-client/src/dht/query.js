@@ -1,23 +1,20 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
 const multiaddr = require('multiaddr')
-const toIterable = require('stream-to-it/source')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * query (peerId, options = {}) {
     options.arg = new CID(peerId)
-    const res = await api.post('dht/query', {
+    const res = await api.ndjson('dht/query', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
     })
 
-    for await (let message of ndjson(toIterable(res.body))) {
+    for await (let message of res) {
       message = toCamel(message)
       message.id = new CID(message.id)
       message.responses = (message.responses || []).map(({ ID, Addrs }) => ({
@@ -27,4 +24,4 @@ module.exports = (/** @type {API} */ api) => {
       yield message
     }
   }
-}
+})

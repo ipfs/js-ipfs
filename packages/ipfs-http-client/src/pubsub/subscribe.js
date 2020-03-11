@@ -4,13 +4,12 @@ const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const SubscriptionTracker = require('./subscription-tracker')
-const { streamToAsyncIterator, ndjson } = require('../lib/api')
+const { streamToAsyncIterator, ndjson } = require('../lib/core')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure((api, options) => {
   const subsTracker = SubscriptionTracker.singleton()
-  const publish = require('./publish')(api)
+  const publish = require('./publish')(options)
 
   return async (topic, handler, options = {}) => {
     options.signal = subsTracker.subscribe(topic, handler, options.signal)
@@ -52,7 +51,7 @@ module.exports = (/** @type {API} */ api) => {
       onError: options.onError
     })
   }
-}
+})
 
 async function readMessages (msgStream, { onMessage, onEnd, onError }) {
   onError = onError || log

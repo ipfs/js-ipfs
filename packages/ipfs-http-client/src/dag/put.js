@@ -4,10 +4,9 @@ const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 const multihash = require('multihashes')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (dagNode, options = {}) => {
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Failed to put DAG node. Provide either `cid` OR `format` and `hashAlg` options')
@@ -58,4 +57,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new CID(data.Cid['/'])
   }
-}
+})

@@ -54,9 +54,6 @@
     "iso-url": "^0.4.6",
     "it-tar": "^1.2.1",
     "it-to-stream": "^0.1.1",
-    "iterable-ndjson": "^1.1.0",
-    "ky": "^0.15.0",
-    "ky-universal": "^0.3.0",
     "merge-options": "^2.0.0",
     "multiaddr": "^7.2.1",
     "multiaddr-to-uri": "^5.1.0",
@@ -69,7 +66,6 @@
   },
   "devDependencies": {
     "aegir": "^21.3.0",
-    "async": "^3.1.0",
     "browser-process-platform": "^0.1.1",
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "0.4.23-3",

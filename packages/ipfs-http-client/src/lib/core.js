@@ -4,7 +4,9 @@ const Multiaddr = require('multiaddr')
 const toUri = require('multiaddr-to-uri')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { URL } = require('iso-url')
-const HTTP = require('./api')
+const parseDuration = require('parse-duration')
+const log = require('debug')('ipfs-http-client:lib:error-handler')
+const HTTP = require('ipfs-utils/src/http')
 
 const isMultiaddr = (input) => {
   try {
@@ -15,13 +17,11 @@ const isMultiaddr = (input) => {
   }
 }
 
-const normalizeURL = (options = {}) => {
-  if (typeof options === 'string') {
-    options = { url: options }
-  }
-
-  if (Multiaddr.isMultiaddr(options) || isMultiaddr(options)) {
+const normalizeInput = (options = {}) => {
+  if (isMultiaddr(options)) {
     options = { url: toUri(options) }
+  } else if (typeof options === 'string') {
+    options = { url: options }
   }
 
   const url = new URL(options.url)
@@ -30,7 +30,6 @@ const normalizeURL = (options = {}) => {
   } else if (url.pathname === '/' || url.pathname === undefined) {
     url.pathname = 'api/v0'
   }
-
   if (!options.url) {
     if (isBrowser || isWebWorker) {
       url.protocol = options.protocol || location.protocol
@@ -53,13 +52,13 @@ const errorHandler = async (response) => {
   try {
     if ((response.headers.get('Content-Type') || '').startsWith('application/json')) {
       const data = await response.json()
-      // log(data)
+      log(data)
       msg = data.Message || data.message
     } else {
       msg = await response.text()
     }
   } catch (err) {
-    // log('Failed to parse error response', err)
+    log('Failed to parse error response', err)
     // Failed to extract/parse error message from response
     msg = err.message
   }
@@ -81,27 +80,33 @@ const kebabCase = (str) => {
   })
 }
 
+const parseTimeout = (value) => {
+  return typeof value === 'string' ? parseDuration(value) : value
+}
+
 /**
- * @typedef {Object} APIOptions - creates a new type named 'SpecialType'
- * @prop {string} [host] - Request body
- * @prop {number} [port] - GET, POST, PUT, DELETE, etc.
- * @prop {string} [protocol] - The base URL to use in case url is a relative URL
- * @prop {Headers|Record<string, string>} [headers] - Request header.
- * @prop {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. @see https://www.npmjs.com/package/parse-duration for valid string values.
+ * @typedef {Object} ClientOptions
+ * @prop {string} [host]
+ * @prop {number} [port]
+ * @prop {string} [protocol]
+ * @prop {Headers|Record<string, string>} [headers] - Request headers.
+ * @prop {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
  * @prop {string} [apiPath] - Path to the API.
+ * @prop {URL|string} [url] - Full API URL.
  */
 
-class API {
+class Client extends HTTP {
   /**
    *
-   * @param {APIOptions|URL|Multiaddr|string} options
+   * @param {ClientOptions|URL|Multiaddr|string} options
    */
   constructor (options = {}) {
-    this.http = new HTTP({
-      timeout: options.timeout || 60000 * 20,
-      signal: options.signal,
-      headers: options.headers,
-      base: normalizeURL(options).toString(),
+    /** @type {ClientOptions} */
+    const opts = normalizeInput(options)
+    super({
+      timeout: parseTimeout(opts.timeout) || 60000 * 20,
+      headers: opts.headers,
+      base: normalizeInput(opts.url).toString(),
       handleError: errorHandler,
       // apply two mutations camelCase to kebad-case and remove undefined/null key/value pairs
       // everything else either is a bug or validation is needed
@@ -126,3 +131,7 @@ class API {
     })
   }
 }
+
+Client.errorHandler = errorHandler
+
+module.exports = Client

@@ -1,13 +1,10 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * ls (path, options = {}) {
     if (typeof path !== 'string') {
       options = path || {}
@@ -22,13 +19,14 @@ module.exports = (/** @type {API} */ api) => {
     // TODO: remove after go-ipfs 0.5 is released
     searchParams.set('l', options.long == null ? true : options.long)
 
-    const res = await api.post('files/ls', {
+    const res = await api.ndjson('files/ls', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (const result of ndjson(toIterable(res.body))) {
+    for await (const result of res) {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {
@@ -39,7 +37,7 @@ module.exports = (/** @type {API} */ api) => {
       }
     }
   }
-}
+})
 
 function toCoreInterface (entry) {
   if (entry.hash) entry.cid = new CID(entry.hash)

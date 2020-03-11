@@ -3,10 +3,9 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure((api, options) => {
   const refs = (args, options = {}) => {
     const searchParams = new URLSearchParams(options)
 
@@ -26,7 +25,7 @@ module.exports = (/** @type {API} */ api) => {
       transform: toCamel
     })
   }
-  refs.local = require('./local')(api)
+  refs.local = require('./local')(options)
 
   return refs
-}
+})

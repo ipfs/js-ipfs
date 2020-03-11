@@ -4,10 +4,9 @@ const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
 const { Buffer } = require('buffer')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (obj, options = {}) => {
     let tmpObj = {
       Data: null,
@@ -55,4 +54,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new CID(Hash)
   }
-}
+})

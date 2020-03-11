@@ -1,10 +1,9 @@
 'use strict'
 
 const modeToString = require('../lib/mode-to-string')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function chmod (path, mode, options = {}) {
     options.arg = path
     options.mode = modeToString(mode)
@@ -19,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return res.text()
   }
-}
+})

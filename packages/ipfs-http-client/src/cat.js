@@ -2,12 +2,10 @@
 
 const CID = require('cids')
 const { Buffer } = require('buffer')
-const toIterable = require('stream-to-it/source')
 const merge = require('merge-options')
+const configure = require('./lib/configure')
 
-/** @typedef { import("./lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * cat (path, options = {}) {
     options = merge(
       options,
@@ -15,14 +13,15 @@ module.exports = (/** @type {API} */ api) => {
         arg: typeof path === 'string' ? path : new CID(path).toString()
       }
     )
-    const res = await api.post('cat', {
+    const res = await api.iterator('cat', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
     })
 
-    for await (const chunk of toIterable(res.body)) {
+    for await (const chunk of res) {
       yield Buffer.from(chunk)
     }
   }
-}
+})

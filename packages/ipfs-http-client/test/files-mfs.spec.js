@@ -7,7 +7,7 @@ const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const all = require('it-all')
 const pipe = require('it-pipe')
-const API = require('../src/lib/api')
+const API = require('../src/lib/core')
 
 const f = require('./utils/factory')()
 

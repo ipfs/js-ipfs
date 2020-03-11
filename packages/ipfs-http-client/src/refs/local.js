@@ -1,10 +1,9 @@
 'use strict'
 
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return function refsLocal (options = {}) {
     return api.ndjson('refs/local', {
       method: 'POST',
@@ -13,4 +12,4 @@ module.exports = (/** @type {API} */ api) => {
       transform: toCamel
     })
   }
-}
+})

@@ -1,8 +1,7 @@
 'use strict'
+const configure = require('./lib/configure')
 
-/** @typedef { import("./lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return () => {
     const url = new URL(api.opts.base)
     return {
@@ -13,4 +12,4 @@ module.exports = (/** @type {API} */ api) => {
       'api-path': url.pathname
     }
   }
-}
+})

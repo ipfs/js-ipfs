@@ -2,8 +2,9 @@
 
 const { BigNumber } = require('bignumber.js')
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = api => {
+module.exports = configure(api => {
   return async (options = {}) => {
     const res = await api.post('bitswap/stat', {
       searchParams: options,
@@ -13,7 +14,7 @@ module.exports = api => {
 
     return toCoreInterface(await res.json())
   }
-}
+})
 
 function toCoreInterface (res) {
   return {

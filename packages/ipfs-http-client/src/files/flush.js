@@ -1,10 +1,9 @@
 'use strict'
 
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (path, options = {}) => {
     if (typeof path !== 'string') {
       options = path || {}
@@ -22,4 +21,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new CID(data.Cid)
   }
-}
+})

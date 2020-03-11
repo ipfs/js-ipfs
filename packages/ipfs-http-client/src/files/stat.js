@@ -2,10 +2,9 @@
 
 const CID = require('cids')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (path, options = {}) => {
     if (typeof path !== 'string') {
       options = path || {}
@@ -25,7 +24,7 @@ module.exports = (/** @type {API} */ api) => {
     data.WithLocality = data.WithLocality || false
     return toCoreInterface(toCamelWithMetadata(data))
   }
-}
+})
 
 function toCoreInterface (entry) {
   entry.cid = new CID(entry.hash)

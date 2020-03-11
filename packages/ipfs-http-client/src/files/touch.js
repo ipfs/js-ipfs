@@ -1,10 +1,9 @@
 'use strict'
 
 const mtimeToObject = require('../lib/mtime-to-object')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function touch (path, options = {}) {
     const mtime = mtimeToObject(options.mtime)
 
@@ -24,4 +23,4 @@ module.exports = (/** @type {API} */ api) => {
     })
     return res.text()
   }
-}
+})

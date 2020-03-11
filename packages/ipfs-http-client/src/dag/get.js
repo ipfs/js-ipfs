@@ -3,8 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const dagCBOR = require('ipld-dag-cbor')
 const raw = require('ipld-raw')
-
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
 const resolvers = {
   'dag-cbor': dagCBOR.resolver,
@@ -12,9 +11,9 @@ const resolvers = {
   raw: raw.resolver
 }
 
-module.exports = (/** @type {API} */ api) => {
-  const getBlock = require('../block/get')(api)
-  const dagResolve = require('./resolve')(api)
+module.exports = configure((api, options) => {
+  const getBlock = require('../block/get')(options)
+  const dagResolve = require('./resolve')(options)
 
   return async (cid, path, options = {}) => {
     if (typeof path === 'object') {
@@ -35,4 +34,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return dagResolver.resolve(block.data, resolved.remPath)
   }
-}
+})

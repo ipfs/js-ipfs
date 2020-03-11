@@ -2,10 +2,9 @@
 
 const { Buffer } = require('buffer')
 const toIterable = require('stream-to-it/source')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * read (path, options = {}) {
     options.arg = path
     const res = await api.post('files/read', {
@@ -18,4 +17,4 @@ module.exports = (/** @type {API} */ api) => {
       yield Buffer.from(chunk)
     }
   }
-}
+})

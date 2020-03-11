@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 'use strict'
 
-const fetch = require('./fetch')
+const fetch = require('node-fetch')
 const merge = require('merge-options')
 const { URL, URLSearchParams } = require('iso-url')
-const global = require('ipfs-utils/src/globalthis')
+const global = require('./globalthis')
 const Request = global.Request
 const AbortController = global.AbortController
 
@@ -57,7 +57,7 @@ const defaults = {
  * @prop {any} [body] - Request body
  * @prop {string} [method] - GET, POST, PUT, DELETE, etc.
  * @prop {string} [base] - The base URL to use in case url is a relative URL
- * @prop {Headers} [headers] - Request header.
+ * @prop {Headers|Record<string, string>} [headers] - Request header.
  * @prop {number} [timeout] - Amount of time until request should timeout in ms.
  * @prop {AbortSignal} [signal] - Signal to abort the request.
  * @prop {URLSearchParams|Object} [searchParams] - URL search param.
@@ -68,7 +68,7 @@ const defaults = {
  * @prop {function(Response): Promise<void>} [handleError] - Handle errors
  */
 
-class API {
+class HTTP {
   /**
    *
    * @param {APIOptions} options
@@ -285,9 +285,9 @@ const isAsyncIterator = (obj) => {
   typeof obj[Symbol.asyncIterator] === 'function'
 }
 
-API.HTTPError = HTTPError
-API.TimeoutError = TimeoutError
-API.ndjson = ndjson
-API.streamToAsyncIterator = streamToAsyncIterator
+HTTP.HTTPError = HTTPError
+HTTP.TimeoutError = TimeoutError
+HTTP.ndjson = ndjson
+HTTP.streamToAsyncIterator = streamToAsyncIterator
 
-module.exports = API
+module.exports = HTTP

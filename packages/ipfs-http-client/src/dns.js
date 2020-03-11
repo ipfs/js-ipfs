@@ -1,8 +1,8 @@
 'use strict'
 
-/** @typedef { import("./lib/api") } API */
+const configure = require('./lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (domain, options = {}) => {
     options.arg = domain
     const res = await api.post('dns', {
@@ -14,4 +14,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return data.Path
   }
-}
+})

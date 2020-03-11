@@ -3,10 +3,9 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function findPeer (peerId, options = {}) {
     options.arg = `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`
 
@@ -32,4 +31,4 @@ module.exports = (/** @type {API} */ api) => {
 
     throw new Error('not found')
   }
-}
+})

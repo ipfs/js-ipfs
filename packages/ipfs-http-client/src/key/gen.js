@@ -1,10 +1,9 @@
 'use strict'
 
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (name, options = {}) => {
     options.arg = name
     const res = await api.post('key/gen', {
@@ -16,4 +15,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return toCamel(data)
   }
-}
+})

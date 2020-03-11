@@ -3,10 +3,9 @@
 const Block = require('ipfs-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (cid, options = {}) => {
     cid = new CID(cid)
     options.arg = cid.toString()
@@ -19,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new Block(Buffer.from(await rsp.arrayBuffer()), cid)
   }
-}
+})

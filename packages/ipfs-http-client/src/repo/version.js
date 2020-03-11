@@ -1,8 +1,8 @@
 'use strict'
 
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (options = {}) => {
     const res = await (await api.post('repo/version', {
       timeout: options.timeout,
@@ -12,4 +12,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return res.Version
   }
-}
+})

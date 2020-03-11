@@ -1,9 +1,9 @@
 'use strict'
 
 const toCamel = require('../lib/object-to-camel')
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (subsystem, level, options = {}) => {
     const searchParams = new URLSearchParams(options)
     searchParams.append('arg', subsystem)
@@ -17,4 +17,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return toCamel(await res.json())
   }
-}
+})

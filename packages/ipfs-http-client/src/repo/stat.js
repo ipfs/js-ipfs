@@ -1,10 +1,9 @@
 'use strict'
 
 const { BigNumber } = require('bignumber.js')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (options = {}) => {
     const res = await (await api.post('repo/stat', {
       timeout: options.timeout,
@@ -20,4 +19,4 @@ module.exports = (/** @type {API} */ api) => {
       storageMax: new BigNumber(res.StorageMax)
     }
   }
-}
+})

@@ -1,8 +1,8 @@
 'use strict'
 
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (topic, options = {}) => {
     if (!options && typeof topic === 'object') {
       options = topic || {}
@@ -20,4 +20,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return Strings || []
   }
-}
+})

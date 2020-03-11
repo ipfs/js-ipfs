@@ -1,13 +1,10 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
 const merge = require('merge-options')
-const toIterable = require('stream-to-it/source')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * rm (cid, options = {}) {
     if (!Array.isArray(cid)) {
       cid = [cid]
@@ -26,17 +23,17 @@ module.exports = (/** @type {API} */ api) => {
       searchParams.append('arg', new CID(cid).toString())
     })
 
-    const res = await api.post('block/rm', {
+    const res = await api.ndjson('block/rm', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: searchParams
     })
 
-    for await (const removed of ndjson(toIterable(res.body))) {
+    for await (const removed of res) {
       yield toCoreInterface(removed)
     }
   }
-}
+})
 
 function toCoreInterface (removed) {
   const out = {

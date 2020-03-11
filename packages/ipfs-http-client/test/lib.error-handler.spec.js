@@ -2,14 +2,14 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { HTTPError } = require('ky-universal')
 const throwsAsync = require('./utils/throws-async')
-const errorHandler = require('../src/lib/error-handler')
+const { errorHandler, HTTPError } = require('../src/lib/core')
 
 describe('lib/error-handler', () => {
   it('should parse json error response', async () => {
     const res = {
       ok: false,
+      statusText: 'test',
       headers: { get: () => 'application/json' },
       json: () => Promise.resolve({
         Message: 'boom',
@@ -19,7 +19,7 @@ describe('lib/error-handler', () => {
       status: 500
     }
 
-    const err = await throwsAsync(errorHandler(null, null, res))
+    const err = await throwsAsync(errorHandler(res))
 
     expect(err instanceof HTTPError).to.be.true()
     expect(err.message).to.eql('boom')
@@ -34,7 +34,7 @@ describe('lib/error-handler', () => {
       status: 500
     }
 
-    const err = await throwsAsync(errorHandler(null, null, res))
+    const err = await throwsAsync(errorHandler(res))
     expect(err instanceof HTTPError).to.be.true()
   })
 
@@ -46,7 +46,7 @@ describe('lib/error-handler', () => {
       status: 500
     }
 
-    const err = await throwsAsync(errorHandler(null, null, res))
+    const err = await throwsAsync(errorHandler(res))
     expect(err instanceof HTTPError).to.be.true()
   })
 })

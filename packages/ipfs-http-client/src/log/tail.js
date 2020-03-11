@@ -1,18 +1,15 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * tail (options = {}) {
-    const res = await api.post('log/tail', {
+    const res = await api.ndjson('log/tail', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
     })
 
-    yield * ndjson(toIterable(res.body))
+    yield * res
   }
-}
+})

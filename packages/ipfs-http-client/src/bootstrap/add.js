@@ -1,10 +1,9 @@
 'use strict'
 
 const Multiaddr = require('multiaddr')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (addr, options = {}) => {
     if (addr && typeof addr === 'object' && !Multiaddr.isMultiaddr(addr)) {
       options = addr
@@ -21,4 +20,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return res.json()
   }
-}
+})

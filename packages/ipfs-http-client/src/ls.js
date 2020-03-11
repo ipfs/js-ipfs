@@ -2,23 +2,21 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
+const configure = require('./lib/configure')
 
-/** @typedef { import("./lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async function * ls (path, options = {}) {
     const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
 
-    const res = await api.post('ls', {
+    const res = await api.ndjson('ls', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (let result of ndjson(toIterable(res.body))) {
+    for await (let result of res) {
       result = result.Objects
 
       if (!result) {
@@ -63,7 +61,7 @@ module.exports = (/** @type {API} */ api) => {
       }
     }
   }
-}
+})
 
 function typeOf (link) {
   switch (link.Type) {

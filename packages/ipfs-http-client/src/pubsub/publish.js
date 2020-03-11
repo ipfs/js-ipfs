@@ -2,10 +2,9 @@
 
 const { Buffer } = require('buffer')
 const encodeBuffer = require('../lib/encode-buffer-uri-component')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (topic, data, options = {}) => {
     data = Buffer.from(data)
 
@@ -19,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return res
   }
-}
+})

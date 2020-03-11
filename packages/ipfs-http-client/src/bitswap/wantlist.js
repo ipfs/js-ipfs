@@ -1,8 +1,9 @@
 'use strict'
 
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = api => {
+module.exports = configure(api => {
   return async (peer, options = {}) => {
     if (peer) {
       options.peer = typeof peer === 'string' ? peer : new CID(peer).toString()
@@ -16,4 +17,4 @@ module.exports = api => {
 
     return (res.Keys || []).map(k => new CID(k['/']))
   }
-}
+})

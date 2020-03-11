@@ -1,9 +1,9 @@
 'use strict'
 
 const CID = require('cids')
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (path, options = {}) => {
     const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${path}`)
@@ -16,4 +16,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
   }
-}
+})

@@ -1,10 +1,9 @@
 'use strict'
 
 const toCamel = require('./lib/object-to-camel')
+const configure = require('./lib/configure')
 
-/** @typedef { import("./lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return function ping (peerId, options = {}) {
     const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${peerId}`)
@@ -17,4 +16,4 @@ module.exports = (/** @type {API} */ api) => {
       transform: toCamel
     })
   }
-}
+})

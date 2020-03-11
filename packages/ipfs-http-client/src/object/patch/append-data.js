@@ -3,10 +3,9 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const toFormData = require('../../lib/buffer-to-form-data')
+const configure = require('../../lib/configure')
 
-/** @typedef { import("./../../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (cid, data, options = {}) => {
     const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
@@ -20,4 +19,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new CID(Hash)
   }
-}
+})

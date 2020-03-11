@@ -1,15 +1,9 @@
 'use strict'
 
 const toCamel = require('./lib/object-to-camel')
+const configure = require('./lib/configure')
 
-/** @typedef { import("./lib/api") } API */
-
-/**
- * Version
- * @param {API} api
- * @returns {function(Object): Promise<Object>}
- */
-const version = (api) => {
+module.exports = configure(api => {
   return async (options = {}) => {
     const res = await (await api.post('version', {
       timeout: options.timeout,
@@ -19,6 +13,4 @@ const version = (api) => {
 
     return toCamel(res)
   }
-}
-
-module.exports = version
+})

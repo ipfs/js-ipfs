@@ -4,10 +4,9 @@ const Block = require('ipfs-block')
 const CID = require('cids')
 const multihash = require('multihashes')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   async function put (data, options = {}) {
     if (Block.isBlock(data)) {
       const { name, length } = multihash.decode(data.cid.multihash)
@@ -57,4 +56,4 @@ module.exports = (/** @type {API} */ api) => {
   }
 
   return put
-}
+})

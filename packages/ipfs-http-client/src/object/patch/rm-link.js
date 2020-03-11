@@ -2,10 +2,9 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
+const configure = require('../../lib/configure')
 
-/** @typedef { import("./../../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (cid, dLink, options = {}) => {
     const searchParams = new URLSearchParams(options)
     searchParams.append('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
@@ -19,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
 
     return new CID(Hash)
   }
-}
+})

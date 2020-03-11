@@ -1,19 +1,14 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
 const CID = require('cids')
-const toIterable = require('stream-to-it/source')
+const merge = require('merge-options')
 const { toFormData } = require('./form-data')
 const toCamel = require('../lib/object-to-camel')
-const merge = require('merge-options')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure((api) => {
   return async function * add (input, options = {}) {
-    // extract functions here
     const progressFn = options.progress
-    // default or mutate/force options here
     options = merge(
       options,
       {
@@ -23,14 +18,15 @@ module.exports = (/** @type {API} */ api) => {
       }
     )
 
-    const res = await api.post('add', {
+    const res = await api.ndjson('add', {
+      method: 'POST',
       searchParams: options,
       body: await toFormData(input),
       timeout: options.timeout,
       signal: options.signal
     })
 
-    for await (let file of ndjson(toIterable(res.body))) {
+    for await (let file of res) {
       file = toCamel(file)
 
       if (progressFn && file.bytes) {
@@ -40,7 +36,7 @@ module.exports = (/** @type {API} */ api) => {
       }
     }
   }
-}
+})
 
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   const output = {

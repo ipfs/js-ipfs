@@ -1,8 +1,8 @@
 'use strict'
 
-/** @typedef { import("./../../lib/api") } API */
+const configure = require('../../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return async (profile, options = {}) => {
     options.arg = profile
     const response = await api.post('config/profile/apply', {
@@ -16,4 +16,4 @@ module.exports = (/** @type {API} */ api) => {
       original: res.OldCfg, updated: res.NewCfg
     }
   }
-}
+})

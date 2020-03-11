@@ -1,11 +1,12 @@
 'use strict'
 
 const { BigNumber } = require('bignumber.js')
-/** @typedef { import("./../lib/api") } API */
+const configure = require('../lib/configure')
 
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return function bw (options = {}) {
     return api.ndjson('stats/bw', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options,
@@ -17,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
       })
     })
   }
-}
+})

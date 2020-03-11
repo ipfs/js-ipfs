@@ -1,10 +1,9 @@
 'use strict'
 
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-/** @typedef { import("./../lib/api") } API */
-
-module.exports = (/** @type {API} */ api) => {
+module.exports = configure(api => {
   return function gc (options = {}) {
     return api.ndjson('repo/gc', {
       method: 'POST',
@@ -19,4 +18,4 @@ module.exports = (/** @type {API} */ api) => {
       }
     })
   }
-}
+})

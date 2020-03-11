@@ -1,8 +1,9 @@
 'use strict'
 
 const CID = require('cids')
+const configure = require('../lib/configure')
 
-module.exports = api => {
+module.exports = configure(api => {
   return async (cid, options = {}) => {
     options.arg = typeof cid === 'string' ? cid : new CID(cid).toString()
 
@@ -14,4 +15,4 @@ module.exports = api => {
 
     return res.json()
   }
-}
+})

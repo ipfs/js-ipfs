@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const f = require('./utils/factory')()
 const ipfsClient = require('../src/index.js')
 const globalThis = require('ipfs-utils/src/globalthis')
+const { isBrowser } = require('ipfs-utils/src/env')
 
 describe('ipfs-http-client constructor tests', () => {
   describe('parameter permuations', () => {
@@ -116,7 +117,7 @@ function expectConfig (ipfs, { host, port, protocol, apiPath }) {
   if (protocol) {
     protocol = protocol + ':'
   }
-  if (globalThis.location) {
+  if (isBrowser) {
     expect(conf.host).to.be.oneOf([host, globalThis.location.hostname, ''])
     expect(conf.port).to.be.oneOf([port, globalThis.location.port, '80'])
     expect(conf.protocol).to.equal(protocol || 'http:')
