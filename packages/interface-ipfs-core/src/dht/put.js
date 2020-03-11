@@ -13,6 +13,7 @@ module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
+  // TODO unskip this after go-ipfs 0.5.0 ships interface is going to change
   describe.skip('.dht.put', function () {
     this.timeout(80 * 1000)
 
