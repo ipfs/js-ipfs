@@ -108,8 +108,6 @@ class Client extends HTTP {
       headers: opts.headers,
       base: normalizeInput(opts.url).toString(),
       handleError: errorHandler,
-      // apply two mutations camelCase to kebad-case and remove undefined/null key/value pairs
-      // everything else either is a bug or validation is needed
       transformSearchParams: (search) => {
         const out = new URLSearchParams()
 
@@ -124,8 +122,6 @@ class Client extends HTTP {
             out.append(kebabCase(key), value)
           }
         }
-
-        // console.log('ipfsClient -> out', out)
         return out
       }
     })
