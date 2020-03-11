@@ -23,6 +23,8 @@
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" /></a>
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square" /></a>
   <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/ipfs-http-client"><img src="https://img.shields.io/npm/dm/ipfs-http-client.svg" /></a>
+  <a href="https://www.jsdelivr.com/package/npm/ipfs-http-client"><img src="https://data.jsdelivr.com/v1/package/npm/ipfs-http-client/badge"/></a>
   <br>
 </p>
 
@@ -128,26 +130,28 @@ See the example in the [examples folder](examples/bundle-webpack) to get an idea
 
 **from CDN**
 
-Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [unpkg CDN](https://unpkg.com/).
+Instead of a local installation (and browserification) you may request a remote copy of IPFS API from [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs).
 
-To always request the latest version, use the following:
+To always request the latest version, use one of the following examples:
 
 ```html
-<script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
-```
+<!-- loading the minified version using jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
 
-Note: remove the `.min` from the URL to get the human-readable (not minified) version.
+<!-- loading the human-readable (not minified) version jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.js"></script>
+```
 
 For maximum security you may also decide to:
 
 * reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
-* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity
+* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity. Learn more also at the [jsdelivr website](https://www.jsdelivr.com/using-sri-with-dynamic-files)
 * set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
 
 Example:
 
 ```html
-<script src="https://unpkg.com/ipfs-http-client@9.0.0/dist/index.js"
+<script src="https://www.jsdelivr.com/package/npm/ipfs-http-client"
 integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
 crossorigin="anonymous"></script>
 ```

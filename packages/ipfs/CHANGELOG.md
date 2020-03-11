@@ -492,7 +492,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
     * all IPLD formats included
 * In browser application bundle `require('ipfs')` bundled with webpack/browserify/etc.
     * only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` included
-* CDN bundle `<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>`
+* CDN bundle `<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>`
     * all IPLD formats included
 
 Co-Authored-By: hugomrdias <mail@hugodias.me>
