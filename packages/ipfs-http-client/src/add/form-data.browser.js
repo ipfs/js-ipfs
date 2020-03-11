@@ -14,6 +14,7 @@ exports.toFormData = async input => {
   let i = 0
 
   for await (const file of files) {
+    // TODO FormData.append doesnt have a 4th arg
     console.log({ file })
     const headers = {}
 
@@ -45,20 +46,31 @@ exports.toFormData = async input => {
 
       const newBlob = new Blob(bufs, { type: 'application/octet-stream' });
       console.log({ newBlob })
-      const encodedUriComponent = encodeURIComponent(file.path);
-
-      formData.append(`file-${i}`, newBlob, encodedUriComponent, {
-        header: headers
-      })
 
       if (newBlob.data) {
         const newBlobData = newBlob.data;
         console.log("newBlob data", newBlobData);
       }
+
+      const encodedUriComponent = encodeURIComponent(file.path);
+      formData.append(
+        `file-${i}`,
+        newBlob,
+        encodedUriComponent
+        // {
+        //   header: headers
+        // }
+      )
+
     } else {
-      formData.append(`dir-${i}`, new Blob([], { type: 'application/x-directory' }), encodeURIComponent(file.path), {
-        header: headers
-      })
+      formData.append(
+        `dir-${i}`,
+        new Blob([], { type: 'application/x-directory' }),
+        encodeURIComponent(file.path)
+        // {
+        //   header: headers
+        // }
+      )
     }
 
     const keyToGet = 'file-0'

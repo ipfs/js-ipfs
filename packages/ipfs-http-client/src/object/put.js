@@ -3,13 +3,11 @@
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
 const { Buffer } = require('buffer')
-const configure = require('../lib/configure')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (obj, options) => {
-    options = options || {}
-
+module.exports = configure(api => {
+  return async (obj, options = {}) => {
     let tmpObj = {
       Data: null,
       Links: []
@@ -45,18 +43,14 @@ module.exports = configure(({ ky }) => {
       buf = Buffer.from(JSON.stringify(tmpObj))
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.enc) searchParams.set('inputenc', options.enc)
-    if (options.pin != null) searchParams.set('pin', options.pin)
-    if (options.quiet != null) searchParams.set('quiet', options.quiet)
-
-    const { Hash } = await ky.post('object/put', {
+    const res = await api.post('object/put', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams,
+      searchParams: options,
       body: toFormData(buf)
-    }).json()
+    })
+
+    const { Hash } = await res.json()
 
     return new CID(Hash)
   }

@@ -1,25 +1,24 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
 const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
-const configure = require('../lib/configure')
-const toAsyncIterable = require('../lib/stream-to-async-iterable')
 const SubscriptionTracker = require('./subscription-tracker')
 
-module.exports = configure((config) => {
-  const ky = config.ky
-  const subsTracker = SubscriptionTracker.singleton()
-  const publish = require('./publish')(config)
+// TODO: Update streamToAsyncIterator with any chances in light of
+// this feature branch
+const { streamToAsyncIterator, ndjson } = require('../lib/core')
+const configure = require('../lib/configure')
 
-  return async (topic, handler, options) => {
-    options = options || {}
+module.exports = configure((api, options) => {
+  const subsTracker = SubscriptionTracker.singleton()
+  const publish = require('./publish')(options)
+
+  return async (topic, handler, options = {}) => {
     options.signal = subsTracker.subscribe(topic, handler, options.signal)
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', topic)
-    if (options.discover != null) searchParams.set('discover', options.discover)
 
     let res
 
@@ -36,10 +35,10 @@ module.exports = configure((config) => {
     }, 1000)
 
     try {
-      res = await ky.post('pubsub/sub', {
+      res = await api.stream('pubsub/sub', {
+        method: 'POST',
         timeout: options.timeout,
         signal: options.signal,
-        headers: options.headers,
         searchParams
       })
     } catch (err) { // Initial subscribe fail, ensure we clean up
@@ -49,7 +48,10 @@ module.exports = configure((config) => {
 
     clearTimeout(ffWorkaround)
 
-    readMessages(ndjson(toAsyncIterable(res)), {
+    // Note: It's interesting that subscribe
+    // keeps this ndjson(tranformation(res)) pattern although
+    // that's now long from other IPFS methods
+    readMessages(ndjson(streamToAsyncIterator(res)), {
       onMessage: handler,
       onEnd: () => subsTracker.unsubscribe(topic, handler),
       onError: options.onError

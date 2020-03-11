@@ -2,20 +2,15 @@
 
 const configure = require('../../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (profile, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', profile)
-    if (options.dryRun != null) searchParams.set('dry-run', options.dryRun)
-
-    const res = await ky.post('config/profile/apply', {
+module.exports = configure(api => {
+  return async (profile, options = {}) => {
+    options.arg = profile
+    const response = await api.post('config/profile/apply', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: options
+    })
+    const res = await response.json()
 
     return {
       original: res.OldCfg, updated: res.NewCfg

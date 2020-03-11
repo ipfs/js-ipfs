@@ -5,20 +5,18 @@ const CID = require('cids')
 const { DAGLink } = require('ipld-dag-pb')
 const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = configure(api => {
+  return async (cid, options = {}) => {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    const res = await ky.post('object/links', {
+    const res = await api.post('object/links', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })
+    const data = await res.json()
 
-    return (res.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
+    return (data.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
   }
 })

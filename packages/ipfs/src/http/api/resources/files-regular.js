@@ -125,7 +125,10 @@ exports.add = {
         'block-write-concurrency': Joi.number().integer().min(0).default(10),
         chunker: Joi.string(),
         trickle: Joi.boolean(),
-        preload: Joi.boolean().default(true)
+        preload: Joi.boolean().default(true),
+        progress: Joi.boolean(),
+        'stream-channels': Joi.boolean().default(true)
+
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })

@@ -5,6 +5,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const loadFixture = require('aegir/fixtures')
+const { Buffer } = require('buffer')
 const all = require('it-all')
 const concat = require('it-concat')
 

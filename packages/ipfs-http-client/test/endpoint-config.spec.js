@@ -11,8 +11,8 @@ describe('.getEndpointConfig', () => {
     const endpoint = ipfs.getEndpointConfig()
 
     expect(endpoint.host).to.equal('127.0.0.1')
-    expect(endpoint.protocol).to.equal('https')
-    expect(endpoint['api-path']).to.equal('/ipfs/api')
+    expect(endpoint.protocol).to.equal('https:')
+    expect(endpoint.pathname).to.equal('/ipfs/api/')
     expect(endpoint.port).to.equal('5501')
   })
 })

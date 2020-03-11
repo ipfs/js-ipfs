@@ -1,24 +1,18 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (name, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', name)
-    if (options.type) searchParams.set('type', options.type)
-    if (options.size != null) searchParams.set('size', options.size)
-
-    const res = await ky.post('key/gen', {
+module.exports = configure(api => {
+  return async (name, options = {}) => {
+    options.arg = name
+    const res = await api.post('key/gen', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: options
+    })
+    const data = await res.json()
 
-    return toCamel(res)
+    return toCamel(data)
   }
 })

@@ -3,20 +3,13 @@
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 const multihash = require('multihashes')
-const configure = require('../lib/configure')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (dagNode, options) => {
+module.exports = configure(api => {
+  return async (dagNode, options = {}) => {
     console.log("dag.put called")
     console.log("Using monorepo version")
-    options = options || {}
-
-    if (options.hash) {
-      options.hashAlg = options.hash
-      delete options.hash
-    }
-
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Failed to put DAG node. Provide either `cid` OR `format` and `hashAlg` options')
     } else if ((options.format && !options.hashAlg) || (!options.format && options.hashAlg)) {
@@ -51,20 +44,19 @@ module.exports = configure(({ ky }) => {
       serialized = dagNode
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('format', options.format)
-    searchParams.set('hash', options.hashAlg)
-    searchParams.set('input-enc', options.inputEnc)
-    if (options.pin != null) searchParams.set('pin', options.pin)
+    // TODO normalize hash property name
+    options.hash = options.hashAlg
+    options.hashAlg = null
+    const searchParams = new URLSearchParams(options)
 
-    const res = await ky.post('dag/put', {
+    const rsp = await api.post('dag/put', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams,
       body: toFormData(serialized)
-    }).json()
+    })
+    const data = await rsp.json()
 
-    return new CID(res.Cid['/'])
+    return new CID(data.Cid['/'])
   }
 })

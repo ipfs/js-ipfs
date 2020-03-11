@@ -2,20 +2,18 @@
 
 const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (addrs, options) => {
+module.exports = configure(api => {
+  return async (addrs, options = {}) => {
     addrs = Array.isArray(addrs) ? addrs : [addrs]
-    options = options || {}
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     addrs.forEach(addr => searchParams.append('arg', addr))
 
-    const res = await ky.post('swarm/connect', {
+    const res = await (await api.post('swarm/connect', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })).json()
 
     return res.Strings || []
   }

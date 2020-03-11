@@ -2,30 +2,21 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toAsyncIterable = require('./lib/stream-to-async-iterable')
 const configure = require('./lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async function * ls (path, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams()
+module.exports = configure(api => {
+  return async function * ls (path, options = {}) {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
-    searchParams.set('stream', options.stream == null ? true : options.stream)
 
-    if (options.long != null) searchParams.set('long', options.long)
-    if (options.unsorted != null) searchParams.set('unsorted', options.unsorted)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('ls', {
+    const res = await api.ndjson('ls', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
     })
 
-    for await (let result of ndjson(toAsyncIterable(res))) {
+    for await (let result of res) {
       result = result.Objects
 
       if (!result) {

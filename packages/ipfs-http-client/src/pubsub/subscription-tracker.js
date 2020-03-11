@@ -49,4 +49,6 @@ class SubscriptionTracker {
   }
 }
 
+SubscriptionTracker.instance = null
+
 module.exports = SubscriptionTracker

@@ -53,12 +53,12 @@ module.exports = (common, options) => {
 
       await ipfs.object.put(testObj)
 
-      const timeout = 2
+      const timeout = 2000
       const startTime = new Date()
       const badCid = 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ'
 
-      const err = await expect(ipfs.object.stat(badCid, { timeout: `${timeout}s` })).to.be.rejected()
-      const timeForRequest = (new Date() - startTime) / 1000
+      const err = await expect(ipfs.object.stat(badCid, { timeout })).to.be.rejected()
+      const timeForRequest = (new Date() - startTime)
 
       if (err.code) {
         expect(err.code).to.equal('ERR_TIMEOUT')
@@ -67,7 +67,7 @@ module.exports = (common, options) => {
       }
 
       expect(timeForRequest).to.not.lessThan(timeout - 0.1)
-      expect(timeForRequest).to.not.greaterThan(timeout + 1)
+      expect(timeForRequest).to.not.greaterThan(timeout + 1000)
     })
 
     it('should get stats for object with links by multihash', async () => {

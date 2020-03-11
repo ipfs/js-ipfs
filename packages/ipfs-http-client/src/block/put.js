@@ -3,13 +3,11 @@
 const Block = require('ipfs-block')
 const CID = require('cids')
 const multihash = require('multihashes')
-const configure = require('../lib/configure')
 const toFormData = require('../lib/buffer-to-form-data')
+const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  async function put (data, options) {
-    options = options || {}
-
+module.exports = configure(api => {
+  async function put (data, options = {}) {
     if (Block.isBlock(data)) {
       const { name, length } = multihash.decode(data.cid.multihash)
       options = {
@@ -33,22 +31,15 @@ module.exports = configure(({ ky }) => {
       delete options.cid
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.format) searchParams.set('format', options.format)
-    if (options.mhtype) searchParams.set('mhtype', options.mhtype)
-    if (options.mhlen) searchParams.set('mhlen', options.mhlen)
-    if (options.pin != null) searchParams.set('pin', options.pin)
-    if (options.version != null) searchParams.set('version', options.version)
-
     let res
     try {
-      res = await ky.post('block/put', {
+      const response = await api.post('block/put', {
         timeout: options.timeout,
         signal: options.signal,
-        headers: options.headers,
-        searchParams,
+        searchParams: options,
         body: toFormData(data)
-      }).json()
+      })
+      res = await response.json()
     } catch (err) {
       // Retry with "protobuf"/"cbor" format for go-ipfs
       // TODO: remove when https://github.com/ipfs/go-cid/issues/75 resolved
