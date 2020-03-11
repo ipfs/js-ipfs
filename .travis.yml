@@ -43,7 +43,7 @@ before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
   # only run jobs in packages that have changed since master in PR builds
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' fi'
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
 script: npx nyc -s npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 after_success:
