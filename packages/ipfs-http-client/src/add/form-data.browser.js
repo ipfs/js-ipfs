@@ -10,6 +10,7 @@ exports.toFormData = async input => {
   let i = 0
 
   for await (const file of files) {
+    // TODO FormData.append doesnt have a 4th arg
     const headers = {}
 
     if (file.mtime !== undefined && file.mtime !== null) {
@@ -34,13 +35,23 @@ exports.toFormData = async input => {
         bufs.push(chunk)
       }
 
-      formData.append(`file-${i}`, new Blob(bufs, { type: 'application/octet-stream' }), encodeURIComponent(file.path), {
-        header: headers
-      })
+      formData.append(
+        `file-${i}`,
+        new Blob(bufs, { type: 'application/octet-stream' }),
+        encodeURIComponent(file.path)
+        // {
+        //   header: headers
+        // }
+      )
     } else {
-      formData.append(`dir-${i}`, new Blob([], { type: 'application/x-directory' }), encodeURIComponent(file.path), {
-        header: headers
-      })
+      formData.append(
+        `dir-${i}`,
+        new Blob([], { type: 'application/x-directory' }),
+        encodeURIComponent(file.path)
+        // {
+        //   header: headers
+        // }
+      )
     }
 
     i++

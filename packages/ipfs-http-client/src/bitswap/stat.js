@@ -1,34 +1,30 @@
 'use strict'
 
-const configure = require('../lib/configure')
-const Big = require('bignumber.js')
+const { BigNumber } = require('bignumber.js')
 const CID = require('cids')
 
-module.exports = configure(({ ky }) => {
-  return async (options) => {
-    options = options || {}
-
-    const res = await ky.post('bitswap/stat', {
+module.exports = api => {
+  return async (options = {}) => {
+    const res = await api.post('bitswap/stat', {
+      searchParams: options,
       timeout: options.timeout,
-      signal: options.signal,
-      headers: options.headers,
-      searchParams: options.searchParams
-    }).json()
+      signal: options.signal
+    })
 
-    return toCoreInterface(res)
+    return toCoreInterface(await res.json())
   }
-})
+}
 
 function toCoreInterface (res) {
   return {
     provideBufLen: res.ProvideBufLen,
     wantlist: (res.Wantlist || []).map(k => new CID(k['/'])),
     peers: (res.Peers || []),
-    blocksReceived: new Big(res.BlocksReceived),
-    dataReceived: new Big(res.DataReceived),
-    blocksSent: new Big(res.BlocksSent),
-    dataSent: new Big(res.DataSent),
-    dupBlksReceived: new Big(res.DupBlksReceived),
-    dupDataReceived: new Big(res.DupDataReceived)
+    blocksReceived: new BigNumber(res.BlocksReceived),
+    dataReceived: new BigNumber(res.DataReceived),
+    blocksSent: new BigNumber(res.BlocksSent),
+    dataSent: new BigNumber(res.DataSent),
+    dupBlksReceived: new BigNumber(res.DupBlksReceived),
+    dupDataReceived: new BigNumber(res.DupDataReceived)
   }
 }

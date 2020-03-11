@@ -1,22 +1,20 @@
 'use strict'
 
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async (addrs, options) => {
+module.exports = (/** @type {API} */ api) => {
+  return async (addrs, options = {}) => {
     addrs = Array.isArray(addrs) ? addrs : [addrs]
-    options = options || {}
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     addrs.forEach(addr => searchParams.append('arg', `${addr}`))
 
-    const res = await ky.post('swarm/disconnect', {
+    const res = await (await api.post('swarm/disconnect', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })).json()
 
     return res.Strings || []
   }
-})
+}

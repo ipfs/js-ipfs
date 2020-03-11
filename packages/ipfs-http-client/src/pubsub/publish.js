@@ -1,23 +1,22 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const configure = require('../lib/configure')
 const encodeBuffer = require('../lib/encode-buffer-uri-component')
 
-module.exports = configure(({ ky }) => {
-  return async (topic, data, options) => {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
+  return async (topic, data, options = {}) => {
     data = Buffer.from(data)
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', topic)
 
-    const res = await ky.post(`pubsub/pub?${searchParams}&arg=${encodeBuffer(data)}`, {
+    const res = await (await api.post(`pubsub/pub?${searchParams}&arg=${encodeBuffer(data)}`, {
       timeout: options.timeout,
-      signal: options.signal,
-      headers: options.headers
-    }).text()
+      signal: options.signal
+    })).text()
 
     return res
   }
-})
+}

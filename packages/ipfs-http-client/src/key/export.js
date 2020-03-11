@@ -1,25 +1,23 @@
 'use strict'
 
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return (name, password, options) => {
+module.exports = (/** @type {API} */ api) => {
+  return async (name, password, options = {}) => {
     if (typeof password !== 'string') {
-      options = password
+      options = password || {}
       password = null
     }
 
-    options = options || {}
+    options.arg = name
+    options.password = password
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', name)
-    if (password) searchParams.set('password', password)
-
-    return ky.post('key/export', {
+    const res = await api.post('key/export', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).text()
+      searchParams: options
+    })
+
+    return res.text()
   }
-})
+}

@@ -1,23 +1,19 @@
 'use strict'
 
 const CID = require('cids')
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = (/** @type {API} */ api) => {
+  return async (path, options = {}) => {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${path}`)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
 
-    const res = await ky.post('pin/rm', {
+    const res = await (await api.post('pin/rm', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })).json()
 
     return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
   }
-})
+}

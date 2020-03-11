@@ -1,6 +1,7 @@
 'use strict'
 
 exports.findSources = (args) => {
+  /** @type {Record<any, any>} */
   let options = {}
   let sources = []
 

@@ -2,24 +2,22 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const configure = require('../../lib/configure')
 const toFormData = require('../../lib/buffer-to-form-data')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, data, options) => {
-    options = options || {}
+/** @typedef { import("./../../lib/api") } API */
 
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = (/** @type {API} */ api) => {
+  return async (cid, data, options = {}) => {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    const { Hash } = await ky.post('object/patch/append-data', {
+    const { Hash } = await (await api.post('object/patch/append-data', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams,
       body: toFormData(data)
-    }).json()
+    })).json()
 
     return new CID(Hash)
   }
-})
+}

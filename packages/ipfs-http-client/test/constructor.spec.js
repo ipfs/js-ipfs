@@ -5,6 +5,7 @@ const multiaddr = require('multiaddr')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const f = require('./utils/factory')()
 const ipfsClient = require('../src/index.js')
+const globalThis = require('ipfs-utils/src/globalthis')
 
 describe('ipfs-http-client constructor tests', () => {
   describe('parameter permuations', () => {
@@ -82,13 +83,7 @@ describe('ipfs-http-client constructor tests', () => {
       const port = '9999'
       const apiPath = '/future/api/v1/'
       const ipfs = ipfsClient({ host, port, apiPath })
-      expectConfig(ipfs, { host, port, apiPath: apiPath.slice(0, -1) })
-    })
-
-    it('throws on invalid multiaddr', () => {
-      expect(() => ipfsClient('/dns4')).to.throw('invalid address')
-      expect(() => ipfsClient('/hello')).to.throw('no protocol with name')
-      expect(() => ipfsClient('/dns4/ipfs.io')).to.throw()
+      expectConfig(ipfs, { host, port, apiPath })
     })
   })
 
@@ -118,8 +113,18 @@ async function clientWorks (client) {
 
 function expectConfig (ipfs, { host, port, protocol, apiPath }) {
   const conf = ipfs.getEndpointConfig()
-  expect(conf.host).to.be.oneOf([host, 'localhost', ''])
-  expect(conf.port).to.be.oneOf([port, '5001', '80'])
-  expect(conf.protocol).to.equal(protocol || 'http')
-  expect(conf['api-path']).to.equal(apiPath || '/api/v0')
+  if (protocol) {
+    protocol = protocol + ':'
+  }
+  if (globalThis.location) {
+    expect(conf.host).to.be.oneOf([host, globalThis.location.hostname, ''])
+    expect(conf.port).to.be.oneOf([port, globalThis.location.port, '80'])
+    expect(conf.protocol).to.equal(protocol || 'http:')
+    expect(conf.pathname).to.equal(apiPath || '/api/v0')
+  } else {
+    expect(conf.host).to.be.oneOf([host, 'localhost', ''])
+    expect(conf.port).to.be.oneOf([port, '5001', '80'])
+    expect(conf.protocol).to.equal(protocol || 'http:')
+    expect(conf.pathname).to.equal(apiPath || '/api/v0')
+  }
 }

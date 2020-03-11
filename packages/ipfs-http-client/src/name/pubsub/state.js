@@ -1,19 +1,17 @@
 'use strict'
 
-const configure = require('../../lib/configure')
 const toCamel = require('../../lib/object-to-camel')
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
+/** @typedef { import("./../../lib/api") } API */
 
-    const res = await ky.post('name/pubsub/state', {
+module.exports = (/** @type {API} */ api) => {
+  return async (options = {}) => {
+    const res = await api.post('name/pubsub/state', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams: options.searchParams
-    }).json()
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
-})
+}

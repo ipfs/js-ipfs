@@ -33,19 +33,24 @@ const normalizeURL = (config) => {
   }
 
   const url = new URL(api)
+  if (config.apiPath) {
+    url.pathname = config.apiPath
+  } else if (url.pathname === '/' || url.pathname === undefined) {
+    url.pathname = 'api/v0'
+  }
 
-  url.pathname = config.apiPath || 'api/v0'
   if (!api) {
     if (isBrowser || isWebWorker) {
       url.protocol = config.protocol || location.protocol
-      url.host = config.host || location.hostname
+      url.hostname = config.host || location.hostname
       url.port = config.port || location.port
     } else {
-      url.host = config.host || 'localhost'
+      url.hostname = config.host || 'localhost'
       url.port = config.port || '5001'
       url.protocol = config.protocol || 'http'
     }
   }
+
   return url
 }
 
@@ -92,57 +97,58 @@ function ipfsClient (config = {}) {
     handleError: errorHandler,
     // apply two mutations camelCase to kebad-case and remove undefined/null key/value pairs
     // everything else either is a bug or validation is needed
-    transformSearchParams: (obj) => {
-      const out = {}
+    transformSearchParams: (search) => {
+      const out = new URLSearchParams()
 
-      for (const [key, value] of obj) {
+      // @ts-ignore https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+      for (const [key, value] of search) {
         if (
           value !== 'undefined' &&
           value !== 'null' &&
           key !== 'signal' &&
           key !== 'timeout'
         ) {
-          out[kebabCase(key)] = value
+          out.append(kebabCase(key), value)
         }
       }
 
+      // console.log('ipfsClient -> out', out)
       return out
     }
   })
-  // console.log('ipfsClient -> api', api)
   return {
     add: require('./add')(api),
-    bitswap: require('./bitswap')(config),
-    block: require('./block')(config),
-    bootstrap: require('./bootstrap')(config),
+    bitswap: require('./bitswap')(api),
+    block: require('./block')(api),
+    bootstrap: require('./bootstrap')(api),
     cat: require('./cat')(api),
-    commands: require('./commands')(config),
-    config: require('./config')(config),
-    dag: require('./dag')(config),
-    dht: require('./dht')(config),
-    diag: require('./diag')(config),
-    dns: require('./dns')(config),
-    files: require('./files')(config),
-    get: require('./get')(config),
-    getEndpointConfig: require('./get-endpoint-config')(config),
-    id: require('./id')(config),
-    key: require('./key')(config),
-    log: require('./log')(config),
-    ls: require('./ls')(config),
-    mount: require('./mount')(config),
-    name: require('./name')(config),
-    object: require('./object')(config),
-    pin: require('./pin')(config),
-    ping: require('./ping')(config),
-    pubsub: require('./pubsub')(config),
-    refs: require('./refs')(config),
-    repo: require('./repo')(config),
-    resolve: require('./resolve')(config),
-    stats: require('./stats')(config),
-    stop: require('./stop')(config),
-    shutdown: require('./stop')(config),
-    swarm: require('./swarm')(config),
-    version: require('./version')(config)
+    commands: require('./commands')(api),
+    config: require('./config')(api),
+    dag: require('./dag')(api),
+    dht: require('./dht')(api),
+    diag: require('./diag')(api),
+    dns: require('./dns')(api),
+    files: require('./files')(api),
+    get: require('./get')(api),
+    getEndpointConfig: require('./get-endpoint-config')(api),
+    id: require('./id')(api),
+    key: require('./key')(api),
+    log: require('./log')(api),
+    ls: require('./ls')(api),
+    mount: require('./mount')(api),
+    name: require('./name')(api),
+    object: require('./object')(api),
+    pin: require('./pin')(api),
+    ping: require('./ping')(api),
+    pubsub: require('./pubsub')(api),
+    refs: require('./refs')(api),
+    repo: require('./repo')(api),
+    resolve: require('./resolve')(api),
+    stats: require('./stats')(api),
+    stop: require('./stop')(api),
+    shutdown: require('./stop')(api),
+    swarm: require('./swarm')(api),
+    version: require('./version')(api)
   }
 }
 

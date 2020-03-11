@@ -1,27 +1,20 @@
 'use strict'
 
 const CID = require('cids')
-const { Buffer } = require('buffer')
-const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
-    if (Buffer.isBuffer(cid)) {
-      cid = new CID(cid)
-    }
+module.exports = (/** @type {API} */ api) => {
+  return async (cid, options = {}) => {
+    options.arg = (new CID(cid)).toString()
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${cid}`)
-
-    const res = await ky.post('block/stat', {
+    const response = await api.post('block/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: options
+    })
+    const res = await response.json()
 
     return { cid: new CID(res.Key), size: res.Size }
   }
-})
+}

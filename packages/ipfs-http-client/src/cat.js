@@ -5,7 +5,9 @@ const { Buffer } = require('buffer')
 const toIterable = require('stream-to-it/source')
 const merge = require('merge-options')
 
-module.exports = api => {
+/** @typedef { import("./lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
   return async function * cat (path, options = {}) {
     options = merge(
       options,

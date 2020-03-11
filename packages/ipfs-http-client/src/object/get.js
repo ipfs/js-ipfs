@@ -3,26 +3,24 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const { DAGNode, DAGLink } = require('ipld-dag-pb')
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = (/** @type {API} */ api) => {
+  return async (cid, options = {}) => {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
     searchParams.set('data-encoding', 'base64')
 
-    const res = await ky.post('object/get', {
+    const res = await api.post('object/get', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })
+    const data = await res.json()
 
     return new DAGNode(
-      Buffer.from(res.Data, 'base64'),
-      (res.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
+      Buffer.from(data.Data, 'base64'),
+      (data.Links || []).map(l => new DAGLink(l.Name, l.Size, l.Hash))
     )
   }
-})
+}

@@ -2,22 +2,20 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async function data (cid, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = (/** @type {API} */ api) => {
+  return async function data (cid, options = {}) {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
-    const data = await ky.post('object/data', {
+    const res = await api.post('object/data', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).arrayBuffer()
+    })
+    const data = await res.arrayBuffer()
 
     return Buffer.from(data)
   }
-})
+}

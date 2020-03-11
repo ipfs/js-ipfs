@@ -4,22 +4,17 @@ const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const multiaddr = require('multiaddr')
 const toIterable = require('stream-to-it/source')
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
 
-module.exports = configure(({ ky }) => {
-  return async function * query (peerId, options) {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`)
-    if (options.verbose != null) searchParams.set('verbose', options.verbose)
-
-    const res = await ky.post('dht/query', {
+module.exports = (/** @type {API} */ api) => {
+  return async function * query (peerId, options = {}) {
+    options.arg = new CID(peerId)
+    const res = await api.post('dht/query', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: options
     })
 
     for await (let message of ndjson(toIterable(res.body))) {
@@ -32,4 +27,4 @@ module.exports = configure(({ ky }) => {
       yield message
     }
   }
-})
+}

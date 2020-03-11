@@ -2,23 +2,20 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
+module.exports = (/** @type {API} */ api) => {
+  return async (cid, options = {}) => {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
 
     let res
     try {
-      res = await ky.post('object/stat', {
+      res = await (await api.post('object/stat', {
         timeout: options.timeout,
         signal: options.signal,
-        headers: options.headers,
         searchParams
-      }).json()
+      })).json()
     } catch (err) {
       if (err.name === 'TimeoutError') {
         err.message = `failed to get block for ${Buffer.isBuffer(cid) ? new CID(cid) : cid}: context deadline exceeded`
@@ -28,4 +25,4 @@ module.exports = configure(({ ky }) => {
 
     return res
   }
-})
+}

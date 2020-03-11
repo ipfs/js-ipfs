@@ -1,36 +1,34 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
 
-module.exports = configure(({ ky }) => {
-  return async (key, value, options) => {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
+module.exports = (/** @type {API} */ api) => {
+  return async (key, value, options = {}) => {
     if (typeof key !== 'string') {
       throw new Error('Invalid key type')
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
 
     if (typeof value === 'boolean') {
-      searchParams.set('bool', true)
+      searchParams.set('bool', 'true')
       value = value.toString()
     } else if (typeof value !== 'string') {
-      searchParams.set('json', true)
+      searchParams.set('json', 'true')
       value = JSON.stringify(value)
     }
 
-    searchParams.set('arg', key)
+    searchParams.append('arg', key)
     searchParams.append('arg', value)
 
-    const res = await ky.post('config', {
+    const res = await api.post('config', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
-    }).json()
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
-})
+}

@@ -1,27 +1,17 @@
 'use strict'
 
 const CID = require('cids')
-const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
+module.exports = api => {
+  return async (cid, options = {}) => {
+    options.arg = typeof cid === 'string' ? cid : new CID(cid).toString()
 
-    const searchParams = new URLSearchParams(options.searchParams)
-
-    if (typeof cid === 'string') {
-      searchParams.set('arg', cid)
-    } else {
-      searchParams.set('arg', new CID(cid).toString())
-    }
-
-    const res = await ky.post('bitswap/unwant', {
+    const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: options
+    })
 
-    return res
+    return res.json()
   }
-})
+}

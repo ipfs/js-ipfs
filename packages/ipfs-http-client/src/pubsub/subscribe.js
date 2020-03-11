@@ -1,25 +1,22 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
 const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
-const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
 const SubscriptionTracker = require('./subscription-tracker')
+const { streamToAsyncIterator, ndjson } = require('../lib/api')
 
-module.exports = configure((config) => {
-  const ky = config.ky
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
   const subsTracker = SubscriptionTracker.singleton()
-  const publish = require('./publish')(config)
+  const publish = require('./publish')(api)
 
-  return async (topic, handler, options) => {
-    options = options || {}
+  return async (topic, handler, options = {}) => {
     options.signal = subsTracker.subscribe(topic, handler, options.signal)
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', topic)
-    if (options.discover != null) searchParams.set('discover', options.discover)
 
     let res
 
@@ -36,10 +33,10 @@ module.exports = configure((config) => {
     }, 1000)
 
     try {
-      res = await ky.post('pubsub/sub', {
+      res = await api.stream('pubsub/sub', {
+        method: 'POST',
         timeout: options.timeout,
         signal: options.signal,
-        headers: options.headers,
         searchParams
       })
     } catch (err) { // Initial subscribe fail, ensure we clean up
@@ -49,13 +46,13 @@ module.exports = configure((config) => {
 
     clearTimeout(ffWorkaround)
 
-    readMessages(ndjson(toIterable(res.body)), {
+    readMessages(ndjson(streamToAsyncIterator(res)), {
       onMessage: handler,
       onEnd: () => subsTracker.unsubscribe(topic, handler),
       onError: options.onError
     })
   }
-})
+}
 
 async function readMessages (msgStream, { onMessage, onEnd, onError }) {
   onError = onError || log

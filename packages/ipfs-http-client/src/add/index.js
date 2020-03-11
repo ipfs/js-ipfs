@@ -7,7 +7,9 @@ const { toFormData } = require('./form-data')
 const toCamel = require('../lib/object-to-camel')
 const merge = require('merge-options')
 
-module.exports = api => {
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
   return async function * add (input, options = {}) {
     // extract functions here
     const progressFn = options.progress

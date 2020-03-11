@@ -4,23 +4,20 @@ const { Buffer } = require('buffer')
 const ndjson = require('iterable-ndjson')
 const toIterable = require('stream-to-it/source')
 const encodeBufferURIComponent = require('../lib/encode-buffer-uri-component')
-const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async function get (key, options) {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.verbose != null) searchParams.set('verbose', options.verbose)
-
+module.exports = (/** @type {API} */ api) => {
+  return async function get (key, options = {}) {
     if (!Buffer.isBuffer(key)) {
       throw new Error('invalid key')
     }
 
-    const res = await ky.post(`dht/get?key=${encodeBufferURIComponent(key)}&${searchParams}`, {
+    options.key = encodeBufferURIComponent(key)
+    const res = await api.post('dht/get', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers
+      searchParams: options
     })
 
     for await (const message of ndjson(toIterable(res.body))) {
@@ -40,4 +37,4 @@ module.exports = configure(({ ky }) => {
 
     throw new Error('not found')
   }
-})
+}

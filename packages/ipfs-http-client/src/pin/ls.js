@@ -1,41 +1,38 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
 const CID = require('cids')
-const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
 
-module.exports = configure(({ ky }) => {
-  return async function * ls (path, options) {
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
+  return async function * ls (path, options = {}) {
     if (path && path.type) {
-      options = path
-      path = null
+      options = path || {}
+      path = []
     }
 
-    path = path || []
     path = Array.isArray(path) ? path : [path]
-    options = options || {}
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('stream', options.stream == null ? true : options.stream)
+    const searchParams = new URLSearchParams(options)
+    searchParams.set('stream', options.stream || true)
     path.forEach(p => searchParams.append('arg', `${p}`))
-    if (options.type) searchParams.set('type', options.type)
 
-    const res = await ky.post('pin/ls', {
+    const source = api.ndjson('pin/ls', {
+      method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
     })
 
-    for await (const pin of ndjson(toIterable(res.body))) {
+    for await (const pin of source) {
       if (pin.Keys) { // non-streaming response
-        for (const cid of Object.keys(pin.Keys)) {
-          yield { cid: new CID(cid), type: pin.Keys[cid].Type }
+        // eslint-disable-next-line guard-for-in
+        for (const key in pin.Keys) {
+          yield { cid: new CID(key), type: pin.Keys[key].Type }
         }
-        return
+      } else {
+        yield { cid: new CID(pin.Cid), type: pin.Type }
       }
-      yield { cid: new CID(pin.Cid), type: pin.Type }
     }
   }
-})
+}

@@ -7,7 +7,7 @@ const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const all = require('it-all')
 const pipe = require('it-pipe')
-const { TimeoutError } = require('ky-universal')
+const API = require('../src/lib/api')
 
 const f = require('./utils/factory')()
 
@@ -89,7 +89,7 @@ describe('.files (the MFS API part)', function () {
 
     // 'ipfs.object.get(<hash>)' should timeout because content wasn't actually added
     return expect(ipfs.object.get(files[0].cid, { timeout: 2000 }))
-      .to.be.rejectedWith(TimeoutError)
+      .to.be.rejectedWith(API.TimeoutError)
   })
 
   it('.add with options', async () => {

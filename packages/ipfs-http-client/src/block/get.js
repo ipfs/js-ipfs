@@ -3,23 +3,20 @@
 const Block = require('ipfs-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
-const configure = require('../lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
+  return async (cid, options = {}) => {
     cid = new CID(cid)
-    options = options || {}
+    options.arg = cid.toString()
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${cid}`)
-
-    const data = await ky.post('block/get', {
+    const rsp = await api.post('block/get', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).arrayBuffer()
+      searchParams: options
+    })
 
-    return new Block(Buffer.from(data), cid)
+    return new Block(Buffer.from(await rsp.arrayBuffer()), cid)
   }
-})
+}

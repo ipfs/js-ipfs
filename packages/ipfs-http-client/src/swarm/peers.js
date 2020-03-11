@@ -1,24 +1,15 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const configure = require('../lib/configure')
+/** @typedef { import("./../lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.direction != null) searchParams.append('direction', options.direction)
-    if (options.latency != null) searchParams.append('latency', options.latency)
-    if (options.streams != null) searchParams.append('streams', options.streams)
-    if (options.verbose != null) searchParams.append('verbose', options.verbose)
-
-    const res = await ky.post('swarm/peers', {
+module.exports = (/** @type {API} */ api) => {
+  return async (options = {}) => {
+    const res = await (await api.post('swarm/peers', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: options
+    })).json()
 
     return (res.Peers || []).map(peer => {
       const info = {}
@@ -44,4 +35,4 @@ module.exports = configure(({ ky }) => {
       return info
     })
   }
-})
+}

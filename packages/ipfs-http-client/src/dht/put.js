@@ -1,29 +1,23 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const ndjson = require('iterable-ndjson')
-const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
-const encodeBufferURIComponent = require('../lib/encode-buffer-uri-component')
 const toCamel = require('../lib/object-to-camel')
 
-module.exports = configure(({ ky }) => {
-  return async function * put (key, value, options) {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.verbose != null) searchParams.set('verbose', options.verbose)
+module.exports = (/** @type {API} */ api) => {
+  return async function * put (key, value, options = {}) {
+    const searchParams = new URLSearchParams(options)
 
-    key = Buffer.isBuffer(key) ? encodeBufferURIComponent(key) : encodeURIComponent(key)
-    value = Buffer.isBuffer(value) ? encodeBufferURIComponent(value) : encodeURIComponent(value)
-
-    const url = `dht/put?arg=${key}&arg=${value}&${searchParams}`
-    const res = await ky.post(url, {
+    searchParams.append('arg', key)
+    searchParams.append('arg', value)
+    const res = await api.post('dht/put', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers
+      searchParams
     })
 
     for await (let message of ndjson(toIterable(res.body))) {
@@ -45,4 +39,4 @@ module.exports = configure(({ ky }) => {
       yield message
     }
   }
-})
+}

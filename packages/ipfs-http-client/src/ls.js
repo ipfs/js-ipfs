@@ -4,24 +4,17 @@ const { Buffer } = require('buffer')
 const CID = require('cids')
 const ndjson = require('iterable-ndjson')
 const toIterable = require('stream-to-it/source')
-const configure = require('./lib/configure')
 
-module.exports = configure(({ ky }) => {
-  return async function * ls (path, options) {
-    options = options || {}
+/** @typedef { import("./lib/api") } API */
 
-    const searchParams = new URLSearchParams()
+module.exports = (/** @type {API} */ api) => {
+  return async function * ls (path, options = {}) {
+    const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
-    searchParams.set('stream', options.stream == null ? true : options.stream)
 
-    if (options.long != null) searchParams.set('long', options.long)
-    if (options.unsorted != null) searchParams.set('unsorted', options.unsorted)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('ls', {
+    const res = await api.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
     })
 
@@ -70,7 +63,7 @@ module.exports = configure(({ ky }) => {
       }
     }
   }
-})
+}
 
 function typeOf (link) {
   switch (link.Type) {

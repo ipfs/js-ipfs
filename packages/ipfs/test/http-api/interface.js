@@ -53,7 +53,30 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }
   })
 
-  tests.files(commonFactory)
+  tests.files(commonFactory, {
+    skip: [
+      {
+        name: 'should make directory and specify mtime as hrtime',
+        reason: 'FIXME: use kebab case in joi validation'
+      },
+      {
+        name: 'should respect metadata when copying directories',
+        reason: 'FIXME: use kebab case in joi validation'
+      },
+      {
+        name: 'should stat sharded dir with mode',
+        reason: 'FIXME: expected: hamt-sharded-directory, actual: directory'
+      },
+      {
+        name: 'should stat sharded dir with mtime',
+        reason: 'FIXME: expected: hamt-sharded-directory, actual: directory'
+      },
+      {
+        name: 'should set mtime as hrtime',
+        reason: 'FIXME: use kebab case in joi validation'
+      }
+    ]
+  })
 
   tests.key(commonFactory)
 

@@ -3,24 +3,21 @@
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const ndjson = require('iterable-ndjson')
-const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
 const toCamel = require('../lib/object-to-camel')
 
-module.exports = configure(({ ky }) => {
-  return async function * provide (cids, options) {
+/** @typedef { import("./../lib/api") } API */
+
+module.exports = (/** @type {API} */ api) => {
+  return async function * provide (cids, options = {}) {
     cids = Array.isArray(cids) ? cids : [cids]
-    options = options || {}
 
-    const searchParams = new URLSearchParams(options.searchParams)
+    const searchParams = new URLSearchParams(options)
     cids.forEach(cid => searchParams.append('arg', `${new CID(cid)}`))
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-    if (options.verbose != null) searchParams.set('verbose', options.verbose)
 
-    const res = await ky.post('dht/provide', {
+    const res = await api.post('dht/provide', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
       searchParams
     })
 
@@ -45,4 +42,4 @@ module.exports = configure(({ ky }) => {
       yield message
     }
   }
-})
+}

@@ -3,23 +3,17 @@
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const ndjson = require('iterable-ndjson')
-const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
 
-module.exports = configure(({ ky }) => {
-  return async function * findProvs (cid, options) {
-    options = options || {}
+/** @typedef { import("./../lib/api") } API */
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${new CID(cid)}`)
-    if (options.numProviders) searchParams.set('num-providers', options.numProviders)
-    if (options.verbose != null) searchParams.set('verbose', options.verbose)
-
-    const res = await ky.post('dht/findprovs', {
+module.exports = (/** @type {API} */ api) => {
+  return async function * findProvs (cid, options = {}) {
+    options.arg = `${new CID(cid)}`
+    const res = await api.post('dht/findprovs', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: options
     })
 
     for await (const message of ndjson(toIterable(res.body))) {
@@ -42,4 +36,4 @@ module.exports = configure(({ ky }) => {
       }
     }
   }
-})
+}

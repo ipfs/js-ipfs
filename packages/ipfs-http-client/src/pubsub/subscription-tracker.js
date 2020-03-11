@@ -1,6 +1,6 @@
 'use strict'
 
-const AbortController = require('abort-controller')
+const { AbortController } = require('abort-controller')
 
 class SubscriptionTracker {
   constructor () {
@@ -48,5 +48,7 @@ class SubscriptionTracker {
     unsubs.forEach(s => s.controller.abort())
   }
 }
+
+SubscriptionTracker.instance = null
 
 module.exports = SubscriptionTracker

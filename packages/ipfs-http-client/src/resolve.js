@@ -1,25 +1,16 @@
 'use strict'
 
-const configure = require('./lib/configure')
+/** @typedef { import("./lib/api") } API */
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${path}`)
-    if (options.cidBase) searchParams.set('cid-base', options.cidBase)
-    if (options.dhtRecordCount) searchParams.set('dht-record-count', options.dhtRecordCount)
-    if (options.dhtTimeout) searchParams.set('dht-timeout', options.dhtTimeout)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('resolve', {
+module.exports = (/** @type {API} */ api) => {
+  return async (path, options = {}) => {
+    options.arg = path
+    const rsp = await api.post('resolve', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
-
-    return res.Path
+      searchParams: options
+    })
+    const data = await rsp.json()
+    return data.Path
   }
-})
+}

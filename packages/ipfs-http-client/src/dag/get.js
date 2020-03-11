@@ -3,7 +3,8 @@
 const dagPB = require('ipld-dag-pb')
 const dagCBOR = require('ipld-dag-cbor')
 const raw = require('ipld-raw')
-const configure = require('../lib/configure')
+
+/** @typedef { import("./../lib/api") } API */
 
 const resolvers = {
   'dag-cbor': dagCBOR.resolver,
@@ -11,31 +12,27 @@ const resolvers = {
   raw: raw.resolver
 }
 
-module.exports = config => {
-  const getBlock = require('../block/get')(config)
-  const dagResolve = require('./resolve')(config)
+module.exports = (/** @type {API} */ api) => {
+  const getBlock = require('../block/get')(api)
+  const dagResolve = require('./resolve')(api)
 
-  return configure(({ ky }) => {
-    return async (cid, path, options) => {
-      if (typeof path === 'object') {
-        options = path
-        path = null
-      }
-
-      options = options || {}
-
-      const resolved = await dagResolve(cid, path, options)
-      const block = await getBlock(resolved.cid, options)
-      const dagResolver = resolvers[block.cid.codec]
-
-      if (!dagResolver) {
-        throw Object.assign(
-          new Error(`Missing IPLD format "${block.cid.codec}"`),
-          { missingMulticodec: cid.codec }
-        )
-      }
-
-      return dagResolver.resolve(block.data, resolved.remPath)
+  return async (cid, path, options = {}) => {
+    if (typeof path === 'object') {
+      options = path
+      path = null
     }
-  })(config)
+
+    const resolved = await dagResolve(cid, path, options)
+    const block = await getBlock(resolved.cid, options)
+    const dagResolver = resolvers[block.cid.codec]
+
+    if (!dagResolver) {
+      throw Object.assign(
+        new Error(`Missing IPLD format "${block.cid.codec}"`),
+        { missingMulticodec: cid.codec }
+      )
+    }
+
+    return dagResolver.resolve(block.data, resolved.remPath)
+  }
 }
