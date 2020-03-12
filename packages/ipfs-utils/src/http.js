@@ -5,6 +5,7 @@ const fetch = require('node-fetch')
 const merge = require('merge-options')
 const { URL, URLSearchParams } = require('iso-url')
 const global = require('./globalthis')
+const TextDecoder = require('./text-encoder')
 const Request = global.Request
 const AbortController = global.AbortController
 
@@ -235,7 +236,6 @@ class HTTP {
  * @returns {AsyncGenerator<Object, void, any>}
  */
 const ndjson = async function * (source) {
-  const TextDecoder = globalThis.TextDecoder || require('util').TextDecoder
   const decoder = new TextDecoder()
   let buf = ''
 
