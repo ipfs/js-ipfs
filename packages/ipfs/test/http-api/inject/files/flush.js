@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-// const http = require('../helpers/http')
+const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')

@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-// const http = require('../helpers/http')
+const http = require('../../utils/http')
 const sinon = require('sinon')
 
 function defaultOptions (modification = {}) {
