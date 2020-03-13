@@ -11,19 +11,19 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `add` results now include `mode` and `mtime` properties if they were set.
 
-* `files.chmod` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileschmod) for info.
+* `files.chmod` has been added. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileschmod) for info.
 
 *  `files.flush` now returns the root CID for the path that was flushed (`/` by default)
 
-* `files.ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+* `files.ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#ls) for more info.
 
-* `files.mkdir` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir) for more info.
+* `files.mkdir` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesmkdir) for more info.
 
-* `files.stat` result now includes `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesstat) for more info.
+* `files.stat` result now includes `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesstat) for more info.
 
-* `files.touch` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filestouch) for info.
+* `files.touch` has been added. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filestouch) for info.
 
-* `files.write` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileswrite) for more info.
+* `files.write` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileswrite) for more info.
 
 * `object.get` now accepts a `timeout` option. It will cause the method to throw with a `TimeoutError` if no data is received within the timeout window. It can be passed as a `number` or a `string`. If a `number` is passed it is interpreted as milliseconds, if a string is passed it is interpreted as a [human readable duration](https://www.npmjs.com/package/parse-duration).
 
@@ -37,7 +37,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `add` now returns an async iterable.
 
-* `add` now accepts `mode` and `mtime` options on inputs to allow setting mode and mtime metadata for added files. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#add) for more info.
+* `add` now accepts `mode` and `mtime` options on inputs to allow setting mode and mtime metadata for added files. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#add) for more info.
 
 * `add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
 
@@ -92,7 +92,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `ls` results now contain a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `hash` property.
 
-* `ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+* `ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#ls) for more info.
 
 * `pin.add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
 
@@ -229,7 +229,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
         * Node.js style address e.g. `{ host: '127.0.0.1', port: 5001, protocol: 'http' }`
 * Errors returned from request failures are now all [`HTTPError`](https://github.com/sindresorhus/ky/blob/c0d9d2bb07e4c122a08f019b39e9c55a4c9324f3/index.js#L117-L123)s which carry a `response` property. This is a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) that can be used to inspect _all_ information relating to the HTTP response. This means that the `err.status` or `err.statusCode` property should now be accessed via `err.response.status`.
 * files in `src/files-regular` have moved to `src`. The `src/files-mfs` directory has been renamed to `src/files`. If you were previously requiring files from these directories e.g. `require('ipfs-http-client/src/files-regular/add')` then please be aware that they have moved.
-* Kebab case options are no longer supported. Please use camel case option names as defined in the [`interface-ipfs-core`](https://github.com/ipfs/interface-js-ipfs-core/tree/master/SPEC) docs. e.g. the `allow-offline` option to `name.publish` should be passed as `allowOffline`.
+* Kebab case options are no longer supported. Please use camel case option names as defined in the [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/SPEC) docs. e.g. the `allow-offline` option to `name.publish` should be passed as `allowOffline`.
   * Note that you can pass [additional query string parameters](https://github.com/ipfs/js-ipfs-http-client#additional-options) in the `searchParams` option available to all API methods.
 
 
@@ -760,7 +760,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 * `ipfs.dht.findprovs` renamed to `ipfs.dht.findProvs` and returns an array of [PeerInfo](https://github.com/libp2p/js-peer-info)
 * `ipfs.dht.findpeer` renamed to `ipfs.dht.findPeer` and returns a [PeerInfo](https://github.com/libp2p/js-peer-info)
 * `ipfs.dht.query` now returns an array of [PeerId](https://github.com/libp2p/js-peer-id)
-* [More info](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md)
+* [More info](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md)
 
 
 

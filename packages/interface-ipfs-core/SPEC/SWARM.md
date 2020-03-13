@@ -215,4 +215,4 @@ Example:
 await ipfs.swarm.filters.rm(filter)
 ```
 
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/swarm
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/swarm

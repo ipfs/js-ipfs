@@ -13,7 +13,7 @@
 
 > JavaScript implementation of the IPFS Mutable File System
 
-[The MFS spec can be found inside the ipfs/specs repository](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#mutable-file-system)
+[The MFS spec can be found inside the ipfs/specs repository](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#mutable-file-system)
 
 ## Lead Maintainer <!-- omit in toc -->
 

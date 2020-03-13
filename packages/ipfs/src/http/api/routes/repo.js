@@ -21,5 +21,5 @@ module.exports = [
     },
     handler: resources.repo.gc.handler
   }
-  // TODO: implement the missing spec https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/REPO.md
+  // TODO: implement the missing spec https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REPO.md
 ]

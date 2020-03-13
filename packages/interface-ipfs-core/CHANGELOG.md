@@ -889,7 +889,7 @@ in the diff because using `new` stops us from destructuring in js.
 
 ### BREAKING CHANGES
 
-* Consumers of this test suite now have fine grained control over what tests are run. Tests can now be skipped and "onlyed" (run only specific tests). This can be done on a test, command and sub-system level. See the updated usage guide for instructions: https://github.com/ipfs/interface-ipfs-core/blob/master/README.md#usage.
+* Consumers of this test suite now have fine grained control over what tests are run. Tests can now be skipped and "onlyed" (run only specific tests). This can be done on a test, command and sub-system level. See the updated usage guide for instructions: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/README.md#usage.
 
 This means that tests skips depending on implementation (e.g. go/js), environment (e.g. node/browser) or platform (e.g. macOS/linux/windows) that were previously present in this suite have been removed. Consumers of this library should add their own skips based on the implementation that's being tested and the environment/platform that the tests are running on.
 

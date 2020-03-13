@@ -406,4 +406,4 @@ A great source of [examples][] can be found in the tests for this API.
 [CID]: https://github.com/multiformats/js-cid
 [DAGNode]: https://github.com/ipld/js-ipld-dag-pb
 [multihash]: http://github.com/multiformats/multihash
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/object
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/object

@@ -79,5 +79,5 @@ console.log(stats)
 A great source of [examples][] can be found in the tests for this API.
 
 [1]: https://github.com/MikeMcl/bignumber.js/
-[examples]: https://github.com/ipfs/interface-ipfs-core/blob/master/src/bitswap
+[examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/bitswap
 [cid]: https://www.npmjs.com/package/cids

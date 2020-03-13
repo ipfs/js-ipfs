@@ -46,7 +46,7 @@ Version: 0.31.2
 
 Now let's make it more interesting and add a file to IPFS using `node.add`. A file consists of a path and content.
 
-You can learn about the IPFS File API at [interface-ipfs-core](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md).
+You can learn about the IPFS File API at [interface-ipfs-core](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md).
 
 ```js
 const IPFS = require('ipfs')
