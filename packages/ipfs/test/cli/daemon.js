@@ -256,4 +256,13 @@ describe('daemon', () => {
       }
     })
   })
+
+  it('should print help when command is unknown', async function () {
+    this.timeout(100 * 1000)
+
+    const err = await ipfs.fail('derp')
+
+    expect(err.stderr).to.include('Commands:')
+    expect(err.stderr).to.include('Unknown argument: derp')
+  })
 })
