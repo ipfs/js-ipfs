@@ -54,6 +54,7 @@
     "Marcin Rataj <lidel@lidel.org>"
   ],
   "browser": {
-    "fs-extra": false
+    "fs-extra": false,
+    "./src/text-encoder.js": "./src/text-encoder.browser.js"
   }
 }
