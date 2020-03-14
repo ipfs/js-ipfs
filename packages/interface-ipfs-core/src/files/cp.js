@@ -11,6 +11,7 @@ const Block = require('ipfs-block')
 const CID = require('cids')
 const crypto = require('crypto')
 const createShardedDirectory = require('../utils/create-sharded-directory')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -50,13 +51,17 @@ module.exports = (common, options) => {
       await expect(ipfs.files.cp('/i-do-not-exist', '/destination', {})).to.eventually.be.rejected.with('does not exist')
     })
 
-    it('refuses to copy files to a non-existent child directory', async () => {
-      const src1 = `/src2-${Math.random()}`
+    it('refuses to copy multiple files to a non-existent child directory', async () => {
+      const src1 = `/src1-${Math.random()}`
       const src2 = `/src2-${Math.random()}`
       const parent = `/output-${Math.random()}`
 
-      await ipfs.files.touch(src1)
-      await ipfs.files.touch(src2)
+      await ipfs.files.write(src1, [], {
+        create: true
+      })
+      await ipfs.files.write(src2, [], {
+        create: true
+      })
       await ipfs.files.mkdir(parent)
       await expect(ipfs.files.cp(src1, src2, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/destination did not exist/)
@@ -70,7 +75,9 @@ module.exports = (common, options) => {
       await ipfs.block.put(new Block(Buffer.from('derp'), cid), { cid })
       await ipfs.files.cp(`/ipfs/${cid}`, parent)
 
-      await ipfs.files.touch(src1)
+      await ipfs.files.write(src1, [], {
+        create: true
+      })
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/Missing IPLD format/)
     })
@@ -269,7 +276,8 @@ module.exports = (common, options) => {
       const finalShardedDirPath = `${normalDirPath}${shardedDirPath}`
 
       // should still be a sharded directory
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
 
       const files = await all(ipfs.files.ls(finalShardedDirPath))
 
@@ -289,7 +297,8 @@ module.exports = (common, options) => {
       const finalDirPath = `${shardedDirPath}${normalDirPath}`
 
       // should still be a sharded directory
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
     })
 
@@ -307,7 +316,8 @@ module.exports = (common, options) => {
       await ipfs.files.cp(filePath, finalFilePath)
 
       // should still be a sharded directory
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
     })
 
@@ -326,8 +336,10 @@ module.exports = (common, options) => {
       await ipfs.files.cp(filePath, finalFilePath)
 
       // should still be a sharded directory
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
-      expect((await ipfs.files.stat(othershardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+      await expect(isShardAtPath(othershardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(othershardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
     })
 
@@ -349,7 +361,8 @@ module.exports = (common, options) => {
       await ipfs.files.cp(filePath, finalFilePath)
 
       // should still be a sharded directory
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
     })

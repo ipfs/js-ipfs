@@ -19,7 +19,11 @@ module.exports = configure(api => {
     const res = await api.post('files/write', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(path, { ...options, streamChannels: true }),
+      searchParams: toUrlSearchParams(path, {
+        ...options,
+        streamChannels: true,
+        count: options.count || options.length
+      }),
       headers,
       body
     })

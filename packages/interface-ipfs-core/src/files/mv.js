@@ -5,6 +5,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const concat = require('it-concat')
 const crypto = require('crypto')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -107,7 +108,8 @@ module.exports = (common, options) => {
       await ipfs.files.mkdir(dirPath)
       await ipfs.files.mv(shardedDirPath, dirPath)
 
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
 
       try {
@@ -126,7 +128,8 @@ module.exports = (common, options) => {
       await ipfs.files.mkdir(dirPath)
       await ipfs.files.mv(dirPath, shardedDirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
 
       try {
@@ -144,8 +147,10 @@ module.exports = (common, options) => {
 
       await ipfs.files.mv(otherShardedDirPath, shardedDirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
 
       try {
         await ipfs.files.stat(otherShardedDirPath)
@@ -169,7 +174,8 @@ module.exports = (common, options) => {
 
       await ipfs.files.mv(filePath, shardedDirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
 
       try {
@@ -194,7 +200,8 @@ module.exports = (common, options) => {
 
       await ipfs.files.mv(filePath, dirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
       expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
 
@@ -219,9 +226,11 @@ module.exports = (common, options) => {
 
       await ipfs.files.mv(filePath, otherShardedDirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
 
       try {
         await ipfs.files.stat(filePath)
@@ -244,9 +253,11 @@ module.exports = (common, options) => {
 
       await ipfs.files.mv(filePath, otherShardedDirPath)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
       expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
 
       try {
         await ipfs.files.stat(filePath)

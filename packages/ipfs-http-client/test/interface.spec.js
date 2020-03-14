@@ -121,7 +121,6 @@ describe('interface-ipfs-core tests', () => {
   tests.dht(commonFactory)
 
   tests.files(commonFactory, {
-    only: true,
     skip: [
       {
         name: 'should ls directory',
@@ -338,6 +337,94 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'lists a raw node in an mfs directory',
         reason: 'TODO go-ipfs does not support non-ipfs nodes in mfs'
+      },
+      {
+        name: 'writes a small file with an escaped slash in the title',
+        reason: 'TODO go-ipfs does not support escapes in paths'
+      },
+      {
+        name: 'overwrites a file with a different CID version',
+        reason: 'TODO go-ipfs does not support changing the CID version'
+      },
+      {
+        name: 'partially overwrites a file with a different CID version',
+        reason: 'TODO go-ipfs does not support changing the CID version'
+      },
+      {
+        name: 'refuses to copy multiple files to a non-existent child directory',
+        reason: 'TODO go-ipfs does not support copying multiple files at once'
+      },
+      {
+        name: 'refuses to copy files to an unreadable node',
+        reason: 'TODO go-ipfs does not support identity format, maybe in 0.5.0?'
+      },
+      {
+        name: 'copies a file to a pre-existing directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'copies multiple files to new location',
+        reason: 'TODO go-ipfs does not support copying multiple files at once'
+      },
+      {
+        name: 'copies files to deep mfs paths and creates intermediate directories',
+        reason: 'TODO go-ipfs does not support the parents flag in the cp command'
+      },
+      {
+        name: 'copies a sharded directory to a normal directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'copies a normal directory to a sharded directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'removes multiple files',
+        reason: 'TODO go-ipfs does not support removing multiple files'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a file',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "85675" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "2109" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a file from a subshard of a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "170441" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a subshard of a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "11463" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a new file',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "5835" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when creating a new subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "8038" to type "bool" (for option "-size")'
+      },
+      {
+        name: ' results in the same hash as a sharded directory created by the importer when adding a file to a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "6620" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a file to a subshard',
+        reason: 'HTTPError: Could not convert value "6620" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard',
+        reason: 'HTTPError: Could not convert value "170441" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'stats a dag-cbor node',
+        reason: 'TODO go-ipfs does not support non-dag-pb nodes in mfs'
+      },
+      {
+        name: 'stats an identity CID',
+        reason: 'TODO go-ipfs does not support non-dag-pb nodes in mfs'
       }
     ]
   })

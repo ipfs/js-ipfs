@@ -67,7 +67,7 @@ module.exports = (common, options) => {
     })
 
     it('stats a small file', async () => {
-      const filePath = '/stat/small-file.txt'
+      const filePath = `/stat-${Math.random()}/small-file-${Math.random()}.txt`
 
       await ipfs.files.write(filePath, smallFile, {
         create: true,
@@ -83,7 +83,7 @@ module.exports = (common, options) => {
     })
 
     it('stats a large file', async () => {
-      const filePath = '/stat/large-file.txt'
+      const filePath = `/stat-${Math.random()}/large-file-${Math.random()}.txt`
 
       await ipfs.files.write(filePath, largeFile, {
         create: true,
@@ -99,7 +99,7 @@ module.exports = (common, options) => {
     })
 
     it('stats a raw node', async () => {
-      const filePath = '/stat/large-file.txt'
+      const filePath = `/stat-${Math.random()}/large-file-${Math.random()}.txt`
 
       await ipfs.files.write(filePath, largeFile, {
         create: true,
@@ -113,6 +113,7 @@ module.exports = (common, options) => {
       expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
 
       const child = node.Links[0]
+
       const rawNodeStats = await ipfs.files.stat(`/ipfs/${child.Hash}`)
 
       expect(rawNodeStats.cid.toString()).to.equal(child.Hash.toString())
@@ -120,7 +121,7 @@ module.exports = (common, options) => {
     })
 
     it('stats a raw node in an mfs directory', async () => {
-      const filePath = '/stat/large-file.txt'
+      const filePath = `/stat-${Math.random()}/large-file-${Math.random()}.txt`
 
       await ipfs.files.write(filePath, largeFile, {
         create: true,
@@ -151,7 +152,7 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(`${shardedDirPath}`)
 
-      expect(stats.type).to.equal('hamt-sharded-directory')
+      expect(stats.type).to.equal('directory')
       expect(stats.size).to.equal(0)
     })
 

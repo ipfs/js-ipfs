@@ -1,8 +1,8 @@
 'use strict'
 
 const { expect } = require('./mocha')
+const isShardAtPath = require('./is-shard-at-path')
 const last = require('it-last')
-const UnixFS = require('ipfs-unixfs')
 
 module.exports = async (ipfs, files = 1001) => {
   const dirPath = `/sharded-dir-${Math.random()}`
@@ -16,13 +16,9 @@ module.exports = async (ipfs, files = 1001) => {
     }
   }()))
 
-  const cid = result.cid
-  const { value: node } = await ipfs.dag.get(cid)
-  const entry = UnixFS.unmarshal(node.Data)
+  await ipfs.files.cp(`/ipfs/${result.cid}`, dirPath)
 
-  expect(entry.type).to.equal('hamt-sharded-directory')
-
-  await ipfs.files.cp(`/ipfs/${cid}`, dirPath)
+  await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
 
   return dirPath
 }

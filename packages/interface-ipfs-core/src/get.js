@@ -82,7 +82,7 @@ module.exports = (common, options) => {
       }
     })
 
-    it('should get a directory', async function () {
+    it.only('should get a directory', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]

@@ -27,7 +27,7 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should ls with a base58 encoded CID', async function () {
+    it.only('should ls with a base58 encoded CID', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]

@@ -4,6 +4,7 @@
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')
+const last = require('it-last')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -202,7 +203,7 @@ module.exports = (common, options) => {
       expect(file.cid.toString()).to.equal(expectedCid)
     })
 
-    it('should add a nested directory as array of tupples', async function () {
+    it.only('should add a nested directory as array of tupples', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
@@ -221,14 +222,13 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(ipfs.add(dirs))
+      const root = await last(ipfs.add(dirs))
 
-      const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })
 
-    it('should add a nested directory as array of tupples with progress', async function () {
+    it.only('should add a nested directory as array of tupples with progress', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
@@ -258,9 +258,7 @@ module.exports = (common, options) => {
         accumProgress += p
       }
 
-      const filesAdded = await all(ipfs.add(dirs, { progress: handler }))
-
-      const root = filesAdded[filesAdded.length - 1]
+      const root = await last(ipfs.add(dirs, { progress: handler }))
       expect(progCalled).to.be.true()
       expect(accumProgress).to.be.at.least(total)
       expect(root.path).to.equal('test-folder')

@@ -1,9 +1,10 @@
 'use strict'
 
-const createShard = require('./create-shard')
+const { expect } = require('./mocha')
+const isShardAtPath = require('./is-shard-at-path')
+const last = require('it-last')
 
 const createTwoShards = async (ipfs, fileCount) => {
-  const shardSplitThreshold = 10
   const dirPath = `/sharded-dir-${Math.random()}`
   const files = new Array(fileCount).fill(0).map((_, index) => ({
     path: `${dirPath}/file-${index}`,
@@ -19,8 +20,11 @@ const createTwoShards = async (ipfs, fileCount) => {
   }))
   const nextFile = someFiles.pop()
 
-  const dirWithAllFiles = await createShard(ipfs, allFiles, shardSplitThreshold)
-  const dirWithSomeFiles = await createShard(ipfs, someFiles, shardSplitThreshold)
+  const dirWithAllFiles = await last(ipfs.add(allFiles))
+  const dirWithSomeFiles = await last(ipfs.add(someFiles))
+
+  await expect(isShardAtPath(dirWithAllFiles, ipfs)).to.eventually.be.true()
+  await expect(isShardAtPath(dirWithSomeFiles, ipfs)).to.eventually.be.true()
 
   return {
     nextFile,

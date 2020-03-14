@@ -6,6 +6,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
 const crypto = require('crypto')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -136,7 +137,8 @@ module.exports = (common, options) => {
 
       const finalShardedDirPath = `${dirPath}${shardedDirPath}`
 
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
 
       await ipfs.files.rm(dirPath, {
         recursive: true
@@ -154,8 +156,10 @@ module.exports = (common, options) => {
 
       const finalShardedDirPath = `${otherDirPath}${shardedDirPath}`
 
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('hamt-sharded-directory')
-      expect((await ipfs.files.stat(otherDirPath)).type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
+      await expect(isShardAtPath(otherDirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(otherDirPath)).type).to.equal('directory')
 
       await ipfs.files.rm(otherDirPath, {
         recursive: true
@@ -173,7 +177,7 @@ module.exports = (common, options) => {
         dirWithAllFiles,
         dirWithSomeFiles,
         dirPath
-      } = await createTwoShards(ipfs, 15)
+      } = await createTwoShards(ipfs, 1001)
 
       await ipfs.files.cp(`/ipfs/${dirWithAllFiles}`, dirPath)
 
@@ -182,7 +186,8 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(dirPath)
       const updatedDirCid = stats.cid
 
-      expect(stats.type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
     })
 
@@ -203,7 +208,8 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(dirPath)
       const updatedDirCid = stats.cid
 
-      expect(stats.type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
     })
 
@@ -224,7 +230,8 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(dirPath)
       const updatedDirCid = stats.cid
 
-      expect(stats.type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
     })
 
@@ -245,7 +252,8 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(dirPath)
       const updatedDirCid = stats.cid
 
-      expect(stats.type).to.equal('hamt-sharded-directory')
+      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
     })
   })

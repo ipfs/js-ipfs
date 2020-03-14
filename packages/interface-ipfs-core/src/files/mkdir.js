@@ -6,6 +6,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const multihash = require('multihashes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -159,7 +160,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-512'
       })
 
-      await expect(ipfs.files.stat(directoryPath)).to.eventually.have.nested.property('cid.multihash')
+      await expect(ipfs.files.stat(subDirectoryPath)).to.eventually.have.nested.property('cid.multihash')
         .that.satisfies(hash => multihash.decode(hash).name === 'sha2-512')
     })
 
@@ -169,8 +170,11 @@ module.exports = (common, options) => {
 
       await ipfs.files.mkdir(`${dirPath}`)
 
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('hamt-sharded-directory')
-      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
+      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.false()
+      await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
     })
 
     it('should make directory and have default mode', async function () {
