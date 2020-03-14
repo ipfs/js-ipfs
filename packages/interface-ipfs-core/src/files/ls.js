@@ -42,31 +42,20 @@ module.exports = (common, options) => {
 
       const files = await all(ipfs.files.ls())
 
-      expect(files.find(file => file.name === fileName)).to.be.ok()
+      expect(files).to.have.lengthOf(1).and.to.containSubset([{
+        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        name: fileName,
+        size: content.length,
+        type: MFS_FILE_TYPES.file
+      }])
     })
 
     it('refuses to lists files with an empty path', async () => {
-      try {
-        for await (const _ of ipfs.files.ls('')) { // eslint-disable-line no-unused-vars
-          // falala
-        }
-
-        throw new Error('No error was thrown for an empty path')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NO_PATH')
-      }
+      await expect(all(ipfs.files.ls(''))).to.eventually.be.rejected()
     })
 
     it('refuses to lists files with an invalid path', async () => {
-      try {
-        for await (const _ of ipfs.files.ls('not-valid')) { // eslint-disable-line no-unused-vars
-          // falala
-        }
-
-        throw new Error('No error was thrown for an empty path')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_INVALID_PATH')
-      }
+      await expect(all(ipfs.files.ls('not-valid'))).to.eventually.be.rejected()
     })
 
     it('lists files in a directory', async () => {
@@ -81,12 +70,12 @@ module.exports = (common, options) => {
 
       const files = await all(ipfs.files.ls(`/${dirName}`))
 
-      expect(files.find(file => file.name === fileName)).to.be.ok()
-      expect(files.length).to.equal(1)
-      expect(files[0].name).to.equal(fileName)
-      expect(files[0].type).to.equal(MFS_FILE_TYPES.file)
-      expect(files[0].size).to.equal(content.length)
-      expect(CID.isCID(files[0].cid)).to.be.ok()
+      expect(files).to.have.lengthOf(1).and.to.containSubset([{
+        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        name: fileName,
+        size: content.length,
+        type: MFS_FILE_TYPES.file
+      }])
     })
 
     it('lists a file', async () => {
@@ -99,23 +88,16 @@ module.exports = (common, options) => {
 
       const files = await all(ipfs.files.ls(`/${fileName}`))
 
-      expect(files.length).to.equal(1)
-      expect(files[0].name).to.equal(fileName)
-      expect(files[0].type).to.equal(MFS_FILE_TYPES.file)
-      expect(files[0].size).to.equal(content.length)
-      expect(CID.isCID(files[0].cid)).to.be.ok()
+      expect(files).to.have.lengthOf(1).and.to.containSubset([{
+        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        name: fileName,
+        size: content.length,
+        type: MFS_FILE_TYPES.file
+      }])
     })
 
     it('fails to list non-existent file', async () => {
-      try {
-        for await (const _ of ipfs.files.ls('/i-do-not-exist')) { // eslint-disable-line no-unused-vars
-          // falala
-        }
-
-        throw new Error('No error was thrown for a non-existent file')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(all(ipfs.files.ls('/i-do-not-exist'))).to.eventually.be.rejected()
     })
 
     it('lists a raw node', async () => {
@@ -129,15 +111,18 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(filePath)
       const { value: node } = await ipfs.dag.get(stats.cid)
+
+      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+
       const child = node.Links[0]
-
-      expect(child.Hash.codec).to.equal('raw')
-
       const files = await all(ipfs.files.ls(`/ipfs/${child.Hash}`))
 
-      expect(files.length).to.equal(1)
-      expect(files[0].type).to.equal(0) // this is what go does
-      expect(files[0].cid.toString()).to.equal(child.Hash.toString())
+      expect(files).to.have.lengthOf(1).and.to.containSubset([{
+        cid: child.Hash,
+        name: child.Hash.toString(),
+        size: 262144,
+        type: MFS_FILE_TYPES.file
+      }])
     })
 
     it('lists a raw node in an mfs directory', async () => {
@@ -152,10 +137,10 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(filePath)
       const cid = stats.cid
       const { value: node } = await ipfs.dag.get(cid)
+
+      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+
       const child = node.Links[0]
-
-      expect(child.Hash.codec).to.equal('raw')
-
       const dir = `/dir-with-raw-${Math.random()}`
       const path = `${dir}/raw-${Math.random()}`
 
@@ -164,16 +149,17 @@ module.exports = (common, options) => {
 
       const files = await all(ipfs.files.ls(`/ipfs/${child.Hash}`))
 
-      expect(files.length).to.equal(1)
-      expect(files[0].type).to.equal(0) // this is what go does
-      expect(files[0].cid.toString()).to.equal(child.Hash.toString())
+      expect(files).to.have.lengthOf(1).and.to.containSubset([{
+        cid: child.Hash,
+        name: child.Hash.toString(),
+        size: 262144,
+        type: MFS_FILE_TYPES.file
+      }])
     })
 
     it('lists a sharded directory contents', async () => {
-      const shardSplitThreshold = 10
-      const fileCount = 11
-      const dirPath = await createShardedDirectory(ipfs, shardSplitThreshold, fileCount)
-
+      const fileCount = 1001
+      const dirPath = await createShardedDirectory(ipfs, fileCount)
       const files = await all(ipfs.files.ls(dirPath))
 
       expect(files.length).to.equal(fileCount)
@@ -187,14 +173,12 @@ module.exports = (common, options) => {
     it('lists a file inside a sharded directory directly', async () => {
       const dirPath = await createShardedDirectory(ipfs)
       const files = await all(ipfs.files.ls(dirPath))
-
       const filePath = `${dirPath}/${files[0].name}`
 
       // should be able to ls new file directly
       const file = await all(ipfs.files.ls(filePath))
 
-      expect(file.length).to.equal(1)
-      expect(file[0].name).to.equal(files[0].name)
+      expect(file).to.have.lengthOf(1).and.to.containSubset([files[0]])
     })
 
     it('lists the contents of a directory inside a sharded directory', async () => {

@@ -29,21 +29,11 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('refuses to move files without arguments', async () => {
-      try {
-        await ipfs.files.mv()
-        throw new Error('No error was thrown for missing files')
-      } catch (err) {
-        expect(err.message).to.contain('Please supply at least one source')
-      }
+      await expect(ipfs.files.mv()).to.eventually.be.rejected()
     })
 
     it('refuses to move files without enough arguments', async () => {
-      try {
-        await ipfs.files.mv('/destination')
-        throw new Error('No error was thrown for missing files')
-      } catch (err) {
-        expect(err.message).to.contain('Please supply at least one source')
-      }
+      await expect(ipfs.files.mv()).to.eventually.be.rejected()
     })
 
     it('moves a file', async () => {
@@ -59,12 +49,7 @@ module.exports = (common, options) => {
       const buffer = await concat(ipfs.files.read(destination))
       expect(buffer.slice()).to.deep.equal(data)
 
-      try {
-        await ipfs.files.stat(source)
-        throw new Error('File was copied but not removed')
-      } catch (err) {
-        expect(err.message).to.contain('does not exist')
-      }
+      await expect(ipfs.files.stat(source)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('moves a directory', async () => {
@@ -247,7 +232,7 @@ module.exports = (common, options) => {
     })
 
     it('moves a file from a sub-shard of a sharded directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs, 10, 75)
+      const shardedDirPath = await createShardedDirectory(ipfs)
       const otherShardedDirPath = await createShardedDirectory(ipfs)
       const file = 'file-1a.txt'
       const filePath = `${shardedDirPath}/${file}`

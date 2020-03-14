@@ -124,6 +124,14 @@ const mfsWrite = {
           override: true,
           ignoreUndefined: true
         })
+        .rename('raw-leaves', 'rawLeaves', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('reduce-single-leaf-to-self', 'reduceSingleLeafToSelf', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
   }
 }

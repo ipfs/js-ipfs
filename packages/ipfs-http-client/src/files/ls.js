@@ -3,6 +3,7 @@
 const CID = require('cids')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
@@ -11,19 +12,22 @@ module.exports = configure(api => {
       path = '/'
     }
 
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', CID.isCID(path) ? `/ipfs/${path}` : path)
-    // TODO the args below are not in the go-ipfs or interface core
-    searchParams.set('stream', options.stream == null ? true : options.stream)
-    searchParams.set('long', options.long == null ? true : options.long)
-    // TODO: remove after go-ipfs 0.5 is released
-    searchParams.set('l', options.long == null ? true : options.long)
-
     const res = await api.ndjson('files/ls', {
       method: 'POST',
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams(
+        CID.isCID(path) ? `/ipfs/${path}` : path, {
+          ...options,
+
+          // TODO the args below are not in the go-ipfs or interface core
+          stream: options.stream == null ? true : options.stream,
+          long: options.long == null ? true : options.long,
+
+          // TODO: remove after go-ipfs 0.5 is released
+          l: options.long == null ? true : options.long
+        }
+      )
     })
 
     for await (const result of res) {

@@ -1,16 +1,19 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const { findSources } = require('./utils')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (path, options = {}) => {
-    options.arg = path
+  return async (...args) => {
+    const { sources, options } = findSources(args)
+
     const res = await api.post('files/rm', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams(sources, options)
     })
 
-    return res.text()
+    await res.text()
   }
 })

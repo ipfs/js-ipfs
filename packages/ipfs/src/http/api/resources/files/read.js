@@ -1,13 +1,10 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const {
-  PassThrough
-} = require('stream')
-const toStream = require('it-to-stream')
+const streamResponse = require('../../../utils/stream-response')
 
 const mfsRead = {
-  async handler (request, h) {
+  handler (request, h) {
     const {
       ipfs
     } = request.server.app
@@ -17,27 +14,10 @@ const mfsRead = {
       length
     } = request.query
 
-    const responseStream = await new Promise((resolve, reject) => {
-      const stream = toStream.readable(ipfs.files.read(arg, {
-        offset,
-        length
-      }))
-
-      stream.once('data', (chunk) => {
-        const passThrough = new PassThrough()
-
-        resolve(passThrough)
-
-        passThrough.write(chunk)
-        stream.pipe(passThrough)
-      })
-
-      stream.once('error', (error) => {
-        reject(error)
-      })
-    })
-
-    return h.response(responseStream).header('X-Stream-Output', '1')
+    return streamResponse(request, h, () => ipfs.files.read(arg, {
+      offset,
+      length
+    }))
   },
   options: {
     validate: {

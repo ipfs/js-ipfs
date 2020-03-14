@@ -1,11 +1,10 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const {
-  PassThrough
-} = require('stream')
-const toStream = require('it-to-stream')
 const all = require('it-all')
+const map = require('it-map')
+const pipe = require('it-pipe')
+const streamResponse = require('../../../utils/stream-response')
 
 const mapEntry = (entry, options) => {
   options = options || {}
@@ -14,8 +13,7 @@ const mapEntry = (entry, options) => {
     Name: entry.name,
     Type: options.long ? entry.type : 0,
     Size: options.long ? entry.size || 0 : 0,
-    Hash: entry.cid.toString(options.cidBase),
-    Mode: entry.mode.toString(8).padStart(4, '0')
+    Hash: entry.cid.toString(options.cidBase)
   }
 
   if (entry.mtime) {
@@ -24,6 +22,10 @@ const mapEntry = (entry, options) => {
     if (entry.mtime.nsecs != null) {
       output.MtimeNsecs = entry.mtime.nsecs
     }
+  }
+
+  if (entry.mode != null) {
+    output.Mode = entry.mode.toString(8).padStart(4, '0')
   }
 
   return output
@@ -42,28 +44,11 @@ const mfsLs = {
     } = request.query
 
     if (stream) {
-      const responseStream = await new Promise((resolve, reject) => {
-        const readableStream = toStream.readable(ipfs.files.ls(arg), { objectMode: true })
-
-        const passThrough = new PassThrough()
-
-        readableStream.on('data', (entry) => {
-          resolve(passThrough)
-          passThrough.write(JSON.stringify(mapEntry(entry, { cidBase, long })) + '\n')
-        })
-
-        readableStream.once('end', (entry) => {
-          resolve(passThrough)
-          passThrough.end(entry ? JSON.stringify(mapEntry(entry, { cidBase, long })) + '\n' : undefined)
-        })
-
-        readableStream.once('error', (err) => {
-          passThrough.end()
-          reject(err)
-        })
-      })
-
-      return h.response(responseStream).header('X-Stream-Output', '1')
+      return streamResponse(request, h, () => pipe(
+        ipfs.files.ls(arg),
+        source => map(source, (entry) => mapEntry(entry, { cidBase, long })),
+        source => map(source, (entry) => JSON.stringify(entry) + '\n')
+      ))
     }
 
     const files = await all(ipfs.files.ls(arg))

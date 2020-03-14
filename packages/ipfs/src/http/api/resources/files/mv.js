@@ -37,7 +37,7 @@ const mfsMv = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.array().items(Joi.string()).min(2),
+        arg: Joi.array().required().items(Joi.string()).min(2),
         recursive: Joi.boolean().default(false),
         parents: Joi.boolean().default(false),
         hashAlg: Joi.string().default('sha2-256'),

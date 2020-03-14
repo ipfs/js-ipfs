@@ -160,9 +160,7 @@ module.exports = (common, options) => {
       })
 
       await expect(ipfs.files.stat(directoryPath)).to.eventually.have.nested.property('cid.multihash')
-        .that.satisfies(hash => {
-          return multihash.decode(hash).name === 'sha2-512'
-        })
+        .that.satisfies(hash => multihash.decode(hash).name === 'sha2-512')
     })
 
     it('makes a directory inside a sharded directory', async () => {

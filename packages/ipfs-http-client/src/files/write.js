@@ -5,18 +5,13 @@ const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (path, input, options = {}) => {
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', path)
-    searchParams.set('stream-channels', 'true')
-    searchParams.set('hash', options.hashAlg)
-    searchParams.set('hashAlg', null)
-
     const { body, headers } = multipartRequest(normaliseInput({
       content: input,
-      path: path,
+      path: 'arg',
       mode: modeToString(options.mode),
       mtime: mtimeToObject(options.mtime)
     }))
@@ -24,11 +19,11 @@ module.exports = configure(api => {
     const res = await api.post('files/write', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams,
+      searchParams: toUrlSearchParams(path, { ...options, streamChannels: true }),
       headers,
       body
     })
 
-    return res.text()
+    await res.text()
   }
 })

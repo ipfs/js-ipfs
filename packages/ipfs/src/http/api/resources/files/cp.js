@@ -35,7 +35,7 @@ const mfsCp = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.array().items(Joi.string()).min(2),
+        arg: Joi.array().required().items(Joi.string()).min(2),
         parents: Joi.boolean().default(false),
         flush: Joi.boolean().default(true),
         hashAlg: Joi.string().default('sha2-256'),

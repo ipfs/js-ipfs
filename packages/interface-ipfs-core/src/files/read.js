@@ -126,21 +126,13 @@ module.exports = (common, options) => {
     it('refuses to read a directory', async () => {
       const path = '/'
 
-      try {
-        await concat(ipfs.files.read(path))
-        throw new Error('Should have errored on trying to read a directory')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FILE')
-      }
+      await expect(concat(ipfs.files.read(path))).to.eventually.be.rejectedWith(/not a file/)
     })
 
     it('refuses to read a non-existent file', async () => {
-      try {
-        await concat(ipfs.files.read(`/file-${Math.random()}.txt`))
-        throw new Error('Should have errored on non-existent file')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      const path = `/file-${Math.random()}.txt`
+
+      await expect(concat(ipfs.files.read(path))).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('reads file from inside a sharded directory', async () => {

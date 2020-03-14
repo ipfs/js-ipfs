@@ -38,30 +38,15 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('refuses to stat files with an empty path', async () => {
-      try {
-        await ipfs.files.stat('')
-        throw new Error('No error was thrown for an empty path')
-      } catch (err) {
-        expect(err.message).to.contain('paths must not be empty')
-      }
+      await expect(ipfs.files.stat('')).to.be.rejected()
     })
 
     it('refuses to lists files with an invalid path', async () => {
-      try {
-        await ipfs.files.stat('not-valid')
-        throw new Error('No error was thrown for an empty path')
-      } catch (err) {
-        expect(err.message).to.contain('paths must start with a leading /')
-      }
+      await expect(ipfs.files.stat('not-valid')).to.be.rejectedWith(/paths must start with a leading/)
     })
 
     it('fails to stat non-existent file', async () => {
-      try {
-        await ipfs.files.stat('/i-do-not-exist')
-        throw new Error('No error was thrown for a non-existent file')
-      } catch (err) {
-        expect(err.message).to.contain('does not exist')
-      }
+      await expect(ipfs.files.stat('/i-do-not-exist')).to.be.rejectedWith(/does not exist/)
     })
 
     it('stats an empty directory', async () => {
@@ -69,11 +54,12 @@ module.exports = (common, options) => {
 
       await ipfs.files.mkdir(path)
 
-      const stats = await ipfs.files.stat(path)
-      expect(stats.size).to.equal(0)
-      expect(stats.cumulativeSize).to.equal(4)
-      expect(stats.blocks).to.equal(0)
-      expect(stats.type).to.equal('directory')
+      await expect(ipfs.files.stat(path)).to.eventually.include({
+        size: 0,
+        cumulativeSize: 4,
+        blocks: 0,
+        type: 'directory'
+      })
     })
 
     it.skip('computes how much of the DAG is local', async () => {
@@ -88,11 +74,12 @@ module.exports = (common, options) => {
         parents: true
       })
 
-      const stats = await ipfs.files.stat(filePath)
-      expect(stats.size).to.equal(smallFile.length)
-      expect(stats.cumulativeSize).to.equal(71)
-      expect(stats.blocks).to.equal(1)
-      expect(stats.type).to.equal('file')
+      await expect(ipfs.files.stat(filePath)).to.eventually.include({
+        size: smallFile.length,
+        cumulativeSize: 71,
+        blocks: 1,
+        type: 'file'
+      })
     })
 
     it('stats a large file', async () => {
@@ -103,11 +90,12 @@ module.exports = (common, options) => {
         parents: true
       })
 
-      const stats = await ipfs.files.stat(filePath)
-      expect(stats.size).to.equal(largeFile.length)
-      expect(stats.cumulativeSize).to.equal(490800)
-      expect(stats.blocks).to.equal(2)
-      expect(stats.type).to.equal('file')
+      await expect(ipfs.files.stat(filePath)).to.eventually.include({
+        size: largeFile.length,
+        cumulativeSize: 490800,
+        blocks: 2,
+        type: 'file'
+      })
     })
 
     it('stats a raw node', async () => {
@@ -121,10 +109,10 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(filePath)
       const { value: node } = await ipfs.dag.get(stats.cid)
+
+      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+
       const child = node.Links[0]
-
-      expect(child.Hash.codec).to.equal('raw')
-
       const rawNodeStats = await ipfs.files.stat(`/ipfs/${child.Hash}`)
 
       expect(rawNodeStats.cid.toString()).to.equal(child.Hash.toString())

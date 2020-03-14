@@ -32,43 +32,23 @@ module.exports = (common, options) => {
     })
 
     it('refuses to remove files without arguments', async () => {
-      try {
-        await ipfs.files.rm()
-        throw new Error('No error was thrown for missing paths')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_INVALID_PARAMS')
-      }
+      await expect(ipfs.files.rm()).to.eventually.be.rejected()
     })
 
     it('refuses to remove the root path', async () => {
-      try {
-        await ipfs.files.rm('/')
-        throw new Error('No error was thrown for missing paths')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_INVALID_PARAMS')
-      }
+      await expect(ipfs.files.rm('/')).to.eventually.be.rejected()
     })
 
     it('refuses to remove a directory without the recursive flag', async () => {
-      const path = `/directory-${Math.random()}`
+      const path = `/directory-${Math.random()}.txt`
 
       await ipfs.files.mkdir(path)
 
-      try {
-        await ipfs.files.rm(path)
-        throw new Error('No error was thrown for missing recursive flag')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_WAS_DIR')
-      }
+      await expect(ipfs.files.rm(path)).to.eventually.be.rejectedWith(/use -r to remove directories/)
     })
 
     it('refuses to remove a non-existent file', async () => {
-      try {
-        await ipfs.files.rm(`/file-${Math.random()}`)
-        throw new Error('No error was thrown for non-existent file')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.rm(`/file-${Math.random()}`)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('removes a file', async () => {
@@ -79,16 +59,9 @@ module.exports = (common, options) => {
         parents: true
       })
 
-      await ipfs.files.rm(file, {
-        recursive: true
-      })
+      await ipfs.files.rm(file)
 
-      try {
-        await ipfs.files.stat(file)
-        throw new Error('File was not removed')
-      } catch (err) {
-        expect(err.message).to.contain('does not exist')
-      }
+      await expect(ipfs.files.stat(file)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('removes multiple files', async () => {
@@ -103,23 +76,10 @@ module.exports = (common, options) => {
         create: true,
         parents: true
       })
-      await ipfs.files.rm(file1, file2, {
-        recursive: true
-      })
+      await ipfs.files.rm(file1, file2)
 
-      try {
-        await ipfs.files.stat(file1)
-        throw new Error('File #1 was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
-
-      try {
-        await ipfs.files.stat(file2)
-        throw new Error('File #2 was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(file1)).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat(file2)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('removes a directory', async () => {
@@ -130,12 +90,7 @@ module.exports = (common, options) => {
         recursive: true
       })
 
-      try {
-        await ipfs.files.stat(directory)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(directory)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('recursively removes a directory', async () => {
@@ -150,46 +105,24 @@ module.exports = (common, options) => {
         recursive: true
       })
 
-      try {
-        await ipfs.files.stat(path)
-        throw new Error('File was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
-
-      try {
-        await ipfs.files.stat(directory)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(path)).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat(directory)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('recursively removes a directory with files in', async () => {
-      const directory = `directory-${Math.random()}`
-      const file = `/${directory}/some-file-${Math.random()}.txt`
+      const directory = `/directory-${Math.random()}`
+      const file = `${directory}/some-file-${Math.random()}.txt`
 
       await ipfs.files.write(file, crypto.randomBytes(100), {
         create: true,
         parents: true
       })
-      await ipfs.files.rm(`/${directory}`, {
+      await ipfs.files.rm(directory, {
         recursive: true
       })
 
-      try {
-        await ipfs.files.stat(file)
-        throw new Error('File was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
-
-      try {
-        await ipfs.files.stat(`/${directory}`)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(file)).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat(directory)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('recursively removes a sharded directory inside a normal directory', async () => {
@@ -209,19 +142,8 @@ module.exports = (common, options) => {
         recursive: true
       })
 
-      try {
-        await ipfs.files.stat(dirPath)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
-
-      try {
-        await ipfs.files.stat(shardedDirPath)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(dirPath)).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('recursively removes a sharded directory inside a sharded directory', async () => {
@@ -239,19 +161,8 @@ module.exports = (common, options) => {
         recursive: true
       })
 
-      try {
-        await ipfs.files.stat(otherDirPath)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
-
-      try {
-        await ipfs.files.stat(finalShardedDirPath)
-        throw new Error('Directory was not removed')
-      } catch (err) {
-        expect(err.code).to.equal('ERR_NOT_FOUND')
-      }
+      await expect(ipfs.files.stat(otherDirPath)).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat(finalShardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('results in the same hash as a sharded directory created by the importer when removing a file', async function () {

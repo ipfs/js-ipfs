@@ -592,7 +592,7 @@ module.exports = (common, options) => {
     })
 
     it('overwrites a file in a subshard of a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs, 10, 75)
+      const shardedDirPath = await createShardedDirectory(ipfs)
       const newFile = 'file-1a.txt'
       const newFilePath = `${shardedDirPath}/${newFile}`
       const newContent = Buffer.from([3, 2, 1, 0])

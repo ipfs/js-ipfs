@@ -14,10 +14,12 @@ const mfsRm = {
       shardSplitThreshold
     } = request.query
 
-    await ipfs.files.rm(arg, {
+    const args = [...arg, {
       recursive,
       shardSplitThreshold
-    })
+    }]
+
+    await ipfs.files.rm.apply(null, args)
 
     return h.response()
   },
@@ -28,7 +30,7 @@ const mfsRm = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string().required(),
+        arg: Joi.array().required().items(Joi.string()).min(1).single(),
         recursive: Joi.boolean().default(false),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000)
       })

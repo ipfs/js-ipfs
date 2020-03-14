@@ -28,12 +28,15 @@ const toOutput = (fsEntry) => {
     cid: fsEntry.cid,
     name: fsEntry.name,
     type,
-    size,
-    mode
+    size
   }
 
   if (mtime !== undefined) {
     output.mtime = mtime
+  }
+
+  if (mode !== undefined) {
+    output.mode = mode
   }
 
   return output

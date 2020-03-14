@@ -121,6 +121,7 @@ describe('interface-ipfs-core tests', () => {
   tests.dht(commonFactory)
 
   tests.files(commonFactory, {
+    only: true,
     skip: [
       {
         name: 'should ls directory',
@@ -143,19 +144,51 @@ describe('interface-ipfs-core tests', () => {
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode',
+        name: 'should update the mode for a file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change directory mode',
+        name: 'should update the mode for a directory',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode as string',
+        name: 'should update the mode for a hamt-sharded-directory',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode to 0',
+        name: 'should update modes with basic symbolic notation that adds bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with basic symbolic notation that removes bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with basic symbolic notation that overrides bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with multiple symbolic notation',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with special symbolic notation',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to world',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to user',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to user and group',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to sharded directories',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -164,6 +197,14 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should update directory mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update the mtime for a hamt-sharded-directory',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should create an empty file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -289,6 +330,14 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should stat sharded dir with mtime',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'lists a raw node',
+        reason: 'TODO go-ipfs does not support ipfs paths for all mfs commands'
+      },
+      {
+        name: 'lists a raw node in an mfs directory',
+        reason: 'TODO go-ipfs does not support non-ipfs nodes in mfs'
       }
     ]
   })

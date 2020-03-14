@@ -253,12 +253,7 @@ module.exports = (common, options) => {
         create: true
       })
 
-      try {
-        await ipfs.files.cp(source, destination)
-        throw new Error('No error was thrown when copying to deep directory with missing intermediate directories')
-      } catch (err) {
-        expect(err).to.have.property('code', 'ERR_INVALID_PARAMS')
-      }
+      await expect(ipfs.files.cp(source, destination)).to.eventually.be.rejected()
     })
 
     it('copies a sharded directory to a normal directory', async () => {

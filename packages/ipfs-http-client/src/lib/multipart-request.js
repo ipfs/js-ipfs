@@ -16,12 +16,15 @@ function multipartRequest (source, boundary = `-----------------------------${ha
         let index = 0
 
         for await (const { content, path, mode, mtime } of normaliseInput(source)) {
+          let fileSuffix = ''
+
           if (index > 0) {
             yield '\r\n'
+            fileSuffix = `-${index}`
           }
 
           yield `--${boundary}\r\n`
-          yield `Content-Disposition: file; name="file-${index}"; filename="${encodeURIComponent(path)}"\r\n`
+          yield `Content-Disposition: file; name="file${fileSuffix}"; filename="${encodeURIComponent(path)}"\r\n`
           yield `Content-Type: ${content ? 'application/octet-stream' : 'application/x-directory'}\r\n`
 
           if (mode != null) {
