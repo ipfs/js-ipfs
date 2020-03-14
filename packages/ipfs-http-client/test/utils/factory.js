@@ -8,14 +8,7 @@ const commonOptions = {
   test: true,
   type: 'go',
   ipfsHttpModule: require('../../src'),
-  endpoint: 'http://localhost:48372',
-  ipfsOptions: {
-    config: {
-      Experimental: {
-        ShardingEnabled: true
-      }
-    }
-  }
+  endpoint: 'http://localhost:48372'
 }
 
 const commonOverrides = {
@@ -30,3 +23,25 @@ const factory = (options = {}, overrides = {}) => createFactory(
 )
 
 module.exports = factory
+
+module.exports.sharding = (options = {}, overrides = {}) => createFactory(
+  merge(commonOptions, options),
+  merge(commonOverrides, {
+    go: {
+      ipfsOptions: {
+        config: {
+          Experimental: {
+            ShardingEnabled: true
+          }
+        }
+      }
+    },
+    js: {
+      ipfsOptions: {
+        EXPERIMENTAL: {
+          sharding: true
+        }
+      }
+    }
+  }, overrides)
+)

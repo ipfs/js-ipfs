@@ -18,16 +18,19 @@ function multipartRequest (source, boundary = `-----------------------------${ha
         for await (const { content, path, mode, mtime } of normaliseInput(source)) {
           let fileSuffix = ''
 
+          const type = content ? 'file' : 'dir'
+
           if (index > 0) {
             yield '\r\n'
+
             fileSuffix = `-${index}`
           }
 
           yield `--${boundary}\r\n`
-          yield `Content-Disposition: file; name="file${fileSuffix}"; filename="${encodeURIComponent(path)}"\r\n`
+          yield `Content-Disposition: form-data; name="${type}${fileSuffix}"; filename="${encodeURIComponent(path)}"\r\n`
           yield `Content-Type: ${content ? 'application/octet-stream' : 'application/x-directory'}\r\n`
 
-          if (mode != null) {
+          if (mode !== null && mode !== undefined) {
             yield `mode: ${modeToString(mode)}\r\n`
           }
 

@@ -14,7 +14,6 @@ const urlSource = require('ipfs-utils/src/files/url-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const { echoUrl, redirectUrl } = require('./utils/echo-http-server')
-
 const fixturesPath = path.join(__dirname, '..', 'test', 'fixtures')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -203,7 +202,7 @@ module.exports = (common, options) => {
       expect(file.cid.toString()).to.equal(expectedCid)
     })
 
-    it.only('should add a nested directory as array of tupples', async function () {
+    it('should add a nested directory as array of tupples', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
@@ -228,7 +227,7 @@ module.exports = (common, options) => {
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })
 
-    it.only('should add a nested directory as array of tupples with progress', async function () {
+    it('should add a nested directory as array of tupples with progress', async function () {
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
