@@ -10,6 +10,7 @@ const CID = require('cids')
 const mh = require('multihashes')
 const Block = require('ipfs-block')
 const crypto = require('crypto')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -42,7 +43,7 @@ module.exports = (common, options) => {
     })
 
     it('refuses to lists files with an invalid path', async () => {
-      await expect(ipfs.files.stat('not-valid')).to.be.rejectedWith(/paths must start with a leading/)
+      await expect(ipfs.files.stat('not-valid')).to.be.rejectedWith(/paths must start with a leading slash/)
     })
 
     it('fails to stat non-existent file', async () => {
@@ -296,7 +297,8 @@ module.exports = (common, options) => {
 
       const stat = await ipfs.files.stat(testDir)
 
-      expect(stat).to.have.property('type', 'hamt-sharded-directory')
+      await expect(isShardAtPath(testDir, ipfs)).to.eventually.be.true()
+      expect(stat).to.have.property('type', 'directory')
       expect(stat).to.include({
         mode: 0o755
       })
@@ -319,7 +321,8 @@ module.exports = (common, options) => {
 
       const stat = await ipfs.files.stat(testDir)
 
-      expect(stat).to.have.property('type', 'hamt-sharded-directory')
+      await expect(isShardAtPath(testDir, ipfs)).to.eventually.be.true()
+      expect(stat).to.have.property('type', 'directory')
       expect(stat).to.deep.include({
         mtime: {
           secs: 5,

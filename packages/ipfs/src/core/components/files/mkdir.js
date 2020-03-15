@@ -40,7 +40,7 @@ module.exports = (context) => {
     }
 
     if (path.substring(0, 1) !== '/') {
-      throw errCode(new Error('paths must start with a leading /'), 'ERR_INVALID_PATH')
+      throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')
     }
 
     log(`Creating ${path}`)

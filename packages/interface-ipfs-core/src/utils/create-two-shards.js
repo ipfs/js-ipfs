@@ -20,11 +20,17 @@ const createTwoShards = async (ipfs, fileCount) => {
   }))
   const nextFile = someFiles.pop()
 
-  const dirWithAllFiles = await last(ipfs.add(allFiles))
-  const dirWithSomeFiles = await last(ipfs.add(someFiles))
+  const { cid: dirWithAllFiles } = await last(ipfs.add(allFiles, {
+    // for js-ipfs - go-ipfs shards everything when sharding is turned on
+    shardSplitThreshold: files.length - 1
+  }))
+  const { cid: dirWithSomeFiles } = await last(ipfs.add(someFiles, {
+    // for js-ipfs - go-ipfs shards everything when sharding is turned on
+    shardSplitThreshold: files.length - 1
+  }))
 
-  await expect(isShardAtPath(dirWithAllFiles, ipfs)).to.eventually.be.true()
-  await expect(isShardAtPath(dirWithSomeFiles, ipfs)).to.eventually.be.true()
+  await expect(isShardAtPath(`/ipfs/${dirWithAllFiles}`, ipfs)).to.eventually.be.true()
+  await expect(isShardAtPath(`/ipfs/${dirWithSomeFiles}`, ipfs)).to.eventually.be.true()
 
   return {
     nextFile,

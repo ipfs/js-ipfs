@@ -8,7 +8,7 @@ const {
 
 const toAsyncIterator = (content) => {
   if (!content) {
-    throw errCode(new Error('paths must start with a leading /'), 'ERR_INVALID_PATH')
+    throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')
   }
 
   if (typeof content === 'string' || content instanceof String) {

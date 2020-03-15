@@ -73,7 +73,14 @@ const statters = {
 
     if (file.unixfs) {
       output.size = file.unixfs.fileSize()
-      output.type = file.unixfs.type
+
+      // for go-ipfs compatibility
+      if (file.unixfs.type === 'hamt-sharded-directory') {
+        output.type = 'directory'
+      } else {
+        output.type = file.unixfs.type
+      }
+
       output.mode = file.unixfs.mode
 
       if (file.unixfs.isDirectory()) {

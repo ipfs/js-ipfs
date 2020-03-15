@@ -98,7 +98,7 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    // streaming errors do not work
+    // TODO: streaming request errors do not work over http
     it.skip('explodes if it cannot convert content to a source', async () => {
       await expect(ipfs.files.write('/foo-bad-source', -1, {
         create: true
@@ -117,10 +117,11 @@ module.exports = (common, options) => {
       })).to.eventually.be.rejectedWith(/cannot have negative write offset/)
     })
 
+    // TODO: go-ipfs errors with 'does not exist', js-ipfs errors with 'cannot have negative byte count'
     it('explodes if given a negative length', async () => {
       await expect(ipfs.files.write('/foo-negative-length', Buffer.from('foo'), {
         length: -1
-      })).to.eventually.be.rejectedWith(/does not exist/)
+      })).to.eventually.be.rejected()
     })
 
     it('creates a zero length file when passed a zero length', async () => {

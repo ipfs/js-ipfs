@@ -3,6 +3,7 @@
 
 const hat = require('hat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const isShardAtPath = require('../utils/is-shard-at-path')
 
 module.exports = (common, options) => {
   const describe = getDescribe(options)
@@ -315,8 +316,9 @@ module.exports = (common, options) => {
       })
 
       // directories should be user and group executable
+      await expect(isShardAtPath(path, ipfs)).to.eventually.be.true()
       await expect(ipfs.files.stat(path)).to.eventually.include({
-        type: 'hamt-sharded-directory',
+        type: 'directory',
         mode: 0o754
       })
       await expect(ipfs.files.stat(sub)).to.eventually.have.property('mode', 0o754)
