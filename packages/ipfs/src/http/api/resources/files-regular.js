@@ -129,7 +129,6 @@ exports.add = {
         preload: Joi.boolean().default(true),
         progress: Joi.boolean(),
         'stream-channels': Joi.boolean().default(true)
-
       })
       // TODO: Necessary until validate "recursive", "stream-channels" etc.
       .options({ allowUnknown: true })
@@ -224,7 +223,9 @@ exports.add = {
         }
       })
       .catch(err => {
-        if (!filesParsed) {
+        log.error(err)
+
+        if (!filesParsed && output.writable) {
           output.write(' ')
         }
 
@@ -235,7 +236,7 @@ exports.add = {
           })
         })
       })
-      .then(() => {
+      .finally(() => {
         output.end()
       })
 

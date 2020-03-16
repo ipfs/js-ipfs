@@ -79,7 +79,7 @@ module.exports = (common, options) => {
         create: true
       })
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
-        .that.has.property('message').that.matches(/Missing IPLD format/)
+        .that.has.property('message').that.matches(/"identity"/)
     })
 
     it('refuses to copy files to an exsting file', async () => {

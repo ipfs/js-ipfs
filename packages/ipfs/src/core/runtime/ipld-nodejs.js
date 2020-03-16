@@ -49,7 +49,7 @@ module.exports = (blockService, options, log) => {
         if (IpldFormats[codec]) {
           return IpldFormats[codec]
         } else {
-          throw new Error(`Missing IPLD format "${codec}"`)
+          throw new Error(`Missing IPLD format "${multicodec.getName(codec)}"`)
         }
       }
     }, options)

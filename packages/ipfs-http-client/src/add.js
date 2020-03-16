@@ -10,8 +10,6 @@ module.exports = configure((api) => {
   return async function * add (input, options = {}) {
     const progressFn = options.progress
 
-    const { body, headers } = multipartRequest(input)
-
     const res = await api.ndjson('add', {
       method: 'POST',
       searchParams: toUrlSearchParams(null, {
@@ -19,10 +17,11 @@ module.exports = configure((api) => {
         'stream-channels': true,
         progress: Boolean(progressFn)
       }),
-      headers,
-      body,
       timeout: options.timeout,
-      signal: options.signal
+      signal: options.signal,
+      ...(
+        await multipartRequest(input)
+      )
     })
 
     for await (let file of res) {

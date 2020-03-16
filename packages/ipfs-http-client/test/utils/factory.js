@@ -23,25 +23,3 @@ const factory = (options = {}, overrides = {}) => createFactory(
 )
 
 module.exports = factory
-
-module.exports.sharding = (options = {}, overrides = {}) => createFactory(
-  merge(commonOptions, options),
-  merge(commonOverrides, {
-    go: {
-      ipfsOptions: {
-        config: {
-          Experimental: {
-            ShardingEnabled: true
-          }
-        }
-      }
-    },
-    js: {
-      ipfsOptions: {
-        EXPERIMENTAL: {
-          sharding: true
-        }
-      }
-    }
-  }, overrides)
-)

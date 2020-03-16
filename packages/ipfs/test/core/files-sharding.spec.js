@@ -20,7 +20,9 @@ describe('files directory (sharding tests)', function () {
     let ipfsd
 
     before(async function () {
-      ipfsd = await df.spawn()
+      ipfsd = await df.spawn({
+        ipfsOptions: { EXPERIMENTAL: { sharding: false } }
+      })
       ipfs = ipfsd.api
     })
 

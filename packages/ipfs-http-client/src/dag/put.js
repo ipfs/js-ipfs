@@ -3,8 +3,8 @@
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 const multihash = require('multihashes')
-const toFormData = require('../lib/buffer-to-form-data')
 const configure = require('../lib/configure')
+const multipartRequest = require('../lib/multipart-request')
 
 module.exports = configure(api => {
   return async (dagNode, options = {}) => {
@@ -51,7 +51,9 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams,
-      body: toFormData(serialized)
+      ...(
+        await multipartRequest(serialized)
+      )
     })
     const data = await rsp.json()
 

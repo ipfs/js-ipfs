@@ -9,7 +9,6 @@ const isWindows = process.platform && process.platform === 'win32'
 
 describe('interface-ipfs-core tests', () => {
   const commonFactory = factory()
-  const factoryWithSharding = factory.sharding()
 
   tests.root(commonFactory, {
     skip: [
@@ -121,7 +120,24 @@ describe('interface-ipfs-core tests', () => {
 
   tests.dht(commonFactory)
 
-  tests.files(factoryWithSharding, {
+  tests.files(factory({}, {
+    go: {
+      ipfsOptions: {
+        config: {
+          Experimental: {
+            ShardingEnabled: true
+          }
+        }
+      }
+    },
+    js: {
+      ipfsOptions: {
+        EXPERIMENTAL: {
+          sharding: true
+        }
+      }
+    }
+  }), {
     skip: [
       {
         name: 'should ls directory',

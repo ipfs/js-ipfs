@@ -66,7 +66,8 @@ const mfsWrite = {
   options: {
     payload: {
       parse: false,
-      output: 'stream'
+      output: 'stream',
+      maxBytes: Number.MAX_SAFE_INTEGER
     },
     validate: {
       options: {

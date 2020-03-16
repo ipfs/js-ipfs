@@ -2,32 +2,25 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const merge = require('merge-options')
-const { createFactory } = require('ipfsd-ctl')
-const IPFS = require('../../src')
+const factory = require('../utils/factory')
+const { isNode } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
-
 describe('interface-ipfs-core over ipfs-http-client tests', function () {
   this.timeout(20000)
-  /** @type ControllerOptions */
-  const commonOptions = {
-    test: true,
-    type: 'js',
-    ipfsModule: IPFS,
-    ipfsHttpModule: require('ipfs-http-client'),
-    ipfsOptions: {
-      pass: 'ipfs-is-awesome-software'
-    }
-  }
-  const overrides = {
-    js: {
-      ipfsBin: './src/cli/bin.js'
-    }
-  }
-  const commonFactory = createFactory(commonOptions, overrides)
 
-  tests.root(commonFactory)
+  const commonFactory = factory({
+    type: 'js',
+    ipfsBin: './src/cli/bin.js',
+    ipfsModule: false
+  })
+
+  tests.root(commonFactory, {
+    skip: isNode ? null : [{
+      name: 'should add with mtime as hrtime',
+      reason: 'Not designed to run in the browser'
+    }]
+  })
 
   tests.bitswap(commonFactory)
 
@@ -53,25 +46,35 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }
   })
 
-  tests.files(commonFactory)
+  tests.files(factory({
+    type: 'js',
+    ipfsBin: './src/cli/bin.js',
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        sharding: true
+      }
+    }
+  }))
 
   tests.key(commonFactory)
 
   tests.miscellaneous(commonFactory)
 
-  tests.name(createFactory(merge(commonOptions, {
+  tests.name(factory({
     ipfsOptions: {
       offline: true
     }
-  }), overrides))
+  }))
 
-  tests.namePubsub(createFactory(merge(commonOptions, {
+  tests.namePubsub(factory({
+    type: 'js',
+    ipfsBin: './src/cli/bin.js',
     ipfsOptions: {
       EXPERIMENTAL: {
         ipnsPubsub: true
       }
     }
-  }), overrides))
+  }))
 
   tests.object(commonFactory)
 
@@ -92,11 +95,13 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }]
   })
 
-  tests.pubsub(createFactory(commonOptions, merge(overrides, {
+  tests.pubsub(factory({
+    type: 'js',
+    ipfsBin: './src/cli/bin.js',
     go: {
       args: ['--enable-pubsub-experiment']
     }
-  })))
+  }))
 
   tests.repo(commonFactory)
 

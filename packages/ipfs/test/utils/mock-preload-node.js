@@ -55,7 +55,10 @@ module.exports.createNode = () => {
 }
 
 // Get the stored preload CIDs for the server at `addr`
-const getPreloadCids = addr => HTTP.get(`${toUri(addr || defaultAddr)}/cids`).json()
+const getPreloadCids = async (addr) => {
+  const res = await HTTP.get(`${toUri(addr || defaultAddr)}/cids`)
+  return res.json()
+}
 
 module.exports.getPreloadCids = getPreloadCids
 

@@ -108,16 +108,15 @@ module.exports = (common, options) => {
     it('explodes if given an invalid path', async () => {
       await expect(ipfs.files.write('foo-no-slash', null, {
         create: true
-      })).to.eventually.be.rejectedWith(/paths must start with a leading slash/)
+      })).to.eventually.be.rejected()
     })
 
     it('explodes if given a negtive offset', async () => {
       await expect(ipfs.files.write('/foo-negative-offset', Buffer.from('foo'), {
         offset: -1
-      })).to.eventually.be.rejectedWith(/cannot have negative write offset/)
+      })).to.eventually.be.rejected()
     })
 
-    // TODO: go-ipfs errors with 'does not exist', js-ipfs errors with 'cannot have negative byte count'
     it('explodes if given a negative length', async () => {
       await expect(ipfs.files.write('/foo-negative-length', Buffer.from('foo'), {
         length: -1
@@ -286,7 +285,9 @@ module.exports = (common, options) => {
           length: 2
         })
 
-        await expect(concat(ipfs.files.read(path))).to.eventually.satisfy(buffer => buffer.length === 2)
+        const buffer = await concat(ipfs.files.read(path))
+
+        expect(buffer.length).to.equal(2)
       })
     })
 

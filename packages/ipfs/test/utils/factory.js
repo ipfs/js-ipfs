@@ -14,9 +14,6 @@ const commonOptions = {
       dialer: {
         dialTimeout: 60e3 // increase timeout because travis is slow
       }
-    },
-    EXPERIMENTAL: {
-      sharding: true
     }
   },
   endpoint: 'http://localhost:57483'
@@ -46,9 +43,11 @@ const commonOverrides = {
   }
 }
 
-const factory = (options = {}, overrides = {}) => createFactory(
-  merge(commonOptions, options),
-  merge(commonOverrides, overrides)
-)
+const factory = (options = {}, overrides = {}) => {
+  return createFactory(
+    merge(commonOptions, options),
+    merge(commonOverrides, overrides)
+  )
+}
 
 module.exports = factory
