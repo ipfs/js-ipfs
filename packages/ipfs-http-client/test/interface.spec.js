@@ -442,6 +442,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'stats an identity CID',
         reason: 'TODO go-ipfs does not support non-dag-pb nodes in mfs'
+      },
+      {
+        name: 'limits how many bytes to write to a file (Really large file)',
+        reason: 'TODO go-ipfs drops the connection'
       }
     ]
   })
