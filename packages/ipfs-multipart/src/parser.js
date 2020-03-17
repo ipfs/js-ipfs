@@ -134,4 +134,15 @@ async function * parser (stream, options) {
   }
 }
 
-module.exports = parser
+/**
+ * Request Parser
+ *
+ * @param {Object} req - Request
+ * @param {Object} options - Options passed to stream constructors
+ * @returns {Object} an async iterable
+ */
+module.exports = (req, options = {}) => {
+  options.boundary = Content.type(req.headers['content-type']).boundary
+
+  return parser(req.payload || req, options)
+}
