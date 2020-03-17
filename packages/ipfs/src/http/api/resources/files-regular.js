@@ -1,6 +1,6 @@
 'use strict'
 
-const multipart = require('ipfs-multipart')
+const multipart = require('../../utils/multipart-request-parser')
 const debug = require('debug')
 const tar = require('it-tar')
 const log = debug('ipfs:http-api:files')

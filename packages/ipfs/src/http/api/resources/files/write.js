@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
-const multipart = require('ipfs-multipart')
+const multipart = require('../../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 const drain = require('it-drain')
 
