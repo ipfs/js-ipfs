@@ -942,22 +942,18 @@ const node = await IPFS.create({
 
 The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
 
-**Note:** We host a signalling server at star-signal.cloud.ipfs.team that can be used for practical demos and experimentation, it should not be used for apps in production. A libp2p-webrtc-star address, using the signalling server we provide, looks like:
+#### Is there an alternative to webrtc-star that offers a similar functionality?
 
-/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star/p2p/<your-peer-id>
-
-Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
-
-#### Is there a more stable alternative to webrtc-star that offers a similar functionality?
-
-Yes, stardust! A WebSockets based transport that uses a Relay to route the messages. To enable it, just do:
+Yes, stardust! A WebSockets based transport that uses a Relay to route the messages. To enable it, you will need to execute its `signaling server` (available on [libp2p-stardust](https://github.com/libp2p/js-libp2p-stardust)) and include the correct `stardustServerId` as follows:
 
 ```JavaScript
+const stardustServerId = 'QmY7t45zkBxzw5rtWQp3oAjzoJGTjh49f7LNz4YPBtTpqy'
+
 const node = await IPFS.create({
   config: {
     Addresses: { 
       Swarm: [
-        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+        `/ip4/0.0.0.0/tcp/5892/ws/p2p-stardust/p2p/${stardustServerId}`
       ]
     }
   }
