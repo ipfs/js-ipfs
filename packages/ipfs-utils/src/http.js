@@ -305,39 +305,39 @@ HTTP.TimeoutError = TimeoutError
 HTTP.ndjson = ndjson
 HTTP.streamToAsyncIterator = streamToAsyncIterator
 
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.post = (resource, options) => new HTTP().post(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.get = (resource, options) => new HTTP().get(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.put = (resource, options) => new HTTP().put(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.delete = (resource, options) => new HTTP().delete(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.options = (resource, options) => new HTTP().options(resource, options)
+
 module.exports = HTTP
-
-/**
- * @param {string | URL | Request} resource
- * @param {APIOptions} options
- * @returns {Promise<Response>}
- */
-module.exports.post = (resource, options) => new HTTP().post(resource, options)
-
-/**
- * @param {string | URL | Request} resource
- * @param {APIOptions} options
- * @returns {Promise<Response>}
- */
-module.exports.get = (resource, options) => new HTTP().get(resource, options)
-
-/**
- * @param {string | URL | Request} resource
- * @param {APIOptions} options
- * @returns {Promise<Response>}
- */
-module.exports.put = (resource, options) => new HTTP().put(resource, options)
-
-/**
- * @param {string | URL | Request} resource
- * @param {APIOptions} options
- * @returns {Promise<Response>}
- */
-module.exports.delete = (resource, options) => new HTTP().delete(resource, options)
-
-/**
- * @param {string | URL | Request} resource
- * @param {APIOptions} options
- * @returns {Promise<Response>}
- */
-module.exports.options = (resource, options) => new HTTP().options(resource, options)
