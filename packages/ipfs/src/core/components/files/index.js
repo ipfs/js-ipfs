@@ -1,6 +1,5 @@
 'use strict'
 
-const assert = require('assert')
 const createLock = require('./utils/create-lock')
 const isIpfs = require('is-ipfs')
 
@@ -45,10 +44,6 @@ function createMfs (options) {
   const {
     repoOwner
   } = Object.assign({}, defaultOptions || {}, options)
-
-  assert(options.ipld, 'MFS requires an IPLD instance')
-  assert(options.blocks, 'MFS requires an BlockStore instance')
-  assert(options.datastore, 'MFS requires a DataStore instance')
 
   options.repo = {
     blocks: options.blocks,
