@@ -27,7 +27,7 @@ describe('http', function () {
     await expect(res).to.eventually.be.rejectedWith(/aborted/)
   })
 
-  it('should handle errors in streaming bodies', async function () {
+  it.skip('should handle errors in streaming bodies', async function () {
     if (isBrowser || isWebWorker) {
       // streaming bodies not supported by browsers
       return this.skip()
@@ -49,7 +49,7 @@ describe('http', function () {
     await expect(drain(HTTP.ndjson(res.body))).to.eventually.be.rejectedWith(/aborted/)
   })
 
-  it('should handle errors in streaming bodies when a signal is passed', async function () {
+  it.skip('should handle errors in streaming bodies when a signal is passed', async function () {
     if (isBrowser || isWebWorker) {
       // streaming bodies not supported by browsers
       return this.skip()

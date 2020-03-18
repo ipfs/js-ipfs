@@ -8,6 +8,8 @@ const global = require('./globalthis')
 const TextDecoder = require('./text-encoder')
 const Request = global.Request
 const AbortController = require('abort-controller')
+const log = require('debug')('ipfs:http-request')
+log.error = require('debug')('ipfs:http-request:error')
 
 class TimeoutError extends Error {
   constructor () {
@@ -37,10 +39,14 @@ const timeout = (promise, ms, abortController) => {
     }, ms)
 
     promise
-      .then(resolve)
-      .catch(reject)
-      .then(() => {
+      .then((result) => {
         clearTimeout(timeoutID)
+
+        resolve(result)
+      }, (err) => {
+        clearTimeout(timeoutID)
+
+        reject(err)
       })
   })
 }
@@ -97,9 +103,7 @@ class HTTP {
    */
   async fetch (resource, options = {}) {
     /** @type {APIOptions} */
-    const opts = merge(this.opts, options, {
-      signal: this.opts.signal
-    })
+    const opts = merge(this.opts, options)
 
     // validate resource type
     if (typeof resource !== 'string' && !(resource instanceof URL || resource instanceof Request)) {
@@ -121,17 +125,9 @@ class HTTP {
 
     // TODO: try to remove the logic above or fix URL instance input without trailing '/'
     const url = new URL(resource, opts.base)
+
     if (opts.searchParams) {
       url.search = opts.transformSearchParams(new URLSearchParams(opts.searchParams))
-    }
-
-    if (opts.body && (opts.body.on || opts.body.addEventListener)) {
-      const on = (opts.body.on || opts.body.addEventListener).bind(opts.body)
-
-      // body streaming errors are not caught
-      on('error', () => {
-        this.abortController.abort()
-      })
     }
 
     const response = await timeout(fetch(url, opts), opts.timeout, this.abortController)
