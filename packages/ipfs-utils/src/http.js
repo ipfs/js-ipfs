@@ -97,7 +97,9 @@ class HTTP {
    */
   async fetch (resource, options = {}) {
     /** @type {APIOptions} */
-    const opts = merge(this.opts, options)
+    const opts = merge(this.opts, options, {
+      signal: this.opts.signal
+    })
 
     // validate resource type
     if (typeof resource !== 'string' && !(resource instanceof URL || resource instanceof Request)) {
@@ -123,15 +125,12 @@ class HTTP {
       url.search = opts.transformSearchParams(new URLSearchParams(opts.searchParams))
     }
 
-    let bodyErr
-
     if (opts.body && (opts.body.on || opts.body.addEventListener)) {
       const on = (opts.body.on || opts.body.addEventListener).bind(opts.body)
 
-      // TODO: not sure this will work after the high water mark is hit and the request
-      // starts streaming
-      on('error', (err) => {
-        bodyErr = err
+      // body streaming errors are not caught
+      on('error', () => {
+        this.abortController.abort()
       })
     }
 
@@ -142,10 +141,6 @@ class HTTP {
         await opts.handleError(response)
       }
       throw new HTTPError(response)
-    }
-
-    if (bodyErr) {
-      throw bodyErr
     }
 
     return response
@@ -310,34 +305,34 @@ HTTP.streamToAsyncIterator = streamToAsyncIterator
  * @param {APIOptions} options
  * @returns {Promise<Response>}
  */
-HTTP.post = (resource, options) => new HTTP().post(resource, options)
+HTTP.post = (resource, options) => new HTTP(options).post(resource, options)
 
 /**
  * @param {string | URL | Request} resource
  * @param {APIOptions} options
  * @returns {Promise<Response>}
  */
-HTTP.get = (resource, options) => new HTTP().get(resource, options)
+HTTP.get = (resource, options) => new HTTP(options).get(resource, options)
 
 /**
  * @param {string | URL | Request} resource
  * @param {APIOptions} options
  * @returns {Promise<Response>}
  */
-HTTP.put = (resource, options) => new HTTP().put(resource, options)
+HTTP.put = (resource, options) => new HTTP(options).put(resource, options)
 
 /**
  * @param {string | URL | Request} resource
  * @param {APIOptions} options
  * @returns {Promise<Response>}
  */
-HTTP.delete = (resource, options) => new HTTP().delete(resource, options)
+HTTP.delete = (resource, options) => new HTTP(options).delete(resource, options)
 
 /**
  * @param {string | URL | Request} resource
  * @param {APIOptions} options
  * @returns {Promise<Response>}
  */
-HTTP.options = (resource, options) => new HTTP().options(resource, options)
+HTTP.options = (resource, options) => new HTTP(options).options(resource, options)
 
 module.exports = HTTP
