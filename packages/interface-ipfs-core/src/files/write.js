@@ -8,7 +8,7 @@ const multihash = require('multihashes')
 const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const all = require('it-all')
 const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
@@ -28,8 +28,8 @@ if (isNode) {
 module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const smallFile = crypto.randomBytes(13)
-  const largeFile = crypto.randomBytes(490668)
+  const smallFile = randomBytes(13)
+  const largeFile = randomBytes(490668)
 
   const runTest = (fn) => {
     const iterations = 5
@@ -422,7 +422,7 @@ module.exports = (common, options) => {
       for (let i = 0; i < 10; i++) {
         files.push({
           name: `source-file-${Math.random()}.txt`,
-          source: crypto.randomBytes(100)
+          source: randomBytes(100)
         })
       }
 
@@ -442,8 +442,8 @@ module.exports = (common, options) => {
     })
 
     it('rewrites really big files', async function () {
-      const initialStream = crypto.randomBytes(1024 * 300)
-      const newDataStream = crypto.randomBytes(1024 * 300)
+      const initialStream = randomBytes(1024 * 300)
+      const newDataStream = randomBytes(1024 * 300)
 
       const fileName = `/rewrite/file-${Math.random()}.txt`
 

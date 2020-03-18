@@ -5,7 +5,7 @@ const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -55,7 +55,7 @@ module.exports = (common, options) => {
     it('removes a file', async () => {
       const file = `/some-file-${Math.random()}.txt`
 
-      await ipfs.files.write(file, crypto.randomBytes(100), {
+      await ipfs.files.write(file, randomBytes(100), {
         create: true,
         parents: true
       })
@@ -69,11 +69,11 @@ module.exports = (common, options) => {
       const file1 = `/some-file-${Math.random()}.txt`
       const file2 = `/some-file-${Math.random()}.txt`
 
-      await ipfs.files.write(file1, crypto.randomBytes(100), {
+      await ipfs.files.write(file1, randomBytes(100), {
         create: true,
         parents: true
       })
-      await ipfs.files.write(file2, crypto.randomBytes(100), {
+      await ipfs.files.write(file2, randomBytes(100), {
         create: true,
         parents: true
       })
@@ -114,7 +114,7 @@ module.exports = (common, options) => {
       const directory = `/directory-${Math.random()}`
       const file = `${directory}/some-file-${Math.random()}.txt`
 
-      await ipfs.files.write(file, crypto.randomBytes(100), {
+      await ipfs.files.write(file, randomBytes(100), {
         create: true,
         parents: true
       })

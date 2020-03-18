@@ -9,7 +9,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const mh = require('multihashing-async').multihash
 const Block = require('ipfs-block')
 const CID = require('cids')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
@@ -86,10 +86,10 @@ module.exports = (common, options) => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/dest-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true
       })
-      await ipfs.files.write(destination, crypto.randomBytes(100), {
+      await ipfs.files.write(destination, randomBytes(100), {
         create: true
       })
 
@@ -104,7 +104,7 @@ module.exports = (common, options) => {
     it('refuses to copy a file to itself', async () => {
       const source = `/source-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true
       })
 
@@ -119,7 +119,7 @@ module.exports = (common, options) => {
     it('copies a file to new location', async () => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/dest-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(500)
+      const data = randomBytes(500)
 
       await ipfs.files.write(source, data, {
         create: true
@@ -137,7 +137,7 @@ module.exports = (common, options) => {
       const directory = `/dest-directory-${Math.random()}`
       const destination = `${directory}${source}`
 
-      await ipfs.files.write(source, crypto.randomBytes(500), {
+      await ipfs.files.write(source, randomBytes(500), {
         create: true
       })
       await ipfs.files.mkdir(directory)
@@ -179,10 +179,10 @@ module.exports = (common, options) => {
     it('copies multiple files to new location', async () => {
       const sources = [{
         path: `/source-file-${Math.random()}.txt`,
-        data: crypto.randomBytes(500)
+        data: randomBytes(500)
       }, {
         path: `/source-file-${Math.random()}.txt`,
-        data: crypto.randomBytes(500)
+        data: randomBytes(500)
       }]
       const destination = `/dest-dir-${Math.random()}`
 
@@ -207,7 +207,7 @@ module.exports = (common, options) => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/dest-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true
       })
 
@@ -224,7 +224,7 @@ module.exports = (common, options) => {
       const source = `/${dir}/${file}`
       const destination = `/dest-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true,
         parents: true
       })
@@ -240,7 +240,7 @@ module.exports = (common, options) => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/really/deep/path/to/dest-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true
       })
 
@@ -256,7 +256,7 @@ module.exports = (common, options) => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/really/deep/path-${Math.random()}/to-${Math.random()}/dest-file-${Math.random()}.txt`
 
-      await ipfs.files.write(source, crypto.randomBytes(100), {
+      await ipfs.files.write(source, randomBytes(100), {
         create: true
       })
 

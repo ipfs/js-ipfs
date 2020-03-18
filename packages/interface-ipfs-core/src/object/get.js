@@ -6,7 +6,7 @@ const DAGNode = dagPB.DAGNode
 const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const { asDAGLink } = require('./utils')
 const all = require('it-all')
 
@@ -131,7 +131,7 @@ module.exports = (common, options) => {
 
     it('should supply unaltered data', async () => {
       // has to be big enough to span several DAGNodes
-      const data = crypto.randomBytes(1024 * 3000)
+      const data = randomBytes(1024 * 3000)
 
       const result = await all(ipfs.add({
         path: '',

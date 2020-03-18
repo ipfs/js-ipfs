@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -24,7 +24,7 @@ module.exports = (http) => {
           'Content-Disposition: form-data; name="test"; filename="test.txt"',
           'Content-Type: text/plain',
           '',
-          crypto.randomBytes(1024 * 1024 * 2).toString('hex'),
+          randomBytes(1024 * 1024 * 2).toString('hex'),
           '------------287032381131322--'
         ].join('\r\n'))
 

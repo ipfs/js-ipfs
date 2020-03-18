@@ -186,6 +186,7 @@
     "interface-ipfs-core": "^0.132.0",
     "ipfs-interop": "ipfs/interop#fix/name-pubsub",
     "ipfsd-ctl": "^3.0.0",
+    "iso-random-stream": "^1.1.1",
     "it-first": "^1.0.1",
     "nanoid": "^2.1.11",
     "ncp": "^2.0.0",

@@ -6,7 +6,7 @@ const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -16,7 +16,7 @@ const crypto = require('crypto')
 module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const smallFile = crypto.randomBytes(13)
+  const smallFile = randomBytes(13)
 
   describe('.files.read', function () {
     this.timeout(40 * 1000)
@@ -41,7 +41,7 @@ module.exports = (common, options) => {
 
     it('reads a file with an offset', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(100)
+      const data = randomBytes(100)
       const offset = 10
 
       await ipfs.files.write(path, data, {
@@ -57,7 +57,7 @@ module.exports = (common, options) => {
 
     it('reads a file with a length', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(100)
+      const data = randomBytes(100)
       const length = 10
 
       await ipfs.files.write(path, data, {
@@ -73,7 +73,7 @@ module.exports = (common, options) => {
 
     it('reads a file with a legacy count argument', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(100)
+      const data = randomBytes(100)
       const length = 10
 
       await ipfs.files.write(path, data, {
@@ -89,7 +89,7 @@ module.exports = (common, options) => {
 
     it('reads a file with an offset and a length', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(100)
+      const data = randomBytes(100)
       const offset = 10
       const length = 10
 
@@ -107,7 +107,7 @@ module.exports = (common, options) => {
 
     it('reads a file with an offset and a legacy count argument', async () => {
       const path = `/some-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(100)
+      const data = randomBytes(100)
       const offset = 10
       const length = 10
 

@@ -5,7 +5,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const CID = require('cids')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 
 const MFS_FILE_TYPES = {
   file: 0,
@@ -21,7 +21,7 @@ const MFS_FILE_TYPES = {
 module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const largeFile = crypto.randomBytes(490668)
+  const largeFile = randomBytes(490668)
 
   describe('.files.ls', function () {
     this.timeout(40 * 1000)

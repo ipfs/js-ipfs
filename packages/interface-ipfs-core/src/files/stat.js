@@ -9,7 +9,7 @@ const createShardedDirectory = require('../utils/create-sharded-directory')
 const CID = require('cids')
 const mh = require('multihashes')
 const Block = require('ipfs-block')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -20,8 +20,8 @@ const isShardAtPath = require('../utils/is-shard-at-path')
 module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
-  const smallFile = crypto.randomBytes(13)
-  const largeFile = crypto.randomBytes(490668)
+  const smallFile = randomBytes(13)
+  const largeFile = randomBytes(490668)
 
   describe('.files.stat', function () {
     this.timeout(40 * 1000)

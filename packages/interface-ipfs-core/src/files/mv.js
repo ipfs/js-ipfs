@@ -4,7 +4,7 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const concat = require('it-concat')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -40,7 +40,7 @@ module.exports = (common, options) => {
     it('moves a file', async () => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/dest-file-${Math.random()}.txt`
-      const data = crypto.randomBytes(500)
+      const data = randomBytes(500)
 
       await ipfs.files.write(source, data, {
         create: true
