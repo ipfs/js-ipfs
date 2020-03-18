@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -25,7 +25,7 @@ module.exports = (common, options) => {
     it('should list all the keys', async function () {
       this.timeout(60 * 1000)
 
-      const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(hat(), { type: 'rsa', size: 2048 })))
+      const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(nanoid(), { type: 'rsa', size: 2048 })))
 
       const res = await ipfs.key.list()
       expect(res).to.exist()

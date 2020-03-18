@@ -2,7 +2,7 @@
 'use strict'
 
 const fs = require('fs')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const Daemon = require('../../src/cli/daemon')
 const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)
@@ -21,7 +21,7 @@ describe('HTTP API', () => {
   const startHttpAPI = async (config) => {
     http.api = new Daemon({
       repo: repoTests,
-      pass: hat(),
+      pass: nanoid(),
       config,
       preload: { enabled: false }
     })

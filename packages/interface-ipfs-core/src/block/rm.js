@@ -2,7 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -22,7 +22,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should remove by CID object', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -44,7 +44,7 @@ module.exports = (common, options) => {
     })
 
     it('should remove by CID in string', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -56,7 +56,7 @@ module.exports = (common, options) => {
     })
 
     it('should remove by CID in buffer', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -69,15 +69,15 @@ module.exports = (common, options) => {
 
     it('should remove multiple CIDs', async () => {
       const cids = [
-        await ipfs.dag.put(Buffer.from(hat()), {
+        await ipfs.dag.put(Buffer.from(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(Buffer.from(hat()), {
+        await ipfs.dag.put(Buffer.from(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(Buffer.from(hat()), {
+        await ipfs.dag.put(Buffer.from(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         })
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
     })
 
     it('should error when removing non-existent blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -111,7 +111,7 @@ module.exports = (common, options) => {
     })
 
     it('should not error when force removing non-existent blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -128,7 +128,7 @@ module.exports = (common, options) => {
     })
 
     it('should return empty output when removing blocks quietly', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -138,7 +138,7 @@ module.exports = (common, options) => {
     })
 
     it('should error when removing pinned blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(hat()), {
+      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })

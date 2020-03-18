@@ -7,7 +7,7 @@ const ipfsCmd = require('../utils/ipfs-exec')
 const { isWindows } = require('../utils/platforms')
 const os = require('os')
 const path = require('path')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const fs = require('fs')
 const tempWrite = require('temp-write')
 const pkg = require('../../package.json')
@@ -96,7 +96,7 @@ describe('daemon', () => {
   let ipfs
 
   beforeEach(() => {
-    repoPath = path.join(os.tmpdir(), 'ipfs-test-not-found-' + hat())
+    repoPath = path.join(os.tmpdir(), 'ipfs-test-not-found-' + nanoid())
     ipfs = ipfsCmd(repoPath)
   })
 

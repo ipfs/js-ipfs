@@ -5,7 +5,7 @@ const IPFS = require('ipfs')
 const execa = require('execa')
 const os = require('os')
 const path = require('path')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const {
   waitForOutput
 } = require('test-ipfs-example/utils')
@@ -18,7 +18,7 @@ async function testCli () {
 }
 
 async function startCliNode () {
-  const repoDir = path.join(os.tmpdir(), `repo-${hat()}`)
+  const repoDir = path.join(os.tmpdir(), `repo-${nanoid()}`)
   const opts = {
     env: {
       ...process.env,
@@ -43,7 +43,7 @@ async function testProgramatically () {
 }
 
 async function startProgramaticNode () {
-  const repoDir = path.join(os.tmpdir(), `repo-${hat()}`)
+  const repoDir = path.join(os.tmpdir(), `repo-${nanoid()}`)
   const node = await IPFS.create({
     repo: repoDir,
     config: {

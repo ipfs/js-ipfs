@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const DAGNode = require('ipld-dag-pb').DAGNode
 const Readable = require('stream').Readable
@@ -259,7 +259,7 @@ module.exports = (http) => {
       it('pins a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: hat()
+          disambiguator: nanoid()
         }
 
         const res = await api.inject({
@@ -279,7 +279,7 @@ module.exports = (http) => {
       it('does not pin a node after adding', async () => {
         const node = {
           foo: 'bar',
-          disambiguator: hat()
+          disambiguator: nanoid()
         }
 
         const res = await api.inject({

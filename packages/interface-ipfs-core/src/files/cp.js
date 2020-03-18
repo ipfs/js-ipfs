@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const all = require('it-all')
 const concat = require('it-concat')
 const { fixtures } = require('../utils')
@@ -368,8 +368,8 @@ module.exports = (common, options) => {
     })
 
     it('should respect metadata when copying files', async function () {
-      const testSrcPath = `/test-${hat()}`
-      const testDestPath = `/test-${hat()}`
+      const testSrcPath = `/test-${nanoid()}`
+      const testDestPath = `/test-${nanoid()}`
       const mode = parseInt('0321', 8)
       const mtime = new Date()
       const seconds = Math.floor(mtime.getTime() / 1000)
@@ -391,8 +391,8 @@ module.exports = (common, options) => {
     })
 
     it('should respect metadata when copying directories', async function () {
-      const testSrcPath = `/test-${hat()}`
-      const testDestPath = `/test-${hat()}`
+      const testSrcPath = `/test-${nanoid()}`
+      const testDestPath = `/test-${nanoid()}`
       const mode = parseInt('0321', 8)
       const mtime = new Date()
       const seconds = Math.floor(mtime.getTime() / 1000)
@@ -415,7 +415,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect metadata when copying from outside of mfs', async function () {
-      const testDestPath = `/test-${hat()}`
+      const testDestPath = `/test-${nanoid()}`
       const mode = parseInt('0321', 8)
       const mtime = new Date()
       const seconds = Math.floor(mtime.getTime() / 1000)

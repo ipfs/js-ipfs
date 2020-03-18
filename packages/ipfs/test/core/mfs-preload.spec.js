@@ -4,14 +4,14 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
 const multihashing = require('multihashing-async')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')
 
 const fakeCid = async () => {
-  const mh = await multihashing(Buffer.from(hat()), 'sha2-256')
+  const mh = await multihashing(Buffer.from(nanoid()), 'sha2-256')
   return new CID(mh)
 }
 

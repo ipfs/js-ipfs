@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
@@ -15,7 +15,7 @@ module.exports = (common, options) => {
     let ipfs
 
     async function testChmod (initialMode, modification, expectedFinalMode) {
-      const path = `/test-${hat()}`
+      const path = `/test-${nanoid()}`
 
       await ipfs.files.write(path, Buffer.from('Hello world!'), {
         create: true,

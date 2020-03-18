@@ -36,7 +36,6 @@
     "cids": "^0.7.3",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
-    "hat": "0.0.3",
     "ipfs-block": "^0.8.1",
     "ipfs-unixfs": "^1.0.0",
     "ipfs-utils": "^0.7.2",
@@ -51,6 +50,7 @@
     "multibase": "^0.6.0",
     "multihashes": "^0.4.14",
     "multihashing-async": "^0.8.0",
+    "nanoid": "^2.1.11",
     "peer-id": "^0.13.5",
     "readable-stream": "^3.4.0",
     "temp-write": "^4.0.0"

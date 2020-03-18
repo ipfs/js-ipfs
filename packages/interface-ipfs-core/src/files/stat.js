@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -187,7 +187,7 @@ module.exports = (common, options) => {
 
     it('stats an identity CID', async () => {
       const data = Buffer.from('derp')
-      const path = `/test-${hat()}/identity.node`
+      const path = `/test-${nanoid()}/identity.node`
       const cid = new CID(1, 'identity', mh.encode(data, 'identity'))
       await ipfs.block.put(new Block(data, cid))
       await ipfs.files.cp(`/ipfs/${cid}`, path, {
@@ -201,7 +201,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat file with mode', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
       await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
@@ -214,7 +214,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat file with mtime', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
       await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), {
@@ -236,7 +236,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat dir', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
       await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true })
@@ -255,7 +255,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat dir with mode', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
       const stat = await ipfs.files.stat(testDir)
@@ -266,7 +266,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat dir with mtime', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, {
         parents: true,
@@ -287,7 +287,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat sharded dir with mode', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
       await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), {
@@ -305,7 +305,7 @@ module.exports = (common, options) => {
     })
 
     it('should stat sharded dir with mtime', async function () {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, {
         parents: true,

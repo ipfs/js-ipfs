@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const factory = require('../utils/factory')
 
 describe('key exchange', function () {
@@ -11,12 +11,12 @@ describe('key exchange', function () {
   const df = factory()
   let ipfs
   let selfPem
-  const passwordPem = hat()
+  const passwordPem = nanoid()
 
   before(async () => {
     ipfs = (await df.spawn({
       ipfsOptions: {
-        pass: hat()
+        pass: nanoid()
       }
     })).api
   })

@@ -3,7 +3,7 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
 const all = require('it-all')
@@ -30,7 +30,7 @@ module.exports = (common, options) => {
 
     it('should get empty links by multihash', async () => {
       const testObj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 
@@ -60,7 +60,7 @@ module.exports = (common, options) => {
 
     it('should get links by base58 encoded multihash', async () => {
       const testObj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 
@@ -73,7 +73,7 @@ module.exports = (common, options) => {
 
     it('should get links by base58 encoded multihash string', async () => {
       const testObj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 

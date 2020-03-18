@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const concat = require('it-concat')
@@ -16,7 +16,7 @@ module.exports = (common, options) => {
     let ipfs
 
     async function testMtime (mtime, expectedMtime) {
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
 
       await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
         create: true
@@ -39,7 +39,7 @@ module.exports = (common, options) => {
 
     it('should have default mtime', async function () {
       this.slow(5 * 1000)
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
 
       await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
         create: true
@@ -59,7 +59,7 @@ module.exports = (common, options) => {
 
     it('should update file mtime', async function () {
       this.slow(5 * 1000)
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
       const mtime = new Date()
       const seconds = Math.floor(mtime.getTime() / 1000)
 
@@ -76,7 +76,7 @@ module.exports = (common, options) => {
 
     it('should update directory mtime', async function () {
       this.slow(5 * 1000)
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
       const mtime = new Date()
       const seconds = Math.floor(mtime.getTime() / 1000)
 

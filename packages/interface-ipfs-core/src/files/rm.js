@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
@@ -27,7 +27,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should not remove not found file/dir, expect error', () => {
-      const testDir = `/test-${hat()}`
+      const testDir = `/test-${nanoid()}`
 
       return expect(ipfs.files.rm(`${testDir}/a`)).to.eventually.be.rejected()
     })

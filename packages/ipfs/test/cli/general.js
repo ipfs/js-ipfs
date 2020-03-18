@@ -4,7 +4,7 @@
 const os = require('os')
 const fs = require('fs').promises
 const path = require('path')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { repoVersion } = require('ipfs-repo')
 const { promisify } = require('util')
@@ -42,7 +42,7 @@ describe('--migrate', () => {
   }
 
   beforeEach(async () => {
-    repoPath = path.join(os.tmpdir(), `ipfs-${hat()}`)
+    repoPath = path.join(os.tmpdir(), `ipfs-${nanoid()}`)
     const v7RepoPath = path.join(__dirname, '../fixtures/v7-repo')
     await ncp(v7RepoPath, repoPath)
     ipfs = ipfsExec(repoPath)

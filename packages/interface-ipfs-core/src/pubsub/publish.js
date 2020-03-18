@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')
 
@@ -32,7 +32,7 @@ module.exports = (common, options) => {
 
     it('should publish message from buffer', () => {
       const topic = getTopic()
-      return ipfs.pubsub.publish(topic, Buffer.from(hat()))
+      return ipfs.pubsub.publish(topic, Buffer.from(nanoid()))
     })
 
     it('should publish 10 times within time limit', async () => {
@@ -40,7 +40,7 @@ module.exports = (common, options) => {
       const topic = getTopic()
 
       for (let i = 0; i < count; i++) {
-        await ipfs.pubsub.publish(topic, Buffer.from(hat()))
+        await ipfs.pubsub.publish(topic, Buffer.from(nanoid()))
       }
     })
   })

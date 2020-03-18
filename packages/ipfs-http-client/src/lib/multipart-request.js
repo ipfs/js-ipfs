@@ -2,11 +2,11 @@
 
 const normaliseInput = require('ipfs-utils/src/files/normalise-input')
 const toStream = require('./to-stream')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 
-async function multipartRequest (source, boundary = `-----------------------------${hat()}`) {
+async function multipartRequest (source, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {
       let index = 0

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const multihash = require('multihashes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
@@ -23,7 +23,7 @@ module.exports = (common, options) => {
     let ipfs
 
     async function testMode (mode, expectedMode) {
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
       await ipfs.files.mkdir(testPath, {
         mode
       })
@@ -33,7 +33,7 @@ module.exports = (common, options) => {
     }
 
     async function testMtime (mtime, expectedMtime) {
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
       await ipfs.files.mkdir(testPath, {
         mtime
       })

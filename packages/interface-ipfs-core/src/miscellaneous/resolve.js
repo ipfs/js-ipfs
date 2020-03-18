@@ -3,7 +3,7 @@
 
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
@@ -55,7 +55,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve up to the last node', async () => {
-      const content = { path: { to: { file: hat() } } }
+      const content = { path: { to: { file: nanoid() } } }
       const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
       const cid = await ipfs.dag.put(content, options)
       const path = `/ipfs/${cid}/path/to/file`
@@ -66,7 +66,7 @@ module.exports = (common, options) => {
 
     it('should resolve up to the last node across multiple nodes', async () => {
       const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
-      const childCid = await ipfs.dag.put({ node: { with: { file: hat() } } }, options)
+      const childCid = await ipfs.dag.put({ node: { with: { file: nanoid() } } }, options)
       const parentCid = await ipfs.dag.put({ path: { to: childCid } }, options)
       const resolved = await ipfs.resolve(`/ipfs/${parentCid}/path/to/node/with/file`)
 

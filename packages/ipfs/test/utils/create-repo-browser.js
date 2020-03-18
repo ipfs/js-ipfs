@@ -2,7 +2,7 @@
 'use strict'
 
 const IPFSRepo = require('ipfs-repo')
-const hat = require('hat')
+const nanoid = require('nanoid')
 
 const idb = self.indexedDB ||
   self.mozIndexedDB ||
@@ -10,7 +10,7 @@ const idb = self.indexedDB ||
   self.msIndexedDB
 
 module.exports = function createTempRepo (repoPath) {
-  repoPath = repoPath || '/ipfs-' + hat()
+  repoPath = repoPath || '/ipfs-' + nanoid()
 
   const repo = new IPFSRepo(repoPath)
 

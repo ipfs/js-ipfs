@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const pmap = require('p-map')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Block = require('ipfs-block')
@@ -12,7 +12,7 @@ const concat = require('it-concat')
 const factory = require('../utils/factory')
 
 const makeBlock = async () => {
-  const d = Buffer.from(`IPFS is awesome ${hat()}`)
+  const d = Buffer.from(`IPFS is awesome ${nanoid()}`)
   const h = await multihashing(d, 'sha2-256')
 
   return new Block(d, new CID(h))
@@ -65,7 +65,7 @@ describe('bitswap', function () {
     it('2 peers', async () => {
       // TODO make this test more interesting (10Mb file)
       // TODO remove randomness from the test
-      const file = Buffer.from(`I love IPFS <3 ${hat()}`)
+      const file = Buffer.from(`I love IPFS <3 ${nanoid()}`)
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
       proc.swarm.connect(remote.peerId.addresses[0])

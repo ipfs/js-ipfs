@@ -3,7 +3,7 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
 const crypto = require('crypto')
@@ -32,7 +32,7 @@ module.exports = (common, options) => {
 
     it('should get object by multihash', async () => {
       const obj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 
@@ -52,7 +52,7 @@ module.exports = (common, options) => {
 
     it('should get object by multihash string', async () => {
       const obj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 
@@ -91,7 +91,7 @@ module.exports = (common, options) => {
 
     it('should get object by base58 encoded multihash', async () => {
       const obj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 
@@ -111,7 +111,7 @@ module.exports = (common, options) => {
 
     it('should get object by base58 encoded multihash string', async () => {
       const obj = {
-        Data: Buffer.from(hat()),
+        Data: Buffer.from(nanoid()),
         Links: []
       }
 

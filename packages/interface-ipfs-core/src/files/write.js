@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
 const multihash = require('multihashes')
@@ -67,7 +67,7 @@ module.exports = (common, options) => {
     let ipfs
 
     async function testMode (mode, expectedMode) {
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
 
       await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
         create: true,
@@ -80,7 +80,7 @@ module.exports = (common, options) => {
     }
 
     async function testMtime (mtime, expectedMtime) {
-      const testPath = `/test-${hat()}`
+      const testPath = `/test-${nanoid()}`
 
       await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
         create: true,

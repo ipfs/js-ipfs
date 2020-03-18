@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -36,8 +36,8 @@ module.exports = (common, options) => {
     // "invalid record keytype" - it needs to put a valid key and value for it to
     // be a useful test.
     it.skip('should get a value after it was put on another node', async () => {
-      const key = Buffer.from(hat())
-      const value = Buffer.from(hat())
+      const key = Buffer.from(nanoid())
+      const value = Buffer.from(nanoid())
 
       await nodeB.dht.put(key, value)
       const result = await nodeA.dht.get(key)

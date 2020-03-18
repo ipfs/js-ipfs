@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
 const delay = require('delay')
@@ -81,7 +81,7 @@ describe('name', function () {
     let nodeB
     let nodeC
 
-    const createNode = () => df.spawn({ ipfsOptions: { pass: hat() } })
+    const createNode = () => df.spawn({ ipfsOptions: { pass: nanoid() } })
 
     before(async function () {
       this.timeout(70 * 1000)
@@ -104,7 +104,7 @@ describe('name', function () {
 
     it('should recursively resolve to an IPFS hash', async function () {
       this.timeout(360 * 1000)
-      const keyName = hat()
+      const keyName = nanoid()
 
       const key = await nodeA.key.gen(keyName, { type: 'rsa', size: 2048 })
 
