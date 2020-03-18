@@ -34,13 +34,13 @@ describe('http', function () {
     }
 
     const err = new Error('Should be caught')
-    const body = async function * () {
+    const body = (async function * () {
       yield Buffer.from('{}\n')
 
       await delay(100)
 
       throw err
-    }()
+    }())
 
     const res = await HTTP.post('http://localhost:3000', {
       body: toStream.readable(body)
@@ -57,13 +57,13 @@ describe('http', function () {
 
     const controller = new AbortController()
     const err = new Error('Should be caught')
-    const body = async function * () {
+    const body = (async function * () {
       yield Buffer.from('{}\n')
 
       await delay(100)
 
       throw err
-    }()
+    }())
 
     const res = await HTTP.post('http://localhost:3000', {
       body: toStream.readable(body),
