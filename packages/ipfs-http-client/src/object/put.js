@@ -3,7 +3,7 @@
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
 const { Buffer } = require('buffer')
-const toFormData = require('../lib/buffer-to-form-data')
+const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 
 module.exports = configure(api => {
@@ -47,7 +47,9 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options,
-      body: toFormData(buf)
+      ...(
+        await multipartRequest(buf)
+      )
     })
 
     const { Hash } = await res.json()

@@ -32,17 +32,17 @@
   "dependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "chai-things": "^0.2.0",
+    "chai-subset": "^1.6.0",
     "cids": "^0.7.3",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
-    "hat": "0.0.3",
     "ipfs-block": "^0.8.1",
     "ipfs-unixfs": "^1.0.0",
     "ipfs-utils": "^0.7.2",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.3",
     "is-ipfs": "^0.6.1",
+    "iso-random-stream": "^1.1.1",
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",
     "it-last": "^1.0.1",
@@ -51,11 +51,13 @@
     "multibase": "^0.6.0",
     "multihashes": "^0.4.14",
     "multihashing-async": "^0.8.0",
+    "nanoid": "^2.1.11",
     "peer-id": "^0.13.5",
-    "readable-stream": "^3.4.0"
+    "readable-stream": "^3.4.0",
+    "temp-write": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^21.3.0",
+    "aegir": "21.3.0",
     "ipfsd-ctl": "^3.0.0"
   },
   "contributors": [

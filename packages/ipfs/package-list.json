@@ -30,7 +30,6 @@
     ["ipfs/js-ipfs", "ipfs-http-client"],
     ["ipfs/js-ipfs-http-response", "ipfs-http-response"],
     ["ipfs/js-ipfsd-ctl", "ipfsd-ctl"],
-    ["ipfs/js-ipfs", "ipfs-multipart"],
     ["ipfs/is-ipfs", "is-ipfs"],
     ["ipfs/aegir", "aegir"],
     ["ipfs/js-ipfs-repo-migrations", "ipfs-repo-migrations"],

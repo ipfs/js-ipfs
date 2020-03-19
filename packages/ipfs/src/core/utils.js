@@ -5,10 +5,20 @@ const CID = require('cids')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
 const parseDuration = require('parse-duration')
+const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
+
+exports.MFS_FILE_TYPES = {
+  file: 0,
+  directory: 1,
+  'hamt-sharded-directory': 1
+}
+exports.MFS_ROOT_KEY = new Key('/local/filesroot')
+exports.MFS_MAX_CHUNK_SIZE = 262144
+exports.MFS_MAX_LINKS = 174
 
 /**
  * Break an ipfs-path down into it's hash and an array of links.

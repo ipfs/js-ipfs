@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -25,8 +25,8 @@ module.exports = (common, options) => {
     it('should rename a key', async function () {
       this.timeout(30 * 1000)
 
-      const oldName = hat()
-      const newName = hat()
+      const oldName = nanoid()
+      const newName = nanoid()
 
       const key = await ipfs.key.gen(oldName, { type: 'rsa', size: 2048 })
 

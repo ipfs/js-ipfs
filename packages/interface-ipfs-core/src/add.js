@@ -4,6 +4,7 @@
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')
+const last = require('it-last')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -13,7 +14,6 @@ const urlSource = require('ipfs-utils/src/files/url-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const { echoUrl, redirectUrl } = require('./utils/echo-http-server')
-
 const fixturesPath = path.join(__dirname, '..', 'test', 'fixtures')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -221,9 +221,8 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(ipfs.add(dirs))
+      const root = await last(ipfs.add(dirs))
 
-      const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })
@@ -258,9 +257,7 @@ module.exports = (common, options) => {
         accumProgress += p
       }
 
-      const filesAdded = await all(ipfs.add(dirs, { progress: handler }))
-
-      const root = filesAdded[filesAdded.length - 1]
+      const root = await last(ipfs.add(dirs, { progress: handler }))
       expect(progCalled).to.be.true()
       expect(accumProgress).to.be.at.least(total)
       expect(root.path).to.equal('test-folder')
@@ -289,10 +286,10 @@ module.exports = (common, options) => {
       expect(nonSeqDirFilePaths.every(p => filesAddedPaths.includes(p))).to.be.true()
     })
 
-    it('should fail when passed invalid input', () => {
+    it('should fail when passed invalid input', async () => {
       const nonValid = 138
 
-      return expect(all(ipfs.add(nonValid))).to.eventually.be.rejected()
+      await expect(all(ipfs.add(nonValid))).to.eventually.be.rejected()
     })
 
     it('should wrap content in a directory', async () => {

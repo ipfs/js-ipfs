@@ -2,7 +2,7 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const toFormData = require('../../lib/buffer-to-form-data')
+const multipartRequest = require('../../lib/multipart-request')
 const configure = require('../../lib/configure')
 
 module.exports = configure(api => {
@@ -14,7 +14,9 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams,
-      body: toFormData(data)
+      ...(
+        await multipartRequest(data)
+      )
     })).json()
 
     return new CID(Hash)

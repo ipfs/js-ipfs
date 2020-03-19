@@ -7,7 +7,7 @@ const { URL, URLSearchParams } = require('iso-url')
 const global = require('./globalthis')
 const TextDecoder = require('./text-encoder')
 const Request = global.Request
-const AbortController = global.AbortController
+const AbortController = require('abort-controller')
 
 class TimeoutError extends Error {
   constructor () {
@@ -33,16 +33,18 @@ const timeout = (promise, ms, abortController) => {
     const timeoutID = setTimeout(() => {
       reject(new TimeoutError())
 
-      if (AbortController) {
-        abortController.abort()
-      }
+      abortController.abort()
     }, ms)
 
     promise
-      .then(resolve)
-      .catch(reject)
-      .then(() => {
+      .then((result) => {
         clearTimeout(timeoutID)
+
+        resolve(result)
+      }, (err) => {
+        clearTimeout(timeoutID)
+
+        reject(err)
       })
   })
 }
@@ -79,16 +81,15 @@ class HTTP {
     this.opts = merge(defaults, options)
 
     // connect internal abort to external
-    if (AbortController) {
-      this.abortController = new AbortController()
-      if (this.opts.signal) {
-        this.opts.signal.addEventListener('abort', () => {
-          this.abortController.abort()
-        })
-      }
+    this.abortController = new AbortController()
 
-      this.opts.signal = this.abortController.signal
+    if (this.opts.signal) {
+      this.opts.signal.addEventListener('abort', () => {
+        this.abortController.abort()
+      })
     }
+
+    this.opts.signal = this.abortController.signal
   }
 
   /**
@@ -122,6 +123,7 @@ class HTTP {
 
     // TODO: try to remove the logic above or fix URL instance input without trailing '/'
     const url = new URL(resource, opts.base)
+
     if (opts.searchParams) {
       url.search = opts.transformSearchParams(new URLSearchParams(opts.searchParams))
     }
@@ -134,6 +136,7 @@ class HTTP {
       }
       throw new HTTPError(response)
     }
+
     return response
   }
 
@@ -290,5 +293,40 @@ HTTP.HTTPError = HTTPError
 HTTP.TimeoutError = TimeoutError
 HTTP.ndjson = ndjson
 HTTP.streamToAsyncIterator = streamToAsyncIterator
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.post = (resource, options) => new HTTP(options).post(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.get = (resource, options) => new HTTP(options).get(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.put = (resource, options) => new HTTP(options).put(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.delete = (resource, options) => new HTTP(options).delete(resource, options)
+
+/**
+ * @param {string | URL | Request} resource
+ * @param {APIOptions} options
+ * @returns {Promise<Response>}
+ */
+HTTP.options = (resource, options) => new HTTP(options).options(resource, options)
 
 module.exports = HTTP

@@ -116,6 +116,26 @@ async function getIpfs (argv) {
   }
 }
 
+const asBoolean = (value) => {
+  if (value === false || value === true) {
+    return value
+  }
+
+  if (value === undefined) {
+    return true
+  }
+
+  return false
+}
+
+const asOctal = (value) => {
+  return parseInt(value, 8)
+}
+
+const asDateFromSeconds = (value) => {
+  return new Date(parseInt(value, 10) * 1000)
+}
+
 module.exports = {
   getIpfs,
   isDaemonOn,
@@ -124,5 +144,8 @@ module.exports = {
   print,
   createProgressBar,
   rightpad,
-  ipfsPathHelp
+  ipfsPathHelp,
+  asBoolean,
+  asOctal,
+  asDateFromSeconds
 }

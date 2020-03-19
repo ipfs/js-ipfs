@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -18,7 +18,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.name.publish offline', () => {
-    const keyName = hat()
+    const keyName = nanoid()
     let ipfs
     let nodeId
 

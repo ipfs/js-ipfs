@@ -3,14 +3,17 @@
 const { Buffer } = require('buffer')
 const toIterable = require('stream-to-it/source')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * read (path, options = {}) {
-    options.arg = path
     const res = await api.post('files/read', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams(path, {
+        ...options,
+        count: options.count || options.length
+      })
     })
 
     for await (const chunk of toIterable(res.body)) {

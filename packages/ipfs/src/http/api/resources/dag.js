@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-const multipart = require('ipfs-multipart')
+const multipart = require('../../utils/multipart-request-parser')
 const mh = require('multihashes')
 const Joi = require('@hapi/joi')
 const multibase = require('multibase')

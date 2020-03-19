@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const all = require('it-all')
 const factory = require('../utils/factory')
 
@@ -27,7 +27,7 @@ describe('block', () => {
 
   describe('put', () => {
     it('should not error when passed null options', () => {
-      return ipfs.block.put(Buffer.from(hat()), null)
+      return ipfs.block.put(Buffer.from(nanoid()), null)
     })
   })
 
@@ -47,7 +47,7 @@ describe('block', () => {
     })
 
     it('should not error when passed null options', async () => {
-      const block = await ipfs.block.put(Buffer.from(hat()))
+      const block = await ipfs.block.put(Buffer.from(nanoid()))
       return ipfs.block.stat(block.cid, null)
     })
   })

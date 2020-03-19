@@ -7,7 +7,7 @@ const Daemon = require('../../src/cli/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
 const path = require('path')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const fileType = require('file-type')
 const CID = require('cids')
 const all = require('it-all')
@@ -32,7 +32,7 @@ describe('HTTP Gateway', function () {
 
   before(async () => {
     this.timeout(60 * 1000)
-    const repoPath = path.join(os.tmpdir(), '/ipfs-' + hat())
+    const repoPath = path.join(os.tmpdir(), '/ipfs-' + nanoid())
 
     http.api = new Daemon({
       repo: repoPath,

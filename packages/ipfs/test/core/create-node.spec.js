@@ -6,7 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
 const os = require('os')
 const path = require('path')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { isNode } = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
 
@@ -26,7 +26,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = await IPFS.create({
-      repo: path.join(os.tmpdir(), 'ipfs-repo-' + hat()),
+      repo: path.join(os.tmpdir(), 'ipfs-repo-' + nanoid()),
       init: { bits: 512 },
       config: {
         Addresses: {

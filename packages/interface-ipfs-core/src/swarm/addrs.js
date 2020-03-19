@@ -35,12 +35,14 @@ module.exports = (common, options) => {
       expect(peerInfos).to.not.be.empty()
       expect(peerInfos).to.be.an('array')
 
-      expect(peerInfos).to.all.satisfy(peerInfo => {
+      for (const peerInfo of peerInfos) {
         expect(CID.isCID(new CID(peerInfo.id))).to.be.true()
-        expect(peerInfo).to.have.a.property('addrs').that.is.an('array').and.all.satisfy(ma => Multiaddr.isMultiaddr(ma))
+        expect(peerInfo).to.have.a.property('addrs').that.is.an('array')
 
-        return true
-      })
+        for (const ma of peerInfo.addrs) {
+          expect(Multiaddr.isMultiaddr(ma)).to.be.true()
+        }
+      }
     })
   })
 }

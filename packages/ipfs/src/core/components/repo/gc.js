@@ -3,7 +3,7 @@
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:repo:gc')
-const { MFS_ROOT_KEY } = require('ipfs-mfs/src/core/utils/constants')
+const { MFS_ROOT_KEY } = require('../../utils')
 const Repo = require('ipfs-repo')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code

@@ -43,9 +43,11 @@ const commonOverrides = {
   }
 }
 
-const factory = (options = {}, overrides = {}) => createFactory(
-  merge(commonOptions, options),
-  merge(commonOverrides, overrides)
-)
+const factory = (options = {}, overrides = {}) => {
+  return createFactory(
+    merge(commonOptions, options),
+    merge(commonOverrides, overrides)
+  )
+}
 
 module.exports = factory

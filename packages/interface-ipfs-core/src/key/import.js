@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const nanoid = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -23,7 +23,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should import an exported key', async () => {
-      const password = hat()
+      const password = nanoid()
 
       const pem = await ipfs.key.export('self', password)
       expect(pem).to.exist()

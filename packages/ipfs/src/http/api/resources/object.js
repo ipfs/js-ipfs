@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-const multipart = require('ipfs-multipart')
+const multipart = require('../../utils/multipart-request-parser')
 const all = require('it-all')
 const dagPB = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagPB

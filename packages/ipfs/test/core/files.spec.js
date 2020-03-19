@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const all = require('it-all')
 const factory = require('../utils/factory')
 
@@ -30,7 +30,7 @@ describe('files', function () {
 
   describe('add', () => {
     it('should not error when passed null options', async () => {
-      await all(ipfs.add(Buffer.from(hat()), null))
+      await all(ipfs.add(Buffer.from(nanoid()), null))
     })
 
     it('should add a file with a v1 CID', async () => {

@@ -120,7 +120,24 @@ describe('interface-ipfs-core tests', () => {
 
   tests.dht(commonFactory)
 
-  tests.files(commonFactory, {
+  tests.files(factory({}, {
+    go: {
+      ipfsOptions: {
+        config: {
+          Experimental: {
+            ShardingEnabled: true
+          }
+        }
+      }
+    },
+    js: {
+      ipfsOptions: {
+        EXPERIMENTAL: {
+          sharding: true
+        }
+      }
+    }
+  }), {
     skip: [
       {
         name: 'should ls directory',
@@ -143,19 +160,51 @@ describe('interface-ipfs-core tests', () => {
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode',
+        name: 'should update the mode for a file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change directory mode',
+        name: 'should update the mode for a directory',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode as string',
+        name: 'should update the mode for a hamt-sharded-directory',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should change file mode to 0',
+        name: 'should update modes with basic symbolic notation that adds bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with basic symbolic notation that removes bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with basic symbolic notation that overrides bits',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with multiple symbolic notation',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update modes with special symbolic notation',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to world',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to user',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to user and group',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should apply special execute permissions to sharded directories',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -164,6 +213,14 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should update directory mtime',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should update the mtime for a hamt-sharded-directory',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should create an empty file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -289,6 +346,106 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should stat sharded dir with mtime',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'lists a raw node',
+        reason: 'TODO go-ipfs does not support ipfs paths for all mfs commands'
+      },
+      {
+        name: 'lists a raw node in an mfs directory',
+        reason: 'TODO go-ipfs does not support non-ipfs nodes in mfs'
+      },
+      {
+        name: 'writes a small file with an escaped slash in the title',
+        reason: 'TODO go-ipfs does not support escapes in paths'
+      },
+      {
+        name: 'overwrites a file with a different CID version',
+        reason: 'TODO go-ipfs does not support changing the CID version'
+      },
+      {
+        name: 'partially overwrites a file with a different CID version',
+        reason: 'TODO go-ipfs does not support changing the CID version'
+      },
+      {
+        name: 'refuses to copy multiple files to a non-existent child directory',
+        reason: 'TODO go-ipfs does not support copying multiple files at once'
+      },
+      {
+        name: 'refuses to copy files to an unreadable node',
+        reason: 'TODO go-ipfs does not support identity format, maybe in 0.5.0?'
+      },
+      {
+        name: 'copies a file to a pre-existing directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'copies multiple files to new location',
+        reason: 'TODO go-ipfs does not support copying multiple files at once'
+      },
+      {
+        name: 'copies files to deep mfs paths and creates intermediate directories',
+        reason: 'TODO go-ipfs does not support the parents flag in the cp command'
+      },
+      {
+        name: 'copies a sharded directory to a normal directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'copies a normal directory to a sharded directory',
+        reason: 'TODO go-ipfs does not copying files into existing directories if the directory is specify as the target path'
+      },
+      {
+        name: 'removes multiple files',
+        reason: 'TODO go-ipfs does not support removing multiple files'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a file',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "85675" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "2109" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a file from a subshard of a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "170441" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when removing a subshard of a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "11463" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a new file',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "5835" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when creating a new subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "8038" to type "bool" (for option "-size")'
+      },
+      {
+        name: ' results in the same hash as a sharded directory created by the importer when adding a file to a subshard',
+        reason: 'TODO go-ipfs errors out with HTTPError: Could not convert value "6620" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a file to a subshard',
+        reason: 'HTTPError: Could not convert value "6620" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard',
+        reason: 'HTTPError: Could not convert value "170441" to type "bool" (for option "-size")'
+      },
+      {
+        name: 'stats a dag-cbor node',
+        reason: 'TODO go-ipfs does not support non-dag-pb nodes in mfs'
+      },
+      {
+        name: 'stats an identity CID',
+        reason: 'TODO go-ipfs does not support non-dag-pb nodes in mfs'
+      },
+      {
+        name: 'limits how many bytes to write to a file (Really large file)',
+        reason: 'TODO go-ipfs drops the connection'
       }
     ]
   })

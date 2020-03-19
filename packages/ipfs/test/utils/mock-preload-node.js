@@ -5,7 +5,7 @@ const http = require('http')
 const toUri = require('multiaddr-to-uri')
 const URL = require('url').URL || self.URL
 const errCode = require('err-code')
-const { default: ky } = require('ky-universal')
+const HTTP = require('ipfs-utils/src/http')
 const waitFor = require('../utils/wait-for')
 
 const defaultPort = 1138
@@ -55,12 +55,18 @@ module.exports.createNode = () => {
 }
 
 // Get the stored preload CIDs for the server at `addr`
-const getPreloadCids = addr => ky.get(`${toUri(addr || defaultAddr)}/cids`).json()
+const getPreloadCids = async (addr) => {
+  const res = await HTTP.get(`${toUri(addr || defaultAddr)}/cids`)
+  return res.json()
+}
 
 module.exports.getPreloadCids = getPreloadCids
 
 // Clear the stored preload URLs for the server at `addr`
-module.exports.clearPreloadCids = addr => ky.delete(`${toUri(addr || defaultAddr)}/cids`)
+
+module.exports.clearPreloadCids = addr => {
+  return HTTP.delete(`${toUri(addr || defaultAddr)}/cids`)
+}
 
 // Wait for the passed CIDs to appear in the CID list from the preload node
 module.exports.waitForCids = async (cids, opts) => {

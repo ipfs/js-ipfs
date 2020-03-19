@@ -29,9 +29,13 @@ module.exports = (common, options) => {
       expect(res).to.have.a.property('id').that.is.a('string')
       expect(CID.isCID(new CID(res.id))).to.equal(true)
       expect(res).to.have.a.property('publicKey')
-      expect(res).to.have.a.property('addresses').that.is.an('array').and.all.satisfy(ma => Multiaddr.isMultiaddr(ma))
       expect(res).to.have.a.property('agentVersion').that.is.a('string')
       expect(res).to.have.a.property('protocolVersion').that.is.a('string')
+      expect(res).to.have.a.property('addresses').that.is.an('array')
+
+      for (const ma of res.addresses) {
+        expect(Multiaddr.isMultiaddr(ma)).to.be.true()
+      }
     })
   })
 }

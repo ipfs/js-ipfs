@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const hat = require('hat')
+const nanoid = require('nanoid')
 const factory = require('../utils/factory')
 
 describe('object', function () {
@@ -26,21 +26,21 @@ describe('object', function () {
     })
 
     it('should not error when passed null options', async () => {
-      const cid = await ipfs.object.put(Buffer.from(hat()))
+      const cid = await ipfs.object.put(Buffer.from(nanoid()))
       await ipfs.object.get(cid)
     })
   })
 
   describe('put', () => {
     it('should not error when passed null options', () => {
-      return ipfs.object.put(Buffer.from(hat()), null)
+      return ipfs.object.put(Buffer.from(nanoid()), null)
     })
   })
 
   describe('patch.addLink', () => {
     it('should not error when passed null options', async () => {
-      const aCid = await ipfs.object.put(Buffer.from(hat()))
-      const bCid = await ipfs.object.put(Buffer.from(hat()))
+      const aCid = await ipfs.object.put(Buffer.from(nanoid()))
+      const bCid = await ipfs.object.put(Buffer.from(nanoid()))
       const bNode = await ipfs.object.get(bCid)
 
       const link = {
@@ -55,8 +55,8 @@ describe('object', function () {
 
   describe('patch.rmLink', () => {
     it('should not error when passed null options', async () => {
-      const aCid = await ipfs.object.put(Buffer.from(hat()))
-      const bCid = await ipfs.object.put(Buffer.from(hat()))
+      const aCid = await ipfs.object.put(Buffer.from(nanoid()))
+      const bCid = await ipfs.object.put(Buffer.from(nanoid()))
       const bNode = await ipfs.object.get(bCid)
 
       const cCid = await ipfs.object.patch.addLink(aCid, {
@@ -72,15 +72,15 @@ describe('object', function () {
 
   describe('patch.appendData', () => {
     it('should not error when passed null options', async () => {
-      const cid = await ipfs.object.put(Buffer.from(hat()), null)
-      await ipfs.object.patch.appendData(cid, Buffer.from(hat()), null)
+      const cid = await ipfs.object.put(Buffer.from(nanoid()), null)
+      await ipfs.object.patch.appendData(cid, Buffer.from(nanoid()), null)
     })
   })
 
   describe('patch.setData', () => {
     it('should not error when passed null options', async () => {
-      const cid = await ipfs.object.put(Buffer.from(hat()), null)
-      await ipfs.object.patch.setData(cid, Buffer.from(hat()), null)
+      const cid = await ipfs.object.put(Buffer.from(nanoid()), null)
+      await ipfs.object.patch.setData(cid, Buffer.from(nanoid()), null)
     })
   })
 })

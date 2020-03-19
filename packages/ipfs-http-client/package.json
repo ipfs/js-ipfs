@@ -15,8 +15,7 @@
   ],
   "main": "src/index.js",
   "browser": {
-    "./src/add/form-data.js": "./src/add/form-data.browser.js",
-    "./src/lib/buffer-to-form-data.js": "./src/lib/buffer-to-form-data.browser.js",
+    "./src/lib/to-stream.js": "./src/lib/to-stream.browser.js",
     "ipfs-utils/src/files/glob-source": false
   },
   "repository": {
@@ -53,6 +52,7 @@
     "ipld-raw": "^4.0.1",
     "iso-url": "^0.4.6",
     "it-tar": "^1.2.1",
+    "it-to-buffer": "^1.0.0",
     "it-to-stream": "^0.1.1",
     "merge-options": "^2.0.0",
     "multiaddr": "^7.2.1",
@@ -60,12 +60,13 @@
     "multibase": "^0.6.0",
     "multicodec": "^1.0.0",
     "multihashes": "^0.4.14",
+    "nanoid": "^2.1.11",
     "node-fetch": "^2.6.0",
     "parse-duration": "^0.1.2",
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "^21.3.0",
+    "aegir": "21.3.0",
     "browser-process-platform": "^0.1.1",
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "0.4.23-3",

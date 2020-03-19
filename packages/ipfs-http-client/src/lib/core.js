@@ -122,6 +122,7 @@ class Client extends HTTP {
             out.append(kebabCase(key), value)
           }
         }
+
         return out
       }
     })
