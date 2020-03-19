@@ -8,8 +8,6 @@ const global = require('./globalthis')
 const TextDecoder = require('./text-encoder')
 const Request = global.Request
 const AbortController = require('abort-controller')
-const log = require('debug')('ipfs:http-request')
-log.error = require('debug')('ipfs:http-request:error')
 
 class TimeoutError extends Error {
   constructor () {
