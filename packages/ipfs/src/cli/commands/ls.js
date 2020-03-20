@@ -3,8 +3,8 @@
 const multibase = require('multibase')
 const { rightpad } = require('../utils')
 const { cidToString } = require('../../utils/cid')
-const formatMode = require('ipfs-utils/src/files/format-mode')
-const formatMtime = require('ipfs-utils/src/files/format-mtime')
+const formatMode = require('ipfs-core-utils/src/files/format-mode')
+const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
 
 module.exports = {
   command: 'ls <key>',
