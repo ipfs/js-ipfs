@@ -131,7 +131,7 @@ jobs:
     - stage: test
       name: examples
       script:
-        - npm run build -- --scope={ipfs,ipfs-http-client}
+        - npm run build
         - npm run test -- $RUN_SINCE --scope=example* --concurrency=1
 
     - stage: release-rc
@@ -139,6 +139,7 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release rc
       script:
+        - npm run build
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
 

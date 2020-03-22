@@ -2,7 +2,7 @@
 
 const errCode = require('err-code')
 const { Buffer } = require('buffer')
-const globalThis = require('../globalthis')
+const globalThis = require('ipfs-utils/src/globalthis')
 
 /*
  * Transform one of:

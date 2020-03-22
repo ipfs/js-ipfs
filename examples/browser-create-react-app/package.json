@@ -6,8 +6,8 @@
     "dot-prop": "^5.0.0",
     "ipfs": "^0.41.0",
     "ipfs-css": "^0.13.1",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-scripts": "^3.2.0",
     "tachyons": "^4.11.1"
   },
