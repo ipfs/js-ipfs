@@ -753,7 +753,7 @@ Where:
 Each object contains the following keys:
 
 - `name` which is the file's name
-- `type` which is the object's type (`directory` or `file`)
+- `type` which is the object's type (`0` for files or `1` for directories)
 - `size` the size of the file in bytes
 - `cid` the hash of the file (A [CID][cid] instance)
 - `mode` the UnixFS mode as a Number
