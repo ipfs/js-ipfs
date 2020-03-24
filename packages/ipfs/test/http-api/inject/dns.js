@@ -3,41 +3,79 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
+const sinon = require('sinon')
 
-module.exports = (http) => {
-  describe('/dns', () => {
-    let api
+describe('/dns', () => {
+  let ipfs
 
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
-    })
-
-    it('only accepts POST', () => {
-      return testHttpMethod('/api/v0/dns?arg=ipfs.io')
-    })
-
-    it('resolve ipfs.io DNS', async () => {
-      const res = await api.inject({
-        method: 'POST',
-        url: '/api/v0/dns?arg=ipfs.io'
-      })
-
-      expect(res.result).to.have.property('Path')
-    })
-
-    it('resolve ipfs.enstest.eth ENS', async function () {
-      const res = await api.inject({
-        method: 'POST',
-        url: '/api/v0/dns?arg=ipfs.enstest.eth'
-      })
-
-      // TODO: eth.link domains have no SLA yet and are liable to be down...
-      // Remove skip when reliable!
-      if (res.statusCode === 500) {
-        return this.skip()
-      }
-
-      expect(res.result).to.have.property('Path')
-    })
+  beforeEach(() => {
+    ipfs = {
+      dns: sinon.stub()
+    }
   })
-}
+
+  it('only accepts POST', () => {
+    return testHttpMethod('/api/v0/dns?arg=ipfs.io')
+  })
+
+  it('resolves a domain', async () => {
+    const domain = 'ipfs.io'
+    ipfs.dns.withArgs(domain, sinon.match({
+      recursive: false,
+      format: undefined
+    })).returns('path')
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/dns?arg=${domain}`
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Path', 'path')
+  })
+
+  it('resolves a domain recursively', async () => {
+    const domain = 'ipfs.io'
+    ipfs.dns.withArgs(domain, sinon.match({
+      recursive: true,
+      format: undefined
+    })).returns('path')
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/dns?arg=${domain}&recursive=true`
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Path', 'path')
+  })
+
+  it('resolves a domain recursively (short option)', async () => {
+    const domain = 'ipfs.io'
+    ipfs.dns.withArgs(domain, sinon.match({
+      recursive: true,
+      format: undefined
+    })).returns('path')
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/dns?arg=${domain}&r=true`
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Path', 'path')
+  })
+
+  it('resolves a domain with a format', async () => {
+    const domain = 'ipfs.io'
+    ipfs.dns.withArgs(domain, sinon.match({
+      recursive: false,
+      format: 'derp'
+    })).returns('path')
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/dns?arg=${domain}&format=derp`
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Path', 'path')
+  })
+})

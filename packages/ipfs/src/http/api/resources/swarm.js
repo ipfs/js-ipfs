@@ -26,7 +26,9 @@ exports.peers = {
     const verbose = rawVerbose === 'true'
     const { ipfs } = request.server.app
 
-    const peers = await ipfs.swarm.peers({ verbose })
+    const peers = await ipfs.swarm.peers({
+      verbose
+    })
 
     return h.response({
       Peers: peers.map((p) => {

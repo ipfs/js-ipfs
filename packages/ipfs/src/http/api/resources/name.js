@@ -18,10 +18,18 @@ exports.resolve = {
   },
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { arg, stream } = request.query
+    const {
+      arg,
+      nocache,
+      recursive,
+      stream
+    } = request.query
 
     if (!stream) {
-      const value = await last(ipfs.name.resolve(arg, request.query))
+      const value = await last(ipfs.name.resolve(arg, {
+        nocache,
+        recursive
+      }))
       return h.response({ Path: value })
     }
 
@@ -39,14 +47,29 @@ exports.publish = {
       arg: Joi.string().required(),
       resolve: Joi.boolean().default(true),
       lifetime: Joi.string().default('24h'),
-      key: Joi.string().default('self')
+      ttl: Joi.string(),
+      key: Joi.string().default('self'),
+      'allow-offline': Joi.boolean()
     }).unknown()
   },
   async handler (request, h) {
     const { ipfs } = request.server.app
-    const { arg } = request.query
+    const {
+      arg,
+      resolve,
+      lifetime,
+      ttl,
+      key,
+      'allow-offline': allowOffline
+    } = request.query
 
-    const res = await ipfs.name.publish(arg, request.query)
+    const res = await ipfs.name.publish(arg, {
+      resolve,
+      lifetime,
+      ttl,
+      key,
+      allowOffline
+    })
 
     return h.response({
       Name: res.name,

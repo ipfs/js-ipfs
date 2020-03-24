@@ -173,7 +173,7 @@ exports.put = {
     query: Joi.object().keys({
       format: Joi.string().default('cbor'),
       'input-enc': Joi.string().default('json'),
-      pin: Joi.boolean(),
+      pin: Joi.boolean().default(false),
       hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
       'cid-base': Joi.string().valid(...multibase.names)
     }).unknown()
@@ -245,14 +245,11 @@ exports.put = {
     try {
       cid = await ipfs.dag.put(node, {
         format: format,
-        hashAlg: hashAlg
+        hashAlg: hashAlg,
+        pin: request.query.pin
       })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to put node' })
-    }
-
-    if (request.query.pin) {
-      await ipfs.pin.add(cid)
     }
 
     return h.response({
@@ -287,15 +284,13 @@ exports.resolve = {
       let lastRemainderPath = path
 
       if (path) {
-        const result = ipfs.dag.resolve(lastCid, path)
-        while (true) {
-          const resolveResult = (await result.next()).value
-          if (!CID.isCID(resolveResult.value)) {
+        for await (const { value, remainderPath } of ipfs.dag.resolve(lastCid, path)) {
+          if (!CID.isCID(value)) {
             break
           }
 
-          lastRemainderPath = resolveResult.remainderPath
-          lastCid = resolveResult.value
+          lastRemainderPath = remainderPath
+          lastCid = value
         }
       }
 

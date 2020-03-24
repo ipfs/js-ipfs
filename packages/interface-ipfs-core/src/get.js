@@ -6,6 +6,8 @@ const CID = require('cids')
 const all = require('it-all')
 const concat = require('it-concat')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
+const delay = require('delay')
+const AbortController = require('abort-controller')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

@@ -12,7 +12,7 @@ const mfsFlush = {
       cidBase
     } = request.query
 
-    let cid = await ipfs.files.flush(arg || '/', {})
+    let cid = await ipfs.files.flush(arg || '/')
 
     if (cidBase && cidBase !== 'base58btc' && cid.version === 0) {
       cid = cid.toV1()
