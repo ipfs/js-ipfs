@@ -191,7 +191,7 @@ Both js-ipfs and js-ipfs-http-client export a utility to make importing a file f
 
 ```js
 const IPFS = require('ipfs')
-const { globSource } = IPFS
+const { urlSource } = IPFS
 
 const ipfs = await IPFS.create()
 
