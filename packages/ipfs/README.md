@@ -961,6 +961,11 @@ const node = await IPFS.create({
 // your instance with stardust is ready
 ```
 
+While the libp2p infra team host stardust servers for users to test with, these servers should **not be relied on for Production applications**.
+
+If you wish to leverage stardust servers for your application, we recommend running your own.
+Docker images can be found at [libp2p Docker Hub](https://hub.docker.com/u/libp2p).
+
 #### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
 
 Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https://github.com/ipfs/js-ipfs/issues/611), it cuts freezes the execution of any background tab, turning an IPFS node that was running on that webpage into a vegetable state.

@@ -8,7 +8,7 @@ const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
 
-const isBrowser = require('is-browser')
+const { isBrowser } = require('ipfs-utils/src/env')
 
 class DummyTransport {
   get [Symbol.toStringTag] () {
