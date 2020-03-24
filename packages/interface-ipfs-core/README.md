@@ -1,25 +1,29 @@
-# interface-ipfs-core
+# interface-ipfs-core <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/interface-ipfs-core)](https://david-dm.org/ipfs/js-ipfs?path=packages/interface-ipfs-core)
 
 > A test suite and interface you can use to implement an IPFS core interface.
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
-[Alan Shaw](http://github.com/alanshaw).
+[Alex Potsides](http://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
   - [Modules that implement the interface](#modules-that-implement-the-interface)
   - [Badge](#badge)
 - [Install](#install)
 - [Usage](#usage)
-  - [JavaScript](#javascript)
-  - [Go](#go)
+    - [Running tests by command](#running-tests-by-command)
+    - [Skipping tests](#skipping-tests)
+      - [Skipping specific tests](#skipping-specific-tests)
+    - [Running only some tests](#running-only-some-tests)
+      - [Running only specific tests](#running-only-specific-tests)
 - [API](#api)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
@@ -149,29 +153,7 @@ tests.repo(createCommon, { only: ['should do a thing'] })
 
 ## API
 
-In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
-
-- **Files**
-  - [files](./SPEC/FILES.md)
-  - [block](./SPEC/BLOCK.md)
-  - [repo (not spec'ed yet)](./SPEC/REPO.md)
-- **Graph**
-  - [dag](./SPEC/DAG.md)
-  - [object](./SPEC/OBJECT.md)
-  - [pin](./SPEC/PIN.md)
-- [**Name**](./SPEC/NAME.md)
-- **Network**
-  - [bootstrap](./SPEC/BOOTSTRAP.md)
-  - [bitswap](./SPEC/BITSWAP.md)
-  - [dht](./SPEC/DHT.md)
-  - [pubsub](./SPEC/PUBSUB.md)
-  - [swarm](./SPEC/SWARM.md)
-- **Node Management**
-  - [Miscellaneous](./SPEC/MISCELLANEOUS.md)
-  - [config](./SPEC/CONFIG.md)
-  - [key](./SPEC/KEY.md)
-  - [stats](./SPEC/STATS.md)
-  - [repo](./SPEC/REPO.md)
+In order to be considered "valid", an IPFS core implementation must expose the Core API as described in [/docs/api](https://github.com/ipfs/js-ipfs/tree/master/docs/api). You can also use this loose spec as documentation for consuming the core APIs.
 
 ## Contribute
 
