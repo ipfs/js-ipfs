@@ -55,6 +55,7 @@ print.error = (msg, newline) => {
 
 // used by ipfs.add to interrupt the progress bar
 print.isTTY = process.stdout.isTTY
+print.columns = process.stdout.columns
 
 const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
