@@ -293,6 +293,8 @@ const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
 for await (const file of ipfs.get(cid)) {
   console.log(file.path)
+  
+  if (!file.content) continue;
 
   const content = new BufferList()
   for await (const chunk of file.content) {
