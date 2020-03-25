@@ -31,7 +31,7 @@
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of the Dragons 🐉..
 
-## Getting started
+## Getting started
 
 Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
@@ -45,6 +45,7 @@ Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Getting started](#getting-started)
 - [Install](#install)
   - [Browser CDN](#browser-cdn)
   - [Browser bundle](#browser-bundle)
