@@ -48,6 +48,11 @@ async function main () {
 
   try {
     const data = await cli(command, async (argv) => {
+
+      if (argv.debug) {
+        debug.enable('ipfs:cli')
+      }
+
       if (!['daemon', 'init'].includes(command[0])) {
         const { ipfs, isDaemon, cleanup } = await getIpfs(argv)
 

@@ -23,6 +23,11 @@ const parser = yargs
     type: 'boolean',
     default: false
   })
+  .option('debug', {
+    desc: 'Enable debug mode',
+    type: 'boolean',
+    default: false
+  })
   .epilog(utils.ipfsPathHelp)
   .demandCommand(1)
   .showHelpOnFail(false)
