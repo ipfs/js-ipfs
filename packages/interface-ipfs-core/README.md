@@ -152,26 +152,26 @@ tests.repo(createCommon, { only: ['should do a thing'] })
 In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
 
 - **Files**
-  - [files](/SPEC/FILES.md)
-  - [block](/SPEC/BLOCK.md)
-  - [repo (not spec'ed yet)](/SPEC/REPO)
+  - [files](./SPEC/FILES.md)
+  - [block](./SPEC/BLOCK.md)
+  - [repo (not spec'ed yet)](./SPEC/REPO.md)
 - **Graph**
-  - [dag](/SPEC/DAG.md)
-  - [object](/SPEC/OBJECT.md)
-  - [pin](/SPEC/PIN.md)
-- [**Name**](/SPEC/NAME.md)
+  - [dag](./SPEC/DAG.md)
+  - [object](./SPEC/OBJECT.md)
+  - [pin](./SPEC/PIN.md)
+- [**Name**](./SPEC/NAME.md)
 - **Network**
-  - [bootstrap](/SPEC/BOOSTRAP.md)
-  - [bitswap](/SPEC/BITSWAP.md)
-  - [dht](/SPEC/DHT.md)
-  - [pubsub](/SPEC/PUBSUB.md)
-  - [swarm](/SPEC/SWARM.md)
+  - [bootstrap](./SPEC/BOOTSTRAP.md)
+  - [bitswap](./SPEC/BITSWAP.md)
+  - [dht](./SPEC/DHT.md)
+  - [pubsub](./SPEC/PUBSUB.md)
+  - [swarm](./SPEC/SWARM.md)
 - **Node Management**
-  - [Miscellaneous](/SPEC/MISCELLANEOUS.md)
-  - [config](/SPEC/CONFIG.md)
-  - [key](/SPEC/KEY.md)
-  - [stats](/SPEC/STATS.md)
-  - [repo](/SPEC/REPO.md)
+  - [Miscellaneous](./SPEC/MISCELLANEOUS.md)
+  - [config](./SPEC/CONFIG.md)
+  - [key](./SPEC/KEY.md)
+  - [stats](./SPEC/STATS.md)
+  - [repo](./SPEC/REPO.md)
 
 ## Contribute
 
