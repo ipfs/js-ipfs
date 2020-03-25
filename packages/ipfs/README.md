@@ -29,11 +29,11 @@
 
 > **Upgrading from <=0.40 to 0.41?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26).
 
-### Project status - `Alpha` <!-- omit in toc -->
+We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of the Dragons 🐉..
 
-We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the 🐉
+## Getting started
 
-**Want to get started?** Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
 
 ## Tech Lead <!-- omit in toc -->
 
