@@ -29,12 +29,19 @@
 
 > A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
+## Getting started
+
+* Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+* Read the [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) docs to see what you can do with an IPFS ndoe
+* Visit https://proto.school to learn how to use IPFS and the concepts that underpin it.
+
 ## Lead Maintainer
 
 [Alex Potsides](http://github.com/achingbrain)
 
 ## Table of Contents
 
+- [Getting started](#getting-started)
 - [Lead Maintainer](#lead-maintainer)
 - [Table of Contents](#table-of-contents)
 - [Install](#install)

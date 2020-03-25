@@ -33,7 +33,9 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Getting started
 
-Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+* Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+* Read the [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) docs to see what you can do with an IPFS ndoe
+* Visit https://proto.school to learn how to use IPFS and the concepts that underpin it.
 
 ## Tech Lead <!-- omit in toc -->
 
@@ -50,6 +52,8 @@ Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples
   - [Browser CDN](#browser-cdn)
   - [Browser bundle](#browser-bundle)
 - [Documentation](#documentation)
+  - [Core API](#core-api)
+  - [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
 - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [Packages](#packages)
 - [License](#license)
@@ -97,32 +101,32 @@ Learn how to bundle IPFS into your application with webpack, parceljs and browse
 
 ## Documentation
 
-Core API:
+### Core API
 
 * [API Docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)
 
-How to run IPFS in various environments:
+### How to run IPFS in various environments
 
 * [docs/CLI.md](./docs/CLI.md)
 * [docs/DAEMON.md](./docs/DAEMON.md)
 * [docs/DOCKER.md](./docs/DOCKER.md)
 
-How to use IPFS in your application:
+### How to use IPFS in your application
 
 * [docs/MODULE.md](./docs/MODULE.md)
 
-Different topics in detail:
+### Different topics in detail
 
 * [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 * [docs/MONITORING.md](./docs/MONITORING.md)
 * [docs/DELEGATE_ROUTERS.md](./docs/DELEGATE_ROUTERS.md)
 * [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
 
-Questions?
+### Questions?
 
 * [docs/FAQ.md](./docs/FAQ.md)
 
-Need help?
+### Need help?
 
 Please ask 'How do I?' questions on https://discuss.ipfs.io
 

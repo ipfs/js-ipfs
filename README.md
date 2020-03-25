@@ -26,8 +26,9 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Getting started
 
-Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
-
+* Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
+* Read the [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) docs to see what you can do with an IPFS ndoe
+* Visit https://proto.school to learn how to use IPFS and the concepts that underpin it.
 ## Tech Lead <!-- omit in toc -->
 
 [David Dias](https://github.com/daviddias)
