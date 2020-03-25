@@ -47,6 +47,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Documentation](#documentation)
 - [Structure](#structure)
 - [Development](#development)
   - [Clone and install dependencies](#clone-and-install-dependencies)
@@ -58,6 +59,11 @@ We've come a long way, but this project is still in Alpha, lots of development i
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
+
+## Documentation
+
+* [API docs](./docs/api.md)
+* [Examples](./examples)
 
 ## Structure
 

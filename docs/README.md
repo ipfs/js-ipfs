@@ -1,11 +1,21 @@
 # IPFS Docs <!-- omit in toc -->
 
-- [How to use IPFS](#how-to-use-ipfs)
+- [API Docs](#api-docs)
+- [How tos and other documentation](#how-tos-and-other-documentation)
 - [Development documentation](#development-documentation)
 
-## How to use IPFS
+## API Docs
 
-* [API docs](./API.md)
+`ipfs` can run as part of your program (an in-process node) or as a standalone daemon process that can be communicated with via an HTTP RPC API using the [`ipfs-http-client`](../packages/ipfs-http-api) module.
+
+Whether accessed directly or over HTTP, both methods support the full [Core API](#core-api).  In addition other methods are available to construct instances of each module, etc.
+
+* [Core API docs](./API.md)
+* [IPFS API]('./IPFS.md)
+* [IPFS-HTTP-CLIENT API]('./IPFS-HTTP-CLIENT.md)
+
+## How tos and other documentation
+
 * [How to run js-IPFS in the browser](./BROWSERS.md)
 * [js-IPFS configuration options](./CONFIG.md)
 
