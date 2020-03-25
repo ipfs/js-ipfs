@@ -34,7 +34,6 @@ function defaultAddArgs (overrides) {
     pin: true,
     chunker: 'size-262144',
     preload: true,
-    nonatomic: undefined,
     fileImportConcurrency: 50,
     blockWriteConcurrency: 10,
     progress: sinon.match.func,
