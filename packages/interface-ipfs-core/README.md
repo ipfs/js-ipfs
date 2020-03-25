@@ -15,6 +15,7 @@
 ## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
+- [Core API](#core-api)
 - [Modules that implement the interface](#modules-that-implement-the-interface)
 - [Badge](#badge)
 - [Install](#install)
@@ -25,16 +26,19 @@
   - [Running only specific tests](#running-only-specific-tests)
 - [Skipping tests](#skipping-tests)
   - [Skipping specific tests](#skipping-specific-tests)
-- [API](#api)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
 
 ## Background
 
-The primary goal of this module is to define and ensure that both IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications. In addition to the definition of the expected interface, this module offers a suite of tests that can be run in order to check if the interface is used as described.
+The primary goal of this module is to define and ensure that IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications.
 
-The API is presented with both Node.js and Go primitives. However, there are no actual limitations keeping it from being extended for any other language, pushing forward cross compatibility and interoperability through different stacks.
+It offers a suite of tests that can be run in order to check if the interface is implemented as described.
+
+## Core API
+
+In order to be considered "valid", an IPFS implementation must expose the Core API as described in [/docs/core-api](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api). You can also use this loose spec as documentation for consuming the core APIs.
 
 ## Modules that implement the interface
 
@@ -162,10 +166,6 @@ tests.repo(createCommon, {
   }]
 })
 ```
-
-## API
-
-In order to be considered "valid", an IPFS core implementation must expose the Core API as described in [/docs/core-api](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api). You can also use this loose spec as documentation for consuming the core APIs.
 
 ## Contribute
 
