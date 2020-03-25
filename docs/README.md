@@ -10,7 +10,7 @@
 
 Whether accessed directly or over HTTP, both methods support the full [Core API](#core-api).  In addition other methods are available to construct instances of each module, etc.
 
-* [Core API docs](./API.md)
+* [Core API docs](./core-api/README.md)
 * [IPFS API]('./IPFS.md)
 * [IPFS-HTTP-CLIENT API]('./IPFS-HTTP-CLIENT.md)
 
