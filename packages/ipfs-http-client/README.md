@@ -39,6 +39,17 @@
 - [Lead Maintainer](#lead-maintainer)
 - [Table of Contents](#table-of-contents)
 - [Install](#install)
+- [Usage](#usage)
+  - [API](#api)
+  - [Additional Options](#additional-options)
+  - [Instance Utils](#instance-utils)
+  - [Static Types and Utils](#static-types-and-utils)
+    - [Glob source](#glob-source)
+      - [`globSource(path, [options])`](#globsourcepath-options)
+      - [Example](#example)
+    - [URL source](#url-source)
+      - [`urlSource(url)`](#urlsourceurl)
+      - [Example](#example-1)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
@@ -46,8 +57,6 @@
   - [CORS](#cors)
   - [Custom Headers](#custom-headers)
   - [Global Timeouts](#global-timeouts)
-- [Usage](#usage)
-  - [API](#api)
 - [Development](#development)
   - [Testing](#testing)
 - [Contribute](#contribute)
@@ -62,7 +71,119 @@ This module uses node.js, and can be installed through npm:
 npm install --save ipfs-http-client
 ```
 
-We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
+Both the Current and Active LTS versions of Node.js are supported. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
+
+## Usage
+
+### API
+
+[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
+
+> `js-ipfs-http-client` implements the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) - please follow the previous link to see the the methods available.
+
+### Additional Options
+
+All core API methods take _additional_ `options` specific to the HTTP API:
+
+* `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
+* `signal` - An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) that can be used to abort the request on demand.
+* `timeout` - A number or string specifying a timeout for the request. If the timeout is reached before data is received a [`TimeoutError`](https://github.com/sindresorhus/ky/blob/2f37c3f999efb36db9108893b8b3d4b3a7f5ec45/index.js#L127-L132) is thrown. If a number is specified it is interpreted as milliseconds, if a string is passed, it is intepreted according to [`parse-duration`](https://www.npmjs.com/package/parse-duration). Note that this option can also be [configured globally](#global-timeouts) via the constructor options.
+* `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+
+### Instance Utils
+
+- `ipfs.getEndpointConfig()`
+
+Call this on your client instance to return an object containing the `host`, `port`, `protocol` and `api-path`.
+
+### Static Types and Utils
+
+Aside from the default export, `ipfs-http-client` exports various types and utilities that are included in the bundle:
+
+- [`Buffer`](https://www.npmjs.com/package/buffer)
+- [`multiaddr`](https://www.npmjs.com/package/multiaddr)
+- [`multibase`](https://www.npmjs.com/package/multibase)
+- [`multicodec`](https://www.npmjs.com/package/multicodec)
+- [`multihash`](https://www.npmjs.com/package/multihashes)
+- [`CID`](https://www.npmjs.com/package/cids)
+- [`globSource`](https://github.com/ipfs/js-ipfs-utils/blob/master/src/files/glob-source.js) (not available in the browser)
+- [`urlSource`](https://github.com/ipfs/js-ipfs-utils/blob/master/src/files/url-source.js)
+
+These can be accessed like this, for example:
+
+```js
+const { CID } = require('ipfs-http-client')
+// ...or from an es-module:
+import { CID } from 'ipfs-http-client'
+```
+
+#### Glob source
+
+A utility to allow files on the file system to be easily added to IPFS.
+
+##### `globSource(path, [options])`
+
+- `path`: A path to a single file or directory to glob from
+- `options`: Optional options
+- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
+- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
+- `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
+
+Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
+
+##### Example
+
+```js
+const IpfsHttpClient = require('ipfs-http-client')
+const { globSource } = IpfsHttpClient
+const ipfs = IpfsHttpClient()
+
+for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
+  console.log(file)
+}
+/*
+{
+  path: 'docs/assets/anchor.js',
+  cid: CID('QmVHxRocoWgUChLEvfEyDuuD6qJ4PhdDL2dTLcpUy3dSC2'),
+  size: 15347
+}
+{
+  path: 'docs/assets/bass-addons.css',
+  cid: CID('QmPiLWKd6yseMWDTgHegb8T7wVS7zWGYgyvfj7dGNt2viQ'),
+  size: 232
+}
+...
+*/
+```
+
+#### URL source
+
+A utility to allow content from the internet to be easily added to IPFS.
+
+##### `urlSource(url)`
+
+- `url`: A string URL or [`URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL) instance to send HTTP GET request to
+
+Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
+
+##### Example
+
+```js
+const IpfsHttpClient = require('ipfs-http-client')
+const { urlSource } = IpfsHttpClient
+const ipfs = IpfsHttpClient()
+
+for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
+  console.log(file)
+}
+/*
+{
+  path: 'ipfs-logo.svg',
+  cid: CID('QmTqZhR6f7jzdhLgPArDPnsbZpvvgxzCZycXK7ywkLxSyU'),
+  size: 3243
+}
+*/
+```
 
 ### Running the daemon with the right port
 
@@ -194,14 +315,6 @@ const ipfs = ipfsClient({ timeout: 10000 })
 const ipfs = ipfsClient({ timeout: '2m' })
 // see https://www.npmjs.com/package/parse-duration for valid string values
 ```
-
-## Usage
-
-### API
-
-[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
-
-> `js-ipfs-http-client` follows the spec defined by [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core), which concerns the interface to expect from IPFS implementations. This interface is a currently active endeavor. You can use it today to consult the methods available.
 
 ## Development
 

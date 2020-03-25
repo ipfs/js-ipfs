@@ -28,7 +28,7 @@ $ npm install --save ipfs-core-utils
 
 ## Contribute
 
-Contributions welcome. Please check out [the issues](https://github.com/ipfs/js-ipfs-utils/issues).
+Contributions welcome. Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
 
 Check out our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
