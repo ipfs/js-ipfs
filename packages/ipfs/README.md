@@ -4,12 +4,7 @@
   </a>
 </p>
 
-<h3 align="center">The JavaScript implementation of the IPFS protocol.</h3>
-
-<p align="center">
-  <a href="http://protocol.ai"><img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat" /></a>
-  <a href="http://ipfs.io/"><img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat" /></a>
-</p>
+<h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
   <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
@@ -36,13 +31,9 @@
 
 ### Project status - `Alpha` <!-- omit in toc -->
 
-We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉.
+We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the 🐉
 
 **Want to get started?** Check our [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
-
-**Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
-
-[**`Weekly Core Implementations Call`**](https://github.com/ipfs/team-mgmt/issues/992)
 
 ## Tech Lead <!-- omit in toc -->
 
@@ -58,9 +49,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [Browser CDN](#browser-cdn)
   - [Browser bundle](#browser-bundle)
 - [Documentation](#documentation)
+- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [Packages](#packages)
-- [Contribute](#contribute)
-  - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
 
 ## Install
@@ -106,6 +96,10 @@ Learn how to bundle IPFS into your application with webpack, parceljs and browse
 
 ## Documentation
 
+Core API:
+
+* [API Docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)
+
 How to run IPFS in various environments:
 
 * [docs/CLI.md](./docs/CLI.md)
@@ -129,7 +123,24 @@ Questions?
 
 Need help?
 
-Please ask questions on https://discuss.ipfs.io
+Please ask 'How do I?' questions on https://discuss.ipfs.io
+
+## Want to hack on IPFS?
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
+
+The IPFS implementation in JavaScript needs your help!  There are a few things you can do right now to help out:
+
+Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md) and [JavaScript Contributing Guidelines](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md).
+
+- **Check out existing issues** The [issue list](https://github.com/ipfs/js-ipfs/issues) has many that are marked as ['help wanted'](https://github.com/ipfs/js-ipfs/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22help+wanted%22) or ['difficulty:easy'](https://github.com/ipfs/js-ipfs/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Adifficulty%3Aeasy) which make great starting points for development, many of which can be tackled with no prior IPFS knowledge
+- **Look at the [IPFS Roadmap](https://github.com/ipfs/roadmap)** This are the high priority items being worked on right now
+- **Perform code reviews** More eyes will help
+  a. speed the project along
+  b. ensure quality, and
+  c. reduce possible future bugs.
+- **Add tests**. There can never be enough tests.
+- **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
 
 ## Packages
 
@@ -187,19 +198,6 @@ List of the main packages that make up the IPFS ecosystem.
 | [`multihashes`](//github.com/multiformats/js-multihash) | [![npm](https://img.shields.io/npm/v/multihashes.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihash/releases) | [![Deps](https://david-dm.org/multiformats/js-multihash.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash) | [![Travis CI](https://flat.badgen.net/travis/multiformats/js-multihash/master)](https://travis-ci.com/multiformats/js-multihash) | [![codecov](https://codecov.io/gh/multiformats/js-multihash/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/multiformats/js-multihash) | [David Dias](mailto:daviddias@ipfs.io) |
 
 > This table is generated using the module [`package-table`](https://www.npmjs.com/package/package-table) with `package-table --data=package-list.json`.
-
-## Contribute
-
-IPFS implementation in JavaScript is a work in progress. As such, there's a few things you can do right now to help out:
-
-- Go through the modules below and **check out existing issues**. This would be especially useful for modules in active development. Some knowledge of IPFS may be required, as well as the infrastructure behind it - for instance, you may need to read up on p2p and more complex operations like muxing to be able to help technically.
-- **Perform code reviews**. More eyes will help (a) speed the project along, (b) ensure quality, and (c) reduce possible future bugs.
-- Take a look at go-ipfs and some of the planning repositories or issues: for instance, the [libp2p spec](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
-- **Add tests**. There can never be enough tests.
-
-### Want to hack on IPFS?
-
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
 ## License
 

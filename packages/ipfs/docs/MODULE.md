@@ -1,6 +1,6 @@
 # IPFS Module <!-- omit in toc -->
 
-Use the IPFS Module as a dependency of a project to spawn in process instances of IPFS in node.js, the browser, electron, etc.
+Use the IPFS module as a dependency of your project to spawn in process instances of IPFS in node.js, the browser, electron, etc.
 
 ## Table of contents <!-- omit in toc -->
 
