@@ -6,7 +6,7 @@ const mtimeToObject = require('./mtime-to-object')
 module.exports = (args, options) => {
   const searchParams = new URLSearchParams(options)
 
-  if (args === undefined) {
+  if (args === undefined || args === null) {
     args = []
   } else if (!Array.isArray(args)) {
     args = [args]

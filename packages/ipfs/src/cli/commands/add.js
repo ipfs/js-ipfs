@@ -74,7 +74,8 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      describe: 'Use raw blocks for leaf nodes. (experimental)'
+      describe: 'Use raw blocks for leaf nodes. (experimental)',
+      default: false
     },
     'cid-version': {
       type: 'integer',
@@ -89,7 +90,8 @@ module.exports = {
     hash: {
       type: 'string',
       choices: Object.keys(mh.names),
-      describe: 'Hash function to use. Will set CID version to 1 if used. (experimental)'
+      describe: 'Hash function to use. Will set CID version to 1 if used. (experimental)',
+      default: 'sha2-256'
     },
     quiet: {
       alias: 'q',
@@ -174,9 +176,7 @@ module.exports = {
     const { ipfs, print, isDaemon, getStdin } = argv.ctx
     const options = {
       trickle: argv.trickle,
-      shardSplitThreshold: argv.enableShardingExperiment
-        ? argv.shardSplitThreshold
-        : Infinity,
+      shardSplitThreshold: argv.shardSplitThreshold,
       cidVersion: argv.cidVersion,
       rawLeaves: argv.rawLeaves,
       onlyHash: argv.onlyHash,
@@ -185,7 +185,6 @@ module.exports = {
       pin: argv.pin,
       chunker: argv.chunker,
       preload: argv.preload,
-      nonatomic: argv.nonatomic,
       fileImportConcurrency: argv.fileImportConcurrency,
       blockWriteConcurrency: argv.blockWriteConcurrency,
       progress: () => {}
