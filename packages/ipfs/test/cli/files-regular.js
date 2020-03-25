@@ -157,12 +157,36 @@ describe('files', () => {
   it('add from pipe', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(sinon.match({
+      content: matchIterable()
+    }), defaultAddArgs()).returns([{
       cid,
       path: 'readme'
     }])
 
     const proc = cli('add', {
+      ipfs,
+      getStdin: function * () {
+        yield Buffer.from('hello\n')
+      }
+    })
+
+    const out = await proc
+    expect(out).to.equal(`added ${cid} ${cid}\n`)
+  })
+
+  it('add from pipe with mtime=100', async () => {
+    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+    ipfs.add.withArgs(sinon.match({
+      content: matchIterable(),
+      mtime: { secs: 100 }
+    }), defaultAddArgs()).returns([{
+      cid,
+      path: 'readme'
+    }])
+
+    const proc = cli('add --mtime=100', {
       ipfs,
       getStdin: function * () {
         yield Buffer.from('hello\n')

@@ -236,7 +236,11 @@ module.exports = {
         mode: argv.mode,
         mtime
       })
-      : getStdin() // Pipe directly to ipfs.add
+      : {
+        content: getStdin(),
+        mode: argv.mode,
+        mtime
+      } // Pipe to ipfs.add tagging with mode and mtime
 
     let finalCid
 
