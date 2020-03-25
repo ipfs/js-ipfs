@@ -25,11 +25,11 @@ const HASH_ALGS = [
 function defaultAddArgs (overrides) {
   return {
     trickle: false,
-    shardSplitThreshold: Infinity,
+    shardSplitThreshold: 1000,
     cidVersion: 0,
-    rawLeaves: undefined,
+    rawLeaves: false,
     onlyHash: false,
-    hashAlg: undefined,
+    hashAlg: 'sha2-256',
     wrapWithDirectory: false,
     pin: true,
     chunker: 'size-262144',
