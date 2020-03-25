@@ -54,6 +54,10 @@ We've come a long way, but this project is still in Alpha, lots of development i
 - [Documentation](#documentation)
   - [Core API](#core-api)
   - [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
+  - [How to use IPFS in your application](#how-to-use-ipfs-in-your-application)
+  - [Different topics in detail](#different-topics-in-detail)
+  - [Questions?](#questions)
+  - [Need help?](#need-help)
 - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [Packages](#packages)
 - [License](#license)
@@ -111,22 +115,22 @@ Learn how to bundle IPFS into your application with webpack, parceljs and browse
 * [docs/DAEMON.md](./docs/DAEMON.md)
 * [docs/DOCKER.md](./docs/DOCKER.md)
 
-### How to use IPFS in your application
+### How to use IPFS in your application
 
 * [docs/MODULE.md](./docs/MODULE.md)
 
-### Different topics in detail
+### Different topics in detail
 
 * [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 * [docs/MONITORING.md](./docs/MONITORING.md)
 * [docs/DELEGATE_ROUTERS.md](./docs/DELEGATE_ROUTERS.md)
 * [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
 
-### Questions?
+### Questions?
 
 * [docs/FAQ.md](./docs/FAQ.md)
 
-### Need help?
+### Need help?
 
 Please ask 'How do I?' questions on https://discuss.ipfs.io
 
