@@ -15,15 +15,16 @@
 ## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
-  - [Modules that implement the interface](#modules-that-implement-the-interface)
-  - [Badge](#badge)
+- [Modules that implement the interface](#modules-that-implement-the-interface)
+- [Badge](#badge)
 - [Install](#install)
 - [Usage](#usage)
-    - [Running tests by command](#running-tests-by-command)
-    - [Skipping tests](#skipping-tests)
-      - [Skipping specific tests](#skipping-specific-tests)
-    - [Running only some tests](#running-only-some-tests)
-      - [Running only specific tests](#running-only-specific-tests)
+- [Running tests](#running-tests)
+  - [Running tests by command](#running-tests-by-command)
+  - [Running only some tests](#running-only-some-tests)
+  - [Running only specific tests](#running-only-specific-tests)
+- [Skipping tests](#skipping-tests)
+  - [Skipping specific tests](#skipping-specific-tests)
 - [API](#api)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
@@ -35,15 +36,15 @@ The primary goal of this module is to define and ensure that both IPFS core impl
 
 The API is presented with both Node.js and Go primitives. However, there are no actual limitations keeping it from being extended for any other language, pushing forward cross compatibility and interoperability through different stacks.
 
-### Modules that implement the interface
+## Modules that implement the interface
 
-- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
-- [JavaScript IPFS HTTP Client Library](https://github.com/ipfs/js-ipfs-api)
+- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs)
+- [JavaScript IPFS HTTP Client Library](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client)
 - [JavaScript IPFS postMessage proxy](https://github.com/ipfs-shipyard/ipfs-postmsg-proxy)
 
 Send in a PR if you find or write one!
 
-### Badge
+## Badge
 
 Include this badge in your readme if you make a new module that implements interface-ipfs-core API.
 
@@ -57,16 +58,16 @@ Include this badge in your readme if you make a new module that implements inter
 
 In JavaScript land:
 
-```js
-npm install interface-ipfs-core
+```console
+$ npm install interface-ipfs-core
 ```
 
 If you want to run these tests against a go-ipfs daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
 
-```
-git clone https://github.com/ipfs/js-ipfs-http-client
-npm install
-npm test
+```console
+$ git clone https://github.com/ipfs/js-ipfs-http-client
+$ npm install
+$ npm test
 ```
 
 ## Usage
@@ -99,36 +100,20 @@ tests.dag(createCommon)
 // ...etc. (see src/index.js)
 ```
 
-#### Running tests by command
+## Running tests
+
+```js
+// run all the tests for the repo subsystem
+tests.repo(createCommon)
+```
+
+### Running tests by command
 
 ```js
 tests.repo.version(createCommon)
 ```
 
-#### Skipping tests
-
-```js
-tests.repo.gc(createCommon, { skip: true }) // pass an options object to skip these tests
-
-// OR, at the subsystem level
-
-// skips ALL the repo.gc tests
-tests.repo(createCommon, { skip: ['gc'] })
-// skips ALL the object.patch.addLink tests
-tests.object(createCommon, { skip: ['patch.addLink'] })
-```
-
-##### Skipping specific tests
-
-```js
-tests.repo.gc(createCommon, { skip: ['should do a thing'] }) // named test(s) to skip
-
-// OR, at the subsystem level
-
-tests.repo(createCommon, { skip: ['should do a thing'] })
-```
-
-#### Running only some tests
+### Running only some tests
 
 ```js
 tests.repo.gc(createCommon, { only: true }) // pass an options object to run only these tests
@@ -141,19 +126,46 @@ tests.repo(createCommon, { only: ['gc'] })
 tests.object(createCommon, { only: ['patch.addLink'] })
 ```
 
-##### Running only specific tests
+### Running only specific tests
 
 ```js
 tests.repo.gc(createCommon, { only: ['should do a thing'] }) // only run these named test(s)
 
 // OR, at the subsystem level
-
 tests.repo(createCommon, { only: ['should do a thing'] })
+```
+
+## Skipping tests
+
+```js
+tests.repo.gc(createCommon, { skip: true }) // pass an options object to skip these tests
+
+// skips ALL the repo.gc tests
+tests.repo(createCommon, { skip: ['gc'] })
+// skips ALL the object.patch.addLink tests
+tests.object(createCommon, { skip: ['patch.addLink'] })
+```
+
+### Skipping specific tests
+
+```js
+tests.repo.gc(createCommon, { skip: ['should do a thing'] }) // named test(s) to skip
+
+// OR, at the subsystem level
+tests.repo(createCommon, { skip: ['should do a thing'] })
+
+// Optionally specify a reason
+tests.repo(createCommon, {
+  skip: [{
+    name: 'should do a thing',
+    reason: 'Thing is not implemented yet'
+  }]
+})
 ```
 
 ## API
 
-In order to be considered "valid", an IPFS core implementation must expose the Core API as described in [/docs/api](https://github.com/ipfs/js-ipfs/tree/master/docs/api). You can also use this loose spec as documentation for consuming the core APIs.
+In order to be considered "valid", an IPFS core implementation must expose the Core API as described in [/docs/core-api](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api). You can also use this loose spec as documentation for consuming the core APIs.
 
 ## Contribute
 
