@@ -9,10 +9,10 @@ branches:
   - /^release\/.*$/
 
 stages:
-#  - check
-#  - test
+  - check
+  - test
   - release-rc
-#  - test-external
+  - test-external
 
 node_js:
   - '10'
@@ -139,18 +139,11 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release rc
       script:
+        # need tags to work out what has changed since the last release
         - git fetch --tags
         - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
-
-#    - stage: release-docker-rc
-#      # only run on changes to master
-#      if: branch = master AND type = push AND fork = false
-#      name: release docker rc
-#      script:
-#        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-#        - docker push ipfs/js-ipfs:next
 
     - stage: test-external
       # only run on changes to master
