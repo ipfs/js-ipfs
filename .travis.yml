@@ -9,10 +9,10 @@ branches:
   - /^release\/.*$/
 
 stages:
-#  - check
-#  - test
+  - check
+  - test
   - release-rc
-#  - test-external
+  - test-external
 
 node_js:
   - '10'
@@ -139,7 +139,8 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release rc
       script:
-        # need tags to work out what has changed since the last release
+        # travis does not fetch the whole repo history, but we need that to work out the
+        # ref count to publish canary releases properly
         - git fetch --unshallow
         - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
