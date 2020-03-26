@@ -11,7 +11,8 @@ branches:
 stages:
   - check
   - test
-  - release-rc
+  - release-rc-npm
+  - release-rc-docker
   - test-external
 
 node_js:
@@ -134,17 +135,28 @@ jobs:
         - npm run build
         - npm run test -- $RUN_SINCE --scope=example* --concurrency=1
 
-    - stage: release-rc
+    - stage: release-rc-npm
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
-      name: release rc
+      name: release npm rc
       script:
-        # travis does not fetch the whole repo history, but we need that to work out the
-        # ref count to publish canary releases properly
-        - git fetch --unshallow
+        # need tags to work out what has changed since the last release
+        - git fetch --tags
         - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
+
+    - stage: release-rc-docker
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: release docker rc
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build . --tag js-ipfs:next --file ./Dockerfile.next
+        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next
+        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`
+        - docker push ipfs/js-ipfs:next
+        - docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`
 
     - stage: test-external
       # only run on changes to master
