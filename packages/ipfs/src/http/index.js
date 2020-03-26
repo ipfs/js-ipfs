@@ -45,15 +45,6 @@ class HttpApi {
     this._options = options || {}
     this._log = debug(LOG)
     this._log.error = debug(LOG_ERROR)
-
-    if (process.env.IPFS_MONITORING) {
-      // Setup debug metrics collection
-      const prometheusClient = require('prom-client')
-      const prometheusGcStats = require('prometheus-gc-stats')
-      const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
-      collectDefaultMetrics({ timeout: 5000 })
-      prometheusGcStats(prometheusClient.register)()
-    }
   }
 
   async start () {
