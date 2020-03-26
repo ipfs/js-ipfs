@@ -140,8 +140,9 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release npm rc
       script:
-        # need tags to work out what has changed since the last release
-        - git fetch --tags
+        # travis does not fetch the whole repo history, but we need that to work out the
+        # ref count to publish canary releases properly
+        - git fetch --unshallow
         - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
