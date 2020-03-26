@@ -140,6 +140,7 @@ jobs:
       name: release rc
       script:
         - git checkout master
+        - git pull
         - npm run reset
         - npm install
         - npm run build -- --scope=ipfs*
