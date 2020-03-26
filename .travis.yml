@@ -139,7 +139,10 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release rc
       script:
-        - npm run build
+        - git checkout master
+        - npm run reset
+        - npm install
+        - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
 
