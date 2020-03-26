@@ -9,10 +9,10 @@ branches:
   - /^release\/.*$/
 
 stages:
-  - check
-  - test
+#  - check
+#  - test
   - release-rc
-  - test-external
+#  - test-external
 
 node_js:
   - '10'
@@ -140,7 +140,7 @@ jobs:
       name: release rc
       script:
         # need tags to work out what has changed since the last release
-        - git fetch --tags
+        - git fetch --unshallow
         - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
