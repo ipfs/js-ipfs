@@ -3,7 +3,9 @@
 const {
   asBoolean,
   asOctal,
-  asDateFromSeconds
+  asMtimeFromSeconds,
+  coerceMtime,
+  coerceMtimeNsecs
 } = require('../../utils')
 
 module.exports = {
@@ -89,10 +91,14 @@ module.exports = {
       describe: 'The mode to use'
     },
     mtime: {
-      alias: 'm',
-      type: 'date',
-      coerce: asDateFromSeconds,
-      describe: 'Time to use as the new modification time'
+      type: 'number',
+      coerce: coerceMtime,
+      describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+    },
+    'mtime-nsecs': {
+      type: 'number',
+      coerce: coerceMtimeNsecs,
+      describe: 'Modification time fraction in nanoseconds'
     }
   },
 
@@ -114,7 +120,8 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime
+      mtime,
+      mtimeNsecs
     } = argv
 
     await ipfs.files.write(path, getStdin(), {
@@ -132,7 +139,7 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime
+      mtime: asMtimeFromSeconds(mtime, mtimeNsecs)
     })
   }
 }

@@ -3,7 +3,9 @@
 const {
   asBoolean,
   asOctal,
-  asDateFromSeconds
+  asMtimeFromSeconds,
+  coerceMtime,
+  coerceMtimeNsecs
 } = require('../../utils')
 
 module.exports = {
@@ -49,9 +51,14 @@ module.exports = {
       describe: 'Mode to apply to the new directory'
     },
     mtime: {
-      type: 'date',
-      coerce: asDateFromSeconds,
-      describe: 'Mtime to apply to the new directory in seconds'
+      type: 'number',
+      coerce: coerceMtime,
+      describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+    },
+    'mtime-nsecs': {
+      type: 'number',
+      coerce: coerceMtimeNsecs,
+      describe: 'Modification time fraction in nanoseconds'
     }
   },
 
@@ -65,7 +72,8 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime
+      mtime,
+      mtimeNsecs
     } = argv
 
     return ipfs.files.mkdir(path, {
@@ -75,7 +83,7 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime
+      mtime: asMtimeFromSeconds(mtime, mtimeNsecs)
     })
   }
 }
