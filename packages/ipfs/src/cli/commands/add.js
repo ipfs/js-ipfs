@@ -85,8 +85,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names,
-      default: 'base58btc'
+      choices: multibase.names
     },
     hash: {
       type: 'string',
