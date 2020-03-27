@@ -4,12 +4,7 @@
   </a>
 </p>
 
-<h3 align="center">The JavaScript implementation of the IPFS protocol.</h3>
-
-<p align="center">
-  <a href="http://protocol.ai"><img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat" /></a>
-  <a href="http://ipfs.io/"><img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat" /></a>
-</p>
+<h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
   <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
@@ -23,7 +18,7 @@
   <a href="https://travis-ci.com/ipfs/js-ipfs?branch=master"><img src="https://badgen.net/travis/ipfs/js-ipfs?branch=master" /></a>
   <a href="https://codecov.io/gh/ipfs/js-ipfs"><img src="https://badgen.net/codecov/c/github/ipfs/js-ipfs" /></a>
   <a href="https://bundlephobia.com/result?p=ipfs"><img src="https://badgen.net/bundlephobia/minzip/ipfs"></a>
-  <a href="https://david-dm.org/ipfs/js-ipfs"><img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat" /></a>
+  <a href="https://david-dm.org/ipfs/js-ipfs?path=packages/ipfs"><img src="https://david-dm.org/ipfs/js-ipfs.svg?style=flat&path=packages/ipfs" /></a>
   <a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat"></a>
   <a href=""><img src="https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat" /></a>
   <a href=""><img src="https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat" /></a>
@@ -34,15 +29,15 @@
 
 > **Upgrading from <=0.40 to 0.41?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26).
 
-### Project status - `Alpha` <!-- omit in toc -->
+We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
 
-We've come a long way, but this project is still in Alpha, lots of development is happening, API might change, beware of the Dragons 🐉.
+## Getting started
 
-**Want to get started?** Check our [examples folder](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser.
-
-**Please read this:** The [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), a fundamental piece for automatic content and peer discovery is not yet complete. There are multiple applications that can be built without this service but nevertheless it is fundamental to getting that magic IPFS experience. The current status is that implementation is done and merged and we're working on performance issues. Expect the DHT to be available in a release very soon.
-
-[**`Weekly Core Implementations Call`**](https://github.com/ipfs/team-mgmt/issues/992)
+* Look into the [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
+* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
+* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
+* Check out https://docs-beta.ipfs.io for tips, how-tos and more
 
 ## Tech Lead <!-- omit in toc -->
 
@@ -50,125 +45,40 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Lead Maintainer <!-- omit in toc -->
 
-[Alan Shaw](https://github.com/alanshaw)
+[Alex Potsides](http://github.com/achingbrain)
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Getting started](#getting-started)
 - [Install](#install)
-  - [npm](#npm)
-  - [Use in Node.js](#use-in-nodejs)
-  - [Through command line tool](#through-command-line-tool)
-  - [Use in the browser](#use-in-the-browser)
-- [Usage](#usage)
-  - [IPFS CLI](#ipfs-cli)
-  - [IPFS Daemon](#ipfs-daemon)
-  - [IPFS Module](#ipfs-module)
-  - [Tutorials and Examples](#tutorials-and-examples)
-  - [API](#api)
-    - [IPFS Constructor](#ipfs-constructor)
-      - [`options.repo`](#optionsrepo)
-      - [`options.repoAutoMigrate`](#optionsrepoautomigrate)
-      - [`options.init`](#optionsinit)
-      - [`options.start`](#optionsstart)
-      - [`options.pass`](#optionspass)
-      - [`options.silent`](#optionssilent)
-      - [`options.relay`](#optionsrelay)
-      - [`options.offline`](#optionsoffline)
-      - [`options.preload`](#optionspreload)
-      - [`options.EXPERIMENTAL`](#optionsexperimental)
-      - [`options.config`](#optionsconfig)
-        - [Configuring Delegate Routers](#configuring-delegate-routers)
-      - [`options.ipld`](#optionsipld)
-      - [`options.libp2p`](#optionslibp2p)
-      - [`options.connectionManager`](#optionsconnectionmanager)
-    - [`node.start()`](#nodestart)
-    - [`node.stop()`](#nodestop)
-    - [Core API](#core-api)
-    - [Files](#files)
-    - [Graph](#graph)
-    - [Block](#block)
-    - [Name](#name)
-    - [Crypto and Key Management](#crypto-and-key-management)
-    - [Network](#network)
-    - [Node Management](#node-management)
-    - [Static types and utils](#static-types-and-utils)
-      - [Glob source](#glob-source)
-        - [`globSource(path, [options])`](#globsourcepath-options)
-        - [Example](#example)
-      - [URL source](#url-source)
-        - [`urlSource(url)`](#urlsourceurl)
-        - [Example](#example-1)
-- [FAQ](#faq)
-    - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
-    - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
-    - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
-    - [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
-    - [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
-    - [Have more questions?](#have-more-questions)
-- [Running js-ipfs with Docker](#running-js-ipfs-with-docker)
+  - [Browser CDN](#browser-cdn)
+  - [Browser bundle](#browser-bundle)
+- [Documentation](#documentation)
+  - [Core API](#core-api)
+  - [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
+  - [How to use IPFS in your application](#how-to-use-ipfs-in-your-application)
+  - [Different topics in detail](#different-topics-in-detail)
+  - [Questions?](#questions)
+  - [Need help?](#need-help)
+- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [Packages](#packages)
-- [Development](#development)
-  - [Clone and install dependencies](#clone-and-install-dependencies)
-  - [Run tests](#run-tests)
-  - [Run interop tests](#run-interop-tests)
-  - [Run benchmark tests](#run-benchmark-tests)
-  - [Lint](#lint)
-  - [Build a dist version](#build-a-dist-version)
-  - [Runtime Support](#runtime-support)
-  - [Code Architecture and folder Structure](#code-architecture-and-folder-structure)
-      - [Source code](#source-code)
-  - [Monitoring](#monitoring)
-  - [IPFS Architecture](#ipfs-architecture)
-- [Contribute](#contribute)
-  - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
 
 ## Install
 
-### npm
-
-This project is available through [npm](https://www.npmjs.com/). To install, run:
-
-```bash
-> npm install ipfs
+```console
+$ npm install ipfs
 ```
 
-JS IPFS depends on native modules that are installed by [`node-gyp`](https://github.com/nodejs/node-gyp). If you have problems running the command above, it is likely that the [build tools required by `node-gyp`](https://github.com/nodejs/node-gyp#installation) are missing from your system. Please install them and then try again.
+If you are planning on using js-ipfs on the command line, install it globally:
 
-We support both the Current and Active LTS versions of Node.js. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
-
-This project is tested on macOS, Linux and Windows.
-
-### Use in Node.js
-
-To create an IPFS node programmatically:
-
-```js
-const IPFS = require('ipfs')
-const node = await IPFS.create()
-
-// Ready to use!
-// See https://github.com/ipfs/js-ipfs#core-api
+```console
+$ npm install -g ipfs
 ```
 
-### Through command line tool
+### Browser CDN
 
-In order to use js-ipfs as a CLI, you must install it with the `global` flag. Run the following (even if you have ipfs installed locally):
-
-```bash
-npm install ipfs --global
-```
-
-The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the [Go implementation](https://github.com/ipfs/go-ipfs).
-
-Once installed, please follow the [Getting Started Guide](https://docs.ipfs.io/introduction/usage/) to learn how to initialize your node and run the daemon.
-
-### Use in the browser
-
-Learn how to bundle with browserify and webpack in the [`examples`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples) folder.
-
-You can also load it using a `<script>` using the [jsDelivr](https://www.jsdelivr.com/package/npm/ipfs) CDN. Inserting one of the following lines will make an `Ipfs` object available in the global namespace.
-
+You can load IPFS right in your browser by adding the following to your page using the super fast [jsdelivr](https://www.jsdelivr.com) CDN:
 
 ```html
 <!-- loading the minified version using jsDelivr -->
@@ -191,817 +101,67 @@ main()
 </script>
 ```
 
-## Usage
+### Browser bundle
 
-### IPFS CLI
+Learn how to bundle IPFS into your application with webpack, parceljs and browserify in the [examples](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
 
-The `jsipfs` CLI, available when `js-ipfs` is installed globally, follows (should, it is a WIP) the same interface defined by `go-ipfs`, you can always use the `help` command for help menus.
+## Documentation
 
-```sh
-# Install js-ipfs globally
-> npm install ipfs --global
-> jsipfs --help
-Commands:
-  bitswap               A set of commands to manipulate the bitswap agent.
-  block                 Manipulate raw IPFS blocks.
-  bootstrap             Show or edit the list of bootstrap peers.
-  commands              List all available commands
-  config <key> [value]  Get and set IPFS config values
-  daemon                Start a long-running daemon process
-# ...
-```
+### Core API
 
-`js-ipfs` uses some different default config values, so that they don't clash directly with a go-ipfs node running in the same machine. These are:
+* [API Docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)
 
-- default repo location: `~/.jsipfs` (can be changed with env variable `IPFS_PATH`)
-- default swarm port: `4002`
-- default API port: `5002`
+### How to run IPFS in various environments
 
-### IPFS Daemon
+* [docs/CLI.md](./docs/CLI.md)
+* [docs/DAEMON.md](./docs/DAEMON.md)
+* [docs/DOCKER.md](./docs/DOCKER.md)
 
-The IPFS Daemon exposes the API defined in the [HTTP API spec](https://docs.ipfs.io/reference/api/http/). You can use any of the IPFS HTTP-API client libraries with it, such as: [js-ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client).
+### How to use IPFS in your application
 
-If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check out [ipfsd-ctl module](https://github.com/ipfs/js-ipfsd-ctl)
+* [docs/MODULE.md](./docs/MODULE.md)
 
-### IPFS Module
+### Different topics in detail
 
-Use the IPFS Module as a dependency of a project to __spawn in process instances of IPFS__. Create an instance by calling `await IPFS.create()`:
+* [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+* [docs/MONITORING.md](./docs/MONITORING.md)
+* [docs/DELEGATE_ROUTERS.md](./docs/DELEGATE_ROUTERS.md)
+* [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
 
-```js
-// Create the IPFS node instance
-const node = await IPFS.create()
-// Your node is now ready to use \o/
-await node.stop()
-// node is now 'offline'
-```
+### Questions?
 
-### [Tutorials and Examples](/examples)
+* [docs/FAQ.md](./docs/FAQ.md)
 
-You can find some examples and tutorials in the [examples](/examples) folder, these exist to help you get started using `js-ipfs`.
+### Need help?
 
-### API
+Please ask 'How do I?' questions on https://discuss.ipfs.io
 
-#### IPFS Constructor
+## Want to hack on IPFS?
 
-```js
-const node = await IPFS.create([options])
-```
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
-Creates and returns a ready to use instance of an IPFS node.
+The IPFS implementation in JavaScript needs your help!  There are a few things you can do right now to help out:
 
-Use the `options` argument to specify advanced configuration. It is an object with any of these properties:
+Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md) and [JavaScript Contributing Guidelines](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md).
 
-##### `options.repo`
-
-| Type | Default |
-|------|---------|
-| string or [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance | `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers |
-
-The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance.
-
-Example:
-
-```js
-// Store data outside your user directory
-const node = await IPFS.create({ repo: '/var/ipfs/data' })
-```
-
-##### `options.repoAutoMigrate`
-
-| Type | Default |
-|------|---------|
-| boolean | `true` |
-
-`js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available.
-
-**For apps that build on top of `js-ipfs` and run in the browser environment, be aware that disabling automatic
-migrations leaves the user with no way to run the migrations because there is no CLI in the browser. In such
-a case, you should provide a way to trigger migrations manually.**
-
-##### `options.init`
-
-| Type | Default |
-|------|---------|
-| boolean or object | `true` |
-
-Perform repo initialization steps when creating the IPFS node.
-
-Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
-
-Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
-
-- `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
-- `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
-- `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
-    ```js
-    // Generating a Peer ID:
-    const PeerId = require('peer-id')
-    // Generates a new Peer ID, complete with public/private keypair
-    // See https://github.com/libp2p/js-peer-id
-    const peerId = await PeerId.create({ bits: 2048 })
-    ```
-- `pass` (string) A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
-- `profiles` (Array) Apply profile settings to config.
-- `allowNew` (boolean, default: `true`) Set to `false` to disallow initialization if the repo does not already exist.
-
-##### `options.start`
-
-| Type | Default |
-|------|---------|
-| boolean | `true` |
-
- If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
-
-##### `options.pass`
-
-| Type | Default |
-|------|---------|
-| string | `null` |
-
-A passphrase to encrypt/decrypt your keys.
-
-##### `options.silent`
-
-| Type | Default |
-|------|---------|
-| Boolean | `false` |
-
-Prevents all logging output from the IPFS node.
-
-##### `options.relay`
-
-| Type | Default |
-|------|---------|
-| object | `{ enabled: true, hop: { enabled: false, active: false } }` |
-
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples/circuit-relaying) to learn more).
-
-- `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
-- `hop` (object)
-    - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
-    - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
-
-##### `options.offline`
-
-| Type | Default |
-|------|---------|
-| Boolean | `false` |
-
-Run ipfs node offline. The node does not connect to the rest of the network but provides a local API.
-
-##### `options.preload`
-
-| Type | Default |
-|------|---------|
-| object | `{ enabled: true, addresses: [...] }` |
-
-Configure remote preload nodes. The remote will preload content added on this node, and also attempt to preload objects requested by this node.
-
-- `enabled` (boolean): Enable content preloading (Default: `true`)
-- `addresses` (array): Multiaddr API addresses of nodes that should preload content. **NOTE:** nodes specified here should also be added to your node's bootstrap address list at [`config.Boostrap`](#optionsconfig).
-
-##### `options.EXPERIMENTAL`
-
-| Type | Default |
-|------|---------|
-| object | `{ ipnsPubsub: false, sharding: false }` |
-
-Enable and configure experimental features.
-
-- `ipnsPubsub` (boolean): Enable pub-sub on IPNS. (Default: `false`)
-- `sharding` (boolean): Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
-
-##### `options.config`
-
-| Type | Default |
-|------|---------|
-| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js) in browsers |
-
-Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](docs/config.md).
-
-###### Configuring Delegate Routers
-
-If you need to support Delegated Content and/or Peer Routing, you can enable it by specifying the multiaddrs of your delegate nodes in the config via `options.config.Addresses.Delegates`. If you need to run a delegate router we encourage you to run your own, with go-ipfs. You can see instructions for doing so in the [delegated routing example](https://github.com/libp2p/js-libp2p/tree/master/examples/delegated-routing).
-
-If you are not able to run your own delegate router nodes, we currently have two nodes that support delegated routing. **Important**: As many people may be leveraging these nodes, performance may be affected, which is why we recommend running your own nodes in production.
-
-Available delegate multiaddrs are:
-- `/dns4/node0.delegate.ipfs.io/tcp/443/https`
-- `/dns4/node1.delegate.ipfs.io/tcp/443/https`
-
-**Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
-
-**Note**: If you wish to use delegated routing and are creating your node _programmatically_ in Node.js or the browser you must `npm install libp2p-delegated-content-routing` and/or `npm install libp2p-delegated-peer-routing` and provide configured instances of them in [`options.libp2p`](#optionslibp2p). See the module repos for further instructions:
-
-- https://github.com/libp2p/js-libp2p-delegated-content-routing
-- https://github.com/libp2p/js-libp2p-delegated-peer-routing
-
-##### `options.ipld`
-
- | Type | Default |
-|------|---------|
-| object |  [`ipld-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js) in browsers |
-
- Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
-
- > Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
-
- To add support for other formats we provide two options, one sync and another async.
-
- Examples for the sync option:
-
-<details><summary>ESM Environments</summary>
-
-```js
-import ipldGit from 'ipld-git'
-import ipldBitcoin from 'ipld-bitcoin'
-
-const node = await IPFS.create({
-  ipld: {
-    formats: [ipldGit, ipldBitcoin]
-  }
-})
-```
-</details>
-<details><summary>Commonjs Environments</summary>
-
-```js
-const node = await IPFS.create({
-  ipld: {
-    formats: [require('ipld-git'), require('ipld-bitcoin')]
-  }
-})
-```
-</details>
-<details><summary>Using script tags</summary>
-
-```html
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
-<script>
-async function main () {
-  const node = await self.IPFS.create({
-    ipld: {
-      formats: [self.IpldGit, self.IpldBitcoin]
-    }
-  })
-}
-main()
-</script>
-```
-</details>
-
- Examples for the async option:
-
-<details><summary>ESM Environments</summary>
-
-```js
-const node = await IPFS.create({
-  ipld: {
-    async loadFormat (codec) {
-      if (codec === multicodec.GIT_RAW) {
-        return import('ipld-git') // This is a dynamic import
-      } else {
-        throw new Error('unable to load format ' + multicodec.print[codec])
-      }
-    }
-  }
-})
-```
-> For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
-
-Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be requested by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
-
-With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
-</details>
-
-<details><summary>Commonjs Environments</summary>
-
-```js
-const node = await IPFS.create({
-  ipld: {
-    async loadFormat (codec) {
-      if (codec === multicodec.GIT_RAW) {
-        return require('ipld-git')
-      } else {
-        throw new Error('unable to load format ' + multicodec.print[codec])
-      }
-    }
-  }
-})
-```
-</details>
-
-<details><summary>Using Script tags</summary>
-
-```js
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
-<script>
-const load = (name, url) => new Promise((resolve, reject) => {
-  const script = document.createElement('script')
-  script.src = url
-  script.onload = () => resolve(self[name])
-  script.onerror = () => reject(new Error('Failed to load ' + url))
-  document.body.appendChild(script)
-})
-
-const node = await self.IPFS.create({
-  ipld: {
-    async loadFormat (codec) {
-      switch (codec) {
-        case multicodec.GIT_RAW:
-          return load('IpldGit', 'https://unpkg.com/ipld-git/dist/index.min.js')
-        case multicodec.BITCOIN_BLOCK:
-          return load('IpldBitcoin', 'https://unpkg.com/ipld-bitcoin/dist/index.min.js')
-        default:
-          throw new Error('Unable to load format ' + multicodec.print[codec])
-      }
-    }
-  }
-})
-</script>
-```
-</details>
-
-
-##### `options.libp2p`
-
-| Type | Default |
-|------|---------|
-| object | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/src/core/runtime/libp2p-browser.js) in browsers |
-| function | [`libp2p bundle`](examples/custom-libp2p) |
-
-The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
-
-You can see the bundle in action in the [custom libp2p example](examples/custom-libp2p).
-
-- `modules` (object):
-    - `transport` (Array<[libp2p.Transport](https://github.com/libp2p/js-interfaces/tree/master/src/transport)>): An array of Libp2p transport classes/instances to use _instead_ of the defaults. See [libp2p/js-interfaces/transport](https://github.com/libp2p/js-interfaces/tree/master/src/transport) for details.
-    - `peerDiscovery` (Array<[libp2p.PeerDiscovery](https://github.com/libp2p/js-interfaces/tree/master/src/peer-discovery)>): An array of Libp2p peer discovery classes/instances to use _instead_ of the defaults. See [libp2p/js-interfaces/peer-discovery](https://github.com/libp2p/js-interfaces/tree/master/src/peer-discovery) for details. If passing a class, configuration can be passed using the config section below under the key corresponding to you module's unique `tag` (a static property on the class)
-    - `dht` (object): a DHT implementation that enables PeerRouting and ContentRouting. Example [libp2p/js-libp2p-kad-dht](https://github.com/libp2p/js-libp2p-kad-dht)
-    - `pubsub` (object): a Pubsub implementation on top of [libp2p/js-libp2p-pubsub](https://github.com/libp2p/js-libp2p-pubsub)
-    - `contentRouting` (Array<[libp2p.ContentRouting](https://github.com/libp2p/js-interfaces/tree/master/src/content-routing)>): An array of Libp2p content routing modules. See [libp2p/js-interfaces/content-routing](https://github.com/libp2p/js-interfaces/tree/master/src/content-routing) for details.
-    - `peerRouting` (Array<[libp2p.PeerRouting](https://github.com/libp2p/js-interfaces/tree/master/src/peer-routing)>): An array of Libp2p peer routing modules. See [libp2p/js-interfaces/peer-routing](https://github.com/libp2p/js-interfaces/tree/master/src/peer-routing) for details.
-- `config` (object):
-    - `peerDiscovery` (object):
-        - `autoDial` (boolean): Dial to discovered peers when under the Connection Manager min peer count watermark. (default `true`)
-        - `[PeerDiscovery.tag]` (object): configuration for a peer discovery module
-            - `enabled` (boolean): whether this module is enabled or disabled
-            - `[custom config]` (any): other keys are specific to the module
-    - `dht` (object): Configuration options for the DHT (WARNING: the current DHT implementation has performance issues, your mileage may vary)
-        - `enabled` (boolean): whether the DHT is enabled or not (default `false`)
-        - `kBucketSize` (number): bucket size (default `20`)
-        - `randomWalk` (object): configuration for random walk
-            - `enabled` (boolean): whether random DHT walking is enabled (default `false`)
-    - `pubsub` (object): Configuration options for Pubsub
-        - `enabled` (boolean): if pubbsub subsystem should be enabled (default: `false`)
-        - `emitSelf` (boolean): whether the node should emit to self on publish, in the event of the topic being subscribed (default: `true`)
-        - `signMessages` (boolean): if messages should be signed (default: `true`)
-        - `strictSigning` (boolean): if message signing should be required (default: `true`)
-
-##### `options.connectionManager`
-
-| Type | Default |
-|------|---------|
-| object | [defaults](https://github.com/libp2p/js-libp2p-connection-manager#create-a-connectionmanager) |
-
-Configure the libp2p connection manager.
-
-#### `node.start()`
-
-Start listening for connections with other IPFS nodes on the network. In most cases, you do not need to call this method — `IPFS.create()` will automatically do it for you.
-
-This method is asynchronous and returns a promise.
-
-```js
-const node = await IPFS.create({ start: false })
-console.log('Node is ready to use but not started!')
-
-try {
-  await node.start()
-  console.log('Node started!')
-} catch (error) {
-  console.error('Node failed to start!', error)
-}
-```
-
-#### `node.stop()`
-
-Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
-
-This method is asynchronous and returns a promise.
-
-```js
-const node = await IPFS.create()
-console.log('Node is ready to use!')
-
-try {
-  await node.stop()
-  console.log('Node stopped!')
-} catch (error) {
-  console.error('Node failed to stop!', error)
-}
-```
-
-#### Core API
-
-[![](https://github.com/ipfs/js-ipfs/raw/master/packages/interface-ipfs-core/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
-
-The IPFS core API provides all functionality that is not specific to setting up and starting or stopping a node. This API is available directly on an IPFS instance, on the command line (when using the CLI interface), and as an HTTP REST API. For a complete reference, see [![](https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core).
-
-The core API is grouped into several areas:
-
-#### Files
-
-- [Regular Files API](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md)
-  - [`ipfs.add(data, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#add)
-  - [`ipfs.cat(ipfsPath, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#cat)
-  - [`ipfs.get(ipfsPath, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#get)
-  - [`ipfs.ls(ipfsPath)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#ls)
-- [MFS (mutable file system) specific](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#mutable-file-system)
-  - [`ipfs.files.chmod(path, mode, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileschmod)
-  - [`ipfs.files.cp([from, to])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filescp)
-  - [`ipfs.files.flush([path])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesflush)
-  - [`ipfs.files.ls([path], [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesls)
-  - [`ipfs.files.mkdir(path, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesmkdir)
-  - [`ipfs.files.mv([from, to])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesmv)
-  - [`ipfs.files.read(path, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesread)
-  - [`ipfs.files.rm(path, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesrm)
-  - [`ipfs.files.stat(path, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesstat)
-  - [`ipfs.files.touch(path, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filestouch)
-  - [`ipfs.files.write(path, content, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileswrite)
-
-- [refs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REFS.md)
-  - [`ipfs.refs(ipfsPath, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REFS.md#refs)
-  - [`ipfs.refs.local()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REFS.md#refslocal)
-
-#### Graph
-
-- [dag](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DAG.md)
-  - [`ipfs.dag.put(dagNode, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DAG.md#dagput)
-  - [`ipfs.dag.get(cid, [path], [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DAG.md#dagget)
-  - [`ipfs.dag.tree(cid, [path], [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DAG.md#dagtree)
-
-- [pin](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PIN.md)
-  - [`ipfs.pin.add(hash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PIN.md#pinadd)
-  - [`ipfs.pin.ls([hash], [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PIN.md#pinls)
-  - [`ipfs.pin.rm(hash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PIN.md#pinrm)
-
-- [object](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md)
-  - [`ipfs.object.new([template])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectnew)
-  - [`ipfs.object.put(obj, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectput)
-  - [`ipfs.object.get(multihash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectget)
-  - [`ipfs.object.data(multihash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectdata)
-  - [`ipfs.object.links(multihash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectlinks)
-  - [`ipfs.object.stat(multihash, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectstat)
-  - [`ipfs.object.patch.addLink(multihash, DAGLink, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectpatchaddlink)
-  - [`ipfs.object.patch.rmLink(multihash, DAGLink, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectpatchrmlink)
-  - [`ipfs.object.patch.appendData(multihash, data, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectpatchappenddata)
-  - [`ipfs.object.patch.setData(multihash, data, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/OBJECT.md#objectpatchsetdata)
-
-#### Block
-
-- [block](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BLOCK.md)
-  - [`ipfs.block.get(cid, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BLOCK.md#blockget)
-  - [`ipfs.block.put(block, cid)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BLOCK.md#blockput)
-  - [`ipfs.block.rm(cid)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BLOCK.md#blockrm)
-  - [`ipfs.block.stat(cid)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BLOCK.md#blockstat)
-- [bitswap](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BITSWAP.md)
-  - [`ipfs.bitswap.wantlist([peerId])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BITSWAP.md#bitswapwantlist)
-  - [`ipfs.bitswap.stat()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BITSWAP.md#bitswapstat)
-
-#### Name
-
-- [name](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md)
-  - [`ipfs.name.publish(value, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md#namepublish)
-  - [`ipfs.name.pubsub.cancel(arg)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md#namepubsubcancel)
-  - [`ipfs.name.pubsub.state()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md#namepubsubstate)
-  - [`ipfs.name.pubsub.subs()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md#namepubsubsubs)
-  - [`ipfs.name.resolve(value, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md#nameresolve)
-
-#### Crypto and Key Management
-
-- [key](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md)
-  - [`ipfs.key.export(name, password)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keyexport)
-  - [`ipfs.key.gen(name, options)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keygen)
-  - [`ipfs.key.import(name, pem, password)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keyimport)
-  - [`ipfs.key.list()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keylist)
-  - [`ipfs.key.rename(oldName, newName)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keyrename)
-  - [`ipfs.key.rm(name)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/KEY.md#keyrm)
-
-- crypto (not implemented yet)
-
-#### Network
-
-- [bootstrap](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BOOTSTRAP.md)
-  - [`ipfs.bootstrap.list()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BOOTSTRAP.md#bootstraplist)
-  - [`ipfs.bootstrap.add(addr, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BOOTSTRAP.md#bootstrapadd)
-  - [`ipfs.bootstrap.rm(peer, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/BOOTSTRAP.md#bootstraprm)
-
-- [dht](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md)
-  - [`ipfs.dht.findPeer(peerId)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtfindpeer)
-  - [`ipfs.dht.findProvs(multihash)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtfindprovs)
-  - [`ipfs.dht.get(key)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtget)
-  - [`ipfs.dht.provide(cid)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtprovide)
-  - [`ipfs.dht.put(key, value)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtput)
-  - [`ipfs.dht.query(peerId)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md#dhtquery)
-
-- [pubsub](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md)
-  - [`ipfs.pubsub.subscribe(topic, handler, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md#pubsubsubscribe)
-  - [`ipfs.pubsub.unsubscribe(topic, handler)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md#pubsubunsubscribe)
-  - [`ipfs.pubsub.publish(topic, data)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md#pubsubpublish)
-  - [`ipfs.pubsub.ls(topic)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md#pubsubls)
-  - [`ipfs.pubsub.peers(topic)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/PUBSUB.md#pubsubpeers)
-
-- [libp2p](https://github.com/libp2p/interface-libp2p). Every IPFS instance also exposes the libp2p SPEC at `ipfs.libp2p`. The formal interface for this SPEC hasn't been defined but you can find documentation at its implementations:
-  - [Node.js bundle](./src/core/runtime/libp2p-nodejs.js)
-  - [Browser Bundle](./src/core/runtime/libp2p-browser.js)
-  - [libp2p baseclass](https://github.com/libp2p/js-libp2p)
-
-- [swarm](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/SWARM.md)
-  - [`ipfs.swarm.addrs()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/SWARM.md#swarmaddrs)
-  - [`ipfs.swarm.connect(addr)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/SWARM.md#swarmconnect)
-  - [`ipfs.swarm.disconnect(addr)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/SWARM.md#swarmdisconnect)
-  - [`ipfs.swarm.peers([options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/SWARM.md#swarmpeers)
-
-#### Node Management
-
-- [miscellaneous operations](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md)
-  - [`ipfs.id()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#id)
-  - [`ipfs.version()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#version)
-  - [`ipfs.ping(peerId, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#ping)
-  - `ipfs.init([options])`
-  - `ipfs.start()`
-  - [`ipfs.stop()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#stop)
-  - `ipfs.isOnline()`
-  - [`ipfs.resolve(name, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#resolve)
-  - [`ipfs.dns(name, [options]`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/MISCELLANEOUS.md#dns)
-
-- [repo](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REPO.md)
-  - `ipfs.repo.init`
-  - [`ipfs.repo.stat([options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REPO.md#repostat)
-  - [`ipfs.repo.version()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REPO.md#repoversion)
-  - [`ipfs.repo.gc([options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/REPO.md#repogc)
-
-- [stats](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/STATS.md)
-  - [`ipfs.stats.bitswap()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/STATS.md#statsbitswap)
-  - [`ipfs.stats.bw([options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/STATS.md#statsbw)
-  - [`ipfs.stats.repo([options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/STATS.md#statsrepo)
-
-- [config](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md)
-  - [`ipfs.config.get([key])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md#configget)
-  - [`ipfs.config.set(key, value)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md#configset)
-  - [`ipfs.config.replace(config)`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md#configreplace)
-  - [`ipfs.config.profiles.list()`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md#configprofileslist)
-  - [`ipfs.config.profiles.apply(name, [options])`](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/CONFIG.md#configprofilesapply)
-
-#### Static types and utils
-
-Aside from the default export, `ipfs` exports various types and utilities that are included in the bundle:
-
-- [`crypto`](https://www.npmjs.com/package/libp2p-crypto)
-- [`isIPFS`](https://www.npmjs.com/package/is-ipfs)
-- [`Buffer`](https://www.npmjs.com/package/buffer)
-- [`PeerId`](https://www.npmjs.com/package/peer-id)
-- [`PeerInfo`](https://www.npmjs.com/package/peer-info)
-- [`multiaddr`](https://www.npmjs.com/package/multiaddr)
-- [`multibase`](https://www.npmjs.com/package/multibase)
-- [`multihash`](https://www.npmjs.com/package/multihashes)
-- [`multihashing`](https://www.npmjs.com/package/multihashing-async)
-- [`multicodec`](https://www.npmjs.com/package/multicodec)
-- [`CID`](https://www.npmjs.com/package/cids)
-
-These can be accessed like this, for example:
-
-```js
-const { CID } = require('ipfs')
-// ...or from an es-module:
-import { CID } from 'ipfs'
-```
-
-##### Glob source
-
-A utility to allow files on the file system to be easily added to IPFS.
-
-###### `globSource(path, [options])`
-
-- `path`: A path to a single file or directory to glob from
-- `options`: Optional options
-- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
-- `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
-
-Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
-
-###### Example
-
-```js
-const IPFS = require('ipfs')
-const { globSource } = IPFS
-const ipfs = await IPFS.create()
-for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
-  console.log(file)
-}
-/*
-{
-  path: 'docs/assets/anchor.js',
-  cid: CID('QmVHxRocoWgUChLEvfEyDuuD6qJ4PhdDL2dTLcpUy3dSC2'),
-  size: 15347
-}
-{
-  path: 'docs/assets/bass-addons.css',
-  cid: CID('QmPiLWKd6yseMWDTgHegb8T7wVS7zWGYgyvfj7dGNt2viQ'),
-  size: 232
-}
-...
-*/
-```
-
-##### URL source
-
-A utility to allow content from the internet to be easily added to IPFS.
-
-###### `urlSource(url)`
-
-- `url`: A string URL or [`URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL) instance to send HTTP GET request to
-
-Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
-
-###### Example
-
-```js
-const IPFS = require('ipfs')
-const { urlSource } = IPFS
-const ipfs = await IPFS.create()
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
-/*
-{
-  path: 'ipfs-logo.svg',
-  cid: CID('QmTqZhR6f7jzdhLgPArDPnsbZpvvgxzCZycXK7ywkLxSyU'),
-  size: 3243
-}
-*/
-```
-
-## FAQ
-
-#### How to enable WebRTC support for js-ipfs in the Browser
-
-To add a WebRTC transport to your js-ipfs node, you must add a WebRTC multiaddr. To do that, simple override the config.Addresses.Swarm array which contains all the multiaddrs which the IPFS node will use. See below:
-
-```JavaScript
-const node = await IPFS.create({
-  config: {
-    Addresses: {
-      Swarm: [
-        '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
-      ]
-    }
-  }
-})
-
-// your instance with WebRTC is ready
-```
-
-**Important:** This transport usage is kind of unstable and several users have experienced crashes. Track development of a solution at https://github.com/ipfs/js-ipfs/issues/1088.
-
-#### Is there WebRTC support for js-ipfs with Node.js?
-
-Yes, however, bear in mind that there isn't a 100% stable solution to use WebRTC in Node.js, use it at your own risk. The most tested options are:
-
-- [wrtc](https://npmjs.org/wrtc) - Follow the install instructions.
-- [electron-webrtc](https://npmjs.org/electron-webrtc)
-
-To add WebRTC support in a IPFS node instance, do:
-
-```JavaScript
-const wrtc = require('wrtc') // or require('electron-webrtc')()
-const WStar = require('libp2p-webrtc-star')
-const wstar = new WStar({ wrtc })
-
-const node = await IPFS.create({
-  repo: 'your-repo-path',
-  // start: false,
-  config: {
-    Addresses: {
-      Swarm: [
-        "/ip4/0.0.0.0/tcp/4002",
-        "/ip4/127.0.0.1/tcp/4003/ws",
-        "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
-      ]
-    }
-  },
-  libp2p: {
-    modules: {
-      transport: [wstar],
-      peerDiscovery: [wstar.discovery]
-    }
-  }
-})
-
-// your instance with WebRTC is ready
-```
-
-To add WebRTC support to the IPFS daemon, you only need to install one of the WebRTC modules globally:
-
-```bash
-npm install wrtc --global
-# or
-npm install electron-webrtc --global
-```
-
-Then, update your IPFS Daemon config to include the multiaddr for this new transport on the `Addresses.Swarm` array. Add: `"/dns4/wrtc-star.discovery.libp2p.io/wss/p2p-webrtc-star"`
-
-#### How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?
-
-You'll need to execute a compatible `signaling server` ([libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) works) and include the correct configuration param for your IPFS node:
-
-- provide the [`multiaddr`](https://github.com/multiformats/multiaddr) for the `signaling server`
-
-```JavaScript
-const node = await IPFS.create({
-  repo: 'your-repo-path',
-  config: {
-    Addresses: {
-      Swarm: [
-        '/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star'
-      ]
-    }
-  }
-})
-```
-
-The code above assumes you are running a local `signaling server` on port `9090`. Provide the correct values accordingly.
-
-#### I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?
-
-Yes, unfortunately, due to [Chrome aggressive resource throttling policy](https://github.com/ipfs/js-ipfs/issues/611), it cuts freezes the execution of any background tab, turning an IPFS node that was running on that webpage into a vegetable state.
-
-A way to mitigate this in Chrome, is to run your IPFS node inside a Service Worker, so that the IPFS instance runs in a background process. You can learn how to install an IPFS node as a service worker in here the repo [ipfs-service-worker](https://github.com/ipfs/ipfs-service-worker)
-
-#### Can I use IPFS in my Electron App?
-
-Yes you can and in many ways. Read https://github.com/ipfs/notes/issues/256 for the multiple options.
-
-We now support Electron v5.0.0 without the need to rebuilt native modules.
-Still if you run into problems with native modules follow these instructions [here](https://electronjs.org/docs/tutorial/using-native-node-modules).
-
-#### Have more questions?
-
-Ask for help in our forum at https://discuss.ipfs.io or in IRC (#ipfs on Freenode).
-
-## Running js-ipfs with Docker
-
-We have automatic Docker builds setup with Docker Hub: https://hub.docker.com/r/ipfs/js-ipfs/
-
-All branches in the Github repository maps to a tag in Docker Hub, except `master` Git branch which is mapped to `latest` Docker tag.
-
-You can run js-ipfs like this:
-
-```
-$ docker run -it -p 4002:4002 -p 4003:4003 -p 5002:5002 -p 9090:9090 ipfs/js-ipfs:latest
-
-initializing ipfs node at /root/.jsipfs
-generating 2048-bit RSA keypair...done
-peer identity: Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS
-to get started, enter:
-
-         jsipfs files cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
-
-Initializing daemon...
-Using wrtc for webrtc support
-Swarm listening on /ip4/127.0.0.1/tcp/4003/ws/ipfs/Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS
-Swarm listening on /ip4/172.17.0.2/tcp/4003/ws/ipfs/Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS
-Swarm listening on /ip4/127.0.0.1/tcp/4002/ipfs/Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS
-Swarm listening on /ip4/172.17.0.2/tcp/4002/ipfs/Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS
-API is listening on: /ip4/0.0.0.0/tcp/5002
-Gateway (readonly) is listening on: /ip4/0.0.0.0/tcp/9090
-Daemon is ready
-
-$ curl --silent localhost:5002/api/v0/id | jq .ID
-"Qmbd5jx8YF1QLhvwfLbCTWXGyZLyEJHrPbtbpRESvYs4FS"
-```
-
+- **Check out existing issues** The [issue list](https://github.com/ipfs/js-ipfs/issues) has many that are marked as ['help wanted'](https://github.com/ipfs/js-ipfs/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22help+wanted%22) or ['difficulty:easy'](https://github.com/ipfs/js-ipfs/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Adifficulty%3Aeasy) which make great starting points for development, many of which can be tackled with no prior IPFS knowledge
+- **Look at the [IPFS Roadmap](https://github.com/ipfs/roadmap)** This are the high priority items being worked on right now
+- **Perform code reviews** More eyes will help
+  a. speed the project along
+  b. ensure quality, and
+  c. reduce possible future bugs.
+- **Add tests**. There can never be enough tests.
+- **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
 
 ## Packages
 
-Listing of the main packages used in the IPFS ecosystem. There are also three specifications worth linking here:
-
-- [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
-- [`HTTP API spec`](https://docs.ipfs.io/reference/api/http)
-- [`cli spec`](https://github.com/ipfs/specs/tree/master/public-api/cli)
-
-> This table is generated using the module [`package-table`](https://www.npmjs.com/package/package-table) with `package-table --data=package-list.json`.
+List of the main packages that make up the IPFS ecosystem.
 
 | Package | Version | Deps | CI/Travis | Coverage | Lead Maintainer |
 | ---------|---------|---------|---------|---------|--------- |
 | **Files** |
 | [`ipfs-unixfs-exporter`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs-exporter.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-unixfs/master)](https://travis-ci.com/ipfs/js-ipfs-unixfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-unixfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-unixfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | [`ipfs-unixfs-importer`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs-importer.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-unixfs/master)](https://travis-ci.com/ipfs/js-ipfs-unixfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-unixfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-unixfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
-| [`ipfs-mfs`](//github.com/ipfs/js-ipfs-mfs) | [![npm](https://img.shields.io/npm/v/ipfs-mfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-mfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-mfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-mfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-mfs/master)](https://travis-ci.com/ipfs/js-ipfs-mfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-mfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-mfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | [`ipfs-unixfs`](//github.com/ipfs/js-ipfs-unixfs) | [![npm](https://img.shields.io/npm/v/ipfs-unixfs.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-unixfs/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-unixfs.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-unixfs) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-unixfs/master)](https://travis-ci.com/ipfs/js-ipfs-unixfs) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-unixfs/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-unixfs) | [Alex Potsides](mailto:alex.potsides@protocol.ai) |
 | **Repo** |
 | [`ipfs-repo`](//github.com/ipfs/js-ipfs-repo) | [![npm](https://img.shields.io/npm/v/ipfs-repo.svg?maxAge=86400&style=flat-square)](//github.com/ipfs/js-ipfs-repo/releases) | [![Deps](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo) | [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo/master)](https://travis-ci.com/ipfs/js-ipfs-repo) | [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-repo) | [Alex Potsides](mailto:alex@achingbrain.net) |
@@ -1047,149 +207,10 @@ Listing of the main packages used in the IPFS ecosystem. There are also three sp
 | [`multiaddr`](//github.com/multiformats/js-multiaddr) | [![npm](https://img.shields.io/npm/v/multiaddr.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multiaddr/releases) | [![Deps](https://david-dm.org/multiformats/js-multiaddr.svg?style=flat-square)](https://david-dm.org/multiformats/js-multiaddr) | [![Travis CI](https://flat.badgen.net/travis/multiformats/js-multiaddr/master)](https://travis-ci.com/multiformats/js-multiaddr) | [![codecov](https://codecov.io/gh/multiformats/js-multiaddr/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/multiformats/js-multiaddr) | [Jacob Heun](mailto:jacobheun@gmail.com) |
 | [`multihashes`](//github.com/multiformats/js-multihash) | [![npm](https://img.shields.io/npm/v/multihashes.svg?maxAge=86400&style=flat-square)](//github.com/multiformats/js-multihash/releases) | [![Deps](https://david-dm.org/multiformats/js-multihash.svg?style=flat-square)](https://david-dm.org/multiformats/js-multihash) | [![Travis CI](https://flat.badgen.net/travis/multiformats/js-multihash/master)](https://travis-ci.com/multiformats/js-multihash) | [![codecov](https://codecov.io/gh/multiformats/js-multihash/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/multiformats/js-multihash) | [David Dias](mailto:daviddias@ipfs.io) |
 
-## Development
-
-### Clone and install dependencies
-
-```sh
-> git clone https://github.com/ipfs/js-ipfs.git
-> cd js-ipfs
-> npm install
-```
-
-### Run tests
-
-```sh
-# run all the unit tests
-> npm test
-
-# run individual tests (findprovs)
-> npm run test -- --grep findprovs
-
-# run just IPFS tests in Node.js
-> npm run test:node
-
-# run just IPFS core tests
-> npm run test:node:core
-
-# run just IPFS HTTP-API tests
-> npm run test:node:http
-
-# run just IPFS CLI tests
-> npm run test:cli
-
-# run just IPFS core tests in the Browser (Chrome)
-> npm run test:browser
-
-# run some interface tests (block API) on Node.js
-> npm run test:node:interface -- --grep '.block'
-```
-
-### Run interop tests
-
-
-```sh
-# run the interop tests with the default go-IPFS
-> npm run test:interop
-
-# run the interop tests with a different go-IPFS
-> IPFS_EXEC_GO=/path/to/ipfs npm run test:interop
-```
-
-### Run benchmark tests
-
-```sh
-# run all the benchmark tests
-> npm run benchmark
-
-# run just IPFS benchmarks in Node.js
-> npm run benchmark:node
-
-# run just IPFS benchmarks in Node.js for an IPFS instance
-> npm run benchmark:node:core
-
-# run just IPFS benchmarks in Node.js for an IPFS daemon
-> npm run benchmark:node:http
-
-# run just IPFS benchmarks in the browser (Chrome)
-> npm run benchmark:browser
-```
-
-### Lint
-
-**Conforming to linting rules is a prerequisite to commit to js-ipfs.**
-
-```sh
-> npm run lint
-```
-
-### Build a dist version
-
-```sh
-> npm run build
-```
-
-### [Runtime Support](https://github.com/ipfs/js-ipfs/issues/536)
-
-### Code Architecture and folder Structure
-
-![](/img/overview.png)
-
-##### Source code
-
-```Bash
-> tree src -L 2
-src                 # Main source code folder
-├── cli             # Implementation of the IPFS CLI
-│   └── ...
-├── http            # The HTTP-API implementation of IPFS as defined by HTTP API spec
-├── core            # IPFS implementation, the core (what gets loaded in browser)
-│   ├── components  # Each of IPFS subcomponent
-│   └── ...
-└── ...
-```
-
-### Monitoring
-
-The HTTP API exposed with js-ipfs can also be used for exposing metrics about
-the running js-ipfs node and other Node.js metrics.
-
-To enable it, you need to set the environment variable `IPFS_MONITORING` (any value)
-
-Once the environment variable is set and the js-ipfs daemon is running, you can get
-the metrics (in prometheus format) by making a GET request to the following endpoint:
-
-```
-http://localhost:5002/debug/metrics/prometheus
-```
-
-### IPFS Architecture
-
-![](/img/architecture.png)
-
-[Annotated version](https://user-images.githubusercontent.com/1211152/47606420-b6265780-da13-11e8-923b-b365a8534e0e.png)
-
-What does this image explain?
-
-- IPFS uses `ipfs-repo` which picks `fs` or `indexeddb` as its storage drivers, depending if it is running in Node.js or in the Browser.
-- The exchange protocol, `bitswap`, uses the Block Service which in turn uses the Repo, offering a get and put of blocks to the IPFS implementation.
-- The DAG API (previously Object) comes from the IPLD Resolver, it can support several IPLD Formats (i.e: dag-pb, dag-cbor, etc).
-- The Files API uses `ipfs-unixfs-engine` to import and export files to and from IPFS.
-- libp2p, the network stack of IPFS, uses libp2p to dial and listen for connections, to use the DHT, for discovery mechanisms, and more.
-
-## Contribute
-
-IPFS implementation in JavaScript is a work in progress. As such, there's a few things you can do right now to help out:
-
-- Go through the modules below and **check out existing issues**. This would be especially useful for modules in active development. Some knowledge of IPFS may be required, as well as the infrastructure behind it - for instance, you may need to read up on p2p and more complex operations like muxing to be able to help technically.
-- **Perform code reviews**. More eyes will help (a) speed the project along, (b) ensure quality, and (c) reduce possible future bugs.
-- Take a look at go-ipfs and some of the planning repositories or issues: for instance, the [libp2p spec](https://github.com/ipfs/specs/pull/19). Contributions here that would be most helpful are **top-level comments** about how it should look based on our understanding. Again, the more eyes the better.
-- **Add tests**. There can never be enough tests.
-
-### Want to hack on IPFS?
-
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
+> This table is generated using the module [`package-table`](https://www.npmjs.com/package/package-table) with `package-table --data=package-list.json`.
 
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
+
+[![](https://github.com/ipfs/js-ipfs/raw/master/packages/interface-ipfs-core/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)

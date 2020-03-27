@@ -1,8 +1,32 @@
-# The js-ipfs config file
+# The js-ipfs config file <!-- omit in toc -->
 
 The js-ipfs config file is a JSON document located in the root directory of the js-ipfs repository.
 
-#### Profiles
+## Table of Contents <!-- omit in toc -->
+
+- [Profiles](#profiles)
+- [`Addresses`](#addresses)
+  - [`API`](#api)
+  - [`Delegates`](#delegates)
+  - [`Gateway`](#gateway)
+  - [`Swarm`](#swarm)
+- [`Bootstrap`](#bootstrap)
+- [`Datastore`](#datastore)
+  - [`Spec`](#spec)
+- [`Discovery`](#discovery)
+  - [`MDNS`](#mdns)
+  - [`webRTCStar`](#webrtcstar)
+- [`Identity`](#identity)
+  - [`PeerID`](#peerid)
+  - [`PrivKey`](#privkey)
+- [`Keychain`](#keychain)
+- [`Pubsub`](#pubsub)
+  - [`Router`](#router)
+  - [`Enabled`](#enabled)
+- [`Swarm`](#swarm-1)
+  - [`ConnMgr`](#connmgr)
+
+## Profiles
 
 Configuration profiles allow to tweak configuration quickly. Profiles can be
 applied with `--profile` flag to `ipfs init` or with the `ipfs config profile
@@ -40,29 +64,8 @@ Available profiles:
 
   Inverse of "lowpower" profile.
 
-## Table of Contents
-
-- [`Addresses`](#addresses)
-  - [`API`](#api)
-  - [`Delegates`](#delegates)
-  - [`Gateway`](#gateway)
-  - [`Swarm`](#swarm)
-- [`Bootstrap`](#bootstrap)
-- [`Datastore`](#datastore)
-  - [`Spec`](#spec)
-- [`Discovery`](#discovery)
-  - [`MDNS`](#mdns)
-  - [`webRTCStar`](#webrtcstar)
-- [`Identity`](#identity)
-  - [`PeerID`](#peerid)
-  - [`PrivKey`](#privkey)
-- [`Keychain`](#keychain)
-- [`Pubsub`](#pubsub)
-  - [`Router`](#router)
-- [`Swarm`](#swarm)
-  - [`ConnMgr`](#connmgr)
-
 ## `Addresses`
+
 Contains information about various listener addresses to be used by this node.
 
 ### `API`
