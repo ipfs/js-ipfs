@@ -52,7 +52,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 * [Core API](./docs/core-api)
 * [Examples](./examples)
-* [Development]('./docs/DEVELOPMENT.md)
+* [Development](./docs/DEVELOPMENT.md)
 
 ## Structure
 

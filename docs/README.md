@@ -11,8 +11,8 @@
 Whether accessed directly or over HTTP, both methods support the full [Core API](#core-api).  In addition other methods are available to construct instances of each module, etc.
 
 * [Core API docs](./core-api/README.md)
-* [IPFS API]('../packages/ipfs/README.md)
-* [IPFS-HTTP-CLIENT API]('../packages/ipfs-http-client/README.md)
+* [IPFS API](../packages/ipfs/README.md)
+* [IPFS-HTTP-CLIENT API](../packages/ipfs-http-client/README.md)
 
 ## How tos and other documentation
 
