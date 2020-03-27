@@ -18,7 +18,7 @@ module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) =
     }
 
     // CID v0 is for multihashes encoded with sha2-256
-    if (opts.hashAlg && opts.cidVersion !== 1) {
+    if (opts.hashAlg && opts.hashAlg !== 'sha2-256' && opts.cidVersion !== 1) {
       opts.cidVersion = 1
     }
 
