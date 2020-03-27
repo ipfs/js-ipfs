@@ -42,6 +42,19 @@ Here's what we are going to be doing:
 
 Just follow the instructions below and it will be up and running in no time!
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
+
 ### 1. Install `go-ipfs` or `js-ipfs`
 
 If you already have `go-ipfs` or `js-ipfs` installed in your machine, you can skip this step. Otherwise, read on.

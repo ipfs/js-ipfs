@@ -6,6 +6,19 @@ In this tutorial, we go through spawning an IPFS node, adding a file and cat'ing
 
 You can find a complete version of this tutorial in [1.js](./1.js). For this tutorial, you need to install `ipfs` using `npm install ipfs`.
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
+
 Creating an IPFS instance can be done in one line, after requiring the module, you simply have to:
 
 ```js

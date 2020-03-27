@@ -2,7 +2,20 @@
 
 This example takes you through the process needed to run 2 or more JS IPFS nodes on the same computer.
 
-## Via the CLI
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
+
+### Via the CLI
 
 Firstly, you'll want to use the `IPFS_PATH` env variable to get a different repo for each instance. Initialise a new IPFS repo like this:
 
@@ -36,7 +49,7 @@ IPFS_PATH=~/.jsipfs2 jsipfs daemon
 # Repeat this for as many nodes as you want to run...
 ```
 
-## Programmatically
+### Programmatically
 
 Firstly, you'll want to pass the [`repo`](https://github.com/ipfs/js-ipfs#optionsrepo) option to the constructor to get a different repo for each instance:
 

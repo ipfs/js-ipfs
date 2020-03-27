@@ -28,22 +28,33 @@ In order for any of the above to be useful, we also need to have a way to actual
 
 For example, say we have a directory containing a video file `BigBuckBunny_320x180.mp4`. We can then create a sub directory and generate the HLS data there, and finally add it to IPFS:
 
-```bash
-> mkdir hls-bunny
-> cd hls-bunny
-> ffmpeg -i ../BigBuckBunny_320x180.mp4 -profile:v baseline -level 3.0 -start_number 0 -hls_time 5 -hls_list_size 0 -f hls master.m3u8
-> ipfs add -Qr .
+```console
+$ mkdir hls-bunny
+$ cd hls-bunny
+$ ffmpeg -i ../BigBuckBunny_320x180.mp4 -profile:v baseline -level 3.0 -start_number 0 -hls_time 5 -hls_list_size 0 -f hls master.m3u8
+$ ipfs add -Qr .
 ```
 
 The most important piece of information to note down is the name you choose for the HLS manifest (master.m3u8 in this example, but you're free to use any name), and the hash returned by `ipfs add`. Consult [streaming.js](streaming.js) for a full example of how these values are used.
 
-## Putting it all together
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 *Note:* If you try to run the example straight from disk, some browsers (e.g Chrome) might, for security reasons, prevent some resources from loading correctly. To get around this, simply cd into the directory of this example and use http-server from npm:
 
-```bash
-> npm install -g http-server
-> http-server
+```console
+$ npm install -g http-server
+$ http-server
 ```
 
 You should then be able to stream Big Buck Bunny by pointing your browser at http://localhost:8080.

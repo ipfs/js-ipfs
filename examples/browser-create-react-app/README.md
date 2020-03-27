@@ -8,6 +8,17 @@ It boots up a js-ipfs instance via a custom React hook in `./src/hooks/use-ipfs-
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). **v2.1.3**
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
 ## Available Scripts
 
 In the project directory, you can run:

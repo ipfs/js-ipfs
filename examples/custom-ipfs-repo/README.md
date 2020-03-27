@@ -7,7 +7,18 @@ This example shows you how to customize your repository, including where your da
 
 You can find full details on customization in the [IPFS Repo Docs](https://github.com/ipfs/js-ipfs-repo#setup).
 
-## Run this example
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 ```
 > npm start

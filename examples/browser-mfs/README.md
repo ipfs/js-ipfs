@@ -8,9 +8,18 @@ This demo allows you to upload files from your computer and use them to explore 
 
 ![screenshot](screenshot_2.png)
 
-## Running the demo
+## Before you start
 
-Fork and clone this repo.
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 Navigate into this directory:
 

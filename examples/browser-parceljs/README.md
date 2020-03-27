@@ -6,6 +6,17 @@ that you can follow it for creating Parcel.js bundled js-ipfs DApps.
 
 ## Before you start
 
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
+
 1. Start your IPFS daemon of choice e.g. `ipfs daemon` (optional if you do not
 want to serve the example over IPFS)
 1. Open a new terminal

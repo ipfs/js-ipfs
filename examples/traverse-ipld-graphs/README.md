@@ -5,6 +5,17 @@ IPLD stands for [`InterPlanetary Linked-Data`](https://ipld.io/), it is the data
 
 This tutorial goes through several operations over IPLD graphs using the [DAG API](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/API/dag).
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
 ## [create nodes to build a graph](./put.js)
 
 ## [retrieve a node from a graph](./get.js)

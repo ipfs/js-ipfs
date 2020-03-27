@@ -6,28 +6,39 @@ A minimal demonstration of how to use `js-ipfs` with `Vue`.
 
 This project was bootstrapped with [Vue CLI](https://cli.vuejs.org/).
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
 ### Compiles and hot-reloads for development
 
-```bash
-npm run serve
+```console
+$ npm run serve
 ```
 
 ### Compiles and minifies for production
 
-```bash
-npm run build
+```console
+$ npm run build
 ```
 
 ### Run your tests
 
-```bash
-npm run test
+```console
+$ npm run test
 ```
 
 ### Lints and fixes files
 
-```bash
-npm run lint
+```console
+$ npm run lint
 ```
 
 ### Customize configuration

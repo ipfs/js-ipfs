@@ -4,7 +4,18 @@ We can use the execllent [`videostream`](https://www.npmjs.com/package/videostre
 
 Take a look at [`index.js`](./index.js) to see a working example.
 
-## Running the demo
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 In this directory:
 
