@@ -4,7 +4,7 @@
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
   "main": "src/index.js",
-  "homepage": "https://github.com/ipfs/js-ipfs",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "browser": {
     "fs": false,

@@ -5,7 +5,7 @@
   "keywords": [
     "IPFS"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alan Shaw <alan@tableflip.io>",
