@@ -39,6 +39,9 @@ module.exports = ({
       config.Addresses.Swarm.forEach(addr => {
         let ma = multiaddr(addr)
 
+        // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
+        // webrtc-star) can have the intermediary's peer ID in the address, so append our
+        // peer ID to the end of it
         const maId = ma.getPeerId()
         if (maId && maId !== peerInfo.id.toB58String()) {
           ma = ma.encapsulate(`/p2p/${peerInfo.id.toB58String()}`)
