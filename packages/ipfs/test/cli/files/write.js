@@ -417,7 +417,27 @@ describe('write', () => {
       path,
       stdin,
       defaultOptions({
-        mtime: new Date(11000)
+        mtime: {
+          secs: 11
+        }
+      })
+    ])
+  })
+
+  it('should write to a file with a specified mtime and mtime nsecs', async () => {
+    const path = '/foo'
+
+    await cli(`files write --mtime 11 --mtime-nsecs 10 ${path}`, { ipfs, getStdin })
+
+    expect(ipfs.files.write.callCount).to.equal(1)
+    expect(ipfs.files.write.getCall(0).args).to.deep.equal([
+      path,
+      stdin,
+      defaultOptions({
+        mtime: {
+          secs: 11,
+          nsecs: 10
+        }
       })
     ])
   })

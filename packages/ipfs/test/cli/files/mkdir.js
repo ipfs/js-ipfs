@@ -177,7 +177,24 @@ describe('mkdir', () => {
     expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
       path,
       defaultOptions({
-        mtime: new Date(5000)
+        mtime: {
+          secs: 5
+        }
+      })
+    ])
+  })
+
+  it('should make a directory a different mtime and mtime nsecs', async () => {
+    await cli(`files mkdir --mtime 5 --mtime-nsecs 10 ${path}`, { ipfs })
+
+    expect(ipfs.files.mkdir.callCount).to.equal(1)
+    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
+      path,
+      defaultOptions({
+        mtime: {
+          secs: 5,
+          nsecs: 10
+        }
       })
     ])
   })

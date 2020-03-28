@@ -28,7 +28,9 @@ describe('touch', () => {
   }
 
   const path = '/foo'
-  const mtime = new Date(100000)
+  const mtime = {
+    secs: 1000
+  }
   let ipfs
 
   beforeEach(() => {
@@ -40,7 +42,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime for a file', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -52,7 +54,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime without flushing', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} --flush false ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} --flush false ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -65,7 +67,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime without flushing (short option)', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} -f false ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} -f false ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -78,7 +80,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime with a different hash algorithm', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} --hash-alg sha3-256 ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} --hash-alg sha3-256 ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -91,7 +93,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime with a different hash algorithm (short option)', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} -h sha3-256 ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} -h sha3-256 ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -104,7 +106,7 @@ describe('touch', () => {
   })
 
   it('should update the mtime with a shard split threshold', async () => {
-    await cli(`files touch -m ${mtime.getTime() / 1000} --shard-split-threshold 10 ${path}`, { ipfs })
+    await cli(`files touch -m ${mtime.secs} --shard-split-threshold 10 ${path}`, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
@@ -112,6 +114,21 @@ describe('touch', () => {
       defaultOptions({
         mtime,
         shardSplitThreshold: 10
+      })
+    ])
+  })
+
+  it('should update the mtime and nsecs', async () => {
+    await cli(`files touch -m 5 --mtime-nsecs 10 ${path}`, { ipfs })
+
+    expect(ipfs.files.touch.callCount).to.equal(1)
+    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
+      path,
+      defaultOptions({
+        mtime: {
+          secs: 5,
+          nsecs: 10
+        }
       })
     ])
   })

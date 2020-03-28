@@ -6,7 +6,11 @@ const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
 const mh = require('multihashes')
 const multibase = require('multibase')
-const { createProgressBar } = require('../utils')
+const {
+  createProgressBar,
+  coerceMtime,
+  coerceMtimeNsecs
+} = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
 
@@ -142,32 +146,12 @@ module.exports = {
     },
     mtime: {
       type: 'number',
-      coerce: (value) => {
-        value = parseInt(value)
-
-        if (isNaN(value)) {
-          throw new Error('mtime must be a number')
-        }
-
-        return value
-      },
+      coerce: coerceMtime,
       describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
     },
     'mtime-nsecs': {
       type: 'number',
-      coerce: (value) => {
-        value = parseInt(value)
-
-        if (isNaN(value)) {
-          throw new Error('mtime-nsecs must be a number')
-        }
-
-        if (value < 0 || value > 999999999) {
-          throw new Error('mtime-nsecs must be in the range [0,999999999]')
-        }
-
-        return value
-      },
+      coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
     }
   },

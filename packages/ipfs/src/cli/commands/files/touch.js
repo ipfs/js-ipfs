@@ -2,7 +2,9 @@
 
 const {
   asBoolean,
-  asDateFromSeconds
+  asMtimeFromSeconds,
+  coerceMtime,
+  coerceMtimeNsecs
 } = require('../../utils')
 
 module.exports = {
@@ -12,11 +14,15 @@ module.exports = {
 
   builder: {
     mtime: {
+      type: 'number',
       alias: 'm',
-      type: 'date',
-      coerce: asDateFromSeconds,
-      default: Date.now(),
-      describe: 'Time to use as the new modification time'
+      coerce: coerceMtime,
+      describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
+    },
+    'mtime-nsecs': {
+      type: 'number',
+      coerce: coerceMtimeNsecs,
+      describe: 'Modification time fraction in nanoseconds'
     },
     flush: {
       alias: 'f',
@@ -52,11 +58,12 @@ module.exports = {
       cidVersion,
       hashAlg,
       shardSplitThreshold,
-      mtime
+      mtime,
+      mtimeNsecs
     } = argv
 
     return ipfs.files.touch(path, {
-      mtime,
+      mtime: asMtimeFromSeconds(mtime, mtimeNsecs),
       flush,
       cidVersion,
       hashAlg,

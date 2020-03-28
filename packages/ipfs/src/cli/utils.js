@@ -133,8 +133,44 @@ const asOctal = (value) => {
   return parseInt(value, 8)
 }
 
-const asDateFromSeconds = (value) => {
-  return new Date(parseInt(value, 10) * 1000)
+const asMtimeFromSeconds = (secs, nsecs) => {
+  if (secs === null || secs === undefined) {
+    return undefined
+  }
+
+  const output = {
+    secs
+  }
+
+  if (nsecs !== null && nsecs !== undefined) {
+    output.nsecs = nsecs
+  }
+
+  return output
+}
+
+const coerceMtime = (value) => {
+  value = parseInt(value)
+
+  if (isNaN(value)) {
+    throw new Error('mtime must be a number')
+  }
+
+  return value
+}
+
+const coerceMtimeNsecs = (value) => {
+  value = parseInt(value)
+
+  if (isNaN(value)) {
+    throw new Error('mtime-nsecs must be a number')
+  }
+
+  if (value < 0 || value > 999999999) {
+    throw new Error('mtime-nsecs must be in the range [0,999999999]')
+  }
+
+  return value
 }
 
 module.exports = {
@@ -148,5 +184,7 @@ module.exports = {
   ipfsPathHelp,
   asBoolean,
   asOctal,
-  asDateFromSeconds
+  asMtimeFromSeconds,
+  coerceMtime,
+  coerceMtimeNsecs
 }
