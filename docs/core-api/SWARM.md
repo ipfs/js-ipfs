@@ -18,7 +18,7 @@
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<{ id: String, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
+| `Promise<Array<{ id: String, addrs: Multiaddr[] }>>` | A promise that resolves to an array of objects with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
 **Example:**
 
