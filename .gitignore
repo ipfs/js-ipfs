@@ -1,7 +1,3 @@
-# Dependency tools
-package-lock.json
-yarn.lock
-
 # Logs
 logs
 *.log
@@ -12,12 +8,14 @@ coverage
 .nyc_output
 tests_output
 cache
+.cache
 
 # Dependency directory
 node_modules
 
 # Build artefacts
 dist
+build
 
 # Deployment files
 .npmrc
