@@ -42,7 +42,7 @@
     "bignumber.js": "^9.0.0",
     "bs58": "^4.0.1",
     "buffer": "^5.4.2",
-    "cids": "^0.7.3",
+    "cids": "^0.8.0",
     "debug": "^4.1.0",
     "form-data": "^3.0.0",
     "ipfs-block": "^0.8.1",
@@ -58,16 +58,16 @@
     "merge-options": "^2.0.0",
     "multiaddr": "^7.2.1",
     "multiaddr-to-uri": "^5.1.0",
-    "multibase": "^0.6.0",
+    "multibase": "^0.7.0",
     "multicodec": "^1.0.0",
     "multihashes": "^0.4.14",
-    "nanoid": "^2.1.11",
+    "nanoid": "^3.0.2",
     "node-fetch": "^2.6.0",
     "parse-duration": "^0.1.2",
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "21.3.0",
+    "aegir": "21.4.5",
     "browser-process-platform": "^0.1.1",
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "0.4.23-3",
@@ -76,7 +76,7 @@
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",
     "it-pipe": "^1.1.0",
-    "nock": "^11.7.2"
+    "nock": "^12.0.3"
   },
   "engines": {
     "node": ">=10.3.0",
