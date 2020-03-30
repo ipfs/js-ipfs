@@ -5,7 +5,7 @@ const IPFS = require('ipfs')
 const execa = require('execa')
 const os = require('os')
 const path = require('path')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const {
   waitForOutput
 } = require('test-ipfs-example/utils')

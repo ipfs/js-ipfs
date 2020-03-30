@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const delay = require('delay')
 const multihashing = require('multihashing-async')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const waitFor = require('../utils/wait-for')

@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const factory = require('../utils/factory')
 
 describe('key exchange', function () {

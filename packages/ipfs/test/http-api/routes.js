@@ -2,7 +2,7 @@
 'use strict'
 
 const fs = require('fs')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const Daemon = require('../../src/cli/daemon')
 const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)

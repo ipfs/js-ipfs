@@ -6,7 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
 const os = require('os')
 const path = require('path')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { isNode } = require('ipfs-utils/src/env')
 const IPFS = require('../../src/core')
 

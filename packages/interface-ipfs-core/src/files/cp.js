@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const all = require('it-all')
 const concat = require('it-concat')
 const { fixtures } = require('../utils')
