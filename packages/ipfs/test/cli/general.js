@@ -4,7 +4,7 @@
 const os = require('os')
 const fs = require('fs').promises
 const path = require('path')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { repoVersion } = require('ipfs-repo')
 const { promisify } = require('util')

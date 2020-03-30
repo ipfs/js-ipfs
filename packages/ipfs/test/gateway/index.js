@@ -7,8 +7,8 @@ const Daemon = require('../../src/cli/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
 const path = require('path')
-const nanoid = require('nanoid')
-const fileType = require('file-type')
+const { nanoid } = require('nanoid')
+const FileType = require('file-type')
 const CID = require('cids')
 const all = require('it-all')
 
@@ -442,7 +442,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
     expect(res.headers.suborigin).to.equal('ipfs000bafybeidsg6t7ici2osxjkukisd5inixiunqdpq2q5jy4a2ruzdf6ewsqk4')
 
-    const fileSignature = fileType(res.rawPayload)
+    const fileSignature = await FileType.fromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   })
@@ -619,7 +619,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal('"Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"')
     expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
 
-    const fileSignature = fileType(res.rawPayload)
+    const fileSignature = await FileType.fromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   })

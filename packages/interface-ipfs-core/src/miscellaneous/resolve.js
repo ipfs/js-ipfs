@@ -3,7 +3,7 @@
 
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')

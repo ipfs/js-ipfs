@@ -2,7 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

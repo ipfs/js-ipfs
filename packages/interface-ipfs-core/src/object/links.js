@@ -3,7 +3,7 @@
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
 const all = require('it-all')

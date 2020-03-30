@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')

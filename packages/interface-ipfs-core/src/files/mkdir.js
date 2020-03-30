@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const multihash = require('multihashes')
 const createShardedDirectory = require('../utils/create-sharded-directory')

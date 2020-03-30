@@ -50,11 +50,9 @@ let echo
 module.exports = {
   hooks: {
     pre: async () => {
-      console.info('starting echo server')
       echo = await echoServer()
     },
     post: async () => {
-      console.info('stopping echo server')
       await echo.stop()
     }
   }

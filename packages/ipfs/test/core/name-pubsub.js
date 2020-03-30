@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const base64url = require('base64url')
 const { fromB58String } = require('multihashes')

@@ -1,6 +1,6 @@
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const delay = require('delay')
 
 async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {

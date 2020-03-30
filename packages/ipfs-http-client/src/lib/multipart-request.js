@@ -2,7 +2,7 @@
 
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
 const toStream = require('./to-stream')
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 

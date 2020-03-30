@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const pmap = require('p-map')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Block = require('ipfs-block')

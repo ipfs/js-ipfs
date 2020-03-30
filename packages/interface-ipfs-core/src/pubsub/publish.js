@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')
 
