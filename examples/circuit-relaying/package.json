@@ -19,8 +19,8 @@
     "ipfs-pubsub-room": "^2.0.1"
   },
   "devDependencies": {
-    "aegir": "21.3.0",
-    "execa": "^3.2.0",
+    "aegir": "21.4.5",
+    "execa": "^4.0.0",
     "ipfs-css": "^0.13.1",
     "ipfs-http-client": "^42.0.0",
     "parcel-bundler": "^1.12.4",

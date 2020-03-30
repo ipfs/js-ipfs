@@ -16,7 +16,7 @@ let sigServerB
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '652kB' },
+  bundlesize: { maxSize: '601kB' },
   webpack: {
     resolve: {
       mainFields: ['browser', 'main'],

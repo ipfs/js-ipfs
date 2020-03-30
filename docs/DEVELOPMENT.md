@@ -58,7 +58,8 @@ Please run the linter before submitting a PR, the build will not pass if it fail
 ## Publishing new versions
 
 1. Ensure you have a `GH_TOKEN` env var containing a GitHub [Personal Access Token](https://github.com/settings/tokens) with `public_repo` permissions
-2. From the root of this repo run `npm run release` and follow the on screen prompts.  It will use [conventional commits](https://www.conventionalcommits.org) to work out the new package version
+2. You'll also need a valid [Docker Hub](https://hub.docker.com) login with sufficient permissions to publish new Docker images to the [ipfs/js-ipfs](https://hub.docker.com/repository/docker/ipfs/js-ipfs) repository
+3. From the root of this repo run `npm run release` and follow the on screen prompts.  It will use [conventional commits](https://www.conventionalcommits.org) to work out the new package version
 
 ## Using prerelease versions
 
