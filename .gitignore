@@ -11,6 +11,7 @@ npm-debug.log*
 coverage
 .nyc_output
 tests_output
+cache
 
 # Dependency directory
 node_modules
