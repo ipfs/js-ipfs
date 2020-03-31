@@ -118,14 +118,24 @@ jobs:
         - npm run test:interface:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
-      name: interface over http - node
+      name: interface over http to js-ipfs - node
       script:
-        - npm run test:interface:node:http -- $RUN_SINCE -- -- --bail
+        - npm run test:interface:node:http -- $RUN_SINCE --scope=ipfs -- -- --bail
 
     - stage: test
-      name: interface over http - browser
+      name: interface over http to js-ifps - browser
       script:
-        - npm run test:interface:browser:http -- $RUN_SINCE -- -- --bail
+        - npm run test:interface:browser:http -- $RUN_SINCE --scope=ipfs -- -- --bail
+
+    - stage: test
+      name: interface over http to go-ifps - node
+      script:
+        - npm run test:interface:node:http -- $RUN_SINCE --scope=ipfs-http-client -- -- --bail
+
+    - stage: test
+      name: interface over http to go-ipfs - browser
+      script:
+        - npm run test:interface:browser:http -- $RUN_SINCE --scope=ipfs-http-client -- -- --bail
 
     - stage: test
       name: interop - node
