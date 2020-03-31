@@ -3,12 +3,14 @@
 
 const tests = require('interface-ipfs-core')
 const { isNode } = require('ipfs-utils/src/env')
-const factory = require('../utils/factory')
+const factory = require('./utils/factory')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
-  const commonFactory = factory()
+  const commonFactory = factory({
+    type: 'proc'
+  })
 
   tests.root(commonFactory, {
     skip: isNode ? null : [{

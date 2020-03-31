@@ -108,6 +108,26 @@ jobs:
         - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
 
     - stage: test
+      name: interface to core - node
+      script:
+        - npm run test:interface:node -- $RUN_SINCE -- -- --bail
+
+    - stage: test
+      name: interface to core - browser
+      script:
+        - npm run test:interface:browser -- $RUN_SINCE -- -- --bail
+
+    - stage: test
+      name: interface over http - node
+      script:
+        - npm run test:interface:node:http -- $RUN_SINCE -- -- --bail
+
+    - stage: test
+      name: interface over http - browser
+      script:
+        - npm run test:interface:browser:http -- $RUN_SINCE -- -- --bail
+
+    - stage: test
       name: interop - node
       script:
         - npm run test:interop:node -- $RUN_SINCE -- -- --bail

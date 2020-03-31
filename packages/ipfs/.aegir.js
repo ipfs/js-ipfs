@@ -41,7 +41,10 @@ module.exports = {
     node: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
-        echoServer = EchoServer.createServer()
+
+        if (process.env.ECHO_SERVER_PORT) {
+          echoServer = EchoServer.createServer()
+        }
 
         await preloadNode.start(),
         await echoServer.start()
@@ -92,11 +95,9 @@ module.exports = {
         }).start()
       },
       post: async () => {
-        await ipfsdServer.stop()
-        await preloadNode.stop()
-        await echoServer.stop()
-        await sigServerA.stop()
-        await sigServerB.stop()
+        await Promise.all(
+          [ipfsdServer, preloadNode, echoServer, sigServerA, sigServerB].map(server => server && server.stop())
+        )
       }
     }
   }

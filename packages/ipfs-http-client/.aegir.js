@@ -38,9 +38,11 @@ module.exports = {
   hooks: {
     node: {
       pre: () => {
-        echoServer = EchoServer.createServer()
+        if (process.env.ECHO_SERVER_PORT) {
+          echoServer = EchoServer.createServer()
 
-        return echoServer.start()
+          return echoServer.start()
+        }
       },
       post: () => echoServer.stop()
     },
@@ -50,13 +52,13 @@ module.exports = {
 
         return Promise.all([
           server.start(),
-          echoServer.start()
+          echoServer ? echoServer.start() : null
         ])
       },
       post: () => {
         return Promise.all([
           server.stop(),
-          echoServer.stop()
+          echoServer ? echoServer.stop() : null
         ])
       }
     }
