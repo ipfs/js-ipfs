@@ -51,19 +51,21 @@ module.exports = {
       }
     },
     browser: {
-      pre: () => {
-        echoServer = EchoServer.createServer()
+      pre: async () => {
+        if (process.env.ECHO_SERVER_PORT) {
+          echoServer = EchoServer.createServer()
 
-        return Promise.all([
-          server.start(),
-          echoServer ? echoServer.start() : Promise.resolve()
-        ])
+          await echoServer.start()
+        }
+
+        await server.start()
       },
-      post: () => {
-        return Promise.all([
-          server.stop(),
-          echoServer ? echoServer.stop() : Promise.resolve()
-        ])
+      post: async () => {
+        if (echoServer) {
+          await echoServer.stop()
+        }
+
+        await server.stop()
       }
     }
   }
