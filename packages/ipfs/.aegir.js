@@ -44,23 +44,28 @@ module.exports = {
 
         if (process.env.ECHO_SERVER_PORT) {
           echoServer = EchoServer.createServer()
+          await echoServer.start()
         }
 
-        await preloadNode.start(),
-        await echoServer.start()
+        await preloadNode.start()
       },
       post: async () => {
-        await preloadNode.stop(),
-        await echoServer.stop()
+        await preloadNode.stop()
+
+        if (echoServer) {
+          await echoServer.stop()
+        }
       }
     },
     browser: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
-        echoServer = EchoServer.createServer()
 
-        await preloadNode.start()
-        await echoServer.start()
+        if (process.env.ECHO_SERVER_PORT) {
+          echoServer = EchoServer.createServer()
+          await echoServer.start()
+        }
+
         sigServerA = await webRTCStarSigServer.start({
           host: '127.0.0.1',
           port: 14579,

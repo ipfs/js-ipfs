@@ -37,14 +37,18 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => {
+      pre: async () => {
         if (process.env.ECHO_SERVER_PORT) {
           echoServer = EchoServer.createServer()
 
-          return echoServer.start()
+          await echoServer.start()
         }
       },
-      post: () => echoServer.stop()
+      post: async () => {
+        if (echoServer) {
+          await echoServer.stop()
+        }
+      }
     },
     browser: {
       pre: () => {
