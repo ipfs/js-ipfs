@@ -99,7 +99,7 @@
     "ipfs-bitswap": "^0.27.1",
     "ipfs-block": "^0.8.1",
     "ipfs-block-service": "^0.16.0",
-    "ipfs-core-utils": "^0.0.1",
+    "ipfs-core-utils": "^0.1.0",
     "ipfs-http-client": "^43.0.0",
     "ipfs-http-response": "^0.5.0",
     "ipfs-repo": "^1.0.1",
