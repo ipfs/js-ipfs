@@ -41,13 +41,12 @@ module.exports = {
     node: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
+        await preloadNode.start()
 
         if (process.env.ECHO_SERVER_PORT) {
           echoServer = EchoServer.createServer()
           await echoServer.start()
         }
-
-        await preloadNode.start()
       },
       post: async () => {
         await preloadNode.stop()
@@ -60,6 +59,7 @@ module.exports = {
     browser: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
+        await preloadNode.start()
 
         if (process.env.ECHO_SERVER_PORT) {
           echoServer = EchoServer.createServer()
