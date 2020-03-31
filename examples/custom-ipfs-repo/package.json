@@ -1,6 +1,6 @@
 {
   "name": "example-custom-ipfs-repo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Customizing your ipfs repo",
   "main": "index.js",
   "private": true,
@@ -11,12 +11,12 @@
   "license": "MIT",
   "dependencies": {
     "datastore-fs": "^0.9.1",
-    "ipfs": "^0.41.0",
+    "ipfs": "^0.42.0",
     "ipfs-repo": "^1.0.1",
     "it-all": "^1.0.1"
   },
   "devDependencies": {
     "execa": "^4.0.0",
-    "test-ipfs-example": "^1.0.0"
+    "test-ipfs-example": "^2.0.0"
   }
 }

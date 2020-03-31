@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.41.2",
+  "version": "0.42.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -99,8 +99,8 @@
     "ipfs-bitswap": "^0.27.1",
     "ipfs-block": "^0.8.1",
     "ipfs-block-service": "^0.16.0",
-    "ipfs-core-utils": "~0.0.0",
-    "ipfs-http-client": "^42.0.0",
+    "ipfs-core-utils": "^0.0.1",
+    "ipfs-http-client": "^43.0.0",
     "ipfs-http-response": "^0.5.0",
     "ipfs-repo": "^1.0.1",
     "ipfs-unixfs": "^1.0.1",
@@ -184,7 +184,7 @@
     "execa": "^4.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
-    "interface-ipfs-core": "^0.132.0",
+    "interface-ipfs-core": "^0.133.0",
     "ipfs-interop": "ipfs/interop#fix/name-pubsub",
     "ipfsd-ctl": "^3.0.0",
     "iso-random-stream": "^1.1.1",

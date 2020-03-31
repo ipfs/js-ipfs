@@ -1,3 +1,51 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.42.0 (2020-03-31)
+
+
+### Bug Fixes
+
+* add default args for ipfs.add ([#2950](https://github.com/ipfs/js-ipfs/issues/2950)) ([a01f5b6](https://github.com/ipfs/js-ipfs/commit/a01f5b63cd92d225b10eff497f79caf4baab1973))
+* add default for cid base and fix cid version override ([d951993](https://github.com/ipfs/js-ipfs/commit/d9519931642fbeabd4a04940e67911e346106814))
+* dont include util.textencoder in the browser ([#2919](https://github.com/ipfs/js-ipfs/issues/2919)) ([3207e3b](https://github.com/ipfs/js-ipfs/commit/3207e3b35c9c250332c03dd2a066e8ebcda35e43))
+* error when command is unknown ([#2916](https://github.com/ipfs/js-ipfs/issues/2916)) ([743a7fc](https://github.com/ipfs/js-ipfs/commit/743a7fc1630e753568e8a56a8f3580cb2b8d50ad))
+* multiaddr validation to add peer id for listening ([#2833](https://github.com/ipfs/js-ipfs/issues/2833)) ([78cbec1](https://github.com/ipfs/js-ipfs/commit/78cbec159ed84b1bc4cd86eb17d3c2d050827a6d))
+* only start prometheus metrics in one place ([#2954](https://github.com/ipfs/js-ipfs/issues/2954)) ([d52a41e](https://github.com/ipfs/js-ipfs/commit/d52a41e1db601db55cf8433c9a91c2ee6b9b3e09)), closes [#2019](https://github.com/ipfs/js-ipfs/issues/2019)
+* reuse columns value from process.stdout ([e8646d8](https://github.com/ipfs/js-ipfs/commit/e8646d874bbbdf51aa1c8df83f8d5e52a45592be))
+* tag stdin with mtime and mode when piping to cli 'add' ([#2832](https://github.com/ipfs/js-ipfs/issues/2832)) ([8c97de1](https://github.com/ipfs/js-ipfs/commit/8c97de1e85c8544976a8240bf72e850f0e49a2b0)), closes [#2763](https://github.com/ipfs/js-ipfs/issues/2763)
+
+
+### chore
+
+* move mfs and multipart files into core ([#2811](https://github.com/ipfs/js-ipfs/issues/2811)) ([82b9e08](https://github.com/ipfs/js-ipfs/commit/82b9e085330e6c6290e6f3dd29678247984ffdce))
+* update dep version and ignore interop test for raw leaves ([#2747](https://github.com/ipfs/js-ipfs/issues/2747)) ([6376cec](https://github.com/ipfs/js-ipfs/commit/6376cec2b4beccef4751c498088f600ec7788118))
+
+
+### Features
+
+* remove ky from http-client and utils ([#2810](https://github.com/ipfs/js-ipfs/issues/2810)) ([9bc9625](https://github.com/ipfs/js-ipfs/commit/9bc96252686d0bbbfdb2a3300bb17b80eafdaf00)), closes [#2801](https://github.com/ipfs/js-ipfs/issues/2801)
+* support mtime-nsecs in mfs cli ([#2958](https://github.com/ipfs/js-ipfs/issues/2958)) ([69c091d](https://github.com/ipfs/js-ipfs/commit/69c091da963d974e75638a63c36140c8e9d3c4e0)), closes [#2803](https://github.com/ipfs/js-ipfs/issues/2803)
+
+
+### BREAKING CHANGES
+
+* When the path passed to `ipfs.files.stat(path)` was a hamt sharded dir, the resovled
+value returned by js-ipfs previously had a `type` property of with a value of
+`'hamt-sharded-directory'`.  To bring it in line with go-ipfs this value is now
+`'directory'`.
+* Files that fit into one block imported with either `--cid-version=1`
+or `--raw-leaves=true` previously returned a CID that resolved to
+a raw node (e.g. a buffer). Returned CIDs now resolve to a `dag-pb`
+node that contains a UnixFS entry. This is to allow setting metadata
+on small files with CIDv1.
+
+
+
+
+
 <a name="0.41.0"></a>
 # [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
 
@@ -2128,6 +2176,3 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 <a name="0.0.2"></a>
 ## 0.0.2 (2016-01-11)
-
-
-

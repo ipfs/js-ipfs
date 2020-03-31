@@ -1,6 +1,6 @@
 {
   "name": "example-browser-browserify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bundle js-ipfs with Browserify",
   "main": "index.js",
   "private": true,
@@ -18,10 +18,9 @@
     "concat-stream": "^2.0.0",
     "execa": "^4.0.0",
     "http-server": "^0.11.1",
-    "ipfs": "^0.41.0",
-    "test-ipfs-example": "^1.0.0"
+    "ipfs": "^0.42.0",
+    "test-ipfs-example": "^2.0.0"
   },
-  "dependencies": {},
   "browser": {
     "ipfs": "ipfs/dist/index.js"
   }

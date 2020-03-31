@@ -1,6 +1,6 @@
 {
   "name": "example-browser-vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
-    "ipfs": "^0.41.2",
+    "ipfs": "^0.42.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.1",
-    "test-ipfs-example": "^1.0.0",
+    "test-ipfs-example": "^2.0.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

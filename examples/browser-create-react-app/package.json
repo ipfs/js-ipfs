@@ -1,10 +1,10 @@
 {
   "name": "example-browser-create-react-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "dot-prop": "^5.0.0",
-    "ipfs": "^0.41.0",
+    "ipfs": "^0.42.0",
     "ipfs-css": "^0.13.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -12,7 +12,7 @@
     "tachyons": "^4.11.1"
   },
   "devDependencies": {
-    "test-ipfs-example": "^1.0.0"
+    "test-ipfs-example": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
