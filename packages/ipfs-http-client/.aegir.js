@@ -52,13 +52,13 @@ module.exports = {
 
         return Promise.all([
           server.start(),
-          echoServer ? echoServer.start() : null
+          echoServer ? echoServer.start() : Promise.resolve()
         ])
       },
       post: () => {
         return Promise.all([
           server.stop(),
-          echoServer ? echoServer.stop() : null
+          echoServer ? echoServer.stop() : Promise.resolve()
         ])
       }
     }

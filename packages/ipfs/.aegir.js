@@ -96,7 +96,9 @@ module.exports = {
       },
       post: async () => {
         await Promise.all(
-          [ipfsdServer, preloadNode, echoServer, sigServerA, sigServerB].map(server => server && server.stop())
+          [ipfsdServer, preloadNode, echoServer, sigServerA, sigServerB]
+            .filter(Boolean)
+            .map(server => server.stop())
         )
       }
     }
