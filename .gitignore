@@ -16,6 +16,7 @@ node_modules
 # Build artefacts
 dist
 build
+bundle.js
 
 # Deployment files
 .npmrc
