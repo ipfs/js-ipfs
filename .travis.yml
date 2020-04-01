@@ -123,12 +123,12 @@ jobs:
         - npm run test:interface:node:http -- $RUN_SINCE --scope=ipfs -- -- --bail
 
     - stage: test
-      name: interface over http to js-ifps - browser
+      name: interface over http to js-ipfs - browser
       script:
         - npm run test:interface:browser:http -- $RUN_SINCE --scope=ipfs -- -- --bail
 
     - stage: test
-      name: interface over http to go-ifps - node
+      name: interface over http to go-ipfs - node
       script:
         - npm run test:interface:node:http -- $RUN_SINCE --scope=ipfs-http-client -- -- --bail
 
