@@ -182,7 +182,6 @@
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
     "delay": "^4.3.0",
-    "electron-webrtc": "^0.3.0",
     "execa": "^4.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
