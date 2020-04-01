@@ -182,6 +182,7 @@
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
     "delay": "^4.3.0",
+    "electron-webrtc": "^0.3.0",
     "execa": "^4.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
@@ -199,7 +200,8 @@
     "sinon": "^9.0.1",
     "stream-to-promise": "^2.2.0",
     "string-argv": "^0.3.1",
-    "temp-write": "^4.0.0"
+    "temp-write": "^4.0.0",
+    "wrtc": "^0.4.4"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",
