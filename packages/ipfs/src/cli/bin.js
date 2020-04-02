@@ -50,7 +50,7 @@ async function main () {
     const data = await cli(command, async (argv) => {
 
       if (argv.debug) {
-        debug.enable('ipfs:cli')
+        debug.enable((typeof process.env.DEBUG === 'string' && process.env.DEBUG.length ? process.env.DEBUG + ',' : '') + 'ipfs:*')
       }
 
       if (!['daemon', 'init'].includes(command[0])) {
