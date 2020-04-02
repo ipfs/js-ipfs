@@ -77,7 +77,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerInfo }) {
 
   if (wrtc || electronWebRTC) {
     log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
-    set(libp2pOptions, 'config.transport.webRTCStar.wrtc', wrtc || electronWebRTC)
+    set(libp2pOptions, 'config.transport.WebRTCStar.wrtc', wrtc || electronWebRTC)
     libp2pOptions.modules.transport.push(WebRTCStar)
   }
 
