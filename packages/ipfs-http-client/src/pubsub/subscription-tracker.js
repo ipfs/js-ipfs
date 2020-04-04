@@ -47,6 +47,13 @@ class SubscriptionTracker {
 
     unsubs.forEach(s => s.controller.abort())
   }
+
+  /**
+   * emit unsubscribe all topic
+   */
+  unsubscribeAll () {
+    this._subs.forEach((topic, s) => this.unsubscribe(topic))
+  }
 }
 
 SubscriptionTracker.instance = null
