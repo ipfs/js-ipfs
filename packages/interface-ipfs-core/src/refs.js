@@ -6,6 +6,10 @@ const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const all = require('it-all')
 
+const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
+const DAGLink = dagPB.DAGLink
+
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -307,12 +311,16 @@ function getRefsTests () {
 
 function loadPbContent (ipfs, node) {
   const store = {
-    putData: (data) => ipfs.object.put({ Data: data, Links: [] }),
-    putLinks: (links) =>
-      ipfs.object.put({
-        Data: '',
-        Links: links.map(({ name, cid }) => ({ Name: name, Hash: cid, Size: 8 }))
-      })
+    putData: async (data) => {
+      const res = await ipfs.block.put(new DAGNode(data).serialize());
+      return res.cid;
+    },
+    putLinks: async (links) => {
+      const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
+        return new DAGLink(name, 8, cid);
+      })).serialize());
+      return res.cid;
+    }
   }
   return loadContent(ipfs, store, node)
 }
