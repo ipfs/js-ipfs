@@ -10,6 +10,8 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 
+const UnixFS = require('ipfs-unixfs')
+
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -328,8 +330,10 @@ function loadPbContent (ipfs, node) {
 function loadDagContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const res = await all(ipfs.add(data))
-      return res[0].cid
+      const inner = new UnixFS({ type: 'file', data: data });
+      const serialized = new DAGNode(inner.marshal()).serialize();
+      const res = await ipfs.block.put(serialized);
+      return res.cid;
     },
     putLinks: (links) => {
       const obj = {}
