@@ -30,7 +30,7 @@
   "dependencies": {
     "buffer": "^5.4.2",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^1.0.0"
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/destroy-stream-before-return"
   },
   "devDependencies": {
     "aegir": "21.4.5",
