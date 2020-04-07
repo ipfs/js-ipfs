@@ -314,14 +314,14 @@ function getRefsTests () {
 function loadPbContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const res = await ipfs.block.put(new DAGNode(data).serialize());
-      return res.cid;
+      const res = await ipfs.block.put(new DAGNode(data).serialize())
+      return res.cid
     },
     putLinks: async (links) => {
       const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
-        return new DAGLink(name, 8, cid);
-      })).serialize());
-      return res.cid;
+        return new DAGLink(name, 8, cid)
+      })).serialize())
+      return res.cid
     }
   }
   return loadContent(ipfs, store, node)
@@ -330,10 +330,10 @@ function loadPbContent (ipfs, node) {
 function loadDagContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const inner = new UnixFS({ type: 'file', data: data });
-      const serialized = new DAGNode(inner.marshal()).serialize();
-      const res = await ipfs.block.put(serialized);
-      return res.cid;
+      const inner = new UnixFS({ type: 'file', data: data })
+      const serialized = new DAGNode(inner.marshal()).serialize()
+      const res = await ipfs.block.put(serialized)
+      return res.cid
     },
     putLinks: (links) => {
       const obj = {}
