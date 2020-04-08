@@ -1,6 +1,6 @@
 {
   "name": "example-browser-readablestream",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "An example of how to play a video in a browser using a readable stream",
   "main": "index.js",
   "private": true,
@@ -16,11 +16,11 @@
     "html-webpack-plugin": "^3.2.0",
     "http-server": "^0.11.1",
     "terser-webpack-plugin": "^1.2.1",
-    "test-ipfs-example": "^2.0.0",
+    "test-ipfs-example": "^2.0.1",
     "webpack": "^4.28.4"
   },
   "dependencies": {
-    "ipfs": "^0.42.0",
+    "ipfs": "^0.42.1",
     "it-to-stream": "^0.1.1",
     "videostream": "^3.2.0"
   }

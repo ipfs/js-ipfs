@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [43.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.0...ipfs-http-client@43.0.1) (2020-04-08)
+
+
+### Bug Fixes
+
+* dht.findPeer API endpoint returns ndjson ([#2965](https://github.com/ipfs/js-ipfs/issues/2965)) ([524ff32](https://github.com/ipfs/js-ipfs/commit/524ff32901e43460fe5b364bc4903ab249792874))
+
+
+
+
+
 # 43.0.0 (2020-03-31)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "example-custom-libp2p",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Customizing your libp2p node",
   "main": "index.js",
   "private": true,
@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ipfs": "^0.42.0",
+    "ipfs": "^0.42.1",
     "libp2p": "^0.27.2",
     "libp2p-bootstrap": "^0.10.3",
     "libp2p-kad-dht": "^0.18.3",
@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "execa": "^4.0.0",
-    "test-ipfs-example": "^2.0.0"
+    "test-ipfs-example": "^2.0.1"
   }
 }

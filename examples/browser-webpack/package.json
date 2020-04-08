@@ -1,6 +1,6 @@
 {
   "name": "example-browser-webpack",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Bundle js-ipfs with WebPack",
   "private": true,
   "scripts": {
@@ -20,12 +20,12 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.8.8",
-    "test-ipfs-example": "^2.0.0",
+    "test-ipfs-example": "^2.0.1",
     "webpack": "^4.28.4",
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "ipfs": "^0.42.0"
+    "ipfs": "^0.42.1"
   },
   "browserslist": [
     ">1%",

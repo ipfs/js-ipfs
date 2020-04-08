@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.42.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.0...ipfs@0.42.1) (2020-04-08)
+
+
+### Bug Fixes
+
+* use correct name for webrtc transport config ([#2966](https://github.com/ipfs/js-ipfs/issues/2966)) ([83ca42a](https://github.com/ipfs/js-ipfs/commit/83ca42a83fbe43a93d3d66d7c117123c9423359b)), closes [#2963](https://github.com/ipfs/js-ipfs/issues/2963)
+
+
+
+
+
 # 0.42.0 (2020-03-31)
 
 

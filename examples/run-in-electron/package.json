@@ -1,6 +1,6 @@
 {
   "name": "example-js-ipfs-in-electron",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A minimal Electron application with js-ipfs",
   "main": "main.js",
   "private": true,
@@ -18,8 +18,8 @@
   "devDependencies": {
     "electron": "^6.0.0",
     "electron-rebuild": "^1.8.4",
-    "ipfs": "^0.42.0",
-    "test-ipfs-example": "^2.0.0"
+    "ipfs": "^0.42.1",
+    "test-ipfs-example": "^2.0.1"
   },
   "greenkeeper": {
     "ignore": [

@@ -1,6 +1,6 @@
 {
   "name": "example-browser-script-tag",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Using IPFS in the browser via a script tag",
   "main": "index.html",
   "private": true,
@@ -13,9 +13,9 @@
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.11.1",
-    "test-ipfs-example": "^2.0.0"
+    "test-ipfs-example": "^2.0.1"
   },
   "dependencies": {
-    "ipfs": "^0.42.0"
+    "ipfs": "^0.42.1"
   }
 }

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ipfs/js-ipfs/compare/example-exchange-files-in-browser@0.1.0...example-exchange-files-in-browser@0.1.1) (2020-04-08)
+
+**Note:** Version bump only for package example-exchange-files-in-browser
+
+
+
+
+
 # 0.1.0 (2020-03-31)
 
 
