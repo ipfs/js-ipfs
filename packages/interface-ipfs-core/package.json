@@ -38,7 +38,7 @@
     "dirty-chai": "^2.0.1",
     "ipfs-block": "^0.8.1",
     "ipfs-unixfs": "^1.0.1",
-    "ipfs-utils": "ipfs/js-ipfs-utils#fix/destroy-stream-before-return",
+    "ipfs-utils": "^1.2.4",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.3",
     "is-ipfs": "^1.0.0",
