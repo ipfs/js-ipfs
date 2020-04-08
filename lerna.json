@@ -19,7 +19,6 @@
     },
     "publish": {
       "message": "chore: publish",
-      "conventionalCommits": true,
       "createRelease": "github"
     }
   }
