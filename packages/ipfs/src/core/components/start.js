@@ -160,6 +160,20 @@ function createApi ({
   dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
   const add = Components.add({ ipld, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
+
+  const dhtNotEnabled = async () => { // eslint-disable-line require-await
+    throw new NotEnabledError('dht not enabled')
+  }
+
+  const dht = get(libp2p, '_config.dht.enabled', false) ? Components.dht({ libp2p, repo }) : {
+    get: dhtNotEnabled,
+    put: dhtNotEnabled,
+    findProvs: dhtNotEnabled,
+    findPeer: dhtNotEnabled,
+    provide: dhtNotEnabled,
+    query: dhtNotEnabled
+  }
+
   const dns = Components.dns()
   const name = {
     pubsub: {
@@ -209,6 +223,7 @@ function createApi ({
     cat: Components.cat({ ipld, preload }),
     config: Components.config({ repo }),
     dag,
+    dht,
     dns,
     files,
     get: Components.get({ ipld, preload }),

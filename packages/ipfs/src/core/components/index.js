@@ -25,6 +25,7 @@ exports.dag = {
   resolve: require('./dag/resolve'),
   tree: require('./dag/tree')
 }
+exports.dht = require('./dht')
 exports.dns = require('./dns')
 exports.files = require('./files')
 exports.get = require('./get')
