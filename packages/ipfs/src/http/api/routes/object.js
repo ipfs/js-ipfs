@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/new',
     options: {
       validate: resources.object.new.validate
@@ -12,7 +12,7 @@ module.exports = [
     handler: resources.object.new.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/get',
     options: {
       pre: [
@@ -23,7 +23,7 @@ module.exports = [
     handler: resources.object.get.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/put',
     options: {
       payload: {
@@ -38,7 +38,7 @@ module.exports = [
     handler: resources.object.put.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/stat',
     options: {
       pre: [
@@ -49,7 +49,7 @@ module.exports = [
     handler: resources.object.stat.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/data',
     options: {
       pre: [
@@ -59,7 +59,7 @@ module.exports = [
     handler: resources.object.data.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/links',
     options: {
       pre: [
@@ -70,7 +70,7 @@ module.exports = [
     handler: resources.object.links.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/patch/append-data',
     options: {
       payload: {
@@ -85,7 +85,7 @@ module.exports = [
     handler: resources.object.patchAppendData.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/patch/set-data',
     options: {
       payload: {
@@ -100,7 +100,7 @@ module.exports = [
     handler: resources.object.patchSetData.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/patch/add-link',
     options: {
       pre: [
@@ -111,7 +111,7 @@ module.exports = [
     handler: resources.object.patchAddLink.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/object/patch/rm-link',
     options: {
       pre: [

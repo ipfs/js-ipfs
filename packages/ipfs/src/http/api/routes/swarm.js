@@ -4,22 +4,22 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/swarm/peers',
     handler: resources.swarm.peers.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/swarm/addrs',
     handler: resources.swarm.addrs.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/swarm/addrs/local',
     handler: resources.swarm.localAddrs.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/swarm/connect',
     options: {
       pre: [
@@ -29,7 +29,7 @@ module.exports = [
     handler: resources.swarm.connect.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/swarm/disconnect',
     options: {
       pre: [
@@ -40,7 +40,7 @@ module.exports = [
   }
   // TODO
   // {
-  //  method: '*',
+  //  method: 'POST',
   //  path: '/api/v0/swarm/filters',
   //  handler: resources.swarm.disconnect
   // }

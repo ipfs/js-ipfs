@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/stats/bitswap',
     options: {
       validate: resources.stats.bitswap.validate
@@ -12,12 +12,12 @@ module.exports = [
     handler: resources.stats.bitswap.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/stats/repo',
     handler: resources.stats.repo
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/stats/bw',
     handler: resources.stats.bw
   }

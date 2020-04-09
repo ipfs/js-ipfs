@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/block/get',
     options: {
       pre: [
@@ -14,7 +14,7 @@ module.exports = [
     handler: resources.block.get.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/block/put',
     options: {
       payload: {
@@ -29,7 +29,7 @@ module.exports = [
     handler: resources.block.put.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/block/rm',
     options: {
       pre: [
@@ -40,7 +40,7 @@ module.exports = [
     handler: resources.block.rm.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/block/stat',
     config: {
       pre: [

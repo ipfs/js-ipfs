@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pin/add',
     options: {
       pre: [
@@ -15,7 +15,7 @@ module.exports = [
     handler: resources.pin.add.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pin/rm',
     options: {
       pre: [
@@ -26,7 +26,7 @@ module.exports = [
     handler: resources.pin.rm.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pin/ls',
     config: {
       pre: [

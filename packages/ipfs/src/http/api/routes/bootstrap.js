@@ -4,12 +4,12 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap',
     handler: resources.bootstrap.list
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap/add',
     options: {
       pre: [
@@ -19,17 +19,17 @@ module.exports = [
     handler: resources.bootstrap.add.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap/add/default',
     handler: resources.bootstrap.addDefault
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap/list',
     handler: resources.bootstrap.list
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap/rm',
     options: {
       pre: [
@@ -39,7 +39,7 @@ module.exports = [
     handler: resources.bootstrap.rm.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/bootstrap/rm/all',
     handler: resources.bootstrap.rmAll
   }

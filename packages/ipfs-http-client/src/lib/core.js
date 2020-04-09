@@ -7,6 +7,7 @@ const { URL } = require('iso-url')
 const parseDuration = require('parse-duration')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
+const merge = require('merge-options')
 
 const isMultiaddr = (input) => {
   try {
@@ -126,6 +127,19 @@ class Client extends HTTP {
         return out
       }
     })
+
+    delete this.get
+    delete this.put
+    delete this.delete
+    delete this.options
+
+    const fetch = this.fetch
+
+    this.fetch = (resource, options = {}) => {
+      return fetch.call(this, resource, merge(options, {
+        method: 'POST'
+      }))
+    }
   }
 }
 
