@@ -17,6 +17,15 @@ module.exports = (http) => {
     })
 
     describe('/new', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/new'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns value', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -52,6 +61,15 @@ module.exports = (http) => {
     })
 
     describe('/get', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/get'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -120,6 +138,15 @@ module.exports = (http) => {
     })
 
     describe('/put', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/put'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 if no node is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -218,6 +245,15 @@ module.exports = (http) => {
     })
 
     describe('/stat', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/stat'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -291,6 +327,15 @@ module.exports = (http) => {
     })
 
     describe('/data', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/data'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -324,6 +369,15 @@ module.exports = (http) => {
     })
 
     describe('/links', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/links'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -439,6 +493,15 @@ module.exports = (http) => {
     })
 
     describe('/patch/append-data', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/patch/append-data'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without key', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -556,6 +619,15 @@ module.exports = (http) => {
     })
 
     describe('/patch/set-data', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/patch/set-data'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without key', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -670,6 +742,15 @@ module.exports = (http) => {
     })
 
     describe('/patch/add-link', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/patch/add-link'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without arguments', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -764,6 +845,15 @@ module.exports = (http) => {
     })
 
     describe('/patch/rm-link', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/object/patch/rm-link'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns 400 for request without arguments', async () => {
         const res = await api.inject({
           method: 'POST',

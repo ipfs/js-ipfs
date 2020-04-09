@@ -11,9 +11,18 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('resolve ipfs.io DNS', async () => {
+    it('only accepts POST', async () => {
       const res = await api.inject({
         method: 'GET',
+        url: '/api/v0/dns?arg=ipfs.io'
+      })
+
+      expect(res.statusCode).to.equal(404)
+    })
+
+    it('resolve ipfs.io DNS', async () => {
+      const res = await api.inject({
+        method: 'POST',
         url: '/api/v0/dns?arg=ipfs.io'
       })
 
@@ -22,7 +31,7 @@ module.exports = (http) => {
 
     it('resolve ipfs.enstest.eth ENS', async function () {
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/dns?arg=ipfs.enstest.eth'
       })
 

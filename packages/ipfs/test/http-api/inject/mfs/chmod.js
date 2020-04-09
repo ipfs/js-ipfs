@@ -20,7 +20,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('chmod', () => {
+describe('/files/chmod', () => {
   const path = '/foo'
   const mode = '0654'
   let ipfs
@@ -31,6 +31,15 @@ describe('chmod', () => {
         chmod: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/chmod?arg=${path}&mode=${mode}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should update the mode for a file', async () => {

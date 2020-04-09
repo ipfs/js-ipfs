@@ -22,7 +22,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('mv', () => {
+describe('/files/mv', () => {
   const source = '/src'
   const dest = '/dest'
   let ipfs
@@ -33,6 +33,15 @@ describe('mv', () => {
         mv: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/mv?arg=${source}&arg=${dest}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should move an entry', async () => {

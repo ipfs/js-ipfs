@@ -7,6 +7,7 @@ const sinon = require('sinon')
 
 function defaultOptions (modification = {}) {
   const options = {
+    cidVersion: 0,
     parents: false,
     hashAlg: 'sha2-256',
     flush: true,
@@ -20,7 +21,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('cp', () => {
+describe('/files/cp', () => {
   const source = 'source'
   const dest = 'dest'
   let ipfs
@@ -31,6 +32,15 @@ describe('cp', () => {
         cp: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/cp?arg=${source}&arg=${dest}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should copy files', async () => {
@@ -59,6 +69,22 @@ describe('cp', () => {
       dest,
       defaultOptions({
         parents: true
+      })
+    ])
+  })
+
+  it('should copy files with a different cid version', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/cp?arg=${source}&arg=${dest}&cidVersion=1`
+    }, { ipfs })
+
+    expect(ipfs.files.cp.callCount).to.equal(1)
+    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
+      source,
+      dest,
+      defaultOptions({
+        cidVersion: 1
       })
     ])
   })

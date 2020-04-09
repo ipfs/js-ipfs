@@ -11,9 +11,18 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('get the id', async () => {
+    it('only accepts POST', async () => {
       const res = await api.inject({
         method: 'GET',
+        url: '/api/v0/id'
+      })
+
+      expect(res.statusCode).to.equal(404)
+    })
+
+    it('get the id', async () => {
+      const res = await api.inject({
+        method: 'POST',
         url: '/api/v0/id'
       })
 

@@ -26,14 +26,23 @@ const toHeadersAndPayload = async (thing) => {
 }
 
 module.exports = (http) => {
-  describe('dag endpoint', () => {
+  describe('/dag', () => {
     let api
 
     before(() => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    describe('/dag/get', () => {
+    describe('/get', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/dag/get'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns error for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -179,7 +188,16 @@ module.exports = (http) => {
       })
     })
 
-    describe('/dag/put', () => {
+    describe('/put', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/dag/put'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns error for request without file argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -297,7 +315,16 @@ module.exports = (http) => {
       })
     })
 
-    describe('/dag/resolve', () => {
+    describe('/resolve', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/dag/resolve'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('returns error for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',

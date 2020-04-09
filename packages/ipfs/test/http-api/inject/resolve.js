@@ -6,11 +6,20 @@ const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 
 module.exports = (http) => {
-  describe('resolve', () => {
+  describe('/resolve', () => {
     let api
 
     before(() => {
       api = http.api._httpApi._apiServers[0]
+    })
+
+    it('only accepts POST', async () => {
+      const res = await api.inject({
+        method: 'GET',
+        url: '/api/v0/resolve'
+      })
+
+      expect(res.statusCode).to.equal(404)
     })
 
     it('should not resolve a path for invalid cid-base option', async () => {

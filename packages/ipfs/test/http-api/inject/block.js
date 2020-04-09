@@ -90,9 +90,18 @@ module.exports = (http) => {
     })
 
     describe('/block/get', () => {
-      it('returns 400 for request without argument', async () => {
+      it('only accepts POST', async () => {
         const res = await api.inject({
           method: 'GET',
+          url: '/api/v0/block/get'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
+          method: 'POST',
           url: '/api/v0/block/get'
         })
 
@@ -102,7 +111,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/get?arg=invalid'
         })
 
@@ -113,7 +122,7 @@ module.exports = (http) => {
 
       it('returns value', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/get?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 
@@ -123,9 +132,18 @@ module.exports = (http) => {
     })
 
     describe('/block/stat', () => {
-      it('returns 400 for request without argument', async () => {
+      it('only accepts POST', async () => {
         const res = await api.inject({
           method: 'GET',
+          url: '/api/v0/block/stat'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
+          method: 'POST',
           url: '/api/v0/block/stat'
         })
 
@@ -135,7 +153,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/stat?arg=invalid'
         })
 
@@ -146,7 +164,7 @@ module.exports = (http) => {
 
       it('returns value', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/stat?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 
@@ -191,9 +209,18 @@ module.exports = (http) => {
     })
 
     describe('/block/rm', () => {
-      it('returns 400 for request without argument', async () => {
+      it('only accepts POST', async () => {
         const res = await api.inject({
           method: 'GET',
+          url: '/api/v0/block/rm'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
+      it('returns 400 for request without argument', async () => {
+        const res = await api.inject({
+          method: 'POST',
           url: '/api/v0/block/rm'
         })
 
@@ -203,7 +230,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/rm?arg=invalid'
         })
 
@@ -214,7 +241,7 @@ module.exports = (http) => {
 
       it('returns 200', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/rm?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 

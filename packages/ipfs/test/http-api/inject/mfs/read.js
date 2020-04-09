@@ -18,7 +18,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('read', () => {
+describe('/files/read', () => {
   const path = '/foo'
   let ipfs
 
@@ -28,6 +28,15 @@ describe('read', () => {
         read: sinon.stub().returns([Buffer.from('hello world')])
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/read?arg=${path}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should read a path', async () => {

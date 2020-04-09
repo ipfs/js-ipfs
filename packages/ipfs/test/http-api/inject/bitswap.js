@@ -19,12 +19,12 @@ module.exports = (http) => {
       this.timeout(120 * 1000)
 
       // Add a CID to the wantlist
-      api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid0}` })
-      api.inject({ method: 'GET', url: `/api/v0/block/get?arg=${wantedCid1}` })
+      api.inject({ method: 'POST', url: `/api/v0/block/get?arg=${wantedCid0}` })
+      api.inject({ method: 'POST', url: `/api/v0/block/get?arg=${wantedCid1}` })
 
       const test = async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/bitswap/wantlist'
         })
 
@@ -44,9 +44,18 @@ module.exports = (http) => {
       })
     })
 
-    it('/wantlist', async () => {
+    it('/wantlist only accepts POST', async () => {
       const res = await api.inject({
         method: 'GET',
+        url: '/api/v0/bitswap/wantlist'
+      })
+
+      expect(res.statusCode).to.equal(404)
+    })
+
+    it('/wantlist', async () => {
+      const res = await api.inject({
+        method: 'POST',
         url: '/api/v0/bitswap/wantlist'
       })
 
@@ -58,7 +67,7 @@ module.exports = (http) => {
     it('/wantlist?cid-base=base64', async () => {
       const base64Cid = new CID(wantedCid1).toString('base64')
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/bitswap/wantlist?cid-base=base64'
       })
 
@@ -68,7 +77,7 @@ module.exports = (http) => {
 
     it('/wantlist?cid-base=invalid', async () => {
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/bitswap/wantlist?cid-base=invalid'
       })
 
@@ -76,9 +85,18 @@ module.exports = (http) => {
       expect(res.result.Message).to.include('Invalid request query input')
     })
 
-    it('/stat', async () => {
+    it('/stat only accepts POST', async () => {
       const res = await api.inject({
         method: 'GET',
+        url: '/api/v0/bitswap/stat'
+      })
+
+      expect(res.statusCode).to.equal(404)
+    })
+
+    it('/stat', async () => {
+      const res = await api.inject({
+        method: 'POST',
         url: '/api/v0/bitswap/stat'
       })
 
@@ -97,7 +115,7 @@ module.exports = (http) => {
     it('/stat?cid-base=base64', async () => {
       const base64Cid = new CID(wantedCid1).toString('base64')
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/bitswap/stat?cid-base=base64'
       })
 
@@ -107,7 +125,7 @@ module.exports = (http) => {
 
     it('/stat?cid-base=invalid', async () => {
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/bitswap/stat?cid-base=invalid'
       })
 

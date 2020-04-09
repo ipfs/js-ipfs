@@ -25,120 +25,138 @@ module.exports = (http) => {
       fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
     })
 
-    describe('/config', () => {
-      it('returns 400 for request without arguments', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config'
-        })
-
-        expect(res.statusCode).to.equal(400)
+    it('only accepts POST', async () => {
+      const res = await api.inject({
+        method: 'GET',
+        url: '/api/v0/config'
       })
 
-      it('404 for request with missing args', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=kitten'
-        })
-
-        expect(res.statusCode).to.equal(404)
-        expect(res.result.Code).to.equal(3)
-        expect(res.result.Message).to.be.a('string')
-      })
-
-      it('returns value for request with valid arg', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=API.HTTPHeaders'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('API.HTTPHeaders')
-        expect(res.result.Value).to.equal(null)
-      })
-
-      it('returns value for request as subcommand', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config/API.HTTPHeaders'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('API.HTTPHeaders')
-        expect(res.result.Value).to.equal(null)
-      })
-
-      it('updates value for request with both args', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=Datastore.Path&arg=kitten'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('Datastore.Path')
-        expect(res.result.Value).to.equal('kitten')
-        expect(updatedConfig().Datastore.Path).to.equal('kitten')
-      })
-
-      it('returns 400 value for request with both args and JSON flag with invalid JSON argument', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=Datastore.Path&arg=kitten&json'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Code).to.equal(1)
-        expect(res.result.Message).to.be.a('string')
-      })
-
-      it('updates value for request with both args and JSON flag with valid JSON argument', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=Datastore.Path&arg={"kitten": true}&json'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('Datastore.Path')
-        expect(res.result.Value).to.deep.equal({ kitten: true })
-        expect(updatedConfig().Datastore.Path).to.deep.equal({ kitten: true })
-      })
-
-      it('updates value for request with both args and bool flag and true argument', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=Datastore.Path&arg=true&bool'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('Datastore.Path')
-        expect(res.result.Value).to.deep.equal(true)
-        expect(updatedConfig().Datastore.Path).to.deep.equal(true)
-      })
-
-      it('updates value for request with both args and bool flag and false argument', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/config?arg=Datastore.Path&arg=false&bool'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Key).to.equal('Datastore.Path')
-        expect(res.result.Value).to.deep.equal(false)
-        expect(updatedConfig().Datastore.Path).to.deep.equal(false)
-      })
+      expect(res.statusCode).to.equal(404)
     })
 
-    it('/config/show', async () => {
+    it('returns 400 for request without arguments', async () => {
       const res = await api.inject({
         method: 'POST',
-        url: '/api/v0/config/show'
+        url: '/api/v0/config'
+      })
+
+      expect(res.statusCode).to.equal(400)
+    })
+
+    it('404 for request with missing args', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=kitten'
+      })
+
+      expect(res.statusCode).to.equal(404)
+      expect(res.result.Code).to.equal(3)
+      expect(res.result.Message).to.be.a('string')
+    })
+
+    it('returns value for request with valid arg', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=API.HTTPHeaders'
       })
 
       expect(res.statusCode).to.equal(200)
-      expect(res.result).to.deep.equal(updatedConfig())
+      expect(res.result.Key).to.equal('API.HTTPHeaders')
+      expect(res.result.Value).to.equal(null)
     })
 
-    describe('/config/replace', () => {
+    it('returns value for request as subcommand', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config/API.HTTPHeaders'
+      })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Key).to.equal('API.HTTPHeaders')
+      expect(res.result.Value).to.equal(null)
+    })
+
+    it('updates value for request with both args', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=Datastore.Path&arg=kitten'
+      })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Key).to.equal('Datastore.Path')
+      expect(res.result.Value).to.equal('kitten')
+      expect(updatedConfig().Datastore.Path).to.equal('kitten')
+    })
+
+    it('returns 400 value for request with both args and JSON flag with invalid JSON argument', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=Datastore.Path&arg=kitten&json'
+      })
+
+      expect(res.statusCode).to.equal(400)
+      expect(res.result.Code).to.equal(1)
+      expect(res.result.Message).to.be.a('string')
+    })
+
+    it('updates value for request with both args and JSON flag with valid JSON argument', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=Datastore.Path&arg={"kitten": true}&json'
+      })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Key).to.equal('Datastore.Path')
+      expect(res.result.Value).to.deep.equal({ kitten: true })
+      expect(updatedConfig().Datastore.Path).to.deep.equal({ kitten: true })
+    })
+
+    it('updates value for request with both args and bool flag and true argument', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=Datastore.Path&arg=true&bool'
+      })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Key).to.equal('Datastore.Path')
+      expect(res.result.Value).to.deep.equal(true)
+      expect(updatedConfig().Datastore.Path).to.deep.equal(true)
+    })
+
+    it('updates value for request with both args and bool flag and false argument', async () => {
+      const res = await api.inject({
+        method: 'POST',
+        url: '/api/v0/config?arg=Datastore.Path&arg=false&bool'
+      })
+
+      expect(res.statusCode).to.equal(200)
+      expect(res.result.Key).to.equal('Datastore.Path')
+      expect(res.result.Value).to.deep.equal(false)
+      expect(updatedConfig().Datastore.Path).to.deep.equal(false)
+    })
+
+    describe('/show', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/config/show'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
+      it('shows config', async () => {
+        const res = await api.inject({
+          method: 'POST',
+          url: '/api/v0/config/show'
+        })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.result).to.deep.equal(updatedConfig())
+      })
+    })
+
+    describe('/replace', () => {
       it('returns 400 if no config is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -191,7 +209,7 @@ module.exports = (http) => {
       })
     })
 
-    describe('/config/profile/apply', () => {
+    describe('/profile/apply', () => {
       let originalConfig
 
       beforeEach(() => {
@@ -239,7 +257,16 @@ module.exports = (http) => {
       })
     })
 
-    describe('/config/profile/list', () => {
+    describe('/profile/list', () => {
+      it('only accepts POST', async () => {
+        const res = await api.inject({
+          method: 'GET',
+          url: '/api/v0/config/profile/list'
+        })
+
+        expect(res.statusCode).to.equal(404)
+      })
+
       it('lists available profiles', async () => {
         const res = await api.inject({
           method: 'POST',

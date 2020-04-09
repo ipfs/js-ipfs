@@ -21,7 +21,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('touch', () => {
+describe('/files/touch', () => {
   const path = '/foo'
   const mtime = new Date(1000000)
   let ipfs
@@ -32,6 +32,15 @@ describe('touch', () => {
         touch: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should update the mtime for a file', async () => {

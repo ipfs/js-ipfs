@@ -23,7 +23,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('mkdir', () => {
+describe('/files/mkdir', () => {
   const path = '/foo'
   let ipfs
 
@@ -33,6 +33,15 @@ describe('mkdir', () => {
         mkdir: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/mkdir?arg=${path}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should make a directory', async () => {

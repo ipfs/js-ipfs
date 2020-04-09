@@ -21,7 +21,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('stat', () => {
+describe('/files/stat', () => {
   const path = '/foo'
   const stats = {
     cid: fileCid,
@@ -40,6 +40,15 @@ describe('stat', () => {
         stat: sinon.stub().resolves(stats)
       }
     }
+  })
+
+  it('only accepts POST', async () => {
+    const res = await http({
+      method: 'GET',
+      url: `/api/v0/files/stat?arg=${path}`
+    }, { ipfs })
+
+    expect(res.statusCode).to.equal(404)
   })
 
   it('should stat a path', async () => {
