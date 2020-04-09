@@ -9,7 +9,6 @@ module.exports = ({
   options,
   peerInfo,
   repo,
-  print,
   config
 }) => {
   options = options || {}
