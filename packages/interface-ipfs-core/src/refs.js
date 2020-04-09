@@ -6,6 +6,12 @@ const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const all = require('it-all')
 
+const dagPB = require('ipld-dag-pb')
+const DAGNode = dagPB.DAGNode
+const DAGLink = dagPB.DAGLink
+
+const UnixFS = require('ipfs-unixfs')
+
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -307,12 +313,16 @@ function getRefsTests () {
 
 function loadPbContent (ipfs, node) {
   const store = {
-    putData: (data) => ipfs.object.put({ Data: data, Links: [] }),
-    putLinks: (links) =>
-      ipfs.object.put({
-        Data: '',
-        Links: links.map(({ name, cid }) => ({ Name: name, Hash: cid, Size: 8 }))
-      })
+    putData: async (data) => {
+      const res = await ipfs.block.put(new DAGNode(data).serialize())
+      return res.cid
+    },
+    putLinks: async (links) => {
+      const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
+        return new DAGLink(name, 8, cid)
+      })).serialize())
+      return res.cid
+    }
   }
   return loadContent(ipfs, store, node)
 }
@@ -320,8 +330,10 @@ function loadPbContent (ipfs, node) {
 function loadDagContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const res = await all(ipfs.add(data))
-      return res[0].cid
+      const inner = new UnixFS({ type: 'file', data: data })
+      const serialized = new DAGNode(inner.marshal()).serialize()
+      const res = await ipfs.block.put(serialized)
+      return res.cid
     },
     putLinks: (links) => {
       const obj = {}
