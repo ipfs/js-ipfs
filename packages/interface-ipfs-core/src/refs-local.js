@@ -2,8 +2,11 @@
 'use strict'
 
 const { fixtures } = require('./utils')
+const createFile = require('./utils/create-file')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
+const UnixFS = require('ipfs-unixfs')
+const { DAGLink, DAGNode } = require('ipld-dag-pb')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,17 +29,14 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should get local refs', async function () {
-      const content = (name) => ({
-        path: `test-folder/${name}`,
-        content: fixtures.directory.files[name]
-      })
-
-      const dirs = [
-        content('pp.txt'),
-        content('holmes.txt')
-      ]
-
-      await all(ipfs.add(dirs))
+      const pp = await createFile(ipfs, fixtures.directory.files['pp.txt'])
+      const holmes = await createFile(ipfs, fixtures.directory.files['holmes.txt'])
+      const directory = new UnixFS({ type: 'directory' })
+      const serialized = new DAGNode(directory.marshal(), [
+        new DAGLink('pp.txt', pp.cumulativeSize, pp.cid),
+        new DAGLink('holmes.txt', holmes.cumulativeSize, holmes.cid)
+      ]).serialize()
+      await ipfs.block.put(serialized)
 
       const refs = await all(ipfs.refs.local())
 
