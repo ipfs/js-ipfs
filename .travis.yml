@@ -64,7 +64,7 @@ jobs:
     - stage: check
       script:
         - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client} -- -- --bundlesize
-        - npm run dep-check -- $RUN_SINCE -- -- -- -i wrtc -i electron-webrtc
+        - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test

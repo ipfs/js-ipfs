@@ -1,15 +1,10 @@
 'use strict'
 
-const Hapi = require('@hapi/hapi')
-const routes = require('../../src/http/api/routes')
+const HttpApi = require('../../src/http')
 
-module.exports = (request, { ipfs }) => {
-  const server = Hapi.server()
-  server.app.ipfs = ipfs
-
-  routes.forEach(route => {
-    server.route(route)
-  })
+module.exports = async (request, { ipfs } = {}) => {
+  const api = new HttpApi(ipfs)
+  const server = await api._createApiServer('127.0.0.1', 8080, ipfs)
 
   return server.inject(request)
 }
