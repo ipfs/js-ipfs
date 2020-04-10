@@ -8,13 +8,13 @@ module.exports = configure(api => {
     searchParams.set('arg', path)
     searchParams.set('stream', options.stream || true)
 
-    const res = await api.ndjson('name/resolve', {
+    const res = await api.post('name/resolve', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (const result of res) {
+    for await (const result of res.ndjson()) {
       yield result.Path
     }
   }

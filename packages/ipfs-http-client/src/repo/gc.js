@@ -4,9 +4,8 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 
 module.exports = configure(api => {
-  return function gc (options = {}) {
-    return api.ndjson('repo/gc', {
-      method: 'POST',
+  return async function * gc (options = {}) {
+    const res = await api.post('repo/gc', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options,
@@ -17,5 +16,7 @@ module.exports = configure(api => {
         }
       }
     })
+
+    yield res.ndjson()
   }
 })

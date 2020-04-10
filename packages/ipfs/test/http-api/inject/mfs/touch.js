@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -21,7 +22,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('touch', () => {
+describe('/files/touch', () => {
   const path = '/foo'
   const mtime = new Date(1000000)
   let ipfs
@@ -32,6 +33,10 @@ describe('touch', () => {
         touch: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}`, ipfs)
   })
 
   it('should update the mtime for a file', async () => {

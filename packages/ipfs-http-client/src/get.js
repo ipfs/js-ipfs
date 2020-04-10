@@ -9,8 +9,7 @@ module.exports = configure(api => {
   return async function * get (path, options = {}) {
     options.arg = `${Buffer.isBuffer(path) ? new CID(path) : path}`
 
-    const res = await api.iterator('get', {
-      method: 'POST',
+    const res = await api.post('get', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
@@ -18,7 +17,7 @@ module.exports = configure(api => {
 
     const extractor = Tar.extract()
 
-    for await (const { header, body } of extractor(res)) {
+    for await (const { header, body } of extractor(res.iterator())) {
       if (header.type === 'directory') {
         yield {
           path: header.name

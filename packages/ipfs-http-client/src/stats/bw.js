@@ -4,9 +4,8 @@ const { BigNumber } = require('bignumber.js')
 const configure = require('../lib/configure')
 
 module.exports = configure(api => {
-  return function bw (options = {}) {
-    return api.ndjson('stats/bw', {
-      method: 'POST',
+  return async function * bw (options = {}) {
+    const res = await api.post('stats/bw', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options,
@@ -17,5 +16,7 @@ module.exports = configure(api => {
         rateOut: new BigNumber(stats.RateOut)
       })
     })
+
+    yield * res.ndjson()
   }
 })

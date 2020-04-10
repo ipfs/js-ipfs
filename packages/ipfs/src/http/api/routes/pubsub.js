@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pubsub/sub',
     handler: resources.pubsub.subscribe.handler,
     options: {
@@ -14,17 +14,17 @@ module.exports = [
     }
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pubsub/pub',
     handler: resources.pubsub.publish.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pubsub/ls',
     handler: resources.pubsub.ls.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/pubsub/peers',
     handler: resources.pubsub.peers.handler
   }

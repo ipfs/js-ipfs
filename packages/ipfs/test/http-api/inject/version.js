@@ -3,6 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const pkgversion = require('./../../../package.json').version
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/version', () => {
@@ -12,9 +13,13 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/version')
+    })
+
     it('get the version', async () => {
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/version'
       })
 

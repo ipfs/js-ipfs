@@ -4,9 +4,11 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
+    cidVersion: 0,
     parents: false,
     hashAlg: 'sha2-256',
     flush: true,
@@ -20,7 +22,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('cp', () => {
+describe('/files/cp', () => {
   const source = 'source'
   const dest = 'dest'
   let ipfs
@@ -31,6 +33,10 @@ describe('cp', () => {
         cp: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/cp?arg=${source}&arg=${dest}`, ipfs)
   })
 
   it('should copy files', async () => {
@@ -59,6 +65,22 @@ describe('cp', () => {
       dest,
       defaultOptions({
         parents: true
+      })
+    ])
+  })
+
+  it('should copy files with a different cid version', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/cp?arg=${source}&arg=${dest}&cidVersion=1`
+    }, { ipfs })
+
+    expect(ipfs.files.cp.callCount).to.equal(1)
+    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
+      source,
+      dest,
+      defaultOptions({
+        cidVersion: 1
       })
     ])
   })

@@ -23,13 +23,13 @@ module.exports = configure(api => {
       searchParams.append('arg', new CID(cid).toString())
     })
 
-    const res = await api.ndjson('block/rm', {
+    const res = await api.post('block/rm', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: searchParams
     })
 
-    for await (const removed of res) {
+    for await (const removed of res.ndjson()) {
       yield toCoreInterface(removed)
     }
   }

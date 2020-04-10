@@ -16,14 +16,13 @@ module.exports = configure(api => {
     searchParams.set('stream', options.stream || true)
     path.forEach(p => searchParams.append('arg', `${p}`))
 
-    const source = api.ndjson('pin/ls', {
-      method: 'POST',
+    const res = await api.post('pin/ls', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (const pin of source) {
+    for await (const pin of res.ndjson()) {
       if (pin.Keys) { // non-streaming response
         // eslint-disable-next-line guard-for-in
         for (const key in pin.Keys) {

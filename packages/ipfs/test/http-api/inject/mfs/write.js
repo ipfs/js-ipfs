@@ -45,7 +45,7 @@ async function send (text, headers = {}) {
   }
 }
 
-describe('write', () => {
+describe('/files/write', () => {
   const path = '/foo'
   let ipfs
   let content

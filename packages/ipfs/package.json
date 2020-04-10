@@ -106,7 +106,7 @@
     "ipfs-unixfs": "^1.0.1",
     "ipfs-unixfs-exporter": "^1.0.3",
     "ipfs-unixfs-importer": "^1.0.3",
-    "ipfs-utils": "^1.2.4",
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/add-iterator-method-to-response",
     "ipld": "^0.25.0",
     "ipld-bitcoin": "^0.3.0",
     "ipld-dag-cbor": "^0.15.1",
@@ -134,8 +134,8 @@
     "libp2p": "^0.27.2",
     "libp2p-bootstrap": "^0.10.3",
     "libp2p-crypto": "^0.17.1",
-    "libp2p-delegated-content-routing": "^0.4.3",
-    "libp2p-delegated-peer-routing": "^0.4.1",
+    "libp2p-delegated-content-routing": "^0.4.4",
+    "libp2p-delegated-peer-routing": "^0.4.2",
     "libp2p-floodsub": "^0.20.0",
     "libp2p-gossipsub": "^0.2.3",
     "libp2p-kad-dht": "^0.18.3",
@@ -198,7 +198,8 @@
     "sinon": "^9.0.1",
     "stream-to-promise": "^2.2.0",
     "string-argv": "^0.3.1",
-    "temp-write": "^4.0.0"
+    "temp-write": "^4.0.0",
+    "wrtc": "^0.4.4"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",

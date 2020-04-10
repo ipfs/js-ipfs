@@ -1,6 +1,16 @@
 'use strict'
 
-module.exports = [
+const Boom = require('@hapi/boom')
+
+const METHODS = [
+  'GET',
+  'PUT',
+  'PATCH',
+  'DELETE',
+  'OPTIONS'
+]
+
+const routes = [
   require('./version'),
   require('./shutdown'),
   require('./id'),
@@ -26,3 +36,21 @@ module.exports = [
   ...require('./name'),
   ...require('./dht')
 ]
+
+const extraRoutes = []
+
+const handler = () => {
+  throw Boom.methodNotAllowed()
+}
+
+METHODS.forEach(method => {
+  routes.forEach(route => {
+    extraRoutes.push({
+      method,
+      handler,
+      path: route.path
+    })
+  })
+})
+
+module.exports = routes.concat(extraRoutes)

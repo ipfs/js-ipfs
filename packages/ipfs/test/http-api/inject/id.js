@@ -2,6 +2,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/id', () => {
@@ -11,9 +12,13 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/id')
+    })
+
     it('get the id', async () => {
       const res = await api.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/api/v0/id'
       })
 

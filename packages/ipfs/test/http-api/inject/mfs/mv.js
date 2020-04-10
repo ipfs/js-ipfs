@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -22,7 +23,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('mv', () => {
+describe('/files/mv', () => {
   const source = '/src'
   const dest = '/dest'
   let ipfs
@@ -33,6 +34,10 @@ describe('mv', () => {
         mv: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/mv?arg=${source}&arg=${dest}`, ipfs)
   })
 
   it('should move an entry', async () => {

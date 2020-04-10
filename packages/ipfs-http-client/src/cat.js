@@ -1,7 +1,6 @@
 'use strict'
 
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const merge = require('merge-options')
 const configure = require('./lib/configure')
 
@@ -13,15 +12,13 @@ module.exports = configure(api => {
         arg: typeof path === 'string' ? path : new CID(path).toString()
       }
     )
-    const res = await api.iterator('cat', {
-      method: 'POST',
+
+    const res = await api.post('cat', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
     })
 
-    for await (const chunk of res) {
-      yield Buffer.from(chunk)
-    }
+    yield * res.iterator()
   }
 })

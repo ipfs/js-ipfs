@@ -6,6 +6,7 @@ const http = require('../../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -21,7 +22,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('stat', () => {
+describe('/files/stat', () => {
   const path = '/foo'
   const stats = {
     cid: fileCid,
@@ -40,6 +41,10 @@ describe('stat', () => {
         stat: sinon.stub().resolves(stats)
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/stat?arg=${path}`, ipfs)
   })
 
   it('should stat a path', async () => {

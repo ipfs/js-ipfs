@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/config/{key?}',
     options: {
       pre: [
@@ -14,12 +14,12 @@ module.exports = [
     handler: resources.config.getOrSet.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/config/show',
     handler: resources.config.show
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/config/replace',
     options: {
       payload: {
@@ -33,7 +33,7 @@ module.exports = [
     handler: resources.config.replace.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/config/profile/apply',
     options: {
       pre: [
@@ -44,7 +44,7 @@ module.exports = [
     handler: resources.config.profiles.apply.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/config/profile/list',
     handler: resources.config.profiles.list.handler
   }

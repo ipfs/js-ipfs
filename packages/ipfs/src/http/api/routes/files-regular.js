@@ -4,8 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/cat',
     options: {
       pre: [
@@ -15,8 +14,7 @@ module.exports = [
     handler: resources.filesRegular.cat.handler
   },
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/get',
     options: {
       pre: [
@@ -26,8 +24,7 @@ module.exports = [
     handler: resources.filesRegular.get.handler
   },
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/add',
     options: {
       payload: {
@@ -40,8 +37,7 @@ module.exports = [
     handler: resources.filesRegular.add.handler
   },
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/ls',
     options: {
       pre: [
@@ -51,8 +47,7 @@ module.exports = [
     handler: resources.filesRegular.ls.handler
   },
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/refs',
     options: {
       pre: [
@@ -63,8 +58,7 @@ module.exports = [
     handler: resources.filesRegular.refs.handler
   },
   {
-    // TODO fix method
-    method: '*',
+    method: 'POST',
     path: '/api/v0/refs/local',
     handler: resources.filesRegular.refs.local.handler
   }

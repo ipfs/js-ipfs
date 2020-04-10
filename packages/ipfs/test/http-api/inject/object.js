@@ -7,6 +7,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/object', () => {
@@ -17,6 +18,10 @@ module.exports = (http) => {
     })
 
     describe('/new', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/new')
+      })
+
       it('returns value', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -52,6 +57,10 @@ module.exports = (http) => {
     })
 
     describe('/get', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/get')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -120,6 +129,10 @@ module.exports = (http) => {
     })
 
     describe('/put', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/put')
+      })
+
       it('returns 400 if no node is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -218,6 +231,10 @@ module.exports = (http) => {
     })
 
     describe('/stat', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/stat')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -291,6 +308,10 @@ module.exports = (http) => {
     })
 
     describe('/data', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/data')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -324,6 +345,10 @@ module.exports = (http) => {
     })
 
     describe('/links', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/links')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -439,6 +464,10 @@ module.exports = (http) => {
     })
 
     describe('/patch/append-data', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/patch/append-data')
+      })
+
       it('returns 400 for request without key', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -556,6 +585,10 @@ module.exports = (http) => {
     })
 
     describe('/patch/set-data', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/patch/set-data')
+      })
+
       it('returns 400 for request without key', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -670,6 +703,10 @@ module.exports = (http) => {
     })
 
     describe('/patch/add-link', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/patch/add-link')
+      })
+
       it('returns 400 for request without arguments', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -764,6 +801,10 @@ module.exports = (http) => {
     })
 
     describe('/patch/rm-link', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/object/patch/rm-link')
+      })
+
       it('returns 400 for request without arguments', async () => {
         const res = await api.inject({
           method: 'POST',

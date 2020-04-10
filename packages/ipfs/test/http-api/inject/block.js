@@ -7,6 +7,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/block', () => {
@@ -16,7 +17,11 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    describe('/block/put', () => {
+    describe('/put', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/put')
+      })
+
       it('returns 400 if no node is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -90,9 +95,13 @@ module.exports = (http) => {
     })
 
     describe('/block/get', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/get')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/get'
         })
 
@@ -102,7 +111,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/get?arg=invalid'
         })
 
@@ -113,7 +122,7 @@ module.exports = (http) => {
 
       it('returns value', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/get?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 
@@ -123,9 +132,13 @@ module.exports = (http) => {
     })
 
     describe('/block/stat', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/stat')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/stat'
         })
 
@@ -135,7 +148,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/stat?arg=invalid'
         })
 
@@ -146,7 +159,7 @@ module.exports = (http) => {
 
       it('returns value', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/stat?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 
@@ -191,9 +204,13 @@ module.exports = (http) => {
     })
 
     describe('/block/rm', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/rm')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/rm'
         })
 
@@ -203,7 +220,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/rm?arg=invalid'
         })
 
@@ -214,7 +231,7 @@ module.exports = (http) => {
 
       it('returns 200', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/block/rm?arg=QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
         })
 

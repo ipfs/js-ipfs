@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -20,7 +21,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('chmod', () => {
+describe('/files/chmod', () => {
   const path = '/foo'
   const mode = '0654'
   let ipfs
@@ -31,6 +32,10 @@ describe('chmod', () => {
         chmod: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/chmod?arg=${path}&mode=${mode}`, ipfs)
   })
 
   it('should update the mode for a file', async () => {

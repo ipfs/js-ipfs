@@ -7,6 +7,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/files', () => {
@@ -17,6 +18,10 @@ module.exports = (http) => {
     })
 
     describe('/add', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/add')
+      })
+
       it('should add buffer bigger than Hapi default max bytes (1024 * 1024)', async () => {
         const payload = Buffer.from([
           '',
@@ -111,9 +116,13 @@ module.exports = (http) => {
     })
 
     describe('/cat', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/cat')
+      })
+
       it('returns 400 for request without argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/cat'
         })
 
@@ -123,7 +132,7 @@ module.exports = (http) => {
 
       it('returns 400 for request with invalid argument', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/cat?arg=invalid'
         })
 
@@ -151,7 +160,7 @@ module.exports = (http) => {
         const cid = JSON.parse(res.result).Hash
 
         res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/cat?arg=' + cid
         })
 
@@ -161,9 +170,17 @@ module.exports = (http) => {
       })
     })
 
-    describe('/get', () => {}) // TODO
+    describe('/get', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/get')
+      })
+    })
 
     describe('/ls', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/ls')
+      })
+
       it('should list directory contents and return a base64 encoded CIDs', async () => {
         const form = new FormData()
         form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
@@ -193,6 +210,10 @@ module.exports = (http) => {
     })
 
     describe('/refs', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/refs')
+      })
+
       it('should list refs', async () => {
         const form = new FormData()
         form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })
@@ -220,6 +241,10 @@ module.exports = (http) => {
     })
 
     describe('/refs/local', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/refs/local')
+      })
+
       it('should list local refs', async () => {
         const form = new FormData()
         form.append('file', Buffer.from('TEST' + Date.now()), { filename: 'data.txt' })

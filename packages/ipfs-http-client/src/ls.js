@@ -9,14 +9,13 @@ module.exports = configure(api => {
     const searchParams = new URLSearchParams(options)
     searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
 
-    const res = await api.ndjson('ls', {
-      method: 'POST',
+    const res = await api.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (let result of res) {
+    for await (let result of res.ndjson()) {
       result = result.Objects
 
       if (!result) {

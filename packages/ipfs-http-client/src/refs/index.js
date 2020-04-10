@@ -6,7 +6,7 @@ const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 
 module.exports = configure((api, options) => {
-  const refs = (args, options = {}) => {
+  const refs = async function * (args, options = {}) {
     const searchParams = new URLSearchParams(options)
 
     if (!Array.isArray(args)) {
@@ -17,13 +17,14 @@ module.exports = configure((api, options) => {
       searchParams.append('arg', `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`)
     }
 
-    return api.ndjson('refs', {
-      method: 'POST',
+    const res = await api.post('refs', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams,
       transform: toCamel
     })
+
+    yield * res.ndjson()
   }
   refs.local = require('./local')(options)
 

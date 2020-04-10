@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -23,7 +24,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('mkdir', () => {
+describe('/files/mkdir', () => {
   const path = '/foo'
   let ipfs
 
@@ -33,6 +34,10 @@ describe('mkdir', () => {
         mkdir: sinon.stub()
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/mkdir?arg=${path}`, ipfs)
   })
 
   it('should make a directory', async () => {

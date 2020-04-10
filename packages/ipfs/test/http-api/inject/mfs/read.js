@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -18,7 +19,7 @@ function defaultOptions (modification = {}) {
   return options
 }
 
-describe('read', () => {
+describe('/files/read', () => {
   const path = '/foo'
   let ipfs
 
@@ -28,6 +29,10 @@ describe('read', () => {
         read: sinon.stub().returns([Buffer.from('hello world')])
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/read?arg=${path}`, ipfs)
   })
 
   it('should read a path', async () => {

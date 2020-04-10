@@ -9,6 +9,8 @@ const ncp = promisify(require('ncp').ncp)
 const path = require('path')
 const clean = require('../utils/clean')
 
+require('./inject/mfs')
+
 describe('HTTP API', () => {
   const repoExample = path.join(__dirname, '../fixtures/go-ipfs-repo')
   const repoTests = path.join(__dirname, '../repo-tests-run')

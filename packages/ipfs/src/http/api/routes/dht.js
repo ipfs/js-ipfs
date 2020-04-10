@@ -4,7 +4,7 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/findpeer',
     options: {
       validate: resources.dht.findPeer.validate
@@ -12,7 +12,7 @@ module.exports = [
     handler: resources.dht.findPeer.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/findprovs',
     options: {
       validate: resources.dht.findProvs.validate
@@ -20,7 +20,7 @@ module.exports = [
     handler: resources.dht.findProvs.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/get',
     options: {
       validate: resources.dht.get.validate
@@ -28,7 +28,7 @@ module.exports = [
     handler: resources.dht.get.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/provide',
     options: {
       validate: resources.dht.provide.validate
@@ -36,7 +36,7 @@ module.exports = [
     handler: resources.dht.provide.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/put',
     options: {
       pre: [
@@ -47,7 +47,7 @@ module.exports = [
     handler: resources.dht.put.handler
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/dht/query',
     options: {
       validate: resources.dht.query.validate

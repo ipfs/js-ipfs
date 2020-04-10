@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 // We use existing pin structure in the go-ipfs-repo fixture
 // so that we don't have to stream a bunch of object/put operations
@@ -32,7 +33,7 @@ const pins = {
 }
 
 module.exports = (http) => {
-  describe('pin', function () {
+  describe('/pin', function () {
     this.timeout(20 * 1000)
     let api
 
@@ -40,7 +41,11 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    describe('rm', () => {
+    describe('/rm', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod(`/api/v0/pin/rm?arg=${pins.root1}`)
+      })
+
       it('fails on invalid args', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -131,7 +136,11 @@ module.exports = (http) => {
       })
     })
 
-    describe('add', () => {
+    describe('/add', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod(`/api/v0/pin/add?arg=${pins.root1}`)
+      })
+
       it('fails on invalid args', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -216,10 +225,14 @@ module.exports = (http) => {
       })
     })
 
-    describe('ls', () => {
+    describe('/ls', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pin/ls')
+      })
+
       it('fails on invalid args', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/pin/ls?arg=invalid'
         })
 
@@ -229,7 +242,7 @@ module.exports = (http) => {
 
       it('finds all pinned objects', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/pin/ls'
         })
 
@@ -239,7 +252,7 @@ module.exports = (http) => {
 
       it('finds all pinned objects streaming', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/pin/ls?stream=true'
         })
 
@@ -250,7 +263,7 @@ module.exports = (http) => {
 
       it('finds specific pinned objects', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: `/api/v0/pin/ls?arg=${pins.c1}`
         })
 
@@ -261,7 +274,7 @@ module.exports = (http) => {
 
       it('finds pins of type', async () => {
         const res = await api.inject({
-          method: 'GET',
+          method: 'POST',
           url: '/api/v0/pin/ls?type=recursive'
         })
 

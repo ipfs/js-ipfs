@@ -6,8 +6,9 @@ const http = require('../../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+const testHttpMethod = require('../../../utils/test-http-method')
 
-describe('ls', () => {
+describe('/files/ls', () => {
   const path = '/foo'
   const file = {
     name: 'file-name',
@@ -28,6 +29,10 @@ describe('ls', () => {
         ls: sinon.stub().returns([])
       }
     }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/ls?arg=${path}`, ipfs)
   })
 
   it('should list a path', async () => {

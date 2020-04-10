@@ -9,13 +9,13 @@ module.exports = configure(api => {
   return async function findPeer (peerId, options = {}) {
     options.arg = `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`
 
-    const res = await api.ndjson('dht/findpeer', {
+    const res = await api.post('dht/findpeer', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: options
     })
 
-    for await (const data of res) {
+    for await (const data of res.ndjson()) {
       if (data.Type === 3) {
         throw new Error(data.Extra)
       }
