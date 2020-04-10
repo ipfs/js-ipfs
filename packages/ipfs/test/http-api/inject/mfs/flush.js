@@ -6,6 +6,7 @@ const http = require('../../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 describe('/files/flush', () => {
   const path = '/foo'
@@ -19,13 +20,8 @@ describe('/files/flush', () => {
     }
   })
 
-  it('only accepts POST', async () => {
-    const res = await http({
-      method: 'GET',
-      url: `/api/v0/files/flush?arg=${path}`
-    }, { ipfs })
-
-    expect(res.statusCode).to.equal(404)
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/flush?arg=${path}`, ipfs)
   })
 
   it('should flush a path', async () => {

@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 // We use existing pin structure in the go-ipfs-repo fixture
 // so that we don't have to stream a bunch of object/put operations
@@ -41,13 +42,8 @@ module.exports = (http) => {
     })
 
     describe('/rm', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: `/api/v0/pin/rm?arg=${pins.root1}`
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod(`/api/v0/pin/rm?arg=${pins.root1}`)
       })
 
       it('fails on invalid args', async () => {
@@ -141,13 +137,8 @@ module.exports = (http) => {
     })
 
     describe('/add', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: `/api/v0/pin/add?arg=${pins.root1}`
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod(`/api/v0/pin/add?arg=${pins.root1}`)
       })
 
       it('fails on invalid args', async () => {
@@ -234,14 +225,9 @@ module.exports = (http) => {
       })
     })
 
-    describe('ls', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/pin/ls'
-        })
-
-        expect(res.statusCode).to.equal(404)
+    describe('/ls', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pin/ls')
       })
 
       it('fails on invalid args', async () => {

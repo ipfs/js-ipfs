@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 function defaultOptions (modification = {}) {
   const options = {
@@ -35,13 +36,8 @@ describe('/files/mv', () => {
     }
   })
 
-  it('only accepts POST', async () => {
-    const res = await http({
-      method: 'GET',
-      url: `/api/v0/files/mv?arg=${source}&arg=${dest}`
-    }, { ipfs })
-
-    expect(res.statusCode).to.equal(404)
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/mv?arg=${source}&arg=${dest}`, ipfs)
   })
 
   it('should move an entry', async () => {

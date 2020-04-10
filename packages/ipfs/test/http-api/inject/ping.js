@@ -3,6 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/ping', function () {
@@ -12,13 +13,8 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('only accepts POST', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/ping'
-      })
-
-      expect(res.statusCode).to.equal(404)
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/ping')
     })
 
     it('returns 400 if both n and count are provided', async () => {

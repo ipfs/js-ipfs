@@ -7,6 +7,7 @@ const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const path = require('path')
 const { profiles } = require('../../../src/core/components/config')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/config', () => {
@@ -25,13 +26,8 @@ module.exports = (http) => {
       fs.writeFileSync(configPath, fs.readFileSync(originalConfigPath, 'utf8'), 'utf8')
     })
 
-    it('only accepts POST', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/config'
-      })
-
-      expect(res.statusCode).to.equal(404)
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/config')
     })
 
     it('returns 400 for request without arguments', async () => {
@@ -136,13 +132,8 @@ module.exports = (http) => {
     })
 
     describe('/show', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/config/show'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/config/show')
       })
 
       it('shows config', async () => {
@@ -157,6 +148,10 @@ module.exports = (http) => {
     })
 
     describe('/replace', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/config/replace')
+      })
+
       it('returns 400 if no config is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -216,6 +211,10 @@ module.exports = (http) => {
         originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
       })
 
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/config/profile/apply')
+      })
+
       it('returns 400 if no config profile is provided', async () => {
         const res = await api.inject({
           method: 'POST',
@@ -258,13 +257,8 @@ module.exports = (http) => {
     })
 
     describe('/profile/list', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/config/profile/list'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/config/profile/list')
       })
 
       it('lists available profiles', async () => {

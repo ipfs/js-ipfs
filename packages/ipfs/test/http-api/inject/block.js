@@ -7,6 +7,7 @@ const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/block', () => {
@@ -16,7 +17,11 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    describe('/block/put', () => {
+    describe('/put', () => {
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/put')
+      })
+
       it('returns 400 if no node is provided', async () => {
         const form = new FormData()
         const headers = form.getHeaders()
@@ -90,13 +95,8 @@ module.exports = (http) => {
     })
 
     describe('/block/get', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/block/get'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/get')
       })
 
       it('returns 400 for request without argument', async () => {
@@ -132,13 +132,8 @@ module.exports = (http) => {
     })
 
     describe('/block/stat', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/block/stat'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/stat')
       })
 
       it('returns 400 for request without argument', async () => {
@@ -209,13 +204,8 @@ module.exports = (http) => {
     })
 
     describe('/block/rm', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/block/rm'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/block/rm')
       })
 
       it('returns 400 for request without argument', async () => {

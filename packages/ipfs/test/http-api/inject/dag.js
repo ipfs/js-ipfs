@@ -10,6 +10,7 @@ const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const CID = require('cids')
 const all = require('it-all')
+const testHttpMethod = require('../../utils/test-http-method')
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()
@@ -34,13 +35,8 @@ module.exports = (http) => {
     })
 
     describe('/get', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/dag/get'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/dag/get')
       })
 
       it('returns error for request without argument', async () => {
@@ -189,13 +185,8 @@ module.exports = (http) => {
     })
 
     describe('/put', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/dag/put'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/dag/put')
       })
 
       it('returns error for request without file argument', async () => {
@@ -316,13 +307,8 @@ module.exports = (http) => {
     })
 
     describe('/resolve', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/dag/resolve'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/dag/resolve')
       })
 
       it('returns error for request without argument', async () => {

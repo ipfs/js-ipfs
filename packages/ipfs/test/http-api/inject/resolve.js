@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/resolve', () => {
@@ -13,13 +14,8 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('only accepts POST', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/resolve'
-      })
-
-      expect(res.statusCode).to.equal(404)
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/resolve')
     })
 
     it('should not resolve a path for invalid cid-base option', async () => {

@@ -6,6 +6,7 @@ const http = require('../../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+const testHttpMethod = require('../../../utils/test-http-method')
 
 describe('/files/ls', () => {
   const path = '/foo'
@@ -30,13 +31,8 @@ describe('/files/ls', () => {
     }
   })
 
-  it('only accepts POST', async () => {
-    const res = await http({
-      method: 'GET',
-      url: `/api/v0/files/ls?arg=${path}`
-    }, { ipfs })
-
-    expect(res.statusCode).to.equal(404)
+  it('only accepts POST', () => {
+    return testHttpMethod(`/api/v0/files/ls?arg=${path}`, ipfs)
   })
 
   it('should list a path', async () => {

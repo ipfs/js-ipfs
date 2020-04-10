@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const qs = require('qs')
 const defaultList = require('../../../src/core/runtime/config-nodejs.js')().Bootstrap
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/bootstrap', () => {
@@ -19,13 +20,8 @@ module.exports = (http) => {
     })
 
     describe('/list', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/bootstrap/list'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/bootstrap/list')
       })
 
       it('returns a list', async () => {
@@ -50,17 +46,12 @@ module.exports = (http) => {
     })
 
     describe('/add', () => {
-      it('only accepts POST', async () => {
+      it('only accepts POST', () => {
         const query = {
           arg: validIp4
         }
 
-        const res = await api.inject({
-          method: 'GET',
-          url: `/api/v0/bootstrap/add?${qs.stringify(query)}`
-        })
-
-        expect(res.statusCode).to.equal(404)
+        return testHttpMethod(`/api/v0/bootstrap/add?${qs.stringify(query)}`)
       })
 
       it('adds a bootstrapper', async () => {
@@ -89,17 +80,12 @@ module.exports = (http) => {
     })
 
     describe('/rm', () => {
-      it('only accepts POST', async () => {
+      it('only accepts POST', () => {
         const query = {
           arg: validIp4
         }
 
-        const res = await api.inject({
-          method: 'GET',
-          url: `/api/v0/bootstrap/rm?${qs.stringify(query)}`
-        })
-
-        expect(res.statusCode).to.equal(404)
+        return testHttpMethod(`/api/v0/bootstrap/rm?${qs.stringify(query)}`)
       })
 
       it('removes a bootstrapper', async () => {

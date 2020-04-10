@@ -3,6 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/pubsub', () => {
@@ -17,13 +18,8 @@ module.exports = (http) => {
     })
 
     describe('/sub', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/pubsub/sub'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pubsub/sub')
       })
 
       it('returns 400 if no topic is provided', async () => {
@@ -63,13 +59,8 @@ module.exports = (http) => {
     })
 
     describe('/pub', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/pubsub/pub'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pubsub/pub')
       })
 
       it('returns 400 if no buffer is provided', async () => {
@@ -93,13 +84,8 @@ module.exports = (http) => {
     })
 
     describe.skip('/ls', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/pubsub/ls'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pubsub/ls')
       })
 
       it('returns 200', async () => {
@@ -113,13 +99,8 @@ module.exports = (http) => {
     })
 
     describe('/peers', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/pubsub/peers'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/pubsub/peers')
       })
 
       it('returns 200 if not subscribed to a topic', async () => {

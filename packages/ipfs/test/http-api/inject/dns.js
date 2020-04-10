@@ -2,6 +2,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/dns', () => {
@@ -11,13 +12,8 @@ module.exports = (http) => {
       api = http.api._httpApi._apiServers[0]
     })
 
-    it('only accepts POST', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/dns?arg=ipfs.io'
-      })
-
-      expect(res.statusCode).to.equal(404)
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/dns?arg=ipfs.io')
     })
 
     it('resolve ipfs.io DNS', async () => {

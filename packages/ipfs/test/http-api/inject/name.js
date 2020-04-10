@@ -5,6 +5,7 @@
 const CID = require('cids')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const checkAll = (bits) => string => bits.every(bit => string.includes(bit))
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/name', function () {
@@ -16,13 +17,8 @@ module.exports = (http) => {
     })
 
     describe('/publish', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: `/api/v0/name/publish?arg=${cid}&resolve=false`
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod(`/api/v0/name/publish?arg=${cid}&resolve=false`)
       })
 
       it('should publish a record', async function () {
@@ -39,13 +35,8 @@ module.exports = (http) => {
     })
 
     describe('/resolve', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/name/resolve'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/name/resolve')
       })
 
       it('should publish and resolve a record', async function () {

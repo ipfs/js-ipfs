@@ -7,6 +7,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   describe('/files', () => {
@@ -17,13 +18,8 @@ module.exports = (http) => {
     })
 
     describe('/add', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/add'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/add')
       })
 
       it('should add buffer bigger than Hapi default max bytes (1024 * 1024)', async () => {
@@ -120,13 +116,8 @@ module.exports = (http) => {
     })
 
     describe('/cat', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/cat'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/cat')
       })
 
       it('returns 400 for request without argument', async () => {
@@ -180,24 +171,14 @@ module.exports = (http) => {
     })
 
     describe('/get', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/get'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/get')
       })
     })
 
     describe('/ls', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/ls'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/ls')
       })
 
       it('should list directory contents and return a base64 encoded CIDs', async () => {
@@ -229,13 +210,8 @@ module.exports = (http) => {
     })
 
     describe('/refs', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/refs'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/refs')
       })
 
       it('should list refs', async () => {
@@ -265,13 +241,8 @@ module.exports = (http) => {
     })
 
     describe('/refs/local', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/refs/local'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/refs/local')
       })
 
       it('should list local refs', async () => {

@@ -3,6 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
 
 module.exports = (http) => {
   // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
@@ -14,13 +15,8 @@ module.exports = (http) => {
     })
 
     describe('/findpeer', () => {
-      it('only accepts POST', async () => {
-        const res = await api.inject({
-          method: 'GET',
-          url: '/api/v0/dht/findpeer'
-        })
-
-        expect(res.statusCode).to.equal(404)
+      it('only accepts POST', () => {
+        return testHttpMethod('/api/v0/dht/findpeer')
       })
 
       it('returns 400 if no peerId is provided', async () => {
