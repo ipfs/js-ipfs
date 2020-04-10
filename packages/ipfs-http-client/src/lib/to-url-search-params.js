@@ -3,32 +3,43 @@
 const modeToString = require('./mode-to-string')
 const mtimeToObject = require('./mtime-to-object')
 
-module.exports = (args, options) => {
-  const searchParams = new URLSearchParams(options)
-
-  if (args === undefined || args === null) {
-    args = []
-  } else if (!Array.isArray(args)) {
-    args = [args]
+module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) => {
+  if (searchParams) {
+    options = {
+      ...options,
+      ...searchParams
+    }
   }
 
-  args.forEach(arg => searchParams.append('arg', arg))
-
-  if (options.hashAlg) {
-    searchParams.set('hash', options.hashAlg)
-    searchParams.delete('hashAlg')
+  if (hashAlg) {
+    options.hash = hashAlg
   }
 
-  if (options.mtime != null) {
-    const mtime = mtimeToObject(options.mtime)
+  if (mtime != null) {
+    mtime = mtimeToObject(mtime)
 
-    searchParams.set('mtime', mtime.secs)
-    searchParams.set('mtime-nsecs', mtime.nsecs)
+    options.mtime = mtime.secs
+    options.mtimeNsecs = mtime.nsecs
   }
 
-  if (options.mode != null) {
-    searchParams.set('mode', modeToString(options.mode))
+  if (mode != null) {
+    options.mode = modeToString(mode)
   }
 
-  return searchParams
+  if (options.timeout && !isNaN(options.timeout)) {
+    // server API expects timeouts as strings
+    options.timeout = `${options.timeout}ms`
+  }
+
+  if (arg === undefined || arg === null) {
+    arg = []
+  } else if (!Array.isArray(arg)) {
+    arg = [arg]
+  }
+
+  const urlSearchParams = new URLSearchParams(options)
+
+  arg.forEach(arg => urlSearchParams.append('arg', arg))
+
+  return urlSearchParams
 }

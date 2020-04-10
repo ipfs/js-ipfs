@@ -2,15 +2,17 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, options = {}) => {
-    options.arg = typeof cid === 'string' ? cid : new CID(cid).toString()
-
     const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
+        ...options
+      })
     })
 
     return res.json()

@@ -4,15 +4,17 @@ const Tar = require('it-tar')
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * get (path, options = {}) {
-    options.arg = `${Buffer.isBuffer(path) ? new CID(path) : path}`
-
     const res = await api.post('get', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
+        ...options
+      })
     })
 
     const extractor = Tar.extract()

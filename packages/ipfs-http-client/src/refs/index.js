@@ -4,23 +4,21 @@ const { Buffer } = require('buffer')
 const CID = require('cids')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure((api, options) => {
   const refs = async function * (args, options = {}) {
-    const searchParams = new URLSearchParams(options)
-
     if (!Array.isArray(args)) {
       args = [args]
-    }
-
-    for (const arg of args) {
-      searchParams.append('arg', `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`)
     }
 
     const res = await api.post('refs', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams,
+      searchParams: toUrlSearchParams({
+        arg: args.map(arg => `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`),
+        ...options
+      }),
       transform: toCamel
     })
 

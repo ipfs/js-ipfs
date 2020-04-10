@@ -12,10 +12,10 @@ module.exports = configure(api => {
     const res = await api.post('files/cp', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(
-        sources.map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
-        options
-      )
+      searchParams: toUrlSearchParams({
+        arg: sources.map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
+        ...options
+      })
     })
 
     await res.text()

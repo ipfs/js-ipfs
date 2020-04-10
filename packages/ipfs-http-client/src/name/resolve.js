@@ -1,17 +1,18 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * (path, options = {}) {
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', path)
-    searchParams.set('stream', options.stream || true)
-
     const res = await api.post('name/resolve', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: path,
+        stream: options.stream || true,
+        ...options
+      })
     })
 
     for await (const result of res.ndjson()) {

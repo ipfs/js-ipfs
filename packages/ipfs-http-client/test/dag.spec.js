@@ -48,7 +48,7 @@ describe('.dag', function () {
     expect(result.value).to.deep.equal(cbor)
   })
 
-  it('should callback with error when missing DAG resolver for multicodec from requested CID', async () => {
+  it('should error when missing DAG resolver for multicodec from requested CID', async () => {
     const block = await ipfs.block.put(Buffer.from([0, 1, 2, 3]), {
       cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })

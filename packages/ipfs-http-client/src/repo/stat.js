@@ -2,21 +2,23 @@
 
 const { BigNumber } = require('bignumber.js')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (options = {}) => {
-    const res = await (await api.post('repo/stat', {
+    const res = await api.post('repo/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
-    })).json()
+      searchParams: toUrlSearchParams(options)
+    })
+    const data = await res.json()
 
     return {
-      numObjects: new BigNumber(res.NumObjects),
-      repoSize: new BigNumber(res.RepoSize),
-      repoPath: res.RepoPath,
-      version: res.Version,
-      storageMax: new BigNumber(res.StorageMax)
+      numObjects: new BigNumber(data.NumObjects),
+      repoSize: new BigNumber(data.RepoSize),
+      repoPath: data.RepoPath,
+      version: data.Version,
+      storageMax: new BigNumber(data.StorageMax)
     }
   }
 })

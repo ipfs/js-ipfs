@@ -4,16 +4,17 @@ const { Buffer } = require('buffer')
 const CID = require('cids')
 const { DAGLink } = require('ipld-dag-pb')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, options = {}) => {
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
-
     const res = await api.post('object/links', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
+        ...options
+      })
     })
     const data = await res.json()
 

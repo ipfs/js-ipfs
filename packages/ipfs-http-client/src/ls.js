@@ -3,16 +3,17 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
-
     const res = await api.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
+        ...options
+      })
     })
 
     for await (let result of res.ndjson()) {

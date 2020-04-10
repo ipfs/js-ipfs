@@ -5,6 +5,7 @@ const CID = require('cids')
 const multihash = require('multihashes')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (dagNode, options = {}) => {
@@ -42,20 +43,15 @@ module.exports = configure(api => {
       serialized = dagNode
     }
 
-    // TODO normalize hash property name
-    options.hash = options.hashAlg
-    options.hashAlg = null
-    const searchParams = new URLSearchParams(options)
-
-    const rsp = await api.post('dag/put', {
+    const res = await api.post('dag/put', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams,
+      searchParams: toUrlSearchParams(options),
       ...(
         await multipartRequest(serialized)
       )
     })
-    const data = await rsp.json()
+    const data = await res.json()
 
     return new CID(data.Cid['/'])
   }

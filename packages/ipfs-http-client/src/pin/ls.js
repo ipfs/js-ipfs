@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
@@ -12,14 +13,14 @@ module.exports = configure(api => {
 
     path = Array.isArray(path) ? path : [path]
 
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('stream', options.stream || true)
-    path.forEach(p => searchParams.append('arg', `${p}`))
-
     const res = await api.post('pin/ls', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: path.map(p => `${p}`),
+        stream: options.stream || true,
+        ...options
+      })
     })
 
     for await (const pin of res.ndjson()) {
