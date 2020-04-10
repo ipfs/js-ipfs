@@ -12,14 +12,13 @@ module.exports = configure(api => {
     const searchParams = new URLSearchParams(options)
     cids.forEach(cid => searchParams.append('arg', `${new CID(cid)}`))
 
-    const res = await api.ndjson('dht/provide', {
-      method: 'POST',
+    const res = await api.post('dht/provide', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams
     })
 
-    for await (let message of res) {
+    for await (let message of res.ndjson()) {
       // 3 = QueryError
       // https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b969bdab/routing/query.go#L18
       // https://github.com/ipfs/go-ipfs/blob/eb11f569b064b960d1aba4b5b8ca155a3bd2cb21/core/commands/dht.go#L283-L284

@@ -10,8 +10,7 @@ module.exports = configure((api) => {
   return async function * add (input, options = {}) {
     const progressFn = options.progress
 
-    const res = await api.ndjson('add', {
-      method: 'POST',
+    const res = await api.post('add', {
       searchParams: toUrlSearchParams(null, {
         ...options,
         'stream-channels': true,
@@ -24,7 +23,7 @@ module.exports = configure((api) => {
       )
     })
 
-    for await (let file of res) {
+    for await (let file of res.ndjson()) {
       file = toCamel(file)
 
       if (progressFn && file.bytes) {

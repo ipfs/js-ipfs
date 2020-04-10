@@ -12,8 +12,7 @@ module.exports = configure(api => {
       path = '/'
     }
 
-    const res = await api.ndjson('files/ls', {
-      method: 'POST',
+    const res = await api.post('files/ls', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(
@@ -30,7 +29,7 @@ module.exports = configure(api => {
       )
     })
 
-    for await (const result of res) {
+    for await (const result of res.ndjson()) {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {

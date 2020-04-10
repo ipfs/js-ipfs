@@ -4,7 +4,6 @@ const bs58 = require('bs58')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const SubscriptionTracker = require('./subscription-tracker')
-const { streamToAsyncIterator, ndjson } = require('../lib/core')
 const configure = require('../lib/configure')
 
 module.exports = configure((api, options) => {
@@ -32,8 +31,7 @@ module.exports = configure((api, options) => {
     }, 1000)
 
     try {
-      res = await api.stream('pubsub/sub', {
-        method: 'POST',
+      res = await api.post('pubsub/sub', {
         timeout: options.timeout,
         signal: options.signal,
         searchParams
@@ -45,7 +43,7 @@ module.exports = configure((api, options) => {
 
     clearTimeout(ffWorkaround)
 
-    readMessages(ndjson(streamToAsyncIterator(res)), {
+    readMessages(res.ndjson(), {
       onMessage: handler,
       onEnd: () => subsTracker.unsubscribe(topic, handler),
       onError: options.onError
