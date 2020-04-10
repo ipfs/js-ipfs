@@ -52,7 +52,7 @@ async function start () {
         Addresses: {
           Swarm: [
             // This is a public webrtc-star server
-            // '/dns4/star-signal.cloud.ipfs.team/wss/p2p-webrtc-star'
+            // '/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star'
             '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
           ]
         },

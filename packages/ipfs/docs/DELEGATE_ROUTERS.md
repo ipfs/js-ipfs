@@ -1,5 +1,13 @@
 # Configuring Delegate Routers
 
+## What is it?
+
+Delegate routers peform tasks on behalf of nodes that may be missing functionality, so for example they may search the DHT for peers or content providers on behalf of IPFS implementations that do not have a DHT.
+
+The delegate node is started and the client of the delegate calls API methods using the IPFS HTTP API client.
+
+## How do I do it?
+
 If you need to support Delegated Content and/or Peer Routing, you can enable it by specifying the multiaddrs of your delegate nodes in the config via `options.config.Addresses.Delegates`. If you need to run a delegate router we encourage you to run your own, with go-ipfs. You can see instructions for doing so in the [delegated routing example](https://github.com/libp2p/js-libp2p/tree/master/examples/delegated-routing).
 
 If you are not able to run your own delegate router nodes, we currently have two nodes that support delegated routing. **Important**: As many people may be leveraging these nodes, performance may be affected, which is why we recommend running your own nodes in production.

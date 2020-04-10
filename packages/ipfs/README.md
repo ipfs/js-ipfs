@@ -54,9 +54,9 @@ We've come a long way, but this project is still in Alpha, lots of development i
   - [Browser CDN](#browser-cdn)
   - [Browser bundle](#browser-bundle)
 - [Documentation](#documentation)
+  - [Getting started & constructor options](#getting-started--constructor-options)
   - [Core API](#core-api)
   - [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
-  - [How to use IPFS in your application](#how-to-use-ipfs-in-your-application)
   - [Different topics in detail](#different-topics-in-detail)
   - [Questions?](#questions)
   - [Need help?](#need-help)
@@ -107,6 +107,10 @@ Learn how to bundle IPFS into your application with webpack, parceljs and browse
 
 ## Documentation
 
+### Getting started & constructor options
+
+* [docs/MODULE.md](./docs/MODULE.md)
+
 ### Core API
 
 * [API Docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)
@@ -116,10 +120,6 @@ Learn how to bundle IPFS into your application with webpack, parceljs and browse
 * [docs/CLI.md](./docs/CLI.md)
 * [docs/DAEMON.md](./docs/DAEMON.md)
 * [docs/DOCKER.md](./docs/DOCKER.md)
-
-### How to use IPFS in your application
-
-* [docs/MODULE.md](./docs/MODULE.md)
 
 ### Different topics in detail
 
