@@ -4,18 +4,21 @@ const Block = require('ipfs-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, options = {}) => {
     cid = new CID(cid)
-    options.arg = cid.toString()
 
-    const rsp = await api.post('block/get', {
+    const res = await api.post('block/get', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: cid.toString(),
+        ...options
+      })
     })
 
-    return new Block(Buffer.from(await rsp.arrayBuffer()), cid)
+    return new Block(Buffer.from(await res.arrayBuffer()), cid)
   }
 })

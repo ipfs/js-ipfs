@@ -11,9 +11,9 @@ module.exports = configure((api) => {
     const progressFn = options.progress
 
     const res = await api.post('add', {
-      searchParams: toUrlSearchParams(null, {
-        ...options,
+      searchParams: toUrlSearchParams({
         'stream-channels': true,
+        ...options,
         progress: Boolean(progressFn)
       }),
       timeout: options.timeout,

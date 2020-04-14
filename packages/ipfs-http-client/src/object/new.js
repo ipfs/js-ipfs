@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (template, options = {}) => {
@@ -10,13 +11,13 @@ module.exports = configure(api => {
       template = null
     }
 
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', template)
-
     const res = await api.post('object/new', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: template,
+        ...options
+      })
     })
 
     const { Hash } = await res.json()

@@ -1,20 +1,22 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (addrs, options = {}) => {
     addrs = Array.isArray(addrs) ? addrs : [addrs]
 
-    const searchParams = new URLSearchParams(options)
-    addrs.forEach(addr => searchParams.append('arg', `${addr}`))
-
-    const res = await (await api.post('swarm/disconnect', {
+    const res = await api.post('swarm/disconnect', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
-    })).json()
+      searchParams: toUrlSearchParams({
+        arg: addrs.map(addr => `${addr}`),
+        ...options
+      })
+    })
+    const { Strings } = await res.json()
 
-    return res.Strings || []
+    return Strings || []
   }
 })

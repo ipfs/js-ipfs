@@ -2,14 +2,17 @@
 
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (name, options = {}) => {
-    options.arg = name
     const res = await api.post('key/gen', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: name,
+        ...options
+      })
     })
     const data = await res.json()
 

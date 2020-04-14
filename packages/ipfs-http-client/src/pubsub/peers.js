@@ -1,6 +1,7 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (topic, options = {}) => {
@@ -9,14 +10,16 @@ module.exports = configure(api => {
       topic = null
     }
 
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', topic)
-
-    const { Strings } = await (await api.post('pubsub/peers', {
+    const res = await api.post('pubsub/peers', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
-    })).json()
+      searchParams: toUrlSearchParams({
+        arg: topic,
+        ...options
+      })
+    })
+
+    const { Strings } = await res.json()
 
     return Strings || []
   }

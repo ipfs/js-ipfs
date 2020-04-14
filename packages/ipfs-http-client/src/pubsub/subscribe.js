@@ -5,6 +5,7 @@ const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const SubscriptionTracker = require('./subscription-tracker')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure((api, options) => {
   const subsTracker = SubscriptionTracker.singleton()
@@ -12,9 +13,6 @@ module.exports = configure((api, options) => {
 
   return async (topic, handler, options = {}) => {
     options.signal = subsTracker.subscribe(topic, handler, options.signal)
-
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', topic)
 
     let res
 
@@ -34,7 +32,10 @@ module.exports = configure((api, options) => {
       res = await api.post('pubsub/sub', {
         timeout: options.timeout,
         signal: options.signal,
-        searchParams
+        searchParams: toUrlSearchParams({
+          arg: topic,
+          ...options
+        })
       })
     } catch (err) { // Initial subscribe fail, ensure we clean up
       subsTracker.unsubscribe(topic, handler)

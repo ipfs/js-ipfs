@@ -1,6 +1,7 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (key, options = {}) => {
@@ -10,12 +11,15 @@ module.exports = configure(api => {
     }
 
     const url = key ? 'config' : 'config/show'
-    const rsp = await api.post(url, {
+    const res = await api.post(url, {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: { arg: key }
+      searchParams: toUrlSearchParams({
+        arg: key,
+        ...options
+      })
     })
-    const data = await rsp.json()
+    const data = await res.json()
 
     return key ? data.Value : data
   }

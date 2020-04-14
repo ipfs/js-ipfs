@@ -4,17 +4,20 @@ const CID = require('cids')
 const multiaddr = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * put (key, value, options = {}) {
-    const searchParams = new URLSearchParams(options)
-
-    searchParams.append('arg', key)
-    searchParams.append('arg', value)
     const res = await api.post('dht/put', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: [
+          key,
+          value
+        ],
+        ...options
+      })
     })
 
     for await (let message of res.ndjson()) {

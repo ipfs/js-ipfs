@@ -1,19 +1,22 @@
 'use strict'
 
 const configure = require('../../lib/configure')
+const toUrlSearchParams = require('../../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (profile, options = {}) => {
-    options.arg = profile
-    const response = await api.post('config/profile/apply', {
+    const res = await api.post('config/profile/apply', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: profile,
+        ...options
+      })
     })
-    const res = await response.json()
+    const data = await res.json()
 
     return {
-      original: res.OldCfg, updated: res.NewCfg
+      original: data.OldCfg, updated: data.NewCfg
     }
   }
 })

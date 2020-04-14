@@ -4,15 +4,17 @@ const { Buffer } = require('buffer')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function findPeer (peerId, options = {}) {
-    options.arg = `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`
-
     const res = await api.post('dht/findpeer', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`,
+        ...options
+      })
     })
 
     for await (const data of res.ndjson()) {

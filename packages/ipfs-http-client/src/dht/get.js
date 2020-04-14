@@ -3,6 +3,7 @@
 const { Buffer } = require('buffer')
 const encodeBufferURIComponent = require('../lib/encode-buffer-uri-component')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function get (key, options = {}) {
@@ -10,11 +11,13 @@ module.exports = configure(api => {
       throw new Error('invalid key')
     }
 
-    options.key = encodeBufferURIComponent(key)
     const res = await api.post('dht/get', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        key: encodeBufferURIComponent(key),
+        ...options
+      })
     })
 
     for await (const message of res.ndjson()) {
