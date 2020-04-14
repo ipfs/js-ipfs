@@ -18,8 +18,8 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path.map(p => `${p}`),
-        stream: options.stream || true,
-        ...options
+        ...options,
+        stream: true
       })
     })
 

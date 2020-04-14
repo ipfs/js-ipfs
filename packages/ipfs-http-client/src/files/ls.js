@@ -19,12 +19,12 @@ module.exports = configure(api => {
         arg: CID.isCID(path) ? `/ipfs/${path}` : path,
 
         // TODO the args below are not in the go-ipfs or interface core docs
-        stream: options.stream == null ? true : options.stream,
         long: options.long == null ? true : options.long,
 
         // TODO: remove after go-ipfs 0.5 is released
         l: options.long == null ? true : options.long,
-        ...options
+        ...options,
+        stream: true
       })
     })
 
