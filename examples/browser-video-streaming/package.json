@@ -1,6 +1,5 @@
 {
   "name": "example-browser-video-streaming",
-  "version": "2.0.1",
   "description": "IPFS browser video streaming example",
   "main": "index.html",
   "private": true,

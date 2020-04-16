@@ -1,6 +1,5 @@
 {
   "name": "example-browser-parceljs",
-  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "private": true,

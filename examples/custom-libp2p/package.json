@@ -1,6 +1,5 @@
 {
   "name": "example-custom-libp2p",
-  "version": "0.2.1",
   "description": "Customizing your libp2p node",
   "main": "index.js",
   "private": true,
