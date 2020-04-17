@@ -5,7 +5,6 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const Unixfs = require('ipfs-unixfs')
-const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
