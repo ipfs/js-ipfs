@@ -7,6 +7,7 @@ const all = require('it-all')
 const importer = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -47,15 +48,46 @@ module.exports = (common, options) => {
 
       const imported = await all(importer(dirs, ipfs.block))
 
-      // otherwise go-ipfs doesn't show them in the local refs
-      await Promise.all(
-        imported.map(i => ipfs.pin.add(i.cid))
-      )
+      // rust-ipfs doesn't yet have pinning api, it'll just list all local cids
+      // in /refs/local
+      if (common.opts.type !== 'rust') {
+        // otherwise go-ipfs doesn't show them in the local refs
+        await Promise.all(
+          imported.map(i => ipfs.pin.add(i.cid))
+        )
+      }
 
       const refs = await all(ipfs.refs.local())
+
+      const expected = [
+        'QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn',
+        'QmR4nFjTu18TyANgC65ArNWp5Yaab1gPzQ4D8zp7Kx3vhr'
+      ]
+
       const cids = refs.map(r => r.ref)
-      expect(cids).to.include('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn')
-      expect(cids).to.include('QmR4nFjTu18TyANgC65ArNWp5Yaab1gPzQ4D8zp7Kx3vhr')
+
+      for (const alt of expected.map(alternatives)) {
+        // allow the cids to be either original or in later cid version.
+        let removed = false
+        for (const version of alt) {
+          const index = cids.indexOf(version)
+          if (index === -1) {
+            continue
+          }
+          removed = true
+          delete cids[index]
+          break
+        }
+        expect(removed, `failed to remove '${alt[0]}'`).to.be.true()
+      }
     })
   })
+}
+
+function alternatives (cidstr) {
+  const cid = new CID(cidstr)
+  if (cid.version === 0) {
+    return [cidstr, cid.toV1().toString()]
+  }
+  return [cidstr]
 }
