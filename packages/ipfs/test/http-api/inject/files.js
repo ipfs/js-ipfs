@@ -308,7 +308,8 @@ describe('/files', () => {
       })
     })
 
-    it('should return a base64 encoded CIDs', async () => {
+    // TODO: unskip after switch to v1 CIDs by default
+    it.skip('should return base64 encoded CIDs', async () => {
       ipfs.ls.withArgs(cid.toString(), sinon.match({
         recursive: false
       })).returns([])

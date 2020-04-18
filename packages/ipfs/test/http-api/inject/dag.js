@@ -339,7 +339,7 @@ describe('/dag', () => {
     })
 
     it('returns an error when the path is not available', async () => {
-      ipfs.dag.resolve.withArgs(cid, 'bar').rejects(new Error('Not found'))
+      ipfs.dag.resolve.withArgs(cid, 'bar').throws(new Error('Not found'))
 
       const res = await http({
         method: 'POST',
