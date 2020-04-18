@@ -7,7 +7,7 @@ It is broken up into the following sections:
 * [BITSWAP.md](BITSWAP.md)
 * [BLOCK.md](BLOCK.md)
 * [BOOTSTRAP.md](BOOTSTRAP.md)
-* [CONFIG.md]([CONFIG.md)
+* [CONFIG.md](CONFIG.md)
 * [DAG.md](DAG.md)
 * [DHT.md](DHT.md)
 * [FILES.md](FILES.md)
