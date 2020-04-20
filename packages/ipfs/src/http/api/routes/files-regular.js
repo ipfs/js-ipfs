@@ -42,7 +42,8 @@ module.exports = [
     options: {
       pre: [
         { method: resources.filesRegular.ls.parseArgs, assign: 'args' }
-      ]
+      ],
+      validate: resources.filesRegular.ls.validate
     },
     handler: resources.filesRegular.ls.handler
   },

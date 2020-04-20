@@ -2,43 +2,32 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
 const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
+const sinon = require('sinon')
+const CID = require('cids')
 
-module.exports = (http) => {
-  describe('/resolve', () => {
-    let api
+describe('/resolve', () => {
+  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  let ipfs
 
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
-    })
-
-    it('only accepts POST', () => {
-      return testHttpMethod('/api/v0/resolve')
-    })
-
-    it('should not resolve a path for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      let res = await api.inject({
-        method: 'POST',
-        url: '/api/v0/add',
-        headers: headers,
-        payload: payload
-      })
-      expect(res.statusCode).to.equal(200)
-      const hash = JSON.parse(res.result).Hash
-
-      res = await api.inject({
-        method: 'POST',
-        url: `/api/v0/resolve?arg=/ipfs/${hash}&cid-base=invalid`
-      })
-      expect(res.statusCode).to.equal(400)
-      expect(res.result.Message).to.include('Invalid request query input')
-    })
+  beforeEach(() => {
+    ipfs = {
+      resolve: sinon.stub()
+    }
   })
-}
+
+  it('only accepts POST', () => {
+    return testHttpMethod('/api/v0/resolve')
+  })
+
+  it('should not resolve a path for invalid cid-base option', async () => {
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/resolve?arg=${cid}&cid-base=invalid`
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 400)
+    expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+  })
+})

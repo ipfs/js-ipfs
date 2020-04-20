@@ -21,7 +21,7 @@ exports.findPeer = {
     let res
 
     try {
-      res = await ipfs.dht.findPeer(arg)
+      res = await ipfs.dht.findPeer(new CID(arg))
     } catch (err) {
       if (err.code === 'ERR_LOOKUP_FAILED') {
         throw Boom.notFound(err.toString())
@@ -52,9 +52,9 @@ exports.findProvs = {
     const ipfs = request.server.app.ipfs
     const { arg } = request.query
 
-    request.query.maxNumProviders = request.query['num-providers']
-
-    const res = await all(ipfs.dht.findProvs(arg, { numProviders: request.query['num-providers'] }))
+    const res = await all(ipfs.dht.findProvs(new CID(arg), {
+      numProviders: request.query['num-providers']
+    }))
 
     return h.response({
       Responses: res.map(({ id, addrs }) => ({

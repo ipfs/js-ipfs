@@ -22,7 +22,10 @@ module.exports = {
     const cidBase = request.query['cid-base']
 
     log(name, { recursive, cidBase })
-    const res = await ipfs.resolve(name, { recursive, cidBase })
+    const res = await ipfs.resolve(name, {
+      recursive,
+      cidBase
+    })
 
     return h.response({ Path: res })
   }

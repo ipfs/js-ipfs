@@ -83,7 +83,9 @@ exports.get = {
 
     let node, cid
     try {
-      node = await ipfs.object.get(key, { enc })
+      node = await ipfs.object.get(key, {
+        enc
+      })
       cid = await dagPB.util.cid(dagPB.util.serialize(node))
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get object' })
@@ -490,7 +492,9 @@ exports.patchRmLink = {
 
     let cid, node
     try {
-      cid = await ipfs.object.patch.rmLink(root, { name: link })
+      cid = await ipfs.object.patch.rmLink(root, {
+        name: link
+      })
       node = await ipfs.object.get(cid)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to remove link from object' })
