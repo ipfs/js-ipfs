@@ -12,22 +12,21 @@ module.exports = ({ libp2p }) => {
       peerId = PeerId.createFromCID(peerId)
     }
 
-    let peerInfo
-    if (libp2p.peerStore.has(peerId)) {
-      peerInfo = libp2p.peerStore.get(peerId)
-    } else {
+    let peer = libp2p.peerStore.get(peerId)
+
+    if (!peer) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      peerInfo = await libp2p.peerRouting.findPeer(peerId)
+      peer = await libp2p.peerRouting.findPeer(peerId)
     }
 
-    yield { ...basePacket, text: `PING ${peerInfo.id.toB58String()}` }
+    yield { ...basePacket, text: `PING ${peer.id.toB58String()}` }
 
     let packetCount = 0
     let totalTime = 0
 
     for (let i = 0; i < options.count; i++) {
       try {
-        const time = await libp2p.ping(peerInfo)
+        const time = await libp2p.ping(peer.id)
         totalTime += time
         packetCount++
         yield { ...basePacket, time }

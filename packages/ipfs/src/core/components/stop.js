@@ -16,7 +16,7 @@ module.exports = ({
   keychain,
   libp2p,
   mfsPreload,
-  peerInfo,
+  peerId,
   pinManager,
   preload,
   print,
@@ -37,9 +37,6 @@ module.exports = ({
       repo.close()
     ])
 
-    // Clear our addresses so we can start clean
-    peerInfo.multiaddrs.clear()
-
     const api = createApi({
       apiManager,
       constructorOptions,
@@ -48,7 +45,7 @@ module.exports = ({
       initOptions,
       ipld,
       keychain,
-      peerInfo,
+      peerId,
       pinManager,
       preload,
       print,
@@ -74,7 +71,7 @@ function createApi ({
   initOptions,
   ipld,
   keychain,
-  peerInfo,
+  peerId,
   pinManager,
   preload,
   print,
@@ -142,7 +139,7 @@ function createApi ({
     dns: Components.dns(),
     files: Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions }),
     get: Components.get({ ipld, preload }),
-    id: Components.id({ peerInfo }),
+    id: Components.id({ peerId }),
     init: async () => { // eslint-disable-line require-await
       throw new AlreadyInitializedError()
     },
@@ -174,7 +171,7 @@ function createApi ({
       initOptions,
       ipld,
       keychain,
-      peerInfo,
+      peerId,
       pinManager,
       preload,
       print,
@@ -190,7 +187,7 @@ function createApi ({
       addrs: notStarted,
       connect: notStarted,
       disconnect: notStarted,
-      localAddrs: Components.swarm.localAddrs({ peerInfo }),
+      localAddrs: Components.swarm.localAddrs({ multiaddrs: [] }),
       peers: notStarted
     },
     version: Components.version({ repo })

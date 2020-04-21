@@ -7,7 +7,8 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 module.exports = ({
   options,
-  peerInfo,
+  peerId,
+  multiaddrs = [],
   repo,
   config
 }) => {
@@ -15,10 +16,10 @@ module.exports = ({
   config = config || {}
 
   const { datastore } = repo
-  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerInfo })
+  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerId, multiaddrs })
 
   if (typeof options.libp2p === 'function') {
-    return options.libp2p({ libp2pOptions, options, config, datastore, peerInfo })
+    return options.libp2p({ libp2pOptions, options, config, datastore, peerId })
   }
 
   // Required inline to reduce startup time
@@ -26,7 +27,7 @@ module.exports = ({
   return new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
 }
 
-function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
+function getLibp2pOptions ({ options, config, datastore, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
@@ -39,7 +40,7 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
 
   const libp2pDefaults = {
     datastore,
-    peerInfo,
+    peerId: peerId,
     modules: {}
   }
 
@@ -79,6 +80,9 @@ function getLibp2pOptions ({ options, config, datastore, peerInfo }) {
         enabled: get(options, 'config.Pubsub.Enabled',
           get(config, 'Pubsub.Enabled', true))
       }
+    },
+    addresses: {
+      listen: multiaddrs
     },
     connectionManager: get(options, 'connectionManager', {
       maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater',
