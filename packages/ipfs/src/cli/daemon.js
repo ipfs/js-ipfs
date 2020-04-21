@@ -60,7 +60,7 @@ class Daemon {
   }
 }
 
-function getLibp2p ({ libp2pOptions, options, config, peerInfo }) {
+function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   // Attempt to use any of the WebRTC versions available globally
   let electronWebRTC
   let wrtc
@@ -98,7 +98,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerInfo }) {
     }
 
     libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
-    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerInfo.id, delegatedApiOptions))
+    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegatedApiOptions))
 
     libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
     libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegatedApiOptions))

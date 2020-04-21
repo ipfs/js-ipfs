@@ -32,7 +32,11 @@ module.exports = (common, options) => {
       // Add key to the wantlist for ipfsB
       ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
 
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      // Add peers to addressBook
+      ipfsA.libp2p.peerStore.addressBook.set(ipfsB.libp2p.peerId, ipfsB.libp2p.multiaddrs)
+      ipfsB.libp2p.peerStore.addressBook.set(ipfsA.libp2p.peerId, ipfsA.libp2p.multiaddrs)
+
+      await ipfsA.swarm.connect(ipfsB.libp2p.peerId)
     })
 
     after(() => common.clean())
