@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 const invalidArg = 'this/Is/So/Invalid/'
 const validIp4 = '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
@@ -25,6 +26,13 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when adding bootstrap nodes', () => {
+      return testTimeout(() => ipfs.bootstrap.add(null, {
+        default: true,
+        timeout: 1
+      }))
+    })
 
     it('should return an error when called with an invalid arg', () => {
       return expect(ipfs.bootstrap.add(invalidArg)).to.eventually.be.rejected

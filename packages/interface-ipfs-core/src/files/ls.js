@@ -5,7 +5,9 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const CID = require('cids')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
+const drain = require('it-drain')
 const randomBytes = require('iso-random-stream/src/random')
+const testTimeout = require('../utils/test-timeout')
 
 const MFS_FILE_TYPES = {
   file: 0,
@@ -195,6 +197,15 @@ module.exports = (common, options) => {
 
       expect(files.length).to.equal(1)
       expect(files.filter(file => file.name === fileName)).to.be.ok()
+    })
+
+    it('should respect timeout option when listing files', async () => {
+      await testTimeout(() => drain(ipfs.files.ls({
+        timeout: 1
+      })))
+
+      // ensures that the request that timed out has completed
+      await ipfs.files.stat('/')
     })
   })
 }

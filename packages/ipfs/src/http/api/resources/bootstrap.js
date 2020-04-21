@@ -1,74 +1,198 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
-const Boom = require('@hapi/boom')
+const Joi = require('../../utils/joi')
 
-exports.list = async (request, h) => {
-  const { ipfs } = request.server.app
-  const list = await ipfs.bootstrap.list()
-  return h.response(list)
+exports.list = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.bootstrap.list({
+      timeout,
+      signal
+    })
+    return h.response(list)
+  }
 }
 
 exports.add = {
-  parseArgs (request, h) {
-    const q = request.query
-    const def = q.default === 'true'
-
-    if (q.arg != null) {
-      try {
-        return {
-          addr: multiaddr(q.arg),
-          default: def
-        }
-      } catch (err) {
-        throw Boom.badRequest('Not a valid multiaddr')
-      }
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        addr: Joi.multiaddr(),
+        default: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'addr', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    return { default: def }
   },
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const { addr, default: def } = request.pre.args
-    const list = await ipfs.bootstrap.add(addr && addr.toString(), { default: def })
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        addr,
+        default: def,
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.bootstrap.add(addr, {
+      default: def || !addr,
+      signal,
+      timeout
+    })
     return h.response(list)
   }
 }
 
-exports.addDefault = async (request, h) => {
-  const { ipfs } = request.server.app
-  const list = await ipfs.bootstrap.add(null, { default: true })
-  return h.response(list)
+exports.addDefault = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.bootstrap.add(null, {
+      default: true,
+      signal,
+      timeout
+    })
+    return h.response(list)
+  }
 }
 
 exports.rm = {
-  parseArgs (request, h) {
-    const q = request.query
-    const all = q.all === 'true'
-
-    if (q.arg != null) {
-      try {
-        return {
-          addr: multiaddr(q.arg),
-          all: all
-        }
-      } catch (err) {
-        throw Boom.badRequest('Not a valid multiaddr')
-      }
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        addr: Joi.multiaddr(),
+        all: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'addr', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    return { all }
   },
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const { addr, all } = request.pre.args
-    const list = await ipfs.bootstrap.rm(addr && addr.toString(), { all })
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        addr,
+        all,
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.bootstrap.rm(addr, {
+      all: all || !addr,
+      signal,
+      timeout
+    })
     return h.response(list)
   }
 }
 
-exports.rmAll = async (request, h) => {
-  const { ipfs } = request.server.app
-  const list = await ipfs.bootstrap.rm(null, { all: true })
-  return h.response(list)
+exports.rmAll = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.bootstrap.rm(null, {
+      all: true,
+      signal,
+      timeout
+    })
+    return h.response(list)
+  }
 }

@@ -6,35 +6,26 @@ module.exports = [
   {
     method: 'POST',
     path: '/api/v0/name/resolve',
-    options: {
-      validate: resources.name.resolve.validate
-    },
-    handler: resources.name.resolve.handler
+    ...resources.name.resolve
   },
   {
     method: 'POST',
     path: '/api/v0/name/publish',
-    options: {
-      validate: resources.name.publish.validate
-    },
-    handler: resources.name.publish.handler
+    ...resources.name.publish
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/state',
-    handler: resources.name.pubsub.state.handler
+    ...resources.name.pubsub.state
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/subs',
-    handler: resources.name.pubsub.subs.handler
+    ...resources.name.pubsub.subs
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/cancel',
-    options: {
-      validate: resources.name.pubsub.cancel.validate
-    },
-    handler: resources.name.pubsub.cancel.handler
+    ...resources.name.pubsub.cancel
   }
 ]

@@ -12,6 +12,7 @@ const updateMfsRoot = require('./utils/update-mfs-root')
 const { DAGNode } = require('ipld-dag-pb')
 const mc = require('multicodec')
 const mh = require('multihashes')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   mtime: undefined,
@@ -22,7 +23,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsTouch (path, options) {
+  return withTimeoutOption(async function mfsTouch (path, options) {
     options = options || {}
     options = applyDefaultOptions(options, defaultOptions)
     options.mtime = options.mtime || new Date()
@@ -95,5 +96,5 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  }
+  })
 }

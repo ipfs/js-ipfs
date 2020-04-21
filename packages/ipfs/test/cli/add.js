@@ -1,10 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const fs = require('fs')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const path = require('path')
-const rimraf = require('rimraf').sync
 const CID = require('cids')
 const first = require('it-first')
 const cli = require('../utils/cli')
@@ -22,52 +19,40 @@ const HASH_ALGS = [
   'keccak-512'
 ]
 
-function defaultAddArgs (overrides) {
-  return {
-    trickle: false,
-    shardSplitThreshold: 1000,
-    cidVersion: 0,
-    rawLeaves: false,
-    onlyHash: false,
-    hashAlg: 'sha2-256',
-    wrapWithDirectory: false,
-    pin: true,
-    chunker: 'size-262144',
-    preload: true,
-    fileImportConcurrency: 50,
-    blockWriteConcurrency: 10,
-    progress: sinon.match.func,
-    ...overrides
-  }
-}
-
-function defaultCatArgs (overrides) {
-  return {
-    offset: undefined,
-    length: undefined,
-    ...overrides
-  }
+const defaultOptions = {
+  trickle: false,
+  shardSplitThreshold: 1000,
+  cidVersion: 0,
+  rawLeaves: false,
+  onlyHash: false,
+  hashAlg: 'sha2-256',
+  wrapWithDirectory: false,
+  pin: true,
+  chunker: 'size-262144',
+  preload: true,
+  fileImportConcurrency: 50,
+  blockWriteConcurrency: 10,
+  progress: sinon.match.func,
+  timeout: undefined
 }
 
 function matchIterable () {
   return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
 }
 
-describe('files', () => {
+describe('add', () => {
   let ipfs
 
   beforeEach(() => {
     ipfs = {
-      add: sinon.stub(),
-      cat: sinon.stub(),
-      get: sinon.stub()
+      add: sinon.stub()
     }
   })
 
-  it('add', async () => {
+  it('should add a file', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid: new CID(cid),
       path: 'readme'
     }])
@@ -80,7 +65,7 @@ describe('files', () => {
   it('adds a file path with progress', async () => {
     const cid = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid: new CID(cid),
       path: 'readme'
     }])
@@ -93,10 +78,11 @@ describe('files', () => {
     const cid1 = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
     const cid2 = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       progress: sinon.match.func,
       wrapWithDirectory: true
-    })).returns([{
+    }).returns([{
       cid: new CID(cid1),
       path: 'readme'
     }, {
@@ -112,9 +98,10 @@ describe('files', () => {
   it('add with cid-version=1', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       cidVersion: 1
-    })).returns([{
+    }).returns([{
       cid,
       path: 'readme'
     }])
@@ -126,10 +113,11 @@ describe('files', () => {
   it('add with cid-version=1 and raw-leaves=false', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       cidVersion: 1,
       rawLeaves: false
-    })).returns([{
+    }).returns([{
       cid,
       path: 'readme'
     }])
@@ -141,10 +129,11 @@ describe('files', () => {
   it('add with cid-version=1 and raw-leaves=true', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       cidVersion: 1,
       rawLeaves: true
-    })).returns([{
+    }).returns([{
       cid,
       path: 'readme'
     }])
@@ -158,7 +147,7 @@ describe('files', () => {
 
     ipfs.add.withArgs(sinon.match({
       content: matchIterable()
-    }), defaultAddArgs()).returns([{
+    }), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -180,7 +169,7 @@ describe('files', () => {
     ipfs.add.withArgs(sinon.match({
       content: matchIterable(),
       mtime: { secs: 100 }
-    }), defaultAddArgs()).returns([{
+    }), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -199,7 +188,7 @@ describe('files', () => {
   it('add --quiet', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -211,7 +200,7 @@ describe('files', () => {
   it('add --quiet (short option)', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -223,7 +212,7 @@ describe('files', () => {
   it('add --quieter', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -235,7 +224,7 @@ describe('files', () => {
   it('add --quieter (short option)', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -247,7 +236,7 @@ describe('files', () => {
   it('add --silent', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -259,9 +248,10 @@ describe('files', () => {
   it('add --only-hash outputs correct hash', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       onlyHash: true
-    })).returns([{
+    }).returns([{
       cid,
       path: 'readme'
     }])
@@ -273,9 +263,10 @@ describe('files', () => {
   it('add does not pin with --pin=false', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
       pin: false
-    })).returns([{
+    }).returns([{
       cid,
       path: 'readme'
     }])
@@ -287,7 +278,7 @@ describe('files', () => {
   it('add with mtime', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -303,7 +294,7 @@ describe('files', () => {
   it('add with mtime-nsecs', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -320,7 +311,7 @@ describe('files', () => {
   it('add with mode', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -337,10 +328,11 @@ describe('files', () => {
     it(`add with hash=${name} and raw-leaves=false`, async () => {
       const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-      ipfs.add.withArgs(matchIterable(), defaultAddArgs({
+      ipfs.add.withArgs(matchIterable(), {
+        ...defaultOptions,
         hashAlg: name,
         rawLeaves: false
-      })).returns([{
+      }).returns([{
         cid,
         path: 'readme'
       }])
@@ -353,7 +345,7 @@ describe('files', () => {
   it('should add and print CID encoded in specified base', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultAddArgs()).returns([{
+    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -362,165 +354,18 @@ describe('files', () => {
     expect(out).to.equal(`added ${cid.toV1().toString('base64')} readme\n`)
   })
 
-  it('cat', async () => {
+  it('should add with a timeout', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
 
-    ipfs.cat.withArgs(cid.toString(), defaultCatArgs()).returns([buf])
-
-    const out = await cli(`cat ${cid}`, { ipfs })
-    expect(out).to.equal(buf.toString('utf8'))
-  })
-
-  it('cat part of a file using `count`', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.cat.withArgs(cid.toString(), defaultCatArgs({
-      offset: 21,
-      length: 5
-    })).returns([buf])
-
-    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5', { ipfs })
-    expect(out).to.equal(buf.toString('utf8'))
-  })
-
-  it('cat part of a file using `length`', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.cat.withArgs(cid.toString(), defaultCatArgs({
-      offset: 21,
-      length: 5
-    })).returns([buf])
-
-    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5', { ipfs })
-    expect(out).to.equal(buf.toString('utf8'))
-  })
-
-  it('cat non-existent file', async () => {
-    const err = new Error('wat')
-    ipfs.cat.returns(async function * () { // eslint-disable-line require-await,require-yield
-      throw err
-    }())
-
-    const out = await cli.fail('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/dummy', { ipfs })
-    expect(out).to.equal(`${err.message}\n`)
-  })
-
-  it('get file', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.get.withArgs(cid.toString()).returns([{
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
-      content: function * () {
-        yield buf
-      }
+    ipfs.add.withArgs(matchIterable(), {
+      ...defaultOptions,
+      timeout: 1000
+    }).returns([{
+      cid,
+      path: 'readme'
     }])
 
-    const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
-
-    const out = await cli(`get ${cid}`, { ipfs })
-    expect(out)
-      .to.equal(`Saving file(s) ${cid}\n`)
-
-    expect(fs.readFileSync(outPath)).to.deep.equal(buf)
-
-    rimraf(outPath)
-  })
-
-  it('get file with output option', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.get.withArgs(cid.toString()).returns([{
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
-      content: function * () {
-        yield buf
-      }
-    }])
-
-    const outPath = path.join(process.cwd(), 'derp')
-    rimraf(outPath)
-
-    const out = await cli(`get ${cid} --output ${outPath}`, { ipfs })
-    expect(out)
-      .to.equal(`Saving file(s) ${cid}\n`)
-
-    expect(fs.readFileSync(path.join(outPath, cid.toString()))).to.deep.equal(buf)
-
-    rimraf(outPath)
-  })
-
-  it('get file with short output option', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.get.withArgs(cid.toString()).returns([{
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
-      content: function * () {
-        yield buf
-      }
-    }])
-
-    const outPath = path.join(process.cwd(), 'herp')
-    rimraf(outPath)
-
-    const out = await cli(`get ${cid} -o ${outPath}`, { ipfs })
-    expect(out)
-      .to.equal(`Saving file(s) ${cid}\n`)
-
-    expect(fs.readFileSync(path.join(outPath, cid.toString()))).to.deep.equal(buf)
-
-    rimraf(outPath)
-  })
-
-  it('get directory', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-
-    ipfs.get.withArgs(cid.toString()).returns([{
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
-    }])
-
-    const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
-
-    const out = await cli(`get ${cid}`, { ipfs })
-    expect(out)
-      .to.equal(`Saving file(s) ${cid}\n`)
-
-    expect(fs.statSync(outPath).isDirectory()).to.be.true()
-
-    rimraf(outPath)
-  })
-
-  it('get recursively', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-    const buf = Buffer.from('hello world')
-
-    ipfs.get.withArgs(cid.toString()).returns([{
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
-    }, {
-      path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB/foo.txt',
-      content: function * () {
-        yield buf
-      }
-    }])
-
-    const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
-
-    const out = await cli(`get ${cid}`, { ipfs })
-    expect(out).to.eql(
-      `Saving file(s) ${cid}\n`
-    )
-
-    expect(fs.statSync(outPath).isDirectory()).to.be.true()
-    expect(fs.statSync(path.join(outPath, 'foo.txt')).isFile()).to.be.true()
-    expect(fs.readFileSync(path.join(outPath, 'foo.txt'))).to.deep.equal(buf)
-
-    rimraf(outPath)
+    const out = await cli('add  src/init-files/init-docs/readme --timeout=1s', { ipfs })
+    expect(out).to.equal(`added ${cid} readme\n`)
   })
 })

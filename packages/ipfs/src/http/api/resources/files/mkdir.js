@@ -1,37 +1,9 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 const parseMtime = require('./utils/parse-mtime')
 
 const mfsMkdir = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      mode,
-      mtime,
-      mtimeNsecs,
-      parents,
-      hashAlg,
-      cidVersion,
-      flush,
-      shardSplitThreshold
-    } = request.query
-
-    await ipfs.files.mkdir(arg, {
-      mode,
-      mtime: parseMtime(mtime, mtimeNsecs),
-      parents,
-      hashAlg,
-      cidVersion,
-      flush,
-      shardSplitThreshold
-    })
-
-    return h.response()
-  },
   options: {
     validate: {
       options: {
@@ -50,7 +22,8 @@ const mfsMkdir = {
           1
         ]).default(0),
         flush: Joi.boolean().default(true),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
         .rename('p', 'parents', {
           override: true,
@@ -77,6 +50,37 @@ const mfsMkdir = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      mode,
+      mtime,
+      mtimeNsecs,
+      parents,
+      hashAlg,
+      cidVersion,
+      flush,
+      shardSplitThreshold,
+      timeout
+    } = request.query
+
+    await ipfs.files.mkdir(arg, {
+      mode,
+      mtime: parseMtime(mtime, mtimeNsecs),
+      parents,
+      hashAlg,
+      cidVersion,
+      flush,
+      shardSplitThreshold,
+      signal: request.app.signal,
+      timeout
+    })
+
+    return h.response()
   }
 }
 

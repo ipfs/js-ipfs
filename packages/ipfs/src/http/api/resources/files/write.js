@@ -1,68 +1,11 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 const multipart = require('../../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 const drain = require('it-drain')
 
 const mfsWrite = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      offset,
-      length,
-      create,
-      truncate,
-      rawLeaves,
-      reduceSingleLeafToSelf,
-      cidVersion,
-      hashAlg,
-      parents,
-      progress,
-      strategy,
-      flush,
-      shardSplitThreshold
-    } = request.query
-
-    let files = 0
-
-    for await (const entry of multipart(request)) {
-      if (entry.type === 'file') {
-        files++
-
-        if (files > 1) {
-          throw Boom.badRequest('Please only send one file')
-        }
-
-        await ipfs.files.write(arg, entry.content, {
-          offset,
-          length,
-          create,
-          truncate,
-          rawLeaves,
-          reduceSingleLeafToSelf,
-          cidVersion,
-          hashAlg,
-          parents,
-          progress,
-          strategy,
-          flush,
-          shardSplitThreshold,
-          mode: entry.mode,
-          mtime: entry.mtime
-        })
-
-        // if we didn't read the whole body, read it and discard the remainder
-        // otherwise the request will never end
-        await drain(entry.content)
-      }
-    }
-
-    return h.response()
-  },
   options: {
     payload: {
       parse: false,
@@ -95,7 +38,8 @@ const mfsWrite = {
         ]).default('trickle'),
         flush: Joi.boolean().default(true),
         reduceSingleLeafToSelf: Joi.boolean().default(false),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
         .rename('o', 'offset', {
           override: true,
@@ -134,6 +78,66 @@ const mfsWrite = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      offset,
+      length,
+      create,
+      truncate,
+      rawLeaves,
+      reduceSingleLeafToSelf,
+      cidVersion,
+      hashAlg,
+      parents,
+      progress,
+      strategy,
+      flush,
+      shardSplitThreshold,
+      timeout
+    } = request.query
+
+    let files = 0
+
+    for await (const entry of multipart(request)) {
+      if (entry.type === 'file') {
+        files++
+
+        if (files > 1) {
+          throw Boom.badRequest('Please only send one file')
+        }
+
+        await ipfs.files.write(arg, entry.content, {
+          offset,
+          length,
+          create,
+          truncate,
+          rawLeaves,
+          reduceSingleLeafToSelf,
+          cidVersion,
+          hashAlg,
+          parents,
+          progress,
+          strategy,
+          flush,
+          shardSplitThreshold,
+          mode: entry.mode,
+          mtime: entry.mtime,
+          signal: request.app.signal,
+          timeout
+        })
+
+        // if we didn't read the whole body, read it and discard the remainder
+        // otherwise the request will never end
+        await drain(entry.content)
+      }
+    }
+
+    return h.response()
   }
 }
 

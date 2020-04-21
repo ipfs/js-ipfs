@@ -1,35 +1,8 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 
 const mfsMv = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      recursive,
-      parents,
-      hashAlg,
-      cidVersion,
-      flush,
-      shardSplitThreshold
-    } = request.query
-
-    const args = arg.concat({
-      recursive,
-      parents,
-      cidVersion,
-      flush,
-      hashAlg,
-      shardSplitThreshold
-    })
-
-    await ipfs.files.mv.apply(null, args)
-
-    return h.response()
-  },
   options: {
     validate: {
       options: {
@@ -46,7 +19,8 @@ const mfsMv = {
           1
         ]).default(0),
         flush: Joi.boolean().default(true),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
         .rename('shard-split-threshold', 'shardSplitThreshold', {
           override: true,
@@ -65,6 +39,36 @@ const mfsMv = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      recursive,
+      parents,
+      hashAlg,
+      cidVersion,
+      flush,
+      shardSplitThreshold,
+      timeout
+    } = request.query
+
+    const args = arg.concat({
+      recursive,
+      parents,
+      cidVersion,
+      flush,
+      hashAlg,
+      shardSplitThreshold,
+      signal: request.app.signal,
+      timeout
+    })
+
+    await ipfs.files.mv.apply(null, args)
+
+    return h.response()
   }
 }
 

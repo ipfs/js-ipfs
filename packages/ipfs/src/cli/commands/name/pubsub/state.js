@@ -1,13 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'state',
 
   describe: 'Query the state of IPNS pubsub.',
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const result = await ipfs.name.pubsub.state()
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    const result = await ipfs.name.pubsub.state({
+      timeout
+    })
     print(result.enabled ? 'enabled' : 'disabled')
   }
 }

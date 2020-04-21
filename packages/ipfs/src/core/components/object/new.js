@@ -4,9 +4,10 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, preload }) => {
-  return async function _new (template, options) {
+  return withTimeoutOption(async function _new (template, options) {
     options = options || {}
 
     // allow options in the template position
@@ -39,5 +40,5 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return cid
-  }
+  })
 }

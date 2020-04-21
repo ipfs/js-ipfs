@@ -1,28 +1,8 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 
 const mfsRm = {
-
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      recursive,
-      shardSplitThreshold
-    } = request.query
-
-    const args = [...arg, {
-      recursive,
-      shardSplitThreshold
-    }]
-
-    await ipfs.files.rm.apply(null, args)
-
-    return h.response()
-  },
   options: {
     validate: {
       options: {
@@ -32,7 +12,8 @@ const mfsRm = {
       query: Joi.object().keys({
         arg: Joi.array().required().items(Joi.string()).min(1).single(),
         recursive: Joi.boolean().default(false),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
         .rename('r', 'recursive', {
           override: true,
@@ -43,6 +24,28 @@ const mfsRm = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      recursive,
+      shardSplitThreshold,
+      timeout
+    } = request.query
+
+    const args = [...arg, {
+      recursive,
+      shardSplitThreshold,
+      signal: request.app.signal,
+      timeout
+    }]
+
+    await ipfs.files.rm.apply(null, args)
+
+    return h.response()
   }
 }
 

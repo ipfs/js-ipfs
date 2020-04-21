@@ -7,6 +7,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 const multihash = require('multihashes')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -41,6 +42,14 @@ module.exports = (common, options) => {
       }
 
       done()
+    })
+
+    it('should respect timeout option when putting a DAG node', () => {
+      return testTimeout(() => ipfs.dag.put(pbNode, {
+        format: 'dag-pb',
+        hashAlg: 'sha2-256',
+        timeout: 1
+      }))
     })
 
     it('should put dag-pb with default hash func (sha2-256)', () => {

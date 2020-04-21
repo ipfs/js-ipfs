@@ -3,6 +3,8 @@
 
 const { getDescribe, getIt } = require('../utils/mocha')
 const all = require('it-all')
+const testTimeout = require('../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -27,6 +29,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when putting a value into the DHT', () => {
+      return testTimeout(() => nodeA.dht.put(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), Buffer.from('derp'), {
+        timeout: 1
+      }))
+    })
 
     it('should put a value to the DHT', async function () {
       this.timeout(80 * 1000)

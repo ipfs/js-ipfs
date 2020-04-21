@@ -3,6 +3,7 @@
 const defer = require('p-defer')
 const { NotStartedError, AlreadyInitializedError } = require('../errors')
 const Components = require('./')
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({
   apiManager,
@@ -21,7 +22,7 @@ module.exports = ({
   preload,
   print,
   repo
-}) => async function stop () {
+}) => withTimeoutOption(async function stop () {
   const stopPromise = defer()
   const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
 
@@ -62,9 +63,8 @@ module.exports = ({
     throw err
   }
 
-  stopPromise.resolve(apiManager.api)
-  return apiManager.api
-}
+  stopPromise.resolve()
+})
 
 function createApi ({
   apiManager,
@@ -99,17 +99,19 @@ function createApi ({
     put: Components.object.put({ ipld, gcLock, preload }),
     stat: Components.object.stat({ ipld, preload })
   }
+
   const pin = {
     add: Components.pin.add({ pinManager, gcLock, dag }),
     ls: Components.pin.ls({ pinManager, dag }),
     rm: Components.pin.rm({ pinManager, gcLock, dag })
   }
+
   // FIXME: resolve this circular dependency
   dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
 
   const block = {
     get: Components.block.get({ blockService, preload }),
-    put: Components.block.put({ blockService, gcLock, preload }),
+    put: Components.block.put({ blockService, pin, gcLock, preload }),
     rm: Components.block.rm({ blockService, gcLock, pinManager }),
     stat: Components.block.stat({ blockService, preload })
   }
@@ -185,7 +187,7 @@ function createApi ({
       bw: notStarted,
       repo: Components.repo.stat({ repo })
     },
-    stop: () => apiManager.api,
+    stop: () => {},
     swarm: {
       addrs: notStarted,
       connect: notStarted,

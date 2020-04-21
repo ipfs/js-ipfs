@@ -1,29 +1,52 @@
-# Block API
+# Block API <!-- omit in toc -->
 
-* [block.get](#blockget)
-* [block.put](#blockput)
-* [block.rm](#blockrm)
-* [block.stat](#blockstat)
+- [`ipfs.block.get(cid, [options])`](#ipfsblockgetcid-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.block.put(block, [options])`](#ipfsblockputblock-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.block.rm(cid, [options])`](#ipfsblockrmcid-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
+- [`ipfs.block.stat(cid, [options])`](#ipfsblockstatcid-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
 
-#### `block.get`
+## `ipfs.block.get(cid, [options])`
 
 > Get a raw IPFS block.
 
-##### `ipfs.block.get(cid, [options])`
+### Parameters
 
-`cid` is a [cid][cid] which can be passed as:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][], `String` or `Buffer` | A CID that corresponds to the desired block |
 
-- Buffer, the raw Buffer of the cid
-- CID, a CID instance
-- String, the base58 encoded version of the multihash
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Block>` | A [Block][block] type object, containing both the data and the hash of the block |
 
-**Example:**
+### Example
 
 ```JavaScript
 const block = await ipfs.block.get(cid)
@@ -32,43 +55,46 @@ console.log(block.data)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `block.put`
+## `ipfs.block.put(block, [options])`
 
 > Stores input as an IPFS block.
 
-##### `ipfs.block.put(block, [options])`
+### Parameters
 
-Where `block` can be:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| block | A `Buffer` or [Block][] instance | The block or data to store |
 
-- `Buffer` - the raw bytes of the Block
-- [`Block`][block] instance
+### Options
 
-and `options` is an Object that can contain the following properties:
+An optional object which may have the following keys:
 
-- `cid` - a [cid][cid] which can be passed as:
-  - Buffer, the raw Buffer of the cid
-  - CID, a CID instance
-  - String, the base58 encoded version of the multihash
-- format
-- mhtype
-- mhlen
-- version
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| cid  | [CID][] | `undefined` | A CID to store the block under |
+| format | `String` | `'dag-pb'` | The codec to use to create the CID |
+| mhtype | `String` | `sha2-256` | The hashing algorithm to use to create the CID |
+| mhlen | `Number` | | |
+| version | `Number` | 0 |  The version to use to create the CID |
+| pin | `boolean` | false |  If true, pin added blocks recursively |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
-if no options are passed, it defaults to `{ format: 'dag-pb', mhtype: 'sha2-256', version: 0 }`
+if no options are passed, it defaults to `{ format: 'dag-pb', mhtype: 'sha2-256', version: 0, pin: false }`
 
 **Note:** If you pass a [`Block`][block] instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Block>` | A [Block][block] type object, containing both the data and the hash of the block |
 
-**Example:**
+### Example
 
 ```JavaScript
 // Defaults
-const buf = new Buffer('a serialized object')
+const buf = Buffer.from('a serialized object')
 
 const block = await ipfs.block.put(buf)
 
@@ -81,7 +107,7 @@ console.log(block.cid.toString())
 
 // With custom format and hashtype through CID
 const CID = require('cids')
-const buf = new Buffer('another serialized object')
+const buf = Buffer.from('another serialized object')
 const cid = new CID(1, 'dag-pb', multihash)
 
 const block = await ipfs.block.put(blob, cid)
@@ -96,25 +122,28 @@ console.log(block.cid.toString())
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `block.rm`
+## `ipfs.block.rm(cid, [options])`
 
 > Remove one or more IPFS block(s).
 
-##### `ipfs.block.rm(cid, [options])`
+### Parameters
 
-`cid` is a [cid][cid] which can be passed as:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | A [CID][] or Array of [CID][]s | Blocks corresponding to the passed CID(s) will be removed |
 
-- Buffer, the raw Buffer of the cid
-- CID, a CID instance
-- String, the base58 encoded version of the multihash
-- Array, list of CIDs in any of the above three formats
+### Options
 
-`options` is an Object that can contain the following properties:
+An optional object which may have the following keys:
 
-- `force` (boolean): Ignores nonexistent blocks.
-- `quiet` (boolean): write minimal output
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| force | `boolean` | `false` | Ignores nonexistent blocks |
+| quiet | `boolean` | `false | Write minimal output |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -131,7 +160,7 @@ Each object yielded is of the form:
 
 Note: If an error string is present for a given object, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const result of ipfs.block.rm(cid)) {
@@ -141,19 +170,26 @@ for await (const result of ipfs.block.rm(cid)) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `block.stat`
+## `ipfs.block.stat(cid, [options])`
 
 > Print information of a raw IPFS block.
 
-##### `ipfs.block.stat(cid)`
+### Parameters
 
-`cid` is a [cid][cid] which can be passed as:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | A [CID][] or Array of [CID][]s | The stats of the passed CID will be returned |
 
-- `Buffer`, the raw Buffer of the multihash (or of and encoded version)
-- `String`, the toString version of the multihash (or of an encoded version)
-- CID, a CID instance
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -168,7 +204,7 @@ the returned object has the following keys:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const multihashStr = 'QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ'
@@ -188,4 +224,5 @@ A great source of [examples][] can be found in the tests for this API.
 [block]: https://github.com/ipfs/js-ipfs-block
 [multihash]: https://github.com/multiformats/multihash
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/block
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
 [cid]: https://www.npmjs.com/package/cids

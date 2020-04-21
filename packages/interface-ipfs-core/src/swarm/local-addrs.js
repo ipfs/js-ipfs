@@ -3,6 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,6 +24,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when listing local addresses', () => {
+      return testTimeout(() => ipfs.swarm.localAddrs({
+        timeout: 1
+      }))
+    })
 
     it('should list local addresses the node is listening on', async () => {
       const multiaddrs = await ipfs.swarm.localAddrs()

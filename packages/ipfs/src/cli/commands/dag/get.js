@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'get <cid path>',
@@ -11,18 +12,22 @@ module.exports = {
     'local-resolve': {
       type: 'boolean',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, cidpath, localResolve }) {
-    const { ipfs, print } = ctx
+  async handler ({ ctx: { ipfs, print }, cidpath, localResolve, timeout }) {
     const refParts = cidpath.split('/')
     const cidString = refParts[0]
     const path = refParts.slice(1).join('/')
     const cid = new CID(cidString)
 
     const options = {
-      localResolve: localResolve
+      localResolve,
+      timeout
     }
 
     let result

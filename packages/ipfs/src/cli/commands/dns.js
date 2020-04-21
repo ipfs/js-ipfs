@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'dns <domain>',
 
@@ -14,13 +16,15 @@ module.exports = {
     },
     format: {
       type: 'string'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, domain, recursive, format }) {
-    const { ipfs, print } = ctx
-
-    const path = await ipfs.dns(domain, { recursive, format })
+  async handler ({ ctx: { ipfs, print }, domain, recursive, format, timeout }) {
+    const path = await ipfs.dns(domain, { recursive, format, timeout })
     print(path)
   }
 }

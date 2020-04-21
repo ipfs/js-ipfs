@@ -1,22 +1,22 @@
 'use strict'
 
 const getDefaultConfig = require('../runtime/config-nodejs.js')
+const { withTimeoutOption } = require('../utils')
 const log = require('debug')('ipfs:core:config')
 
 module.exports = ({ repo }) => {
   return {
-    get: repo.config.get,
-    set: repo.config.set,
-    replace: repo.config.set,
+    get: withTimeoutOption(repo.config.get),
+    set: withTimeoutOption(repo.config.set),
+    replace: withTimeoutOption(repo.config.replace),
     profiles: {
-      apply: applyProfile,
-      list: listProfiles
+      apply: withTimeoutOption(applyProfile),
+      list: withTimeoutOption(listProfiles)
     }
   }
 
-  async function applyProfile (profileName, opts) {
-    opts = opts || {}
-    const { dryRun } = opts
+  async function applyProfile (profileName, options = {}) {
+    const { dryRun } = options
 
     const profile = profiles[profileName]
 
@@ -25,12 +25,12 @@ module.exports = ({ repo }) => {
     }
 
     try {
-      const oldCfg = await repo.config.get()
+      const oldCfg = await repo.config.getAll(options)
       let newCfg = JSON.parse(JSON.stringify(oldCfg)) // clone
       newCfg = profile.transform(newCfg)
 
       if (!dryRun) {
-        await repo.config.set(newCfg)
+        await repo.config.replace(newCfg, options)
       }
 
       // Scrub private key from output

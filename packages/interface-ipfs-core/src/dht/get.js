@@ -3,6 +3,7 @@
 
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,6 +27,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting a value from the DHT', () => {
+      return testTimeout(() => nodeA.dht.get('some-key', {
+        timeout: 1
+      }))
+    })
 
     it('should error when getting a non-existent key from the DHT', () => {
       return expect(nodeA.dht.get('non-existing', { timeout: 100 })).to.eventually.be.rejected

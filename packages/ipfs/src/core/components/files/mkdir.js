@@ -10,6 +10,7 @@ const updateTree = require('./utils/update-tree')
 const addLink = require('./utils/add-link')
 const withMfsRoot = require('./utils/with-mfs-root')
 const applyDefaultOptions = require('./utils/apply-default-options')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   parents: false,
@@ -22,7 +23,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsMkdir (path, options) {
+  return withTimeoutOption(async function mfsMkdir (path, options) {
     options = applyDefaultOptions(options, defaultOptions)
 
     if (!path) {
@@ -100,7 +101,7 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  }
+  })
 }
 
 const addEmptyDir = async (context, childName, emptyDir, parent, trail, options) => {

@@ -7,6 +7,7 @@ const dagPB = require('ipld-dag-pb')
 const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 const inputDecoders = {
   json: (buf) => JSON.parse(buf.toString()),
@@ -77,11 +78,14 @@ module.exports = {
       type: 'boolean',
       default: false,
       describe: 'Only hash the content, do not write to the underlying block store'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash }) {
-    const { ipfs, print, getStdin } = ctx
+  async handler ({ ctx: { ipfs, print, getStdin }, data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
     if (inputEncoding === 'cbor') {
       format = 'dag-cbor'
     } else if (inputEncoding === 'protobuf') {
@@ -117,7 +121,8 @@ module.exports = {
       version: cidVersion,
       onlyHash,
       preload,
-      pin
+      pin,
+      timeout
     })
 
     print(cidToString(cid, { base: cidBase }))

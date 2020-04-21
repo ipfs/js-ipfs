@@ -1,24 +1,9 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 const streamResponse = require('../../../utils/stream-response')
 
 const mfsRead = {
-  handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      offset,
-      length
-    } = request.query
-
-    return streamResponse(request, h, () => ipfs.files.read(arg, {
-      offset,
-      length
-    }))
-  },
   options: {
     validate: {
       options: {
@@ -28,7 +13,8 @@ const mfsRead = {
       query: Joi.object().keys({
         arg: Joi.string().required(),
         offset: Joi.number().integer().min(0),
-        length: Joi.number().integer().min(0)
+        length: Joi.number().integer().min(0),
+        timeout: Joi.timeout()
       })
         .rename('o', 'offset', {
           override: true,
@@ -43,6 +29,24 @@ const mfsRead = {
           ignoreUndefined: true
         })
     }
+  },
+  handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      offset,
+      length,
+      timeout
+    } = request.query
+
+    return streamResponse(request, h, () => ipfs.files.read(arg, {
+      offset,
+      length,
+      signal: request.app.signal,
+      timeout
+    }))
   }
 }
 

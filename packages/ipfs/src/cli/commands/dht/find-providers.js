@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'findprovs <key>',
 
@@ -11,12 +13,18 @@ module.exports = {
       describe: 'The number of providers to find. Default: 20.',
       default: 20,
       type: 'number'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, key, numProviders }) {
-    const { ipfs, print } = ctx
-    for await (const prov of ipfs.dht.findProvs(key, { numProviders })) {
+  async handler ({ ctx: { ipfs, print }, key, numProviders, timeout }) {
+    for await (const prov of ipfs.dht.findProvs(key, {
+      numProviders,
+      timeout
+    })) {
       print(prov.id.toString())
     }
   }

@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
+    "any-signal": "^1.1.0",
     "bignumber.js": "^9.0.0",
     "bs58": "^4.0.1",
     "buffer": "^5.4.2",
@@ -47,7 +48,7 @@
     "form-data": "^3.0.0",
     "ipfs-block": "^0.8.1",
     "ipfs-core-utils": "^0.2.0",
-    "ipfs-utils": "^2.2.0",
+    "ipfs-utils": "^2.2.1",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.3",
     "ipld-raw": "^4.0.1",

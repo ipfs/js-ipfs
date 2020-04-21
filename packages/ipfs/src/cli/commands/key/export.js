@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'export <name>',
@@ -19,12 +20,18 @@ module.exports = {
       describe: 'Output file',
       type: 'string',
       default: 'stdout'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, name, passout, output }) {
+  async handler ({ ctx, name, passout, output, timeout }) {
     const { ipfs } = ctx
-    const pem = await ipfs.key.export(name, passout)
+    const pem = await ipfs.key.export(name, passout, {
+      timeout
+    })
     if (output === 'stdout') {
       process.stdout.write(pem)
     } else {

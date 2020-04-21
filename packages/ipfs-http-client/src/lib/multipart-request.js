@@ -6,7 +6,7 @@ const { nanoid } = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 
-async function multipartRequest (source, boundary = `-----------------------------${nanoid()}`) {
+async function multipartRequest (source, abortController, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {
       let index = 0
@@ -49,6 +49,9 @@ async function multipartRequest (source, boundary = `---------------------------
 
         index++
       }
+    } catch (err) {
+      // workaround for https://github.com/node-fetch/node-fetch/issues/753
+      abortController.abort(err)
     } finally {
       yield `\r\n--${boundary}--\r\n`
     }

@@ -8,16 +8,9 @@ const { isNode } = require('ipfs-utils/src/env')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    withLocal: false
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  withLocal: false,
+  timeout: undefined
 }
 
 describe('stat', () => {
@@ -56,7 +49,7 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.include('CumulativeSize')
   })
@@ -66,10 +59,10 @@ describe('stat', () => {
 
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         withLocal: true
-      })
+      }
     ])
     expect(output).to.include('CumulativeSize')
   })
@@ -79,10 +72,10 @@ describe('stat', () => {
 
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         withLocal: true
-      })
+      }
     ])
     expect(output).to.include('CumulativeSize')
   })
@@ -93,7 +86,7 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal(`${fileCid}\n`)
   })
@@ -104,7 +97,7 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal(`${fileCid}\n`)
   })
@@ -115,7 +108,7 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal('stats-size\n')
   })
@@ -126,7 +119,7 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal('stats-size\n')
   })
@@ -137,8 +130,21 @@ describe('stat', () => {
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal('---------- stats-type\n')
+  })
+
+  it('should stat a path with a timeout', async () => {
+    await cli(`files stat ${path} --timeout=1s`, { ipfs, print })
+
+    expect(ipfs.files.stat.callCount).to.equal(1)
+    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        timeout: 1000
+      }
+    ])
+    expect(output).to.include('CumulativeSize')
   })
 })

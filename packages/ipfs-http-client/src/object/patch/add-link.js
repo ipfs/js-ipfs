@@ -13,7 +13,7 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: [
           `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
-          dLink.Name || dLink.name || null,
+          dLink.Name || dLink.name || '',
           (dLink.Hash || dLink.cid || '').toString() || null
         ],
         ...options

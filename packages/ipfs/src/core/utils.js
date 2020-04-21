@@ -188,27 +188,55 @@ function withTimeoutOption (fn, optionsArgIndex) {
 
     const fnRes = fn(...args)
     const timeoutPromise = new Promise((resolve, reject) => {
-      controller.signal.addEventListener('abort', () => reject(new TimeoutError()))
+      controller.signal.addEventListener('abort', () => {
+        reject(new TimeoutError())
+      })
     })
+
+    const start = Date.now()
+
+    const maybeThrowTimeoutError = () => {
+      if (controller.signal.aborted) {
+        throw new TimeoutError()
+      }
+
+      const timeTaken = Date.now() - start
+
+      // if we have starved the event loop by adding microtasks, we could have
+      // timed out already but the TimeoutController will never know because it's
+      // setTimeout will not fire until we stop adding microtasks
+      if (timeTaken > timeout) {
+        controller.abort()
+        throw new TimeoutError()
+      }
+    }
 
     if (fnRes[Symbol.asyncIterator]) {
       return (async function * () {
         const it = fnRes[Symbol.asyncIterator]()
+
         try {
           while (true) {
             const { value, done } = await Promise.race([it.next(), timeoutPromise])
-            if (done) break
 
-            controller.clear()
+            if (done) {
+              break
+            }
+
+            maybeThrowTimeoutError()
+
             yield value
-            controller.reset()
           }
         } catch (err) {
-          if (controller.signal.aborted) throw new TimeoutError()
+          maybeThrowTimeoutError()
+
           throw err
         } finally {
           controller.clear()
-          if (it.return) it.return()
+
+          if (it.return) {
+            it.return()
+          }
         }
       })()
     }
@@ -216,9 +244,13 @@ function withTimeoutOption (fn, optionsArgIndex) {
     return (async () => {
       try {
         const res = await Promise.race([fnRes, timeoutPromise])
+
+        maybeThrowTimeoutError()
+
         return res
       } catch (err) {
-        if (controller.signal.aborted) throw new TimeoutError()
+        maybeThrowTimeoutError()
+
         throw err
       } finally {
         controller.clear()

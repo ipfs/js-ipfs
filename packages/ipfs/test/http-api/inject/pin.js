@@ -9,6 +9,7 @@ const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const allNdjson = require('../../utils/all-ndjson')
+const { AbortSignal } = require('abort-controller')
 
 describe('/pin', () => {
   const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
@@ -26,6 +27,12 @@ describe('/pin', () => {
   })
 
   describe('/rm', () => {
+    const defaultOptions = {
+      recursive: true,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod(`/api/v0/pin/rm?arg=${cid}`)
     })
@@ -37,13 +44,10 @@ describe('/pin', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
     })
 
     it('unpins recursive pins', async () => {
-      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
-        recursive: true
-      })).returns([{
+      ipfs.pin.rm.withArgs([cid], defaultOptions).returns([{
         cid
       }])
 
@@ -57,9 +61,10 @@ describe('/pin', () => {
     })
 
     it('unpins direct pins', async () => {
-      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
+      ipfs.pin.rm.withArgs([cid], {
+        ...defaultOptions,
         recursive: false
-      })).returns([{
+      }).returns([{
         cid
       }])
 
@@ -73,9 +78,7 @@ describe('/pin', () => {
     })
 
     it('should remove pin and return base64 encoded CID', async () => {
-      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
-        recursive: true
-      })).returns([{
+      ipfs.pin.rm.withArgs([cid], defaultOptions).returns([{
         cid
       }])
 
@@ -99,9 +102,32 @@ describe('/pin', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.pin.rm.withArgs([cid], {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        cid
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/rm?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
   })
 
   describe('/add', () => {
+    const defaultOptions = {
+      recursive: true,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod(`/api/v0/pin/add?arg=${cid}`)
     })
@@ -113,13 +139,10 @@ describe('/pin', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
     })
 
     it('recursively', async () => {
-      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
-        recursive: true
-      })).returns([{
+      ipfs.pin.add.withArgs([cid], defaultOptions).returns([{
         cid
       }])
 
@@ -133,9 +156,10 @@ describe('/pin', () => {
     })
 
     it('directly', async () => {
-      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
+      ipfs.pin.add.withArgs([cid], {
+        ...defaultOptions,
         recursive: false
-      })).returns([{
+      }).returns([{
         cid
       }])
 
@@ -149,9 +173,7 @@ describe('/pin', () => {
     })
 
     it('should add pin and return base64 encoded CID', async () => {
-      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
-        recursive: true
-      })).returns([{
+      ipfs.pin.add.withArgs([cid], defaultOptions).returns([{
         cid
       }])
 
@@ -175,9 +197,32 @@ describe('/pin', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.pin.add.withArgs([cid], {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        cid
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/add?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
   })
 
   describe('/ls', () => {
+    const defaultOptions = {
+      type: 'all',
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/pin/ls')
     })
@@ -189,11 +234,10 @@ describe('/pin', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
     })
 
     it('finds all pinned objects', async () => {
-      ipfs.pin.ls.returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid,
         type: 'recursive'
       }])
@@ -208,7 +252,7 @@ describe('/pin', () => {
     })
 
     it('finds all pinned objects streaming', async () => {
-      ipfs.pin.ls.returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid: cid,
         type: 'recursive'
       }, {
@@ -229,9 +273,7 @@ describe('/pin', () => {
     })
 
     it('finds specific pinned objects', async () => {
-      ipfs.pin.ls.withArgs(cid.toString(), sinon.match({
-        type: 'all'
-      })).returns([{
+      ipfs.pin.ls.withArgs([`/ipfs/${cid}`], defaultOptions).returns([{
         cid,
         type: 'recursive'
       }])
@@ -250,9 +292,10 @@ describe('/pin', () => {
     })
 
     it('finds pins of type', async () => {
-      ipfs.pin.ls.withArgs(undefined, sinon.match({
+      ipfs.pin.ls.withArgs(undefined, {
+        ...defaultOptions,
         type: 'direct'
-      })).returns([{
+      }).returns([{
         cid,
         type: 'direct'
       }])
@@ -271,7 +314,7 @@ describe('/pin', () => {
     })
 
     it('should list pins and return base64 encoded CIDs', async () => {
-      ipfs.pin.ls.returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid,
         type: 'direct'
       }])
@@ -297,6 +340,24 @@ describe('/pin', () => {
 
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.pin.ls.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        cid,
+        type: 'recursive'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.includes.keys(cid.toString())
     })
   })
 })

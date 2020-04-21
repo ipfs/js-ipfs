@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'config <key> [value]',
 
@@ -18,14 +20,18 @@ module.exports = {
         describe: 'Parse stringified JSON.',
         default: false
       })
+      .option('timeout', {
+        type: 'string',
+        coerce: parseDuration
+      })
   },
 
-  async handler ({ ctx, value, bool, json, key }) {
-    const { ipfs, print } = ctx
-
+  async handler ({ ctx: { ipfs, print }, value, bool, json, key, timeout }) {
     if (!value) {
       // Get the value of a given key
-      value = await ipfs.config.get(key)
+      value = await ipfs.config.get(key, {
+        timeout
+      })
 
       if (typeof value === 'object') {
         print(JSON.stringify(value, null, 2))
@@ -45,7 +51,9 @@ module.exports = {
         }
       }
 
-      await ipfs.config.set(key, value)
+      await ipfs.config.set(key, value, {
+        timeout
+      })
     }
   }
 }

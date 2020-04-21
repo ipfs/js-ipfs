@@ -1,22 +1,41 @@
-# Repo API
+# Repo API <!-- omit in toc -->
 
-* [repo.gc](#repogc)
-* [repo.stat](#repostat)
-* [repo.version](#repoversion)
+- [`ipfs.repo.gc([options])`](#ipfsrepogcoptions)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.repo.stat([options])`](#ipfsrepostatoptions)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+  - [Notes](#notes)
+- [`ipfs.repo.version([options])`](#ipfsrepoversionoptions)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
 
-#### `repo.gc`
+## `ipfs.repo.gc([options])`
 
 > Perform a garbage collection sweep on the repo.
 
-##### `ipfs.repo.gc([options])`
+### Parameters
 
-Where:
+None
 
-- `options` is an object that contains following properties
-  - `quiet` writes a minimal output.
-  - `stream-errors` stream errors.
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| quiet | `boolean` | `false` | Write minimal output |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -27,7 +46,7 @@ Each yielded object contains the following properties:
 - `err` is an `Error` if it was not possible to GC a particular block.
 - `cid` is the [CID][cid] of the block that was Garbage Collected.
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const res of ipfs.repo.gc()) {
@@ -35,20 +54,25 @@ for await (const res of ipfs.repo.gc()) {
 }
 ```
 
-#### `repo.stat`
+## `ipfs.repo.stat([options])`
 
 > Get stats for the currently used repo.
 
-##### `ipfs.repo.stat([options])`
+### Parameters
 
-`stats.repo` and `repo.stat` can be used interchangeably.
+None
 
-Where:
+### Options
 
-- `options` is an object that contains following properties
-  - `human` a Boolean value to output `repoSize` in MiB.
+An optional object which may have the following keys:
 
-**Returns**
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| options | `boolean` | `false` | Return storage numbers in `MiB` |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -62,7 +86,7 @@ the returned object has the following keys:
 - `version` is a string.
 - `storageMax` is a [BigNumber Int][1].
 
-**Example:**
+### Example
 
 ```JavaScript
 const stats = await ipfs.repo.stat()
@@ -75,19 +99,34 @@ console.log(stats)
 //   storageMax: 10000000000 }
 ```
 
-#### `repo.version`
+### Notes
+
+`stats.repo` and `repo.stat` can be used interchangeably.
+
+## `ipfs.repo.version([options])`
 
 > Show the repo version.
 
-##### `ipfs.repo.version()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<String>` | A String containing the repo's version |
 
-**Example:**
+### Example
 
 ```JavaScript
 const version = await ipfs.repo.version()
@@ -98,3 +137,4 @@ console.log(version)
 
 [1]: https://github.com/MikeMcl/bignumber.js/
 [cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

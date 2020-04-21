@@ -30,7 +30,7 @@
   "dependencies": {
     "buffer": "^5.4.2",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^2.2.0"
+    "ipfs-utils": "^2.2.1"
   },
   "devDependencies": {
     "aegir": "21.4.5",

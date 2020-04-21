@@ -2,6 +2,8 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const testTimeout = require('../../utils/test-timeout')
+
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -20,6 +22,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when applying a config profile', () => {
+      return testTimeout(() => ipfs.config.profiles.apply('server', {
+        timeout: 1
+      }))
+    })
 
     it('should apply a config profile', async () => {
       const diff = await ipfs.config.profiles.apply('lowpower')

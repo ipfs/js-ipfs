@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -19,6 +20,12 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting config values', () => {
+      return testTimeout(() => ipfs.config.get('Identity.PeerID', {
+        timeout: 1
+      }))
+    })
 
     it('should retrieve the whole config', async () => {
       const config = await ipfs.config.get()

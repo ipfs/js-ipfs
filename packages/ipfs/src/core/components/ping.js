@@ -2,9 +2,10 @@
 
 const PeerId = require('peer-id')
 const basePacket = { success: true, time: 0, text: '' }
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({ libp2p }) => {
-  return async function * (peerId, options) {
+  return withTimeoutOption(async function * ping (peerId, options) {
     options = options || {}
     options.count = options.count || 10
 
@@ -40,5 +41,5 @@ module.exports = ({ libp2p }) => {
       const average = totalTime / packetCount
       yield { ...basePacket, text: `Average latency: ${average}ms` }
     }
-  }
+  })
 }

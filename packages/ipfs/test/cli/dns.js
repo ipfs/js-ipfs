@@ -5,6 +5,12 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 
+const defaultOptions = {
+  recursive: true,
+  format: undefined,
+  timeout: undefined
+}
+
 describe('dns', () => {
   let ipfs
 
@@ -18,10 +24,7 @@ describe('dns', () => {
     const domain = 'ipfs.io'
     const path = 'path'
 
-    ipfs.dns.withArgs(domain, {
-      recursive: true,
-      format: undefined
-    }).returns(path)
+    ipfs.dns.withArgs(domain, defaultOptions).returns(path)
 
     const out = await cli('dns ipfs.io', {
       ipfs
@@ -34,8 +37,8 @@ describe('dns', () => {
     const path = 'path'
 
     ipfs.dns.withArgs(domain, {
-      recursive: false,
-      format: undefined
+      ...defaultOptions,
+      recursive: false
     }).returns(path)
 
     const out = await cli('dns ipfs.io --recursive=false', {
@@ -49,8 +52,8 @@ describe('dns', () => {
     const path = 'path'
 
     ipfs.dns.withArgs(domain, {
-      recursive: false,
-      format: undefined
+      ...defaultOptions,
+      recursive: false
     }).returns(path)
 
     const out = await cli('dns ipfs.io -r false', {
@@ -64,11 +67,26 @@ describe('dns', () => {
     const path = 'path'
 
     ipfs.dns.withArgs(domain, {
-      recursive: true,
+      ...defaultOptions,
       format: 'derp'
     }).returns(path)
 
     const out = await cli('dns ipfs.io --format derp', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
+  })
+
+  it('resolves ipfs.io dns with a timeout', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
+
+    ipfs.dns.withArgs(domain, {
+      ...defaultOptions,
+      timeout: 1000
+    }).returns(path)
+
+    const out = await cli('dns ipfs.io --timeout=1s', {
       ipfs
     })
     expect(out).to.equal(`${path}\n`)

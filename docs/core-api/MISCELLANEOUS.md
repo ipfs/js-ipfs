@@ -1,19 +1,54 @@
-# Miscellaneous API
+# Miscellaneous API <!-- omit in toc -->
 
-* [id](#id)
-* [version](#version)
-* [dns](#dns)
-* [stop](#stop)
-* [ping](#ping)
-* [resolve](#resolve)
+- [`ipfs.id([options])`](#ipfsidoptions)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.version([options])`](#ipfsversionoptions)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.dns(domain, [options])`](#ipfsdnsdomain-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
+- [`ipfs.stop([options])`](#ipfsstopoptions)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
+- [`ipfs.ping(peerId, [options])`](#ipfspingpeerid-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
+- [`ipfs.resolve(name, [options])`](#ipfsresolvename-options)
+  - [Parameters](#parameters-5)
+  - [Options](#options-5)
+  - [Returns](#returns-5)
+  - [Example](#example-5)
 
-#### `id`
+## `ipfs.id([options])`
 
 > Returns the identity of the Peer
 
-##### `ipfs.id()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -27,7 +62,7 @@ The Peer identity has the following properties:
 - `agentVersion: String` - The agent version
 - `protocolVersion: String` - The supported protocol version
 
-**Example:**
+### Example
 
 ```JavaScript
 const identity = await ipfs.id()
@@ -36,19 +71,30 @@ console.log(identity)
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/id.js) can be found in the tests for this API.
 
-#### `version`
+## `ipfs.version([options])`
 
 > Returns the implementation version
 
-##### `ipfs.version()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object with the version of the implementation, the commit and the Repo |
 
-**Example:**
+### Example
 
 ```JavaScript
 const version = await ipfs.version()
@@ -57,24 +103,33 @@ console.log(version)
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/version.js) can be found in the tests for this API.
 
-#### `dns`
+## `ipfs.dns(domain, [options])`
 
 > Resolve DNS links
 
-##### `ipfs.dns(domain, [options])`
+### Parameters
 
-Where:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| domain | String | The domain to resolve |
 
-- `options` is an optional object argument that might include the following properties:
-    - `recursive` (boolean, default true): resolve until result is not a domain name
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `true` | Resolve until result is not a domain name |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<String>` | A string representing the IPFS path for that domain |
 
-**Example:**
+### Example
 
 ```JavaScript
 const path = await ipfs.dns('ipfs.io')
@@ -83,19 +138,30 @@ console.log(path)
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/dns.js) can be found in the tests for this API.
 
-#### `stop`
+## `ipfs.stop([options])`
 
 > Stops the IPFS node and in case of talking with an IPFS Daemon, it stops the process.
 
-##### `ipfs.stop()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
-**Example:**
+### Example
 
 ```JavaScript
 await ipfs.stop()
@@ -103,11 +169,26 @@ await ipfs.stop()
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous/stop.js) can be found in the tests for this API.
 
-#### `ping`
+## `ipfs.ping(peerId, [options])`
 
 > Send echo request packets to IPFS hosts
 
-##### `ipfs.ping(peerId, [options])`
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| peerId | [PeerID][] or [CID][] | The remote peer to send packets to |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| count | `Number` | `10` | The number of ping messages to send |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
 
 Where:
 
@@ -115,7 +196,7 @@ Where:
 - `options` is an optional object argument that might include the following properties:
     - `count` (integer, default 10): the number of ping messages to send
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -133,7 +214,7 @@ Each yielded object is of the form:
 
 Note that not all ping response objects are "pongs". A "pong" message can be identified by a truthy `success` property and an empty `text` property. Other ping responses are failures or status updates.
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const res of ipfs.ping('Qmhash')) {
@@ -147,28 +228,36 @@ for await (const res of ipfs.ping('Qmhash')) {
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/src/ping) can be found in the tests for this API.
 
-#### `resolve`
+## `ipfs.resolve(name, [options])`
 
 > Resolve the value of names to IPFS
 
 There are a number of mutable name protocols that can link among themselves and into IPNS. For example IPNS references can (currently) point at an IPFS object, and DNS links can point at other DNS links, IPNS entries, or IPFS objects. This command accepts any of these identifiers and resolves them to the referenced item.
 
-##### `ipfs.resolve(name, [options])`
+### Parameters
 
-Where:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | String | The name to resolve |
 
-- `name` (string): The name to resolve
-- `options` is an optional object that might include the following properties:
-  - `recursive` (boolean, default false): Resolve until the result is an IPFS name
-  - `cidBase` (string): Multibase codec name the CID in the resolved path will be encoded with
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `true` | Resolve until result is an IPFS name |
+| cidBase | `String` | `base58btc` | Multibase codec name the CID in the resolved path will be encoded with |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<String>` | A string representing the resolved name |
 
-**Examples:**
+### Example
 
 Resolve the value of your identity:
 
@@ -209,3 +298,5 @@ A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/package
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
+[cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

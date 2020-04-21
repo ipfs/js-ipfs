@@ -5,7 +5,9 @@ const { fixtures } = require('./utils')
 const CID = require('cids')
 const all = require('it-all')
 const concat = require('it-concat')
+const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
+const testTimeout = require('./utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -28,6 +30,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting files', () => {
+      return testTimeout(() => drain(ipfs.get(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+        timeout: 1
+      })))
+    })
 
     it('should get with a base58 encoded multihash', async () => {
       const files = await all(ipfs.get(fixtures.smallFile.cid))

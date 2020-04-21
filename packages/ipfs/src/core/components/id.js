@@ -2,9 +2,10 @@
 
 const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({ peerInfo, libp2p }) => {
-  return async function id () { // eslint-disable-line require-await
+  return withTimeoutOption(async function id () { // eslint-disable-line require-await
     const id = peerInfo.id.toB58String()
     let addresses = []
 
@@ -33,5 +34,5 @@ module.exports = ({ peerInfo, libp2p }) => {
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
     }
-  }
+  })
 }

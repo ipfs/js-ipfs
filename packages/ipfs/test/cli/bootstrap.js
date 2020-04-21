@@ -6,6 +6,7 @@ const cli = require('../utils/cli')
 const sinon = require('sinon')
 
 describe('bootstrap', () => {
+  const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
   let ipfs
 
   before(() => {
@@ -40,60 +41,114 @@ describe('bootstrap', () => {
     '/dns4/node1.preload.ipfs.io/tcp/443/wss/p2p/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
   ]
 
-  it('add default', async () => {
-    ipfs.bootstrap.add.withArgs(undefined, {
-      default: true
-    }).returns({
-      Peers: defaultList
+  describe('add', () => {
+    const defaultOptions = {
+      default: false,
+      timeout: undefined
+    }
+
+    it('add default', async () => {
+      ipfs.bootstrap.add.withArgs(undefined, {
+        ...defaultOptions,
+        default: true
+      }).returns({
+        Peers: defaultList
+      })
+
+      const out = await cli('bootstrap add --default', { ipfs })
+      expect(out).to.equal(defaultList.join('\n') + '\n')
     })
 
-    const out = await cli('bootstrap add --default', { ipfs })
-    expect(out).to.equal(defaultList.join('\n') + '\n')
+    it('add another bootstrap node', async () => {
+      ipfs.bootstrap.add.withArgs(peer, defaultOptions).returns({
+        Peers: defaultList.concat(peer)
+      })
+
+      const out = await cli(`bootstrap add ${peer}`, { ipfs })
+      expect(out).to.include(`${peer}\n`)
+    })
+
+    it('add another bootstrap node with a timeout', async () => {
+      ipfs.bootstrap.add.withArgs(peer, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        Peers: defaultList.concat(peer)
+      })
+
+      const out = await cli(`bootstrap add ${peer} --timeout=1s`, { ipfs })
+      expect(out).to.include(`${peer}\n`)
+    })
   })
 
-  it('list the bootstrap nodes', async () => {
-    ipfs.bootstrap.list.returns({
-      Peers: defaultList
+  describe('list', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
+    it('lists the bootstrap nodes', async () => {
+      ipfs.bootstrap.list.withArgs(defaultOptions).returns({
+        Peers: defaultList
+      })
+
+      const out = await cli('bootstrap list', { ipfs })
+      expect(out).to.equal(defaultList.join('\n') + '\n')
     })
 
-    const out = await cli('bootstrap list', { ipfs })
-    expect(out).to.equal(defaultList.join('\n') + '\n')
+    it('lists the bootstrap nodes with a timeout', async () => {
+      ipfs.bootstrap.list.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        Peers: defaultList
+      })
+
+      const out = await cli('bootstrap list --timeout=1s', { ipfs })
+      expect(out).to.equal(defaultList.join('\n') + '\n')
+    })
   })
 
-  it('add another bootstrap node', async () => {
-    const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
-    ipfs.bootstrap.add.withArgs(peer, {
-      default: false
-    }).returns({
-      Peers: defaultList.concat(peer)
+  describe('rm', () => {
+    const defaultOptions = {
+      all: false,
+      timeout: undefined
+    }
+
+    it('should remove a bootstrap node', async () => {
+      ipfs.bootstrap.rm.withArgs(peer, defaultOptions).returns({
+        Peers: [
+          peer
+        ]
+      })
+
+      const out = await cli(`bootstrap rm ${peer}`, { ipfs })
+      expect(out).to.include(`${peer}\n`)
     })
 
-    const out = await cli(`bootstrap add ${peer}`, { ipfs })
-    expect(out).to.include(`${peer}\n`)
-  })
+    it('should remove all bootstrap nodes', async () => {
+      ipfs.bootstrap.rm.withArgs(undefined, {
+        ...defaultOptions,
+        all: true
+      }).returns({
+        Peers: defaultList
+      })
 
-  it('rm a bootstrap node', async () => {
-    const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
-    ipfs.bootstrap.rm.withArgs(peer, {
-      all: false
-    }).returns({
-      Peers: [
-        peer
-      ]
+      const outRm = await cli('bootstrap rm --all', { ipfs })
+      expect(outRm).to.equal(defaultList.join('\n') + '\n')
     })
 
-    const out = await cli(`bootstrap rm ${peer}`, { ipfs })
-    expect(out).to.include(`${peer}\n`)
-  })
+    it('should remove a bootstrap node with a timeout', async () => {
+      ipfs.bootstrap.rm.withArgs(peer, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        Peers: [
+          peer
+        ]
+      })
 
-  it('rm all bootstrap nodes', async () => {
-    ipfs.bootstrap.rm.withArgs(undefined, {
-      all: true
-    }).returns({
-      Peers: defaultList
+      const out = await cli(`bootstrap rm ${peer} --timeout=1s`, { ipfs })
+      expect(out).to.include(`${peer}\n`)
     })
-
-    const outRm = await cli('bootstrap rm --all', { ipfs })
-    expect(outRm).to.equal(defaultList.join('\n') + '\n')
   })
 })

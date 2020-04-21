@@ -7,8 +7,16 @@ const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const allNdjson = require('../../utils/all-ndjson')
+const { AbortSignal } = require('abort-controller')
+
+const defaultOptions = {
+  count: 10,
+  signal: sinon.match.instanceOf(AbortSignal),
+  timeout: undefined
+}
 
 describe('/ping', function () {
+  const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
   let ipfs
 
   beforeEach(() => {
@@ -40,7 +48,6 @@ describe('/ping', function () {
   })
 
   it('returns 500 for incorrect Peer Id', async () => {
-    const peerId = 'peerid'
     ipfs.ping.withArgs(peerId).throws(new Error('derp'))
 
     const res = await http({
@@ -52,10 +59,10 @@ describe('/ping', function () {
   })
 
   it('pings with a count', async () => {
-    const peerId = 'peerid'
-    ipfs.ping.withArgs(peerId, sinon.match({
+    ipfs.ping.withArgs(peerId, {
+      ...defaultOptions,
       count: 5
-    })).returns([])
+    }).returns([])
 
     const res = await http({
       method: 'POST',
@@ -65,11 +72,11 @@ describe('/ping', function () {
     expect(res).to.have.property('statusCode', 200)
   })
 
-  it('pings with a as n', async () => {
-    const peerId = 'peerid'
-    ipfs.ping.withArgs(peerId, sinon.match({
+  it('pings with a count as n', async () => {
+    ipfs.ping.withArgs(peerId, {
+      ...defaultOptions,
       count: 5
-    })).returns([])
+    }).returns([])
 
     const res = await http({
       method: 'POST',
@@ -80,10 +87,7 @@ describe('/ping', function () {
   })
 
   it('pings a remote peer', async () => {
-    const peerId = 'peerid'
-    ipfs.ping.withArgs(peerId, sinon.match({
-      count: 10
-    })).returns([{
+    ipfs.ping.withArgs(peerId, defaultOptions).returns([{
       success: true,
       time: 1,
       text: 'hello'
@@ -108,5 +112,19 @@ describe('/ping', function () {
       Time: 2,
       Text: 'world'
     }])
+  })
+
+  it('accepts a timeout', async () => {
+    ipfs.ping.withArgs(peerId, {
+      ...defaultOptions,
+      timeout: 1000
+    }).returns([])
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/ping?arg=${peerId}&timeout=1s`
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
   })
 })

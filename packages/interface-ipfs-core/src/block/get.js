@@ -4,6 +4,7 @@
 const multihash = require('multihashes')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,6 +26,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting a block', () => {
+      return testTimeout(() => ipfs.block.get(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA3'), {
+        timeout: 1
+      }))
+    })
 
     it('should get by CID object', async () => {
       const cid = new CID(hash)

@@ -9,6 +9,12 @@ const { profiles } = require('../../../src/core/components/config')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
+const { AbortSignal } = require('abort-controller')
+
+const defaultOptions = {
+  signal: sinon.match.instanceOf(AbortSignal),
+  timeout: undefined
+}
 
 describe('/config', () => {
   let ipfs
@@ -51,7 +57,7 @@ describe('/config', () => {
   })
 
   it('returns value for request with valid arg', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       API: {
         HTTPHeaders: 'value'
       }
@@ -68,7 +74,7 @@ describe('/config', () => {
   })
 
   it('returns value for request as subcommand', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       API: {
         HTTPHeaders: 'value'
       }
@@ -85,7 +91,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -107,7 +113,7 @@ describe('/config', () => {
   })
 
   it('returns 400 value for request with both args and JSON flag with invalid JSON argument', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -125,7 +131,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args and JSON flag with valid JSON argument', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -148,8 +154,30 @@ describe('/config', () => {
     })).to.be.true()
   })
 
+  it('updates null json value', async () => {
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+      Datastore: {
+        Path: 'not-kitten'
+      }
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/config?arg=Datastore.Path&arg=null&json'
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
+    expect(res).to.have.nested.property('result.Key', 'Datastore.Path')
+    expect(res).to.have.deep.nested.property('result.Value', null)
+    expect(ipfs.config.replace.calledWith({
+      Datastore: {
+        Path: null
+      }
+    })).to.be.true()
+  })
+
   it('updates value for request with both args and bool flag and true argument', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -171,7 +199,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args and bool flag and false argument', async () => {
-    ipfs.config.get.returns({
+    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -192,6 +220,35 @@ describe('/config', () => {
     })).to.be.true()
   })
 
+  it('accepts a timeout', async () => {
+    const key = 'Datastore.Path'
+    const value = 'value'
+    ipfs.config.get.withArgs(undefined, {
+      ...defaultOptions,
+      timeout: 1000
+    }).returns({
+      Datastore: {
+        Path: 'not-kitten'
+      }
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/config?arg=${key}&arg=${value}&timeout=1s`
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
+    expect(res).to.have.nested.property('result.Key', key)
+    expect(res).to.have.nested.property('result.Value', value)
+    expect(ipfs.config.replace.calledWith({
+      Datastore: {
+        Path: value
+      }
+    }, sinon.match({
+      timeout: 1000
+    }))).to.be.true()
+  })
+
   describe('/show', () => {
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/config/show')
@@ -204,11 +261,32 @@ describe('/config', () => {
         }
       }
 
-      ipfs.config.get.returns(config)
+      ipfs.config.get.withArgs(undefined, defaultOptions).returns(config)
 
       const res = await http({
         method: 'POST',
         url: '/api/v0/config/show'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.property('result', config)
+    })
+
+    it('accepts a timeout', async () => {
+      const config = {
+        Datastore: {
+          Path: 'not-kitten'
+        }
+      }
+
+      ipfs.config.get.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(config)
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/config/show?timeout=1s'
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -281,11 +359,51 @@ describe('/config', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.config.replace.calledWith(expectedConfig)).to.be.true()
+      expect(ipfs.config.replace.calledWith(expectedConfig, defaultOptions)).to.be.true()
+    })
+
+    it('accepts a timeout', async () => {
+      const expectedConfig = {
+        Key: 'value',
+        OtherKey: 'otherValue',
+        Deep: {
+          Key: {
+            Is: 'value'
+          }
+        },
+        Array: [
+          'va1',
+          'val2',
+          'val3'
+        ]
+      }
+      const form = new FormData()
+      form.append('file', Buffer.from(JSON.stringify(expectedConfig)))
+      const headers = form.getHeaders()
+
+      const payload = await streamToPromise(form)
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/config/replace?timeout=1s',
+        headers,
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(ipfs.config.replace.calledWith(expectedConfig, {
+        ...defaultOptions,
+        timeout: 1000
+      })).to.be.true()
     })
   })
 
   describe('/profile/apply', () => {
+    const defaultOptions = {
+      dryRun: false,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/config/profile/apply')
     })
@@ -309,9 +427,10 @@ describe('/config', () => {
     })
 
     it('does not apply config profile with dry-run argument', async () => {
-      ipfs.config.profiles.apply.withArgs('lowpower', sinon.match({
+      ipfs.config.profiles.apply.withArgs('lowpower', {
+        ...defaultOptions,
         dryRun: true
-      })).returns({
+      }).returns({
         original: {},
         updated: {}
       })
@@ -324,11 +443,26 @@ describe('/config', () => {
       expect(res).to.have.property('statusCode', 200)
     })
 
+    it('accepts a timeout', async () => {
+      ipfs.config.profiles.apply.withArgs('lowpower', {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        original: {},
+        updated: {}
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/config/profile/apply?arg=lowpower&timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
+
     Object.keys(profiles).forEach(profile => {
       it(`applies config profile ${profile}`, async () => {
-        ipfs.config.profiles.apply.withArgs(profile, sinon.match({
-          dryRun: false
-        })).returns({
+        ipfs.config.profiles.apply.withArgs(profile, defaultOptions).returns({
           original: {},
           updated: {}
         })
@@ -349,7 +483,7 @@ describe('/config', () => {
     })
 
     it('lists available profiles', async () => {
-      ipfs.config.profiles.list.returns(Object.keys(profiles).map(name => ({
+      ipfs.config.profiles.list.withArgs(defaultOptions).returns(Object.keys(profiles).map(name => ({
         name,
         description: profiles[name].description
       })))
@@ -369,6 +503,23 @@ describe('/config', () => {
           return acc && profile && profile.Description === profiles[name].description
         }, true)
       })
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.config.profiles.list.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(Object.keys(profiles).map(name => ({
+        name,
+        description: profiles[name].description
+      })))
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/config/profile/list?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
     })
   })
 })

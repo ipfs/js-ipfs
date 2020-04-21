@@ -7,7 +7,9 @@ const dagCBOR = require('ipld-dag-cbor')
 const importer = require('ipfs-unixfs-importer')
 const Unixfs = require('ipfs-unixfs')
 const all = require('it-all')
+const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -49,6 +51,12 @@ module.exports = (common, options) => {
 
       await ipfs.dag.put(nodePb, { format: 'dag-pb', hashAlg: 'sha2-256' })
       await ipfs.dag.put(nodeCbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    })
+
+    it('should respect timeout option when getting a DAG node', () => {
+      return testTimeout(() => ipfs.dag.get(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'), {
+        timeout: 1
+      }))
     })
 
     it('should get a dag-pb node', async () => {

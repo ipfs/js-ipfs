@@ -2,9 +2,10 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ bitswap }) => {
-  return async function unwant (keys) { // eslint-disable-line require-await
+  return withTimeoutOption(async function unwant (keys, options) { // eslint-disable-line require-await
     if (!Array.isArray(keys)) {
       keys = [keys]
     }
@@ -15,6 +16,6 @@ module.exports = ({ bitswap }) => {
       throw errCode(err, 'ERR_INVALID_CID')
     }
 
-    return bitswap.unwant(keys)
-  }
+    return bitswap.unwant(keys, options)
+  })
 }

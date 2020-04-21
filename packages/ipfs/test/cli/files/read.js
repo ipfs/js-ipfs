@@ -6,17 +6,10 @@ const cli = require('../../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    offset: undefined,
-    length: undefined
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  offset: undefined,
+  length: undefined,
+  timeout: undefined
 }
 
 describe('read', () => {
@@ -47,7 +40,7 @@ describe('read', () => {
     expect(ipfs.files.read.callCount).to.equal(1)
     expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
     expect(output).to.equal('hello world')
   })
@@ -59,10 +52,10 @@ describe('read', () => {
 
     expect(ipfs.files.read.callCount).to.equal(1)
     expect(ipfs.files.read.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         offset
-      })
+      }
     ])
     expect(output).to.equal('hello world')
   })
@@ -75,8 +68,8 @@ describe('read', () => {
     expect(ipfs.files.read.callCount).to.equal(1)
     expect(ipfs.files.read.getCall(0).args).to.deep.equal([
       path, {
-        offset,
-        length: undefined
+        ...defaultOptions,
+        offset
       }
     ])
     expect(output).to.equal('hello world')
@@ -89,10 +82,10 @@ describe('read', () => {
 
     expect(ipfs.files.read.callCount).to.equal(1)
     expect(ipfs.files.read.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         length
-      })
+      }
     ])
     expect(output).to.equal('hello world')
   })
@@ -104,10 +97,23 @@ describe('read', () => {
 
     expect(ipfs.files.read.callCount).to.equal(1)
     expect(ipfs.files.read.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         length
-      })
+      }
+    ])
+    expect(output).to.equal('hello world')
+  })
+
+  it('should read a path with a timeout', async () => {
+    await cli(`files read ${path} --timeout=1s`, { ipfs, print })
+
+    expect(ipfs.files.read.callCount).to.equal(1)
+    expect(ipfs.files.read.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
     expect(output).to.equal('hello world')
   })

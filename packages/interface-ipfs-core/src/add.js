@@ -5,6 +5,7 @@ const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')
 const last = require('it-last')
+const drain = require('it-drain')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -15,6 +16,7 @@ const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const { echoUrl, redirectUrl } = require('./utils/echo-http-server')
 const fixturesPath = path.join(__dirname, '..', 'test', 'fixtures')
+const testTimeout = require('./utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -59,6 +61,12 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
+
+    it('should respect timeout option when adding files', () => {
+      return testTimeout(() => drain(ipfs.add(Buffer.from('Hello'), {
+        timeout: 1
+      })))
+    })
 
     it('should add a File', async function () {
       if (!supportsFileReader) return this.skip('skip in node')

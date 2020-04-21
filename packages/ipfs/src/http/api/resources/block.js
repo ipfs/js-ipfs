@@ -1,11 +1,9 @@
 'use strict'
 
-const CID = require('cids')
 const multihash = require('multihashes')
 const codecs = require('multicodec/src/base-table.json')
 const multipart = require('../../utils/multipart-request-parser')
-const Joi = require('@hapi/joi')
-const multibase = require('multibase')
+const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
@@ -17,31 +15,51 @@ const streamResponse = require('../../utils/stream-response')
 const log = debug('ipfs:http-api:block')
 log.error = debug('ipfs:http-api:block:error')
 
-// common pre request handler that parses the args and returns `key` which is assigned to `request.pre.args`
-exports.parseKey = (request, h) => {
-  if (!request.query.arg) {
-    throw Boom.badRequest("Argument 'key' is required")
-  }
-
-  try {
-    return { key: new CID(request.query.arg) }
-  } catch (err) {
-    log.error(err)
-    throw Boom.badRequest('Not a valid hash')
-  }
-}
-
 exports.get = {
-  // uses common parseKey method that returns a `key`
-  parseArgs: exports.parseKey,
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cid: Joi.cid().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'cid', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
 
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const key = request.pre.args.key
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cid,
+        timeout
+      }
+    } = request
 
     let block
     try {
-      block = await request.server.app.ipfs.block.get(key)
+      block = await ipfs.block.get(cid, {
+        timeout,
+        signal
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get block' })
     }
@@ -54,124 +72,211 @@ exports.get = {
   }
 }
 exports.put = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names),
-      format: Joi.string().valid(...Object.keys(codecs)),
-      mhtype: Joi.string().valid(...Object.keys(multihash.names)),
-      mhlen: Joi.number().default(-1),
-      pin: Joi.bool().default(false)
-    }).unknown()
-  },
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    pre: [{
+      assign: 'args',
+      method: async (request, h) => {
+        if (!request.payload) {
+          throw Boom.badRequest("File argument 'data' is required")
+        }
 
-  // pre request handler that parses the args and returns `data` which is assigned to `request.pre.args`
-  parseArgs: async (request, h) => {
-    if (!request.payload) {
-      throw Boom.badRequest("File argument 'data' is required")
-    }
+        let data
 
-    let data
+        for await (const part of multipart(request)) {
+          if (part.type !== 'file') {
+            continue
+          }
 
-    for await (const part of multipart(request)) {
-      if (part.type !== 'file') {
-        continue
+          data = Buffer.concat(await all(part.content))
+        }
+
+        if (!data) {
+          throw Boom.badRequest("File argument 'data' is required")
+        }
+
+        return { data }
       }
-
-      data = Buffer.concat(await all(part.content))
+    }],
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cidBase: Joi.cidBase(),
+        format: Joi.string().valid(...Object.keys(codecs)),
+        mhtype: Joi.string().valid(...Object.keys(multihash.names)),
+        mhlen: Joi.number(),
+        pin: Joi.bool().default(false),
+        version: Joi.number(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    if (!data) {
-      throw Boom.badRequest("File argument 'data' is required")
-    }
-
-    return { data }
   },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const { data } = request.pre.args
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      pre: {
+        args: {
+          data
+        }
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        mhtype,
+        mhlen,
+        format,
+        version,
+        pin,
+        timeout,
+        cidBase
+      }
+    } = request
 
     let block
     try {
       block = await ipfs.block.put(data, {
-        mhtype: request.query.mhtype,
-        format: request.query.format,
-        version: request.query.version && parseInt(request.query.version)
+        mhtype,
+        mhlen,
+        format,
+        version,
+        pin,
+        signal,
+        timeout
       })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to put block' })
     }
 
     return h.response({
-      Key: cidToString(block.cid, { base: request.query['cid-base'] }),
+      Key: cidToString(block.cid, { base: cidBase }),
       Size: block.data.length
     })
   }
 }
 
 exports.rm = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.array().items(Joi.string()).single().required(),
-      force: Joi.boolean().default(false),
-      quiet: Joi.boolean().default(false),
-      'stream-channels': Joi.boolean().default(true)
-    }).unknown()
-  },
-
-  parseArgs: (request, h) => {
-    let { arg } = request.query
-
-    try {
-      arg = arg.map(thing => new CID(thing))
-    } catch (err) {
-      throw Boom.badRequest('Not a valid hash')
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cids: Joi.array().single().items(Joi.cid()).min(1).required(),
+        force: Joi.boolean().default(false),
+        quiet: Joi.boolean().default(false),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'cids', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    return {
-      ...request.query,
-      arg
-    }
   },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   handler (request, h) {
-    const { arg, force, quiet } = request.pre.args
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cids,
+        force,
+        quiet,
+        timeout,
+        cidBase
+      }
+    } = request
 
     return streamResponse(request, h, () => pipe(
-      ipfs.block.rm(arg, { force, quiet }),
-      map(({ cid, error }) => ({ Hash: cid.toString(), Error: error ? error.message : undefined })),
+      ipfs.block.rm(cids, {
+        force,
+        quiet,
+        timeout,
+        signal
+      }),
+      map(({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined })),
       ndjson.stringify
     ))
   }
 }
 
 exports.stat = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string(),
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cid: Joi.cid().required(),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'cid', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
-  // uses common parseKey method that returns a `key`
-  parseArgs: exports.parseKey,
-
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const { key } = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cid,
+        cidBase,
+        timeout
+      }
+    } = request
 
     let stats
     try {
-      stats = await request.server.app.ipfs.block.stat(key)
+      stats = await ipfs.block.stat(cid, {
+        timeout,
+        signal
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get block stats' })
     }
 
     return h.response({
-      Key: cidToString(stats.cid, { base: request.query['cid-base'] }),
+      Key: cidToString(stats.cid, { base: cidBase }),
       Size: stats.size
     })
   }

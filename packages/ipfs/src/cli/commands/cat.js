@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'cat <ipfsPath>',
 
@@ -15,13 +17,15 @@ module.exports = {
       alias: ['n', 'count'],
       type: 'integer',
       describe: 'Maximum number of bytes to read'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, ipfsPath, offset, length }) {
-    const { ipfs, print } = ctx
-
-    for await (const buf of ipfs.cat(ipfsPath, { offset, length })) {
+  async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
+    for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {
       print.write(buf)
     }
   }

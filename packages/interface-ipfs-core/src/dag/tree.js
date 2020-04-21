@@ -5,7 +5,10 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const all = require('it-all')
+const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const CID = require('cids')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,6 +43,12 @@ module.exports = (common, options) => {
 
       await ipfs.dag.put(nodePb, { format: 'dag-pb', hashAlg: 'sha2-256' })
       await ipfs.dag.put(nodeCbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    })
+
+    it('should respect timeout option when resolving a DAG tree', () => {
+      return testTimeout(() => drain(ipfs.dag.tree(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA8'), {
+        timeout: 1
+      })))
     })
 
     it('should get tree with CID', async () => {

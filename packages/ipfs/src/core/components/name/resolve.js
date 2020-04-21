@@ -9,7 +9,7 @@ const isDomain = require('is-domain-name')
 const log = debug('ipfs:name:resolve')
 log.error = debug('ipfs:name:resolve:error')
 
-const { OFFLINE_ERROR } = require('../../utils')
+const { OFFLINE_ERROR, withTimeoutOption } = require('../../utils')
 
 const appendRemainder = async (result, remainder) => {
   result = await result
@@ -42,7 +42,7 @@ module.exports = ({ dns, ipns, peerInfo, isOnline, options: constructorOptions }
    * @param {function(Error)} [callback]
    * @returns {Promise|void}
    */
-  return async function * resolve (name, options) { // eslint-disable-line require-await
+  return withTimeoutOption(async function * resolve (name, options) { // eslint-disable-line require-await
     options = mergeOptions({
       nocache: false,
       recursive: true
@@ -86,5 +86,5 @@ module.exports = ({ dns, ipns, peerInfo, isOnline, options: constructorOptions }
 
     // TODO: convert ipns.resolve to return an iterator
     yield appendRemainder(ipns.resolve(`/${namespace}/${hash}`, options), remainder)
-  }
+  })
 }

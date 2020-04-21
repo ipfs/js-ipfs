@@ -3,6 +3,7 @@
 const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({ libp2p, repo }) => {
   return {
@@ -14,7 +15,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.timeout] - optional timeout
      * @returns {Promise<Buffer>}
      */
-    get: async (key, options) => { // eslint-disable-line require-await
+    get: withTimeoutOption(async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
       if (!Buffer.isBuffer(key)) {
@@ -26,7 +27,7 @@ module.exports = ({ libp2p, repo }) => {
       }
 
       return libp2p._dht.get(key, options)
-    },
+    }),
 
     /**
      * Write a key/value pair to the DHT.
@@ -39,7 +40,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {Buffer} value
      * @returns {Promise}
      */
-    put: async (key, value) => { // eslint-disable-line require-await
+    put: withTimeoutOption(async (key, value) => { // eslint-disable-line require-await
       if (!Buffer.isBuffer(key)) {
         try {
           key = (new CID(key)).buffer
@@ -49,7 +50,7 @@ module.exports = ({ libp2p, repo }) => {
       }
 
       return libp2p._dht.put(key, value)
-    },
+    }),
 
     /**
      * Find peers in the DHT that can provide a specific value, given a key.
@@ -60,7 +61,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.numProviders] - maximum number of providers to find
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
-    findProvs: async function * (key, options) { // eslint-disable-line require-await
+    findProvs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
       options = options || {}
 
       if (typeof key === 'string') {
@@ -81,7 +82,7 @@ module.exports = ({ libp2p, repo }) => {
           addrs: peerInfo.multiaddrs.toArray()
         }
       }
-    },
+    }),
 
     /**
      * Query the DHT for all multiaddresses associated with a `PeerId`.
@@ -89,7 +90,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {PeerId} peerId - The id of the peer to search for.
      * @returns {Promise<{ id: CID, addrs: Multiaddr[] }>}
      */
-    findPeer: async peerId => { // eslint-disable-line require-await
+    findPeer: withTimeoutOption(async peerId => { // eslint-disable-line require-await
       if (typeof peerId === 'string') {
         peerId = PeerId.createFromCID(peerId)
       }
@@ -100,7 +101,7 @@ module.exports = ({ libp2p, repo }) => {
         id: peerInfo.id.toB58String(),
         addrs: peerInfo.multiaddrs.toArray()
       }
-    },
+    }),
 
     /**
      * Announce to the network that we are providing given values.
@@ -110,7 +111,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @returns {Promise}
      */
-    provide: async (keys, options) => {
+    provide: withTimeoutOption(async (keys, options) => {
       keys = Array.isArray(keys) ? keys : [keys]
       options = options || {}
 
@@ -138,7 +139,7 @@ module.exports = ({ libp2p, repo }) => {
       } else {
         await Promise.all(keys.map(k => libp2p._dht.provide(k)))
       }
-    },
+    }),
 
     /**
      * Find the closest peers to a given `PeerId`, by querying the DHT.
@@ -146,7 +147,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {string|PeerId} peerId - The `PeerId` to run the query against.
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
-    query: async function * (peerId) {
+    query: withTimeoutOption(async function * (peerId) {
       if (typeof peerId === 'string') {
         peerId = PeerId.createFromCID(peerId)
       }
@@ -157,6 +158,6 @@ module.exports = ({ libp2p, repo }) => {
           addrs: [] // TODO: get addrs?
         }
       }
-    }
+    })
   }
 }

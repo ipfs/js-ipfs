@@ -1,30 +1,53 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
-const debug = require('debug')
-const multibase = require('multibase')
-
-const log = debug('ipfs:http-api:resolve')
-log.error = debug('ipfs:http-api:resolve:error')
+const Joi = require('../../utils/joi')
 
 module.exports = {
-  validate: {
-    query: Joi.object().keys({
-      recursive: Joi.boolean().default(true),
-      arg: Joi.string().required(),
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        path: Joi.string().required(),
+        recursive: Joi.boolean().default(true),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'path', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const name = request.query.arg
-    const recursive = request.query.recursive
-    const cidBase = request.query['cid-base']
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        path,
+        recursive,
+        cidBase,
+        timeout
+      }
+    } = request
 
-    log(name, { recursive, cidBase })
-    const res = await ipfs.resolve(name, {
+    const res = await ipfs.resolve(path, {
       recursive,
-      cidBase
+      cidBase,
+      signal,
+      timeout
     })
 
     return h.response({ Path: res })

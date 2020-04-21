@@ -12,6 +12,7 @@ const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const UnixFS = require('ipfs-unixfs')
+const { AbortSignal } = require('abort-controller')
 const {
   DAGNode,
   DAGLink
@@ -51,13 +52,18 @@ describe('/object', () => {
   })
 
   describe('/new', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/new')
     })
 
     it('returns value', async () => {
-      ipfs.object.new.withArgs(undefined).returns(cid)
-      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+      ipfs.object.new.withArgs(undefined, defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -70,10 +76,10 @@ describe('/object', () => {
     })
 
     it('should create an object with the passed template', async () => {
-      const template = 'template'
+      const template = 'unixfs-dir'
 
-      ipfs.object.new.withArgs(template).returns(cid)
-      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+      ipfs.object.new.withArgs(template, defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -85,10 +91,24 @@ describe('/object', () => {
       expect(res).to.have.nested.property('result.Links').that.is.empty()
     })
 
+    it('should not reate an object with an invalid template', async () => {
+      const template = 'derp'
+
+      ipfs.object.new.withArgs(template, defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/new?arg=${template}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+    })
+
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should create a new object and return a base64 encoded CID', async () => {
-      ipfs.object.new.withArgs(undefined).returns(cid)
-      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+      ipfs.object.new.withArgs(undefined, defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -108,9 +128,35 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.object.new.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(cid)
+      ipfs.object.get.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(emptyDirectoryNode)
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/object/new?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Hash', cid.toString())
+      expect(res).to.have.nested.property('result.Links').that.is.empty()
+    })
   })
 
   describe('/get', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/get')
     })
@@ -137,7 +183,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
-      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -151,7 +197,7 @@ describe('/object', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should get object and return a base64 encoded CID', async () => {
-      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -171,9 +217,31 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.object.get.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(emptyDirectoryNode)
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/get?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Links').that.is.empty()
+      expect(res).to.have.nested.property('result.Data', emptyDirectoryNode.Data.toString())
+    })
   })
 
   describe('/put', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/put')
     })
@@ -194,6 +262,11 @@ describe('/object', () => {
     })
 
     it('returns 400 if the node is invalid', async () => {
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), {
+        ...defaultOptions,
+        enc: 'json'
+      }).throws(new Error('Bad node'))
+
       const form = new FormData()
       const filePath = 'test/fixtures/test-data/badnode.json'
       form.append('file', fs.createReadStream(filePath))
@@ -202,7 +275,7 @@ describe('/object', () => {
       const payload = await streamToPromise(form)
       const res = await http({
         method: 'POST',
-        url: '/api/v0/object/put',
+        url: '/api/v0/object/put?enc=json',
         headers,
         payload
       }, { ipfs })
@@ -211,13 +284,6 @@ describe('/object', () => {
     })
 
     it('updates value', async () => {
-      ipfs.object.put.returns(cid)
-
-      const form = new FormData()
-      const filePath = 'test/fixtures/test-data/node.json'
-      form.append('data', fs.createReadStream(filePath))
-      const headers = form.getHeaders()
-
       const expectedResult = {
         Data: Buffer.from('another'),
         Hash: cid.toString(),
@@ -228,6 +294,14 @@ describe('/object', () => {
         }],
         Size: 68
       }
+
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
+
+      const form = new FormData()
+      const filePath = 'test/fixtures/test-data/node.json'
+      form.append('data', fs.createReadStream(filePath))
+      const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
       const res = await http({
@@ -275,9 +349,52 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      const expectedResult = {
+        Data: Buffer.from('another'),
+        Hash: cid.toString(),
+        Links: [{
+          Name: 'some link',
+          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          Size: 8
+        }],
+        Size: 68
+      }
+
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(cid)
+      ipfs.object.get.withArgs(cid, {
+        signal: sinon.match.instanceOf(AbortSignal),
+        timeout: 1000
+      }).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
+
+      const form = new FormData()
+      const filePath = 'test/fixtures/test-data/node.json'
+      form.append('data', fs.createReadStream(filePath))
+      const headers = form.getHeaders()
+
+      const payload = await streamToPromise(form)
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/object/put?timeout=1s',
+        headers,
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.property('result', expectedResult)
+    })
   })
 
   describe('/stat', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/stat')
     })
@@ -304,7 +421,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
-      ipfs.object.stat.withArgs(cid).returns({
+      ipfs.object.stat.withArgs(cid, defaultOptions).returns({
         Hash: cid.toString(),
         NumLinks: 'NumLinks',
         BlockSize: 'BlockSize',
@@ -354,9 +471,42 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.object.stat.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        Hash: cid.toString(),
+        NumLinks: 'NumLinks',
+        BlockSize: 'BlockSize',
+        LinksSize: 'LinksSize',
+        DataSize: 'DataSize',
+        CumulativeSize: 'CumulativeSize'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/stat?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Hash', cid.toString())
+      expect(res).to.have.nested.property('result.NumLinks', 'NumLinks')
+      expect(res).to.have.nested.property('result.BlockSize', 'BlockSize')
+      expect(res).to.have.nested.property('result.LinksSize', 'LinksSize')
+      expect(res).to.have.nested.property('result.DataSize', 'DataSize')
+      expect(res).to.have.nested.property('result.CumulativeSize', 'CumulativeSize')
+    })
   })
 
   describe('/data', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/data')
     })
@@ -383,7 +533,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
-      ipfs.object.data.withArgs(cid).returns(emptyDirectoryNode.Data)
+      ipfs.object.data.withArgs(cid, defaultOptions).returns(emptyDirectoryNode.Data)
 
       const res = await http({
         method: 'POST',
@@ -393,9 +543,30 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.object.data.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(emptyDirectoryNode.Data)
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/data?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
+    })
   })
 
   describe('/links', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/links')
     })
@@ -422,7 +593,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
-      ipfs.object.links.withArgs(cid).returns(fileNode.Links)
+      ipfs.object.links.withArgs(cid, defaultOptions).returns(fileNode.Links)
 
       const expectedResult = {
         Hash: cid.toString(),
@@ -464,9 +635,39 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.object.links.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(fileNode.Links)
+
+      const expectedResult = {
+        Hash: cid.toString(),
+        Links: [{
+          Name: '',
+          Hash: cid.toString(),
+          Size: 5
+        }]
+      }
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/links?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.property('result', expectedResult)
+    })
   })
 
   describe('/patch/append-data', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/patch/append-data')
     })
@@ -516,7 +717,7 @@ describe('/object', () => {
     it('updates value', async () => {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.object.patch.appendData.withArgs(cid, data).returns(cid)
+      ipfs.object.patch.appendData.withArgs(cid, data, defaultOptions).returns(cid)
       ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
 
       const form = new FormData()
@@ -575,9 +776,46 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      const data = Buffer.from('TEST' + Date.now())
+
+      ipfs.object.patch.appendData.withArgs(cid, data, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(cid)
+      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+
+      const form = new FormData()
+      form.append('data', data)
+      const headers = form.getHeaders()
+      const expectedResult = {
+        Data: emptyDirectoryNode.Data,
+        Hash: cid.toString(),
+        Links: [],
+        Size: 4
+      }
+
+      const payload = await streamToPromise(form)
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/patch/append-data?arg=${cid}&timeout=1s`,
+        headers,
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res.result).to.deep.equal(expectedResult)
+    })
   })
 
   describe('/patch/set-data', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/patch/set-data')
     })
@@ -627,7 +865,7 @@ describe('/object', () => {
     it('updates value', async () => {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.object.patch.setData.withArgs(cid, data).returns(cid)
+      ipfs.object.patch.setData.withArgs(cid, data, defaultOptions).returns(cid)
       ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
 
       const form = new FormData()
@@ -684,9 +922,44 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      const data = Buffer.from('TEST' + Date.now())
+
+      ipfs.object.patch.setData.withArgs(cid, data, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(cid)
+      ipfs.object.get.withArgs(cid).returns(emptyDirectoryNode)
+
+      const form = new FormData()
+      form.append('data', data)
+      const headers = form.getHeaders()
+      const expectedResult = {
+        Hash: cid.toString(),
+        Links: []
+      }
+
+      const payload = await streamToPromise(form)
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/patch/set-data?arg=${cid}&timeout=1s`,
+        headers,
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res.result).to.deep.equal(expectedResult)
+    })
   })
 
   describe('/patch/add-link', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/patch/add-link')
     })
@@ -739,7 +1012,7 @@ describe('/object', () => {
       ipfs.object.patch.addLink.withArgs(cid, sinon.match({
         Name: name,
         Hash: cid2
-      })).returns(cid)
+      }), defaultOptions).returns(cid)
       ipfs.object.get.withArgs(cid).returns(fileNode)
       ipfs.object.get.withArgs(cid2).returns(fileNode)
 
@@ -777,9 +1050,42 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+
+      ipfs.object.patch.addLink.withArgs(cid, sinon.match({
+        Name: name,
+        Hash: cid2
+      }), {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(cid)
+      ipfs.object.get.withArgs(cid).returns(fileNode)
+      ipfs.object.get.withArgs(cid2).returns(fileNode)
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/patch/add-link?arg=${cid}&arg=${name}&arg=${cid2}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Hash', cid.toString())
+      expect(res).to.have.deep.nested.property('result.Links[0]', {
+        Name: '',
+        Hash: cid.toString(),
+        Size: 5
+      })
+    })
   })
 
   describe('/patch/rm-link', () => {
+    const defaultOptions = {
+      enc: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/object/patch/rm-link')
     })
@@ -829,9 +1135,10 @@ describe('/object', () => {
     it('returns value', async () => {
       const name = 'name'
 
-      ipfs.object.patch.rmLink.withArgs(cid, sinon.match({
+      ipfs.object.patch.rmLink.withArgs(cid, {
+        ...defaultOptions,
         name
-      })).returns(cid2)
+      }).returns(cid2)
       ipfs.object.get.withArgs(cid2).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -864,6 +1171,25 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+
+      ipfs.object.patch.rmLink.withArgs(cid, {
+        ...defaultOptions,
+        name,
+        timeout: 1000
+      }).returns(cid2)
+      ipfs.object.get.withArgs(cid2).returns(emptyDirectoryNode)
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/object/patch/rm-link?arg=${cid}&arg=${name}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Hash', cid2.toString())
     })
   })
 })

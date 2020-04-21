@@ -7,19 +7,14 @@ const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    withLocal: false,
-    hash: false,
-    size: false
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  withLocal: false,
+  hash: false,
+  size: false,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/stat', () => {
@@ -54,10 +49,7 @@ describe('/files/stat', () => {
     }, { ipfs })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
-    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions()
-    ])
+    expect(ipfs.files.stat.calledWith(path, defaultOptions)).to.be.true()
     expect(response).to.have.nested.property('result.CumulativeSize', stats.cumulativeSize)
   })
 
@@ -68,12 +60,10 @@ describe('/files/stat', () => {
     }, { ipfs })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
-    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        withLocal: true
-      })
-    ])
+    expect(ipfs.files.stat.calledWith(path, {
+      ...defaultOptions,
+      withLocal: true
+    })).to.be.true()
   })
 
   it('should stat a path and only show hashes', async () => {
@@ -83,12 +73,10 @@ describe('/files/stat', () => {
     }, { ipfs })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
-    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        hash: true
-      })
-    ])
+    expect(ipfs.files.stat.calledWith(path, {
+      ...defaultOptions,
+      hash: true
+    })).to.be.true()
     expect(response).to.have.nested.property('result.Hash', stats.cid.toString())
   })
 
@@ -99,12 +87,10 @@ describe('/files/stat', () => {
     }, { ipfs })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
-    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        size: true
-      })
-    ])
+    expect(ipfs.files.stat.calledWith(path, {
+      ...defaultOptions,
+      size: true
+    })).to.be.true()
     expect(response).to.have.nested.property('result.Size', stats.size)
   })
 
@@ -115,10 +101,21 @@ describe('/files/stat', () => {
     }, { ipfs })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
-    expect(ipfs.files.stat.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions()
-    ])
+    expect(ipfs.files.stat.calledWith(path, defaultOptions)).to.be.true()
     expect(response).to.have.nested.property('result.Hash', stats.cid.toString('base64'))
+  })
+
+  it('accepts a timeout', async () => {
+    const response = await http({
+      method: 'POST',
+      url: `/api/v0/files/stat?arg=${path}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.stat.callCount).to.equal(1)
+    expect(ipfs.files.stat.calledWith(path, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
+    expect(response).to.have.nested.property('result.Size', stats.size)
   })
 })

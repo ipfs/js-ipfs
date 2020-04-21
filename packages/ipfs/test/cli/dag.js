@@ -9,6 +9,7 @@ const sinon = require('sinon')
 const CID = require('cids')
 
 describe('dag', () => {
+  const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
   let ipfs
 
   beforeEach(() => {
@@ -22,28 +23,64 @@ describe('dag', () => {
   })
 
   describe('get', () => {
-    it('get', async () => {
-      const cid = new CID('bagiacgzarkhijr4xmbp345ovwwxra7kcecrnwcwtl7lg3g7d2ogyprdswjwq')
+    const defaultOptions = {
+      localResolve: false,
+      timeout: undefined
+    }
+
+    it('should get a node', async () => {
       const path = 'parentHash'
       const result = {
         value: Buffer.from('hello world')
       }
 
-      ipfs.dag.get.withArgs(cid, path, {
-        localResolve: false
-      }).returns(result)
+      ipfs.dag.get.withArgs(cid, path, defaultOptions).returns(result)
 
       const out = await cli(`dag get ${cid}/${path}`, { ipfs })
+
+      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+    })
+
+    it('should get a node with local resolve', async () => {
+      const result = {
+        value: Buffer.from('hello world')
+      }
+
+      ipfs.dag.get.withArgs(cid, '', {
+        ...defaultOptions,
+        localResolve: true
+      }).returns(result)
+
+      const out = await cli(`dag get ${cid} --local-resolve`, { ipfs })
+
+      expect(out).to.include('resolving path within the node only\n')
+      expect(out).to.include('remainder path: n/a\n')
+      expect(out).to.include('0x' + result.value.toString('hex') + '\n')
+    })
+
+    it('should get a node with a timeout', async () => {
+      const result = {
+        value: Buffer.from('hello world')
+      }
+
+      ipfs.dag.get.withArgs(cid, '', {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(result)
+
+      const out = await cli(`dag get ${cid} --timeout=1s`, { ipfs })
 
       expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
     })
   })
 
   describe('resolve', () => {
-    it('resolves a cid ref', async () => {
-      const cid = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-      ipfs.dag.resolve.withArgs(cid, {}).returns([{
+    it('resolves a cid ref', async () => {
+      ipfs.dag.resolve.withArgs(cid.toString(), defaultOptions).returns([{
         value: new CID(cid)
       }])
 
@@ -52,41 +89,47 @@ describe('dag', () => {
     })
 
     it('resolves an ipfs path', async () => {
-      const cid = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
-
-      ipfs.dag.resolve.withArgs(`/ipfs/${cid}`, {}).returns([{
+      ipfs.dag.resolve.withArgs(`/ipfs/${cid}`, defaultOptions).returns([{
         value: new CID(cid)
       }])
 
       const out = await cli(`dag resolve /ipfs/${cid}`, { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
+
+    it('resolves a cid ref with a timeout', async () => {
+      ipfs.dag.resolve.withArgs(cid.toString(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        value: new CID(cid)
+      }])
+
+      const out = await cli(`dag resolve ${cid} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`${cid}\n`)
+    })
   })
 
-  const putOptions = (overrides) => {
-    return {
+  describe('put', () => {
+    const defaultOptions = {
       format: 'dag-cbor',
       hashAlg: 'sha2-256',
       version: 1,
       onlyHash: false,
       preload: true,
       pin: true,
-      ...overrides
+      timeout: undefined
     }
-  }
 
-  describe('put', () => {
     it('puts json string', async () => {
-      const cid = 'bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua'
-      ipfs.dag.put.withArgs({}, putOptions()).resolves(new CID(cid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(cid))
 
       const out = await cli('dag put "{}"', { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
 
     it('puts piped json string', async () => {
-      const cid = 'bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua'
-      ipfs.dag.put.withArgs({}, putOptions()).resolves(new CID(cid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(cid))
 
       const out = await cli('dag put', {
         getStdin: function * () {
@@ -98,8 +141,7 @@ describe('dag', () => {
     })
 
     it('puts piped cbor node', async () => {
-      const cid = 'bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua'
-      ipfs.dag.put.withArgs({}, putOptions()).resolves(new CID(cid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(cid))
 
       const out = await cli('dag put --input-encoding cbor', {
         getStdin: function * () {
@@ -111,10 +153,10 @@ describe('dag', () => {
     })
 
     it('puts piped raw node', async () => {
-      const cid = 'bafkreiab2rek7wjiazkfrt3hbnqpljmu24226alszdlh6ivic2abgjubzi'
-      ipfs.dag.put.withArgs(Buffer.alloc(10), putOptions({
+      ipfs.dag.put.withArgs(Buffer.alloc(10), {
+        ...defaultOptions,
         format: 'raw'
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --input-encoding raw --format raw', {
         getStdin: function * () {
@@ -126,11 +168,11 @@ describe('dag', () => {
     })
 
     it('puts piped protobuf node', async () => {
-      const cid = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
-      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), putOptions({
+      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), {
+        ...defaultOptions,
         format: 'dag-pb',
         version: 0
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --input-encoding protobuf --format protobuf', {
         getStdin: function * () {
@@ -142,11 +184,11 @@ describe('dag', () => {
     })
 
     it('puts protobuf node as json', async () => {
-      const cid = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
-      ipfs.dag.put.withArgs({ Links: [] }, putOptions({
+      ipfs.dag.put.withArgs({ Links: [] }, {
+        ...defaultOptions,
         format: 'dag-pb',
         version: 0
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --format protobuf \'{"Links":[]}\'', {
         ipfs
@@ -155,11 +197,11 @@ describe('dag', () => {
     })
 
     it('puts piped protobuf node with cid-v1', async () => {
-      const cid = 'bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'
-      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), putOptions({
+      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), {
+        ...defaultOptions,
         format: 'dag-pb',
         version: 1
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --input-encoding protobuf --format protobuf --cid-version=1', {
         getStdin: function * () {
@@ -171,31 +213,40 @@ describe('dag', () => {
     })
 
     it('puts json string with esoteric hashing algorithm', async () => {
-      const cid = 'bafy4lzacausjadzcia'
-      ipfs.dag.put.withArgs({}, putOptions({
+      ipfs.dag.put.withArgs({}, {
+        ...defaultOptions,
         hashAlg: 'blake2s-40'
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --hash-alg blake2s-40 "{}"', { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
 
     it('puts json string with cid base', async () => {
-      const cid = 'bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua'
-      ipfs.dag.put.withArgs({}, putOptions()).resolves(new CID(cid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(cid)
 
       const out = await cli('dag put --cid-base base64 "{}"', { ipfs })
-      expect(out).to.equal('mAXESIMGaeX+h/VkM0uW0LRz18kbim5FoTi+HQEuB3DRcelag\n')
+      expect(out).to.equal(`${cid.toV1().toString('base64')}\n`)
     })
 
     it('pins node after putting', async () => {
-      const cid = 'bafy4lzacausjadzcia'
-      ipfs.dag.put.withArgs({ hello: 'world' }, putOptions({
+      ipfs.dag.put.withArgs({ hello: 'world' }, {
+        ...defaultOptions,
         pin: true
-      })).resolves(new CID(cid))
+      }).resolves(new CID(cid))
 
       const out = await cli('dag put --pin \'{"hello":"world"}\'', { ipfs })
 
+      expect(out).to.equal(`${cid}\n`)
+    })
+
+    it('puts json string with a timeout', async () => {
+      ipfs.dag.put.withArgs({}, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(new CID(cid))
+
+      const out = await cli('dag put "{}" --timeout=1s', { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
   })

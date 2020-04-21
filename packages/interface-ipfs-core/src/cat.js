@@ -5,7 +5,9 @@ const { fixtures } = require('./utils')
 const CID = require('cids')
 const concat = require('it-concat')
 const all = require('it-all')
+const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
+const testTimeout = require('./utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,6 +31,12 @@ module.exports = (common, options) => {
       all(ipfs.add(fixtures.smallFile.data)),
       all(ipfs.add(fixtures.bigFile.data))
     ]))
+
+    it('should respect timeout option when catting files', () => {
+      return testTimeout(() => drain(ipfs.cat(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+        timeout: 1
+      })))
+    })
 
     it('should cat with a base58 string encoded multihash', async () => {
       const data = await concat(ipfs.cat(fixtures.smallFile.cid))

@@ -1,6 +1,7 @@
 'use strict'
 
 const prettyBytes = require('pretty-bytes')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'stat',
@@ -12,12 +13,17 @@ module.exports = {
       type: 'boolean',
       alias: 'H',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, human }) {
-    const { ipfs, print } = ctx
-    const stats = await ipfs.repo.stat()
+  async handler ({ ctx: { ipfs, print }, human, timeout }) {
+    const stats = await ipfs.repo.stat({
+      timeout
+    })
 
     if (human) {
       stats.numObjects = stats.numObjects.toNumber()

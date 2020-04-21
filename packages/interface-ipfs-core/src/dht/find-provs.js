@@ -3,7 +3,9 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
+const drain = require('it-drain')
 const { fakeCid } = require('./utils')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -47,6 +49,12 @@ module.exports = (common, options) => {
         all(nodeB.dht.provide(providedCid)),
         all(nodeC.dht.provide(providedCid))
       ])
+    })
+
+    it('should respect timeout option when finding providers on the DHT', () => {
+      return testTimeout(() => drain(nodeA.dht.findProvs(providedCid, {
+        timeout: 1
+      })))
     })
 
     it('should be able to find providers', async function () {

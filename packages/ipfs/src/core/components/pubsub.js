@@ -1,11 +1,13 @@
 'use strict'
 
+const { withTimeoutOption } = require('../utils')
+
 module.exports = ({ libp2p }) => {
   return {
-    subscribe: (...args) => libp2p.pubsub.subscribe(...args),
-    unsubscribe: (...args) => libp2p.pubsub.unsubscribe(...args),
-    publish: (...args) => libp2p.pubsub.publish(...args),
-    ls: (...args) => libp2p.pubsub.getTopics(...args),
-    peers: (...args) => libp2p.pubsub.getSubscribers(...args)
+    subscribe: withTimeoutOption((...args) => libp2p.pubsub.subscribe(...args)),
+    unsubscribe: withTimeoutOption((...args) => libp2p.pubsub.unsubscribe(...args)),
+    publish: withTimeoutOption((...args) => libp2p.pubsub.publish(...args)),
+    ls: withTimeoutOption((...args) => libp2p.pubsub.getTopics(...args)),
+    peers: withTimeoutOption((...args) => libp2p.pubsub.getSubscribers(...args))
   }
 }

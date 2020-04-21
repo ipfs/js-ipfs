@@ -2,9 +2,10 @@
 
 const Big = require('bignumber.js')
 const CID = require('cids')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ bitswap }) => {
-  return async function stat () { // eslint-disable-line require-await
+  return withTimeoutOption(async function stat () { // eslint-disable-line require-await
     const snapshot = bitswap.stat().snapshot
 
     return {
@@ -18,5 +19,5 @@ module.exports = ({ bitswap }) => {
       blocksSent: new Big(snapshot.blocksSent),
       dataSent: new Big(snapshot.dataSent)
     }
-  }
+  })
 }

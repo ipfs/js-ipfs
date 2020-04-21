@@ -4,6 +4,7 @@
 const PeerId = require('peer-id')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -24,6 +25,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when cancelling an IPNS pubsub subscription', () => {
+      return testTimeout(() => ipfs.name.pubsub.cancel(nodeId, {
+        timeout: 1
+      }))
+    })
 
     it('should return false when the name that is intended to cancel is not subscribed', async function () {
       this.timeout(60 * 1000)

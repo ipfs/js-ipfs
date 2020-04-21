@@ -2,10 +2,10 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile } = require('../utils')
+const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 module.exports = function ({ ipld, preload }) {
-  return async function * ls (ipfsPath, options) {
+  return withTimeoutOption(async function * ls (ipfsPath, options) {
     options = options || {}
 
     const path = normalizeCidPath(ipfsPath)
@@ -50,5 +50,5 @@ module.exports = function ({ ipld, preload }) {
     }
 
     throw errCode(new Error(`Unknown UnixFS type ${file.unixfs.type}`), 'ERR_UNKNOWN_UNIXFS_TYPE')
-  }
+  })
 }

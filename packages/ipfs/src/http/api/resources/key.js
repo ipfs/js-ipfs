@@ -1,5 +1,7 @@
 'use strict'
 
+const Joi = require('../../utils/joi')
+
 function toKeyInfo (key) {
   return {
     Name: key.name,
@@ -7,51 +9,264 @@ function toKeyInfo (key) {
   }
 }
 
-exports.list = async (request, h) => {
-  const { ipfs } = request.server.app
-  const keys = await ipfs.key.list()
-  return h.response({ Keys: keys.map(toKeyInfo) })
+exports.list = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const keys = await ipfs.key.list({
+      signal,
+      timeout
+    })
+
+    return h.response({ Keys: keys.map(toKeyInfo) })
+  }
 }
 
-exports.rm = async (request, h) => {
-  const { ipfs } = request.server.app
-  const name = request.query.arg
-  const key = await ipfs.key.rm(name)
-  return h.response({ Keys: [toKeyInfo(key)] })
+exports.rm = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        name: Joi.string().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'name', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        name,
+        timeout
+      }
+    } = request
+
+    const key = await ipfs.key.rm(name, {
+      timeout,
+      signal
+    })
+
+    return h.response({ Keys: [toKeyInfo(key)] })
+  }
 }
 
-exports.rename = async (request, h) => {
-  const { ipfs } = request.server.app
-  const [oldName, newName] = request.query.arg
-  const key = await ipfs.key.rename(oldName, newName)
-  return h.response({
-    Was: key.was,
-    Now: key.now,
-    Id: key.id,
-    Overwrite: key.overwrite
-  })
+exports.rename = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        arg: Joi.array().single().length(2).required(),
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        arg: [
+          oldName,
+          newName
+        ],
+        timeout
+      }
+    } = request
+
+    const key = await ipfs.key.rename(oldName, newName, {
+      signal,
+      timeout
+    })
+
+    return h.response({
+      Was: key.was,
+      Now: key.now,
+      Id: key.id,
+      Overwrite: key.overwrite
+    })
+  }
 }
 
-exports.gen = async (request, h) => {
-  const { ipfs } = request.server.app
-  const { arg, type, size } = request.query
-  const key = await ipfs.key.gen(arg, {
-    type,
-    size: parseInt(size)
-  })
-  return h.response(toKeyInfo(key))
+exports.gen = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        name: Joi.string().required(),
+        type: Joi.string().default('rsa'),
+        size: Joi.number().integer().default(2048),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'name', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        name,
+        type,
+        size,
+        timeout
+      }
+    } = request
+
+    const key = await ipfs.key.gen(name, {
+      type,
+      size,
+      signal,
+      timeout
+    })
+
+    return h.response(toKeyInfo(key))
+  }
 }
 
-exports.export = async (request, h) => {
-  const { ipfs } = request.server.app
-  const { arg: name, password } = request.query
-  const pem = await ipfs.key.export(name, password)
-  return h.response(pem).type('application/x-pem-file')
+exports.export = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        name: Joi.string().required(),
+        password: Joi.string().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'name', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        name,
+        password,
+        timeout
+      }
+    } = request
+
+    const pem = await ipfs.key.export(name, password, {
+      signal,
+      timeout
+    })
+
+    return h.response(pem).type('application/x-pem-file')
+  }
 }
 
-exports.import = async (request, h) => {
-  const { ipfs } = request.server.app
-  const { arg: name, pem, password } = request.query
-  const key = await ipfs.key.import(name, pem, password)
-  return h.response(toKeyInfo(key))
+exports.import = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        name: Joi.string().required(),
+        password: Joi.string().required(),
+        pem: Joi.string().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'name', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        name,
+        password,
+        pem,
+        timeout
+      }
+    } = request
+
+    const key = await ipfs.key.import(name, pem, password, {
+      signal,
+      timeout
+    })
+
+    return h.response(toKeyInfo(key))
+  }
 }

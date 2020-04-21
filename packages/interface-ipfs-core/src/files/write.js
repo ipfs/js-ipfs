@@ -12,6 +12,7 @@ const randomBytes = require('iso-random-stream/src/random')
 const all = require('it-all')
 const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const testTimeout = require('../utils/test-timeout')
 
 let fs, tempWrite
 
@@ -98,11 +99,10 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    // TODO: streaming request errors do not work over http
-    it.skip('explodes if it cannot convert content to a source', async () => {
+    it('explodes if it cannot convert content to a source', async () => {
       await expect(ipfs.files.write('/foo-bad-source', -1, {
         create: true
-      })).to.eventually.be.rejectedWith(/unexpected input/)
+      })).to.eventually.be.rejected()
     })
 
     it('explodes if given an invalid path', async () => {
@@ -124,12 +124,13 @@ module.exports = (common, options) => {
     })
 
     it('creates a zero length file when passed a zero length', async () => {
-      await ipfs.files.write('/foo-zero-length', Buffer.from('foo'), {
+      const path = '/foo-zero-length'
+      await ipfs.files.write(path, Buffer.from('foo'), {
         length: 0,
         create: true
       })
 
-      await expect(all(ipfs.files.ls('/'))).to.eventually.have.lengthOf(1)
+      await expect(all(ipfs.files.ls('/foo-zero-length'))).to.eventually.have.lengthOf(1)
         .and.to.have.nested.property('[0]').that.includes({
           name: 'foo-zero-length',
           size: 0
@@ -873,6 +874,16 @@ module.exports = (common, options) => {
         secs: mtime[0],
         nsecs: mtime[1]
       })
+    })
+
+    it('should respect timeout option when writing files', async () => {
+      await testTimeout(() => ipfs.files.write('/derp', [], {
+        create: true,
+        timeout: 1
+      }))
+
+      // ensures that the request that timed out has completed
+      await ipfs.files.stat('/')
     })
   })
 }

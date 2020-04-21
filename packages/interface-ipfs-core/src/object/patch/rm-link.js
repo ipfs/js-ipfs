@@ -3,6 +3,8 @@
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')
+const testTimeout = require('../../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,6 +25,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when removing a link from an object', () => {
+      return testTimeout(() => ipfs.object.patch.rmLink(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), { name: 'link' }, {
+        timeout: 1
+      }))
+    })
 
     it('should remove a link from an existing node', async () => {
       const obj1 = {

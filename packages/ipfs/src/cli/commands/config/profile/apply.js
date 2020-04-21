@@ -1,6 +1,7 @@
 'use strict'
 
 const JSONDiff = require('jsondiffpatch')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'apply <profile>',
@@ -12,12 +13,19 @@ module.exports = {
       type: 'boolean',
       describe: 'print difference between the current config and the config that would be generated.',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, profile, dryRun }) {
+  async handler ({ ctx, profile, dryRun, timeout }) {
     const { print, ipfs, isDaemon } = ctx
-    const diff = await ipfs.config.profiles.apply(profile, { dryRun })
+    const diff = await ipfs.config.profiles.apply(profile, {
+      dryRun,
+      timeout
+    })
     const delta = JSONDiff.diff(diff.original, diff.updated)
     const res = JSONDiff.formatters.console.format(delta, diff.original)
 

@@ -6,6 +6,7 @@ const CID = require('cids')
 const sinon = require('sinon')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
+const { AbortSignal } = require('abort-controller')
 
 describe('/bitswap', () => {
   const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
@@ -15,18 +16,24 @@ describe('/bitswap', () => {
     ipfs = {
       bitswap: {
         wantlist: sinon.stub(),
-        stat: sinon.stub()
+        stat: sinon.stub(),
+        unwant: sinon.stub()
       }
     }
   })
 
   describe('/wantlist', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/bitswap/wantlist')
     })
 
     it('/wantlist', async () => {
-      ipfs.bitswap.wantlist.returns([
+      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
         cid
       ])
 
@@ -39,9 +46,26 @@ describe('/bitswap', () => {
       expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
     })
 
+    it('/wantlist?timeout=1s', async () => {
+      ipfs.bitswap.wantlist.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([
+        cid
+      ])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/wantlist?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
+    })
+
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('/wantlist?cid-base=base64', async () => {
-      ipfs.bitswap.wantlist.returns([
+      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
         cid
       ])
 
@@ -55,7 +79,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist?cid-base=invalid', async () => {
-      ipfs.bitswap.wantlist.returns([
+      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
         cid
       ])
 
@@ -67,15 +91,47 @@ describe('/bitswap', () => {
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
+
+    it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
+      const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+
+      ipfs.bitswap.wantlist.withArgs(peerId, defaultOptions).returns([
+        cid
+      ])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bitswap/wantlist?peer=${peerId}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
+    })
+
+    it('/wantlist?peer=invalid', async () => {
+      const peerId = 'invalid'
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bitswap/wantlist?peer=${peerId}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+    })
   })
 
   describe('/stat', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/bitswap/stat')
     })
 
     it('/stat', async () => {
-      ipfs.bitswap.stat.returns({
+      ipfs.bitswap.stat.withArgs(defaultOptions).returns({
         provideBufLen: 'provideBufLen',
         blocksReceived: 'blocksReceived',
         wantlist: [
@@ -106,8 +162,34 @@ describe('/bitswap', () => {
       expect(res).to.have.nested.property('result.DataSent', 'dataSent')
     })
 
+    it('/stat?timeout=1s', async () => {
+      ipfs.bitswap.stat.withArgs(defaultOptions).withArgs({
+        signal: sinon.match.any,
+        timeout: 1000
+      }).returns({
+        provideBufLen: 'provideBufLen',
+        blocksReceived: 'blocksReceived',
+        wantlist: [
+          cid
+        ],
+        peers: 'peers',
+        dupBlksReceived: 'dupBlksReceived',
+        dupDataReceived: 'dupDataReceived',
+        dataReceived: 'dataReceived',
+        blocksSent: 'blocksSent',
+        dataSent: 'dataSent'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/stat?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
+
     it('/stat?cid-base=base64', async () => {
-      ipfs.bitswap.stat.returns({
+      ipfs.bitswap.stat.withArgs(defaultOptions).returns({
         provideBufLen: 'provideBufLen',
         blocksReceived: 'blocksReceived',
         wantlist: [
@@ -138,6 +220,65 @@ describe('/bitswap', () => {
 
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.bitswap.stat.withArgs(defaultOptions).withArgs(sinon.match({
+        timeout: 1000
+      })).returns({
+        provideBufLen: 'provideBufLen',
+        blocksReceived: 'blocksReceived',
+        wantlist: [
+          cid.toV1()
+        ],
+        peers: 'peers',
+        dupBlksReceived: 'dupBlksReceived',
+        dupDataReceived: 'dupDataReceived',
+        dataReceived: 'dataReceived',
+        blocksSent: 'blocksSent',
+        dataSent: 'dataSent'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/stat?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
+  })
+
+  describe('/unwant', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/bitswap/unwant')
+    })
+
+    it('/unwant', async () => {
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bitswap/unwant?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), defaultOptions)).to.be.true()
+    })
+
+    it('accepts a timeout', async () => {
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bitswap/unwant?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), {
+        ...defaultOptions,
+        timeout: 1000
+      })).to.be.true()
     })
   })
 })

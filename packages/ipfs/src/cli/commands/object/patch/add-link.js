@@ -4,6 +4,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const multibase = require('multibase')
 const { cidToString } = require('../../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',
@@ -20,17 +21,20 @@ module.exports = {
       describe: 'The CID version of the DAGNode to link to',
       type: 'number',
       default: 0
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, root, name, ref, cidBase, cidVersion }) {
-    const { ipfs, print } = ctx
-    const nodeA = await ipfs.object.get(ref, { enc: 'base58' })
+  async handler ({ ctx: { ipfs, print }, root, name, ref, cidBase, cidVersion, timeout }) {
+    const nodeA = await ipfs.object.get(ref, { enc: 'base58', timeout })
     const result = await dagPB.util.cid(dagPB.util.serialize(nodeA), {
       cidVersion
     })
     const link = new DAGLink(name, nodeA.size, result)
-    const cid = await ipfs.object.patch.addLink(root, link, { enc: 'base58' })
+    const cid = await ipfs.object.patch.addLink(root, link, { enc: 'base58', timeout })
     print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }

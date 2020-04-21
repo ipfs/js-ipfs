@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'repo',
 
@@ -9,12 +11,15 @@ module.exports = {
     human: {
       type: 'boolean',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const stats = await ipfs.stats.repo({ human: argv.human })
+  async handler ({ ctx: { ipfs, print } }, human, timeout) {
+    const stats = await ipfs.stats.repo({ human, timeout })
     print(`repo status
   number of objects: ${stats.numObjects}
   repo size: ${stats.repoSize}

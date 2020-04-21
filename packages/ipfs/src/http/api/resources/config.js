@@ -7,85 +7,132 @@ const log = debug('ipfs:http-api:config')
 log.error = debug('ipfs:http-api:config:error')
 const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
-const Joi = require('@hapi/joi')
+const Joi = require('../../utils/joi')
 const { profiles } = require('../../../core/components/config')
 const all = require('it-all')
 
 exports.getOrSet = {
-  // pre request handler that parses the args and returns `key` & `value` which are assigned to `request.pre.args`
-  parseArgs (request, h) {
-    const parseValue = (args) => {
-      if (request.query.bool !== undefined) {
-        args.value = args.value === 'true'
-      } else if (request.query.json !== undefined) {
-        try {
-          args.value = JSON.parse(args.value)
-        } catch (err) {
-          log.error(err)
-          throw Boom.badRequest('failed to unmarshal json. ' + err)
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    pre: [{
+      assign: 'args',
+      method: (request, h) => {
+        const parseValue = (args) => {
+          if (request.query.bool) {
+            args.value = args.value === 'true'
+          } else if (request.query.json) {
+            try {
+              args.value = JSON.parse(args.value)
+            } catch (err) {
+              log.error(err)
+              throw Boom.badRequest('failed to unmarshal json. ' + err)
+            }
+          }
+
+          return args
         }
+
+        if (request.query.arg instanceof Array) {
+          return parseValue({
+            key: request.query.arg[0],
+            value: request.query.arg[1]
+          })
+        }
+
+        if (request.params.key) {
+          return parseValue({
+            key: request.params.key,
+            value: request.query.arg
+          })
+        }
+
+        if (!request.query.arg) {
+          throw Boom.badRequest("Argument 'key' is required")
+        }
+
+        return { key: request.query.arg }
       }
-
-      return args
-    }
-
-    if (request.query.arg instanceof Array) {
-      return parseValue({
-        key: request.query.arg[0],
-        value: request.query.arg[1]
+    }],
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        arg: Joi.array().single(),
+        key: Joi.string(),
+        bool: Joi.boolean().truthy(''),
+        json: Joi.boolean().truthy(''),
+        timeout: Joi.timeout()
       })
     }
-
-    if (request.params.key) {
-      return parseValue({
-        key: request.params.key,
-        value: request.query.arg
-      })
-    }
-
-    if (!request.query.arg) {
-      throw Boom.badRequest("Argument 'key' is required")
-    }
-
-    return { key: request.query.arg }
   },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const { key } = request.pre.args
-    let { value } = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      pre: {
+        args: {
+          key,
+          value
+        }
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
 
-    // check that value exists - typeof null === 'object'
-    if (value && (typeof value === 'object' &&
-        value.type === 'Buffer')) {
-      throw Boom.badRequest('Invalid value type')
+    if (value && value.type === 'Buffer' && Array.isArray(value.data)) {
+      // serialized node buffer?
+      throw Boom.badRequest('Invalid value')
     }
 
     let originalConfig
     try {
-      originalConfig = await ipfs.config.get()
+      originalConfig = await ipfs.config.get(undefined, {
+        signal,
+        timeout
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get config value' })
     }
 
     if (value === undefined) {
       // Get the value of a given key
-      value = get(originalConfig, key)
-      if (value === undefined) {
+      const existingValue = get(originalConfig, key)
+
+      if (existingValue === undefined) {
         throw Boom.notFound('Failed to get config value: key has no attributes')
       }
-    } else {
-      // Set the new value of a given key
-      const result = set(originalConfig, key, value)
-      if (!result) {
-        throw Boom.badRequest('Failed to set config value')
-      }
-      try {
-        await ipfs.config.replace(originalConfig)
-      } catch (err) {
-        throw Boom.boomify(err, { message: 'Failed to replace config value' })
-      }
+
+      return h.response({
+        Key: key,
+        Value: existingValue
+      })
+    }
+
+    // Set the new value of a given key
+    const result = set(originalConfig, key, value)
+    if (!result) {
+      throw Boom.badRequest('Failed to set config value')
+    }
+
+    try {
+      await ipfs.config.replace(originalConfig, {
+        signal,
+        timeout
+      })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to replace config value' })
     }
 
     return h.response({
@@ -95,69 +142,159 @@ exports.getOrSet = {
   }
 }
 
-exports.get = async (request, h) => {
-  const { ipfs } = request.server.app
+exports.get = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
 
-  let config
-  try {
-    config = await ipfs.config.get()
-  } catch (err) {
-    throw Boom.boomify(err, { message: 'Failed to get config value' })
+    let config
+    try {
+      config = await ipfs.config.get(undefined, {
+        signal,
+        timeout
+      })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get config value' })
+    }
+
+    return h.response({
+      Value: config
+    })
   }
-
-  return h.response({
-    Value: config
-  })
 }
 
-exports.show = async (request, h) => {
-  const { ipfs } = request.server.app
+exports.show = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+  handler: async (request, h) => {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
 
-  let config
-  try {
-    config = await ipfs.config.get()
-  } catch (err) {
-    throw Boom.boomify(err, { message: 'Failed to get config value' })
+    let config
+    try {
+      config = await ipfs.config.get(undefined, {
+        signal,
+        timeout
+      })
+    } catch (err) {
+      throw Boom.boomify(err, { message: 'Failed to get config value' })
+    }
+
+    return h.response(config)
   }
-
-  return h.response(config)
 }
 
 exports.replace = {
-  // pre request handler that parses the args and returns `config` which is assigned to `request.pre.args`
-  async parseArgs (request, h) {
-    if (!request.payload) {
-      throw Boom.badRequest("Argument 'file' is required")
-    }
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    pre: [{
+      assign: 'args',
+      method: async (request, h) => {
+        if (!request.payload) {
+          throw Boom.badRequest("Argument 'file' is required")
+        }
 
-    let file
+        let file
 
-    for await (const part of multipart(request)) {
-      if (part.type !== 'file') {
-        continue
+        for await (const part of multipart(request)) {
+          if (part.type !== 'file') {
+            continue
+          }
+
+          file = Buffer.concat(await all(part.content))
+        }
+
+        if (!file) {
+          throw Boom.badRequest("Argument 'file' is required")
+        }
+
+        try {
+          return { config: JSON.parse(file.toString('utf8')) }
+        } catch (err) {
+          throw Boom.boomify(err, { message: 'Failed to decode file as config' })
+        }
       }
-
-      file = Buffer.concat(await all(part.content))
-    }
-
-    if (!file) {
-      throw Boom.badRequest("Argument 'file' is required")
-    }
-
-    try {
-      return { config: JSON.parse(file.toString('utf8')) }
-    } catch (err) {
-      throw Boom.boomify(err, { message: 'Failed to decode file as config' })
+    }],
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
     }
   },
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const { config } = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      pre: {
+        args: {
+          config
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
 
     try {
-      await ipfs.config.replace(config)
+      await ipfs.config.replace(config, {
+        signal,
+        timeout
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to save config' })
     }
@@ -168,32 +305,50 @@ exports.replace = {
 
 exports.profiles = {
   apply: {
-    validate: {
-      query: Joi.object().keys({
-        'dry-run': Joi.boolean().default(false)
-      }).unknown()
-    },
-
-    // pre request handler that parses the args and returns `profile` which is assigned to `request.pre.args`
-    parseArgs: function (request, h) {
-      if (!request.query.arg) {
-        throw Boom.badRequest("Argument 'profile' is required")
+    options: {
+      validate: {
+        options: {
+          allowUnknown: true,
+          stripUnknown: true
+        },
+        query: Joi.object().keys({
+          profile: Joi.string().valid(...Object.keys(profiles)).required(),
+          dryRun: Joi.boolean().default(false),
+          timeout: Joi.timeout()
+        })
+          .rename('dry-run', 'dryRun', {
+            override: true,
+            ignoreUndefined: true
+          })
+          .rename('arg', 'profile', {
+            override: true,
+            ignoreUndefined: true
+          })
       }
-
-      if (!profiles[request.query.arg]) {
-        throw Boom.badRequest("Argument 'profile' is not a valid profile name")
-      }
-
-      return { profile: request.query.arg }
     },
-
     handler: async function (request, h) {
-      const { ipfs } = request.server.app
-      const { profile } = request.pre.args
-      const dryRun = request.query['dry-run']
+      const {
+        app: {
+          signal
+        },
+        server: {
+          app: {
+            ipfs
+          }
+        },
+        query: {
+          profile,
+          dryRun,
+          timeout
+        }
+      } = request
 
       try {
-        const diff = await ipfs.config.profiles.apply(profile, { dryRun })
+        const diff = await ipfs.config.profiles.apply(profile, {
+          dryRun,
+          signal,
+          timeout
+        })
 
         return h.response({ OldCfg: diff.original, NewCfg: diff.updated })
       } catch (err) {
@@ -202,9 +357,44 @@ exports.profiles = {
     }
   },
   list: {
+    options: {
+      validate: {
+        options: {
+          allowUnknown: true,
+          stripUnknown: true
+        },
+        query: Joi.object().keys({
+          timeout: Joi.timeout()
+        })
+          .rename('dry-run', 'dryRun', {
+            override: true,
+            ignoreUndefined: true
+          })
+          .rename('arg', 'profile', {
+            override: true,
+            ignoreUndefined: true
+          })
+      }
+    },
     handler: async function (request, h) {
-      const { ipfs } = request.server.app
-      const list = await ipfs.config.profiles.list()
+      const {
+        app: {
+          signal
+        },
+        server: {
+          app: {
+            ipfs
+          }
+        },
+        query: {
+          timeout
+        }
+      } = request
+
+      const list = await ipfs.config.profiles.list({
+        signal,
+        timeout
+      })
 
       return h.response(
         list.map(profile => ({

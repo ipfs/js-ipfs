@@ -9,6 +9,7 @@ const routingConfig = require('../ipns/routing/config')
 const { AlreadyInitializedError, NotEnabledError } = require('../errors')
 const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({
   apiManager,
@@ -23,7 +24,7 @@ module.exports = ({
   preload,
   print,
   repo
-}) => async function start () {
+}) => withTimeoutOption(async function start () {
   const startPromise = defer()
   const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
@@ -71,9 +72,24 @@ module.exports = ({
 
     blockService.setExchange(bitswap)
 
+    const dag = {
+      get: Components.dag.get({ ipld, preload }),
+      resolve: Components.dag.resolve({ ipld, preload }),
+      tree: Components.dag.tree({ ipld, preload })
+    }
+
+    const pin = {
+      add: Components.pin.add({ pinManager, gcLock, dag }),
+      ls: Components.pin.ls({ pinManager, dag }),
+      rm: Components.pin.rm({ pinManager, gcLock, dag })
+    }
+
+    // FIXME: resolve this circular dependency
+    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+
     const block = {
       get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, gcLock, preload }),
+      put: Components.block.put({ blockService, pin, gcLock, preload }),
       rm: Components.block.rm({ blockService, gcLock, pinManager }),
       stat: Components.block.stat({ blockService, preload })
     }
@@ -94,6 +110,7 @@ module.exports = ({
       blockService,
       config,
       constructorOptions,
+      dag,
       files,
       gcLock,
       initOptions,
@@ -103,6 +120,7 @@ module.exports = ({
       libp2p,
       mfsPreload,
       peerInfo,
+      pin,
       pinManager,
       preload,
       print,
@@ -118,7 +136,7 @@ module.exports = ({
 
   startPromise.resolve(apiManager.api)
   return apiManager.api
-}
+})
 
 function createApi ({
   apiManager,
@@ -127,6 +145,7 @@ function createApi ({
   blockService,
   config,
   constructorOptions,
+  dag,
   files,
   gcLock,
   initOptions,
@@ -136,16 +155,12 @@ function createApi ({
   libp2p,
   mfsPreload,
   peerInfo,
+  pin,
   pinManager,
   preload,
   print,
   repo
 }) {
-  const dag = {
-    get: Components.dag.get({ ipld, preload }),
-    resolve: Components.dag.resolve({ ipld, preload }),
-    tree: Components.dag.tree({ ipld, preload })
-  }
   const object = {
     data: Components.object.data({ ipld, preload }),
     get: Components.object.get({ ipld, preload }),
@@ -160,13 +175,7 @@ function createApi ({
     put: Components.object.put({ ipld, gcLock, preload }),
     stat: Components.object.stat({ ipld, preload })
   }
-  const pin = {
-    add: Components.pin.add({ pinManager, gcLock, dag }),
-    ls: Components.pin.ls({ pinManager, dag }),
-    rm: Components.pin.rm({ pinManager, gcLock, dag })
-  }
-  // FIXME: resolve this circular dependency
-  dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+
   const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
 

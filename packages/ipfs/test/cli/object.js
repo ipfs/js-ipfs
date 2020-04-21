@@ -14,6 +14,7 @@ const {
 } = require('ipld-dag-pb')
 
 describe('object', () => {
+  const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
   let ipfs
 
   before(() => {
@@ -35,345 +36,539 @@ describe('object', () => {
     }
   })
 
-  it('new', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+  describe('new', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-    ipfs.object.new.withArgs(undefined).resolves(cid)
+    it('should create a new object', async () => {
+      ipfs.object.new.withArgs(undefined, defaultOptions).resolves(cid)
 
-    const out = await cli('object new', { ipfs })
-    expect(out).to.equal(`${cid}\n`)
-  })
+      const out = await cli('object new', { ipfs })
+      expect(out).to.equal(`${cid}\n`)
+    })
 
-  it('new unixfs-dir', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+    it('new unixfs-dir', async () => {
+      ipfs.object.new.withArgs('unixfs-dir', defaultOptions).resolves(cid)
 
-    ipfs.object.new.withArgs('unixfs-dir').resolves(cid)
+      const out = await cli('object new unixfs-dir', { ipfs })
+      expect(out).to.equal(`${cid}\n`)
+    })
 
-    const out = await cli('object new unixfs-dir', { ipfs })
-    expect(out).to.equal(`${cid}\n`)
-  })
+    it('new with a timeout', async () => {
+      ipfs.object.new.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(cid)
 
-  it('should new and print CID encoded in specified base', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').toV1()
+      const out = await cli('object new --timeout=1s', { ipfs })
+      expect(out).to.equal(`${cid}\n`)
+    })
 
-    ipfs.object.new.withArgs(undefined).resolves(cid)
+    it('should new and print CID encoded in specified base', async () => {
+      ipfs.object.new.withArgs(undefined, defaultOptions).resolves(cid.toV1())
 
-    const out = await cli('object new --cid-base=base64', { ipfs })
-    expect(out).to.equal(
-      'mAXASIOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV\n'
-    )
-  })
-
-  it('get', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-    const node = new DAGNode()
-
-    ipfs.object.get.withArgs(cid.toString(), { enc: 'base58' }).resolves(node)
-
-    const out = await cli(`object get ${cid}`, { ipfs })
-    const result = JSON.parse(out)
-    expect(result.Links).to.deep.equal([])
-    expect(result.Data).to.equal('')
-  })
-
-  it('get with data', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-    const node = new DAGNode(Buffer.from('aGVsbG8gd29ybGQK', 'base64'))
-
-    ipfs.object.get.withArgs(cid.toString(), { enc: 'base58' }).resolves(node)
-
-    const out = await cli(`object get ${cid}`, { ipfs })
-    const result = JSON.parse(out)
-    expect(result.Links).to.deep.equal([])
-    expect(result.Data).to.equal('aGVsbG8gd29ybGQK')
-  })
-
-  it('get while overriding data-encoding', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-    const node = new DAGNode(Buffer.from('hello world'))
-
-    ipfs.object.get.withArgs(cid.toString(), { enc: 'base58' }).resolves(node)
-
-    const out = await cli(`object get --data-encoding=utf8 ${cid}`, { ipfs })
-    const result = JSON.parse(out)
-    expect(result.Links).to.deep.equal([])
-    expect(result.Data).to.equal('hello world')
-  })
-
-  it('should get and print CIDs encoded in specified base', async () => {
-    const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').toV1()
-    const node = new DAGNode(null, [
-      new DAGLink('', 0, cid)
-    ])
-
-    ipfs.object.get.withArgs(cid.toString(), { enc: 'base58' }).resolves(node)
-
-    const out = await cli(`object get --cid-base=base64 ${cid}`, { ipfs })
-    const result = JSON.parse(out)
-
-    expect(multibase.isEncoded(result.Hash)).to.deep.equal('base64')
-    result.Links.forEach(l => {
-      expect(multibase.isEncoded(l.Hash)).to.deep.equal('base64')
+      const out = await cli('object new --cid-base=base64', { ipfs })
+      expect(out).to.equal(
+        `${cid.toV1().toString('base64')}\n`
+      )
     })
   })
 
-  it('put', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+  describe('get', () => {
+    const defaultOptions = {
+      enc: 'base58',
+      timeout: undefined
+    }
 
-    ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), { enc: 'json' }).resolves(cid)
+    it('should get an object', async () => {
+      const node = new DAGNode()
 
-    const out = await cli(`object put ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json`, { ipfs })
+      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
 
-    expect(out).to.equal(
-      `added ${cid}\n`
-    )
-  })
-
-  it('put from pipe', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-    const buf = Buffer.from('hello world')
-
-    ipfs.object.put.withArgs(buf, { enc: 'json' }).resolves(cid)
-
-    const out = await cli('object put', {
-      ipfs,
-      getStdin: function * () {
-        yield buf
-      }
+      const out = await cli(`object get ${cid}`, { ipfs })
+      const result = JSON.parse(out)
+      expect(result.Links).to.deep.equal([])
+      expect(result.Data).to.equal('')
     })
 
-    expect(out).to.equal(
-      `added ${cid}\n`
-    )
-  })
+    it('get with data', async () => {
+      const node = new DAGNode(Buffer.from('aGVsbG8gd29ybGQK', 'base64'))
 
-  it('should put and print CID encoded in specified base', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-    const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json`
-    const buf = fs.readFileSync(filePath)
+      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
 
-    ipfs.object.put.withArgs(buf, { enc: 'json' }).resolves(cid)
-
-    const out = await cli(`object put ${filePath} --cid-base=base64`, { ipfs })
-
-    expect(out).to.equal(
-      'added mAXASIKbM02Neyt6L1RRLYVEOuNlqDOzTvBboo3cI/u6f/+Vk\n'
-    )
-  })
-
-  it('stat', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-
-    ipfs.object.stat.withArgs(cid.toString()).resolves({
-      Hash: cid,
-      NumLinks: 1,
-      BlockSize: 60,
-      LinksSize: 53,
-      DataSize: 7,
-      CumulativeSize: 68
+      const out = await cli(`object get ${cid}`, { ipfs })
+      const result = JSON.parse(out)
+      expect(result.Links).to.deep.equal([])
+      expect(result.Data).to.equal('aGVsbG8gd29ybGQK')
     })
 
-    const out = await cli(`object stat ${cid}`, { ipfs })
-    expect(out).to.deep.equal([
-      'NumLinks: 1',
-      'BlockSize: 60',
-      'LinksSize: 53',
-      'DataSize: 7',
-      'CumulativeSize: 68'
-    ].join('\n') + '\n')
+    it('get while overriding data-encoding', async () => {
+      const node = new DAGNode(Buffer.from('hello world'))
+
+      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+
+      const out = await cli(`object get --data-encoding=utf8 ${cid}`, { ipfs })
+      const result = JSON.parse(out)
+      expect(result.Links).to.deep.equal([])
+      expect(result.Data).to.equal('hello world')
+    })
+
+    it('should get and print CIDs encoded in specified base', async () => {
+      const node = new DAGNode(null, [
+        new DAGLink('', 0, cid.toV1())
+      ])
+
+      ipfs.object.get.withArgs(cid.toV1().toString(), defaultOptions).resolves(node)
+
+      const out = await cli(`object get --cid-base=base64 ${cid.toV1()}`, { ipfs })
+      const result = JSON.parse(out)
+
+      expect(multibase.isEncoded(result.Hash)).to.deep.equal('base64')
+      result.Links.forEach(l => {
+        expect(multibase.isEncoded(l.Hash)).to.deep.equal('base64')
+      })
+    })
+
+    it('should get an object with a timeout', async () => {
+      const node = new DAGNode()
+
+      ipfs.object.get.withArgs(cid.toString(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(node)
+
+      const out = await cli(`object get ${cid} --timeout=1s`, { ipfs })
+      const result = JSON.parse(out)
+      expect(result.Links).to.deep.equal([])
+      expect(result.Data).to.equal('')
+    })
   })
 
-  it('data', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+  describe('put', () => {
+    const defaultOptions = {
+      enc: 'json',
+      timeout: undefined
+    }
+
+    it('should put an object', async () => {
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), defaultOptions).resolves(cid)
+
+      const out = await cli(`object put ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json`, { ipfs })
+
+      expect(out).to.equal(
+        `added ${cid}\n`
+      )
+    })
+
+    it('put from pipe', async () => {
+      const buf = Buffer.from('hello world')
+
+      ipfs.object.put.withArgs(buf, defaultOptions).resolves(cid)
+
+      const out = await cli('object put', {
+        ipfs,
+        getStdin: function * () {
+          yield buf
+        }
+      })
+
+      expect(out).to.equal(
+        `added ${cid}\n`
+      )
+    })
+
+    it('should put and print CID encoded in specified base', async () => {
+      const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json`
+      const buf = fs.readFileSync(filePath)
+
+      ipfs.object.put.withArgs(buf, defaultOptions).resolves(cid.toV1())
+
+      const out = await cli(`object put ${filePath} --cid-base=base64`, { ipfs })
+
+      expect(out).to.equal(
+        `added ${cid.toV1().toString('base64')}\n`
+      )
+    })
+
+    it('should put an object with a timeout', async () => {
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(cid)
+
+      const out = await cli(`object put ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json --timeout=1s`, { ipfs })
+
+      expect(out).to.equal(
+        `added ${cid}\n`
+      )
+    })
+  })
+
+  describe('stat', () => {
+    const defaultOptions = {
+      enc: 'base58',
+      timeout: undefined
+    }
+
+    it('should stat an object', async () => {
+      ipfs.object.stat.withArgs(cid.toString(), defaultOptions).resolves({
+        Hash: cid,
+        NumLinks: 1,
+        BlockSize: 60,
+        LinksSize: 53,
+        DataSize: 7,
+        CumulativeSize: 68
+      })
+
+      const out = await cli(`object stat ${cid}`, { ipfs })
+      expect(out).to.deep.equal([
+        'NumLinks: 1',
+        'BlockSize: 60',
+        'LinksSize: 53',
+        'DataSize: 7',
+        'CumulativeSize: 68'
+      ].join('\n') + '\n')
+    })
+
+    it('should stat an object with a timeout', async () => {
+      ipfs.object.stat.withArgs(cid.toString(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        Hash: cid,
+        NumLinks: 1,
+        BlockSize: 60,
+        LinksSize: 53,
+        DataSize: 7,
+        CumulativeSize: 68
+      })
+
+      const out = await cli(`object stat ${cid} --timeout=1s`, { ipfs })
+      expect(out).to.deep.equal([
+        'NumLinks: 1',
+        'BlockSize: 60',
+        'LinksSize: 53',
+        'DataSize: 7',
+        'CumulativeSize: 68'
+      ].join('\n') + '\n')
+    })
+  })
+
+  describe('data', () => {
     const data = 'another'
+    const defaultOptions = {
+      enc: 'base58',
+      timeout: undefined
+    }
 
-    ipfs.object.data.withArgs(cid.toString(), { enc: 'base58' }).resolves(data)
+    it('should return data from an object', async () => {
+      ipfs.object.data.withArgs(cid.toString(), defaultOptions).resolves(data)
 
-    const out = await cli(`object data ${cid}`, { ipfs })
-    expect(out).to.equal(data)
+      const out = await cli(`object data ${cid}`, { ipfs })
+      expect(out).to.equal(data)
+    })
+
+    it('should return data from an object with a timeout', async () => {
+      ipfs.object.data.withArgs(cid.toString(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(data)
+
+      const out = await cli(`object data ${cid} --timeout=1s`, { ipfs })
+      expect(out).to.equal(data)
+    })
   })
 
-  it('links', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+  describe('links', () => {
+    const defaultOptions = {
+      enc: 'base58',
+      timeout: undefined
+    }
 
-    ipfs.object.links.withArgs(cid.toString(), { enc: 'base58' }).resolves([
-      new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
-    ])
+    it('should return links from an object', async () => {
+      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+        new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
+      ])
 
-    const out = await cli(`object links ${cid}`, { ipfs })
-    expect(out).to.equal(
-      'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
-    )
-  })
+      const out = await cli(`object links ${cid}`, { ipfs })
+      expect(out).to.equal(
+        'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
+      )
+    })
 
-  it('should get links and print CIDs encoded in specified base', async () => {
-    const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+    it('should get links and print CIDs encoded in specified base', async () => {
+      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
 
-    ipfs.object.links.withArgs(cid.toString(), { enc: 'base58' }).resolves([
-      new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1())
-    ])
+      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+        new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1())
+      ])
 
-    const out = await cli(`object links ${cid} --cid-base=base64`, { ipfs })
+      const out = await cli(`object links ${cid} --cid-base=base64`, { ipfs })
 
-    out.trim().split('\n').forEach(line => {
-      const cid = line.split(' ')[0]
-      expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+      out.trim().split('\n').forEach(line => {
+        const cid = line.split(' ')[0]
+        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+      })
+    })
+
+    it('should return links from an object with a timeout', async () => {
+      ipfs.object.links.withArgs(cid.toString(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([
+        new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
+      ])
+
+      const out = await cli(`object links ${cid} --timeout=1000`, { ipfs })
+      expect(out).to.equal(
+        'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
+      )
     })
   })
 
   describe('patch', () => {
-    it('append-data', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
-      const buf = fs.readFileSync(filePath)
+    describe('append-data', () => {
+      const defaultOptions = {
+        enc: 'base58',
+        timeout: undefined
+      }
 
-      ipfs.object.patch.appendData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
+      it('should append data', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
 
-      const out = await cli(`object patch append-data ${cid} ${filePath}`, { ipfs })
-      expect(out).to.equal(`${cid}\n`)
-    })
+        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+          cid
+        )
 
-    it('append-data from pipe', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const buf = Buffer.from('hello world')
-
-      ipfs.object.patch.appendData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
-
-      const out = await cli(`object patch append-data ${cid}`, {
-        ipfs,
-        getStdin: function * () {
-          yield buf
-        }
+        const out = await cli(`object patch append-data ${cid} ${filePath}`, { ipfs })
+        expect(out).to.equal(`${cid}\n`)
       })
-      expect(out).to.equal(`${cid}\n`)
-    })
 
-    it('should append-data and print CID encoded in specified base', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-      const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
-      const buf = fs.readFileSync(filePath)
+      it('append-data from pipe', async () => {
+        const buf = Buffer.from('hello world')
 
-      ipfs.object.patch.appendData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
+        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+          cid
+        )
 
-      const out = await cli(`object patch append-data ${cid} ${filePath} --cid-base=base64`, { ipfs })
-      expect(out).to.equal(`${cid.toString('base64')}\n`)
-    })
-
-    it('set-data', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
-      const buf = fs.readFileSync(filePath)
-
-      ipfs.object.patch.setData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
-
-      const out = await cli(`object patch set-data ${cid} ${filePath}`, { ipfs })
-      expect(out).to.equal(`${cid}\n`)
-    })
-
-    it('set-data from pipe', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const buf = Buffer.from('hello world')
-
-      ipfs.object.patch.setData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
-
-      const out = await cli(`object patch set-data ${cid}`, {
-        ipfs,
-        getStdin: function * () {
-          yield buf
-        }
+        const out = await cli(`object patch append-data ${cid}`, {
+          ipfs,
+          getStdin: function * () {
+            yield buf
+          }
+        })
+        expect(out).to.equal(`${cid}\n`)
       })
-      expect(out).to.equal(`${cid}\n`)
+
+      it('should append-data and print CID encoded in specified base', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
+
+        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+          cid.toV1()
+        )
+
+        const out = await cli(`object patch append-data ${cid} ${filePath} --cid-base=base64`, { ipfs })
+        expect(out).to.equal(`${cid.toV1().toString('base64')}\n`)
+      })
+
+      it('should append data with a timeout', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
+
+        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, {
+          ...defaultOptions,
+          timeout: 1000
+        }).resolves(
+          cid
+        )
+
+        const out = await cli(`object patch append-data ${cid} ${filePath} --timeout=1s`, { ipfs })
+        expect(out).to.equal(`${cid}\n`)
+      })
     })
 
-    it('should set-data and print CID encoded in specified base', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-      const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
-      const buf = fs.readFileSync(filePath)
+    describe('set-data', () => {
+      const defaultOptions = {
+        enc: 'base58',
+        timeout: undefined
+      }
 
-      ipfs.object.patch.setData.withArgs(cid.toString(), buf, { enc: 'base58' }).resolves(
-        cid
-      )
+      it('should set data on an object', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
 
-      const out = await cli(`object patch set-data ${cid} ${filePath} --cid-base=base64`, { ipfs })
-      expect(out).to.equal(`${cid.toString('base64')}\n`)
+        ipfs.object.patch.setData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+          cid
+        )
+
+        const out = await cli(`object patch set-data ${cid} ${filePath}`, { ipfs })
+        expect(out).to.equal(`${cid}\n`)
+      })
+
+      it('set-data from pipe', async () => {
+        const buf = Buffer.from('hello world')
+
+        ipfs.object.patch.setData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+          cid
+        )
+
+        const out = await cli(`object patch set-data ${cid}`, {
+          ipfs,
+          getStdin: function * () {
+            yield buf
+          }
+        })
+        expect(out).to.equal(`${cid}\n`)
+      })
+
+      it('should set-data and print CID encoded in specified base', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
+
+        ipfs.object.patch.setData.withArgs(cid.toV1().toString(), buf, defaultOptions).resolves(
+          cid.toV1()
+        )
+
+        const out = await cli(`object patch set-data ${cid.toV1()} ${filePath} --cid-base=base64`, { ipfs })
+        expect(out).to.equal(`${cid.toV1().toString('base64')}\n`)
+      })
+
+      it('should set data on an object with a timeout', async () => {
+        const filePath = `${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/badconfig`
+        const buf = fs.readFileSync(filePath)
+
+        ipfs.object.patch.setData.withArgs(cid.toString(), buf, {
+          ...defaultOptions,
+          timeout: 1000
+        }).resolves(
+          cid
+        )
+
+        const out = await cli(`object patch set-data ${cid} ${filePath} --timeout=1s`, { ipfs })
+        expect(out).to.equal(`${cid}\n`)
+      })
     })
 
-    it('add-link', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-      const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+    describe('add-link', () => {
+      const defaultOptions = {
+        enc: 'base58',
+        timeout: undefined
+      }
 
-      ipfs.object.get.withArgs(linkCid.toString(), { enc: 'base58' }).resolves(
-        new DAGNode()
-      )
-      ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), { enc: 'base58' }).resolves(
-        updatedCid
-      )
+      it('should add a link to an object', async () => {
+        const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
 
-      const out = await cli(`object patch add-link ${cid} foo ${linkCid}`, { ipfs })
-      expect(out).to.equal(
-        `${updatedCid}\n`
-      )
+        ipfs.object.get.withArgs(linkCid.toString(), defaultOptions).resolves(
+          new DAGNode()
+        )
+        ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
+          updatedCid
+        )
+
+        const out = await cli(`object patch add-link ${cid} foo ${linkCid}`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid}\n`
+        )
+      })
+
+      it('should add-link and print CID encoded in specified base', async () => {
+        const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').toV1()
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+
+        ipfs.object.get.withArgs(linkCid.toString(), defaultOptions).resolves(
+          new DAGNode()
+        )
+        ipfs.object.patch.addLink.withArgs(cid.toV1().toString(), sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
+          updatedCid
+        )
+
+        const out = await cli(`object patch add-link ${cid.toV1()} foo ${linkCid} --cid-base=base64`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid.toString('base64')}\n`
+        )
+      })
+
+      it('should add a link to an object with a timeout', async () => {
+        const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+
+        ipfs.object.get.withArgs(linkCid.toString(), {
+          ...defaultOptions,
+          timeout: 1000
+        }).resolves(
+          new DAGNode()
+        )
+        ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), {
+          ...defaultOptions,
+          timeout: 1000
+        }).resolves(
+          updatedCid
+        )
+
+        const out = await cli(`object patch add-link ${cid} foo ${linkCid} --timeout=1s`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid}\n`
+        )
+      })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it('should add-link and print CID encoded in specified base', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-      const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').toV1()
-      const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+    describe('rm-link', () => {
+      const defaultOptions = {
+        enc: 'base58',
+        timeout: undefined
+      }
 
-      ipfs.object.get.withArgs(linkCid.toString(), { enc: 'base58' }).resolves(
-        new DAGNode()
-      )
-      ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), { enc: 'base58' }).resolves(
-        updatedCid
-      )
+      it('should remove a link from an object', async () => {
+        const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+        const linkName = 'foo'
 
-      const out = await cli(`object patch add-link ${cid} foo ${linkCid} --cid-base=base64`, { ipfs })
-      expect(out).to.equal(
-        `${updatedCid.toString('base64')}\n`
-      )
-    })
+        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, defaultOptions).resolves(
+          updatedCid
+        )
 
-    it('rm-link', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
-      const linkName = 'foo'
+        const out = await cli(`object patch rm-link ${cid} ${linkName}`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid}\n`
+        )
+      })
 
-      ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, { enc: 'base58' }).resolves(
-        updatedCid
-      )
+      it('should rm-link and print CID encoded in specified base', async () => {
+        const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+        const linkName = 'foo'
 
-      const out = await cli(`object patch rm-link ${cid} ${linkName}`, { ipfs })
-      expect(out).to.equal(
-        `${updatedCid}\n`
-      )
-    })
+        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, defaultOptions).resolves(
+          updatedCid
+        )
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it('should rm-link and print CID encoded in specified base', async () => {
-      const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-      const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
-      const linkName = 'foo'
+        const out = await cli(`object patch rm-link ${cid} ${linkName} --cid-base=base64`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid.toString('base64')}\n`
+        )
+      })
 
-      ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, { enc: 'base58' }).resolves(
-        updatedCid
-      )
+      it('should remove a link from an object with a timeout', async () => {
+        const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+        const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
+        const linkName = 'foo'
 
-      const out = await cli(`object patch rm-link ${cid} ${linkName} --cid-base=base64`, { ipfs })
-      expect(out).to.equal(
-        `${updatedCid.toString('base64')}\n`
-      )
+        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, {
+          ...defaultOptions,
+          timeout: 1000
+        }).resolves(
+          updatedCid
+        )
+
+        const out = await cli(`object patch rm-link ${cid} ${linkName} --timeout=1s`, { ipfs })
+        expect(out).to.equal(
+          `${updatedCid}\n`
+        )
+      })
     })
   })
 })

@@ -4,6 +4,9 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { nanoid } = require('nanoid')
 const all = require('it-all')
+const drain = require('it-drain')
+const CID = require('cids')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -20,6 +23,12 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
+
+    it('should respect timeout option when removing a block', () => {
+      return testTimeout(() => drain(ipfs.block.rm(new CID('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
+        timeout: 1
+      })))
+    })
 
     it('should remove by CID object', async () => {
       const cid = await ipfs.dag.put(Buffer.from(nanoid()), {

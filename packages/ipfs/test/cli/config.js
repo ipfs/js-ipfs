@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* eslint max-nested-callbacks: ["error", 5] */
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
@@ -23,7 +24,7 @@ describe('config', () => {
     }
   })
 
-  describe('get/set', () => {
+  describe('set', () => {
     it('set a config key with a string value', async () => {
       await cli('config foo bar', { ipfs })
       expect(ipfs.config.set.calledWith('foo', 'bar')).to.be.true()
@@ -53,6 +54,15 @@ describe('config', () => {
       await cli.fail('config foo {"bar:0"} --json', { ipfs })
     })
 
+    it('set a config key with a timeout', async () => {
+      await cli('config foo bar --timeout=1s', { ipfs })
+      expect(ipfs.config.set.calledWith('foo', 'bar', {
+        timeout: 1000
+      })).to.be.true()
+    })
+  })
+
+  describe('get', () => {
     it('get a config key value', async () => {
       ipfs.config.get.withArgs('Identity.PeerID').returns('hello')
 
@@ -64,14 +74,31 @@ describe('config', () => {
       const out = await cli.fail('config', { ipfs })
       expect(out).to.include('Not enough non-option arguments: got 0, need at least 1')
     })
+
+    it('get a config key value with a timeout', async () => {
+      ipfs.config.get.withArgs('Identity.PeerID', {
+        timeout: 1000
+      }).returns('hello')
+
+      const out = await cli('config Identity.PeerID --timeout=1s', { ipfs })
+      expect(out).to.equal('hello\n')
+    })
   })
 
   describe('show', function () {
-    this.timeout(40 * 1000)
-
     it('returns the full config', async () => {
-      ipfs.config.get.returns({ foo: 'bar' })
+      ipfs.config.get.withArgs({
+        timeout: undefined
+      }).returns({ foo: 'bar' })
       const out = await cli('config show', { ipfs })
+      expect(JSON.parse(out)).to.be.eql({ foo: 'bar' })
+    })
+
+    it('returns the full config with a timeout', async () => {
+      ipfs.config.get.withArgs({
+        timeout: 1000
+      }).returns({ foo: 'bar' })
+      const out = await cli('config show --timeout=1s', { ipfs })
       expect(JSON.parse(out)).to.be.eql({ foo: 'bar' })
     })
   })
@@ -83,7 +110,9 @@ describe('config', () => {
 
       await cli(`config replace ${filePath}`, { ipfs })
 
-      expect(ipfs.config.replace.calledWith(expectedConfig)).to.be.true()
+      expect(ipfs.config.replace.calledWith(expectedConfig, {
+        timeout: undefined
+      })).to.be.true()
     })
 
     it('replace config with file in daemon mode', async () => {
@@ -92,15 +121,51 @@ describe('config', () => {
 
       await cli(`config replace ${filePath}`, { ipfs, isDaemon: true })
 
-      expect(ipfs.config.replace.calledWith(fullPath)).to.be.true()
+      expect(ipfs.config.replace.calledWith(fullPath, {
+        timeout: undefined
+      })).to.be.true()
+    })
+
+    it('replace config with file and timeout', async () => {
+      const filePath = './package.json'
+      const expectedConfig = require('../../package.json')
+
+      await cli(`config replace ${filePath} --timeout=1s`, { ipfs })
+
+      expect(ipfs.config.replace.calledWith(expectedConfig, {
+        timeout: 1000
+      })).to.be.true()
     })
   })
 
   describe('profile', () => {
-    Object.keys(profiles).forEach(profile => {
-      it(`applies profile '${profile}'`, async () => {
-        ipfs.config.profiles.apply.withArgs(profile, {
-          dryRun: false
+    describe('apply', () => {
+      const defaultOptions = {
+        dryRun: false,
+        timeout: undefined
+      }
+
+      Object.keys(profiles).forEach(profile => {
+        it(`applies profile '${profile}'`, async () => {
+          ipfs.config.profiles.apply.withArgs(profile, defaultOptions).returns({
+            original: {
+              foo: 'bar'
+            },
+            updated: {
+              foo: 'baz'
+            }
+          })
+
+          await cli(`config profile apply ${profile}`, { ipfs })
+
+          expect(ipfs.config.profiles.apply.calledWith(profile, defaultOptions)).to.be.true()
+        })
+      })
+
+      it('--dry-run is passed to core', async () => {
+        ipfs.config.profiles.apply.withArgs('server', {
+          ...defaultOptions,
+          dryRun: true
         }).returns({
           original: {
             foo: 'bar'
@@ -110,47 +175,73 @@ describe('config', () => {
           }
         })
 
-        await cli(`config profile apply ${profile}`, { ipfs })
+        await cli('config profile apply server --dry-run=true', { ipfs })
 
-        expect(ipfs.config.profiles.apply.calledWith(profile, {
-          dryRun: false
+        expect(ipfs.config.profiles.apply.calledWith('server', {
+          ...defaultOptions,
+          dryRun: true
+        })).to.be.true()
+      })
+
+      it('--timeout is passed to core', async () => {
+        ipfs.config.profiles.apply.withArgs('server', {
+          ...defaultOptions,
+          timeout: 1000
+        }).returns({
+          original: {
+            foo: 'bar'
+          },
+          updated: {
+            foo: 'baz'
+          }
+        })
+
+        await cli('config profile apply server --timeout=1s', { ipfs })
+
+        expect(ipfs.config.profiles.apply.calledWith('server', {
+          ...defaultOptions,
+          timeout: 1000
         })).to.be.true()
       })
     })
 
-    it('--dry-run is passed to core', async () => {
-      ipfs.config.profiles.apply.withArgs('server', {
-        dryRun: true
-      }).returns({
-        original: {
-          foo: 'bar'
-        },
-        updated: {
-          foo: 'baz'
-        }
+    describe('list', () => {
+      it('lists available config profiles', async () => {
+        ipfs.config.profiles.list.withArgs({
+          timeout: undefined
+        }).returns(
+          Object.keys(profiles).map(profile => {
+            return {
+              name: profiles[profile].name,
+              description: profiles[profile].description
+            }
+          })
+        )
+        const out = await cli('config profile ls', { ipfs })
+
+        Object.keys(profiles => profile => {
+          expect(out).includes(profiles[profile].name)
+          expect(out).includes(profiles[profile].description)
+        })
       })
 
-      await cli('config profile apply server --dry-run=true', { ipfs })
+      it('lists available config profiles with a timeout', async () => {
+        ipfs.config.profiles.list.withArgs({
+          timeout: 1000
+        }).returns(
+          Object.keys(profiles).map(profile => {
+            return {
+              name: profiles[profile].name,
+              description: profiles[profile].description
+            }
+          })
+        )
+        const out = await cli('config profile ls --timeout=1s', { ipfs })
 
-      expect(ipfs.config.profiles.apply.calledWith('server', {
-        dryRun: true
-      })).to.be.true()
-    })
-
-    it('lists available config profiles', async () => {
-      ipfs.config.profiles.list.returns(
-        Object.keys(profiles).map(profile => {
-          return {
-            name: profiles[profile].name,
-            description: profiles[profile].description
-          }
+        Object.keys(profiles => profile => {
+          expect(out).includes(profiles[profile].name)
+          expect(out).includes(profiles[profile].description)
         })
-      )
-      const out = await cli('config profile ls', { ipfs })
-
-      Object.keys(profiles => profile => {
-        expect(out).includes(profiles[profile].name)
-        expect(out).includes(profiles[profile].description)
       })
     })
   })
