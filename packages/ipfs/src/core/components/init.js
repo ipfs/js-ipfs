@@ -3,12 +3,10 @@
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
 const { Buffer } = require('buffer')
-const PeerInfo = require('peer-info')
+
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
 const createRepo = require('../runtime/repo-nodejs')
-const Keychain = require('libp2p-keychain')
-const NoKeychain = require('./no-keychain')
 const mortice = require('mortice')
 const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
@@ -80,7 +78,7 @@ module.exports = ({
       : await initNewRepo(repo, { ...options, print })
 
     log('peer created')
-    const peerInfo = new PeerInfo(peerId)
+
     const blockService = new BlockService(repo)
     const ipld = new Ipld(getDefaultIpldOptions(blockService, constructorOptions.ipld, log))
 
@@ -142,7 +140,7 @@ module.exports = ({
       // Setup the offline routing for IPNS.
       // This is primarily used for offline ipns modifications, such as the initializeKeyspace feature.
       const offlineDatastore = new OfflineDatastore(repo)
-      const ipns = new IPNS(offlineDatastore, repo.datastore, peerInfo, keychain, { pass: options.pass })
+      const ipns = new IPNS(offlineDatastore, repo.datastore, peerId, keychain, { pass: options.pass })
       await ipns.initializeKeyspace(peerId.privKey, emptyDirCid.toString())
     }
 
@@ -158,7 +156,7 @@ module.exports = ({
       ipld,
       keychain,
       object,
-      peerInfo,
+      peerId,
       pin,
       pinManager,
       preload,
@@ -190,7 +188,6 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   }
 
   const peerId = await createPeerId({ privateKey, bits, print })
-  let keychain = new NoKeychain()
 
   log('identity generated')
 
@@ -201,8 +198,6 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 
   privateKey = peerId.privKey
 
-  config.Keychain = Keychain.generateOptions()
-
   log('peer identity: %s', config.Identity.PeerID)
 
   await repo.init(config)
@@ -210,14 +205,25 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 
   log('repo opened')
 
-  if (pass) {
-    log('creating keychain')
-    const keychainOptions = { passPhrase: pass, ...config.Keychain }
-    keychain = new Keychain(repo.keys, keychainOptions)
-    await keychain.importPeer('self', { privKey: privateKey })
+  // Create libp2p for Keychain creation
+  const libp2p = Components.libp2p({
+    peerId,
+    repo,
+    config,
+    keychainConfig: {
+      pass
+    }
+  })
+
+  if (libp2p.keychain && libp2p.keychain.opts) {
+    await libp2p.loadKeychain()
+
+    await repo.config.set('Keychain', {
+      dek: libp2p.keychain.opts.dek
+    })
   }
 
-  return { peerId, keychain }
+  return { peerId, keychain: libp2p.keychain }
 }
 
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
@@ -233,27 +239,21 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
     await repo.config.set(config)
   }
 
-  let keychain = new NoKeychain()
-
-  if (pass) {
-    const keychainOptions = { passPhrase: pass, ...config.Keychain }
-    keychain = new Keychain(repo.keys, keychainOptions)
-    log('keychain constructed')
-  }
-
   const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
 
-  // Import the private key as 'self', if needed.
-  if (pass) {
-    try {
-      await keychain.findKeyByName('self')
-    } catch (err) {
-      log('Creating "self" key')
-      await keychain.importPeer('self', peerId)
+  const libp2p = Components.libp2p({
+    peerId,
+    repo,
+    config,
+    keychainConfig: {
+      pass,
+      ...config.Keychain
     }
-  }
+  })
 
-  return { peerId, keychain }
+  libp2p.keychain && await libp2p.loadKeychain()
+
+  return { peerId, keychain: libp2p.keychain }
 }
 
 function createPeerId ({ privateKey, bits, print }) {
@@ -303,7 +303,7 @@ function createApi ({
   ipld,
   keychain,
   object,
-  peerInfo,
+  peerId,
   pin,
   pinManager,
   preload,
@@ -337,7 +337,7 @@ function createApi ({
     dns: Components.dns(),
     files: Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions }),
     get: Components.get({ ipld, preload }),
-    id: Components.id({ peerInfo }),
+    id: Components.id({ peerId }),
     init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
     isOnline: Components.isOnline({}),
     key: {
@@ -367,7 +367,7 @@ function createApi ({
       initOptions,
       ipld,
       keychain,
-      peerInfo,
+      peerId,
       pinManager,
       preload,
       print,
@@ -383,7 +383,7 @@ function createApi ({
       addrs: notStarted,
       connect: notStarted,
       disconnect: notStarted,
-      localAddrs: Components.swarm.localAddrs({ peerInfo }),
+      localAddrs: Components.swarm.localAddrs({ multiaddrs: [] }),
       peers: notStarted
     },
     version: Components.version({ repo })

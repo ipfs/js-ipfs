@@ -14,9 +14,9 @@ const TLRU = require('../../utils/tlru')
 const defaultRecordTtl = 60 * 1000
 
 class IPNS {
-  constructor (routing, datastore, peerInfo, keychain, options) {
+  constructor (routing, datastore, peerId, keychain, options) {
     this.publisher = new IpnsPublisher(routing, datastore)
-    this.republisher = new IpnsRepublisher(this.publisher, datastore, peerInfo, keychain, options)
+    this.republisher = new IpnsRepublisher(this.publisher, datastore, peerId, keychain, options)
     this.resolver = new IpnsResolver(routing)
     this.cache = new TLRU(1000)
     this.routing = routing
