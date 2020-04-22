@@ -10,16 +10,10 @@ const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
 const randomBytes = require('iso-random-stream/src/random')
+const randomStream = require('iso-random-stream')
 const all = require('it-all')
 const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
-
-let fs, tempWrite
-
-if (isNode) {
-  fs = require('fs')
-  tempWrite = require('temp-write')
-}
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -175,13 +169,9 @@ module.exports = (common, options) => {
     })
 
     it('writes a small file using a Node stream (Node only)', async function () {
-      if (!isNode) {
-        return this.skip()
-      }
-
+      if (!isNode) this.skip()
       const filePath = `/small-file-${Math.random()}.txt`
-      const pathToFile = await tempWrite(smallFile)
-      const stream = fs.createReadStream(pathToFile)
+      const stream = randomStream(1000)
 
       await ipfs.files.write(filePath, stream, {
         create: true

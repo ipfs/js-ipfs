@@ -1,7 +1,9 @@
 'use strict'
 
-const createServer = require('ipfsd-ctl').createServer
-const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
+const { createServer } = require('ipfsd-ctl')
+const EchoServer = require('aegir/utils/echo-server')
+
+
 const server = createServer({
   host: '127.0.0.1',
   port: 48372
@@ -10,18 +12,11 @@ const server = createServer({
   ipfsHttpModule: require('./'),
   ipfsBin: require('go-ipfs-dep').path()
 })
-let echoServer
-const webpack = require('webpack')
+
+let echoServer = new EchoServer()
 
 module.exports = {
   bundlesize: { maxSize: '89kB' },
-  webpack: {
-    ...(process.env.NODE_ENV === 'test' ? {
-      plugins: [
-        new webpack.EnvironmentPlugin(['DEBUG', 'ECHO_SERVER_PORT'])
-      ]
-    } : {})
-  },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -34,21 +29,28 @@ module.exports = {
   },
   hooks: {
     node: {
-      pre: () => {
-        echoServer = EchoServer.createServer()
-
-        return echoServer.start()
+      pre: async () => {
+        await echoServer.start()
+        return {
+          env: {
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+          }
+        }
       },
       post: () => echoServer.stop()
     },
     browser: {
-      pre: () => {
-        echoServer = EchoServer.createServer()
+      pre: async () => {
 
-        return Promise.all([
+        await  Promise.all([
           server.start(),
           echoServer.start()
         ])
+        return {
+          env: {
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+          }
+        }
       },
       post: () => {
         return Promise.all([
