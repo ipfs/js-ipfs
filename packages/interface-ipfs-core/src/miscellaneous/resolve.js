@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
 const { nanoid } = require('nanoid')

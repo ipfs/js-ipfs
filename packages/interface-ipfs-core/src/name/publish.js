@@ -2,7 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-
+const { Buffer } = require('buffer')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')

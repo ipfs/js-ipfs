@@ -1,6 +1,7 @@
 /* eslint-env mocha, browser */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')

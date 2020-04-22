@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const pushable = require('it-pushable')
 const all = require('it-all')
 const { waitForPeers, getTopic } = require('./utils')
