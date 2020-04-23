@@ -301,7 +301,7 @@ describe('name', function () {
       const dht = sinon.stub()
 
       const config = getIpnsRoutingConfig({
-        libp2p: { dht },
+        libp2p: { _dht: dht },
         repo: sinon.stub(),
         peerInfo: sinon.stub(),
         options: {
