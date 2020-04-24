@@ -5,6 +5,7 @@ const CID = require('cids')
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const { FinalPeer } = require('./response-types')
 
 module.exports = configure(api => {
   return async function findPeer (peerId, options = {}) {
@@ -18,14 +19,10 @@ module.exports = configure(api => {
     })
 
     for await (const data of res.ndjson()) {
-      if (data.Type === 3) {
-        throw new Error(data.Extra)
-      }
-
-      if (data.Type === 2 && data.Responses) {
+      if (data.Type === FinalPeer && data.Responses) {
         const { ID, Addrs } = data.Responses[0]
         return {
-          id: ID,
+          id: new CID(ID),
           addrs: (Addrs || []).map(a => multiaddr(a))
         }
       }
