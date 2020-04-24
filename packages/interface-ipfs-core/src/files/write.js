@@ -179,7 +179,7 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(filePath)
 
-      expect(stats.size).to.equal(smallFile.length)
+      expect(stats.size).to.equal(1000)
     })
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
