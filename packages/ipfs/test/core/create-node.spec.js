@@ -4,10 +4,8 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const os = require('os')
-const path = require('path')
-const { nanoid } = require('nanoid')
 const { isNode } = require('ipfs-utils/src/env')
+const tmpDir = require('ipfs-utils/src/temp-dir')
 const IPFS = require('../../src/core')
 
 // This gets replaced by `create-repo-browser.js` in the browser
@@ -26,7 +24,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = await IPFS.create({
-      repo: path.join(os.tmpdir(), 'ipfs-repo-' + nanoid()),
+      repo: tmpDir(),
       init: { bits: 512 },
       config: {
         Addresses: {
