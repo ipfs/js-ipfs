@@ -192,12 +192,13 @@ module.exports = (context) => {
             }
           }
         },
-        (source) => importer(source, context.ipld, {
+        (source) => importer(source, context.block, {
           ...options,
-          dagBuilder: async function * (source, ipld, options) {
+          pin: false,
+          dagBuilder: async function * (source, block, options) {
             for await (const entry of source) {
               yield async function () {
-                const cid = await persist(entry.content, ipld, options)
+                const cid = await persist(entry.content.serialize(), block, options)
 
                 return {
                   cid,

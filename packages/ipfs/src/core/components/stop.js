@@ -106,7 +106,15 @@ function createApi ({
   }
   // FIXME: resolve this circular dependency
   dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
-  const add = Components.add({ ipld, preload, pin, gcLock, options: constructorOptions })
+
+  const block = {
+    get: Components.block.get({ blockService, preload }),
+    put: Components.block.put({ blockService, gcLock, preload }),
+    rm: Components.block.rm({ blockService, gcLock, pinManager }),
+    stat: Components.block.stat({ blockService, preload })
+  }
+
+  const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
   const resolve = Components.resolve({ ipld })
   const refs = Components.refs({ ipld, resolve, preload })
   refs.local = Components.refs.local({ repo })
@@ -122,12 +130,7 @@ function createApi ({
       unwant: notStarted,
       wantlist: notStarted
     },
-    block: {
-      get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, gcLock, preload }),
-      rm: Components.block.rm({ blockService, gcLock, pinManager }),
-      stat: Components.block.stat({ blockService, preload })
-    },
+    block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
       list: Components.bootstrap.list({ repo }),
@@ -137,7 +140,7 @@ function createApi ({
     config: Components.config({ repo }),
     dag,
     dns: Components.dns(),
-    files: Components.files({ ipld, blockService, repo, preload, options: constructorOptions }),
+    files: Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions }),
     get: Components.get({ ipld, preload }),
     id: Components.id({ peerInfo }),
     init: async () => { // eslint-disable-line require-await

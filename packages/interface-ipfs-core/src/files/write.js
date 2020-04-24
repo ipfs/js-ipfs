@@ -780,7 +780,7 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(dirPath)
       const updatedDirCid = stats.cid
 
-      expect(updatedDirCid.toString()).to.deep.equal('QmcGTKoaZeMxVenyxnkP2riibE8vSEPobkN1oxvcEZpBW5')
+      expect(updatedDirCid.toString()).to.equal('QmcGTKoaZeMxVenyxnkP2riibE8vSEPobkN1oxvcEZpBW5')
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {

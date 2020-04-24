@@ -5,7 +5,7 @@ const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
 
-module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) => {
+module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
   return async function * add (source, options) {
     options = options || {}
@@ -40,7 +40,10 @@ module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) =
 
     const iterator = pipe(
       normaliseAddInput(source),
-      source => importer(source, ipld, opts),
+      source => importer(source, block, {
+        ...opts,
+        pin: false
+      }),
       transformFile(opts),
       preloadFile(preload, opts),
       pinFile(pin, opts)

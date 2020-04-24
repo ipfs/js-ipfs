@@ -204,14 +204,15 @@ const write = async (context, source, destination, options) => {
     // persist mode & mtime if set previously
     mode,
     mtime
-  }], context.ipld, {
+  }], context.block, {
     progress: options.progress,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
     strategy: options.strategy,
     rawLeaves: options.rawLeaves,
     reduceSingleLeafToSelf: options.reduceSingleLeafToSelf,
-    leafType: options.leafType
+    leafType: options.leafType,
+    pin: false
   }))
 
   log(`Wrote ${result.cid}`)
