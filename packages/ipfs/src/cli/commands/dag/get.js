@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-
+const { Buffer } = require('buffer')
 module.exports = {
   command: 'get <cid path>',
 

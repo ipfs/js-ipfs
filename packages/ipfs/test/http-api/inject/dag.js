@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const DAGNode = require('ipld-dag-pb').DAGNode
 const Readable = require('stream').Readable
 const FormData = require('form-data')
+const { Buffer } = require('buffer')
 const streamToPromise = require('stream-to-promise')
 const CID = require('cids')
 const testHttpMethod = require('../../utils/test-http-method')

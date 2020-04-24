@@ -1,6 +1,7 @@
 'use strict'
 
 const debug = require('debug')
+const { Buffer } = require('buffer')
 const get = require('dlv')
 const set = require('just-safe-set')
 const log = debug('ipfs:http-api:config')

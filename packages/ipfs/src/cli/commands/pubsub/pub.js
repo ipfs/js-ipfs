@@ -1,5 +1,7 @@
 'use strict'
 
+const { Buffer } = require('buffer')
+
 module.exports = {
   command: 'pub <topic> <data>',
 

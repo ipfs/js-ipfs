@@ -11,6 +11,7 @@ const multihashing = require('multihashing-async')
 const multicodec = require('multicodec')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
+const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 
 const Ipfs = require('../../')

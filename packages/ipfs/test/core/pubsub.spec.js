@@ -3,6 +3,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')

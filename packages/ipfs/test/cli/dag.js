@@ -7,6 +7,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
 const sinon = require('sinon')
 const CID = require('cids')
+const { Buffer } = require('buffer')
 
 describe('dag', () => {
   let ipfs

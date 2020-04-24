@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
 const factory = require('../utils/factory')
+const { Buffer } = require('buffer')
 
 describe('dht', () => {
   describe('enabled by config', () => {

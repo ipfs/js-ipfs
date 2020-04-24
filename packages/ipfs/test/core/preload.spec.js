@@ -2,6 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
 const MockPreloadNode = require('../utils/mock-preload-node')

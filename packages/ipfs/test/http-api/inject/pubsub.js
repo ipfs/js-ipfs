@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
+const { Buffer } = require('buffer')
 
 describe('/pubsub', () => {
   const buf = Buffer.from('some message')

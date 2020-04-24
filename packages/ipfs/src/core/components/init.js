@@ -2,6 +2,7 @@
 
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
+const { Buffer } = require('buffer')
 const PeerInfo = require('peer-info')
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')

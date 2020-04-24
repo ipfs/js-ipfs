@@ -4,6 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
+const { Buffer } = require('buffer')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 
