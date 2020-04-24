@@ -4,6 +4,7 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
+const importer = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -36,10 +37,14 @@ module.exports = (common, options) => {
         content('holmes.txt')
       ]
 
-      await all(ipfs.add(dirs))
+      const imported = await all(importer(dirs, ipfs.block))
+
+      // otherwise go-ipfs doesn't show them in the local refs
+      await Promise.all(
+        imported.map(i => ipfs.pin.add(i.cid))
+      )
 
       const refs = await all(ipfs.refs.local())
-
       const cids = refs.map(r => r.ref)
       expect(cids).to.include('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn')
       expect(cids).to.include('QmR4nFjTu18TyANgC65ArNWp5Yaab1gPzQ4D8zp7Kx3vhr')
