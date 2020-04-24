@@ -21,7 +21,7 @@ module.exports = configure(api => {
       if (message.Type === Provider && message.Responses) {
         for (const { ID, Addrs } of message.Responses) {
           yield {
-            id: new CID(ID),
+            id: ID,
             addrs: (Addrs || []).map(a => multiaddr(a))
           }
         }

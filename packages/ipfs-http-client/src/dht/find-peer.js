@@ -22,7 +22,7 @@ module.exports = configure(api => {
       if (data.Type === FinalPeer && data.Responses) {
         const { ID, Addrs } = data.Responses[0]
         return {
-          id: new CID(ID),
+          id: ID,
           addrs: (Addrs || []).map(a => multiaddr(a))
         }
       }

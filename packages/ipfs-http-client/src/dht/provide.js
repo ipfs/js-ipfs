@@ -24,7 +24,7 @@ module.exports = configure(api => {
       message.id = new CID(message.id)
       if (message.responses) {
         message.responses = message.responses.map(({ ID, Addrs }) => ({
-          id: new CID(ID),
+          id: ID,
           addrs: (Addrs || []).map(a => multiaddr(a))
         }))
       } else {
