@@ -76,9 +76,10 @@ function createMfs (options) {
   return mfs
 }
 
-module.exports = ({ ipld, blockService, repo, preload, options: constructorOptions }) => {
+module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {
   const methods = createMfs({
     ipld,
+    block,
     blocks: blockService,
     datastore: repo.root,
     repoOwner: constructorOptions.repoOwner

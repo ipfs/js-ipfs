@@ -124,7 +124,7 @@ const addToShardedDirectory = async (context, options) => {
     shard, path
   } = await addFileToShardedDirectory(context, options)
 
-  const result = await last(shard.flush('', context.ipld))
+  const result = await last(shard.flush('', context.block))
   const node = await context.ipld.get(result.cid)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
@@ -203,7 +203,7 @@ const addFileToShardedDirectory = async (context, options) => {
 
     if (link.Name.length > 2) {
       // another file had the same prefix, will be replaced with a subshard
-      log(`Link ${link.Name} will be replaced with a subshard`)
+      log(`Link ${link.Name} ${link.Hash} will be replaced with a subshard`)
       index = path.length
 
       break
@@ -231,7 +231,7 @@ const addFileToShardedDirectory = async (context, options) => {
 
     const nextSegment = path[index]
 
-    // add next level's worth of links to bucket
+    // add next levels worth of links to bucket
     await addLinksToHamtBucket(subShard.Links, nextSegment.bucket, rootBucket)
 
     nextSegment.node = subShard
