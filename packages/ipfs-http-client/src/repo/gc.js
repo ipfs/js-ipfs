@@ -18,6 +18,6 @@ module.exports = configure(api => {
       }
     })
 
-    yield res.ndjson()
+    yield * res.ndjson()
   }
 })
