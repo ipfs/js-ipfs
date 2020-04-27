@@ -567,7 +567,24 @@ describe('interface-ipfs-core tests', () => {
     ] : null
   })
 
-  tests.repo(commonFactory)
+  tests.repo(commonFactory, {
+    skip: isWindows ? [{
+      name: 'should run garbage collection',
+      reason: 'https://github.com/ipfs/go-ipfs/issues/7225'
+    }, {
+      name: 'should clean up unpinned data',
+      reason: 'https://github.com/ipfs/go-ipfs/issues/7225'
+    }, {
+      name: 'should clean up removed MFS files',
+      reason: 'https://github.com/ipfs/go-ipfs/issues/7225'
+    }, {
+      name: 'should clean up block only after unpinned and removed from MFS',
+      reason: 'https://github.com/ipfs/go-ipfs/issues/7225'
+    }, {
+      name: 'should clean up indirectly pinned data after recursive pin removal',
+      reason: 'https://github.com/ipfs/go-ipfs/issues/7225'
+    }] : null
+  })
 
   tests.stats(commonFactory)
 
