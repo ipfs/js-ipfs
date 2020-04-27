@@ -1,19 +1,55 @@
----
-name: Open an issue
-about: Only for actionable issues relevant to this repository.
-title: ''
-labels: need/triage
-assignees: ''
+----
+-name: Open an issue
+-about: Only for actionable issues relevant to this repository.
+-title: ''
+-labels: need/triage
+-assignees: ''
+-
+----
 
----
 <!--
-Hello! To ensure this issue is correctly addressed as soon as possible by the IPFS team, please try to make sure:
+Thank you for reporting an issue.
 
-- This issue is relevant to this repository's topic or codebase.
+This issue tracker is for bugs found within the JavaScript implementation of IPFS.
 
-- A clear description is provided. It should includes as much relevant information as possible and clear scope for the issue to be actionable.
+If you are asking a question about how to use IPFS, please ask on https://discuss.ipfs.io
 
-FOR GENERAL DISCUSSION, HELP OR QUESTIONS, please see the options at https://ipfs.io/help or head directly to https://discuss.ipfs.io.
+Otherwise please fill in as much of the template below as possible.
 
-(you can delete this section after reading)
+Version: output of `jsipfs version --all` if using the CLI or `ipfs.version((err, version) => {})` if using the instance.
+
+Platform: output of `uname -a` (UNIX), or version and 32 or 64-bit (Windows). If using in a Browser, please share the browser version as well.
+
+Subsystem: if known, please specify affected core module name (e.g Bitswap, libp2p, etc).
+
+If possible, please provide code that demonstrates the problem, keeping it as
+simple and free of external dependencies as you are able.
+-->
+
+- **Version**:
+- **Platform**:
+- **Subsystem**:
+
+<!-- Bug, Feature, Question, Enhancement, Etc -->
+#### Type:
+
+<!--
+One of following:
+  Critical - System crash, application panic.
+  High - The main functionality of the application does not work, API breakage, repo format breakage, etc.
+  Medium - A non-essential functionality does not work, performance issues, etc.
+  Low - An optional functionality does not work.
+  Very Low - Translation or documentation mistake. Something that won't give anyone a bad day.
+-->
+#### Severity:
+
+#### Description:
+
+#### Steps to reproduce the error:
+
+<!--
+This is for you! Please read, and then delete this text before posting it.
+The js-ipfs issues are only for bug reports and directly actionable features.
+
+Read https://github.com/ipfs/community/blob/master/CONTRIBUTING.md#reporting-issues if your issue doesn't fit either of those categories.
 -->
