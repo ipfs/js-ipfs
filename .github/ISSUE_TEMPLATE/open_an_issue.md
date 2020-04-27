@@ -1,12 +1,11 @@
-----
--name: Open an issue
--about: Only for actionable issues relevant to this repository.
--title: ''
--labels: need/triage
--assignees: ''
--
-----
+---
+name: Open an issue
+about: Only for actionable issues relevant to this repository.
+title: ''
+labels: need/triage
+assignees: ''
 
+---
 <!--
 Thank you for reporting an issue.
 
