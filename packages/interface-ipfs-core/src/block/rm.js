@@ -39,7 +39,6 @@ module.exports = (common, options) => {
 
       // did we actually remove the block?
       const localRefsAfterRemove = await all(ipfs.refs.local())
-      expect(localRefsAfterRemove).to.have.property('length').that.is.greaterThan(0)
       expect(localRefsAfterRemove.find(ref => ref.ref === cid.toString())).to.not.be.ok()
     })
 

@@ -1,6 +1,5 @@
 {
   "name": "example-browser-add-readable-stream",
-  "version": "2.0.1",
   "description": "How to add readable streams in the browser",
   "main": "index.js",
   "private": true,

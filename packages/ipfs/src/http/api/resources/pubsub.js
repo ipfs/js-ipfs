@@ -32,13 +32,16 @@ exports.subscribe = {
     res.write('{}\n')
 
     const unsubscribe = () => {
-      ipfs.pubsub.unsubscribe(topic, handler, () => res.end())
+      ipfs.pubsub.unsubscribe(topic, handler)
+      res.end()
     }
 
     request.events.once('disconnect', unsubscribe)
     request.events.once('finish', unsubscribe)
 
-    await ipfs.pubsub.subscribe(topic, handler, { discover: discover })
+    await ipfs.pubsub.subscribe(topic, handler, {
+      discover: discover
+    })
 
     return h.response(res)
       .header('X-Chunked-Output', '1')

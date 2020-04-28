@@ -3,129 +3,141 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const CID = require('cids')
-const waitFor = require('../../utils/wait-for')
+const sinon = require('sinon')
 const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
 
-module.exports = (http) => {
-  describe('/bitswap', () => {
-    const wantedCid0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
-    const wantedCid1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
-    let api
+describe('/bitswap', () => {
+  const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  let ipfs
 
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
-    })
-
-    before(function () {
-      this.timeout(120 * 1000)
-
-      // Add a CID to the wantlist
-      api.inject({ method: 'POST', url: `/api/v0/block/get?arg=${wantedCid0}` })
-      api.inject({ method: 'POST', url: `/api/v0/block/get?arg=${wantedCid1}` })
-
-      const test = async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/wantlist'
-        })
-
-        if (res.statusCode !== 200) {
-          throw new Error(`unexpected status ${res.statusCode}`)
-        }
-
-        const isWanted0 = res.result.Keys.some(k => k['/'] === wantedCid0)
-        const isWanted1 = res.result.Keys.some(k => k['/'] === wantedCid1)
-
-        return isWanted0 && isWanted1
+  beforeEach(() => {
+    ipfs = {
+      bitswap: {
+        wantlist: sinon.stub(),
+        stat: sinon.stub()
       }
+    }
+  })
 
-      return waitFor(test, {
-        name: `${wantedCid0} and ${wantedCid1} to be wanted`,
-        timeout: 60 * 1000
-      })
+  describe('/wantlist', () => {
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/bitswap/wantlist')
     })
 
-    describe('/wantlist', () => {
-      it('only accepts POST', () => {
-        return testHttpMethod('/api/v0/bitswap/wantlist')
-      })
+    it('/wantlist', async () => {
+      ipfs.bitswap.wantlist.returns([
+        cid
+      ])
 
-      it('/wantlist', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/wantlist'
-        })
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/wantlist'
+      }, { ipfs })
 
-        expect(res.statusCode).to.equal(200)
-        expect(res.result).to.have.property('Keys')
-        expect(res.result.Keys).to.deep.include({ '/': wantedCid0 })
-      })
-
-      it('/wantlist?cid-base=base64', async () => {
-        const base64Cid = new CID(wantedCid1).toString('base64')
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/wantlist?cid-base=base64'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys).to.deep.include({ '/': base64Cid })
-      })
-
-      it('/wantlist?cid-base=invalid', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/wantlist?cid-base=invalid'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('Invalid request query input')
-      })
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
     })
 
-    describe('/stat', () => {
-      it('only accepts POST', () => {
-        return testHttpMethod('/api/v0/bitswap/stat')
-      })
+    // TODO: unskip after switch to v1 CIDs by default
+    it.skip('/wantlist?cid-base=base64', async () => {
+      ipfs.bitswap.wantlist.returns([
+        cid
+      ])
 
-      it('/stat', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/stat'
-        })
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/wantlist?cid-base=base64'
+      }, { ipfs })
 
-        expect(res.statusCode).to.equal(200)
-        expect(res.result).to.have.property('ProvideBufLen')
-        expect(res.result).to.have.property('BlocksReceived')
-        expect(res.result).to.have.property('Wantlist')
-        expect(res.result).to.have.property('Peers')
-        expect(res.result).to.have.property('DupBlksReceived')
-        expect(res.result).to.have.property('DupDataReceived')
-        expect(res.result).to.have.property('DataReceived')
-        expect(res.result).to.have.property('BlocksSent')
-        expect(res.result).to.have.property('DataSent')
-      })
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString('base64') })
+    })
 
-      it('/stat?cid-base=base64', async () => {
-        const base64Cid = new CID(wantedCid1).toString('base64')
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/stat?cid-base=base64'
-        })
+    it('/wantlist?cid-base=invalid', async () => {
+      ipfs.bitswap.wantlist.returns([
+        cid
+      ])
 
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Wantlist).to.deep.include({ '/': base64Cid })
-      })
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/wantlist?cid-base=invalid'
+      }, { ipfs })
 
-      it('/stat?cid-base=invalid', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/bitswap/stat?cid-base=invalid'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('Invalid request query input')
-      })
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
   })
-}
+
+  describe('/stat', () => {
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/bitswap/stat')
+    })
+
+    it('/stat', async () => {
+      ipfs.bitswap.stat.returns({
+        provideBufLen: 'provideBufLen',
+        blocksReceived: 'blocksReceived',
+        wantlist: [
+          cid
+        ],
+        peers: 'peers',
+        dupBlksReceived: 'dupBlksReceived',
+        dupDataReceived: 'dupDataReceived',
+        dataReceived: 'dataReceived',
+        blocksSent: 'blocksSent',
+        dataSent: 'dataSent'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/stat'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.ProvideBufLen', 'provideBufLen')
+      expect(res).to.have.nested.property('result.BlocksReceived', 'blocksReceived')
+      expect(res).to.have.nested.property('result.Wantlist').that.deep.includes({ '/': cid.toString() })
+      expect(res).to.have.nested.property('result.Peers', 'peers')
+      expect(res).to.have.nested.property('result.DupBlksReceived', 'dupBlksReceived')
+      expect(res).to.have.nested.property('result.DupDataReceived', 'dupDataReceived')
+      expect(res).to.have.nested.property('result.DataReceived', 'dataReceived')
+      expect(res).to.have.nested.property('result.BlocksSent', 'blocksSent')
+      expect(res).to.have.nested.property('result.DataSent', 'dataSent')
+    })
+
+    it('/stat?cid-base=base64', async () => {
+      ipfs.bitswap.stat.returns({
+        provideBufLen: 'provideBufLen',
+        blocksReceived: 'blocksReceived',
+        wantlist: [
+          cid.toV1()
+        ],
+        peers: 'peers',
+        dupBlksReceived: 'dupBlksReceived',
+        dupDataReceived: 'dupDataReceived',
+        dataReceived: 'dataReceived',
+        blocksSent: 'blocksSent',
+        dataSent: 'dataSent'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/stat?cid-base=base64'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Wantlist').that.deep.includes({ '/': cid.toV1().toString('base64') })
+    })
+
+    it('/stat?cid-base=invalid', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/bitswap/stat?cid-base=invalid'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+  })
+})

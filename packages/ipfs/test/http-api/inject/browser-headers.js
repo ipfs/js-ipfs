@@ -36,7 +36,7 @@ module.exports = () => {
         }
       }, { ipfs })
 
-      expect(res.statusCode).to.equal(405)
+      expect(res).to.have.property('statusCode', 405)
     })
 
     it('should not block a Mozilla* browser that provides an allowed Origin', async () => {
@@ -49,7 +49,7 @@ module.exports = () => {
         }
       }, { ipfs })
 
-      expect(res.statusCode).to.equal(200)
+      expect(res).to.have.property('statusCode', 200)
     })
   })
 }

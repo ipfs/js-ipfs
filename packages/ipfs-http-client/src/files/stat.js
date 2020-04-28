@@ -15,7 +15,10 @@ module.exports = configure(api => {
     const res = await api.post('files/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(path, options)
+      searchParams: toUrlSearchParams({
+        arg: path,
+        ...options
+      })
     })
     const data = await res.json()
 

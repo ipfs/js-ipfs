@@ -2,6 +2,7 @@
 
 const Multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (addr, options = {}) => {
@@ -10,12 +11,13 @@ module.exports = configure(api => {
       addr = null
     }
 
-    options.arg = addr
-
     const res = await api.post('bootstrap/add', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: addr,
+        ...options
+      })
     })
 
     return res.json()

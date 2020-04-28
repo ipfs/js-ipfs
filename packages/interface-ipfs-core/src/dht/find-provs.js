@@ -67,8 +67,20 @@ module.exports = (common, options) => {
       }
 
       const cidV0 = await fakeCid()
+      const start = Date.now()
+      let res
 
-      await expect(all(nodeA.dht.findProvs(cidV0, options))).to.be.rejected()
+      try {
+        res = await all(nodeA.dht.findProvs(cidV0, options))
+      } catch (err) {
+        // rejected by http client
+        expect(err).to.have.property('name', 'TimeoutError')
+        return
+      }
+
+      // rejected by the server, errors don't work over http - https://github.com/ipfs/js-ipfs/issues/2519
+      expect(res).to.be.an('array').with.lengthOf(0)
+      expect(Date.now() - start).to.be.lessThan(100)
     })
   })
 }

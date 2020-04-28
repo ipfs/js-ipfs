@@ -3,333 +3,300 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
 const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
+const sinon = require('sinon')
+const CID = require('cids')
+const allNdjson = require('../../utils/all-ndjson')
 
-// We use existing pin structure in the go-ipfs-repo fixture
-// so that we don't have to stream a bunch of object/put operations
-// This is suitable because these tests target the functionality
-// of the /pin endpoints and don't delve into the pin core
-//
-// fixture's pins:
-// - root1
-//   - c1
-//   - c2
-//   - c3
-//   - c4
-//   - c5
-//   - c6
+describe('/pin', () => {
+  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid2 = new CID('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V')
+  let ipfs
 
-const pins = {
-  root1: 'QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr',
-  c1: 'QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V',
-  c2: 'QmYCvbfNbCwFR45HiNP45rwJgvatpiW38D961L5qAhUM5Y',
-  c3: 'QmY5heUM5qgRubMDD1og9fhCPA6QdkMp3QCwd4s7gJsyE7',
-  c4: 'QmQN88TEidd3RY2u3dpib49fERTDfKtDpvxnvczATNsfKT',
-  c5: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
-  c6: 'QmciSU8hfpAXKjvK5YLUSwApomGSWN5gFbP4EpDAEzu2Te'
-}
+  beforeEach(() => {
+    ipfs = {
+      pin: {
+        ls: sinon.stub(),
+        add: sinon.stub(),
+        rm: sinon.stub()
+      }
+    }
+  })
 
-module.exports = (http) => {
-  describe('/pin', function () {
-    this.timeout(20 * 1000)
-    let api
-
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
+  describe('/rm', () => {
+    it('only accepts POST', () => {
+      return testHttpMethod(`/api/v0/pin/rm?arg=${cid}`)
     })
 
-    describe('/rm', () => {
-      it('only accepts POST', () => {
-        return testHttpMethod(`/api/v0/pin/rm?arg=${pins.root1}`)
-      })
+    it('fails on invalid args', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/rm?arg=invalid'
+      }, { ipfs })
 
-      it('fails on invalid args', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/rm?arg=invalid'
-        })
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
+    })
 
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.match(/invalid ipfs ref path/)
-      })
+    it('unpins recursive pins', async () => {
+      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
+        recursive: true
+      })).returns([{
+        cid
+      }])
 
-      it('unpins recursive pins', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/rm?arg=${pins.root1}`
-        })
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/rm?arg=${cid}`
+      }, { ipfs })
 
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Pins).to.deep.eql([pins.root1])
-      })
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
 
-      it('unpins direct pins', async () => {
-        let res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/add?arg=${pins.root1}&recursive=false`
-        })
+    it('unpins direct pins', async () => {
+      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
+        recursive: false
+      })).returns([{
+        cid
+      }])
 
-        expect(res.statusCode).to.equal(200)
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/rm?arg=${cid}&recursive=false`
+      }, { ipfs })
 
-        res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/rm?arg=${pins.root1}&recursive=false`
-        })
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
 
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Pins).to.deep.eql([pins.root1])
-      })
+    it('should remove pin and return base64 encoded CID', async () => {
+      ipfs.pin.rm.withArgs([cid.toString()], sinon.match({
+        recursive: true
+      })).returns([{
+        cid
+      }])
 
-      it('should remove pin and return base64 encoded CID', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/rm?arg=${cid}&cid-base=base64`
+      }, { ipfs })
 
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add',
-          headers: headers,
-          payload: payload
-        })
-
-        expect(res.statusCode).to.equal(200)
-        const hash = JSON.parse(res.result).Hash
-
-        res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/rm?arg=${hash}&cid-base=base64`
-        })
-
-        expect(res.statusCode).to.equal(200)
-        res.result.Pins.forEach(cid => {
-          expect(multibase.isEncoded(cid)).to.deep.equal('base64')
-        })
-      })
-
-      it('should not remove pin for invalid cid-base option', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
-
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add',
-          headers: headers,
-          payload: payload
-        })
-
-        expect(res.statusCode).to.equal(200)
-        const hash = JSON.parse(res.result).Hash
-
-        res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/rm?arg=${hash}&cid-base=invalid`
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('Invalid request query input')
+      expect(res).to.have.property('statusCode', 200)
+      res.result.Pins.forEach(cid => {
+        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
       })
     })
 
-    describe('/add', () => {
-      it('only accepts POST', () => {
-        return testHttpMethod(`/api/v0/pin/add?arg=${pins.root1}`)
-      })
+    it('should not remove pin for invalid cid-base option', async () => {
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/rm?arg=${cid}&cid-base=invalid`
+      }, { ipfs })
 
-      it('fails on invalid args', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/add?arg=invalid'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.match(/invalid ipfs ref path/)
-      })
-
-      it('recursively', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/add?arg=${pins.root1}`
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Pins).to.deep.eql([pins.root1])
-      })
-
-      it('directly', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/add?arg=${pins.root1}&recursive=false`
-        })
-        // by directly pinning a node that is already recursively pinned,
-        // it should error and verifies that the endpoint is parsing
-        // the recursive arg correctly.
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.match(/already pinned recursively/)
-      })
-
-      it('should add pin and return base64 encoded CID', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
-
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add?pin=false',
-          headers: headers,
-          payload: payload
-        })
-
-        expect(res.statusCode).to.equal(200)
-        const hash = JSON.parse(res.result).Hash
-
-        res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/add?arg=${hash}&cid-base=base64`
-        })
-
-        expect(res.statusCode).to.equal(200)
-        res.result.Pins.forEach(cid => {
-          expect(multibase.isEncoded(cid)).to.deep.equal('base64')
-        })
-      })
-
-      it('should not add pin for invalid cid-base option', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
-
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add?pin=false',
-          headers: headers,
-          payload: payload
-        })
-        expect(res.statusCode).to.equal(200)
-        const hash = JSON.parse(res.result).Hash
-
-        res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/add?arg=${hash}&cid-base=invalid`
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('Invalid request query input')
-      })
-    })
-
-    describe('/ls', () => {
-      it('only accepts POST', () => {
-        return testHttpMethod('/api/v0/pin/ls')
-      })
-
-      it('fails on invalid args', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls?arg=invalid'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.match(/invalid ipfs ref path/)
-      })
-
-      it('finds all pinned objects', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys).to.include.keys(Object.values(pins))
-      })
-
-      it('finds all pinned objects streaming', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls?stream=true'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        const cids = res.result.trim().split('\n').map(json => JSON.parse(json).Cid)
-        Object.values(pins).forEach(pinnedCid => expect(cids).to.include(pinnedCid))
-      })
-
-      it('finds specific pinned objects', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: `/api/v0/pin/ls?arg=${pins.c1}`
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys[pins.c1].Type)
-          .to.equal(`indirect through ${pins.root1}`)
-      })
-
-      it('finds pins of type', async () => {
-        const res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls?type=recursive'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        expect(res.result.Keys.QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr)
-          .to.deep.eql({ Type: 'recursive' })
-      })
-
-      it('should list pins and return base64 encoded CIDs', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
-
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add',
-          headers: headers,
-          payload: payload
-        })
-        expect(res.statusCode).to.equal(200)
-
-        res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls?cid-base=base64'
-        })
-
-        expect(res.statusCode).to.equal(200)
-        Object.keys(res.result.Keys).forEach(cid => {
-          expect(multibase.isEncoded(cid)).to.deep.equal('base64')
-        })
-      })
-
-      it('should not list pins for invalid cid-base option', async () => {
-        const form = new FormData()
-        form.append('data', Buffer.from('TEST' + Date.now()))
-        const headers = form.getHeaders()
-
-        const payload = await streamToPromise(form)
-        let res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/add',
-          headers: headers,
-          payload: payload
-        })
-        expect(res.statusCode).to.equal(200)
-
-        res = await api.inject({
-          method: 'POST',
-          url: '/api/v0/pin/ls?cid-base=invalid'
-        })
-
-        expect(res.statusCode).to.equal(400)
-        expect(res.result.Message).to.include('Invalid request query input')
-      })
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
   })
-}
+
+  describe('/add', () => {
+    it('only accepts POST', () => {
+      return testHttpMethod(`/api/v0/pin/add?arg=${cid}`)
+    })
+
+    it('fails on invalid args', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/add?arg=invalid'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
+    })
+
+    it('recursively', async () => {
+      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
+        recursive: true
+      })).returns([{
+        cid
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/add?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
+
+    it('directly', async () => {
+      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
+        recursive: false
+      })).returns([{
+        cid
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/add?arg=${cid}&recursive=false`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Pins', [cid.toString()])
+    })
+
+    it('should add pin and return base64 encoded CID', async () => {
+      ipfs.pin.add.withArgs([cid.toString()], sinon.match({
+        recursive: true
+      })).returns([{
+        cid
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/add?arg=${cid}&cid-base=base64`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      res.result.Pins.forEach(cid => {
+        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+      })
+    })
+
+    it('should not add pin for invalid cid-base option', async () => {
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/add?arg=${cid}&cid-base=invalid`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+  })
+
+  describe('/ls', () => {
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/pin/ls')
+    })
+
+    it('fails on invalid args', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?arg=invalid'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.matches(/invalid ipfs ref path/)
+    })
+
+    it('finds all pinned objects', async () => {
+      ipfs.pin.ls.returns([{
+        cid,
+        type: 'recursive'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.includes.keys(cid.toString())
+    })
+
+    it('finds all pinned objects streaming', async () => {
+      ipfs.pin.ls.returns([{
+        cid: cid,
+        type: 'recursive'
+      }, {
+        cid: cid2,
+        type: 'recursive'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?stream=true'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(allNdjson(res)).to.deep.equal([
+        { Cid: cid.toString(), Type: 'recursive' },
+        { Cid: cid2.toString(), Type: 'recursive' }
+      ])
+    })
+
+    it('finds specific pinned objects', async () => {
+      ipfs.pin.ls.withArgs(cid.toString(), sinon.match({
+        type: 'all'
+      })).returns([{
+        cid,
+        type: 'recursive'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/pin/ls?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({
+        [cid.toString()]: {
+          Type: 'recursive'
+        }
+      })
+    })
+
+    it('finds pins of type', async () => {
+      ipfs.pin.ls.withArgs(undefined, sinon.match({
+        type: 'direct'
+      })).returns([{
+        cid,
+        type: 'direct'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?type=direct'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({
+        [cid.toString()]: {
+          Type: 'direct'
+        }
+      })
+    })
+
+    it('should list pins and return base64 encoded CIDs', async () => {
+      ipfs.pin.ls.returns([{
+        cid,
+        type: 'direct'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?cid-base=base64'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.satisfies((keys) => {
+        return Object.keys(keys).reduce((acc, curr) => {
+          return acc && multibase.isEncoded(curr) === 'base64'
+        }, true)
+      })
+    })
+
+    it('should not list pins for invalid cid-base option', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/pin/ls?cid-base=invalid'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+    })
+  })
+})

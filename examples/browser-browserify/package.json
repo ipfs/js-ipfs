@@ -1,6 +1,5 @@
 {
   "name": "example-browser-browserify",
-  "version": "1.1.1",
   "description": "Bundle js-ipfs with Browserify",
   "main": "index.js",
   "private": true,

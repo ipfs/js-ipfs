@@ -11,10 +11,11 @@ module.exports = configure(api => {
     const res = await api.post('files/write', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(path, {
-        ...options,
+      searchParams: toUrlSearchParams({
+        arg: path,
         streamChannels: true,
-        count: options.count || options.length
+        count: options.count || options.length,
+        ...options
       }),
       ...(
         await multipartRequest({

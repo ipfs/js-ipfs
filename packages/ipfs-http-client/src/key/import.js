@@ -2,6 +2,7 @@
 
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (name, pem, password, options = {}) => {
@@ -10,15 +11,15 @@ module.exports = configure(api => {
       password = null
     }
 
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', name)
-    searchParams.set('pem', pem)
-    searchParams.set('password', password)
-
     const res = await api.post('key/import', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: name,
+        pem,
+        password,
+        ...options
+      })
     })
     const data = await res.json()
 

@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.43.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.1...ipfs@0.43.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* make http api only accept POST requests ([#2977](https://github.com/ipfs/js-ipfs/issues/2977)) ([943d4a8](https://github.com/ipfs/js-ipfs/commit/943d4a8cf2d4c4ff5ecd4814c59cb0aae0cfa1fd))
+* regression that dht could not be enabled through conf ([#2976](https://github.com/ipfs/js-ipfs/issues/2976)) ([9d88a2e](https://github.com/ipfs/js-ipfs/commit/9d88a2ebbad4dfa58df351d31d201eaf2aaf78dc))
+
+
+### BREAKING CHANGES
+
+* Where we used to accept all and any HTTP methods, now only POST is
+accepted.  The API client will now only send POST requests too.
+
+* test: add tests to make sure we are post-only
+
+* chore: upgrade ipfs-utils
+
+* fix: return 405 instead of 404 for bad methods
+
+* fix: reject browsers that do not send an origin
+
+Also fixes running interface tests over http in browsers against
+js-ipfs
+
+
+
+
+
 ## [0.42.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.0...ipfs@0.42.1) (2020-04-08)
 
 

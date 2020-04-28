@@ -26,7 +26,7 @@ module.exports = ({ libp2p, repo, peerInfo, options }) => {
     const offlineDatastore = new OfflineDatastore(repo)
     ipnsStores.push(offlineDatastore)
   } else {
-    ipnsStores.push(libp2p.dht)
+    ipnsStores.push(libp2p._dht)
   }
 
   // Create ipns routing with a set of datastores

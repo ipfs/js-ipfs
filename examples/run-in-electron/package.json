@@ -1,6 +1,5 @@
 {
   "name": "example-js-ipfs-in-electron",
-  "version": "0.0.2",
   "description": "A minimal Electron application with js-ipfs",
   "main": "main.js",
   "private": true,

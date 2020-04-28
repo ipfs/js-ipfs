@@ -180,7 +180,7 @@ module.exports = (common, options) => {
       const obj = await new DAGNode(Buffer.from('fruit'), [{
         Name: 'p',
         Hash: dataCid,
-        TSize: addRes[0].size
+        Tsize: addRes[0].size
       }])
 
       // Put the object into IPFS

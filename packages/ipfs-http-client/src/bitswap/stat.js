@@ -3,11 +3,12 @@
 const { BigNumber } = require('bignumber.js')
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (options = {}) => {
     const res = await api.post('bitswap/stat', {
-      searchParams: options,
+      searchParams: toUrlSearchParams(options),
       timeout: options.timeout,
       signal: options.signal
     })

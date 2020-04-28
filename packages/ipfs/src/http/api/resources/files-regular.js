@@ -249,10 +249,13 @@ exports.add = {
 
 exports.ls = {
   validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names),
-      stream: Joi.boolean()
-    }).unknown()
+    query: Joi.object()
+      .keys({
+        arg: Joi.string().required(),
+        'cid-base': Joi.string().valid(...multibase.names),
+        stream: Joi.boolean().default(false),
+        recursive: Joi.boolean().default(false)
+      }).unknown()
   },
 
   // uses common parseKey method that returns a `key`
@@ -262,8 +265,11 @@ exports.ls = {
   async handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
-    const recursive = request.query && request.query.recursive === 'true'
-    const cidBase = request.query['cid-base']
+    const {
+      recursive,
+      stream,
+      'cid-base': cidBase
+    } = request.query
 
     const mapLink = link => {
       const output = {
@@ -286,15 +292,16 @@ exports.ls = {
       return output
     }
 
-    if (!request.query.stream) {
-      let links
+    if (!stream) {
       try {
-        links = await all(ipfs.ls(key, { recursive }))
+        const links = await all(ipfs.ls(key, {
+          recursive
+        }))
+
+        return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
       } catch (err) {
         throw Boom.boomify(err, { message: 'Failed to list dir' })
       }
-
-      return h.response({ Objects: [{ Hash: key, Links: links.map(mapLink) }] })
     }
 
     return streamResponse(request, h, () => pipe(
@@ -334,17 +341,22 @@ exports.refs = {
   handler (request, h) {
     const { ipfs } = request.server.app
     const { key } = request.pre.args
-
-    const options = {
-      recursive: request.query.recursive,
-      format: request.query.format,
-      edges: request.query.edges,
-      unique: request.query.unique,
-      maxDepth: request.query['max-depth']
-    }
+    const {
+      recursive,
+      format,
+      edges,
+      unique,
+      'max-depth': maxDepth
+    } = request.query
 
     return streamResponse(request, h, () => pipe(
-      ipfs.refs(key, options),
+      ipfs.refs(key, {
+        recursive,
+        format,
+        edges,
+        unique,
+        maxDepth
+      }),
       map(({ ref, err }) => ({ Ref: ref, Err: err })),
       ndjson.stringify
     ))

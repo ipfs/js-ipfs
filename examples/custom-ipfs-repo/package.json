@@ -1,6 +1,5 @@
 {
   "name": "example-custom-ipfs-repo",
-  "version": "0.2.1",
   "description": "Customizing your ipfs repo",
   "main": "index.js",
   "private": true,

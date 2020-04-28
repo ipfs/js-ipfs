@@ -2,18 +2,20 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, options = {}) => {
-    options.arg = (new CID(cid)).toString()
-
-    const response = await api.post('block/stat', {
+    const res = await api.post('block/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: new CID(cid).toString(),
+        ...options
+      })
     })
-    const res = await response.json()
+    const data = await res.json()
 
-    return { cid: new CID(res.Key), size: res.Size }
+    return { cid: new CID(data.Key), size: data.Size }
   }
 })

@@ -71,7 +71,14 @@ module.exports = ({
 
     blockService.setExchange(bitswap)
 
-    const files = Components.files({ ipld, blockService, repo, preload, options: constructorOptions })
+    const block = {
+      get: Components.block.get({ blockService, preload }),
+      put: Components.block.put({ blockService, gcLock, preload }),
+      rm: Components.block.rm({ blockService, gcLock, pinManager }),
+      stat: Components.block.stat({ blockService, preload })
+    }
+
+    const files = Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions })
     const mfsPreload = createMfsPreload({ files, preload, options: constructorOptions.preload })
 
     await Promise.all([
@@ -83,6 +90,7 @@ module.exports = ({
     const api = createApi({
       apiManager,
       bitswap,
+      block,
       blockService,
       config,
       constructorOptions,
@@ -115,6 +123,7 @@ module.exports = ({
 function createApi ({
   apiManager,
   bitswap,
+  block,
   blockService,
   config,
   constructorOptions,
@@ -158,7 +167,7 @@ function createApi ({
   }
   // FIXME: resolve this circular dependency
   dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
-  const add = Components.add({ ipld, preload, pin, gcLock, options: constructorOptions })
+  const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
 
   const dhtNotEnabled = async () => { // eslint-disable-line require-await
@@ -209,12 +218,7 @@ function createApi ({
       unwant: Components.bitswap.unwant({ bitswap }),
       wantlist: Components.bitswap.wantlist({ bitswap })
     },
-    block: {
-      get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, gcLock, preload }),
-      rm: Components.block.rm({ blockService, gcLock, pinManager }),
-      stat: Components.block.stat({ blockService, preload })
-    },
+    block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
       list: Components.bootstrap.list({ repo }),

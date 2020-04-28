@@ -19,6 +19,6 @@ module.exports = async (url, ipfs) => {
       url
     }, { ipfs })
 
-    expect(res.statusCode).to.equal(405)
+    expect(res).to.have.property('statusCode', 405)
   }
 }

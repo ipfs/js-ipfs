@@ -5,6 +5,7 @@ const CID = require('cids')
 const multihash = require('multihashes')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   async function put (data, options = {}) {
@@ -36,7 +37,7 @@ module.exports = configure(api => {
       const response = await api.post('block/put', {
         timeout: options.timeout,
         signal: options.signal,
-        searchParams: options,
+        searchParams: toUrlSearchParams(options),
         ...(
           await multipartRequest(data)
         )

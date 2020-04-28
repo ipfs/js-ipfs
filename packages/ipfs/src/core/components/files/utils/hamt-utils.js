@@ -69,7 +69,7 @@ const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
       }
 
       return (rootBucket || bucket).put(link.Name.substring(2), {
-        size: link.TSize,
+        size: link.Tsize,
         cid: link.Hash
       })
     })
@@ -195,7 +195,7 @@ const createShard = async (context, contents, options) => {
     })
   }
 
-  return last(shard.flush('', context.ipld, null))
+  return last(shard.flush('', context.block, null))
 }
 
 module.exports = {

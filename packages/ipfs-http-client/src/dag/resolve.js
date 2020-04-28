@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, path, options = {}) => {
@@ -10,14 +11,13 @@ module.exports = configure(api => {
       path = null
     }
 
-    options.arg = path
-      ? [cid, path].join(path.startsWith('/') ? '' : '/')
-      : `${cid}`
-
     const res = await api.post('dag/resolve', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: options
+      searchParams: toUrlSearchParams({
+        arg: path ? [cid, path].join(path.startsWith('/') ? '' : '/') : `${cid}`,
+        ...options
+      })
     })
 
     const data = await res.json()

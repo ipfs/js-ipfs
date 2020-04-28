@@ -27,7 +27,9 @@ module.exports = {
     const count = request.query.n || request.query.count || 10
 
     return streamResponse(request, h, () => pipe(
-      ipfs.ping(peerId, { count }),
+      ipfs.ping(peerId, {
+        count
+      }),
       map(pong => ({ Success: pong.success, Time: pong.time, Text: pong.text })),
       ndjson.stringify
     ))

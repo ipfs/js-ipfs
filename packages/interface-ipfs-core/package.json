@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.133.1",
+  "version": "0.134.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -38,6 +38,7 @@
     "dirty-chai": "^2.0.1",
     "ipfs-block": "^0.8.1",
     "ipfs-unixfs": "^1.0.1",
+    "ipfs-unixfs-importer": "^2.0.0",
     "ipfs-utils": "^2.2.0",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.3",

@@ -3,19 +3,24 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const configure = require('../../lib/configure')
+const toUrlSearchParams = require('../../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, dLink, options = {}) => {
-    const searchParams = new URLSearchParams(options)
-    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
-    searchParams.append('arg', dLink.Name || dLink.name || null)
-    searchParams.append('arg', (dLink.Hash || dLink.cid || '').toString() || null)
-
-    const { Hash } = await (await api.post('object/patch/add-link', {
+    const res = await api.post('object/patch/add-link', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams
-    })).json()
+      searchParams: toUrlSearchParams({
+        arg: [
+          `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
+          dLink.Name || dLink.name || null,
+          (dLink.Hash || dLink.cid || '').toString() || null
+        ],
+        ...options
+      })
+    })
+
+    const { Hash } = await res.json()
 
     return new CID(Hash)
   }

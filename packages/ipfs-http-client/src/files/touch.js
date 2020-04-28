@@ -8,7 +8,10 @@ module.exports = configure(api => {
     const res = await api.post('files/touch', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(path, options)
+      searchParams: toUrlSearchParams({
+        arg: path,
+        ...options
+      })
     })
 
     await res.text()

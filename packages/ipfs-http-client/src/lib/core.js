@@ -64,7 +64,12 @@ const errorHandler = async (response) => {
     msg = err.message
   }
 
-  const error = new HTTP.HTTPError(response)
+  let error = new HTTP.HTTPError(response)
+
+  // This is what go-ipfs returns where there's a timeout
+  if (msg && msg.includes('context deadline exceeded')) {
+    error = new HTTP.TimeoutError(response)
+  }
 
   // If we managed to extract a message from the response, use it
   if (msg) {
@@ -117,9 +122,13 @@ class Client extends HTTP {
           if (
             value !== 'undefined' &&
             value !== 'null' &&
-            key !== 'signal' &&
-            key !== 'timeout'
+            key !== 'signal'
           ) {
+            out.append(kebabCase(key), value)
+          }
+
+          // server timeouts are strings
+          if (key === 'timeout' && !isNaN(value)) {
             out.append(kebabCase(key), value)
           }
         }

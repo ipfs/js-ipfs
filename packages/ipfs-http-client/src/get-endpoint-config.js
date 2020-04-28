@@ -1,4 +1,5 @@
 'use strict'
+
 const configure = require('./lib/configure')
 
 module.exports = configure(api => {
