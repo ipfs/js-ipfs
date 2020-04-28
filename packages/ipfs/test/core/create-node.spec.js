@@ -111,7 +111,7 @@ describe('create node', function () {
   })
 
   it('should be silent', async function () {
-    if (process && process.env && process.env.DEBUG) return this.skip()
+    if (process.env.DEBUG) return this.skip()
 
     this.timeout(30 * 1000)
 
