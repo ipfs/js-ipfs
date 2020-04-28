@@ -2,7 +2,8 @@
 
 const Boom = require('@hapi/boom')
 
-const METHODS = [
+// RPC API requires POST, we block every other method
+const BLOCKED_METHODS = [
   'GET',
   'PUT',
   'PATCH',
@@ -27,7 +28,6 @@ const routes = [
   ...require('./files'),
   ...require('./pubsub'),
   require('./debug'),
-  ...require('./webui'),
   ...require('./dag'),
   require('./dns'),
   ...require('./key'),
@@ -37,13 +37,15 @@ const routes = [
   ...require('./dht')
 ]
 
-const extraRoutes = []
+// webui is loaded from API port, but works over GET (not a part of RPC API)
+const extraRoutes = [...require('./webui')]
 
 const handler = () => {
   throw Boom.methodNotAllowed()
 }
 
-METHODS.forEach(method => {
+// add routes that return HTTP 504 for non-POST requests to RPC API
+BLOCKED_METHODS.forEach(method => {
   routes.forEach(route => {
     extraRoutes.push({
       method,
