@@ -14,7 +14,7 @@
   "author": "Dmitriy Ryajov <dryajov@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ipfs": "^0.42.1",
+    "ipfs": "^0.43.0",
     "ipfs-pubsub-room": "^2.0.1"
   },
   "devDependencies": {

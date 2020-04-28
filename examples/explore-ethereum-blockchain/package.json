@@ -9,7 +9,7 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "ipfs": "^0.42.1",
+    "ipfs": "^0.43.0",
     "ipfs-http-client": "^43.0.1",
     "test-ipfs-example": "^2.0.1"
   }
