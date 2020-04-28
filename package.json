@@ -12,6 +12,7 @@
     "test:electron": "lerna run test:electron",
     "test:electron-main": "lerna run test:electron-main",
     "test:electron-renderer": "lerna run test:electron-renderer",
+    "test:external": "lerna run test:external",
     "test:cli": "lerna run test:cli",
     "test:interop:node": "lerna run test:interop:node",
     "test:interop:browser": "lerna run test:interop:browser",
