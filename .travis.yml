@@ -133,7 +133,7 @@ jobs:
       name: examples
       script:
         - npm run build
-        - npm run test -- $RUN_SINCE --scope=example* --concurrency=1
+        - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc-npm
       # only run on changes to master
