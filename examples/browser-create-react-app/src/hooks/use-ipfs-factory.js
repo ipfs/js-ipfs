@@ -30,7 +30,7 @@ export default function useIpfsFactory ({ commands }) {
         setIpfsReady(false)
       }
     }
-  })
+  }, [])
 
   async function startIpfs () {
     if (ipfs) {
