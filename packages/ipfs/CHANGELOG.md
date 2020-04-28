@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.43.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.0...ipfs@0.43.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* correct dht reference in ipns routing ([#2996](https://github.com/ipfs/js-ipfs/issues/2996)) ([d2579c0](https://github.com/ipfs/js-ipfs/commit/d2579c0e8f1e81c1a2df578d46459c7a1eeeba53))
+
+
+### Features
+
+* webui v2.7.5, with feeling ([#2984](https://github.com/ipfs/js-ipfs/issues/2984)) ([2e0a114](https://github.com/ipfs/js-ipfs/commit/2e0a1144d9405f1a34fcd038361ad075968d841f))
+
+
+
+
+
 # [0.43.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.1...ipfs@0.43.0) (2020-04-16)
 
 

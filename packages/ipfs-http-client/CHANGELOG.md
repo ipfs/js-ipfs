@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [44.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.0...ipfs-http-client@44.0.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* do not abort dht operation on error responses ([#3001](https://github.com/ipfs/js-ipfs/issues/3001)) ([a69f782](https://github.com/ipfs/js-ipfs/commit/a69f7828ccd77ab502689e45ed1112c9f804b386)), closes [#2991](https://github.com/ipfs/js-ipfs/issues/2991)
+* fix gc tests ([#3008](https://github.com/ipfs/js-ipfs/issues/3008)) ([9f7f03e](https://github.com/ipfs/js-ipfs/commit/9f7f03e1ea672834b7f984657c7d7d7c768bcd6c))
+
+
+
+
+
 # [44.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.1...ipfs-http-client@44.0.0) (2020-04-16)
 
 

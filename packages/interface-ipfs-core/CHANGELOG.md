@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.134.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.134.0...interface-ipfs-core@0.134.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* fix gc tests ([#3008](https://github.com/ipfs/js-ipfs/issues/3008)) ([9f7f03e](https://github.com/ipfs/js-ipfs/commit/9f7f03e1ea672834b7f984657c7d7d7c768bcd6c))
+
+
+
+
+
 # [0.134.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.133.1...interface-ipfs-core@0.134.0) (2020-04-16)
 
 
