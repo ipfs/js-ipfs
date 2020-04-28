@@ -110,7 +110,7 @@ class IpnsRepublisher {
       try {
         const keys = await this._keychain.listKeys()
 
-        for (const key in keys) {
+        for (const key of keys) {
           const pem = await this._keychain.exportKey(key.name, pass)
           const privKey = await crypto.keys.import(pem, pass)
 
