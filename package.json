@@ -23,14 +23,14 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "release": "npm run update-contributors && lerna publish && npm run release:docker",
+    "release": "NODE_ENV=production npm run update-contributors && npm run clean && npm run build && lerna publish && npm run release:docker",
     "release:docker": "npm run release:docker:build && npm run release:docker:tag-latest && npm run release:docker:tag-version && npm run release:docker:push-latest && npm run release:docker:push-version",
     "release:docker:build": "docker build . --no-cache --tag js-ipfs:latest --file ./Dockerfile.latest",
     "release:docker:tag-latest": "docker tag js-ipfs:latest docker.io/ipfs/js-ipfs:latest",
     "release:docker:tag-version": "docker tag js-ipfs:latest docker.io/ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "release:docker:push-latest": "docker push ipfs/js-ipfs:latest",
     "release:docker:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
-    "release:rc": "lerna publish --canary --preid rc --dist-tag next",
+    "release:rc": "NODE_ENV=production npm run clean && npm run build && lerna publish --canary --preid rc --dist-tag next",
     "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"
   },
   "devDependencies": {
