@@ -49,14 +49,6 @@ const mfsLs = {
           override: true,
           ignoreUndefined: true
         })
-        .rename('l', 'long', {
-          override: true,
-          ignoreUndefined: true
-        })
-        .rename('s', 'stream', {
-          override: true,
-          ignoreUndefined: true
-        })
     }
   },
   async handler (request, h) {
