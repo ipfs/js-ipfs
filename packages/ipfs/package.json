@@ -181,7 +181,7 @@
     "delay": "^4.3.0",
     "execa": "^4.0.0",
     "form-data": "^3.0.0",
-    "go-ipfs-dep": "0.4.23-3",
+    "go-ipfs-dep": "0.5.0",
     "interface-ipfs-core": "^0.135.0",
     "ipfs-interop": "^1.0.3",
     "ipfsd-ctl": "^4.1.1",
