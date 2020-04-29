@@ -72,7 +72,7 @@
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "^0.5.0",
     "interface-ipfs-core": "^0.134.1",
-    "ipfsd-ctl": "^3.0.0",
+    "ipfsd-ctl": "^4.1.0",
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",
     "it-pipe": "^1.1.0",
