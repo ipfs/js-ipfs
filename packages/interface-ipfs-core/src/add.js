@@ -470,7 +470,6 @@ module.exports = (common, options) => {
       expect(expectedResult.err).to.not.exist()
       expect(result[0].cid.toString()).to.equal(expectedResult[0].cid.toString())
       expect(result[0].size).to.equal(expectedResult[0].size)
-      // expect(result[0].path).to.equal(text)
     })
 
     it('should add from a HTTP URL with redirection', async () => {
@@ -486,7 +485,6 @@ module.exports = (common, options) => {
       expect(expectedResult.err).to.not.exist()
       expect(result[0].cid.toString()).to.equal(expectedResult[0].cid.toString())
       expect(result[0].size).to.equal(expectedResult[0].size)
-      // expect(result[0].path).to.equal(text)
     })
 
     it('should add from a URL with only-hash=true', async function () {

@@ -169,7 +169,9 @@ module.exports = (common, options) => {
     })
 
     it('writes a small file using a Node stream (Node only)', async function () {
-      if (!isNode) this.skip()
+      if (!isNode) {
+        this.skip()
+      }
       const filePath = `/small-file-${Math.random()}.txt`
       const stream = randomStream(1000)
 
