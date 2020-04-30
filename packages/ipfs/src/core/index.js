@@ -28,7 +28,9 @@ const getDefaultOptions = () => ({
     enabled: !isTest, // preload by default, unless in test env
     addresses: [
       '/dns4/node0.preload.ipfs.io/https',
-      '/dns4/node1.preload.ipfs.io/https'
+      '/dns4/node1.preload.ipfs.io/https',
+      '/dns4/node2.preload.ipfs.io/https',
+      '/dns4/node3.preload.ipfs.io/https'
     ]
   }
 })
