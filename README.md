@@ -32,10 +32,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
 * Check out https://docs-beta.ipfs.io for tips, how-tos and more
 
-## Tech Lead <!-- omit in toc -->
-
-[David Dias](https://github.com/daviddias)
-
 ## Lead Maintainer <!-- omit in toc -->
 
 [Alex Potsides](http://github.com/achingbrain)
