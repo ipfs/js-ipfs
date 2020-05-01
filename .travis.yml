@@ -48,7 +48,7 @@ before_install:
 
 script: npx nyc -s npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 after_success:
-  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F node
 
 jobs:
   allow_failures:
@@ -74,7 +74,7 @@ jobs:
       script:
         - npx nyc -s npm run test:browser -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F chrome
 
 
     - stage: test
@@ -84,7 +84,7 @@ jobs:
       script:
         - npx nyc -s npm run test:webworker -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F chrome-webworker
 
     - stage: test
       name: firefox
@@ -93,7 +93,7 @@ jobs:
       script:
         - npx nyc -s npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F firefox
 
     - stage: test
       name: firefox webworker
@@ -102,7 +102,7 @@ jobs:
       script:
         - npx nyc -s npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F firefox-webworker
 
     - stage: test
       name: electron-main
@@ -110,7 +110,7 @@ jobs:
       script:
         - npx nyc -s npm run test:electron-main -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F electron-main
 
     - stage: test
       name: electron-renderer
@@ -118,21 +118,21 @@ jobs:
       script:
         - npx nyc -s npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F interop -F electron-main
 
     - stage: test
       name: interop - node
       script:
         - npx nyc -s npm run test:interop:node -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F interop -F node
 
     - stage: test
       name: interop - browser
       script:
         - npx nyc -s npm run test:interop:browser -- $RUN_SINCE -- -- --bail
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F interop -F chrome
 
     - stage: test
       name: interop - electron-main
@@ -140,7 +140,7 @@ jobs:
       script:
         - npx nyc -s npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F interop -F electron-main
 
     - stage: test
       name: interop - electron-renderer
@@ -148,7 +148,7 @@ jobs:
       script:
         - npx nyc -s npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
       after_success:
-        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+        - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov -F interop -F electron-renderer
 
     - stage: test
       name: examples
