@@ -50,7 +50,7 @@ Send in a PR if you find or write one!
 
 ## Badge
 
-Include this badge in your readme if you make a new module that implements interface-ipfs-core API.
+Include this badge in your readme if you make a new module that implements the interface-ipfs-core API.
 
 ![](img/badge.svg)
 
