@@ -35,7 +35,8 @@ module.exports = configure((api, options) => {
         searchParams: toUrlSearchParams({
           arg: topic,
           ...options
-        })
+        }),
+        headers: options.headers
       })
     } catch (err) { // Initial subscribe fail, ensure we clean up
       subsTracker.unsubscribe(topic, handler)

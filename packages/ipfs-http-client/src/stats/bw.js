@@ -10,6 +10,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
+      headers: options.headers,
       transform: (stats) => ({
         totalIn: new BigNumber(stats.TotalIn),
         totalOut: new BigNumber(stats.TotalOut),

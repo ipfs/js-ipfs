@@ -12,7 +12,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(Buffer.from(JSON.stringify(config)))
+        await multipartRequest(Buffer.from(JSON.stringify(config)), options.headers)
       )
     })
 

@@ -48,7 +48,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(serialized)
+        await multipartRequest(serialized, options.headers)
       )
     })
     const data = await res.json()

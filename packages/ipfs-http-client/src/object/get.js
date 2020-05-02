@@ -15,7 +15,8 @@ module.exports = configure(api => {
         arg: `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
         dataEncoding: 'base64',
         ...options
-      })
+      }),
+      headers: options.headers
     })
     const data = await res.json()
 

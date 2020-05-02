@@ -17,7 +17,8 @@ module.exports = configure(api => {
         arg: cid.map(cid => new CID(cid).toString()),
         'stream-channels': true,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const removed of res.ndjson()) {

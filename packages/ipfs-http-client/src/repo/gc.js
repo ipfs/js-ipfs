@@ -10,6 +10,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
+      headers: options.headers,
       transform: (res) => {
         return {
           err: res.Error ? new Error(res.Error) : null,

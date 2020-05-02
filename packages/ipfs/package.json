@@ -106,7 +106,7 @@
     "ipfs-unixfs": "^1.0.1",
     "ipfs-unixfs-exporter": "^2.0.0",
     "ipfs-unixfs-importer": "^2.0.0",
-    "ipfs-utils": "^2.2.0",
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/respect-headers",
     "ipld": "^0.25.0",
     "ipld-bitcoin": "^0.3.0",
     "ipld-dag-cbor": "^0.15.1",

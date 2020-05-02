@@ -12,7 +12,8 @@ module.exports = configure(api => {
         arg: path,
         ...options,
         stream: true
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const result of res.ndjson()) {

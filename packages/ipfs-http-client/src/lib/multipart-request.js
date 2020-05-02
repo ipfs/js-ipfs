@@ -5,8 +5,9 @@ const toStream = require('./to-stream')
 const { nanoid } = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
+const merge = require('merge-options').bind({ ignoreUndefined: true })
 
-async function multipartRequest (source, boundary = `-----------------------------${nanoid()}`) {
+async function multipartRequest (source, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {
       let index = 0
@@ -55,9 +56,9 @@ async function multipartRequest (source, boundary = `---------------------------
   }
 
   return {
-    headers: {
+    headers: merge(headers, {
       'Content-Type': `multipart/form-data; boundary=${boundary}`
-    },
+    }),
     body: await toStream(streamFiles(source))
   }
 }

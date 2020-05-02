@@ -14,7 +14,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: paths.map(path => `${path}`),
         ...options
-      })
+      }),
+      headers: options.headers
     })).json()
 
     return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))

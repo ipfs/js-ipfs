@@ -19,7 +19,8 @@ module.exports = configure(api => {
         pem,
         password,
         ...options
-      })
+      }),
+      headers: options.headers
     })
     const data = await res.json()
 
