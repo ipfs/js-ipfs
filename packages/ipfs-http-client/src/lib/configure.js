@@ -14,7 +14,9 @@ const Client = require('./core')
  */
 const configure = (fn) => {
   return (options) => {
-    return fn(new Client(options), options)
+    return fn({
+      post: (...args) => new Client(options).post(...args)
+    }, options)
   }
 }
 module.exports = configure
