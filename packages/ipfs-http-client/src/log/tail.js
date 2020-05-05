@@ -8,7 +8,8 @@ module.exports = configure(api => {
     const res = await api.post('log/tail', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })
 
     yield * res.ndjson()

@@ -19,7 +19,7 @@ module.exports = configure((api) => {
       timeout: options.timeout,
       signal: options.signal,
       ...(
-        await multipartRequest(input)
+        await multipartRequest(input, options.headers)
       )
     })
 

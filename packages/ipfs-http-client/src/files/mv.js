@@ -15,7 +15,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: sources.map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     await res.text()

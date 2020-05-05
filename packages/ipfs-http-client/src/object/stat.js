@@ -15,7 +15,8 @@ module.exports = configure(api => {
         searchParams: toUrlSearchParams({
           arg: `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
           ...options
-        })
+        }),
+        headers: options.headers
       })).json()
     } catch (err) {
       if (err.name === 'TimeoutError') {

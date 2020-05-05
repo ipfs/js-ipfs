@@ -13,7 +13,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (let result of res.ndjson()) {

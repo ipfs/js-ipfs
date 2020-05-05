@@ -17,7 +17,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: path ? [cid, path].join(path.startsWith('/') ? '' : '/') : `${cid}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     const data = await res.json()

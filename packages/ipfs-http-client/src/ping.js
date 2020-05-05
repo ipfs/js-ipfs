@@ -13,6 +13,7 @@ module.exports = configure(api => {
         arg: `${peerId}`,
         ...options
       }),
+      headers: options.headers,
       transform: toCamel
     })
 

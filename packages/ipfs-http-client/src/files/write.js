@@ -23,7 +23,7 @@ module.exports = configure(api => {
           path: 'arg',
           mode: modeToString(options.mode),
           mtime: mtimeToObject(options.mtime)
-        })
+        }, options.headers)
       )
     })
 

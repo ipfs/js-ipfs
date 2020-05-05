@@ -12,7 +12,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: path,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return toCamel(await res.json())

@@ -18,7 +18,7 @@ module.exports = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest(data)
+        await multipartRequest(data, options.headers)
       )
     })).json()
 

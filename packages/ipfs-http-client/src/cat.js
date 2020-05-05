@@ -12,7 +12,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: typeof path === 'string' ? path : new CID(path).toString(),
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     yield * res.iterator()

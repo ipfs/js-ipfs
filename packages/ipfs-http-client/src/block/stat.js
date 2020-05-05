@@ -12,7 +12,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: new CID(cid).toString(),
         ...options
-      })
+      }),
+      headers: options.headers
     })
     const data = await res.json()
 

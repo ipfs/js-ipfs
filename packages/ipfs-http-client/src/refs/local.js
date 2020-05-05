@@ -10,7 +10,8 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       transform: toCamel,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })
 
     yield * res.ndjson()

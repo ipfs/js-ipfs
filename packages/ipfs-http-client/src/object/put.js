@@ -49,7 +49,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(buf)
+        await multipartRequest(buf, options.headers)
       )
     })
 

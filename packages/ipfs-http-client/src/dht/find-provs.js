@@ -14,7 +14,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: `${new CID(cid)}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const message of res.ndjson()) {

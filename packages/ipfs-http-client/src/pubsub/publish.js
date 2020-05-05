@@ -18,7 +18,8 @@ module.exports = configure(api => {
 
     const res = await api.post(`pubsub/pub?${searchParams}&arg=${encodeBuffer(data)}`, {
       timeout: options.timeout,
-      signal: options.signal
+      signal: options.signal,
+      headers: options.headers
     })
 
     await res.text()
