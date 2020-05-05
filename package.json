@@ -23,7 +23,7 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "release": "NODE_ENV=production npm run update-contributors && npm run clean && npm run build && lerna publish && npm run release:docker",
+    "release": "NODE_ENV=production npm run update-contributors && npm run clean -- --scope=ipfs --scope=ipfs-http-client && npm run build -- --scope=ipfs --scope=ipfs-http-client && lerna publish && npm run release:docker",
     "release:docker": "npm run release:docker:build && npm run release:docker:tag-latest && npm run release:docker:tag-version && npm run release:docker:push-latest && npm run release:docker:push-version",
     "release:docker:build": "docker build . --no-cache --tag js-ipfs:latest --file ./Dockerfile.latest",
     "release:docker:tag-latest": "docker tag js-ipfs:latest docker.io/ipfs/js-ipfs:latest",
