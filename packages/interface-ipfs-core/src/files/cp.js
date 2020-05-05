@@ -443,9 +443,6 @@ module.exports = (common, options) => {
       await testTimeout(() => ipfs.files.cp('/ipfs/QmaWLMK8yg36wMZX4Ybz7PAbKi1z5FzEtg5iEVeXHtNBqa', '/derp', {
         timeout: 1
       }))
-
-      // ensures that the request that timed out has completed
-      await ipfs.files.stat('/')
     })
   })
 }

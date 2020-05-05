@@ -80,8 +80,6 @@ An optional object which may have the following keys:
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
-if no options are passed, it defaults to `{ format: 'dag-pb', mhtype: 'sha2-256', version: 0, pin: false }`
-
 **Note:** If you pass a [`Block`][block] instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
 
 ### Returns

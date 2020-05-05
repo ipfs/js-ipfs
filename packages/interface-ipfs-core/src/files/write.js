@@ -130,7 +130,7 @@ module.exports = (common, options) => {
         create: true
       })
 
-      await expect(all(ipfs.files.ls('/foo-zero-length'))).to.eventually.have.lengthOf(1)
+      await expect(all(ipfs.files.ls(path))).to.eventually.have.lengthOf(1)
         .and.to.have.nested.property('[0]').that.includes({
           name: 'foo-zero-length',
           size: 0
@@ -881,9 +881,6 @@ module.exports = (common, options) => {
         create: true,
         timeout: 1
       }))
-
-      // ensures that the request that timed out has completed
-      await ipfs.files.stat('/')
     })
   })
 }

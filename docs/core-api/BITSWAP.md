@@ -83,13 +83,15 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const list = await ipfs.bitswap.wantlist()
+let list = await ipfs.bitswap.wantlist()
 console.log(list)
 // [ CID('QmHash') ]
 
-const list2 = await ipfs.bitswap.wantlist(peerId)
-console.log(list2)
-// [ CID('QmHash') ]
+await ipfs.bitswap.unwant(cid)
+
+list = await ipfs.bitswap.wantlist()
+console.log(list)
+// []
 ```
 
 A great source of [examples][] can be found in the tests for this API.

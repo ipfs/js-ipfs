@@ -269,9 +269,6 @@ module.exports = (common, options) => {
       await testTimeout(() => ipfs.files.rm(file, {
         timeout: 1
       }))
-
-      // ensures that the request that timed out has completed
-      await ipfs.files.stat('/')
     })
   })
 }

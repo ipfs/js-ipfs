@@ -168,9 +168,6 @@ module.exports = (common, options) => {
       await testTimeout(() => drain(ipfs.files.read(path, {
         timeout: 1
       })))
-
-      // ensures that the request that timed out has completed
-      await ipfs.files.stat('/')
     })
   })
 }
