@@ -33,7 +33,7 @@
     "ipfs-utils": "^2.2.2"
   },
   "devDependencies": {
-    "aegir": "^21.10.0",
+    "aegir": "^21.10.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "delay": "^4.3.0",

@@ -176,7 +176,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^21.10.0",
+    "aegir": "^21.10.1",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
