@@ -8,7 +8,6 @@
     "build": "parcel build index.html --public-url '.'",
     "start": "parcel index.html",
     "deploy": "ipfs add -r --quieter dist",
-    "lint": "aegir lint",
     "test": "test-ipfs-example"
   },
   "author": "Dmitriy Ryajov <dryajov@gmail.com>",
@@ -18,7 +17,6 @@
     "ipfs-pubsub-room": "^2.0.1"
   },
   "devDependencies": {
-    "aegir": "^21.10.0",
     "execa": "^4.0.0",
     "ipfs-css": "^0.13.1",
     "ipfs-http-client": "^43.0.1",
