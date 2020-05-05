@@ -47,7 +47,7 @@
     "form-data": "^3.0.0",
     "ipfs-block": "^0.8.1",
     "ipfs-core-utils": "^0.2.0",
-    "ipfs-utils": "ipfs/js-ipfs-utils#fix/respect-headers",
+    "ipfs-utils": "^2.2.2",
     "ipld-dag-cbor": "^0.15.1",
     "ipld-dag-pb": "^0.18.3",
     "ipld-raw": "^4.0.1",
@@ -67,7 +67,7 @@
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "21.4.5",
+    "aegir": "^21.10.0",
     "browser-process-platform": "^0.1.1",
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "0.4.23-3",
