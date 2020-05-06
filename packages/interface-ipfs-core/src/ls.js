@@ -203,5 +203,24 @@ module.exports = (common, options) => {
       expect(output[1].mtime).to.deep.equal(expectedMtime)
       expect(output[1].mode).to.equal(expectedMode)
     })
+
+    it('should ls files by subdir', async () => {
+      const dir = randomName('DIR')
+      const subdir = randomName('F0')
+      const subfile = randomName('F1')
+
+      const input = [
+        { path: `${dir}/${subdir}/${subfile}`, content: Buffer.from(randomName('D1')) }
+      ]
+
+      const res = await all(ipfs.add(input))
+      const path = `/ipfs/${res[res.length - 1].cid}/${subdir}`
+      const output = await all(ipfs.ls(path))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.include({
+        path: `${path}/${subfile}`
+      })
+    })
   })
 }

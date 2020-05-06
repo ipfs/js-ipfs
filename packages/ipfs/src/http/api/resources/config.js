@@ -366,14 +366,6 @@ exports.profiles = {
         query: Joi.object().keys({
           timeout: Joi.timeout()
         })
-          .rename('dry-run', 'dryRun', {
-            override: true,
-            ignoreUndefined: true
-          })
-          .rename('arg', 'profile', {
-            override: true,
-            ignoreUndefined: true
-          })
       }
     },
     handler: async function (request, h) {

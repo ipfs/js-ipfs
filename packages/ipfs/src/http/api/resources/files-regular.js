@@ -428,7 +428,7 @@ exports.ls = {
           timeout
         }))
 
-        return h.response({ Objects: [{ Hash: path.split('/')[2], Links: links.map(mapLink) }] })
+        return h.response({ Objects: [{ Hash: path, Links: links.map(mapLink) }] })
       } catch (err) {
         throw Boom.boomify(err, { message: 'Failed to list dir' })
       }
@@ -440,7 +440,7 @@ exports.ls = {
         signal,
         timeout
       }),
-      map(link => ({ Objects: [{ Hash: path.split('/')[2], Links: [mapLink(link)] }] })),
+      map(link => ({ Objects: [{ Hash: path, Links: [mapLink(link)] }] })),
       ndjson.stringify
     ))
   }

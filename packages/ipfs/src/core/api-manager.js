@@ -12,7 +12,7 @@ module.exports = class ApiManager {
     })
   }
 
-  update (nextApi, onUndef, noWrap) {
+  update (nextApi, onUndef) {
     const prevApi = { ...this._api }
     const prevUndef = this._onUndef
     Object.keys(this._api).forEach(k => { delete this._api[k] })
