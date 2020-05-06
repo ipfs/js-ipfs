@@ -357,7 +357,7 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: cid.toString(),
+        Hash: `/ipfs/${cid}`,
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
@@ -389,7 +389,7 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: cid.toString(),
+        Hash: `/ipfs/${cid}`,
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
