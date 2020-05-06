@@ -4,16 +4,11 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const f = require('./utils/factory')()
 
-let platform = global.platform
-
-if (!platform) { platform = 'linux' }
-
 describe('.diag', function () {
   this.timeout(50 * 1000)
 
   // go-ipfs does not support these on Windows
-  if (platform === 'win32') { return }
-
+  if (global.process && global.process.platform === 'win32') { return }
   let ipfs
 
   before(async () => {
