@@ -214,13 +214,11 @@ module.exports = (common, options) => {
       ]
 
       const res = await all(ipfs.add(input))
-      const path = `/ipfs/${res[res.length - 1].cid}/${subdir}`
+      const path = `${res[res.length - 1].cid}/${subdir}`
       const output = await all(ipfs.ls(path))
 
       expect(output).to.have.lengthOf(1)
-      expect(output[0]).to.include({
-        path: `${path}/${subfile}`
-      })
+      expect(output[0]).to.have.property('path', `${path}/${subfile}`)
     })
   })
 }
