@@ -5,18 +5,27 @@ const mergeOptions = require('merge-options')
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
-module.exports = ({
+module.exports = async ({
   options,
   peerId,
   multiaddrs = [],
   repo,
+  keychainConfig = {},
   config
 }) => {
   options = options || {}
   config = config || {}
 
-  const { datastore } = repo
-  const libp2pOptions = getLibp2pOptions({ options, config, datastore, peerId, multiaddrs })
+  const { datastore, keys } = repo
+  const libp2pOptions = getLibp2pOptions({
+    options,
+    config,
+    datastore,
+    keys,
+    keychainConfig,
+    peerId,
+    multiaddrs
+  })
 
   if (typeof options.libp2p === 'function') {
     return options.libp2p({ libp2pOptions, options, config, datastore, peerId })
@@ -24,10 +33,12 @@ module.exports = ({
 
   // Required inline to reduce startup time
   const Libp2p = require('libp2p')
-  return new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
+  const libp2pNode = await Libp2p.create(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
+
+  return libp2pNode
 }
 
-function getLibp2pOptions ({ options, config, datastore, peerId, multiaddrs }) {
+function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
@@ -89,7 +100,11 @@ function getLibp2pOptions ({ options, config, datastore, peerId, multiaddrs }) {
         get(config, 'Swarm.ConnMgr.HighWater')),
       minConnections: get(options, 'config.Swarm.ConnMgr.LowWater',
         get(config, 'Swarm.ConnMgr.LowWater'))
-    })
+    }),
+    keychain: {
+      datastore: keys,
+      ...keychainConfig
+    }
   }
 
   // Required inline to reduce startup time

@@ -5,8 +5,6 @@ const PeerId = require('peer-id')
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
 const createRepo = require('../runtime/repo-nodejs')
-const Keychain = require('libp2p-keychain')
-const NoKeychain = require('./no-keychain')
 const mortice = require('mortice')
 const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
@@ -78,6 +76,7 @@ module.exports = ({
       : await initNewRepo(repo, { ...options, print })
 
     log('peer created')
+
     const blockService = new BlockService(repo)
     const ipld = new Ipld(getDefaultIpldOptions(blockService, constructorOptions.ipld, log))
 
@@ -187,7 +186,6 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   }
 
   const peerId = await createPeerId({ privateKey, bits, print })
-  let keychain = new NoKeychain()
 
   log('identity generated')
 
@@ -198,7 +196,21 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 
   privateKey = peerId.privKey
 
-  config.Keychain = Keychain.generateOptions()
+  // Create libp2p for Keychain creation
+  const libp2p = await Components.libp2p({
+    peerId,
+    repo,
+    config,
+    keychainConfig: {
+      pass
+    }
+  })
+
+  if (libp2p.keychain && libp2p.keychain.opts) {
+    config.Keychain = {
+      dek: libp2p.keychain.opts.dek
+    }
+  }
 
   log('peer identity: %s', config.Identity.PeerID)
 
@@ -207,14 +219,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 
   log('repo opened')
 
-  if (pass) {
-    log('creating keychain')
-    const keychainOptions = { passPhrase: pass, ...config.Keychain }
-    keychain = new Keychain(repo.keys, keychainOptions)
-    await keychain.importPeer('self', { privKey: privateKey })
-  }
-
-  return { peerId, keychain }
+  return { peerId, keychain: libp2p.keychain }
 }
 
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
@@ -230,27 +235,19 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
     await repo.config.set(config)
   }
 
-  let keychain = new NoKeychain()
-
-  if (pass) {
-    const keychainOptions = { passPhrase: pass, ...config.Keychain }
-    keychain = new Keychain(repo.keys, keychainOptions)
-    log('keychain constructed')
-  }
-
   const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
 
-  // Import the private key as 'self', if needed.
-  if (pass) {
-    try {
-      await keychain.findKeyByName('self')
-    } catch (err) {
-      log('Creating "self" key')
-      await keychain.importPeer('self', peerId)
+  const libp2p = await Components.libp2p({
+    peerId,
+    repo,
+    config,
+    keychainConfig: {
+      pass,
+      ...config.Keychain
     }
-  }
+  })
 
-  return { peerId, keychain }
+  return { peerId, keychain: libp2p.keychain }
 }
 
 function createPeerId ({ privateKey, bits, print }) {
