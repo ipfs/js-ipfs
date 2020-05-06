@@ -18,7 +18,7 @@ module.exports = configure((api, options) => {
   return async (cid, path, options = {}) => {
     if (typeof path === 'object') {
       options = path
-      path = null
+      path = undefined
     }
 
     const resolved = await dagResolve(cid, path, options)

@@ -204,5 +204,19 @@ module.exports = (common, options) => {
       const result = await ipfs.dag.get(cid)
       expect(result.value).to.deep.equal(buf)
     })
+
+    it('should be able to pass a timeout without a path', async () => {
+      const cid = 'bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu'
+
+      let error
+      try {
+        const result = await ipfs.dag.get(cid, { timeout: 200 })
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.name).to.eql('TimeoutError')
+    })
+
   })
 }
