@@ -56,7 +56,7 @@ module.exports = configure(api => {
       signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(buf, controller)
+        await multipartRequest(buf, controller, options.headers)
       )
     })
 

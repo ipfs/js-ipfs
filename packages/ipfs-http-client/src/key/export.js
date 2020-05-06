@@ -17,7 +17,8 @@ module.exports = configure(api => {
         arg: name,
         password: password,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return res.text()

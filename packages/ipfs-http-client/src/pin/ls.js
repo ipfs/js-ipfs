@@ -20,7 +20,8 @@ module.exports = configure(api => {
         arg: path.map(p => `${p}`),
         ...options,
         stream: true
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const pin of res.ndjson()) {

@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.43.1",
+  "version": "0.43.3",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -96,17 +96,17 @@
     "hapi-pino": "^6.1.0",
     "hashlru": "^2.3.0",
     "interface-datastore": "^0.8.0",
-    "ipfs-bitswap": "^0.27.1",
+    "ipfs-bitswap": "0.27.1",
     "ipfs-block": "^0.8.1",
     "ipfs-block-service": "^0.16.0",
-    "ipfs-core-utils": "^0.2.0",
-    "ipfs-http-client": "^44.0.1",
+    "ipfs-core-utils": "^0.2.2",
+    "ipfs-http-client": "^44.0.3",
     "ipfs-http-response": "^0.5.0",
     "ipfs-repo": "^1.1.0",
     "ipfs-unixfs": "^1.0.1",
     "ipfs-unixfs-exporter": "^2.0.0",
     "ipfs-unixfs-importer": "^2.0.0",
-    "ipfs-utils": "^2.2.1",
+    "ipfs-utils": "^2.2.2",
     "ipld": "^0.25.0",
     "ipld-bitcoin": "^0.3.0",
     "ipld-dag-cbor": "^0.15.1",
@@ -176,7 +176,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "21.4.5",
+    "aegir": "^21.10.1",
     "base64url": "^3.0.1",
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
@@ -184,7 +184,7 @@
     "execa": "^4.0.0",
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
-    "interface-ipfs-core": "^0.134.1",
+    "interface-ipfs-core": "^0.134.3",
     "ipfs-interop": "^1.0.1",
     "ipfsd-ctl": "^3.0.0",
     "iso-random-stream": "^1.1.1",

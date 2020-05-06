@@ -18,7 +18,7 @@ module.exports = configure(api => {
       signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(Buffer.from(JSON.stringify(config)), controller)
+        await multipartRequest(Buffer.from(JSON.stringify(config)), controller, options.headers)
       )
     })
 

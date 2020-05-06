@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",
@@ -30,10 +30,10 @@
   "dependencies": {
     "buffer": "^5.4.2",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^2.2.1"
+    "ipfs-utils": "^2.2.2"
   },
   "devDependencies": {
-    "aegir": "21.4.5",
+    "aegir": "^21.10.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "delay": "^4.3.0",

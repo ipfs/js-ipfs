@@ -29,7 +29,7 @@ module.exports = configure(api => {
           path: 'arg',
           mode: modeToString(options.mode),
           mtime: mtimeToObject(options.mtime)
-        }, controller)
+        }, controller, options.headers)
       )
     })
 

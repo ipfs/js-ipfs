@@ -18,7 +18,8 @@ module.exports = configure(api => {
     const res = await (await api.post('bitswap/wantlist', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })).json()
 
     return (res.Keys || []).map(k => new CID(k['/']))

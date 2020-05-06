@@ -25,7 +25,7 @@ module.exports = configure((api) => {
       timeout: options.timeout,
       signal,
       ...(
-        await multipartRequest(input, controller)
+        await multipartRequest(input, controller, options.headers)
       )
     })
 

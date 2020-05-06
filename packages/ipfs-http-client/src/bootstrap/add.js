@@ -17,7 +17,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: addr,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return res.json()

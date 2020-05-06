@@ -15,7 +15,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const data of res.ndjson()) {

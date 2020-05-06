@@ -46,9 +46,7 @@ before_install:
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
-script: npx nyc -s npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
-after_success:
-  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+script: npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 
 jobs:
   allow_failures:

@@ -22,7 +22,7 @@ module.exports = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest(data, controller)
+        await multipartRequest(data, controller, options.headers)
       )
     })
 

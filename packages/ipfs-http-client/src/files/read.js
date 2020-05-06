@@ -14,7 +14,8 @@ module.exports = configure(api => {
         arg: path,
         count: options.count || options.length,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const chunk of toIterable(res.body)) {

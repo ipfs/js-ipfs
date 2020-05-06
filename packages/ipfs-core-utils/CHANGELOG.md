@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.2.1...ipfs-core-utils@0.2.2) (2020-05-05)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.2.0...ipfs-core-utils@0.2.1) (2020-05-05)
+
+
+### Bug Fixes
+
+* pass headers to request ([#3018](https://github.com/ipfs/js-ipfs/issues/3018)) ([3ba00f8](https://github.com/ipfs/js-ipfs/commit/3ba00f8c6a8a057c5776d539a671a74d9565fb29)), closes [#3017](https://github.com/ipfs/js-ipfs/issues/3017)
+
+
+
+
+
 # [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.1.1...ipfs-core-utils@0.2.0) (2020-04-16)
 
 

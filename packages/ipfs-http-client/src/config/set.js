@@ -29,7 +29,8 @@ module.exports = configure(api => {
     const res = await api.post('config', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(params)
+      searchParams: toUrlSearchParams(params),
+      headers: options.headers
     })
 
     return toCamel(await res.json())

@@ -17,7 +17,8 @@ module.exports = configure(api => {
           (dLink.Hash || dLink.cid || '').toString() || null
         ],
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     const { Hash } = await res.json()

@@ -19,6 +19,7 @@ module.exports = configure((api, options) => {
         arg: args.map(arg => `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`),
         ...options
       }),
+      headers: options.headers,
       transform: toCamel
     })
 
