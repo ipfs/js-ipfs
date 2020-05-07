@@ -7,23 +7,6 @@ function createNode (options) {
   options.path = options.path || '/tmp/ipfs' + Math.random()
   return IPFS.create({
     repo: options.path,
-    ipld: {
-      formats: [
-        require('ipld-dag-cbor'),
-        require('ipld-dag-pb'),
-        require('ipld-raw'),
-        require('ipld-bitcoin'),
-        require('ipld-ethereum').ethAccountSnapshot,
-        require('ipld-ethereum').ethBlock,
-        require('ipld-ethereum').ethBlockList,
-        require('ipld-ethereum').ethStateTrie,
-        require('ipld-ethereum').ethStorageTrie,
-        require('ipld-ethereum').ethTx,
-        require('ipld-ethereum').ethTxTrie,
-        require('ipld-git'),
-        require('ipld-zcash')
-      ]
-    },
     config: {
       Addresses: {
         Swarm: [
