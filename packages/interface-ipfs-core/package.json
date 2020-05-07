@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "aegir": "^21.10.1",
-    "ipfsd-ctl": "^4.0.1"
+    "ipfsd-ctl": "^4.1.0"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
