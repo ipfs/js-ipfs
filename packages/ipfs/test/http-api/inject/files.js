@@ -13,6 +13,7 @@ const sinon = require('sinon')
 const CID = require('cids')
 const first = require('it-first')
 const toBuffer = require('it-to-buffer')
+const { Buffer } = require('buffer')
 
 describe('/files', () => {
   const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')

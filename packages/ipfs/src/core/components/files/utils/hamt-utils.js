@@ -10,6 +10,7 @@ const UnixFS = require('ipfs-unixfs')
 const mc = require('multicodec')
 const mh = require('multihashes')
 const last = require('it-last')
+const { Buffer } = require('buffer')
 
 const updateHamtDirectory = async (context, links, bucket, options) => {
   // update parent with new bit field

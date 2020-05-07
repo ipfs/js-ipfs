@@ -4,6 +4,7 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
+const { Buffer } = require('buffer')
 
 const debug = require('debug')
 const log = debug('ipfs:ipns:republisher')
@@ -109,7 +110,7 @@ class IpnsRepublisher {
       try {
         const keys = await this._keychain.listKeys()
 
-        for (const key in keys) {
+        for (const key of keys) {
           const pem = await this._keychain.exportKey(key.name, pass)
           const privKey = await crypto.keys.import(pem, pass)
 

@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const CID = require('cids')
 const concat = require('it-concat')

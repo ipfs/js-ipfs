@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const { Buffer } = require('buffer')
 const multihash = require('multihashes')
 const codecs = require('multicodec/src/base-table.json')
 const multipart = require('../../utils/multipart-request-parser')

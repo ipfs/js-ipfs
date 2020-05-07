@@ -1,6 +1,7 @@
 'use strict'
 
 const errCode = require('err-code')
+const { Buffer } = require('buffer')
 const log = require('debug')('ipfs:mfs:utils:to-async-iterator')
 const {
   MFS_MAX_CHUNK_SIZE

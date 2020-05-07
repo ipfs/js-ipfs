@@ -1,6 +1,7 @@
 'use strict'
 
 const debug = require('debug')
+const { Buffer } = require('buffer')
 const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const last = require('it-last')

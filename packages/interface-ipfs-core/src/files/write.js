@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
@@ -9,16 +10,10 @@ const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
 const randomBytes = require('iso-random-stream/src/random')
+const randomStream = require('iso-random-stream')
 const all = require('it-all')
 const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
-
-let fs, tempWrite
-
-if (isNode) {
-  fs = require('fs')
-  tempWrite = require('temp-write')
-}
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -175,12 +170,10 @@ module.exports = (common, options) => {
 
     it('writes a small file using a Node stream (Node only)', async function () {
       if (!isNode) {
-        return this.skip()
+        this.skip()
       }
-
       const filePath = `/small-file-${Math.random()}.txt`
-      const pathToFile = await tempWrite(smallFile)
-      const stream = fs.createReadStream(pathToFile)
+      const stream = randomStream(1000)
 
       await ipfs.files.write(filePath, stream, {
         create: true
@@ -188,7 +181,7 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(filePath)
 
-      expect(stats.size).to.equal(smallFile.length)
+      expect(stats.size).to.equal(1000)
     })
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {

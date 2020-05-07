@@ -2,6 +2,7 @@
 'use strict'
 
 const CID = require('cids')
+const { Buffer } = require('buffer')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 const multicodec = require('multicodec')

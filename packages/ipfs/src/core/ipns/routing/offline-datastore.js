@@ -2,6 +2,7 @@
 
 const { Key } = require('interface-datastore')
 const { Record } = require('libp2p-record')
+const { Buffer } = require('buffer')
 const { encodeBase32 } = require('./utils')
 
 const errcode = require('err-code')

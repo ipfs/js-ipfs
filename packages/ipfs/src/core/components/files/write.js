@@ -2,6 +2,7 @@
 
 const log = require('debug')('ipfs:mfs:write')
 const importer = require('ipfs-unixfs-importer')
+const { Buffer } = require('buffer')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')

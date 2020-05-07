@@ -8,6 +8,7 @@ const multibase = require('multibase')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
 const debug = require('debug')
+const { Buffer } = require('buffer')
 const {
   cidToString
 } = require('../../../utils/cid')

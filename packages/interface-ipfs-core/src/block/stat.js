@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 

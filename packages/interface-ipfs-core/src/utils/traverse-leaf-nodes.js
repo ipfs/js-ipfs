@@ -1,4 +1,5 @@
 'use strict'
+const { Buffer } = require('buffer')
 
 module.exports = function traverseLeafNodes (ipfs, cid) {
   async function * traverse (cid) {

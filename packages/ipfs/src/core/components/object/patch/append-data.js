@@ -1,6 +1,7 @@
 'use strict'
 
 const { DAGNode } = require('ipld-dag-pb')
+const { Buffer } = require('buffer')
 
 module.exports = ({ ipld, gcLock, preload }) => {
   const get = require('../get')({ ipld, preload })

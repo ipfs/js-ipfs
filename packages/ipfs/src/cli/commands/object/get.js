@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
+const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'get <key>',

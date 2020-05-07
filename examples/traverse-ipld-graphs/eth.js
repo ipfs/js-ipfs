@@ -3,7 +3,7 @@
 const createNode = require('./create-node')
 const path = require('path')
 const multihashing = require('multihashing-async')
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const fs = require('fs').promises
 

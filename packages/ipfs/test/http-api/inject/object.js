@@ -11,6 +11,7 @@ const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
+const { Buffer } = require('buffer')
 const UnixFS = require('ipfs-unixfs')
 const {
   DAGNode,

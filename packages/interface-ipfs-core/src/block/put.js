@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const Block = require('ipfs-block')
+const { Buffer } = require('buffer')
+const Block = require('ipld-block')
 const multihash = require('multihashes')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')

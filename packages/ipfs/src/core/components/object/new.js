@@ -4,6 +4,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
+const { Buffer } = require('buffer')
 
 module.exports = ({ ipld, preload }) => {
   return async function _new (template, options) {

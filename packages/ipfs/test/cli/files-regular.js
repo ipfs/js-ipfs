@@ -9,6 +9,7 @@ const CID = require('cids')
 const first = require('it-first')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
+const { Buffer } = require('buffer')
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05

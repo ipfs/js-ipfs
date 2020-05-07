@@ -3,6 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
+const { Buffer } = require('buffer')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
 

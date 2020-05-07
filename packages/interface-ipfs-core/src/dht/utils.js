@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 

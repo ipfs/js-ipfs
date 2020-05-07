@@ -11,6 +11,7 @@ const { default: Queue } = require('p-queue')
 const dagCborLinks = require('dag-cbor-links')
 const log = require('debug')('ipfs:pin:pin-set')
 const pbSchema = require('./pin.proto')
+const { Buffer } = require('buffer')
 
 const emptyKeyHash = 'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
 const emptyKey = multihashes.fromB58String(emptyKeyHash)
