@@ -2,6 +2,7 @@
 
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
+const { Buffer } = require('buffer')
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'

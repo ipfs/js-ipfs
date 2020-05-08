@@ -5,6 +5,7 @@ const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
 const { withTimeoutOption } = require('../../utils')
+const { Buffer } = require('buffer')
 
 module.exports = ({ ipld, preload }) => {
   return withTimeoutOption(async function _new (template, options) {

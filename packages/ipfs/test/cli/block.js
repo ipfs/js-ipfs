@@ -5,6 +5,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const CID = require('cids')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
+const { Buffer } = require('buffer')
 
 describe('block', () => {
   const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')

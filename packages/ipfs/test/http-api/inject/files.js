@@ -14,6 +14,7 @@ const CID = require('cids')
 const first = require('it-first')
 const toBuffer = require('it-to-buffer')
 const { AbortSignal } = require('abort-controller')
+const { Buffer } = require('buffer')
 
 function matchIterable () {
   return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))

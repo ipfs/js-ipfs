@@ -2,6 +2,7 @@
 
 const { DAGNode } = require('ipld-dag-pb')
 const { withTimeoutOption } = require('../../../utils')
+const { Buffer } = require('buffer')
 
 module.exports = ({ ipld, gcLock, preload }) => {
   const get = require('../get')({ ipld, preload })

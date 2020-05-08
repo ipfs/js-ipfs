@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const parseDuration = require('parse-duration')
+const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'get <cid path>',

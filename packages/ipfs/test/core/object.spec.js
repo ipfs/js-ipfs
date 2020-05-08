@@ -4,6 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 
 describe('object', function () {

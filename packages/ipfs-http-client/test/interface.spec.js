@@ -3,7 +3,7 @@
 
 const tests = require('interface-ipfs-core')
 const factory = require('./utils/factory')
-const isWindows = process.platform && process.platform === 'win32'
+const isWindows = global.process && global.process.platform && global.process.platform === 'win32'
 
 /** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
 

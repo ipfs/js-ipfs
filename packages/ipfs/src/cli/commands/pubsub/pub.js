@@ -1,6 +1,7 @@
 'use strict'
 
 const parseDuration = require('parse-duration')
+const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'pub <topic> <data>',

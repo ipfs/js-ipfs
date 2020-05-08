@@ -3,7 +3,7 @@
 
 const { isNode } = require('ipfs-utils/src/env')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const ipfsClient = require('../src')
+const ipfsClient = require('../../src')
 
 function startServer (fn) {
   let headersResolve

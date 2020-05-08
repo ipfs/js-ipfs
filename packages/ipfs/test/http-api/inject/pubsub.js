@@ -8,6 +8,7 @@ const http = require('../../utils/http')
 const sinon = require('sinon')
 const { AbortSignal } = require('abort-controller')
 const randomBytes = require('iso-random-stream/src/random')
+const { Buffer } = require('buffer')
 
 function encodeBuffer (buf) {
   let uriEncoded = ''

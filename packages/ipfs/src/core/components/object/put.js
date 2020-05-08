@@ -6,6 +6,7 @@ const DAGLink = dagPB.DAGLink
 const mh = require('multihashes')
 const multicodec = require('multicodec')
 const { withTimeoutOption } = require('../../utils')
+const { Buffer } = require('buffer')
 
 function parseBuffer (buf, encoding) {
   switch (encoding) {

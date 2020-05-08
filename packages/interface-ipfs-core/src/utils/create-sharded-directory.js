@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const { expect } = require('./mocha')
 const isShardAtPath = require('./is-shard-at-path')
 const last = require('it-last')

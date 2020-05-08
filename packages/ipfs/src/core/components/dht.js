@@ -4,6 +4,7 @@ const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
 const { withTimeoutOption } = require('../utils')
+const { Buffer } = require('buffer')
 
 module.exports = ({ libp2p, repo }) => {
   return {

@@ -2,9 +2,10 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
-const MockPreloadNode = require('../utils/mock-preload-node')
+const MockPreloadNode = require('../utils/mock-preload-node-utils')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')
 

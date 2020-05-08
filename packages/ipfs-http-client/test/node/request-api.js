@@ -2,14 +2,11 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { isNode } = require('ipfs-utils/src/env')
 const { Buffer } = require('buffer')
-const ipfsClient = require('../src/index.js')
+const ipfsClient = require('../../src/index.js')
 
 describe('\'deal with HTTP weirdness\' tests', () => {
   it('does not crash if no content-type header is provided', async function () {
-    if (!isNode) return this.skip()
-
     // go-ipfs always (currently) adds a content-type header, even if no content is present,
     // the standard behaviour for an http-api is to omit this header if no content is present
     const server = require('http').createServer((req, res) => {
@@ -31,8 +28,6 @@ describe('\'deal with HTTP weirdness\' tests', () => {
 describe('trailer headers', () => {
   // TODO: needs fixing https://github.com/ipfs/js-ipfs-http-client/pull/624#issuecomment-344181950
   it.skip('should deal with trailer x-stream-error correctly', (done) => {
-    if (!isNode) { return done() }
-
     const server = require('http').createServer((req, res) => {
       res.setHeader('x-chunked-output', '1')
       res.setHeader('content-type', 'application/json')
@@ -59,8 +54,6 @@ describe('trailer headers', () => {
 
 describe('error handling', () => {
   it('should handle plain text error response', async function () {
-    if (!isNode) return this.skip()
-
     const server = require('http').createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
@@ -82,8 +75,6 @@ describe('error handling', () => {
   })
 
   it('should handle JSON error response', async function () {
-    if (!isNode) return this.skip()
-
     const server = require('http').createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
@@ -105,8 +96,6 @@ describe('error handling', () => {
   })
 
   it('should handle JSON error response with invalid JSON', async function () {
-    if (!isNode) return this.skip()
-
     const server = require('http').createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})

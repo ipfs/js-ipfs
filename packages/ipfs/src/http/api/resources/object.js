@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const multipart = require('../../utils/multipart-request-parser')
 const all = require('it-all')
 const dagPB = require('ipld-dag-pb')

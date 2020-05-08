@@ -1,6 +1,6 @@
 'use strict'
 
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const configure = require('../lib/configure')

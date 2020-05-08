@@ -3,6 +3,7 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { Buffer } = require('buffer')
 const Daemon = require('../../src/cli/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')

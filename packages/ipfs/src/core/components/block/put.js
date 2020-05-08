@@ -1,6 +1,6 @@
 'use strict'
 
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const isIPFS = require('is-ipfs')

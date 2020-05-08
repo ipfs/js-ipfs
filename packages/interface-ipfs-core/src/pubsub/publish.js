@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')

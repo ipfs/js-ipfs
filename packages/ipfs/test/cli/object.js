@@ -8,6 +8,7 @@ const multibase = require('multibase')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const CID = require('cids')
+const { Buffer } = require('buffer')
 const {
   DAGNode,
   DAGLink
