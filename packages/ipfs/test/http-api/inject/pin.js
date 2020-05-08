@@ -273,7 +273,7 @@ describe('/pin', () => {
     })
 
     it('finds specific pinned objects', async () => {
-      ipfs.pin.ls.withArgs([`/ipfs/${cid}`], defaultOptions).returns([{
+      ipfs.pin.ls.withArgs([`${cid}`], defaultOptions).returns([{
         cid,
         type: 'recursive'
       }])

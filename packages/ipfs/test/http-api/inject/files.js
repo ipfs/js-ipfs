@@ -245,7 +245,7 @@ describe('/files', () => {
     it('should cat a valid hash', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(`/ipfs/${cid}`, defaultOptions).returns([
+      ipfs.cat.withArgs(`${cid}`, defaultOptions).returns([
         data
       ])
 
@@ -262,7 +262,7 @@ describe('/files', () => {
     it('should cat a valid hash with an offset', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(`/ipfs/${cid}`, {
+      ipfs.cat.withArgs(`${cid}`, {
         ...defaultOptions,
         offset: 10
       }).returns([
@@ -282,7 +282,7 @@ describe('/files', () => {
     it('should cat a valid hash with a length', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(`/ipfs/${cid}`, {
+      ipfs.cat.withArgs(`${cid}`, {
         ...defaultOptions,
         length: 10
       }).returns([
@@ -314,7 +314,7 @@ describe('/files', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.get.withArgs(`/ipfs/${cid}`, {
+      ipfs.get.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
       }).returns([{
@@ -342,7 +342,7 @@ describe('/files', () => {
     })
 
     it('should list directory contents', async () => {
-      ipfs.ls.withArgs(`/ipfs/${cid}`, defaultOptions).returns([{
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
         name: 'link',
         cid,
         size: 10,
@@ -358,7 +358,7 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: `/ipfs/${cid}`,
+        Hash: `${cid}`,
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
@@ -371,7 +371,7 @@ describe('/files', () => {
     })
 
     it('should list directory contents recursively', async () => {
-      ipfs.ls.withArgs(`/ipfs/${cid}`, {
+      ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         recursive: true
       }).returns([{
@@ -390,7 +390,7 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: `/ipfs/${cid}`,
+        Hash: `${cid}`,
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
@@ -404,7 +404,7 @@ describe('/files', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should return base64 encoded CIDs', async () => {
-      ipfs.ls.withArgs(`/ipfs/${cid}`, defaultOptions).returns([])
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([])
 
       const res = await http({
         method: 'POST',
@@ -419,7 +419,7 @@ describe('/files', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.ls.withArgs(`/ipfs/${cid}`, {
+      ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
       }).returns([{
@@ -440,7 +440,7 @@ describe('/files', () => {
     })
 
     it('accepts a timeout when streaming', async () => {
-      ipfs.ls.withArgs(`/ipfs/${cid}`, {
+      ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
       }).returns([{
@@ -477,7 +477,7 @@ describe('/files', () => {
     })
 
     it('should list refs', async () => {
-      ipfs.refs.withArgs([`/ipfs/${cid}`], {
+      ipfs.refs.withArgs([`${cid}`], {
         ...defaultOptions,
         format: '<linkname>'
       }).returns([{
@@ -494,7 +494,7 @@ describe('/files', () => {
     })
 
     it('should list refs for multiple IPFS paths', async () => {
-      ipfs.refs.withArgs([`/ipfs/${cid}`, `/ipfs/${cid2}`], defaultOptions).returns([{
+      ipfs.refs.withArgs([`${cid}`, `/ipfs/${cid2}`], defaultOptions).returns([{
         ref: cid.toString()
       }])
 
@@ -508,7 +508,7 @@ describe('/files', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.refs.withArgs([`/ipfs/${cid}`], {
+      ipfs.refs.withArgs([`${cid}`], {
         ...defaultOptions,
         timeout: 1000
       }).returns([{

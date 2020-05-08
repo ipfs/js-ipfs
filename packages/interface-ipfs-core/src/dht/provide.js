@@ -6,6 +6,7 @@ const CID = require('cids')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,8 +30,10 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should respect timeout option when providing a value on the DHT', () => {
-      return testTimeout(() => ipfs.dht.provide(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
+    it('should respect timeout option when providing a value on the DHT', async () => {
+      const res = await last(ipfs.add(Buffer.from('test')))
+
+      await testTimeout(() => ipfs.dht.provide(res.cid, {
         timeout: 1
       }))
     })
