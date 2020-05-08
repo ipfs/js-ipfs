@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "aegir": "^21.10.1",
-    "ipfsd-ctl": "^4.0.1"
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/retry-closing-database"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
