@@ -4,7 +4,7 @@
 const fs = require('fs')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
-const rimraf = require('rimraf').sync
+const clean = require('../utils/clean')
 const CID = require('cids')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
@@ -33,7 +33,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid}`, { ipfs })
     expect(out)
@@ -41,7 +41,7 @@ describe('get', () => {
 
     expect(fs.readFileSync(outPath)).to.deep.equal(buf)
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 
   it('get file with output option', async () => {
@@ -53,7 +53,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), 'derp')
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid} --output ${outPath}`, { ipfs })
     expect(out)
@@ -61,7 +61,7 @@ describe('get', () => {
 
     expect(fs.readFileSync(path.join(outPath, cid.toString()))).to.deep.equal(buf)
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 
   it('get file with short output option', async () => {
@@ -73,7 +73,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), 'herp')
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid} -o ${outPath}`, { ipfs })
     expect(out)
@@ -81,7 +81,7 @@ describe('get', () => {
 
     expect(fs.readFileSync(path.join(outPath, cid.toString()))).to.deep.equal(buf)
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 
   it('get directory', async () => {
@@ -90,7 +90,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid}`, { ipfs })
     expect(out)
@@ -98,7 +98,7 @@ describe('get', () => {
 
     expect(fs.statSync(outPath).isDirectory()).to.be.true()
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 
   it('get recursively', async () => {
@@ -112,7 +112,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid}`, { ipfs })
     expect(out).to.eql(
@@ -123,7 +123,7 @@ describe('get', () => {
     expect(fs.statSync(path.join(outPath, 'foo.txt')).isFile()).to.be.true()
     expect(fs.readFileSync(path.join(outPath, 'foo.txt'))).to.deep.equal(buf)
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 
   it('should get file with a timeout', async () => {
@@ -138,7 +138,7 @@ describe('get', () => {
     }])
 
     const outPath = path.join(process.cwd(), cid.toString())
-    rimraf(outPath)
+    await clean(outPath)
 
     const out = await cli(`get ${cid} --timeout=1s`, { ipfs })
     expect(out)
@@ -146,6 +146,6 @@ describe('get', () => {
 
     expect(fs.readFileSync(outPath)).to.deep.equal(buf)
 
-    rimraf(outPath)
+    await clean(outPath)
   })
 })

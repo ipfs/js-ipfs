@@ -29,6 +29,8 @@ module.exports = (common, options) => {
 
     it('should respect timeout option when generating a key', () => {
       return testTimeout(() => ipfs.key.gen(nanoid(), {
+        type: 'rsa',
+        size: 2048,
         timeout: 1
       }))
     })

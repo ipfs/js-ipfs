@@ -12,18 +12,24 @@ const toIpfsPath = (value) => {
   }
 
   value = value.toString()
+  let startedWithIpfs = false
 
-  if (!value.startsWith('/ipfs/')) {
-    value = `/ipfs/${value}`
+  if (value.startsWith('/ipfs/')) {
+    startedWithIpfs = true
+    value = value.replace(/^\/ipfs\//, '')
   }
 
   // section after /ipfs/ should be a valid CID
   const parts = value.split('/')
 
   // will throw if not valid
-  parts[2] = new CID(parts[2])
+  parts[0] = new CID(parts[0])
 
-  return parts.join('/')
+  // go-ipfs returns /ipfs/ prefix for ipfs paths when passed to the http api
+  // and not when it isn't.  E.g.
+  // GET /api/v0/ls?arg=/ipfs/Qmfoo  -> /ipfs/Qmfoo will be in the result
+  // GET /api/v0/ls?arg=Qmfoo  -> Qmfoo will be in the result
+  return `${startedWithIpfs ? '/ipfs/' : ''}${parts.join('/')}`
 }
 
 const toCID = (value) => {
