@@ -24,6 +24,13 @@ module.exports = {
       included: false
     }],
     browserNoActivityTimeout: 100 * 1000,
+    webpack: {
+      resolve: {
+        alias: {
+          ipfs$: __dirname
+        }
+      }
+    }
   },
   hooks: {
     node: {
