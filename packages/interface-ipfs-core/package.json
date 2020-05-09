@@ -61,7 +61,7 @@
     "temp-write": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^21.10.1",
+    "aegir": "^22.0.0",
     "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/retry-closing-database"
   },
   "contributors": [
