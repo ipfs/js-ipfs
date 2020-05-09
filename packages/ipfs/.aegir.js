@@ -23,14 +23,7 @@ module.exports = {
       served: true,
       included: false
     }],
-    browserNoActivityTimeout: 100 * 1000,
-    webpack: {
-      resolve: {
-        alias: {
-          ipfs$: __dirname
-        }
-      }
-    }
+    browserNoActivityTimeout: 100 * 1000
   },
   hooks: {
     node: {
