@@ -183,7 +183,7 @@
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.4.23-3",
     "interface-ipfs-core": "^0.134.3",
-    "ipfs-interop": "ipfs/interop#fix/override-ipfs-location",
+    "ipfs-interop": "^1.0.2",
     "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/retry-closing-database",
     "iso-random-stream": "^1.1.1",
     "it-first": "^1.0.1",
