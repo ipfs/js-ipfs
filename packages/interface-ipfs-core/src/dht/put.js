@@ -3,7 +3,7 @@
 
 const { Buffer } = require('buffer')
 const { getDescribe, getIt } = require('../utils/mocha')
-const all = require('it-all')
+const drain = require('it-drain')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
@@ -43,9 +43,7 @@ module.exports = (common, options) => {
       const key = Buffer.from('/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
       const data = Buffer.from('data')
 
-      await all(nodeA.dht.put(key, data, { verbose: true }))
-
-      // await nodeA.dht.put(key, data)
+      await drain(nodeA.dht.put(key, data, { verbose: true }))
     })
   })
 }
