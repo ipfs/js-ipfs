@@ -196,8 +196,15 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 
   privateKey = peerId.privKey
 
+  log('peer identity: %s', config.Identity.PeerID)
+
+  await repo.init(config)
+  await repo.open()
+
+  log('repo opened')
+
   // Create libp2p for Keychain creation
-  const libp2p = await Components.libp2p({
+  const libp2p = Components.libp2p({
     peerId,
     repo,
     config,
@@ -207,17 +214,12 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   })
 
   if (libp2p.keychain && libp2p.keychain.opts) {
-    config.Keychain = {
+    await libp2p.loadKeychain()
+
+    await repo.config.set('Keychain', {
       dek: libp2p.keychain.opts.dek
-    }
+    })
   }
-
-  log('peer identity: %s', config.Identity.PeerID)
-
-  await repo.init(config)
-  await repo.open()
-
-  log('repo opened')
 
   return { peerId, keychain: libp2p.keychain }
 }
@@ -237,7 +239,7 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
 
   const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
 
-  const libp2p = await Components.libp2p({
+  const libp2p = Components.libp2p({
     peerId,
     repo,
     config,
@@ -246,6 +248,8 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
       ...config.Keychain
     }
   })
+
+  libp2p.keychain && await libp2p.loadKeychain()
 
   return { peerId, keychain: libp2p.keychain }
 }

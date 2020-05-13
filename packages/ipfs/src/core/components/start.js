@@ -52,13 +52,15 @@ module.exports = ({
       })
     }
 
-    const libp2p = await Components.libp2p({
+    const libp2p = Components.libp2p({
       options: constructorOptions,
       repo,
       peerId: peerId,
       multiaddrs: addrs,
       config
     })
+
+    libp2p.keychain && await libp2p.loadKeychain()
 
     await libp2p.start()
 

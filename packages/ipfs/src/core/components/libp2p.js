@@ -5,7 +5,7 @@ const mergeOptions = require('merge-options')
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
-module.exports = async ({
+module.exports = ({
   options,
   peerId,
   multiaddrs = [],
@@ -17,6 +17,7 @@ module.exports = async ({
   config = config || {}
 
   const { datastore, keys } = repo
+
   const libp2pOptions = getLibp2pOptions({
     options,
     config,
@@ -33,9 +34,7 @@ module.exports = async ({
 
   // Required inline to reduce startup time
   const Libp2p = require('libp2p')
-  const libp2pNode = await Libp2p.create(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
-
-  return libp2pNode
+  return new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
 }
 
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
