@@ -22,6 +22,6 @@
     "test-ipfs-example": "^2.0.1"
   },
   "browser": {
-    "ipfs": "ipfs/dist"
+    "ipfs": "ipfs/dist/index.min.js"
   }
 }
