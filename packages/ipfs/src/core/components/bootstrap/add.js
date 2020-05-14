@@ -2,9 +2,10 @@
 
 const defaultConfig = require('../../runtime/config-nodejs.js')
 const { isValidMultiaddr } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ repo }) => {
-  return async function add (multiaddr, options) {
+  return withTimeoutOption(async function add (multiaddr, options) {
     options = options || {}
 
     if (multiaddr && !isValidMultiaddr(multiaddr)) {
@@ -22,5 +23,5 @@ module.exports = ({ repo }) => {
     return {
       Peers: options.default ? defaultConfig().Bootstrap : [multiaddr]
     }
-  }
+  })
 }

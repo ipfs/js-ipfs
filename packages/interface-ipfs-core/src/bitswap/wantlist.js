@@ -4,6 +4,7 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { waitForWantlistKey } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -32,6 +33,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting bitswap wantlist', () => {
+      return testTimeout(() => ipfsA.bitswap.wantlist({
+        timeout: 1
+      }))
+    })
 
     it('should get the wantlist', function () {
       return waitForWantlistKey(ipfsB, key)

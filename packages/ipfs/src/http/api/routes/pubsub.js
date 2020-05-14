@@ -6,26 +6,21 @@ module.exports = [
   {
     method: 'POST',
     path: '/api/v0/pubsub/sub',
-    handler: resources.pubsub.subscribe.handler,
-    options: {
-      timeout: {
-        socket: false
-      }
-    }
+    ...resources.pubsub.subscribe
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/pub',
-    handler: resources.pubsub.publish.handler
+    ...resources.pubsub.publish
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/ls',
-    handler: resources.pubsub.ls.handler
+    ...resources.pubsub.ls
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/peers',
-    handler: resources.pubsub.peers.handler
+    ...resources.pubsub.peers
   }
 ]

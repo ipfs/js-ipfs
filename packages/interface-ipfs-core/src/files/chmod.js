@@ -5,6 +5,7 @@ const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const testTimeout = require('../utils/test-timeout')
 
 module.exports = (common, options) => {
   const describe = getDescribe(options)
@@ -329,6 +330,18 @@ module.exports = (common, options) => {
 
       // files with prior execute bit should now be user and group executable
       await expect(ipfs.files.stat(bin)).to.eventually.have.property('mode', 0o754)
+    })
+
+    it('should respect timeout option when changing the mode of a file', async () => {
+      const path = `/foo-${Math.random()}`
+
+      await ipfs.files.write(path, Buffer.from('Hello world'), {
+        create: true
+      })
+
+      await testTimeout(() => ipfs.files.chmod(path, '0777', {
+        timeout: 1
+      }))
     })
   })
 }

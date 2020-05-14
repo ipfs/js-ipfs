@@ -6,21 +6,14 @@ const cli = require('../../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    parents: false,
-    recursive: false,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  parents: false,
+  recursive: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined
 }
 
 describe('mv', () => {
@@ -47,7 +40,7 @@ describe('mv', () => {
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
       dest,
-      defaultOptions()
+      defaultOptions
     ])
   })
 
@@ -57,10 +50,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -70,10 +63,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -83,10 +76,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         recursive: true
-      })
+      }
     ])
   })
 
@@ -96,10 +89,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         recursive: true
-      })
+      }
     ])
   })
 
@@ -109,10 +102,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         cidVersion: 5
-      })
+      }
     ])
   })
 
@@ -122,10 +115,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         cidVersion: 5
-      })
+      }
     ])
   })
 
@@ -135,10 +128,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -148,10 +141,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -161,10 +154,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -174,10 +167,10 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -187,10 +180,23 @@ describe('mv', () => {
     expect(ipfs.files.mv.callCount).to.equal(1)
     expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         shardSplitThreshold: 10
-      })
+      }
+    ])
+  })
+
+  it('should move an entry with a timeout', async () => {
+    await cli(`files mv ${source} ${dest} --timeout=1s`, { ipfs })
+
+    expect(ipfs.files.mv.callCount).to.equal(1)
+    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
+      source,
+      dest, {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
   })
 })

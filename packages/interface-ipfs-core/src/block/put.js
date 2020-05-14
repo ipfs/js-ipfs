@@ -6,6 +6,8 @@ const Block = require('ipld-block')
 const multihash = require('multihashes')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -24,6 +26,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when putting a block', () => {
+      return testTimeout(() => ipfs.block.put(Buffer.from('derp'), {
+        timeout: 1
+      }))
+    })
 
     it('should put a buffer, using defaults', async () => {
       const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
@@ -62,13 +70,15 @@ module.exports = (common, options) => {
       const block = await ipfs.block.put(blob, {
         format: 'raw',
         mhtype: 'sha2-512',
-        version: 1
+        version: 1,
+        pin: true
       })
 
       expect(block.data).to.be.eql(blob)
       expect(block.cid.version).to.equal(1)
       expect(block.cid.codec).to.equal('raw')
       expect(multihash.decode(block.cid.multihash).name).to.equal('sha2-512')
+      expect(await all(ipfs.pin.ls(block.cid))).to.have.lengthOf(1)
     })
 
     it('should put a Block instance', async () => {

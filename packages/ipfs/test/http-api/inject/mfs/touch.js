@@ -5,21 +5,16 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    mtime: null,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  mtime: undefined,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/touch', () => {
@@ -42,90 +37,93 @@ describe('/files/touch', () => {
   it('should update the mtime for a file', async () => {
     await http({
       method: 'POST',
+      url: `/api/v0/files/touch?arg=${path}`
+    }, { ipfs })
+
+    expect(ipfs.files.touch.callCount).to.equal(1)
+    expect(ipfs.files.touch.calledWith(path, defaultOptions)).to.be.true()
+  })
+
+  it('should specify the mtime for a file', async () => {
+    await http({
+      method: 'POST',
       url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}`
     }, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000
-        }
-      })
-    ])
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      mtime: {
+        secs: 1000
+      }
+    })).to.be.true()
   })
 
   it('should update the mtime without flushing', async () => {
     await http({
       method: 'POST',
-      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&flush=false`
+      url: `/api/v0/files/touch?arg=${path}&flush=false`
     }, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000
-        },
-        flush: false
-      })
-    ])
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      flush: false
+    })).to.be.true()
   })
 
   it('should update the mtime with a different hash algorithm', async () => {
     await http({
       method: 'POST',
-      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&hashAlg=sha3-256`
+      url: `/api/v0/files/touch?arg=${path}&hashAlg=sha3-256`
     }, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000
-        },
-        hashAlg: 'sha3-256'
-      })
-    ])
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      hashAlg: 'sha3-256'
+    })).to.be.true()
   })
 
   it('should update the mtime with a shard split threshold', async () => {
     await http({
       method: 'POST',
-      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&shardSplitThreshold=10`
+      url: `/api/v0/files/touch?arg=${path}&shardSplitThreshold=10`
     }, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000
-        },
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      shardSplitThreshold: 10
+    })).to.be.true()
   })
 
-  it('should update the mtime with nanoseconds with a shard split threshold', async () => {
+  it('should update the mtime with nanoseconds', async () => {
     await http({
       method: 'POST',
-      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&mtimeNsecs=100&shardSplitThreshold=10`
+      url: `/api/v0/files/touch?arg=${path}&mtime=${mtime.getTime() / 1000}&mtimeNsecs=100`
     }, { ipfs })
 
     expect(ipfs.files.touch.callCount).to.equal(1)
-    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 1000,
-          nsecs: 100
-        },
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      mtime: {
+        secs: 1000,
+        nsecs: 100
+      }
+    })).to.be.true()
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/touch?arg=${path}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.touch.callCount).to.equal(1)
+    expect(ipfs.files.touch.calledWith(path, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
   })
 })

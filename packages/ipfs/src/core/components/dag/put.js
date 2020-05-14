@@ -2,9 +2,10 @@
 
 const multicodec = require('multicodec')
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, pin, gcLock, preload }) => {
-  return async function put (dagNode, options) {
+  return withTimeoutOption(async function put (dagNode, options) {
     options = options || {}
 
     if (options.cid && (options.format || options.hashAlg)) {
@@ -66,5 +67,5 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
         release()
       }
     }
-  }
+  })
 }

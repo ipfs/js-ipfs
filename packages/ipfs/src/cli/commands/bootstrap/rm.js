@@ -3,6 +3,7 @@
 const debug = require('debug')
 const log = debug('cli:bootstrap')
 log.error = debug('cli:bootstrap:error')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'rm [<peer>]',
@@ -14,12 +15,18 @@ module.exports = {
       type: 'boolean',
       describe: 'Remove all bootstrap peers.',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, all, peer }) {
-    const { ipfs, print } = ctx
-    const list = await ipfs.bootstrap.rm(peer, { all })
+  async handler ({ ctx: { ipfs, print }, all, peer, timeout }) {
+    const list = await ipfs.bootstrap.rm(peer, {
+      all,
+      timeout
+    })
     list.Peers.forEach((peer) => print(peer))
   }
 }

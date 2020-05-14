@@ -1,23 +1,42 @@
-# Pin API
+# Pin API <!-- omit in toc -->
 
-* [pin.add](#pinadd)
-* [pin.ls](#pinls)
-* [pin.rm](#pinrm)
+- [`ipfs.pin.add(cid, [options])`](#ipfspinaddcid-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.pin.ls([cid], [options])`](#ipfspinlscid-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.pin.rm(cid, [options])`](#ipfspinrmcid-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
 
-#### `pin.add`
+## `ipfs.pin.add(cid, [options])`
 
-> Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able).
+> Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able)
 
-##### `ipfs.pin.add(hash, [options])`
+### Parameters
 
-Where:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] | Pin this CID in your repo |
 
-- `hash` is an IPFS multihash.
-- `options` is an object that can contain the following keys
-  - `recursive` (`boolean`) - Recursively pin the object linked. Type: bool. Default: `true`
-  - `timeout` (`number`|`string`) - Throw an error if the request does not complete within the specified milliseconds timeout. If `timeout` is a string, the value is parsed as a [human readable duration](https://www.npmjs.com/package/parse-duration). There is no timeout by default.
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `true` | Recursively pin all links contained by the object |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -31,7 +50,7 @@ an array of objects is returned, each of the form:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const pinset = await ipfs.pin.add('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
@@ -42,25 +61,33 @@ console.log(pinset)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `pin.ls`
+## `ipfs.pin.ls([cid], [options])`
 
-> List all the objects pinned to local storage or under a specific hash.
+> List all the objects pinned to local storage or under a specific hash
 
-##### `ipfs.pin.ls([cid], [options])`
+### Parameters
 
-Where:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] or `Array<CID>` | List these specific CIDs |
 
-- `cid` - a [CID][cid] instance or CID as a string or an array of CIDs.
-- `options` - is an object that can contain the following keys:
-  - `type` - filter by this type of pin ("recursive", "direct" or "indirect")
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| type | `String` | `undefined` | Filter by this type of pin ("recursive", "direct" or "indirect") |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `AsyncIterable<{ cid: CID, type: string }>` | An async iterable that yields currently pinned objects with `cid` and `type` properties. `cid` is a [CID][cid] of the pinned node, `type` is the pin type ("recursive", "direct" or "indirect") |
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const { cid, type } of ipfs.pin.ls()) {
@@ -73,24 +100,33 @@ for await (const { cid, type } of ipfs.pin.ls()) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `pin.rm`
+## `ipfs.pin.rm(cid, [options])`
 
-> Remove a hash from the pinset
+> Unpin this block from your repo
 
-##### `ipfs.pin.rm(hash, [options])`
+### Parameters
 
-Where:
-- `hash` is a multihash.
-- `options` is an object that can contain the following keys
-  - 'recursive' - Recursively unpin the object linked. Type: bool. Default: `true`
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] | Unpin this CID |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `true` | Recursively unpin the object linked |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<{ cid: CID }>` | An array of unpinned objects |
 
-**Example:**
+### Example
 
 ```JavaScript
 const pinset = await ipfs.pin.rm('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
@@ -103,3 +139,4 @@ A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/pin
 [cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

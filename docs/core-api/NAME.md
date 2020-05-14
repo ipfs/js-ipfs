@@ -1,34 +1,57 @@
-# Name API
+# Name API <!-- omit in toc -->
 
-* [name.publish](#namepublish)
-* [name.pubsub.cancel](#namepubsubcancel)
-* [name.pubsub.state](#namepubsubstate)
-* [name.pubsub.subs](#namepubsubsubs)
-* [name.resolve](#nameresolve)
+- [`ipfs.name.publish(value, [options])`](#ipfsnamepublishvalue-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+  - [Notes](#notes)
+- [`ipfs.name.pubsub.cancel(name, [options])`](#ipfsnamepubsubcancelname-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.name.pubsub.state([options])`](#ipfsnamepubsubstateoptions)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
+- [`ipfs.name.pubsub.subs([options])`](#ipfsnamepubsubsubsoptions)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
+- [`ipfs.name.resolve(value, [options])`](#ipfsnameresolvevalue-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
 
-#### `name.publish`
+## `ipfs.name.publish(value, [options])`
 
 > Publish an IPNS name with a given value.
 
-##### `ipfs.name.publish(value, [options])`
+### Parameters
 
-`value` is a base58 encoded IPFS multihash, such as: `/ipfs/QmbezGequPwcsWo8UL4wDF6a8hYwM1hmbzYv2mnKkEWaUp`.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| value | [CID][] | The content to publish |
 
-`options` is an object that may contain:
+### Options
 
-```JavaScript
-{
-  resolve:  // bool - Resolve given path before publishing. Default: true
-  lifetime: // string - Time duration of the record. Default: 24h
-  ttl:      // string - Time duration this record should be cached
-  key:      // string - Name of the key to be used. Default: 'self'
-  allowOffline: // bool - When offline, save the IPNS record to the the local datastore without broadcasting to the network instead of simply failing.
-}
-```
+An optional object which may have the following keys:
 
-Note: `allowOffline` option is not yet implemented in js-ipfs. See tracking issue [ipfs/js-ipfs#1997](https://github.com/ipfs/js-ipfs/issues/1997).
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| resolve | `boolean` | `true` | Resolve given path before publishing |
+| lifetime | `String` | `24h` | Time duration of the record |
+| ttl | `String` | `undefined` | Time duration this record should be cached |
+| key | `String` | `'self'` | Name of the key to be used |
+| allowOffline | `boolean` | `true` | When offline, save the IPNS record to the the local datastore without broadcasting to the network instead of simply failing. |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -43,7 +66,7 @@ example of the returned object:
 }
 ```
 
-**Example:**
+### Example
 
 Imagine you want to publish your website under IPFS. You can use the [Files API](./FILES.md) to publish your static website and then you'll get a multihash you can link to. But when you need to make a change, a problem arises: you get a new multihash because you now have a different content. And it is not possible for you to be always giving others the new address.
 
@@ -64,15 +87,32 @@ This way, you can republish a new version of your website under the same address
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `name.pubsub.cancel`
+### Notes
 
-> Cancel a name subscription.
+The `allowOffline` option is not yet implemented in js-ipfs. See tracking issue [ipfs/js-ipfs#1997](https://github.com/ipfs/js-ipfs/issues/1997).
 
-##### `ipfs.name.pubsub.cancel(arg)`
+## `ipfs.name.pubsub.cancel(name, [options])`
+
+> Cancel a name subscription
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | `String` | The name of the subscription to cancel |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
 `arg` is the name of the subscription to cancel.
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -86,7 +126,7 @@ example of the returned object:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const name = 'QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm'
@@ -98,13 +138,24 @@ console.log(result.canceled)
 
 A great source of [examples][examples-pubsub] can be found in the tests for this API.
 
-#### `name.pubsub.state`
+## `ipfs.name.pubsub.state([options])`
 
-> Query the state of IPNS pubsub.
+> Query the state of IPNS pubsub
 
-##### `ipfs.name.pubsub.state()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -118,7 +169,7 @@ example of the returned object:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const result = await ipfs.name.pubsub.state()
@@ -128,13 +179,24 @@ console.log(result.enabled)
 
 A great source of [examples][examples-pubsub] can be found in the tests for this API.
 
-#### `name.pubsub.subs`
+## `ipfs.name.pubsub.subs([options])`
 
-> Show current name subscriptions.
+> Show current name subscriptions
 
-##### `ipfs.name.pubsub.subs()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -146,7 +208,7 @@ example of the returned array:
 ['/ipns/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm']
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const result = await ipfs.name.pubsub.subs()
@@ -156,30 +218,34 @@ console.log(result)
 
 A great source of [examples][examples-pubsub] can be found in the tests for this API.
 
-#### `name.resolve`
+## `ipfs.name.resolve(value, [options])`
 
 > Resolve an IPNS name.
 
-##### `ipfs.name.resolve(value, [options])`
+### Parameters
 
-`value` is a IPNS address, such as: `/ipns/ipfs.io`.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| value | `String` | An IPNS address such as `/ipns/ipfs.io` |
 
-`options` is an object that may contain:
+### Options
 
-```JavaScript
-{
-  recursive: // bool - Resolve until the result is not an IPNS name. Default: false.
-  nocache: // bool - Do not use cached entries. Default: false.
-}
-```
+An optional object which may have the following keys:
 
-**Returns**
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `false` | Resolve until the result is not an IPNS name |
+| nocache | `boolean` | `cache` | Do not use cached entries |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `AsyncIterable<String>` | An async iterable that yields strings that are increasingly more accurate resolved paths. |
 
-**Example:**
+### Example
 
 ```JavaScript
 // The IPNS address you want to resolve.
@@ -195,3 +261,5 @@ A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/name
 [examples-pubsub]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/name-pubsub
+[cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

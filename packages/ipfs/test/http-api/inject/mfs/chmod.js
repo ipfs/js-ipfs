@@ -5,20 +5,15 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    recursive: false,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  recursive: false,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/chmod', () => {
@@ -45,11 +40,7 @@ describe('/files/chmod', () => {
     }, { ipfs })
 
     expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions()
-    ])
+    expect(ipfs.files.chmod.calledWith(path, mode, defaultOptions)).to.be.true()
   })
 
   it('should update the mode recursively', async () => {
@@ -59,13 +50,10 @@ describe('/files/chmod', () => {
     }, { ipfs })
 
     expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions({
-        recursive: true
-      })
-    ])
+    expect(ipfs.files.chmod.calledWith(path, mode, {
+      ...defaultOptions,
+      recursive: true
+    })).to.be.true()
   })
 
   it('should update the mode without flushing', async () => {
@@ -75,13 +63,10 @@ describe('/files/chmod', () => {
     }, { ipfs })
 
     expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions({
-        flush: false
-      })
-    ])
+    expect(ipfs.files.chmod.calledWith(path, mode, {
+      ...defaultOptions,
+      flush: false
+    })).to.be.true()
   })
 
   it('should update the mode a different hash algorithm', async () => {
@@ -91,13 +76,10 @@ describe('/files/chmod', () => {
     }, { ipfs })
 
     expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions({
-        hashAlg: 'sha3-256'
-      })
-    ])
+    expect(ipfs.files.chmod.calledWith(path, mode, {
+      ...defaultOptions,
+      hashAlg: 'sha3-256'
+    })).to.be.true()
   })
 
   it('should update the mode with a shard split threshold', async () => {
@@ -107,12 +89,22 @@ describe('/files/chmod', () => {
     }, { ipfs })
 
     expect(ipfs.files.chmod.callCount).to.equal(1)
-    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
-      path,
-      mode,
-      defaultOptions({
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.chmod.calledWith(path, mode, {
+      ...defaultOptions,
+      shardSplitThreshold: 10
+    })).to.be.true()
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/chmod?arg=${path}&mode=${mode}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.chmod.callCount).to.equal(1)
+    expect(ipfs.files.chmod.calledWith(path, mode, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
   })
 })

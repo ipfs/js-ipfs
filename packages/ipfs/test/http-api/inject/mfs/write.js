@@ -7,31 +7,26 @@ const sinon = require('sinon')
 const { Buffer } = require('buffer')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    offset: undefined,
-    length: undefined,
-    create: false,
-    truncate: false,
-    rawLeaves: false,
-    reduceSingleLeafToSelf: false,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    parents: false,
-    progress: undefined,
-    strategy: 'trickle',
-    flush: true,
-    shardSplitThreshold: 1000,
-    mode: undefined,
-    mtime: undefined
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  offset: undefined,
+  length: undefined,
+  create: false,
+  truncate: false,
+  rawLeaves: false,
+  reduceSingleLeafToSelf: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  parents: false,
+  progress: undefined,
+  strategy: 'trickle',
+  flush: true,
+  shardSplitThreshold: 1000,
+  mode: undefined,
+  mtime: undefined,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 async function send (text, headers = {}) {
@@ -44,6 +39,10 @@ async function send (text, headers = {}) {
     headers: form.getHeaders(),
     payload: await streamToPromise(form)
   }
+}
+
+function matchIterable () {
+  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
 }
 
 describe('/files/write', () => {
@@ -75,8 +74,7 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions())
+    expect(ipfs.files.write.calledWith(path, matchIterable(), defaultOptions)).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -88,10 +86,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       parents: true
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -103,10 +101,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       create: true
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -118,10 +116,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       offset: 10
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -133,10 +131,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       length: 10
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -148,10 +146,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       truncate: true
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -163,10 +161,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       rawLeaves: true
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -178,10 +176,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       reduceSingleLeafToSelf: true
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -193,10 +191,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       flush: false
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -208,10 +206,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       strategy: 'flat'
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -223,10 +221,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       cidVersion: 1
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -238,10 +236,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       hashAlg: 'sha3-256'
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -253,10 +251,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       shardSplitThreshold: 10
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -272,10 +270,10 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       mode: parseInt(mode, 8)
-    }))
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 
@@ -291,12 +289,27 @@ describe('/files/write', () => {
     }, { ipfs })
 
     expect(ipfs.files.write.callCount).to.equal(1)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.property('args[0]', path)
-    expect(ipfs.files.write.getCall(0)).to.have.nested.deep.property('args[2]', defaultOptions({
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
       mtime: {
         secs: 11
       }
-    }))
+    })).to.be.true()
+    expect(content).to.equal('hello world')
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/write?arg=${path}&timeout=1s`,
+      ...await send('hello world')
+    }, { ipfs })
+
+    expect(ipfs.files.write.callCount).to.equal(1)
+    expect(ipfs.files.write.calledWith(path, matchIterable(), {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
     expect(content).to.equal('hello world')
   })
 })

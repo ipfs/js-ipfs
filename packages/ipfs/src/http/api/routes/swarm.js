@@ -6,42 +6,26 @@ module.exports = [
   {
     method: 'POST',
     path: '/api/v0/swarm/peers',
-    handler: resources.swarm.peers.handler
+    ...resources.swarm.peers
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/addrs',
-    handler: resources.swarm.addrs.handler
+    ...resources.swarm.addrs
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/addrs/local',
-    handler: resources.swarm.localAddrs.handler
+    ...resources.swarm.localAddrs
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/connect',
-    options: {
-      pre: [
-        { method: resources.swarm.connect.parseArgs, assign: 'args' }
-      ]
-    },
-    handler: resources.swarm.connect.handler
+    ...resources.swarm.connect
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/disconnect',
-    options: {
-      pre: [
-        { method: resources.swarm.disconnect.parseArgs, assign: 'args' }
-      ]
-    },
-    handler: resources.swarm.disconnect.handler
+    ...resources.swarm.disconnect
   }
-  // TODO
-  // {
-  //  method: 'POST',
-  //  path: '/api/v0/swarm/filters',
-  //  handler: resources.swarm.disconnect
-  // }
 ]

@@ -1,26 +1,56 @@
-# Config API
+# Config API <!-- omit in toc -->
 
-* [config.get](#configget)
-* [config.set](#configset)
-* [config.replace](#configreplace)
-* [config.profiles.list](#configprofileslist)
-* [config.profiles.apply](#configprofilesapply)
+- [`ipfs.config.get([key,] [options])`](#ipfsconfiggetkey-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Example](#example)
+- [`ipfs.config.set(key, value, [options])`](#ipfsconfigsetkey-value-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns)
+  - [Example](#example-1)
+- [`ipfs.config.replace(config, [options])`](#ipfsconfigreplaceconfig-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-1)
+  - [Example](#example-2)
+- [`ipfs.config.profiles.list([options])`](#ipfsconfigprofileslistoptions)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-2)
+  - [Example](#example-3)
+- [`ipfs.config.profiles.apply(name, [options])`](#ipfsconfigprofilesapplyname-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-3)
+  - [Example](#example-4)
 
-#### `config.get`
+## `ipfs.config.get([key,] [options])`
 
 > Returns the currently being used config. If the daemon is off, it returns the stored config.
 
-##### `ipfs.config.get([key])`
+### Parameters
 
-`key` is the key of the value that should be fetched from the config file. If no key is passed, then the whole config should be returned. `key` should be of type String.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | `String` | The key of the value that should be fetched from the config file. If no key is passed, then the whole config will be returned.  |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object containing the configuration of the IPFS node |
 
-**Example:**
+### Example
 
 ```JavaScript
 const config = await ipfs.config.get()
@@ -29,17 +59,27 @@ console.log(config)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `config.set`
+## `ipfs.config.set(key, value, [options])`
 
 > Adds or replaces a config value.
 
-##### `ipfs.config.set(key, value)`
+### Parameters
 
-`key` is the key value that will be added or replaced (in case of the value already). `key` should be of type String.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | `String` | The key of the value that should be added or replaced  |
+| value | any | The value to be set  |
 
-`value` value to be set.
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -47,7 +87,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 Note that this operation will **not** spark the restart of any service, i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will have to be restarted manually for the changes to take difference.
 
-**Example:**
+### Example
 
 ```JavaScript
 await ipfs.config.set('Discovery.MDNS.Enabled', false)
@@ -56,15 +96,26 @@ await ipfs.config.set('Discovery.MDNS.Enabled', false)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `config.replace`
+## `ipfs.config.replace(config, [options])`
 
-> Adds or replaces a config file.
+> Adds or replaces a config file
 
-##### `ipfs.config.replace(config)`
+### Parameters
 
-`config` is a JSON object that contains the new config.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| config | Object | An object that contains the new config |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -72,30 +123,43 @@ A great source of [examples][] can be found in the tests for this API.
 
 Note that this operation will **not** spark the restart of any service, i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will have to be restarted manually for the changes to take difference.
 
-**Example:**
+### Example
 
 ```JavaScript
+const newConfig = {
+  Bootstrap: []
+}
+
 await ipfs.config.replace(newConfig)
 // config has been replaced
 ```
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `config.profiles.list`
+## `ipfs.config.profiles.list([options])`
 
 > List available config profiles
 
-##### `ipfs.config.profiles.list([options])`
+### Parameters
 
-`options` is a object.
+None
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Array>` | An array with all the available config profiles |
 
-**Example:**
+### Example
 
 ```JavaScript
 const profiles = await ipfs.config.profiles.list()
@@ -106,23 +170,35 @@ profiles.forEach(profile => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `config.profiles.apply`
+## `ipfs.config.profiles.apply(name, [options])`
 
 > Apply a config profile
 
-##### `ipfs.config.profiles.apply(name, [options])`
+### Parameters
 
-`name` is a string. Call `config.profiles.list()` for a list of valid profile names.
-`options` an object that might contain the following values:
-  - `dryRun` is a boolean which if true does not apply the profile
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | `String` | The name of the profile to apply |
 
-**Returns**
+Call `config.profiles.list()` for a list of valid profile names.
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| dryRun | `boolean` | false | If true does not apply the profile |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object containing both the `original` and `updated` config |
 
-**Example:**
+### Example
 
 ```JavaScript
 const diff = await ipfs.config.profiles.apply('lowpower')
@@ -135,3 +211,4 @@ Note that you will need to restart your node for config changes to take effect.
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/config
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
-    if (path && path.type) {
+    if (path && (path.type || path.timeout)) {
       options = path || {}
       path = []
     }

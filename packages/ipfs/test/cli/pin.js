@@ -32,8 +32,13 @@ describe('pin', () => {
   })
 
   describe('rm', function () {
+    const defaultOptions = {
+      recursive: true,
+      timeout: undefined
+    }
+
     it('recursively (default)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], defaultOptions).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -42,7 +47,10 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], {
+        ...defaultOptions,
+        recursive: false
+      }).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -51,7 +59,10 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], {
+        ...defaultOptions,
+        recursive: false
+      }).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -60,7 +71,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.rm.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.rm.withArgs([pins.root], defaultOptions).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -68,11 +79,28 @@ describe('pin', () => {
       const b64CidStr = new CID(pins.root).toV1().toString('base64')
       expect(out).to.eql(`unpinned ${b64CidStr}\n`)
     })
+
+    it('recursively with timeout', async () => {
+      ipfs.pin.rm.withArgs([pins.root], {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([{
+        cid: new CID(pins.root)
+      }])
+
+      const out = await cli(`pin rm ${pins.root} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`unpinned ${pins.root}\n`)
+    })
   })
 
   describe('add', function () {
+    const defaultOptions = {
+      recursive: true,
+      timeout: undefined
+    }
+
     it('recursively (default)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], defaultOptions).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -81,7 +109,10 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], {
+        ...defaultOptions,
+        recursive: false
+      }).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -90,7 +121,10 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: false }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], {
+        ...defaultOptions,
+        recursive: false
+      }).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -99,7 +133,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.add.withArgs([pins.root], { recursive: true }).resolves([{
+      ipfs.pin.add.withArgs([pins.root], defaultOptions).resolves([{
         cid: new CID(pins.root)
       }])
 
@@ -107,11 +141,29 @@ describe('pin', () => {
       const b64CidStr = new CID(pins.root).toV1().toString('base64')
       expect(out).to.eql(`pinned ${b64CidStr} recursively\n`)
     })
+
+    it('recursively with timeout', async () => {
+      ipfs.pin.add.withArgs([pins.root], {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([{
+        cid: new CID(pins.root)
+      }])
+
+      const out = await cli(`pin add ${pins.root} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`pinned ${pins.root} recursively\n`)
+    })
   })
 
   describe('ls', function () {
+    const defaultOptions = {
+      type: 'all',
+      stream: false,
+      timeout: undefined
+    }
+
     it('lists all pins when no hash is passed', async () => {
-      ipfs.pin.ls.withArgs(undefined, { type: 'all', stream: false }).returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid: new CID(pins.root),
         type: 'recursive'
       }])
@@ -121,7 +173,7 @@ describe('pin', () => {
     })
 
     it('handles multiple hashes', async () => {
-      ipfs.pin.ls.withArgs([pins.root, pins.solarWiki], { type: 'all', stream: false }).returns([{
+      ipfs.pin.ls.withArgs([pins.root, pins.solarWiki], defaultOptions).returns([{
         cid: new CID(pins.root),
         type: 'recursive'
       }, {
@@ -134,7 +186,7 @@ describe('pin', () => {
     })
 
     it('can print quietly', async () => {
-      ipfs.pin.ls.withArgs(undefined, { type: 'all', stream: false }).returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid: new CID(pins.root),
         type: 'recursive'
       }])
@@ -144,7 +196,7 @@ describe('pin', () => {
     })
 
     it('can print quietly (short option)', async () => {
-      ipfs.pin.ls.withArgs(undefined, { type: 'all', stream: false }).returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid: new CID(pins.root),
         type: 'recursive'
       }])
@@ -154,13 +206,26 @@ describe('pin', () => {
     })
 
     it('should ls and print CIDs encoded in specified base', async () => {
-      ipfs.pin.ls.withArgs(undefined, { type: 'all', stream: false }).returns([{
+      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
         cid: new CID(pins.root).toV1(),
         type: 'recursive'
       }])
 
       const out = await cli('pin ls --cid-base=base64', { ipfs })
       expect(out).to.equal(`${new CID(pins.root).toV1().toString('base64')} recursive\n`)
+    })
+
+    it('lists all pins with a timeout', async () => {
+      ipfs.pin.ls.withArgs(undefined, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        cid: new CID(pins.root),
+        type: 'recursive'
+      }])
+
+      const out = await cli('pin ls --timeout=1s', { ipfs })
+      expect(out).to.equal(`${pins.root} recursive\n`)
     })
   })
 })

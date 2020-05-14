@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'read <path>',
 
@@ -15,20 +17,24 @@ module.exports = {
       alias: 'l',
       type: 'number',
       describe: 'Write only this number of bytes'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const {
-      ctx: { ipfs, print },
-      path,
-      offset,
-      length
-    } = argv
-
+  async handler ({
+    ctx: { ipfs, print },
+    path,
+    offset,
+    length,
+    timeout
+  }) {
     for await (const buffer of ipfs.files.read(path, {
       offset,
-      length
+      length,
+      timeout
     })) {
       print(buffer, false)
     }

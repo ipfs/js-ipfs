@@ -6,16 +6,17 @@ const CID = require('cids')
 const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
+const { withTimeoutOption } = require('../../utils')
 
 const PIN_LS_CONCURRENCY = 8
 
 module.exports = ({ pinManager, dag }) => {
-  return async function * ls (paths, options) {
+  return withTimeoutOption(async function * ls (paths, options) {
     options = options || {}
 
     let type = PinTypes.all
 
-    if (paths && paths.type) {
+    if (paths && !Array.isArray(paths) && !CID.isCID(paths) && typeof paths !== 'string') {
       options = paths
       paths = null
     }
@@ -87,5 +88,5 @@ module.exports = ({ pinManager, dag }) => {
 
     // FIXME: https://github.com/ipfs/js-ipfs/issues/2244
     yield * pins
-  }
+  })
 }

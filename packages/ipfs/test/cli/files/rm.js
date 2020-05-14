@@ -6,16 +6,9 @@ const cli = require('../../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    recursive: false
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  recursive: false,
+  timeout: undefined
 }
 
 describe('rm', () => {
@@ -40,7 +33,7 @@ describe('rm', () => {
     expect(ipfs.files.rm.callCount).to.equal(1)
     expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
       path,
-      defaultOptions()
+      defaultOptions
     ])
   })
 
@@ -49,10 +42,10 @@ describe('rm', () => {
 
     expect(ipfs.files.rm.callCount).to.equal(1)
     expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         recursive: true
-      })
+      }
     ])
   })
 
@@ -61,10 +54,22 @@ describe('rm', () => {
 
     expect(ipfs.files.rm.callCount).to.equal(1)
     expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         recursive: true
-      })
+      }
+    ])
+  })
+
+  it('should remove a path with a timeout', async () => {
+    await cli(`files rm ${path} --timeout=1s`, { ipfs })
+
+    expect(ipfs.files.rm.callCount).to.equal(1)
+    expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
   })
 })

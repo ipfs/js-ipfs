@@ -6,6 +6,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
+const { AbortSignal } = require('abort-controller')
 
 describe('/key', function () {
   let ipfs
@@ -24,12 +25,17 @@ describe('/key', function () {
   })
 
   describe('/list', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/list')
     })
 
     it('should list keys', async () => {
-      ipfs.key.list.returns([{
+      ipfs.key.list.withArgs(defaultOptions).returns([{
         name: 'name',
         id: 'id'
       }])
@@ -43,9 +49,33 @@ describe('/key', function () {
       expect(res).to.have.nested.property('result.Keys[0].Name', 'name')
       expect(res).to.have.nested.property('result.Keys[0].Id', 'id')
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.key.list.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        name: 'name',
+        id: 'id'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/key/list?timeout=1s'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
   })
 
   describe('/gen', () => {
+    const defaultOptions = {
+      type: 'rsa',
+      size: 2048,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/gen')
     })
@@ -55,10 +85,11 @@ describe('/key', function () {
       const type = 'type'
       const size = 10
 
-      ipfs.key.gen.withArgs(name, sinon.match({
+      ipfs.key.gen.withArgs(name, {
+        ...defaultOptions,
         type,
         size
-      })).returns({
+      }).returns({
         name: 'name',
         id: 'id'
       })
@@ -72,9 +103,33 @@ describe('/key', function () {
       expect(res).to.have.nested.property('result.Name', name)
       expect(res).to.have.nested.property('result.Id', 'id')
     })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+
+      ipfs.key.gen.withArgs(name, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        name: 'name',
+        id: 'id'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/key/gen?arg=${name}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
   })
 
   describe('/rm', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/rm')
     })
@@ -82,7 +137,7 @@ describe('/key', function () {
     it('should remove a key', async () => {
       const name = 'name'
 
-      ipfs.key.rm.withArgs(name).returns({
+      ipfs.key.rm.withArgs(name, defaultOptions).returns({
         name: 'name',
         id: 'id'
       })
@@ -96,9 +151,33 @@ describe('/key', function () {
       expect(res).to.have.nested.property('result.Keys[0].Name', 'name')
       expect(res).to.have.nested.property('result.Keys[0].Id', 'id')
     })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+
+      ipfs.key.rm.withArgs(name, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        name: 'name',
+        id: 'id'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/key/rm?arg=${name}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
   })
 
   describe('/rename', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/rename')
     })
@@ -107,7 +186,7 @@ describe('/key', function () {
       const oldName = 'oldName'
       const newName = 'newName'
 
-      ipfs.key.rename.withArgs(oldName, newName).returns({
+      ipfs.key.rename.withArgs(oldName, newName, defaultOptions).returns({
         was: oldName,
         now: newName,
         id: 'id',
@@ -125,9 +204,36 @@ describe('/key', function () {
       expect(res).to.have.nested.property('result.Id', 'id')
       expect(res).to.have.nested.property('result.Overwrite', 'overwrite')
     })
+
+    it('accepts a timeout', async () => {
+      const oldName = 'oldName'
+      const newName = 'newName'
+
+      ipfs.key.rename.withArgs(oldName, newName, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        was: oldName,
+        now: newName,
+        id: 'id',
+        overwrite: 'overwrite'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/key/rename?arg=${oldName}&arg=${newName}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
   })
 
   describe('/export', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/export')
     })
@@ -136,7 +242,7 @@ describe('/key', function () {
       const name = 'name'
       const password = 'password'
 
-      ipfs.key.export.withArgs(name, password).returns('pem')
+      ipfs.key.export.withArgs(name, password, defaultOptions).returns('pem')
 
       const res = await http({
         method: 'POST',
@@ -146,9 +252,32 @@ describe('/key', function () {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.property('result', 'pem')
     })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+      const password = 'password'
+
+      ipfs.key.export.withArgs(name, password, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns('pem')
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/key/export?arg=${name}&password=${password}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.property('result', 'pem')
+    })
   })
 
   describe('/import', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/key/import')
     })
@@ -158,7 +287,7 @@ describe('/key', function () {
       const pem = 'pem'
       const password = 'password'
 
-      ipfs.key.import.withArgs(name, pem, password).returns({
+      ipfs.key.import.withArgs(name, pem, password, defaultOptions).returns({
         name,
         id: 'id'
       })
@@ -166,6 +295,29 @@ describe('/key', function () {
       const res = await http({
         method: 'POST',
         url: `/api/v0/key/import?arg=${name}&pem=${pem}&password=${password}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Name', name)
+      expect(res).to.have.nested.property('result.Id', 'id')
+    })
+
+    it('accepts a timeout', async () => {
+      const name = 'name'
+      const pem = 'pem'
+      const password = 'password'
+
+      ipfs.key.import.withArgs(name, pem, password, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns({
+        name,
+        id: 'id'
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/key/import?arg=${name}&pem=${pem}&password=${password}&timeout=1s`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

@@ -5,18 +5,13 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    recursive: false,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  recursive: false,
+  shardSplitThreshold: 1000,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/rm', () => {
@@ -42,10 +37,7 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions()
-    ])
+    expect(ipfs.files.rm.calledWith(path, defaultOptions)).to.be.true()
   })
 
   it('should remove a path recursively', async () => {
@@ -55,12 +47,10 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        recursive: true
-      })
-    ])
+    expect(ipfs.files.rm.calledWith(path, {
+      ...defaultOptions,
+      recursive: true
+    })).to.be.true()
   })
 
   it('should remove a path with a different shard split threshold', async () => {
@@ -70,11 +60,22 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.rm.calledWith(path, {
+      ...defaultOptions,
+      shardSplitThreshold: 10
+    })).to.be.true()
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/rm?arg=${path}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.rm.callCount).to.equal(1)
+    expect(ipfs.files.rm.calledWith(path, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
   })
 })

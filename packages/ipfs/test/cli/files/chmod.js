@@ -5,19 +5,12 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const cli = require('../../utils/cli')
 const sinon = require('sinon')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    recursive: false,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  recursive: false,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined
 }
 
 describe('chmod', () => {
@@ -40,7 +33,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
       parseInt(mode, 8),
-      defaultOptions()
+      defaultOptions
     ])
   })
 
@@ -50,10 +43,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         recursive: true
-      })
+      }
     ])
   })
 
@@ -63,10 +56,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         recursive: true
-      })
+      }
     ])
   })
 
@@ -76,10 +69,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -89,10 +82,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -102,10 +95,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -115,10 +108,10 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -128,10 +121,23 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
-      defaultOptions({
+      parseInt(mode, 8), {
+        ...defaultOptions,
         shardSplitThreshold: 10
-      })
+      }
+    ])
+  })
+
+  it('should update the mode with a timeout', async () => {
+    await cli(`files chmod ${mode} ${path} --timeout=1s`, { ipfs })
+
+    expect(ipfs.files.chmod.callCount).to.equal(1)
+    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
+      path,
+      parseInt(mode, 8), {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
   })
 })

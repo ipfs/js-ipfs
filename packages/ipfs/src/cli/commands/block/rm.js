@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'rm <hash...>',
 
@@ -17,17 +19,22 @@ module.exports = {
       describe: 'Write minimal output',
       type: 'boolean',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, hash, force, quiet }) {
+  async handler ({ ctx, hash, force, quiet, timeout }) {
     const { ipfs, print } = ctx
 
     let errored = false
 
     for await (const result of ipfs.block.rm(hash, {
       force,
-      quiet
+      quiet,
+      timeout
     })) {
       if (result.error) {
         errored = true

@@ -4,9 +4,10 @@ const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const isIPFS = require('is-ipfs')
+const { withTimeoutOption } = require('../../utils')
 
-module.exports = ({ blockService, gcLock, preload }) => {
-  return async function put (block, options) {
+module.exports = ({ blockService, pin, gcLock, preload }) => {
+  return withTimeoutOption(async function put (block, options) {
     options = options || {}
 
     if (Array.isArray(block)) {
@@ -38,15 +39,24 @@ module.exports = ({ blockService, gcLock, preload }) => {
     const release = await gcLock.readLock()
 
     try {
-      await blockService.put(block)
+      await blockService.put(block, {
+        signal: options.signal
+      })
 
       if (options.preload !== false) {
         preload(block.cid)
+      }
+
+      if (options.pin === true) {
+        await pin.add(block.cid, {
+          recursive: true,
+          signal: options.signal
+        })
       }
 
       return block
     } finally {
       release()
     }
-  }
+  })
 }

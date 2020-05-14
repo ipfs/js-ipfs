@@ -5,22 +5,17 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    parents: false,
-    recursive: false,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  parents: false,
+  recursive: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/mv', () => {
@@ -47,11 +42,7 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions()
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, defaultOptions)).to.be.true()
   })
 
   it('should move an entry and create parents', async () => {
@@ -61,13 +52,10 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        parents: true
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      parents: true
+    })).to.be.true()
   })
 
   it('should move an entry recursively', async () => {
@@ -77,13 +65,10 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        recursive: true
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      recursive: true
+    })).to.be.true()
   })
 
   it('should make a directory with a different cid version', async () => {
@@ -93,13 +78,10 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        cidVersion: 1
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      cidVersion: 1
+    })).to.be.true()
   })
 
   it('should make a directory with a different hash algorithm', async () => {
@@ -109,13 +91,10 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        hashAlg: 'sha3-256'
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      hashAlg: 'sha3-256'
+    })).to.be.true()
   })
 
   it('should make a directory without flushing', async () => {
@@ -125,13 +104,10 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        flush: false
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      flush: false
+    })).to.be.true()
   })
 
   it('should make a directory a different shard split threshold', async () => {
@@ -141,12 +117,22 @@ describe('/files/mv', () => {
     }, { ipfs })
 
     expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest,
-      defaultOptions({
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      shardSplitThreshold: 10
+    })).to.be.true()
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/mv?arg=${source}&arg=${dest}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.mv.callCount).to.equal(1)
+    expect(ipfs.files.mv.calledWith(source, dest, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
   })
 })

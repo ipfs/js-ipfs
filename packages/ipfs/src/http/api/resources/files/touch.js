@@ -1,33 +1,9 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 const parseMtime = require('./utils/parse-mtime')
 
 const mfsTouch = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      flush,
-      shardSplitThreshold,
-      cidVersion,
-      hashAlg,
-      mtime,
-      mtimeNsecs
-    } = request.query
-
-    await ipfs.files.touch(arg, {
-      mtime: parseMtime(mtime, mtimeNsecs),
-      flush,
-      shardSplitThreshold,
-      cidVersion,
-      hashAlg
-    })
-
-    return h.response()
-  },
   options: {
     validate: {
       options: {
@@ -44,7 +20,8 @@ const mfsTouch = {
           1
         ]).default(0),
         flush: Joi.boolean().default(true),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
         .rename('shard-split-threshold', 'shardSplitThreshold', {
           override: true,
@@ -67,6 +44,33 @@ const mfsTouch = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      ipfs
+    } = request.server.app
+    const {
+      arg,
+      flush,
+      shardSplitThreshold,
+      cidVersion,
+      hashAlg,
+      mtime,
+      mtimeNsecs,
+      timeout
+    } = request.query
+
+    await ipfs.files.touch(arg, {
+      mtime: parseMtime(mtime, mtimeNsecs),
+      flush,
+      shardSplitThreshold,
+      cidVersion,
+      hashAlg,
+      signal: request.app.signal,
+      timeout
+    })
+
+    return h.response()
   }
 }
 

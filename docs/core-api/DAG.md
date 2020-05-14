@@ -1,35 +1,59 @@
-# DAG API
+# DAG API <!-- omit in toc -->
 
 > The dag API comes to replace the `object API`, it supports the creation and manipulation of dag-pb object, as well as other IPLD formats (i.e dag-cbor, ethereum-block, git, etc)
 
-* [dag.put](#dagput)
-* [dag.get](#dagget)
-* [dag.tree](#dagtree)
+- [`ipfs.dag.put(dagNode, [options])`](#ipfsdagputdagnode-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.dag.get(cid, [path], [options])`](#ipfsdaggetcid-path-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.dag.tree(cid, [path,] [options])`](#ipfsdagtreecid-path-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
 
 _Explore the DAG API through interactive coding challenges in our ProtoSchool tutorials:_
 - _[P2P data links with content addressing](https://proto.school/#/basics/) (beginner)_
 - _[Blogging on the Decentralized Web](https://proto.school/#/blog/) (intermediate)_
 
-#### `dag.put`
+## `ipfs.dag.put(dagNode, [options])`
 
 > Store an IPLD format node
 
-##### `ipfs.dag.put(dagNode, [options])`
+### Parameters
 
-- `dagNode` - a DAG node that follows one of the supported IPLD formats.
-- `options` - a object that might contain the following values:
-    - `format` - The IPLD format multicodec (default `dag-cbor`).
-    - `hashAlg` - The hash algorithm to be used over the serialized DAG node (default `sha2-256`).
-    - `cid` - The CID of the node passed. **Note**: You should pass the CID or the `format` + `hashAlg` pair but _not both_.
-    - `pin` - Pin this node when adding (default `false`)
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dagNode | `Object` | A DAG node that follows one of the supported IPLD formats |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| format | `String` | `'dag-cbor'` | The IPLD format multicodec |
+| hashAlg | `String` | `'sha2-256'` | The hash algorithm to be used over the serialized DAG node |
+| cid | [CID][] | `'dag-cbor'` | The IPLD format multicodec |
+| pin | `boolean` | `false` | Pin this node when adding to the blockstore |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+**Note**: You should pass `cid` or the `format` & `hashAlg` pair but _not both_.
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<CID>` | A [CID](https://github.com/ipfs/js-cid) instance. The CID generated through the process or the one that was passed |
+| `Promise<CID>` | A [CID][] instance. The CID generated through the process or the one that was passed |
 
-**Example:**
+### Example
 
 ```JavaScript
 const obj = { simple: 'object' }
@@ -41,32 +65,39 @@ console.log(cid.toString())
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dag.get`
+## `ipfs.dag.get(cid, [path], [options])`
 
 > Retrieve an IPLD format node
 
-##### `ipfs.dag.get(cid, [path], [options])`
+### Parameters
 
-- `cid` - can be one of the following:
-  - a [CID](https://github.com/ipfs/js-cid) instance.
-  - a CID in its String format (i.e: zdpuAkxd9KzGwJFGhymCZRkPCXtBmBW7mB2tTuEH11HLbES9Y)
-  - a CID in its String format concatenated with the path to be resolved
-- `path` - the path to be resolved. Optional.
-- `options` - a object that might contain the following values:
-  - `localResolve` - bool - if set to true, it will avoid resolving through different objects.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] | A DAG node that follows one of the supported IPLD formats |
+| path | `String` | An optional path within the DAG to resolve |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| localResolve | `boolean` | `false` | If set to true, it will avoid resolving through different objects |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object representing an IPLD format node |
 
-the returned object contains:
+The returned object contains:
 
 - `value` - the value or node that was fetched during the get operation.
 - `remainderPath` - The remainder of the Path that the node was unable to resolve or what was left in a localResolve scenario.
 
-**Example:**
+### Example
 
 ```JavaScript
 // example obj
@@ -110,27 +141,34 @@ await getAndLog('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/c/ca/1')
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dag.tree`
+## `ipfs.dag.tree(cid, [path,] [options])`
 
 > Enumerate all the entries in a graph
 
-##### `ipfs.dag.tree(cid, [path], [options])`
+### Parameters
 
-- `cid` - can be one of the following:
-  - a [CID](https://github.com/ipfs/js-cid) instance.
-  - a CID in its String format (i.e: zdpuAkxd9KzGwJFGhymCZRkPCXtBmBW7mB2tTuEH11HLbES9Y)
-  - a CID in its String format concatenated with the path to be resolved
-- `path` - the path to be resolved. Optional.
-- `options` - a object that might contain the following values:
-  - `recursive` - bool - if set to true, it will follow the links and continuously run tree on them, returning all the paths in the graph.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] | A DAG node that follows one of the supported IPLD formats |
+| path | `String` | An optional path within the DAG to resolve |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `false` | If set to true, it will follow the links and continuously run tree on them, returning all the paths in the graph |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Array>` | An array with the paths passed |
 
-**Example:**
+### Example
 
 ```JavaScript
 // example obj
@@ -167,3 +205,5 @@ A great source of [examples][] can be found in the tests for this API.
 
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dag
+[cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

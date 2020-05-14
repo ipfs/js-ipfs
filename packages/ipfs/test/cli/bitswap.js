@@ -24,121 +24,194 @@ describe('bitswap', () => {
     }
   })
 
-  it('wantlist', async () => {
-    ipfs.bitswap.wantlist.resolves([
-      new CID(key0),
-      new CID(key1)
-    ])
+  describe('wantlist', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-    const out = await cli('bitswap wantlist', { ipfs })
-    expect(out).to.include(key0)
-    expect(out).to.include(key1)
-  })
-
-  it('should get wantlist with CIDs encoded in specified base', async () => {
-    ipfs.bitswap.wantlist.resolves([
-      new CID(key0),
-      new CID(key1)
-    ])
-
-    const out = await cli('bitswap wantlist --cid-base=base64', { ipfs })
-    expect(out).to.include(new CID(key1).toBaseEncodedString('base64') + '\n')
-  })
-
-  it('wantlist peerid', async () => {
-    ipfs.bitswap.wantlist.withArgs(peerId).resolves([])
-
-    const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
-    expect(out).to.eql('')
-  })
-
-  it('stat', async () => {
-    ipfs.bitswap.stat.resolves({
-      provideBufLen: Big(10),
-      blocksReceived: Big(10),
-      blocksSent: Big(10),
-      dataReceived: Big(10),
-      dupBlksReceived: Big(10),
-      dupDataReceived: Big(10),
-      dataSent: Big(10),
-      wantlist: [
+    it('should return the wantlist', async () => {
+      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).resolves([
         new CID(key0),
         new CID(key1)
-      ],
-      peers: []
+      ])
+
+      const out = await cli('bitswap wantlist', { ipfs })
+      expect(out).to.include(key0)
+      expect(out).to.include(key1)
     })
 
-    const out = await cli('bitswap stat', { ipfs })
-
-    expect(out).to.include('bitswap status')
-    expect(out).to.match(/provides buffer:\s\d+$/m)
-    expect(out).to.match(/blocks received:\s\d+$/m)
-    expect(out).to.match(/blocks sent:\s\d+$/m)
-    expect(out).to.match(/data received:\s\d+$/m)
-    expect(out).to.match(/data sent:\s\d+$/m)
-    expect(out).to.match(/dup blocks received:\s\d+$/m)
-    expect(out).to.match(/dup data received:\s\d+$/m)
-    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
-    expect(out).to.include(key0)
-    expect(out).to.include(key1)
-    expect(out).to.match(/partners\s\[\d+\]$/m)
-  })
-
-  it('stat --human', async () => {
-    ipfs.bitswap.stat.resolves({
-      provideBufLen: Big(10),
-      blocksReceived: Big(10),
-      blocksSent: Big(10),
-      dataReceived: Big(10),
-      dupBlksReceived: Big(10),
-      dupDataReceived: Big(10),
-      dataSent: Big(10),
-      wantlist: [
+    it('should get wantlist with CIDs encoded in specified base', async () => {
+      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).resolves([
         new CID(key0),
         new CID(key1)
-      ],
-      peers: []
+      ])
+
+      const out = await cli('bitswap wantlist --cid-base=base64', { ipfs })
+      expect(out).to.include(new CID(key1).toBaseEncodedString('base64') + '\n')
     })
 
-    const out = await cli('bitswap stat --human', { ipfs })
+    it('wantlist peerid', async () => {
+      ipfs.bitswap.wantlist.withArgs(peerId, defaultOptions).resolves([])
 
-    expect(out).to.include('bitswap status')
-    expect(out).to.match(/provides buffer:\s\d+$/m)
-    expect(out).to.match(/blocks received:\s\d+$/m)
-    expect(out).to.match(/blocks sent:\s\d+$/m)
-    expect(out).to.match(/data received:\s+[\d.]+\s[PTGMK]?B$/m)
-    expect(out).to.match(/data sent:\s+[\d.]+\s[PTGMK]?B$/m)
-    expect(out).to.match(/dup blocks received:\s\d+$/m)
-    expect(out).to.match(/dup data received:\s+[\d.]+\s[PTGMK]?B$/m)
-    expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
-    expect(out).to.not.include(key0)
-    expect(out).to.not.include(key1)
-    expect(out).to.match(/partners\s\[\d+\]$/m)
-  })
-
-  it('should get stats with wantlist CIDs encoded in specified base', async () => {
-    ipfs.bitswap.stat.resolves({
-      provideBufLen: Big(10),
-      blocksReceived: Big(10),
-      blocksSent: Big(10),
-      dataReceived: Big(10),
-      dupBlksReceived: Big(10),
-      dupDataReceived: Big(10),
-      dataSent: Big(10),
-      wantlist: [
-        new CID(key0),
-        new CID(key1)
-      ],
-      peers: []
+      const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
+      expect(out).to.eql('')
     })
 
-    const out = await cli('bitswap stat --cid-base=base64', { ipfs })
-    expect(out).to.include(new CID(key1).toBaseEncodedString('base64'))
+    it('wantlist with a timeout', async () => {
+      ipfs.bitswap.wantlist.withArgs(peerId, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([])
+
+      const out = await cli(`bitswap wantlist ${peerId} --timeout=1s`, { ipfs })
+      expect(out).to.eql('')
+    })
   })
 
-  it('unwant', async () => {
-    const out = await cli('bitswap unwant ' + key0, { ipfs })
-    expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
-    expect(ipfs.bitswap.unwant.called).to.be.true()
+  describe('stat', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
+    it('should return bitswap stats', async () => {
+      ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
+        provideBufLen: Big(10),
+        blocksReceived: Big(10),
+        blocksSent: Big(10),
+        dataReceived: Big(10),
+        dupBlksReceived: Big(10),
+        dupDataReceived: Big(10),
+        dataSent: Big(10),
+        wantlist: [
+          new CID(key0),
+          new CID(key1)
+        ],
+        peers: []
+      })
+
+      const out = await cli('bitswap stat', { ipfs })
+
+      expect(out).to.include('bitswap status')
+      expect(out).to.match(/provides buffer:\s\d+$/m)
+      expect(out).to.match(/blocks received:\s\d+$/m)
+      expect(out).to.match(/blocks sent:\s\d+$/m)
+      expect(out).to.match(/data received:\s\d+$/m)
+      expect(out).to.match(/data sent:\s\d+$/m)
+      expect(out).to.match(/dup blocks received:\s\d+$/m)
+      expect(out).to.match(/dup data received:\s\d+$/m)
+      expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
+      expect(out).to.include(key0)
+      expect(out).to.include(key1)
+      expect(out).to.match(/partners\s\[\d+\]$/m)
+    })
+
+    it('stat --human', async () => {
+      ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
+        provideBufLen: Big(10),
+        blocksReceived: Big(10),
+        blocksSent: Big(10),
+        dataReceived: Big(10),
+        dupBlksReceived: Big(10),
+        dupDataReceived: Big(10),
+        dataSent: Big(10),
+        wantlist: [
+          new CID(key0),
+          new CID(key1)
+        ],
+        peers: []
+      })
+
+      const out = await cli('bitswap stat --human', { ipfs })
+
+      expect(out).to.include('bitswap status')
+      expect(out).to.match(/provides buffer:\s\d+$/m)
+      expect(out).to.match(/blocks received:\s\d+$/m)
+      expect(out).to.match(/blocks sent:\s\d+$/m)
+      expect(out).to.match(/data received:\s+[\d.]+\s[PTGMK]?B$/m)
+      expect(out).to.match(/data sent:\s+[\d.]+\s[PTGMK]?B$/m)
+      expect(out).to.match(/dup blocks received:\s\d+$/m)
+      expect(out).to.match(/dup data received:\s+[\d.]+\s[PTGMK]?B$/m)
+      expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
+      expect(out).to.not.include(key0)
+      expect(out).to.not.include(key1)
+      expect(out).to.match(/partners\s\[\d+\]$/m)
+    })
+
+    it('should get stats with wantlist CIDs encoded in specified base', async () => {
+      ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
+        provideBufLen: Big(10),
+        blocksReceived: Big(10),
+        blocksSent: Big(10),
+        dataReceived: Big(10),
+        dupBlksReceived: Big(10),
+        dupDataReceived: Big(10),
+        dataSent: Big(10),
+        wantlist: [
+          new CID(key0),
+          new CID(key1)
+        ],
+        peers: []
+      })
+
+      const out = await cli('bitswap stat --cid-base=base64', { ipfs })
+      expect(out).to.include(new CID(key1).toBaseEncodedString('base64'))
+    })
+
+    it('should return bitswap stats with a timeout', async () => {
+      ipfs.bitswap.stat.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        provideBufLen: Big(10),
+        blocksReceived: Big(10),
+        blocksSent: Big(10),
+        dataReceived: Big(10),
+        dupBlksReceived: Big(10),
+        dupDataReceived: Big(10),
+        dataSent: Big(10),
+        wantlist: [
+          new CID(key0),
+          new CID(key1)
+        ],
+        peers: []
+      })
+
+      const out = await cli('bitswap stat --timeout=1s', { ipfs })
+
+      expect(out).to.include('bitswap status')
+      expect(out).to.match(/provides buffer:\s\d+$/m)
+      expect(out).to.match(/blocks received:\s\d+$/m)
+      expect(out).to.match(/blocks sent:\s\d+$/m)
+      expect(out).to.match(/data received:\s\d+$/m)
+      expect(out).to.match(/data sent:\s\d+$/m)
+      expect(out).to.match(/dup blocks received:\s\d+$/m)
+      expect(out).to.match(/dup data received:\s\d+$/m)
+      expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
+      expect(out).to.include(key0)
+      expect(out).to.include(key1)
+      expect(out).to.match(/partners\s\[\d+\]$/m)
+    })
+  })
+
+  describe('unwant', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
+    it('should unwant a block', async () => {
+      const out = await cli('bitswap unwant ' + key0, { ipfs })
+      expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
+      expect(ipfs.bitswap.unwant.called).to.be.true()
+    })
+
+    it('should unwant a block with a timeout', async () => {
+      const out = await cli(`bitswap unwant ${key0} --timeout=1s`, { ipfs })
+      expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
+      expect(ipfs.bitswap.unwant.called).to.be.true()
+      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([key0, {
+        ...defaultOptions,
+        timeout: 1000
+      }])
+    })
   })
 })

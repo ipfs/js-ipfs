@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'id',
 
@@ -10,12 +12,17 @@ module.exports = {
       alias: 'f',
       type: 'string',
       describe: 'Print Node ID info in the given format. Allowed tokens: <id> <aver> <pver> <pubkey> <addrs>'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, format }) {
-    const { ipfs, print } = ctx
-    const id = await ipfs.id()
+  async handler ({ ctx: { ipfs, print }, format, timeout }) {
+    const id = await ipfs.id({
+      timeout
+    })
 
     if (format) {
       print(format

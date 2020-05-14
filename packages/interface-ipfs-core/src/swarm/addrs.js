@@ -5,6 +5,7 @@ const CID = require('cids')
 const Multiaddr = require('multiaddr')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,6 +30,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when listing swarm addresses', () => {
+      return testTimeout(() => ipfsA.swarm.addrs({
+        timeout: 1
+      }))
+    })
 
     it('should get a list of node addresses', async () => {
       const peerInfos = await ipfsA.swarm.addrs()

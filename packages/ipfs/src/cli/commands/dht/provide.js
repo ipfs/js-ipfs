@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'provide <key>',
 
@@ -11,11 +13,17 @@ module.exports = {
       recursive: 'Recursively provide entire graph.',
       default: false,
       type: 'boolean'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, key, recursive }) {
-    const { ipfs } = ctx
-    await ipfs.dht.provide(key, { recursive })
+  async handler ({ ctx: { ipfs }, key, recursive, timeout }) {
+    await ipfs.dht.provide(key, {
+      recursive,
+      timeout
+    })
   }
 }

@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,6 +26,14 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when finding a peer on the DHT', async () => {
+      const nodeBId = await nodeB.id()
+
+      await testTimeout(() => nodeA.dht.findPeer(nodeBId, {
+        timeout: 1
+      }))
+    })
 
     it('should find other peers', async () => {
       const nodeBId = await nodeB.id()
