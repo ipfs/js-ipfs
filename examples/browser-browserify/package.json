@@ -17,10 +17,10 @@
     "concat-stream": "^2.0.0",
     "execa": "^4.0.0",
     "http-server": "^0.11.1",
-    "ipfs": "^0.43.0",
+    "ipfs": "^0.43.3",
     "test-ipfs-example": "^2.0.1"
   },
   "browser": {
-    "ipfs": "ipfs/dist/index.js"
+    "ipfs": "ipfs/dist/index.min.js"
   }
 }

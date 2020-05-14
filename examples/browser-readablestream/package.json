@@ -19,7 +19,7 @@
     "webpack": "^4.28.4"
   },
   "dependencies": {
-    "ipfs": "^0.43.0",
+    "ipfs": "^0.43.3",
     "it-to-stream": "^0.1.1",
     "videostream": "^3.2.0"
   }

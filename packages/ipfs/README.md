@@ -81,7 +81,7 @@ You can load IPFS right in your browser by adding the following to your page usi
 <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
 
 <!-- loading the human-readable (not minified) version jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
 ```
 
 Inserting one of the above lines will make an `Ipfs` object available in the global namespace:

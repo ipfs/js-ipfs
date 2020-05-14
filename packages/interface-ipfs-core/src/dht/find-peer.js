@@ -30,7 +30,7 @@ module.exports = (common, options) => {
     it('should respect timeout option when finding a peer on the DHT', async () => {
       const nodeBId = await nodeB.id()
 
-      await testTimeout(() => nodeA.dht.findPeer(nodeBId, {
+      await testTimeout(() => nodeA.dht.findPeer(nodeBId.id, {
         timeout: 1
       }))
     })
