@@ -147,6 +147,11 @@ module.exports = (common, options) => {
       expect(result.value.equals(cidPb)).to.be.true()
     })
 
+    it('should get with options and no path', async function () {
+      const result = await ipfs.dag.get(cidCbor, { localResolve: true })
+      expect(result.value).to.deep.equal(nodeCbor)
+    })
+
     it('should get a node added as CIDv0 with a CIDv1', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
