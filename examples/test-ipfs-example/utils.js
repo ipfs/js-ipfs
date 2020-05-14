@@ -66,7 +66,7 @@ async function startServer (dir) {
     if (fs.existsSync(f)) {
       console.info('Found bare file', f)
 
-      const distFile = path.resolve(process.cwd(), 'node_modules/ipfs/dist/index.js')
+      const distFile = path.resolve(process.cwd(), 'node_modules/ipfs/dist/index.min.js')
 
       console.info('Looking for IPFS dist file at', distFile)
 
@@ -78,6 +78,7 @@ async function startServer (dir) {
           cwd: path.resolve(dir, '../../packages/ipfs'),
           env: {
             ...process.env,
+            NODE_ENV: 'production', // otherwise we only produce index.js and not index.min.js
             CI: true // needed for some "clever" build tools
           },
           all: true
