@@ -1,10 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const drain = require('it-drain')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -29,12 +27,10 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when getting a value from the DHT', async () => {
-      const key = Buffer.from('/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-      const data = Buffer.from('data')
+      const [data] = await all(nodeA.add('should put a value to the DHT'))
+      const publish = await nodeA.name.publish(data.cid)
 
-      await drain(nodeA.dht.put(key, data, { verbose: true }))
-
-      await testTimeout(() => nodeB.dht.get(key, {
+      await testTimeout(() => nodeB.dht.get(`/ipns/${publish.name}`, {
         timeout: 1
       }))
     })
