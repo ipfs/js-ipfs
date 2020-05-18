@@ -110,11 +110,11 @@ exports.publish = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string().required(),
+        topic: Joi.string().required(),
         discover: Joi.boolean(),
         timeout: Joi.timeout()
       })
-        .rename('topic', 'arg', {
+        .rename('arg', 'topic', {
           override: true,
           ignoreUndefined: true
         })
