@@ -25,7 +25,7 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "ipfs": "^0.43.3"
+    "ipfs": "^0.44.0"
   },
   "browserslist": [
     ">1%",
