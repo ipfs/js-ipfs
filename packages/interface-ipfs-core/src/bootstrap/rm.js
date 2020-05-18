@@ -61,7 +61,7 @@ module.exports = (common, options) => {
       const rmRes = await ipfs.bootstrap.rm(null, { all: true })
       const removedPeers = rmRes.Peers
 
-      expect(removedPeers).to.eql(addedPeers)
+      expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
     })
   })
 }
