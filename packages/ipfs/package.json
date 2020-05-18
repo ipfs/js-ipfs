@@ -71,7 +71,6 @@
     "any-signal": "^1.1.0",
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
-    "binary-querystring": "^0.1.2",
     "bl": "^4.0.2",
     "bs58": "^4.0.1",
     "buffer": "^5.6.0",

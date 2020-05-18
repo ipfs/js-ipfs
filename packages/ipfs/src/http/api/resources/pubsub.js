@@ -3,7 +3,8 @@
 const Joi = require('../../utils/joi')
 const PassThrough = require('stream').PassThrough
 const bs58 = require('bs58')
-const binaryQueryString = require('binary-querystring')
+const all = require('it-all')
+const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 
 exports.subscribe = {
@@ -77,20 +78,43 @@ exports.subscribe = {
 
 exports.publish = {
   options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    pre: [{
+      assign: 'data',
+      method: async (request, h) => {
+        if (!request.payload) {
+          throw Boom.badRequest('argument "data" is required')
+        }
+
+        let data
+
+        for await (const part of multipart(request)) {
+          if (part.type === 'file') {
+            data = Buffer.concat(await all(part.content))
+          }
+        }
+
+        if (!data || data.byteLength === 0) {
+          throw Boom.badRequest('argument "data" is required')
+        }
+
+        return data
+      }
+    }],
     validate: {
       options: {
         allowUnknown: true,
         stripUnknown: true
       },
       query: Joi.object().keys({
-        args: Joi.array().ordered(
-          Joi.string().required(),
-          Joi.binary().min(1).required()
-        ).required(),
+        arg: Joi.string().required(),
         discover: Joi.boolean(),
         timeout: Joi.timeout()
       })
-        .rename('arg', 'args', {
+        .rename('topic', 'arg', {
           override: true,
           ignoreUndefined: true
         })
@@ -106,19 +130,17 @@ exports.publish = {
           ipfs
         }
       },
+      pre: {
+        data
+      },
       query: {
-        args: [
-          topic
-        ],
+        topic,
         timeout
       }
     } = request
 
-    const rawArgs = binaryQueryString(request.url.search)
-    const buf = rawArgs.arg && rawArgs.arg[1]
-
     try {
-      await ipfs.pubsub.publish(topic, buf, {
+      await ipfs.pubsub.publish(topic, data, {
         signal,
         timeout
       })
