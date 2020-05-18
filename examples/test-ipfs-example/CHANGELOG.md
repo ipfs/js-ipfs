@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.1...test-ipfs-example@2.0.2) (2020-05-18)
+
+
+### Bug Fixes
+
+* fixes browser script tag example ([#3034](https://github.com/ipfs/js-ipfs/issues/3034)) ([ee8b769](https://github.com/ipfs/js-ipfs/commit/ee8b769b96f7e3c8414bbf85853ab4e21e8fd11c)), closes [#3027](https://github.com/ipfs/js-ipfs/issues/3027)
+
+
+
+
+
 ## [2.0.1](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.0...test-ipfs-example@2.0.1) (2020-04-08)
 
 **Note:** Version bump only for package test-ipfs-example
