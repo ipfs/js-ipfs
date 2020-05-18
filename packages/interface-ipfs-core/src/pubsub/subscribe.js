@@ -2,11 +2,13 @@
 'use strict'
 
 const { Buffer } = require('buffer')
+const { nanoid } = require('nanoid')
 const pushable = require('it-pushable')
 const all = require('it-all')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
+const AbortController = require('abort-controller')
 const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -163,6 +165,63 @@ module.exports = (common, options) => {
         return ipfs1.swarm.connect(ipfs2Addr)
       })
 
+      it('should receive messages from a different node with floodsub', async () => {
+        const expectedString = 'should receive messages from a different node with floodsub'
+        const topic = `floodsub-${nanoid()}`
+        const ipfs1 = (await common.spawn({
+          ipfsOptions: {
+            config: {
+              Pubsub: {
+                Router: 'floodsub'
+              }
+            }
+          }
+        })).api
+        const ipfs2 = (await common.spawn({
+          type: isWebWorker ? 'go' : undefined,
+          ipfsOptions: {
+            config: {
+              Pubsub: {
+                Router: 'floodsub'
+              }
+            }
+          }
+        })).api
+        await ipfs1.swarm.connect(ipfs2.peerId.addresses[0])
+
+        const msgStream1 = pushable()
+        const msgStream2 = pushable()
+
+        const sub1 = msg => {
+          msgStream1.push(msg)
+          msgStream1.end()
+        }
+        const sub2 = msg => {
+          msgStream2.push(msg)
+          msgStream2.end()
+        }
+
+        const abort1 = new AbortController()
+        const abort2 = new AbortController()
+        await Promise.all([
+          ipfs1.pubsub.subscribe(topic, sub1, { signal: abort1.signal }),
+          ipfs2.pubsub.subscribe(topic, sub2, { signal: abort2.signal })
+        ])
+
+        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+        await ipfs2.pubsub.publish(topic, Buffer.from(expectedString))
+
+        const [sub1Msg] = await all(msgStream1)
+        expect(sub1Msg.data.toString()).to.be.eql(expectedString)
+        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+
+        const [sub2Msg] = await all(msgStream2)
+        expect(sub2Msg.data.toString()).to.be.eql(expectedString)
+        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
+        abort1.abort()
+        abort2.abort()
+      })
+
       it('should receive messages from a different node', async () => {
         const expectedString = 'hello from the other side'
 
@@ -184,7 +243,7 @@ module.exports = (common, options) => {
         ])
 
         await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
-
+        await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, Buffer.from(expectedString))
 
         const [sub1Msg] = await all(msgStream1)
