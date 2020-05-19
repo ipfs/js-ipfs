@@ -44,7 +44,7 @@ An optional object which may have the following keys:
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
-### Returns
+### Returns
 
 | Type | Description |
 | -------- | -------- |
