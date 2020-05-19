@@ -12,7 +12,8 @@ module.exports = configure(api => {
         arg: path,
         mode,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     await res.text()

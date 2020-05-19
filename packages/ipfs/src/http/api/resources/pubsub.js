@@ -1,22 +1,46 @@
 'use strict'
 
+const Joi = require('../../utils/joi')
 const PassThrough = require('stream').PassThrough
 const bs58 = require('bs58')
 const binaryQueryString = require('binary-querystring')
 const Boom = require('@hapi/boom')
 
 exports.subscribe = {
-  async handler (request, h) {
-    const query = request.query
-    const discover = query.discover === 'true'
-    const topic = query.arg
-
-    if (!topic) {
-      throw Boom.badRequest('Missing topic')
+  options: {
+    timeout: {
+      socket: false
+    },
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        topic: Joi.string().required(),
+        discover: Joi.boolean()
+      })
+        .rename('arg', 'topic', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    const { ipfs } = request.server.app
-
+  },
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        topic,
+        discover
+      }
+    } = request
     const res = new PassThrough({ highWaterMark: 1 })
 
     const handler = (msg) => {
@@ -40,7 +64,8 @@ exports.subscribe = {
     request.events.once('finish', unsubscribe)
 
     await ipfs.pubsub.subscribe(topic, handler, {
-      discover: discover
+      discover: discover,
+      signal
     })
 
     return h.response(res)
@@ -51,25 +76,52 @@ exports.subscribe = {
 }
 
 exports.publish = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        args: Joi.array().ordered(
+          Joi.string().required(),
+          Joi.binary().min(1).required()
+        ).required(),
+        discover: Joi.boolean(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'args', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
   async handler (request, h) {
-    const { arg } = request.query
-    const topic = arg[0]
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        args: [
+          topic
+        ],
+        timeout
+      }
+    } = request
 
     const rawArgs = binaryQueryString(request.url.search)
     const buf = rawArgs.arg && rawArgs.arg[1]
 
-    const { ipfs } = request.server.app
-
-    if (!topic) {
-      throw Boom.badRequest('Missing topic')
-    }
-
-    if (!buf || buf.length === 0) {
-      throw Boom.badRequest('Missing buf')
-    }
-
     try {
-      await ipfs.pubsub.publish(topic, buf)
+      await ipfs.pubsub.publish(topic, buf, {
+        signal,
+        timeout
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: `Failed to publish to topic ${topic}` })
     }
@@ -79,12 +131,38 @@ exports.publish = {
 }
 
 exports.ls = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
   async handler (request, h) {
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
 
     let subscriptions
     try {
-      subscriptions = await ipfs.pubsub.ls()
+      subscriptions = await ipfs.pubsub.ls({
+        signal,
+        timeout
+      })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to list subscriptions' })
     }
@@ -94,13 +172,44 @@ exports.ls = {
 }
 
 exports.peers = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        topic: Joi.string().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'topic', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
   async handler (request, h) {
-    const topic = request.query.arg
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        topic,
+        timeout
+      }
+    } = request
 
     let peers
     try {
-      peers = await ipfs.pubsub.peers(topic)
+      peers = await ipfs.pubsub.peers(topic, {
+        signal,
+        timeout
+      })
     } catch (err) {
       const message = topic
         ? `Failed to find peers subscribed to ${topic}: ${err}`

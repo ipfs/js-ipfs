@@ -14,7 +14,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: new CID(peerId),
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (let message of res.ndjson()) {

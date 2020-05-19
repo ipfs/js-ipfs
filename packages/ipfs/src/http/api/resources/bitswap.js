@@ -1,23 +1,47 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
-const multibase = require('multibase')
+const Joi = require('../../utils/joi')
 const { cidToString } = require('../../../utils/cid')
-const { parseKey } = require('./block')
 
 exports.wantlist = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        peer: Joi.peerId(),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const peerId = request.query.peer
-    const cidBase = request.query['cid-base']
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        peer,
+        cidBase,
+        timeout
+      }
+    } = request
 
-    const list = await ipfs.bitswap.wantlist(peerId)
+    const list = await ipfs.bitswap.wantlist(peer, {
+      signal,
+      timeout
+    })
 
     return h.response({
       Keys: list.map(cid => ({
@@ -28,17 +52,42 @@ exports.wantlist = {
 }
 
 exports.stat = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const cidBase = request.query['cid-base']
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cidBase,
+        timeout
+      }
+    } = request
 
-    const stats = await ipfs.bitswap.stat()
+    const stats = await ipfs.bitswap.stat({
+      signal,
+      timeout
+    })
 
     stats.wantlist = stats.wantlist.map(cid => ({
       '/': cidToString(cid, { base: cidBase, upgrade: false })
@@ -59,20 +108,50 @@ exports.stat = {
 }
 
 exports.unwant = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cid: Joi.cid().required(),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'cid', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
-  // uses common parseKey method that assigns a `key` to request.pre.args
-  parseArgs: parseKey,
-
   // main route handler which is called after the above `parseArgs`, but only if the args were valid
   async handler (request, h) {
-    const key = request.pre.args.key
-    const { ipfs } = request.server.app
-    await ipfs.bitswap.unwant(key)
-    return h.response({ key: cidToString(key, { base: request.query['cid-base'], upgrade: false }) })
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cid,
+        cidBase,
+        timeout
+      }
+    } = request
+
+    await ipfs.bitswap.unwant(cid, {
+      signal,
+      timeout
+    })
+
+    return h.response({ key: cidToString(cid, { base: cidBase, upgrade: false }) })
   }
 }

@@ -3,6 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
+const { withTimeoutOption } = require('../../utils')
 
 function findLinks (node, links = []) {
   for (const key in node) {
@@ -35,7 +36,7 @@ function findLinks (node, links = []) {
 }
 
 module.exports = ({ dag }) => {
-  return async function links (multihash, options) {
+  return withTimeoutOption(async function links (multihash, options) {
     options = options || {}
 
     const cid = new CID(multihash)
@@ -54,5 +55,5 @@ module.exports = ({ dag }) => {
     }
 
     throw new Error(`Cannot resolve links from codec ${cid.codec}`)
-  }
+  })
 }

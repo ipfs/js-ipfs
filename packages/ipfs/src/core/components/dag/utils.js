@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
+const { Buffer } = require('buffer')
 
 exports.parseArgs = (cid, path, options) => {
   options = options || {}

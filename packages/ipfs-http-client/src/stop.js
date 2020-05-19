@@ -8,7 +8,8 @@ module.exports = configure(api => {
     const res = await api.post('shutdown', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })
 
     await res.text()

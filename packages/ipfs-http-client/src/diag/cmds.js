@@ -8,7 +8,8 @@ module.exports = configure(api => {
     const res = await api.post('diag/cmds', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })
 
     return res.json()

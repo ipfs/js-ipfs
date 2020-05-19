@@ -4,6 +4,7 @@ const {
   asBoolean,
   asOctal
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'chmod [mode] [path]',
@@ -44,25 +45,29 @@ module.exports = {
       type: 'number',
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs },
-      path,
-      mode,
-      recursive,
-      hashAlg,
-      flush,
-      shardSplitThreshold
-    } = argv
-
+  handler ({
+    ctx: { ipfs },
+    path,
+    mode,
+    recursive,
+    hashAlg,
+    flush,
+    shardSplitThreshold,
+    timeout
+  }) {
     return ipfs.files.chmod(path, mode, {
       recursive,
       hashAlg,
       flush,
-      shardSplitThreshold
+      shardSplitThreshold,
+      timeout
     })
   }
 }

@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'flush [path]',
 
@@ -8,17 +10,22 @@ module.exports = {
   builder: {
     'cid-base': {
       describe: 'CID base to use.'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const {
-      ctx: { ipfs, print },
-      path,
-      cidBase
-    } = argv
-
-    let cid = await ipfs.files.flush(path || '/', {})
+  async handler ({
+    ctx: { ipfs, print },
+    path,
+    cidBase,
+    timeout
+  }) {
+    let cid = await ipfs.files.flush(path || '/', {
+      timeout
+    })
 
     if (cidBase && cidBase !== 'base58btc' && cid.version === 0) {
       cid = cid.toV1()

@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
@@ -9,6 +10,8 @@ const UnixFs = require('ipfs-unixfs')
 const randomBytes = require('iso-random-stream/src/random')
 const { asDAGLink } = require('./utils')
 const all = require('it-all')
+const testTimeout = require('../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,6 +32,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting an object', () => {
+      return testTimeout(() => ipfs.object.get(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
+        timeout: 1
+      }))
+    })
 
     it('should get object by multihash', async () => {
       const obj = {

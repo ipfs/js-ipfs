@@ -4,6 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const last = require('it-last')
+const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 
 describe('files directory (sharding tests)', function () {

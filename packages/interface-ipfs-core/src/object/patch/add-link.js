@@ -1,10 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')
+const CID = require('cids')
+const testTimeout = require('../../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,6 +28,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when adding a link to an object', () => {
+      return testTimeout(() => ipfs.object.patch.addLink(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), { name: '', size: 37, cid: new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxaZ') }, {
+        timeout: 1
+      }))
+    })
 
     it('should add a link to an existing node', async () => {
       const obj = {

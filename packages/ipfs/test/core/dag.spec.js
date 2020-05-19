@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
 const factory = require('../utils/factory')
+const { Buffer } = require('buffer')
 
 describe('dag', function () {
   this.timeout(10 * 1000)

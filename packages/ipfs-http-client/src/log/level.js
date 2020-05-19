@@ -15,7 +15,8 @@ module.exports = configure(api => {
           level
         ],
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return toCamel(await res.json())

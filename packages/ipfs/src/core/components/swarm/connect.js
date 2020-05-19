@@ -1,7 +1,9 @@
 'use strict'
 
+const { withTimeoutOption } = require('../../utils')
+
 module.exports = ({ libp2p }) => {
-  return function connect (addr) {
-    return libp2p.dial(addr)
-  }
+  return withTimeoutOption(function connect (addr, options) {
+    return libp2p.dial(addr, options)
+  })
 }

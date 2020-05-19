@@ -1,13 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'sub <topic>',
 
   describe: 'Subscribe to a topic',
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs, print }, topic, timeout }) {
     const handler = msg => print(msg.data.toString())
-    await ipfs.pubsub.subscribe(argv.topic, handler)
+    await ipfs.pubsub.subscribe(topic, handler, {
+      timeout
+    })
   }
 }

@@ -19,6 +19,7 @@ const last = require('it-last')
 const cp = require('./cp')
 const rm = require('./rm')
 const persist = require('ipfs-unixfs-importer/src/utils/persist')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   flush: true,
@@ -161,7 +162,7 @@ function calculateMode (mode, metadata) {
 }
 
 module.exports = (context) => {
-  return async function mfsChmod (path, mode, options) {
+  return withTimeoutOption(async function mfsChmod (path, mode, options) {
     options = applyDefaultOptions(options, defaultOptions)
 
     log(`Fetching stats for ${path}`)
@@ -254,5 +255,5 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  }
+  })
 }

@@ -4,11 +4,12 @@
 const { nanoid } = require('nanoid')
 const pmap = require('p-map')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const all = require('it-all')
 const concat = require('it-concat')
+const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 
 const makeBlock = async () => {

@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'addrs',
 
@@ -8,11 +10,16 @@ module.exports = {
   builder (yargs) {
     return yargs
       .commandDir('addrs')
+      .option('timeout', {
+        type: 'string',
+        coerce: parseDuration
+      })
   },
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const res = await ipfs.swarm.addrs()
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    const res = await ipfs.swarm.addrs({
+      timeout
+    })
 
     const output = res.map((peer) => {
       const count = peer.multiaddrs.size

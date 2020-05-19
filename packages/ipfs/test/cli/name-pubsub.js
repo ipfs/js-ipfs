@@ -5,15 +5,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 
-function defaultResolveArgs (overrides = {}) {
-  return {
-    nocache: false,
-    recursive: true,
-    ...overrides
-  }
-}
-
-describe('name-pubsub', () => {
+describe('name pubsub', () => {
   let ipfs
 
   // Spawn daemons
@@ -30,9 +22,13 @@ describe('name-pubsub', () => {
     }
   })
 
-  describe('pubsub commands', () => {
+  describe('state', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
     it('should get enabled state of pubsub', async () => {
-      ipfs.name.pubsub.state.resolves({
+      ipfs.name.pubsub.state.withArgs(defaultOptions).resolves({
         enabled: true
       })
 
@@ -40,37 +36,27 @@ describe('name-pubsub', () => {
       expect(res).to.have.string('enabled') // enabled
     })
 
-    it('should return best result when resolving a name', async () => {
-      const name = 'ipns-name'
-      const value = 'value'
-      ipfs.name.resolve.withArgs(name, defaultResolveArgs()).returns([
-        'first-result',
-        value
-      ])
+    it('should get enabled state of pubsub with a timeout', async () => {
+      ipfs.name.pubsub.state.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        enabled: true
+      })
 
-      const out = await cli(`name resolve ${name}`, { ipfs })
-
-      expect(out).to.equal(`${value}\n`)
+      const res = await cli('name pubsub state --timeout=1s', { ipfs })
+      expect(res).to.have.string('enabled') // enabled
     })
+  })
 
-    it('should stream results from resoving a name', async () => {
-      const name = 'ipns-name'
-      const firstResult = 'first-result'
-      const secondResult = 'value'
-      ipfs.name.resolve.withArgs(name, defaultResolveArgs()).returns([
-        firstResult,
-        secondResult
-      ])
-
-      const out = await cli(`name resolve ${name} --stream true`, { ipfs })
-
-      expect(out).to.equal(`${firstResult}\n${secondResult}\n`)
-    })
+  describe('cancel', () => {
+    const subName = 'sub-name'
+    const defaultOptions = {
+      timeout: undefined
+    }
 
     it('should be able to cancel subscriptions', async () => {
-      const subName = 'sub-name'
-
-      ipfs.name.pubsub.cancel.withArgs(subName).resolves({
+      ipfs.name.pubsub.cancel.withArgs(subName, defaultOptions).resolves({
         canceled: true
       })
 
@@ -80,9 +66,7 @@ describe('name-pubsub', () => {
     })
 
     it('should not cancel subscriptions that do not exist', async () => {
-      const subName = 'sub-name'
-
-      ipfs.name.pubsub.cancel.withArgs(subName).resolves({
+      ipfs.name.pubsub.cancel.withArgs(subName, defaultOptions).resolves({
         canceled: false
       })
 
@@ -91,14 +75,45 @@ describe('name-pubsub', () => {
       expect(out).to.equal('no subscription\n')
     })
 
-    it('should list subscriptions', async () => {
-      const subName = 'sub-name'
+    it('should be able to cancel subscriptions with a timeout', async () => {
+      ipfs.name.pubsub.cancel.withArgs(subName, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        canceled: true
+      })
 
-      ipfs.name.pubsub.subs.resolves([
+      const out = await cli(`name pubsub cancel ${subName} --timeout=1s`, { ipfs })
+
+      expect(out).to.equal('canceled\n')
+    })
+  })
+
+  describe('list', () => {
+    const subName = 'sub-name'
+    const defaultOptions = {
+      timeout: undefined
+    }
+
+    it('should list subscriptions', async () => {
+      ipfs.name.pubsub.subs.withArgs(defaultOptions).resolves([
         subName
       ])
 
       const out = await cli('name pubsub subs', { ipfs })
+
+      expect(out).to.equal(`${subName}\n`)
+    })
+
+    it('should list subscriptions with a timeout', async () => {
+      ipfs.name.pubsub.subs.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([
+        subName
+      ])
+
+      const out = await cli('name pubsub subs --timeout=1s', { ipfs })
 
       expect(out).to.equal(`${subName}\n`)
     })

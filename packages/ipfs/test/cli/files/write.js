@@ -6,30 +6,23 @@ const cli = require('../../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    offset: undefined,
-    length: undefined,
-    create: false,
-    truncate: false,
-    rawLeaves: false,
-    reduceSingleLeafToSelf: false,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    parents: false,
-    progress: undefined,
-    strategy: 'balanced',
-    flush: true,
-    shardSplitThreshold: 1000,
-    mode: undefined,
-    mtime: undefined
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  offset: undefined,
+  length: undefined,
+  create: false,
+  truncate: false,
+  rawLeaves: false,
+  reduceSingleLeafToSelf: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  parents: false,
+  progress: undefined,
+  strategy: 'balanced',
+  flush: true,
+  shardSplitThreshold: 1000,
+  mode: undefined,
+  mtime: undefined,
+  timeout: undefined
 }
 
 describe('write', () => {
@@ -58,7 +51,7 @@ describe('write', () => {
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
       stdin,
-      defaultOptions()
+      defaultOptions
     ])
   })
 
@@ -70,10 +63,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -85,10 +78,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -100,10 +93,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         create: true
-      })
+      }
     ])
   })
 
@@ -115,10 +108,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         create: true
-      })
+      }
     ])
   })
 
@@ -130,10 +123,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         offset: 10
-      })
+      }
     ])
   })
 
@@ -145,10 +138,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         offset: 10
-      })
+      }
     ])
   })
 
@@ -160,10 +153,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         length: 10
-      })
+      }
     ])
   })
 
@@ -175,10 +168,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         length: 10
-      })
+      }
     ])
   })
 
@@ -190,10 +183,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         truncate: true
-      })
+      }
     ])
   })
 
@@ -205,10 +198,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         truncate: true
-      })
+      }
     ])
   })
 
@@ -220,10 +213,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         rawLeaves: true
-      })
+      }
     ])
   })
 
@@ -235,10 +228,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         rawLeaves: true
-      })
+      }
     ])
   })
 
@@ -250,10 +243,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         reduceSingleLeafToSelf: true
-      })
+      }
     ])
   })
 
@@ -265,10 +258,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -280,10 +273,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         flush: false
-      })
+      }
     ])
   })
 
@@ -295,10 +288,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         strategy: 'trickle'
-      })
+      }
     ])
   })
 
@@ -310,10 +303,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         strategy: 'trickle'
-      })
+      }
     ])
   })
 
@@ -325,10 +318,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         cidVersion: 5
-      })
+      }
     ])
   })
 
@@ -340,10 +333,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         cidVersion: 5
-      })
+      }
     ])
   })
 
@@ -355,10 +348,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -370,10 +363,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -385,10 +378,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         shardSplitThreshold: 10
-      })
+      }
     ])
   })
 
@@ -400,10 +393,10 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         mode: parseInt('0557', 8)
-      })
+      }
     ])
   })
 
@@ -415,12 +408,12 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         mtime: {
           secs: 11
         }
-      })
+      }
     ])
   })
 
@@ -432,13 +425,28 @@ describe('write', () => {
     expect(ipfs.files.write.callCount).to.equal(1)
     expect(ipfs.files.write.getCall(0).args).to.deep.equal([
       path,
-      stdin,
-      defaultOptions({
+      stdin, {
+        ...defaultOptions,
         mtime: {
           secs: 11,
           nsecs: 10
         }
-      })
+      }
+    ])
+  })
+
+  it('should write to a file with a timeout', async () => {
+    const path = '/foo'
+
+    await cli(`files write ${path} --timeout=1s`, { ipfs, getStdin })
+
+    expect(ipfs.files.write.callCount).to.equal(1)
+    expect(ipfs.files.write.getCall(0).args).to.deep.equal([
+      path,
+      stdin, {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
   })
 })

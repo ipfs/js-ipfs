@@ -5,13 +5,14 @@ const toMfsPath = require('./utils/to-mfs-path')
 const exporter = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   withLocal: false
 }
 
 module.exports = (context) => {
-  return async function mfsStat (path, options) {
+  return withTimeoutOption(async function mfsStat (path, options) {
     options = applyDefaultOptions(options, defaultOptions)
 
     log(`Fetching stats for ${path}`)
@@ -40,7 +41,7 @@ module.exports = (context) => {
     }
 
     return statters[file.cid.codec](file, options)
-  }
+  })
 }
 
 const statters = {

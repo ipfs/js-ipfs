@@ -4,6 +4,7 @@
 const { expectIsBandwidth } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')
 const last = require('it-last')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,6 +23,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting bandwith stats', () => {
+      return testTimeout(() => ipfs.stats.bw({
+        timeout: 1
+      }))
+    })
 
     it('should get bandwidth stats ', async () => {
       const res = await last(ipfs.stats.bw())

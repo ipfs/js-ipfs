@@ -13,6 +13,7 @@ const {
 } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
+const parseDuration = require('parse-duration')
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
@@ -153,25 +154,57 @@ module.exports = {
       type: 'number',
       coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print, isDaemon, getStdin } = argv.ctx
+  async handler ({
+    ctx: { ipfs, print, isDaemon, getStdin },
+    trickle,
+    shardSplitThreshold,
+    cidVersion,
+    rawLeaves,
+    onlyHash,
+    hash,
+    wrapWithDirectory,
+    pin,
+    chunker,
+    preload,
+    fileImportConcurrency,
+    blockWriteConcurrency,
+    timeout,
+    quieter,
+    quiet,
+    silent,
+    progress,
+    file,
+    mtime,
+    mtimeNsecs,
+    recursive,
+    hidden,
+    preserveMode,
+    preserveMtime,
+    mode,
+    cidBase
+  }) {
     const options = {
-      trickle: argv.trickle,
-      shardSplitThreshold: argv.shardSplitThreshold,
-      cidVersion: argv.cidVersion,
-      rawLeaves: argv.rawLeaves,
-      onlyHash: argv.onlyHash,
-      hashAlg: argv.hash,
-      wrapWithDirectory: argv.wrapWithDirectory,
-      pin: argv.pin,
-      chunker: argv.chunker,
-      preload: argv.preload,
-      fileImportConcurrency: argv.fileImportConcurrency,
-      blockWriteConcurrency: argv.blockWriteConcurrency,
-      progress: () => {}
+      trickle,
+      shardSplitThreshold,
+      cidVersion,
+      rawLeaves,
+      onlyHash,
+      hashAlg: hash,
+      wrapWithDirectory,
+      pin,
+      chunker,
+      preload,
+      fileImportConcurrency,
+      blockWriteConcurrency,
+      progress: () => {},
+      timeout
     }
 
     if (options.enableShardingExperiment && isDaemon) {
@@ -181,12 +214,12 @@ module.exports = {
     let bar
     let log = print
 
-    if (argv.quieter || argv.quiet || argv.silent) {
-      argv.progress = false
+    if (quieter || quiet || silent) {
+      progress = false
     }
 
-    if (argv.progress && argv.file) {
-      const totalBytes = await getTotalBytes(argv.file)
+    if (progress && file) {
+      const totalBytes = await getTotalBytes(file)
       bar = createProgressBar(totalBytes, print)
 
       if (print.isTTY) {
@@ -198,75 +231,69 @@ module.exports = {
       }
     }
 
-    let mtime
-
-    if (argv.mtime != null) {
+    if (mtime != null) {
       mtime = {
-        secs: argv.mtime
+        secs: mtime
       }
 
-      if (argv.mtimeNsecs != null) {
-        mtime.nsecs = argv.mtimeNsecs
+      if (mtimeNsecs != null) {
+        mtime.nsecs = mtimeNsecs
       }
     }
 
-    const source = argv.file
-      ? globSource(argv.file, {
-        recursive: argv.recursive,
-        hidden: argv.hidden,
-        preserveMode: argv.preserveMode,
-        preserveMtime: argv.preserveMtime,
-        mode: argv.mode,
+    const source = file
+      ? globSource(file, {
+        recursive,
+        hidden,
+        preserveMode,
+        preserveMtime,
+        mode,
         mtime
       })
       : {
         content: getStdin(),
-        mode: argv.mode,
+        mode,
         mtime
       } // Pipe to ipfs.add tagging with mode and mtime
 
     let finalCid
 
     try {
-      for await (const file of ipfs.add(source, options)) {
-        if (argv.silent) {
+      for await (const added of ipfs.add(source, options)) {
+        if (silent) {
           continue
         }
 
-        if (argv.quieter) {
-          finalCid = file.cid
+        if (quieter) {
+          finalCid = added.cid
           continue
         }
 
-        const cid = cidToString(file.cid, { base: argv.cidBase })
+        const cid = cidToString(added.cid, { base: cidBase })
         let message = cid
 
-        if (!argv.quiet) {
+        if (!quiet) {
           // print the hash twice if we are piping from stdin
-          message = `added ${cid} ${argv.file ? file.path || '' : cid}`.trim()
+          message = `added ${cid} ${file ? added.path || '' : cid}`.trim()
         }
 
         log(message)
       }
     } catch (err) {
-      if (bar) {
-        bar.terminate()
-      }
-
       // Tweak the error message and add more relevant infor for the CLI
       if (err.code === 'ERR_DIR_NON_RECURSIVE') {
         err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
       }
 
       throw err
+    } finally {
+      if (bar) {
+        bar.terminate()
+      }
     }
 
-    if (bar) {
-      bar.terminate()
-    }
-
-    if (argv.quieter) {
-      log(cidToString(finalCid, { base: argv.cidBase }))
+    if (quieter) {
+      log(cidToString(finalCid, { base: cidBase }))
     }
   }
 }

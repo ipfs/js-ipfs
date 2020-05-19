@@ -1,34 +1,41 @@
-# Refs API
+# Refs API <!-- omit in toc -->
 
-* [refs](#refs)
-* [refs.local](#refslocal)
+- [`ipfs.refs(ipfsPath, [options])`](#ipfsrefsipfspath-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.refs.local([options])`](#ipfsrefslocaloptions)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
 
-#### `refs`
+## `ipfs.refs(ipfsPath, [options])`
 
 > Get links (references) from an object.
 
-##### `ipfs.refs(ipfsPath, [options])`
+### Parameters
 
-`ipfsPath` can be of type:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| ipfsPath | [CID][] or `String` | The object to search for references |
 
-- [`cid`][cid] of type:
-  - a [CID](https://github.com/ipfs/js-cid) instance
-  - [Buffer][b], the raw Buffer of the cid
-  - String, the base58 encoded version of the cid
-- String, including the ipfs handler, a cid and a path to traverse to, ie:
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66'
-  - '/ipfs/QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
-  - 'QmXEmhrMpbVvTh61FNAxP9nU7ygVtyvZA8HZDUaqQCAb66/a.txt'
+### Options
 
-`options` is an optional object that may contain the following keys:
-  - `recursive (false)`: recursively list references of child nodes
-  - `unique (false)`: omit duplicate references from output
-  - `format ("<dst>")`: output edges with given format. Available tokens: `<src>`, `<dst>`, `<linkname>`
-  - `edges (false)`: output references in edge format: `"<src> -> <dst>"`
-  - `maxDepth (1)`: only for recursive refs, limits fetch and listing to the given depth
-  - `timeout (number|string)`: Throw an error if the request does not complete within the specified milliseconds timeout. If `timeout` is a string, the value is parsed as a [human readable duration](https://www.npmjs.com/package/parse-duration). There is no timeout by default.
+An optional object which may have the following keys:
 
-**Returns**
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | `false` | Recursively list references of child nodes |
+| unique | `boolean` | `false` | Omit duplicate references from output |
+| format | `String` | `'<dst>'` | output edges with given format. Available tokens: `<src>`, `<dst>`, `<linkname>` |
+| edges | `boolean` | `false` | output references in edge format: `"<src> -> <dst>"` |
+| maxDepth | `Number` | `1` | only for recursive refs, limits fetch and listing to the given depth |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -43,7 +50,7 @@ Each yielded object is of the form:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const ref of ipfs.refs(ipfsPath, { recursive: true })) {
@@ -56,13 +63,24 @@ for await (const ref of ipfs.refs(ipfsPath, { recursive: true })) {
 }
 ```
 
-#### `refs.local`
+## `ipfs.refs.local([options])`
 
 > Output all local references (CIDs of all blocks in the blockstore)
 
-##### `ipfs.refs.local()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -77,7 +95,7 @@ Each yielded object is of the form:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const ref of ipfs.refs.local()) {
@@ -94,3 +112,4 @@ for await (const ref of ipfs.refs.local()) {
 [b]: https://www.npmjs.com/package/buffer
 [cid]: https://www.npmjs.com/package/cids
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

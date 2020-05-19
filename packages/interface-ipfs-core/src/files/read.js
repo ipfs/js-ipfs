@@ -1,12 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const concat = require('it-concat')
 const all = require('it-all')
+const drain = require('it-drain')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const randomBytes = require('iso-random-stream/src/random')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -153,6 +156,19 @@ module.exports = (common, options) => {
       const [{ cid }] = await all(ipfs.add(fixtures.smallFile.data))
       const testFileData = await concat(ipfs.files.read(`/ipfs/${cid}`))
       expect(testFileData.slice()).to.eql(fixtures.smallFile.data)
+    })
+
+    it('should respect timeout option when reading files', async () => {
+      const path = `/some-file-${Math.random()}.txt`
+      const data = randomBytes(100)
+
+      await ipfs.files.write(path, data, {
+        create: true
+      })
+
+      await testTimeout(() => drain(ipfs.files.read(path, {
+        timeout: 1
+      })))
     })
   })
 }

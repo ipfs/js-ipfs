@@ -6,20 +6,13 @@ const cli = require('../../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    mtime: null,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  mtime: null,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined
 }
 
 describe('touch', () => {
@@ -46,10 +39,10 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime
-      })
+      }
     ])
   })
 
@@ -58,11 +51,11 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime,
         flush: false
-      })
+      }
     ])
   })
 
@@ -71,11 +64,11 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime,
         flush: false
-      })
+      }
     ])
   })
 
@@ -84,11 +77,11 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -97,11 +90,11 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -110,11 +103,11 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime,
         shardSplitThreshold: 10
-      })
+      }
     ])
   })
 
@@ -123,13 +116,26 @@ describe('touch', () => {
 
     expect(ipfs.files.touch.callCount).to.equal(1)
     expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
+      path, {
+        ...defaultOptions,
         mtime: {
           secs: 5,
           nsecs: 10
         }
-      })
+      }
+    ])
+  })
+
+  it('should update the mtime for a file with a timeout', async () => {
+    await cli(`files touch -m ${mtime.secs} ${path} --timeout=1s`, { ipfs })
+
+    expect(ipfs.files.touch.callCount).to.equal(1)
+    expect(ipfs.files.touch.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        mtime,
+        timeout: 1000
+      }
     ])
   })
 })

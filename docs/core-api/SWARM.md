@@ -1,26 +1,56 @@
-# Swarm API
+# Swarm API <!-- skip in toc -->
 
-* [swarm.addrs](#swarmaddrs)
-* [swarm.connect](#swarmconnect)
-* [swarm.disconnect](#swarmdisconnect)
-* [swarm.localAddrs](#swarmlocaladdrs)
-* [swarm.peers](#swarmpeers)
-* [swarm.filters.add](#swarmfiltersadd) (not implemented yet)
-* [swarm.filters.rm](#swarmfiltersrm) (not implemented yet)
+- [Swarm API](#swarm-api)
+  - [`ipfs.swarm.addrs([options])`](#ipfsswarmaddrsoptions)
+    - [Parameters](#parameters)
+    - [Options](#options)
+    - [Returns](#returns)
+    - [Example](#example)
+  - [`ipfs.swarm.connect(addr, [options])`](#ipfsswarmconnectaddr-options)
+    - [Parameters](#parameters-1)
+    - [Options](#options-1)
+    - [Returns](#returns-1)
+    - [Example](#example-1)
+  - [`ipfs.swarm.disconnect(addr, [options])`](#ipfsswarmdisconnectaddr-options)
+    - [Parameters](#parameters-2)
+    - [Options](#options-2)
+    - [Returns](#returns-2)
+    - [Example](#example-2)
+  - [`ipfs.swarm.localAddrs([options])`](#ipfsswarmlocaladdrsoptions)
+    - [Parameters](#parameters-3)
+    - [Options](#options-3)
+    - [Returns](#returns-3)
+    - [Example](#example-3)
+  - [`ipfs.swarm.peers([options])`](#ipfsswarmpeersoptions)
+    - [Parameters](#parameters-4)
+    - [Options](#options-4)
+    - [Returns](#returns-4)
+    - [Example](#example-4)
 
-#### `swarm.addrs`
+## `ipfs.swarm.addrs([options])`
 
 > List of known addresses of each peer connected.
 
-##### `ipfs.swarm.addrs()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Array<{ id: String, addrs: Multiaddr[] }>>` | A promise that resolves to an array of objects with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
-**Example:**
+### Example
 
 ```JavaScript
 const peerInfos = await ipfs.swarm.addrs()
@@ -45,21 +75,32 @@ peerInfos.forEach(info => {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `swarm.connect`
+## `ipfs.swarm.connect(addr, [options])`
 
 > Open a connection to a given address.
 
-##### `ipfs.swarm.connect(addr)`
+### Parameters
 
-Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| addr | [MultiAddr][] | The object to search for references |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
-**Example:**
+### Example
 
 ```JavaScript
 await ipfs.swarm.connect(addr)
@@ -67,21 +108,32 @@ await ipfs.swarm.connect(addr)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `swarm.disconnect`
+## `ipfs.swarm.disconnect(addr, [options])`
 
 > Close a connection on a given address.
 
-##### `ipfs.swarm.disconnect(addr)`
+### Parameters
 
-Where `addr` is of type [multiaddr](https://github.com/multiformats/js-multiaddr)
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| addr | [MultiAddr][] | The object to search for references |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
-**Example:**
+### Example
 
 ```JavaScript
 await ipfs.swarm.disconnect(addr)
@@ -89,19 +141,30 @@ await ipfs.swarm.disconnect(addr)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `swarm.localAddrs`
+## `ipfs.swarm.localAddrs([options])`
 
 > Local addresses this node is listening on.
 
-##### `ipfs.swarm.localAddrs()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Multiaddr[]>` | An array of [`Multiaddr`](https://github.com/multiformats/js-multiaddr) representing the local addresses the node is listening |
 
-**Example:**
+### Example
 
 ```JavaScript
 const multiAddrs = await ipfs.swarm.localAddrs()
@@ -110,19 +173,28 @@ console.log(multiAddrs)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `swarm.peers`
+## `ipfs.swarm.peers([options])`
 
 > List out the peers that we have connections with.
 
-##### `ipfs.swarm.peers([options])`
+### Parameters
 
-`options` an optional object with the following properties:
-  - `direction` - set to `true` to return connection direction information. Default `false`
-  - `streams` - set to `true` to return information about open muxed streams. Default `false`
-  - `verbose` - set to `true` to return all extra information. Default `false`
-  - `latency` - set to `true` to return latency information. Default `false`
+None
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| direction | `boolean` | `false` | If true, return connection direction information |
+| streams | `boolean` | `false` | If true, return information about open muxed streams |
+| verbose | `boolean` | `false` | If true, return all extra information |
+| latency | `boolean` | `false` | If true, return latency information |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -144,7 +216,7 @@ If an error occurs trying to create an individual object, it will have the prope
 
 All other properties may be `undefined`.
 
-**Example:**
+### Example
 
 ```JavaScript
 const peerInfos = await ipfs.swarm.peers()
@@ -153,66 +225,6 @@ console.log(peerInfos)
 
 A great source of [examples][] can be found in the tests for this API.
 
-------------------------------
-
-> NOT IMPLEMENTED YET
-
-#### `swarm.filters`
-
-> Display current multiaddr filters. Filters are a way to set up rules for the network connections established.
-
-##### `ipfs.swarm.filters()`
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<Array>` | An array of multiaddrs that represent the filters being applied |
-
-Example:
-
-```JavaScript
-const filters = await ipfs.swarm.filters()
-```
-
-#### `swarm.filters.add`
-
-> Add another filter.
-
-##### `ipfs.swarm.filters.add(filter)`
-
-Where `filter` is of type [multiaddr]()
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
-
-Example:
-
-```JavaScript
-await ipfs.swarm.filters.add(filter)
-```
-
-#### `swarm.filters.rm`
-
-> Remove a filter
-
-##### `ipfs.swarm.filters.rm(filter)`
-
-Where `filter` is of type [multiaddr]()
-
-**Returns**
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
-
-Example:
-
-```JavaScript
-await ipfs.swarm.filters.rm(filter)
-```
-
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/swarm
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
+[MultiAddr]: https://github.com/multiformats/js-multiaddr

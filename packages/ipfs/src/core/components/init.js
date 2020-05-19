@@ -2,6 +2,7 @@
 
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
+const { Buffer } = require('buffer')
 const PeerInfo = require('peer-info')
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
@@ -123,7 +124,7 @@ module.exports = ({
 
     const block = {
       get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, gcLock, preload }),
+      put: Components.block.put({ blockService, pin, gcLock, preload }),
       rm: Components.block.rm({ blockService, gcLock, pinManager }),
       stat: Components.block.stat({ blockService, preload })
     }
@@ -377,7 +378,7 @@ function createApi ({
       bw: notStarted,
       repo: Components.repo.stat({ repo })
     },
-    stop: () => apiManager.api,
+    stop: () => {},
     swarm: {
       addrs: notStarted,
       connect: notStarted,

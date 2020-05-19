@@ -3,6 +3,7 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const { cidToString } = require('../../utils/cid')
+const { withTimeoutOption } = require('../utils')
 
 /**
  * @typedef {Object} ResolveOptions
@@ -22,7 +23,7 @@ const { cidToString } = require('../../utils/cid')
  * @returns {Resolve}
  */
 module.exports = ({ ipld, name }) => {
-  return async function resolve (path, opts) {
+  return withTimeoutOption(async function resolve (path, opts) {
     opts = opts || {}
 
     if (!isIpfs.path(path)) {
@@ -61,5 +62,5 @@ module.exports = ({ ipld, name }) => {
     }
 
     return `/ipfs/${cidToString(value, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`
-  }
+  })
 }

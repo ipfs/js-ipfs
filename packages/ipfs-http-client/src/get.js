@@ -14,7 +14,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     const extractor = Tar.extract()

@@ -9,7 +9,8 @@ module.exports = configure(api => {
     const res = await (await api.post('swarm/peers', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })).json()
 
     return (res.Peers || []).map(peer => {

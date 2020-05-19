@@ -252,7 +252,7 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
 1. Keeping all connections until `HighWater` connections is reached.
 2. Once `HighWater` is reached, it closes connections until `LowWater` is reached.
 
-**Example:**
+### Example
 
 ```json
 {

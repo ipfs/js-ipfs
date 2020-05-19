@@ -5,23 +5,18 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    parents: false,
-    cidVersion: 0,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000,
-    mode: undefined,
-    mtime: undefined
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  parents: false,
+  cidVersion: 0,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  mode: undefined,
+  mtime: undefined,
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
 }
 
 describe('/files/mkdir', () => {
@@ -47,10 +42,7 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions()
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, defaultOptions)).to.be.true()
   })
 
   it('should make a directory with parents', async () => {
@@ -60,12 +52,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        parents: true
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      parents: true
+    })).to.be.true()
   })
 
   it('should make a directory with a different cid version', async () => {
@@ -75,12 +65,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        cidVersion: 1
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      cidVersion: 1
+    })).to.be.true()
   })
 
   it('should make a directory with a different hash algorithm', async () => {
@@ -90,12 +78,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        hashAlg: 'sha3-256'
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      hashAlg: 'sha3-256'
+    })).to.be.true()
   })
 
   it('should make a directory without flushing', async () => {
@@ -105,12 +91,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        flush: false
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      flush: false
+    })).to.be.true()
   })
 
   it('should make a directory a different shard split threshold', async () => {
@@ -120,12 +104,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        shardSplitThreshold: 10
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      shardSplitThreshold: 10
+    })).to.be.true()
   })
 
   it('should make a directory a different mode', async () => {
@@ -136,12 +118,10 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mode: mode
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      mode: mode
+    })).to.be.true()
   })
 
   it('should make a directory a different mtime', async () => {
@@ -151,13 +131,24 @@ describe('/files/mkdir', () => {
     }, { ipfs })
 
     expect(ipfs.files.mkdir.callCount).to.equal(1)
-    expect(ipfs.files.mkdir.getCall(0).args).to.deep.equal([
-      path,
-      defaultOptions({
-        mtime: {
-          secs: 5
-        }
-      })
-    ])
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      mtime: {
+        secs: 5
+      }
+    })).to.be.true()
+  })
+
+  it('accepts a timeout', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/mkdir?arg=${path}&timeout=1s`
+    }, { ipfs })
+
+    expect(ipfs.files.mkdir.callCount).to.equal(1)
+    expect(ipfs.files.mkdir.calledWith(path, {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
   })
 })

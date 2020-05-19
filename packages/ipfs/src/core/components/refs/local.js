@@ -1,13 +1,14 @@
 'use strict'
 
 const Repo = require('ipfs-repo')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = function ({ repo }) {
-  return async function * refsLocal () {
-    for await (const result of repo.blocks.query({ keysOnly: true })) {
+  return withTimeoutOption(async function * refsLocal (options = {}) {
+    for await (const result of repo.blocks.query({ keysOnly: true, signal: options.signal })) {
       yield dsKeyToRef(result.key)
     }
-  }
+  })
 }
 
 function dsKeyToRef (key) {

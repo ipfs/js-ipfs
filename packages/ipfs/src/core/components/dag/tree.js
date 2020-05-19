@@ -1,9 +1,10 @@
 'use strict'
 
 const { parseArgs } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, preload }) => {
-  return async function * tree (cid, path, options) { // eslint-disable-line require-await
+  return withTimeoutOption(async function * tree (cid, path, options) { // eslint-disable-line require-await
     [cid, path, options] = parseArgs(cid, path, options)
 
     if (options.preload !== false) {
@@ -11,5 +12,5 @@ module.exports = ({ ipld, preload }) => {
     }
 
     yield * ipld.tree(cid, path, options)
-  }
+  })
 }

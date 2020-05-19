@@ -6,6 +6,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'touch [path]',
@@ -47,27 +48,31 @@ module.exports = {
       type: 'number',
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs },
-      path,
-      flush,
-      cidVersion,
-      hashAlg,
-      shardSplitThreshold,
-      mtime,
-      mtimeNsecs
-    } = argv
-
+  handler ({
+    ctx: { ipfs },
+    path,
+    flush,
+    cidVersion,
+    hashAlg,
+    shardSplitThreshold,
+    mtime,
+    mtimeNsecs,
+    timeout
+  }) {
     return ipfs.files.touch(path, {
       mtime: asMtimeFromSeconds(mtime, mtimeNsecs),
       flush,
       cidVersion,
       hashAlg,
-      shardSplitThreshold
+      shardSplitThreshold,
+      timeout
     })
   }
 }

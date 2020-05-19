@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'gc',
 
@@ -16,12 +18,17 @@ module.exports = {
       desc: 'Output individual errors thrown when deleting blocks.',
       type: 'boolean',
       default: true
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, quiet, streamErrors }) {
-    const { ipfs, print } = ctx
-    for await (const r of ipfs.repo.gc()) {
+  async handler ({ ctx: { ipfs, print }, quiet, streamErrors, timeout }) {
+    for await (const r of ipfs.repo.gc({
+      timeout
+    })) {
       if (r.err) {
         streamErrors && print(r.err.message, true, true)
       } else {

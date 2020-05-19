@@ -11,6 +11,7 @@ const applyDefaultOptions = require('./utils/apply-default-options')
 const toMfsPath = require('./utils/to-mfs-path')
 const toSourcesAndDestination = require('./utils/to-sources-and-destination')
 const toTrail = require('./utils/to-trail')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   parents: false,
@@ -21,7 +22,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsCp (...args) {
+  return withTimeoutOption(async function mfsCp (...args) {
     const options = applyDefaultOptions(args, defaultOptions)
     let {
       sources, destination
@@ -94,7 +95,7 @@ module.exports = (context) => {
 
     log('Multiple sources, wrapping in a directory')
     return copyToDirectory(context, sources, destination, trail, options)
-  }
+  })
 }
 
 const isDirectory = (destination) => {

@@ -15,7 +15,8 @@ module.exports = configure(api => {
           newName
         ],
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return toCamel(await res.json())

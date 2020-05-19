@@ -7,6 +7,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'write <path>',
@@ -99,31 +100,34 @@ module.exports = {
       type: 'number',
       coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const {
-      ctx: { ipfs, getStdin },
-      path,
-      offset,
-      length,
-      create,
-      truncate,
-      rawLeaves,
-      reduceSingleLeafToSelf,
-      cidVersion,
-      hashAlg,
-      parents,
-      progress,
-      strategy,
-      flush,
-      shardSplitThreshold,
-      mode,
-      mtime,
-      mtimeNsecs
-    } = argv
-
+  async handler ({
+    ctx: { ipfs, getStdin },
+    path,
+    offset,
+    length,
+    create,
+    truncate,
+    rawLeaves,
+    reduceSingleLeafToSelf,
+    cidVersion,
+    hashAlg,
+    parents,
+    progress,
+    strategy,
+    flush,
+    shardSplitThreshold,
+    mode,
+    mtime,
+    mtimeNsecs,
+    timeout
+  }) {
     await ipfs.files.write(path, getStdin(), {
       offset,
       length,
@@ -139,7 +143,8 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime: asMtimeFromSeconds(mtime, mtimeNsecs)
+      mtime: asMtimeFromSeconds(mtime, mtimeNsecs),
+      timeout
     })
   }
 }

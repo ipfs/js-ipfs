@@ -3,6 +3,8 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
+const drain = require('it-drain')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,6 +28,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when querying the DHT', () => {
+      return testTimeout(() => drain(nodeA.dht.query(nodeB.peerId.id, {
+        timeout: 1
+      })))
+    })
 
     it('should return the other node in the query', async function () {
       const timeout = 150 * 1000

@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
-    if (path && path.type) {
+    if (path && (path.type || path.timeout)) {
       options = path || {}
       path = []
     }
@@ -20,7 +20,8 @@ module.exports = configure(api => {
         arg: path.map(p => `${p}`),
         ...options,
         stream: true
-      })
+      }),
+      headers: options.headers
     })
 
     for await (const pin of res.ndjson()) {

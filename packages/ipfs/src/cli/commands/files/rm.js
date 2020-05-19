@@ -3,6 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'rm <path>',
@@ -16,18 +17,22 @@ module.exports = {
       default: false,
       coerce: asBoolean,
       describe: 'Remove directories recursively'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs },
-      path,
-      recursive
-    } = argv
-
+  handler ({
+    ctx: { ipfs },
+    path,
+    recursive,
+    timeout
+  }) {
     return ipfs.files.rm(path, {
-      recursive
+      recursive,
+      timeout
     })
   }
 }

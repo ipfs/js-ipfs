@@ -1,8 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,6 +26,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting the data from an object', () => {
+      return testTimeout(() => ipfs.object.data(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
+        timeout: 1
+      }))
+    })
 
     it('should get data by multihash', async () => {
       const testObj = {

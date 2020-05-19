@@ -1,30 +1,8 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 
 const mfsChmod = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      mode,
-      recursive,
-      hashAlg,
-      flush,
-      shardSplitThreshold
-    } = request.query
-
-    await ipfs.files.chmod(arg, mode, {
-      recursive,
-      hashAlg,
-      flush,
-      shardSplitThreshold
-    })
-
-    return h.response()
-  },
   options: {
     validate: {
       options: {
@@ -32,13 +10,18 @@ const mfsChmod = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string(),
+        path: Joi.string(),
         mode: Joi.string(),
         recursive: Joi.boolean().default(false),
         flush: Joi.boolean().default(true),
         hashAlg: Joi.string().default('sha2-256'),
-        shardSplitThreshold: Joi.number().integer().min(0).default(1000)
+        shardSplitThreshold: Joi.number().integer().min(0).default(1000),
+        timeout: Joi.timeout()
       })
+        .rename('arg', 'path', {
+          override: true,
+          ignoreUndefined: true
+        })
         .rename('shard-split-threshold', 'shardSplitThreshold', {
           override: true,
           ignoreUndefined: true
@@ -52,6 +35,37 @@ const mfsChmod = {
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        path,
+        mode,
+        recursive,
+        hashAlg,
+        flush,
+        shardSplitThreshold,
+        timeout
+      }
+    } = request
+    await ipfs.files.chmod(path, mode, {
+      recursive,
+      hashAlg,
+      flush,
+      shardSplitThreshold,
+      signal,
+      timeout
+    })
+
+    return h.response()
   }
 }
 

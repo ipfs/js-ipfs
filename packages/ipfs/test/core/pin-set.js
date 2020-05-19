@@ -3,6 +3,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { util, DAGNode } = require('ipld-dag-pb')
+const { Buffer } = require('buffer')
 const CID = require('cids')
 const map = require('p-map')
 const IPFS = require('../../src/core')

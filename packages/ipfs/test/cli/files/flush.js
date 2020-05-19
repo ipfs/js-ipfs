@@ -7,6 +7,10 @@ const sinon = require('sinon')
 const CID = require('cids')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 
+const defaultOptions = {
+  timeout: undefined
+}
+
 describe('flush', () => {
   const path = '/foo'
   let ipfs
@@ -30,7 +34,7 @@ describe('flush', () => {
     expect(ipfs.files.flush.callCount).to.equal(1)
     expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
       path,
-      {}
+      defaultOptions
     ])
     expect(output).to.include(cid.toString())
   })
@@ -41,7 +45,7 @@ describe('flush', () => {
     expect(ipfs.files.flush.callCount).to.equal(1)
     expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
       '/',
-      {}
+      defaultOptions
     ])
     expect(output).to.include(cid.toString())
   })
@@ -52,8 +56,21 @@ describe('flush', () => {
     expect(ipfs.files.flush.callCount).to.equal(1)
     expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
       '/',
-      {}
+      defaultOptions
     ])
     expect(output).to.include(cid.toV1().toString('base64'))
+  })
+
+  it('should flush a path with a timeout', async () => {
+    await cli(`files flush ${path} --timeout=1s`, { ipfs, print })
+
+    expect(ipfs.files.flush.callCount).to.equal(1)
+    expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        timeout: 1000
+      }
+    ])
+    expect(output).to.include(cid.toString())
   })
 })

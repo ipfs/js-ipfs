@@ -2,6 +2,8 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
+const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'get <key>',
@@ -17,12 +19,15 @@ module.exports = {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, key, dataEncoding, cidBase }) {
-    const { ipfs, print } = ctx
-    const node = await ipfs.object.get(key, { enc: 'base58' })
+  async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
+    const node = await ipfs.object.get(key, { enc: 'base58', timeout })
     let data = node.Data || ''
 
     if (Buffer.isBuffer(data)) {

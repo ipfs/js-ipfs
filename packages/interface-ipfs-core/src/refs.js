@@ -1,10 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const all = require('it-all')
+const drain = require('it-drain')
+const testTimeout = require('./utils/test-timeout')
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
@@ -68,6 +71,12 @@ module.exports = (common, options) => {
         expect(refs.map(r => r.ref)).to.eql(expected)
       })
     }
+
+    it('should respect timeout option when listing refs', () => {
+      return testTimeout(() => drain(ipfs.refs('/ipfs/QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1/foo/bar/baz.txt', {
+        timeout: 1
+      })))
+    })
 
     it('should get refs with cbor links', async function () {
       this.timeout(20 * 1000)

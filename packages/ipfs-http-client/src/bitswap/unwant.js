@@ -12,7 +12,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return res.json()

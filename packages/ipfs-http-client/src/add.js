@@ -5,10 +5,16 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
+const anySignal = require('any-signal')
+const AbortController = require('abort-controller')
 
 module.exports = configure((api) => {
   return async function * add (input, options = {}) {
     const progressFn = options.progress
+
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
 
     const res = await api.post('add', {
       searchParams: toUrlSearchParams({
@@ -17,9 +23,9 @@ module.exports = configure((api) => {
         progress: Boolean(progressFn)
       }),
       timeout: options.timeout,
-      signal: options.signal,
+      signal,
       ...(
-        await multipartRequest(input)
+        await multipartRequest(input, controller, options.headers)
       )
     })
 

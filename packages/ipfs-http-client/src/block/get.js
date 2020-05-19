@@ -1,6 +1,6 @@
 'use strict'
 
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
@@ -16,7 +16,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: cid.toString(),
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     return new Block(Buffer.from(await res.arrayBuffer()), cid)

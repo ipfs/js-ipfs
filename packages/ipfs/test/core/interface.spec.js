@@ -11,7 +11,7 @@ describe('interface-ipfs-core tests', function () {
   const commonFactory = factory()
 
   tests.root(commonFactory, {
-    skip: isNode ? null : [{
+    skip: isNode ? [] : [{
       name: 'should add with mtime as hrtime',
       reason: 'Not designed to run in the browser'
     }]
@@ -77,23 +77,24 @@ describe('interface-ipfs-core tests', function () {
       args: ['--enable-pubsub-experiment']
     }
   }), {
-    skip: isNode ? null : [
-      {
-        name: 'should receive messages from a different node',
-        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-      },
-      {
-        name: 'should round trip a non-utf8 binary buffer',
-        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-      },
-      {
-        name: 'should receive multiple messages',
-        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-      },
-      {
-        name: 'should send/receive 100 messages',
-        reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-      }
+    skip: [
+      ...(isNode ? [] : [
+        {
+          name: 'should receive messages from a different node',
+          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+        },
+        {
+          name: 'should round trip a non-utf8 binary buffer',
+          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+        },
+        {
+          name: 'should receive multiple messages',
+          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+        },
+        {
+          name: 'should send/receive 100 messages',
+          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+        }])
     ]
   })
 

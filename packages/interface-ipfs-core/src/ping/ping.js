@@ -4,7 +4,9 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { expectIsPingResponse, isPong } = require('./utils')
 const all = require('it-all')
+const drain = require('it-drain')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,6 +31,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when pinging a peer', () => {
+      return testTimeout(() => drain(ipfsA.ping(ipfsB.peerId.id, {
+        timeout: 1
+      })))
+    })
 
     it('should send the specified number of packets', async () => {
       const count = 3

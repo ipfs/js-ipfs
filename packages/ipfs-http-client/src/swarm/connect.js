@@ -13,7 +13,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: addrs.map(addr => `${addr}`),
         ...options
-      })
+      }),
+      headers: options.headers
     })
     const { Strings } = await res.json()
 

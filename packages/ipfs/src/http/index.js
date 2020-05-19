@@ -6,6 +6,7 @@ const debug = require('debug')
 const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
+const AbortController = require('abort-controller')
 
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
@@ -122,6 +123,21 @@ class HttpApi {
         // This means the request probably came from a browser and thus, it
         // should have included Origin or referer headers.
         throw Boom.forbidden()
+      }
+    })
+
+    server.ext({
+      type: 'onRequest',
+      method: function (request, h) {
+        const controller = new AbortController()
+        request.app.signal = controller.signal
+
+        // abort the reqest if the client disconnects
+        request.events.once('disconnect', () => {
+          controller.abort()
+        })
+
+        return h.continue
       }
     })
 

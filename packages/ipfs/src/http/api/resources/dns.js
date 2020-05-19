@@ -1,33 +1,53 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../utils/joi')
 
 module.exports = {
-  validate: {
-    options: {
-      allowUnknown: true,
-      stripUnknown: true
-    },
-    query: Joi.object().keys({
-      arg: Joi.string().required(),
-      format: Joi.string(),
-      recursive: Joi.boolean().default(false)
-    })
-      .rename('r', 'recursive', {
-        override: true,
-        ignoreUndefined: true
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        domain: Joi.string().required(),
+        format: Joi.string(),
+        recursive: Joi.boolean().default(false),
+        timeout: Joi.timeout()
       })
+        .rename('r', 'recursive', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'domain', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
     const {
-      arg,
-      format,
-      recursive
-    } = request.query
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        domain,
+        recursive,
+        format,
+        timeout
+      }
+    } = request
 
-    const path = await request.server.app.ipfs.dns(arg, {
+    const path = await ipfs.dns(domain, {
       recursive,
-      format
+      format,
+      signal,
+      timeout
     })
 
     return h.response({

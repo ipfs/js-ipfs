@@ -7,6 +7,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'mkdir <path>',
@@ -59,23 +60,26 @@ module.exports = {
       type: 'number',
       coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs },
-      path,
-      parents,
-      cidVersion,
-      hashAlg,
-      flush,
-      shardSplitThreshold,
-      mode,
-      mtime,
-      mtimeNsecs
-    } = argv
-
+  handler ({
+    ctx: { ipfs },
+    path,
+    parents,
+    cidVersion,
+    hashAlg,
+    flush,
+    shardSplitThreshold,
+    mode,
+    mtime,
+    mtimeNsecs,
+    timeout
+  }) {
     return ipfs.files.mkdir(path, {
       parents,
       cidVersion,
@@ -83,7 +87,8 @@ module.exports = {
       flush,
       shardSplitThreshold,
       mode,
-      mtime: asMtimeFromSeconds(mtime, mtimeNsecs)
+      mtime: asMtimeFromSeconds(mtime, mtimeNsecs),
+      timeout
     })
   }
 }

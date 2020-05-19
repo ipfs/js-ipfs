@@ -1,6 +1,6 @@
 'use strict'
 
-const bs58 = require('bs58')
+const multibase = require('multibase')
 const { Buffer } = require('buffer')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const SubscriptionTracker = require('./subscription-tracker')
@@ -35,7 +35,8 @@ module.exports = configure((api, options) => {
         searchParams: toUrlSearchParams({
           arg: topic,
           ...options
-        })
+        }),
+        headers: options.headers
       })
     } catch (err) { // Initial subscribe fail, ensure we clean up
       subsTracker.unsubscribe(topic, handler)
@@ -59,7 +60,7 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
     for await (const msg of msgStream) {
       try {
         onMessage({
-          from: bs58.encode(Buffer.from(msg.from, 'base64')).toString(),
+          from: multibase.encode('base58btc', Buffer.from(msg.from, 'base64')).toString().slice(1),
           data: Buffer.from(msg.data, 'base64'),
           seqno: Buffer.from(msg.seqno, 'base64'),
           topicIDs: msg.topicIDs

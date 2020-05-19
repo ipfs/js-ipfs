@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async (cid, path, options = {}) => {
-    if (typeof path === 'object') {
+    if (path && typeof path === 'object') {
       options = path
       path = null
     }
@@ -17,7 +17,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: path ? [cid, path].join(path.startsWith('/') ? '' : '/') : `${cid}`,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     const data = await res.json()

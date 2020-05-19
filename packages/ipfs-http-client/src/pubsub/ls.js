@@ -8,7 +8,8 @@ module.exports = configure(api => {
     const { Strings } = await (await api.post('pubsub/ls', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options)
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
     })).json()
 
     return Strings || []

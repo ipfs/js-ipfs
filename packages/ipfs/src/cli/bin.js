@@ -31,9 +31,11 @@ const { print, getIpfs, getRepoPath } = require('./utils')
 const debug = require('debug')('ipfs:cli')
 const cli = require('./')
 
-// Check if an update is available and notify
-const oneWeek = 1000 * 60 * 60 * 24 * 7
-updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
+// If we're not running an rc, check if an update is available and notify
+if (!pkg.version.includes('-rc')) {
+  const oneWeek = 1000 * 60 * 60 * 24 * 7
+  updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
+}
 
 async function main () {
   let exitCode = 0

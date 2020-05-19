@@ -17,7 +17,8 @@ module.exports = configure(api => {
           value
         ],
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     for await (let message of res.ndjson()) {

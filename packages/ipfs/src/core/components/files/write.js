@@ -2,6 +2,7 @@
 
 const log = require('debug')('ipfs:mfs:write')
 const importer = require('ipfs-unixfs-importer')
+const { Buffer } = require('buffer')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
@@ -18,6 +19,7 @@ const {
   MFS_MAX_CHUNK_SIZE
 } = require('../../utils')
 const last = require('it-last')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing
@@ -39,7 +41,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsWrite (path, content, options) {
+  return withTimeoutOption(async function mfsWrite (path, content, options) {
     options = applyDefaultOptions(options, defaultOptions)
 
     let source, destination, parent
@@ -59,7 +61,7 @@ module.exports = (context) => {
     }
 
     return updateOrImport(context, path, source, destination, options)
-  }
+  })
 }
 
 const updateOrImport = async (context, path, source, destination, options) => {

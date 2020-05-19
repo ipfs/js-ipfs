@@ -4,6 +4,7 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -18,7 +19,7 @@ module.exports = (common, options) => {
     this.timeout(50 * 1000)
 
     let ipfs
-    before(async () => {
+    beforeEach(async () => {
       ipfs = (await common.spawn()).api
       await all(ipfs.add(fixtures.files[0].data, { pin: false }))
       await ipfs.pin.add(fixtures.files[0].cid, { recursive: true })
@@ -27,6 +28,13 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when unpinning a block', () => {
+      return testTimeout(() => ipfs.pin.rm(fixtures.files[0].cid, {
+        recursive: true,
+        timeout: 1
+      }))
+    })
 
     it('should remove a recursive pin', async () => {
       const removedPinset = await ipfs.pin.rm(fixtures.files[0].cid, { recursive: true })

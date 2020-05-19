@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -20,6 +21,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting the IPNS pubsub state', () => {
+      return testTimeout(() => ipfs.name.pubsub.state({
+        timeout: 1
+      }))
+    })
 
     it('should get the current state of pubsub', async function () {
       this.timeout(50 * 1000)

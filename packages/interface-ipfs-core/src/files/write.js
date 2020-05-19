@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
@@ -9,16 +10,11 @@ const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
 const randomBytes = require('iso-random-stream/src/random')
+const randomStream = require('iso-random-stream')
 const all = require('it-all')
 const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
-
-let fs, tempWrite
-
-if (isNode) {
-  fs = require('fs')
-  tempWrite = require('temp-write')
-}
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -98,11 +94,10 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    // TODO: streaming request errors do not work over http
-    it.skip('explodes if it cannot convert content to a source', async () => {
+    it('explodes if it cannot convert content to a source', async () => {
       await expect(ipfs.files.write('/foo-bad-source', -1, {
         create: true
-      })).to.eventually.be.rejectedWith(/unexpected input/)
+      })).to.eventually.be.rejected()
     })
 
     it('explodes if given an invalid path', async () => {
@@ -124,12 +119,13 @@ module.exports = (common, options) => {
     })
 
     it('creates a zero length file when passed a zero length', async () => {
-      await ipfs.files.write('/foo-zero-length', Buffer.from('foo'), {
+      const path = '/foo-zero-length'
+      await ipfs.files.write(path, Buffer.from('foo'), {
         length: 0,
         create: true
       })
 
-      await expect(all(ipfs.files.ls('/'))).to.eventually.have.lengthOf(1)
+      await expect(all(ipfs.files.ls(path))).to.eventually.have.lengthOf(1)
         .and.to.have.nested.property('[0]').that.includes({
           name: 'foo-zero-length',
           size: 0
@@ -175,12 +171,10 @@ module.exports = (common, options) => {
 
     it('writes a small file using a Node stream (Node only)', async function () {
       if (!isNode) {
-        return this.skip()
+        this.skip()
       }
-
       const filePath = `/small-file-${Math.random()}.txt`
-      const pathToFile = await tempWrite(smallFile)
-      const stream = fs.createReadStream(pathToFile)
+      const stream = randomStream(1000)
 
       await ipfs.files.write(filePath, stream, {
         create: true
@@ -188,7 +182,7 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(filePath)
 
-      expect(stats.size).to.equal(smallFile.length)
+      expect(stats.size).to.equal(1000)
     })
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
@@ -873,6 +867,13 @@ module.exports = (common, options) => {
         secs: mtime[0],
         nsecs: mtime[1]
       })
+    })
+
+    it('should respect timeout option when writing files', async () => {
+      await testTimeout(() => ipfs.files.write('/derp', [], {
+        create: true,
+        timeout: 1
+      }))
     })
   })
 }

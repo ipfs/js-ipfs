@@ -9,7 +9,6 @@
     "bootstrap": {
       "hoist": true,
       "nohoist": [
-        "ipfs-interop",
         "ipfs-css",
         "tachyons"
       ]

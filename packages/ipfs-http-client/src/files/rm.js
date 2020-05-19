@@ -14,7 +14,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: sources,
         ...options
-      })
+      }),
+      headers: options.headers
     })
 
     await res.text()

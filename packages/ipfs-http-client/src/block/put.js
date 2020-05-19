@@ -1,11 +1,13 @@
 'use strict'
 
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const multihash = require('multihashes')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const anySignal = require('any-signal')
+const AbortController = require('abort-controller')
 
 module.exports = configure(api => {
   async function put (data, options = {}) {
@@ -32,14 +34,18 @@ module.exports = configure(api => {
       delete options.cid
     }
 
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
+
     let res
     try {
       const response = await api.post('block/put', {
         timeout: options.timeout,
-        signal: options.signal,
+        signal: signal,
         searchParams: toUrlSearchParams(options),
         ...(
-          await multipartRequest(data)
+          await multipartRequest(data, controller, options.headers)
         )
       })
       res = await response.json()

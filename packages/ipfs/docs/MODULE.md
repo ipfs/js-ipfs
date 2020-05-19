@@ -21,7 +21,6 @@ Use the IPFS module as a dependency of your project to spawn in process instance
   - [`options.libp2p`](#optionslibp2p)
   - [Instance methods](#instance-methods)
     - [`node.start()`](#nodestart)
-    - [`node.stop()`](#nodestop)
 - [Static types and utils](#static-types-and-utils)
       - [Glob source](#glob-source)
         - [`globSource(path, [options])`](#globsourcepath-options)
@@ -74,7 +73,7 @@ const node = await IPFS.create({ repo: '/var/ipfs/data' })
 
 | Type | Default |
 |------|---------|
-| boolean | `true` |
+| `boolean` | `true` |
 
 `js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available.
 
@@ -112,7 +111,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 | Type | Default |
 |------|---------|
-| boolean | `true` |
+| `boolean` | `true` |
 
  If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
 
@@ -342,24 +341,6 @@ try {
   console.log('Node started!')
 } catch (error) {
   console.error('Node failed to start!', error)
-}
-```
-
-#### `node.stop()`
-
-Close and stop listening for connections with other IPFS nodes, then release access to the node’s repo.
-
-This method is asynchronous and returns a promise.
-
-```js
-const node = await IPFS.create()
-console.log('Node is ready to use!')
-
-try {
-  await node.stop()
-  console.log('Node stopped!')
-} catch (error) {
-  console.error('Node failed to stop!', error)
 }
 ```
 

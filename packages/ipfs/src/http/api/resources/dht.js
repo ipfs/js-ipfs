@@ -1,27 +1,53 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const all = require('it-all')
-const CID = require('cids')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
 
 exports.findPeer = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string().required()
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        peerId: Joi.peerId().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'peerId', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { arg } = request.query
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        peerId,
+        timeout
+      }
+    } = request
+
     let res
 
     try {
-      res = await ipfs.dht.findPeer(new CID(arg))
+      res = await ipfs.dht.findPeer(peerId, {
+        signal,
+        timeout
+      })
     } catch (err) {
       if (err.code === 'ERR_LOOKUP_FAILED') {
         throw Boom.notFound(err.toString())
@@ -41,19 +67,48 @@ exports.findPeer = {
 }
 
 exports.findProvs = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string().required(),
-      'num-providers': Joi.number().integer().default(20),
-      timeout: Joi.number()
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cid: Joi.cid().required(),
+        numProviders: Joi.number().integer().default(20),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'cid', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('num-providers', 'numProviders', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { arg } = request.query
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cid,
+        numProviders,
+        timeout
+      }
+    } = request
 
-    const res = await all(ipfs.dht.findProvs(new CID(arg), {
-      numProviders: request.query['num-providers']
+    const res = await all(ipfs.dht.findProvs(cid, {
+      numProviders,
+      signal,
+      timeout
     }))
 
     return h.response({
@@ -67,17 +122,42 @@ exports.findProvs = {
 }
 
 exports.get = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string().required(),
-      timeout: Joi.number()
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        buffer: Joi.binary().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'buffer', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { arg } = request.query
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        buffer,
+        timeout
+      }
+    } = request
 
-    const res = await ipfs.dht.get(Buffer.from(arg))
+    const res = await ipfs.dht.get(buffer, {
+      signal,
+      timeout
+    })
 
     return h.response({
       Extra: res.toString(),
@@ -87,63 +167,127 @@ exports.get = {
 }
 
 exports.provide = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string().required()
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cid: Joi.cid().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'cid', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   async handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { arg } = request.query
-    let cid
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cid,
+        timeout
+      }
+    } = request
 
-    try {
-      cid = new CID(arg)
-    } catch (err) {
-      throw Boom.boomify(err, { message: err.toString() })
-    }
-
-    await ipfs.dht.provide(cid)
+    await ipfs.dht.provide(cid, {
+      signal,
+      timeout
+    })
 
     return h.response()
   }
 }
 
 exports.put = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.array().items(Joi.string()).length(2).required()
-    }).unknown()
-  },
-  parseArgs: (request, h) => {
-    return {
-      key: request.query.arg[0],
-      value: request.query.arg[1]
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        arg: Joi.array().length(2).items(Joi.binary()).required(),
+        timeout: Joi.timeout()
+      })
     }
   },
   async handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { key, value } = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        arg: [
+          key,
+          value
+        ],
+        timeout
+      }
+    } = request
 
-    await ipfs.dht.put(Buffer.from(key), Buffer.from(value))
+    await ipfs.dht.put(key, value, {
+      signal,
+      timeout
+    })
 
     return h.response()
   }
 }
 
 exports.query = {
-  validate: {
-    query: Joi.object().keys({
-      arg: Joi.string().required()
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        peerId: Joi.peerId().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'peerId', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
   handler (request, h) {
-    const ipfs = request.server.app.ipfs
-    const { arg } = request.query
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        peerId,
+        timeout
+      }
+    } = request
 
     const response = toStream.readable(
       pipe(
-        ipfs.dht.query(arg),
+        ipfs.dht.query(peerId, {
+          signal,
+          timeout
+        }),
         map(({ id }) => ({ ID: id.toString() })),
         ndjson.stringify
       )

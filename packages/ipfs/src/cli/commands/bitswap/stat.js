@@ -3,6 +3,7 @@
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
 const prettyBytes = require('pretty-bytes')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'stat',
@@ -18,12 +19,19 @@ module.exports = {
     human: {
       type: 'boolean',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, cidBase, human }) {
+  async handler ({ ctx, cidBase, human, timeout }) {
     const { ipfs, print } = ctx
-    const stats = await ipfs.bitswap.stat()
+
+    const stats = await ipfs.bitswap.stat({
+      timeout
+    })
 
     if (human) {
       stats.blocksReceived = stats.blocksReceived.toNumber()

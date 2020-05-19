@@ -11,7 +11,8 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: path,
         ...options
-      })
+      }),
+      headers: options.headers
     })
     const { Path } = await res.json()
     return Path

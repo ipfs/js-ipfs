@@ -13,9 +13,16 @@ const sinon = require('sinon')
 const CID = require('cids')
 const first = require('it-first')
 const toBuffer = require('it-to-buffer')
+const { AbortSignal } = require('abort-controller')
+const { Buffer } = require('buffer')
+
+function matchIterable () {
+  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
+}
 
 describe('/files', () => {
   const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const cid2 = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
   let ipfs
 
   beforeEach(() => {
@@ -68,6 +75,24 @@ describe('/files', () => {
   }
 
   describe('/add', () => {
+    const defaultOptions = {
+      cidVersion: undefined,
+      rawLeaves: undefined,
+      progress: sinon.match.func,
+      onlyHash: undefined,
+      hashAlg: undefined,
+      wrapWithDirectory: undefined,
+      pin: undefined,
+      chunker: undefined,
+      trickle: undefined,
+      preload: undefined,
+      shardSplitThreshold: undefined,
+      fileImportConcurrency: 1,
+      blockWriteConcurrency: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/add')
     })
@@ -98,7 +123,7 @@ describe('/files', () => {
     it('should add data and return a base64 encoded CID', async () => {
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.add.returns([{
+      ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
         path: cid.toString(),
         cid,
         size: content.byteLength,
@@ -186,6 +211,13 @@ describe('/files', () => {
   })
 
   describe('/cat', () => {
+    const defaultOptions = {
+      offset: undefined,
+      length: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/cat')
     })
@@ -213,7 +245,7 @@ describe('/files', () => {
     it('should cat a valid hash', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(cid.toString()).returns([
+      ipfs.cat.withArgs(`${cid}`, defaultOptions).returns([
         data
       ])
 
@@ -230,9 +262,10 @@ describe('/files', () => {
     it('should cat a valid hash with an offset', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(cid.toString(), sinon.match({
+      ipfs.cat.withArgs(`${cid}`, {
+        ...defaultOptions,
         offset: 10
-      })).returns([
+      }).returns([
         data
       ])
 
@@ -249,9 +282,10 @@ describe('/files', () => {
     it('should cat a valid hash with a length', async function () {
       const data = Buffer.from('TEST' + Date.now())
 
-      ipfs.cat.withArgs(cid.toString(), sinon.match({
+      ipfs.cat.withArgs(`${cid}`, {
+        ...defaultOptions,
         length: 10
-      })).returns([
+      }).returns([
         data
       ])
 
@@ -267,20 +301,48 @@ describe('/files', () => {
   })
 
   describe('/get', () => {
+    const defaultOptions = {
+      archive: false,
+      compress: false,
+      compressionLevel: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/get')
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.get.withArgs(`${cid}`, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        path: 'path'
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/get?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
     })
   })
 
   describe('/ls', () => {
+    const defaultOptions = {
+      recursive: false,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/ls')
     })
 
     it('should list directory contents', async () => {
-      ipfs.ls.withArgs(cid.toString(), sinon.match({
-        recursive: false
-      })).returns([{
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
         name: 'link',
         cid,
         size: 10,
@@ -296,7 +358,39 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: cid.toString(),
+        Hash: `${cid}`,
+        Links: [{
+          Depth: 1,
+          Hash: cid.toString(),
+          Mode: '0420',
+          Name: 'link',
+          Size: 10,
+          Type: 2
+        }]
+      })
+    })
+
+    it('should list directory contents recursively', async () => {
+      ipfs.ls.withArgs(`${cid}`, {
+        ...defaultOptions,
+        recursive: true
+      }).returns([{
+        name: 'link',
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1,
+        mode: 0o420
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}&recursive=true`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Objects[0]', {
+        Hash: `${cid}`,
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
@@ -310,9 +404,7 @@ describe('/files', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should return base64 encoded CIDs', async () => {
-      ipfs.ls.withArgs(cid.toString(), sinon.match({
-        recursive: false
-      })).returns([])
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([])
 
       const res = await http({
         method: 'POST',
@@ -325,15 +417,70 @@ describe('/files', () => {
         Links: []
       })
     })
+
+    it('accepts a timeout', async () => {
+      ipfs.ls.withArgs(`${cid}`, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        name: 'link',
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1,
+        mode: 0o420
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
+
+    it('accepts a timeout when streaming', async () => {
+      ipfs.ls.withArgs(`${cid}`, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        name: 'link',
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1,
+        mode: 0o420
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}&stream=true&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+    })
   })
 
   describe('/refs', () => {
+    const defaultOptions = {
+      recursive: false,
+      format: '<dst>',
+      edges: false,
+      unique: false,
+      maxDepth: undefined,
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/refs')
     })
 
     it('should list refs', async () => {
-      ipfs.refs.withArgs(cid.toString()).returns([{
+      ipfs.refs.withArgs([`${cid}`], {
+        ...defaultOptions,
+        format: '<linkname>'
+      }).returns([{
         ref: cid.toString()
       }])
 
@@ -345,21 +492,74 @@ describe('/files', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(JSON.parse(res.result)).to.have.property('Ref', cid.toString())
     })
+
+    it('should list refs for multiple IPFS paths', async () => {
+      ipfs.refs.withArgs([`${cid}`, `/ipfs/${cid2}`], defaultOptions).returns([{
+        ref: cid.toString()
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/refs?arg=${cid}&arg=/ipfs/${cid2}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(JSON.parse(res.result)).to.have.property('Ref', cid.toString())
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.refs.withArgs([`${cid}`], {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        ref: cid.toString()
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/refs?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(JSON.parse(res.result)).to.have.property('Ref', cid.toString())
+    })
   })
 
   describe('/refs/local', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
     it('only accepts POST', () => {
       return testHttpMethod('/api/v0/refs/local')
     })
 
     it('should list local refs', async () => {
-      ipfs.refs.local.returns([{
+      ipfs.refs.local.withArgs(defaultOptions).returns([{
         ref: cid.toString()
       }])
 
       const res = await http({
         method: 'POST',
         url: '/api/v0/refs/local'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(JSON.parse(res.result)).to.have.property('Ref', cid.toString())
+    })
+
+    it('accepts a timeout', async () => {
+      ipfs.refs.local.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        ref: cid.toString()
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/refs/local?timeout=1s'
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

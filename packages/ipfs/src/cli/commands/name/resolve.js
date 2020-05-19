@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'resolve [<name>]',
 
@@ -23,14 +25,17 @@ module.exports = {
       alias: 's',
       describe: 'Stream entries as they are found.',
       default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, nocache, recursive, name, stream }) {
-    const { ipfs, print } = ctx
+  async handler ({ ctx: { ipfs, print }, nocache, recursive, name, stream, timeout }) {
     let bestValue
 
-    for await (const value of ipfs.name.resolve(name, { nocache, recursive })) {
+    for await (const value of ipfs.name.resolve(name, { nocache, recursive, timeout })) {
       bestValue = value
       if (stream) print(value)
     }

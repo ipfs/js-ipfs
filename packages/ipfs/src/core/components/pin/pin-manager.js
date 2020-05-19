@@ -9,6 +9,7 @@ const errCode = require('err-code')
 const multicodec = require('multicodec')
 const dagCborLinks = require('dag-cbor-links')
 const debug = require('debug')
+const { Buffer } = require('buffer')
 const { cidToString } = require('../../../utils/cid')
 
 const createPinSet = require('./pin-set')

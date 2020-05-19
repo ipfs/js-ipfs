@@ -1,8 +1,10 @@
 'use strict'
 
+const { withTimeoutOption } = require('../../utils')
+
 module.exports = ({ keychain }) => {
-  return (name, options) => {
+  return withTimeoutOption((name, options) => {
     options = options || {}
     return keychain.createKey(name, options.type, options.size)
-  }
+  })
 }
