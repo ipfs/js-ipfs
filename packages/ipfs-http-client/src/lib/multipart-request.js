@@ -7,7 +7,7 @@ const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 
-async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
+async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {
       let index = 0
