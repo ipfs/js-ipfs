@@ -9,7 +9,7 @@ const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const AbortController = require('abort-controller')
-const { isWebWorker } = require('ipfs-utils/src/env')
+const { isWebWorker, isNode } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -165,7 +165,10 @@ module.exports = (common, options) => {
         return ipfs1.swarm.connect(ipfs2Addr)
       })
 
-      it('should receive messages from a different node with floodsub', async () => {
+      it('should receive messages from a different node with floodsub', async function () {
+        if (!isNode) {
+          return this.skip()
+        }
         const expectedString = 'should receive messages from a different node with floodsub'
         const topic = `floodsub-${nanoid()}`
         const ipfs1 = (await common.spawn({
