@@ -26,11 +26,11 @@ module.exports = ({ repo }) => {
 
   /**
    * @param {string} profileName
-   * @param {*} opts
+   * @param {*} options
    * @returns {Promise<*>}
    */
-    async function applyProfile (profileName, opts={}) {
-    const { dryRun } = opts
+  async function applyProfile (profileName, options = {}) {
+    const { dryRun } = options
 
     const profile = profiles[profileName]
 

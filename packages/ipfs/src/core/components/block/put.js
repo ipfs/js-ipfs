@@ -11,6 +11,7 @@ const { withTimeoutOption } = require('../../utils')
  * @property {import("ipfs-interface").BlockService} blockService
  * @property {import("ipfs-interface").GCLock} gcLock
  * @property {import("ipfs-interface").PreloadService} preload
+ * @property {import("ipfs-interface").PinService} pin
  *
  * @typedef {Object} PutOptions
  * @property {CID} [cid]

@@ -1,7 +1,6 @@
 'use strict'
 
 const log = require('debug')('ipfs')
-// @ts-ignore
 const mergeOptions = require('merge-options')
 // @ts-ignore
 const { isTest } = require('ipfs-utils/src/env')
@@ -16,13 +15,9 @@ const crypto = require('libp2p-crypto')
 // @ts-ignore
 const isIPFS = require('is-ipfs')
 const multiaddr = require('multiaddr')
-// @ts-ignore
 const multihash = require('multihashes')
-// @ts-ignore
 const multibase = require('multibase')
-// @ts-ignore
 const multicodec = require('multicodec')
-// @ts-ignore
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const { NotInitializedError } = require('./errors')

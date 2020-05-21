@@ -2,7 +2,6 @@
 
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
-const { Buffer } = require('buffer')
 const PeerInfo = require('peer-info')
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
@@ -92,11 +91,13 @@ const Components = require('./')
  * @property {import("../api-manager")} apiManager
  * @property {(...args:any[]) => void} print
  * @property {ConstructorOptions} options
+ *
+ * @typedef {InitSettings & ConstructorOptions} Options
  */
 
 /**
  * @param {InitConfig} config
- * @returns {*}
+ * @returns {function(Options): Promise<*>}
  */
 module.exports = ({
   apiManager,
@@ -161,7 +162,13 @@ module.exports = ({
     const dag = {
       get: Components.dag.get({ ipld, preload }),
       resolve: Components.dag.resolve({ ipld, preload }),
-      tree: Components.dag.tree({ ipld, preload })
+      tree: Components.dag.tree({ ipld, preload }),
+      // FIXME: resolve this circular dependency
+      get put () {
+        const value = Components.dag.put({ ipld, pin, gcLock, preload })
+        Object.defineProperty(this, 'put', { value })
+        return value
+      }
     }
     const object = {
       data: Components.object.data({ ipld, preload }),
@@ -187,12 +194,9 @@ module.exports = ({
       rm: Components.pin.rm({ pinManager, gcLock, dag })
     }
 
-    // FIXME: resolve this circular dependency
-    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
-
     const block = {
       get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, pin, gcLock, preload }),
+      put: Components.block.put({ blockService, gcLock, preload, pin }),
       rm: Components.block.rm({ blockService, gcLock, pinManager }),
       stat: Components.block.stat({ blockService, preload })
     }
@@ -214,8 +218,34 @@ module.exports = ({
       await ipns.initializeKeyspace(peerId.privKey, emptyDirCid.toString())
     }
 
-    return apiManager.api
+    const api = createApi({
+      add,
+      apiManager,
+      constructorOptions,
+      block,
+      blockService,
+      dag,
+      gcLock,
+      initOptions: options,
+      ipld,
+      keychain,
+      object,
+      peerInfo,
+      pin,
+      pinManager,
+      preload,
+      print,
+      repo
+    })
+
+    apiManager.update(api, () => { throw new NotStartedError() })
+  } catch (err) {
+    cancel()
+    throw err
   }
+
+  return apiManager.api
+}
 
 /**
  *
@@ -237,6 +267,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   }
 
   const peerId = await createPeerId({ privateKey, bits, print })
+
   /** @type {NoKeychain|Keychain} */
   let keychain = new NoKeychain()
 
@@ -279,7 +310,6 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
  * @returns {Promise<*>}
  */
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
-  /** @type {IPFSConfig} */
   let config = await repo.config.get()
 
   if (newConfig || profiles) {
@@ -291,17 +321,16 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
     }
     await repo.config.set(config)
   }
+
   /** @type {NoKeychain|Keychain} */
   let keychain = new NoKeychain()
 
   if (pass) {
-    // @ts-ignore - TS can't know that .Keychain exists
     const keychainOptions = { passPhrase: pass, ...config.Keychain }
     keychain = new Keychain(repo.keys, keychainOptions)
     log('keychain constructed')
   }
 
-  // @ts-ignore - TS can't know that .Itentity exists
   const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
 
   // Import the private key as 'self', if needed.
@@ -394,7 +423,6 @@ function createApi ({
 
   const resolve = Components.resolve({ ipld })
   const refs = Components.refs({ ipld, resolve, preload })
-  // @ts-ignore
   refs.local = Components.refs.local({ repo })
 
   const api = {
@@ -457,7 +485,7 @@ function createApi ({
       bw: notStarted,
       repo: Components.repo.stat({ repo })
     },
-    stop: () => {},
+    stop: () => apiManager.api,
     swarm: {
       addrs: notStarted,
       connect: notStarted,

@@ -10,10 +10,10 @@ type BlockStore = Store<CID, Block>
 type RootStore = Store<string|Buffer|Key, Buffer>
 type DataStore = Store<Key, Buffer>
 interface ConfigStore extends Store<string, void|any>  {
-  replace(value:any):Promise<void>
+  replace(value:any, options?:{signal?:AbortSignal}):Promise<void>
   get():Promise<any>
   set(value:any):Promise<void>
-  getAll():Promise<any>
+  getAll(options?:{signal?:AbortSignal}):Promise<any>
   exists():Promise<boolean>
 }
 

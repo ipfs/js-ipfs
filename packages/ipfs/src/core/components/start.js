@@ -82,7 +82,13 @@ module.exports = ({
     const dag = {
       get: Components.dag.get({ ipld, preload }),
       resolve: Components.dag.resolve({ ipld, preload }),
-      tree: Components.dag.tree({ ipld, preload })
+      tree: Components.dag.tree({ ipld, preload }),
+      // FIXME: resolve this circular dependency
+      get put () {
+        const value = Components.dag.put({ ipld, pin, gcLock, preload })
+        Object.defineProperty(this, 'put', { value })
+        return value
+      }
     }
 
     const pin = {
@@ -90,9 +96,6 @@ module.exports = ({
       ls: Components.pin.ls({ pinManager, dag }),
       rm: Components.pin.rm({ pinManager, gcLock, dag })
     }
-
-    // FIXME: resolve this circular dependency
-    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
 
     const block = {
       get: Components.block.get({ blockService, preload }),
