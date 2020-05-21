@@ -11,6 +11,10 @@ const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 module.exports = ({
   apiManager,
   options: constructorOptions,
@@ -34,6 +38,7 @@ module.exports = ({
       await repo.open()
     }
 
+    /** @type {import("./init").IPFSConfig} */
     const config = await repo.config.get()
 
     if (config.Addresses && config.Addresses.Swarm) {
@@ -56,12 +61,14 @@ module.exports = ({
       options: constructorOptions,
       repo,
       peerInfo,
+      // @ts-ignore
       print,
       config
     })
 
     await libp2p.start()
 
+    // @ts-ignore
     peerInfo.multiaddrs.forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerInfo.id.toB58String()}`))
 
     const ipnsRouting = routingConfig({ libp2p, repo, peerInfo, options: constructorOptions })
@@ -138,6 +145,10 @@ module.exports = ({
   return apiManager.api
 })
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 function createApi ({
   apiManager,
   bitswap,
@@ -204,6 +215,7 @@ function createApi ({
   }
   const resolve = Components.resolve({ name, ipld })
   const refs = Components.refs({ ipld, resolve, preload })
+  // @ts-ignore
   refs.local = Components.refs.local({ repo })
 
   const pubsubNotEnabled = async () => { // eslint-disable-line require-await

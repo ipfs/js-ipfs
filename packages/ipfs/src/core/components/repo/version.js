@@ -3,6 +3,17 @@
 const { repoVersion } = require('ipfs-repo')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {import('ipfs-repo')} Repo
+ */
+
+/**
+ * @typedef {Object} Config
+ * @property {Repo} repo
+ *
+ * @param {Config} config
+ * @returns {function():Promise<number>}
+ */
 module.exports = ({ repo }) => {
   /**
    * If the repo has been initialized, report the current version.
@@ -10,8 +21,9 @@ module.exports = ({ repo }) => {
    *
    * @returns {number}
    */
-  return withTimeoutOption(async function version (options) {
+  async function version (options) {
     try {
+      // @ts-ignore - private method not supposed to be used from outside.
       await repo._checkInitialized(options)
     } catch (err) {
       // TODO: (dryajov) This is really hacky, there must be a better way
@@ -29,6 +41,8 @@ module.exports = ({ repo }) => {
       throw err
     }
 
-    return repo.version.get(options)
-  })
+    return repo.version.get()
+  }
+
+  withTimeoutOption(version)
 }

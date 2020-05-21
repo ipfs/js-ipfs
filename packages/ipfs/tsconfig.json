@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noEmitHelpers": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "target": "ES5",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "../../types/*",
+        "node_modules/*"
+      ]
+    },
+    "outDir": "./dist/"
+  },
+  "exclude": [
+    "dist",
+    "test",
+    "src/http",
+    "src/cli"
+  ],
+  "include": [
+    "src",
+    "../../node_modules/ipfs-block-service/src/**/**.js",
+    "../../node_modules/multihashing-async/src/**/**.js",
+    "../../node_modules/timeout-abort-controller/**/**.js",
+    "../../node_modules/abort-controller/**/**.js",
+    "../../node_modules/any-signal/**/**.js",
+    "../../node_modules/ipfs-bitswap/src/**/**.js",
+    "../../node_modules/libp2p-keychain/src/**/**.js",
+    "../../node_modules/libp2p-floodsub/src/**/**.js",
+    "../../node_modules/libp2p-tcp/src/**/**.js",
+    "../../node_modules/libp2p-mdns/src/**/**.js",
+    "../../node_modules/libp2p-websockets/src/**/**.js",
+    "../../node_modules/libp2p-kad-dht/src/**/**.js",
+    "../../node_modules/libp2p-mplex/src/**/**.js",
+    "../../node_modules/libp2p-secio/src/**/**.js",
+    "../../node_modules/libp2p-*/src/**/**.js",
+    "../../node_modules/ipld-raw/src/**/**.js",
+    "../../node_modules/ipld-dag-cbor/src/**/**.js",
+    "../../node_modules/ipns/src/**/**.js",
+    "../../node_modules/multihashes/src/**/**.js",
+    "../../node_modules/datastore-pubsub/src/**/**.js",
+    "../../node_modules/datastore-core/src/**/**.js",
+    "../../node_modules/is-domain-name/**/**.js",
+    "../../node_modules/ipfs-utils/src/http.js"
+  ],
+  "compileOnSave": false
+}

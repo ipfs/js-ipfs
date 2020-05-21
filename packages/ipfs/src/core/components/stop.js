@@ -5,6 +5,9 @@ const { NotStartedError, AlreadyInitializedError } = require('../errors')
 const Components = require('./')
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @param {*} config
+ */
 module.exports = ({
   apiManager,
   options: constructorOptions,
@@ -66,6 +69,10 @@ module.exports = ({
   stopPromise.resolve()
 })
 
+/**
+ * 
+ * @param {*} config 
+ */
 function createApi ({
   apiManager,
   constructorOptions,
@@ -83,7 +90,13 @@ function createApi ({
   const dag = {
     get: Components.dag.get({ ipld, preload }),
     resolve: Components.dag.resolve({ ipld, preload }),
-    tree: Components.dag.tree({ ipld, preload })
+    tree: Components.dag.tree({ ipld, preload }),
+    // FIXME: resolve this circular dependency
+    get put() {
+      const put = Components.dag.put({ ipld, pin, gcLock, preload })
+      Object.defineProperty(this, 'put', {value:put})
+      return put
+    }
   }
   const object = {
     data: Components.object.data({ ipld, preload }),
@@ -106,9 +119,6 @@ function createApi ({
     rm: Components.pin.rm({ pinManager, gcLock, dag })
   }
 
-  // FIXME: resolve this circular dependency
-  dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
-
   const block = {
     get: Components.block.get({ blockService, preload }),
     put: Components.block.put({ blockService, pin, gcLock, preload }),
@@ -119,6 +129,7 @@ function createApi ({
   const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
   const resolve = Components.resolve({ ipld })
   const refs = Components.refs({ ipld, resolve, preload })
+  // @ts-ignore
   refs.local = Components.refs.local({ repo })
 
   const notStarted = async () => { // eslint-disable-line require-await

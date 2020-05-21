@@ -12,9 +12,28 @@ const { parallelMerge, transform, map } = require('streaming-iterables')
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
 
-// Perform mark and sweep garbage collection
+/**
+ * @typedef {import("interface-datastore").Key} Key
+ * @typedef {Object} BlockID
+ * @property {CID} cid
+ * @property {err} [void]
+ *
+ * @typedef {Object} Err
+ * @property {cid} [void]
+ * @property {Error} err
+ * @typedef {Err|BlockID} Notification
+ */
+
+/**
+ * Perform mark and sweep garbage collection
+ * @param {*} config
+ * @returns {function():AsyncIterable<Notification>}
+ */
 module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
-  return withTimeoutOption(async function * gc (options = {}) {
+  /**
+   * @returns {AsyncIterable<Notification>}
+   */
+  async function * gc () {
     const start = Date.now()
     log('Creating set of marked blocks')
 
@@ -33,10 +52,16 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(gc)
 }
 
-// Get Set of CIDs of blocks to keep
+/**
+ * Get Set of CIDs of blocks to keep
+ * @param {*} config
+ * @returns {Promise<Set<string>>}
+ */
 async function createMarkedSet ({ pin, pinManager, refs, repo }) {
   const pinsSource = map(({ cid }) => cid, pin.ls())
 
@@ -72,13 +97,23 @@ async function createMarkedSet ({ pin, pinManager, refs, repo }) {
   return output
 }
 
-// Delete all blocks that are not marked as in use
+/**
+ * Delete all blocks that are not marked as in use
+ * @param {*} config
+ * @param {*} markedSet
+ * @param {*} blockKeys
+ * @returns {AsyncIterable<Notification>}
+ */
 async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
   // blockKeys yields { key: Key() }
   let blocksCount = 0
   let removedBlocksCount = 0
 
+  /**
+   * @param {{key:Key}} param
+   * @returns {Promise<Notification|null>}
+   */
   const removeBlock = async ({ key: k }) => {
     blocksCount++
 
@@ -92,6 +127,7 @@ async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
         await repo.blocks.delete(cid)
         removedBlocksCount++
       } catch (err) {
+        // @ts-ignore - This changes type that TS can't pick up
         res.err = new Error(`Could not delete block with CID ${cid}: ${err.message}`)
       }
 

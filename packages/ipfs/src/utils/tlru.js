@@ -16,6 +16,7 @@ class TLRU {
    * @memberof TLRU
    */
   constructor (maxSize) {
+    // @ts-ignore
     this.lru = hashlru(maxSize)
   }
 

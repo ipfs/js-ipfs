@@ -30,6 +30,74 @@ const initAssets = require('../runtime/init-assets-nodejs')
 const PinManager = require('./pin/pin-manager')
 const Components = require('./')
 
+/**
+ * @typedef {string} Multiaddr
+ *
+ * @typedef {Object} DiscoverConfig
+ * @property {{Enabled:boolean, Interval?:number, }} MDNS
+ * @property {{Enabled:boolean}} webRTCStar
+ *
+ * @typedef {Object} AddressConfig
+ * @property {Multiaddr} API
+ * @property {Multiaddr[]} Delegates
+ * @property {Multiaddr[]|Multiaddr} Gateway
+ * @property {Multiaddr[]} Swarm
+ *
+ * @typedef {Object} PubsubConfig
+ * @property {'gossipsub'|'floodsub'} [Router='gossipsub']
+ * @property {boolean} Enabled
+ *
+ * @typedef {Object} IdentityConfig
+ * @property {string} PeerID
+ * @property {string} PrivKey
+ *
+ * @typedef {Object} Datastore
+ * @typedef {Object} KeychainConfig
+ *
+ * @typedef {Object} SwarmConfig
+ * @property {{LowWater?:number, HighWater?:number}} ConnMgr
+ *
+ * @typedef {Object} IPFSConfig
+ * @property {AddressConfig} [Addresses]
+ * @property {string} [Profiles]
+ * @property {Multiaddr[]} [Bootstrap]
+ * @property {DiscoverConfig} [Discovery]
+ * @property {DatastoreConfig} [Datastore]
+ * @property {IdentityConfig} [Identity]
+ * @property {KeychainConfig} [Keychain]
+ * @property {PubsubConfig} [Pubsub]
+ * @property {SwarmConfig} [Swarm]
+ *
+ * @typedef {import("ipfs-repo")} IPFSRepo
+ * @typedef {Object} ConstructorOptions
+ * @property {IPFSRepo|string} [repo]
+ * @property {boolean} [repoAutoMigrate]
+ * @property {boolean} [repoOwner=true]
+ * @property {boolean|InitSettings} [init]
+ * @property {string} [pass]
+ * @property {import("ipld").IPLDOptions<Object>} [ipld]
+ * @property {import("../preload").PreloadConfig} [preload]
+ * @property {IPFSConfig} [config]
+ *
+ * @typedef {Object} InitSettings
+ * @property {boolean} [emptyRepo]
+ * @property {number} [bits=2048]
+ * @property {string|PeerId} [privateKey]
+ * @property {string} [pass]
+ * @property {string[]} [profiles]
+ * @property {boolean} [allowNew=true]
+ * @property {IPFSConfig} [config]
+ *
+ * @typedef {Object} InitConfig
+ * @property {import("../api-manager")} apiManager
+ * @property {(...args:any[]) => void} print
+ * @property {ConstructorOptions} options
+ */
+
+/**
+ * @param {InitConfig} config
+ * @returns {*}
+ */
 module.exports = ({
   apiManager,
   print,
@@ -146,35 +214,14 @@ module.exports = ({
       await ipns.initializeKeyspace(peerId.privKey, emptyDirCid.toString())
     }
 
-    const api = createApi({
-      add,
-      apiManager,
-      constructorOptions,
-      block,
-      blockService,
-      dag,
-      gcLock,
-      initOptions: options,
-      ipld,
-      keychain,
-      object,
-      peerInfo,
-      pin,
-      pinManager,
-      preload,
-      print,
-      repo
-    })
-
-    apiManager.update(api, () => { throw new NotStartedError() })
-  } catch (err) {
-    cancel()
-    throw err
+    return apiManager.api
   }
 
-  return apiManager.api
-}
-
+/**
+ *
+ * @param {IPFSRepo} repo
+ * @param {*} options
+ */
 async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, config, pass, print }) {
   emptyRepo = emptyRepo || false
   bits = bits == null ? 2048 : Number(bits)
@@ -190,6 +237,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   }
 
   const peerId = await createPeerId({ privateKey, bits, print })
+  /** @type {NoKeychain|Keychain} */
   let keychain = new NoKeychain()
 
   log('identity generated')
@@ -220,7 +268,18 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
   return { peerId, keychain }
 }
 
+/**
+ * @typedef {Object} InitExistingConfig
+ * @property {IPFSConfig} [config]
+ * @property {string[]} [profiles]
+ * @property {string} [pass]
+ *
+ * @param {IPFSRepo} repo
+ * @param {InitExistingConfig} options
+ * @returns {Promise<*>}
+ */
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
+  /** @type {IPFSConfig} */
   let config = await repo.config.get()
 
   if (newConfig || profiles) {
@@ -232,15 +291,17 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
     }
     await repo.config.set(config)
   }
-
+  /** @type {NoKeychain|Keychain} */
   let keychain = new NoKeychain()
 
   if (pass) {
+    // @ts-ignore - TS can't know that .Keychain exists
     const keychainOptions = { passPhrase: pass, ...config.Keychain }
     keychain = new Keychain(repo.keys, keychainOptions)
     log('keychain constructed')
   }
 
+  // @ts-ignore - TS can't know that .Itentity exists
   const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
 
   // Import the private key as 'self', if needed.
@@ -256,6 +317,10 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
   return { peerId, keychain }
 }
 
+/**
+ * @param {*} options
+ * @returns {Promise<PeerId>}
+ */
 function createPeerId ({ privateKey, bits, print }) {
   if (privateKey) {
     log('using user-supplied private-key')
@@ -269,6 +334,10 @@ function createPeerId ({ privateKey, bits, print }) {
   }
 }
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 function addEmptyDir ({ dag }) {
   const node = new DAGNode(new UnixFs('directory').marshal())
   return dag.put(node, {
@@ -279,7 +348,12 @@ function addEmptyDir ({ dag }) {
   })
 }
 
-// Apply profiles (e.g. ['server', 'lowpower']) to config
+/**
+ * Apply profiles (e.g. ['server', 'lowpower']) to config
+ * @param {string[]} profiles
+ * @param {IPFSConfig} config
+ * @returns {Object}
+ */
 function applyProfiles (profiles, config) {
   return (profiles || []).reduce((config, name) => {
     const profile = require('./config').profiles[name]
@@ -291,6 +365,10 @@ function applyProfiles (profiles, config) {
   }, config)
 }
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 function createApi ({
   add,
   apiManager,
@@ -316,6 +394,7 @@ function createApi ({
 
   const resolve = Components.resolve({ ipld })
   const refs = Components.refs({ ipld, resolve, preload })
+  // @ts-ignore
   refs.local = Components.refs.local({ repo })
 
   const api = {

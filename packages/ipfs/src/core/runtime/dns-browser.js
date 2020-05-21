@@ -16,12 +16,32 @@ const ttl = 60 * 1000
 // we don't want preload calls to exhaust the limit (~6)
 const httpQueue = new PQueue({ concurrency: 4 })
 
+/**
+ * @param {*} response
+ * @returns {*}
+ */
 const ipfsPath = (response) => {
   if (response.Path) return response.Path
   throw new Error(response.Message)
 }
 
+/**
+ * @typedef {Object} ResolveOptions
+ * @property {boolean} [nocache]
+ *
+ * @typedef {ResolveOptions & Record<string, string>} RosolveSettings
+ */
+
+/**
+ * @param {string} fqdn
+ * @param {RosolveSettings} opts
+ * @returns {Promise<string>}
+ */
 module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
+  /**
+   * @param {string} fqdn
+   * @param {RosolveSettings} opts
+   */
   const resolveDnslink = async (fqdn, opts) => {
     opts = opts || {}
 

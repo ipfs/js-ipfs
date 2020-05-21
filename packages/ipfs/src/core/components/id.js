@@ -4,9 +4,14 @@ const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 module.exports = ({ peerInfo, libp2p }) => {
   return withTimeoutOption(async function id () { // eslint-disable-line require-await
     const id = peerInfo.id.toB58String()
+    /** @type {Buffer[]} */
     let addresses = []
 
     if (libp2p) {

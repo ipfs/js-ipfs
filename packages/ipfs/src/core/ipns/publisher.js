@@ -3,9 +3,8 @@
 const PeerId = require('peer-id')
 const { Key, Errors } = require('interface-datastore')
 const errcode = require('err-code')
-const debug = require('debug')
+const debug = require('../debug')
 const log = debug('ipfs:ipns:publisher')
-log.error = debug('ipfs:ipns:publisher:error')
 
 const ipns = require('ipns')
 
@@ -14,11 +13,22 @@ const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
+  /**
+   *
+   * @param {*} routing
+   * @param {*} datastore
+   */
   constructor (routing, datastore) {
     this._routing = routing
     this._datastore = datastore
   }
 
+  /**
+   *
+   * @param {*} privKey
+   * @param {*} value
+   * @param {*} lifetime
+   */
   // publish record with a eol
   async publishWithEOL (privKey, value, lifetime) {
     if (!privKey || !privKey.bytes) {
@@ -31,11 +41,21 @@ class IpnsPublisher {
     return this._putRecordToRouting(record, peerId)
   }
 
+  /**
+   *
+   * @param {*} privKey
+   * @param {*} value
+   */
   // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
   async publish (privKey, value) { // eslint-disable-line require-await
     return this.publishWithEOL(privKey, value, defaultRecordLifetime)
   }
 
+  /**
+   *
+   * @param {*} record
+   * @param {*} peerId
+   */
   async _putRecordToRouting (record, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
@@ -44,11 +64,13 @@ class IpnsPublisher {
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
     }
 
+    // @ts-ignore - Type defs for PeerId hav no _pubKey
     const publicKey = peerId._pubKey
     const embedPublicKeyRecord = await ipns.embedPublicKey(publicKey, record)
+    /** @type {any} */
     const keys = ipns.getIdKeys(peerId.toBytes())
 
-    await this._publishEntry(keys.routingKey, embedPublicKeyRecord || record, peerId)
+    await this._publishEntry(keys.routingKey, embedPublicKeyRecord || record)
 
     // Publish the public key to support old go-ipfs nodes that are looking for it in the routing
     // We will be able to deprecate this part in the future, since the public keys will be only
@@ -58,6 +80,11 @@ class IpnsPublisher {
     return embedPublicKeyRecord || record
   }
 
+  /**
+   *
+   * @param {*} key
+   * @param {*} entry
+   */
   async _publishEntry (key, entry) {
     if (!(Key.isKey(key))) {
       const errMsg = 'datastore key does not have a valid format'
@@ -92,6 +119,11 @@ class IpnsPublisher {
     }
   }
 
+  /**
+   *
+   * @param {*} key
+   * @param {*} publicKey
+   */
   async _publishPublicKey (key, publicKey) {
     if ((!Key.isKey(key))) {
       const errMsg = 'datastore key does not have a valid format'
@@ -122,8 +154,13 @@ class IpnsPublisher {
     }
   }
 
-  // Returns the record this node has published corresponding to the given peer ID.
-  // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
+  /**
+   * Returns the record this node has published corresponding to the given peer ID.
+   * If `checkRouting` is true and we have no existing record, this method will
+   * check the routing system for any existing records.
+   * @param {*} peerId
+   * @param {*} options
+   */
   async _getPublished (peerId, options) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
@@ -156,6 +193,8 @@ class IpnsPublisher {
       // Try to get from routing
       try {
         const keys = ipns.getIdKeys(peerId.toBytes())
+        // @ts-ignore - return value of ipns.getIdKeys is just Object
+        // so TS can't tell it has routingKey
         const res = await this._routing.get(keys.routingKey.toBuffer())
 
         // unmarshal data
@@ -168,6 +207,10 @@ class IpnsPublisher {
     }
   }
 
+  /**
+   * @param {*} data
+   * @returns {*}
+   */
   _unmarshalData (data) {
     try {
       return ipns.unmarshal(data)
@@ -176,6 +219,13 @@ class IpnsPublisher {
     }
   }
 
+  /**
+   *
+   * @param {*} privKey
+   * @param {*} value
+   * @param {*} validity
+   * @param {*} peerId
+   */
   async _updateOrCreateRecord (privKey, value, validity, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'

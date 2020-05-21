@@ -6,8 +6,35 @@ const CID = require('cids')
 const isIPFS = require('is-ipfs')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {Object} PutConfig
+ * @property {import("ipfs-interface").BlockService} blockService
+ * @property {import("ipfs-interface").GCLock} gcLock
+ * @property {import("ipfs-interface").PreloadService} preload
+ *
+ * @typedef {Object} PutOptions
+ * @property {CID} [cid]
+ * @property {string} [format="dag-pb"]
+ * @property {string} [mhtype="sha2-256"]
+ * @property {number} [mhlen]
+ * @property {0|1} [version=0]
+ * @property {boolean} [pin=false]
+ * @property {number} [timeout]
+ * @property {boolean} [preload]
+ * @property {AbortSignal} [signal]
+ */
+
+/**
+ * @param {PutConfig} config
+ * @returns {*}
+ */
 module.exports = ({ blockService, pin, gcLock, preload }) => {
-  return withTimeoutOption(async function put (block, options) {
+  /**
+   * @param {Block|Buffer} block
+   * @param {PutOptions} options
+   * @returns {Promise<Block>}
+   */
+  async function put (block, options) {
     options = options || {}
 
     if (Array.isArray(block)) {
@@ -20,6 +47,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
       } else {
         const mhtype = options.mhtype || 'sha2-256'
         const format = options.format || 'dag-pb'
+        /** @type {0|1} */
         let cidVersion
 
         if (options.version == null) {
@@ -58,5 +86,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(put)
 }

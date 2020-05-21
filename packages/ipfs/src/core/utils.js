@@ -5,6 +5,7 @@ const CID = require('cids')
 const { Buffer } = require('buffer')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
+/** @type {import('parse-duration')} */
 const parseDuration = require('parse-duration')
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
@@ -29,8 +30,8 @@ exports.MFS_MAX_LINKS = 174
  *  b58Hash/mercury/venus -> { hash: 'b58Hash', links: ['mercury', 'venus']}
  *  /ipfs/b58Hash/links/by/name -> { hash: 'b58Hash', links: ['links', 'by', 'name'] }
  *
- * @param  {String} ipfsPath An ipfs-path
- * @return {Object}            { hash: base58 string, links: [string], ?err: Error }
+ * @param  {string} ipfsPath An ipfs-path
+ * @return {{ hash: string, links: string[] }}
  * @throws on an invalid @param ipfsPath
  */
 function parseIpfsPath (ipfsPath) {
@@ -56,7 +57,7 @@ function parseIpfsPath (ipfsPath) {
  *
  * @param  {String} pathStr An ipfs-path, or ipns-path or a cid
  * @return {String} ipfs-path or ipns-path
- * @throws on an invalid @param ipfsPath
+ * @throws on an invalid ipfsPath
  */
 const normalizePath = (pathStr) => {
   if (isIpfs.cid(pathStr)) {
@@ -69,6 +70,10 @@ const normalizePath = (pathStr) => {
 }
 
 // TODO: do we need both normalizePath and normalizeCidPath?
+/**
+ * @param {any} path
+ * @returns {string}
+ */
 const normalizeCidPath = (path) => {
   if (Buffer.isBuffer(path)) {
     return new CID(path).toString()
@@ -86,6 +91,11 @@ const normalizeCidPath = (path) => {
 }
 
 /**
+ *
+ * @typedef {import('ipfs-interface').DagService} Dag
+ */
+
+/**
  * Resolve various styles of an ipfs-path to the hash of the target node.
  * Follows links in the path.
  *
@@ -95,9 +105,8 @@ const normalizeCidPath = (path) => {
  *  - /ipfs/<base58 string>/link/to/pluto
  *  - multihash Buffer
  *  - Arrays of the above
- *
  * @param {Dag} dag The IPFS dag api
- * @param {Array<CID|string>} ipfsPaths A single or collection of ipfs-paths
+ * @param {Array<string>} ipfsPaths A single or collection of ipfs-paths
  * @param {Object} [options] Optional options passed directly to dag.resolve
  * @return {Promise<Array<CID>>}
  */
@@ -145,9 +154,35 @@ const resolvePath = async function (dag, ipfsPaths, options) {
   return cids
 }
 
+/**
+ * @typedef {import("ipfs-unixfs-exporter").Entry<Object>} ExportEntry
+ * @typedef {import("ipfs-unixfs")} UnixFS
+ * @typedef {ExportEntry & {unixfs?:UnixFS}} InputFile
+ * @typedef {Object} OutputFile
+ * @property {AsyncIterable<Buffer>} [content]
+ * @property {CID} cid
+ * @property {string} path
+ * @property {string} name
+ * @property {number} depth
+ * @property {number} size
+ * @property {'dir'|'file'} type
+ * @property {number} [mode]
+ * @property {{secs:number, nsecs:number}} [mtime]
+ */
+
+/**
+ * @typedef {Object} MapFileOptions
+ * @property {boolean} [includeContent]
+ */
+/**
+ * @param {InputFile} file
+ * @param {MapFileOptions} [options]
+ * @returns {OutputFile}
+ */
 const mapFile = (file, options) => {
   options = options || {}
 
+  /** @type {OutputFile} */
   const output = {
     cid: file.cid,
     path: file.path,
@@ -174,9 +209,26 @@ const mapFile = (file, options) => {
   return output
 }
 
+/**
+ *
+ * @typedef {Object} WithTimeoutOptions
+ * @property {number|string} timeout
+ * @property {AbortSignal} [signal]
+ */
+
+/**
+ * @template F
+ * @param {F} fn
+ * @param {WithTimeoutOptions} [optionsArgIndex]
+ * @returns {F}
+ */
 function withTimeoutOption (fn, optionsArgIndex) {
+  // @ts-ignore
   return (...args) => {
+    /** @type {WithTimeoutOptions} */
+    // @ts-ignore
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
+    // @ts-ignore
     if (!options || !options.timeout) return fn(...args)
 
     const timeout = typeof options.timeout === 'string'
@@ -187,6 +239,7 @@ function withTimeoutOption (fn, optionsArgIndex) {
 
     options.signal = anySignal([options.signal, controller.signal])
 
+    // @ts-ignore
     const fnRes = fn(...args)
     const timeoutPromise = new Promise((resolve, reject) => {
       controller.signal.addEventListener('abort', () => {

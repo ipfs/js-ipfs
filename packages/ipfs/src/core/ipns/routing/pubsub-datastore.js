@@ -8,14 +8,20 @@ const PubsubDatastore = require('datastore-pubsub')
 const withIs = require('class-is')
 
 const errcode = require('err-code')
-const debug = require('debug')
+const debug = require('../../debug')
 const log = debug('ipfs:ipns:pubsub')
-log.error = debug('ipfs:ipns:pubsub:error')
 
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
+  /**
+   *
+   * @param {*} pubsub
+   * @param {*} localDatastore
+   * @param {*} peerId
+   */
   constructor (pubsub, localDatastore, peerId) {
     this._pubsub = pubsub
+    /** @type {Record<string, void|string>} */
     this._subscriptions = {}
 
     // Bind _handleSubscriptionKey function, which is called by PubsubDatastore.
@@ -27,8 +33,7 @@ class IpnsPubsubDatastore {
    * Put a value to the pubsub datastore indexed by the received key properly encoded.
    * @param {Buffer} key identifier of the value.
    * @param {Buffer} value value to be stored.
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   async put (key, value) { // eslint-disable-line require-await
     return this._pubsubDs.put(key, value)
@@ -39,8 +44,7 @@ class IpnsPubsubDatastore {
    * Also, the identifier topic is subscribed to and the pubsub datastore records will be
    * updated once new publishes occur.
    * @param {Buffer} key identifier of the value to be obtained.
-   * @param {function(Error, Buffer)} callback
-   * @returns {void}
+   * @returns {Promise<Buffer>}
    */
   async get (key) {
     let res
@@ -69,10 +73,15 @@ class IpnsPubsubDatastore {
       throw err
     }
 
+    // @ts-ignore - Can't infer that assignment happened
     return res
   }
 
-  // Modify subscription key to have a proper encoding
+  /**
+   * Modify subscription key to have a proper encoding
+   * @param {Buffer|string} key
+   * @returns {*}
+   */
   _handleSubscriptionKey (key) {
     if (Buffer.isBuffer(key)) {
       key = toB58String(key)
@@ -92,12 +101,13 @@ class IpnsPubsubDatastore {
       throw err
     }
 
+    // @ts-ignore - ipns.getIdKeys just returns object so
+    // TS doesn't know if it has `routingKey`.
     return keys.routingKey.toBuffer()
   }
 
   /**
    * Get pubsub subscriptions related to ipns.
-   * @param {function(Error, Object)} callback
    * @returns {Array<Object>}
    */
   getSubscriptions () {
@@ -109,8 +119,7 @@ class IpnsPubsubDatastore {
   /**
    * Cancel pubsub subscriptions related to ipns.
    * @param {String} name ipns path to cancel the pubsub subscription.
-   * @param {function(Error, Object)} callback
-   * @returns {void}
+   * @returns {Promise<{canceled:boolean}>}
    */
   async cancel (name) { // eslint-disable-line require-await
     if (typeof name !== 'string') {

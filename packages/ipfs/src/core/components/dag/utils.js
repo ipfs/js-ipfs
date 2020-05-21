@@ -4,6 +4,23 @@ const CID = require('cids')
 const errCode = require('err-code')
 const { Buffer } = require('buffer')
 
+/**
+ * @template A,B
+ * @typedef {import("ipfs-interface").Extends<B, A>} Extends
+ */
+
+/**
+ * @template T
+ * @typedef {[CID, string|undefined, Extends<Object, T>]} Args
+ */
+
+/**
+ * @template T
+ * @param {string|CID|Buffer} cid
+ * @param {string} [path]
+ * @param {Extends<Object, T>} [options]
+ * @returns {Args<T>}
+ */
 exports.parseArgs = (cid, path, options) => {
   options = options || {}
 

@@ -22,13 +22,17 @@ exports.cidToString = (cid, options) => {
   options.upgrade = options.upgrade !== false
 
   if (!CID.isCID(cid)) {
+    // @ts-ignore - TS fails to infer here
     cid = new CID(cid)
   }
 
-  if (cid.version === 0 && options.base && options.base !== 'base58btc') {
-    if (!options.upgrade) return cid.toString()
-    cid = cid.toV1()
+  // Type of `cid` is `CID|string|Buffer` to refine it to `CID` we create
+  // new variable that has type `CID`.
+  let cid2 = /** @type {CID} */(cid)
+  if (cid2.version === 0 && options.base && options.base !== 'base58btc') {
+    if (!options.upgrade) return cid2.toString()
+    cid2 = cid2.toV1()
   }
 
-  return cid.toBaseEncodedString(options.base)
+  return cid2.toBaseEncodedString(options.base)
 }

@@ -1,12 +1,61 @@
 'use strict'
 
 const multicodec = require('multicodec')
+/**
+ *
+ * @param {string} name
+ * @returns {number}
+ */
+// @ts-ignore - TS can't infer dynamic access
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import("ipfs-interface").IPLDService} IPLDService
+ * @typedef {import("ipfs-interface").PinService} PinService
+ * @typedef {import("ipfs-interface").GCLock} GCLock
+ * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ *
+ * @typedef {Object} PutConfig
+ * @property {IPLDService} ipld
+ * @property {PinService} pin
+ * @property {GCLock} gcLock:any
+ * @property {PreloadService} preload
+ *
+ * @typedef {Object} OptionsWithFormat
+ * @property {string} format
+ * @property {string} hashAlg
+ *
+ * @typedef {Object} OptionsWithCID
+ * @property {CID} cid
+ *
+ * @typedef {Object} OthePutOptions
+ * @property {boolean} [pin=false]
+ * @property {number} [timetout]
+ * @property {number} [version]
+ * @property {boolean} [preload=false]
+ * @property {AbortSignal} [signal]
+ *
+ * @typedef {(OptionsWithFormat|OptionsWithCID) & OthePutOptions} PutOptions
+ *
+ * @typedef {OptionsWithFormat & OptionsWithCID & OthePutOptions} NormalizedOptions
+ */
+
+/**
+ * @param {PutConfig} config
+ * @returns {*}
+ */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
-  return withTimeoutOption(async function put (dagNode, options) {
-    options = options || {}
+  /**
+   * Store an IPLD format node
+   * @param {Object} dagNode
+   * @param {PutOptions} [putOptions]
+   * @returns {Promise<CID>}
+   */
+  async function put (dagNode, putOptions) {
+    /** @type {OthePutOptions & {format:number|string, hashAlg:number|string, cid?:CID}} */
+    let options = putOptions || {}
 
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
@@ -67,5 +116,7 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
         release()
       }
     }
-  })
+  }
+
+  return withTimeoutOption(put)
 }

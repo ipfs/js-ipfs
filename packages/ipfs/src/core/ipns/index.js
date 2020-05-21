@@ -2,9 +2,8 @@
 
 const { createFromPrivKey } = require('peer-id')
 const errcode = require('err-code')
-const debug = require('debug')
+const debug = require('../debug')
 const log = debug('ipfs:ipns')
-log.error = debug('ipfs:ipns:error')
 
 const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')
@@ -14,6 +13,14 @@ const TLRU = require('../../utils/tlru')
 const defaultRecordTtl = 60 * 1000
 
 class IPNS {
+  /**
+   *
+   * @param {*} routing
+   * @param {*} datastore
+   * @param {*} peerInfo
+   * @param {*} keychain
+   * @param {*} options
+   */
   constructor (routing, datastore, peerInfo, keychain, options) {
     this.publisher = new IpnsPublisher(routing, datastore)
     this.republisher = new IpnsRepublisher(this.publisher, datastore, peerInfo, keychain, options)
@@ -22,7 +29,12 @@ class IPNS {
     this.routing = routing
   }
 
-  // Publish
+  /**
+   * Publish
+   * @param {*} privKey
+   * @param {*} value
+   * @param {*} lifetime
+   */
   async publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
     try {
       value = normalizePath(value)
@@ -52,7 +64,12 @@ class IPNS {
     }
   }
 
-  // Resolve
+  /**
+   * Resolve
+   * @param {string} name
+   * @param {*} options
+   * @returns {Promise<string>}
+   */
   async resolve (name, options) {
     if (typeof name !== 'string') {
       throw errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME')
@@ -84,8 +101,12 @@ class IPNS {
     }
   }
 
-  // Initialize keyspace
-  // sets the ipns record for the given key to point to an empty directory
+  /**
+   * Initialize keyspace
+   * sets the ipns record for the given key to point to an empty directory
+   * @param {*} privKey
+   * @param {*} value
+   */
   async initializeKeyspace (privKey, value) { // eslint-disable-line require-await
     return this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime)
   }

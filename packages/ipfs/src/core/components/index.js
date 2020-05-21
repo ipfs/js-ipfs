@@ -73,6 +73,9 @@ exports.pin = {
 }
 exports.ping = require('./ping')
 exports.pubsub = require('./pubsub')
+
+/** @type {import('./refs') & {local:import('./refs/local')}} */
+// @ts-ignore
 exports.refs = require('./refs')
 exports.refs.local = require('./refs/local')
 exports.repo = {

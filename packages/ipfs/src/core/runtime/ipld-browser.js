@@ -4,6 +4,25 @@ const ipldDagCbor = require('ipld-dag-cbor')
 const ipldDagPb = require('ipld-dag-pb')
 const ipldRaw = require('ipld-raw')
 
+/**
+ * @typedef {import("ipfs-block-service")} BlockService
+ */
+
+/**
+ * @template T
+ * @typedef {import("ipld").IPLDOptions<T>} IPLDOptions
+ */
+
+/**
+ * @template T
+ * @typedef {import("ipld").IPLDFormat<T>} IPLDFormat
+ */
+
+/**
+ * @param {BlockService} blockService
+ * @param {IPLDOptions<Object>} [options]
+ * @returns {IPLDOptions<Object>}
+ */
 module.exports = (blockService, options) => {
   options = options || {}
 

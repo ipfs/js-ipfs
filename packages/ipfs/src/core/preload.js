@@ -4,12 +4,26 @@ const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
 const shuffle = require('array-shuffle')
-const AbortController = require('abort-controller')
+const { AbortController } = require('abort-controller')
 const preload = require('./runtime/preload-nodejs')
 
+/** @type {debug.Debugger & {error:debug.Debugger}} */
+// @ts-ignore - TS infers type that we override ^ due to .error extension below.
 const log = debug('ipfs:preload')
 log.error = debug('ipfs:preload:error')
 
+/**
+ * @typedef {Object} PreloadConfig
+ * @property {boolean} [enabled]
+ * @property {string[]} [addresses]
+ *
+ * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ */
+
+/**
+ * @param {PreloadConfig} [options]
+ * @returns {PreloadService}
+ */
 module.exports = options => {
   options = options || {}
   options.enabled = Boolean(options.enabled)
@@ -17,6 +31,8 @@ module.exports = options => {
 
   if (!options.enabled || !options.addresses.length) {
     log('preload disabled')
+    /** @type {PreloadService} */
+    // @ts-ignore - TS can't infer type change with mutations below
     const api = () => {}
     api.start = () => {}
     api.stop = () => {}
@@ -24,9 +40,14 @@ module.exports = options => {
   }
 
   let stopped = true
+  /** @type {AbortController[]} */
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
+  /**
+   * @param {*} path
+   * @returns {Promise<*>}
+   */
   const api = async path => {
     try {
       if (stopped) throw new Error(`preload ${path} but preloader is not started`)
@@ -41,6 +62,7 @@ module.exports = options => {
 
       for (const uri of fallbackApiUris) {
         if (stopped) throw new Error(`preload aborted for ${path}`)
+        /** @type {AbortController} */
         let controller
 
         try {

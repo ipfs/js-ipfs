@@ -36,14 +36,37 @@ const IpldFormats = {
   }
 }
 
+/**
+ * @typedef {import("ipfs-block-service")} BlockService
+ */
+
+/**
+ * @template T
+ * @typedef {import("ipld").IPLDOptions<T>} IPLDOptions
+ */
+
+/**
+ * @template T
+ * @typedef {import("ipld").IPLDFormat<T>} IPLDFormat
+ */
+
+/**
+ * @param {BlockService} blockService
+ * @param {IPLDOptions<Object>} [options]
+ * @param {import("debug").Debugger} log
+ * @returns {IPLDOptions<Object>}
+ */
 module.exports = (blockService, options, log) => {
   options = options || {}
-
   return mergeOptions.call(
     // ensure we have the defaults formats even if the user overrides `formats: []`
     { concatArrays: true },
     {
       blockService: blockService,
+      /**
+       * @param {number} codec
+       * @returns {IPLDFormat<Object>}
+       */
       loadFormat: (codec) => {
         log('Loading IPLD format', codec)
         if (IpldFormats[codec]) {

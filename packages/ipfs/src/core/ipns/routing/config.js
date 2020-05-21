@@ -6,6 +6,10 @@ const get = require('dlv')
 const PubsubDatastore = require('./pubsub-datastore')
 const OfflineDatastore = require('./offline-datastore')
 
+/**
+ * @param {*} config
+ * @returns {TieredDatastore}
+ */
 module.exports = ({ libp2p, repo, peerInfo, options }) => {
   // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
   const ipnsStores = []

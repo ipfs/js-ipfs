@@ -3,10 +3,9 @@
 
 const { default: PQueue } = require('p-queue')
 const HTTP = require('ipfs-utils/src/http')
-const debug = require('debug')
+const debug = require('../debug')
 
 const log = debug('ipfs:preload')
-log.error = debug('ipfs:preload:error')
 
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)

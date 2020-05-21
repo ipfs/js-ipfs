@@ -1,10 +1,13 @@
 'use strict'
 
-const debug = require('debug')
+const debug = require('./debug')
 const { cidToString } = require('../utils/cid')
 const log = debug('ipfs:mfs-preload')
-log.error = debug('ipfs:mfs-preload:error')
 
+/**
+ * @param {*} config
+ * @returns {*}
+ */
 module.exports = ({ preload, files, options }) => {
   options = options || {}
   options.interval = options.interval || 30 * 1000
@@ -15,7 +18,10 @@ module.exports = ({ preload, files, options }) => {
     return { start: noop, stop: noop }
   }
 
-  let rootCid, timeoutId
+  /** @type {string} */
+  let rootCid
+  /** @type {NodeJS.Timeout} */
+  let timeoutId
 
   const preloadMfs = async () => {
     try {

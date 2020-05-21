@@ -2,8 +2,23 @@
 
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {Object} PeersConfig
+ * @property {*} libp2p
+ *
+ * @typedef {Object} PeersOptions
+ * @property {boolean} [v]
+ * @property {boolean} [verbose]
+ * @property {boolean} [direction]
+ *
+ * @param {PeersConfig} config
+ * @returns {*}
+ */
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function peers (options) { // eslint-disable-line require-await
+  /**
+   * @param {PeersOptions} options
+   */
+  async function peers (options) { // eslint-disable-line require-await
     options = options || {}
 
     const verbose = options.v || options.verbose
@@ -11,6 +26,7 @@ module.exports = ({ libp2p }) => {
 
     for (const [peerId, connections] of libp2p.connections) {
       for (const connection of connections) {
+        /** @type {{addr:any, peer:any, direction?:any, muxer?:any, latency?:string}} */
         const tupple = {
           addr: connection.remoteAddr,
           peer: peerId
@@ -30,5 +46,7 @@ module.exports = ({ libp2p }) => {
     }
 
     return peers
-  })
+  }
+
+  return withTimeoutOption(peers)
 }

@@ -6,9 +6,8 @@ const PeerId = require('peer-id')
 const errcode = require('err-code')
 const { Buffer } = require('buffer')
 
-const debug = require('debug')
+const debug = require('../debug')
 const log = debug('ipfs:ipns:republisher')
-log.error = debug('ipfs:ipns:republisher:error')
 
 const minute = 60 * 1000
 const hour = 60 * minute
@@ -17,6 +16,14 @@ const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
 class IpnsRepublisher {
+  /**
+   *
+   * @param {*} publisher
+   * @param {*} datastore
+   * @param {*} peerInfo
+   * @param {*} keychain
+   * @param {*} options
+   */
   constructor (publisher, datastore, peerInfo, keychain, options) {
     this._publisher = publisher
     this._datastore = datastore
@@ -33,14 +40,21 @@ class IpnsRepublisher {
 
     // TODO: this handler should be isolated in another module
     const republishHandle = {
+      /** @type {null|(() => Promise<void>)} */
       _task: null,
+      /** @type {null|Promise<void>} */
       _inflightTask: null,
+      /** @type {null|NodeJS.Timeout} */
       _timeoutId: null,
+      /**
+       * @param {function(): number} period
+       */
       runPeriodically: (period) => {
         republishHandle._timeoutId = setTimeout(async () => {
           republishHandle._timeoutId = null
 
           try {
+            // @ts-ignore - _task could be null
             republishHandle._inflightTask = republishHandle._task()
             await republishHandle._inflightTask
 
@@ -55,6 +69,7 @@ class IpnsRepublisher {
       },
       cancel: async () => {
         // do not run again
+        // @ts-ignore - _timeoutId could be a null
         clearTimeout(republishHandle._timeoutId)
         republishHandle._task = null
 
@@ -93,6 +108,11 @@ class IpnsRepublisher {
     await republishHandle.cancel()
   }
 
+  /**
+   *
+   * @param {*} privateKey
+   * @param {*} pass
+   */
   async _republishEntries (privateKey, pass) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
@@ -122,6 +142,10 @@ class IpnsRepublisher {
     }
   }
 
+  /**
+   *
+   * @param {*} privateKey
+   */
   async _republishEntry (privateKey) {
     if (!privateKey || !privateKey.bytes) {
       throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
@@ -140,6 +164,10 @@ class IpnsRepublisher {
     }
   }
 
+  /**
+   *
+   * @param {*} peerId
+   */
   async _getPreviousValue (peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       throw errcode(new Error('invalid peer ID'), 'ERR_INVALID_PEER_ID')

@@ -1,5 +1,12 @@
 'use strict'
 
+/**
+ * @typedef {import("../components/init").IPFSConfig} IPFSConfig
+ */
+
+/**
+ * @returns {IPFSConfig}
+ */
 module.exports = () => ({
   Addresses: {
     Swarm: [

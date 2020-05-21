@@ -4,20 +4,35 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-const debug = require('debug')
+const debug = require('../debug')
 const log = debug('ipfs:ipns:resolver')
-log.error = debug('ipfs:ipns:resolver:error')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 
 const defaultMaximumRecursiveDepth = 32
 
+/**
+ * @typedef {import("cids")} CID
+ */
+
+/**
+ * @typedef {Object} ResolveOptions
+ * @property {boolean} [recursive]
+ */
 class IpnsResolver {
+  /**
+   *
+   * @param {*} routing
+   */
   constructor (routing) {
     this._routing = routing
   }
 
+  /**
+   * @param {string} name
+   * @param {ResolveOptions} [options]
+   */
   async resolve (name, options) {
     options = options || {}
 
@@ -49,7 +64,12 @@ class IpnsResolver {
     return res
   }
 
-  // Recursive resolver according to the specified depth
+  /**
+   * Recursive resolver according to the specified depth
+   * @param {string} name
+   * @param {number} [depth]
+   * @returns {Promise<string>}
+   */
   async resolver (name, depth) {
     // Exceeded recursive maximum depth
     if (depth === 0) {
@@ -71,9 +91,13 @@ class IpnsResolver {
     return this.resolver(nameSegments[2], depth - 1)
   }
 
-  // resolve ipns entries from the provided routing
+  /**
+   * resolve ipns entries from the provided routing
+   * @param {string|Buffer|CID} name
+   */
   async _resolveName (name) {
     const peerId = PeerId.createFromCID(name)
+    // @ts-ignore - ipns.getIdKeys isn't well typed
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 
@@ -130,7 +154,11 @@ class IpnsResolver {
     return this._validateRecord(peerId, ipnsEntry)
   }
 
-  // validate a resolved record
+  /**
+   * validate a resolved record
+   * @param {*} peerId
+   * @param {*} ipnsEntry
+   */
   async _validateRecord (peerId, ipnsEntry) {
     const pubKey = await ipns.extractPublicKey(peerId, ipnsEntry)
 

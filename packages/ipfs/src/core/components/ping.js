@@ -4,8 +4,34 @@ const PeerId = require('peer-id')
 const basePacket = { success: true, time: 0, text: '' }
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @typedef {import("ipfs-interface").LibP2PService} LibP2P
+ */
+
+/**
+ * @typedef {Object} Packet
+ * @property {boolean} success
+ * @property {number} time
+ * @property {string} text
+ *
+ * @typedef {Object} PingOptions
+ * @property {number} [count=10]
+ *
+ * @typedef {Object} PingConfig
+ * @property {LibP2P} libp2p
+ */
+
+/**
+ * @param {PingConfig} config
+ * @returns {*}
+ */
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function * ping (peerId, options) {
+  /**
+   * @param {PeerId} peerId
+   * @param {PingOptions} [options]
+   * @returns {AsyncIterable<Packet>}
+   */
+  async function * ping (peerId, options) {
     options = options || {}
     options.count = options.count || 10
 
@@ -41,5 +67,7 @@ module.exports = ({ libp2p }) => {
       const average = totalTime / packetCount
       yield { ...basePacket, text: `Average latency: ${average}ms` }
     }
-  })
+  }
+
+  return withTimeoutOption(ping)
 }

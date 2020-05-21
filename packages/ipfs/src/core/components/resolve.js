@@ -15,15 +15,22 @@ const { withTimeoutOption } = require('../utils')
 /** @typedef {(path: string, options?: ResolveOptions) => Promise<string>} Resolve */
 
 /**
+ * @typedef {Object} Config
+ * @property {*} ipld - An instance of IPLD
+ * @property {*} [name] - An IPFS core interface name API
+ * 
  * IPFS Resolve factory
  *
- * @param {Object} config
- * @param {IPLD} config.ipld - An instance of IPLD
- * @param {NameApi} [config.name] - An IPFS core interface name API
+ * @param {Config} config
  * @returns {Resolve}
  */
 module.exports = ({ ipld, name }) => {
-  return withTimeoutOption(async function resolve (path, opts) {
+  /**
+   * 
+   * @param {*} path 
+   * @param {*} opts 
+   */
+  async function resolve (path, opts) {
     opts = opts || {}
 
     if (!isIpfs.path(path)) {
@@ -62,5 +69,7 @@ module.exports = ({ ipld, name }) => {
     }
 
     return `/ipfs/${cidToString(value, { base: opts.cidBase })}${remainderPath ? '/' + remainderPath : ''}`
-  })
+  }
+
+  return withTimeoutOption(resolve)
 }
