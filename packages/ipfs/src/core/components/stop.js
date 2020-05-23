@@ -6,7 +6,37 @@ const Components = require('./')
 const { withTimeoutOption } = require('../utils')
 
 /**
- * @param {*} config
+ * @typedef {import('../api-manager')} ApiManage
+ * @typedef {import('ipfs-interface').BlockService} BlockService
+ * @typedef {import('ipfs-interface').GCLock} GCLock
+ * @typedef {import('./init').Options} InitOptions
+ * @typedef {import('ipfs-interface').IPLDService} IPLDService
+ * @typedef {import('ipfs-interface').IPNSService} IPNSService
+ * @typedef {import('ipfs-interface').LibP2PService} LibP2PService
+ * @typedef {import('ipfs-interface').PeerInfo} PeerInfo
+ */
+
+/**
+ * @callback Stop
+ * @returns {Promise<void>}
+ *
+ * @typedef {Object} StopConfig
+ * @property {ApiManage} apiManager
+ * @property {Object} options
+ * @property {Object} bitswap
+ * @property {BlockService} blockService
+ * @property {GCLock} gcLock
+ * @property {InitOptions} initOptions
+ * @property {IPLDService} ipld
+ * @property {IPNSService} ipns
+ * @property {KeychainService} keychain
+ * @property {LibP2PService} libp2p
+ * @property {PeerInfo} peerInfo
+ */
+
+/**
+ * @param {StopConfig} config
+ * @returns {Stop}
  */
 module.exports = ({
   apiManager,
@@ -70,8 +100,8 @@ module.exports = ({
 })
 
 /**
- * 
- * @param {*} config 
+ * @param {*} config
+ * @returns {*}
  */
 function createApi ({
   apiManager,
@@ -92,10 +122,10 @@ function createApi ({
     resolve: Components.dag.resolve({ ipld, preload }),
     tree: Components.dag.tree({ ipld, preload }),
     // FIXME: resolve this circular dependency
-    get put() {
-      const put = Components.dag.put({ ipld, pin, gcLock, preload })
-      Object.defineProperty(this, 'put', {value:put})
-      return put
+    get value () {
+      const value = Components.dag.put({ ipld, pin, gcLock, preload })
+      Object.defineProperty(this, 'put', { value })
+      return value
     }
   }
   const object = {

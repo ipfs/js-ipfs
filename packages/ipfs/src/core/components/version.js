@@ -6,13 +6,30 @@ const { withTimeoutOption } = require('../utils')
 // TODO add the commit hash of the current ipfs version to the response.
 /**
  * @typedef {import("ipfs-repo")} Repo
+ * @typedef {import("../utils").WithTimeoutOptions} WithTimeoutOptions
+ */
+
+/**
  * @typedef {Object} VersionConfig
  * @property {Repo} repo
- * 
+ *
  * @param {VersionConfig} repo
+ * @returns {Version}
  */
 module.exports = ({ repo }) => {
-  return withTimeoutOption(async function version (options) {
+  /**
+   * @typedef {Object} VersionInfo
+   * @property {string} version
+   * @property {string} repoVersion
+   * @property {string} commit
+   *
+   * @callback Version
+   * @param {WithTimeoutOptions} [options]
+   * @returns {VersionInfo}
+   *
+   * @type {Version}
+   */
+  async function version (options) {
     const repoVersion = await repo.version.get(options)
 
     return {
@@ -20,5 +37,7 @@ module.exports = ({ repo }) => {
       repo: repoVersion,
       commit: ''
     }
-  })
+  }
+
+  return withTimeoutOption(version)
 }

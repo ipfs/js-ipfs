@@ -1,8 +1,3 @@
-// Type definitions for ipfs-unixfs 1.0
-// Project: https://github.com/ipfs/js-ipfs-unixfs#readme
-// Definitions by: Irakli Gozalishvili <https://github.com/me>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
 type DataType =
   | 'raw'
   | 'directory'
@@ -11,10 +6,14 @@ type DataType =
   | 'symlink'
   | 'hamt-sharded-directory'
 
-declare class Data {
-  constructor(...args: any[]);
+type DirectoryType =
+  | 'directory'
+  | 'hamt-sharded-directory'
 
-  type:'dir'|'file'
+declare class UnixFS<T extends UnixFS.DataType = UnixFS.DataType> {
+  constructor(type: T, content?: any);
+
+  type:T
   mode:number
   mtime:{secs:number, nsecs:number}
 
@@ -29,7 +28,11 @@ declare class Data {
   marshal(): Buffer;
 
 
-  static unmarshal(bytes:Buffer): Data;
+  static unmarshal(bytes:Buffer): UnixFS;
 }
 
-export = Data
+declare namespace UnixFS {
+  export {DataType, DirectoryType}
+}
+
+export = UnixFS

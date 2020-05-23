@@ -2,9 +2,12 @@
 
 import { Buffer } from "buffer"
 import Block from "ipld-block"
-import { Store, Key, StoreOptions } from "interface-datastore"
+import { Store, Key, StoreOptions} from "interface-datastore"
+import { TimeoutOptions } from "ipfs-interface"
 import CID from "cids"
 import * as ERRORS from "./errors"
+
+
 
 type BlockStore = Store<CID, Block>
 type RootStore = Store<string|Buffer|Key, Buffer>
@@ -29,7 +32,7 @@ type RepoOptions = {
 }
 
 interface Cell<T> {
-  get():Promise<T>
+  get(options?:TimeoutOptions):Promise<T>
   set(value:T):Promise<void>
 }
 

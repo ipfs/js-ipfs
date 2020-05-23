@@ -11,13 +11,19 @@ const errcode = require('err-code')
 const debug = require('../../debug')
 const log = debug('ipfs:ipns:pubsub')
 
+/**
+ * @typedef {import('ipfs-interface').PeerId} PeerId
+ * @typedef {import('ipfs-interface').PubSub} PubSub
+ * @typedef {import('ipfs-interface').Store<Buffer, Buffer>} Store
+ */
+
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
   /**
    *
-   * @param {*} pubsub
+   * @param {PubSub} pubsub
    * @param {*} localDatastore
-   * @param {*} peerId
+   * @param {PeerId} peerId
    */
   constructor (pubsub, localDatastore, peerId) {
     this._pubsub = pubsub
@@ -108,7 +114,7 @@ class IpnsPubsubDatastore {
 
   /**
    * Get pubsub subscriptions related to ipns.
-   * @returns {Array<Object>}
+   * @returns {Array<string>}
    */
   getSubscriptions () {
     const subscriptions = Object.values(this._subscriptions).filter(Boolean)

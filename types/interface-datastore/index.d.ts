@@ -1,9 +1,9 @@
 import { ErrorCode } from "err-code"
 import { Buffer } from "buffer"
+import {TimeoutOptions} from "ipfs-interface"
 
-export type StoreOptions = {
-  signal?:AbortSignal
-}
+
+export type StoreOptions = TimeoutOptions
 
 export type StoreEntry<Key, Value> = {
   key:Key,

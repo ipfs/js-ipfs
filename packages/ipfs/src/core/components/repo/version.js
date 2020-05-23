@@ -5,6 +5,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('../../utils').WithTimeoutOptions} WithTimeoutOptions
  */
 
 /**
@@ -12,14 +13,16 @@ const { withTimeoutOption } = require('../../utils')
  * @property {Repo} repo
  *
  * @param {Config} config
- * @returns {function():Promise<number>}
+ * @returns {Version}
  */
 module.exports = ({ repo }) => {
   /**
    * If the repo has been initialized, report the current version.
    * Otherwise report the version that would be initialized.
-   *
-   * @returns {number}
+   * @callback Version
+   * @param {WithTimeoutOptions} [options]
+   * @returns {Promise<number>}
+   * @type {Version}
    */
   async function version (options) {
     try {
@@ -44,5 +47,5 @@ module.exports = ({ repo }) => {
     return repo.version.get()
   }
 
-  withTimeoutOption(version)
+  return withTimeoutOption(version)
 }

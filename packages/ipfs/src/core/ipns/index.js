@@ -14,7 +14,6 @@ const defaultRecordTtl = 60 * 1000
 
 class IPNS {
   /**
-   *
    * @param {*} routing
    * @param {*} datastore
    * @param {*} peerInfo

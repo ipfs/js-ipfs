@@ -15,12 +15,15 @@ const hour = 60 * minute
 const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
+/**
+ * @typedef {import("peer-info")} PeerInfo
+ */
+
 class IpnsRepublisher {
   /**
-   *
    * @param {*} publisher
    * @param {*} datastore
-   * @param {*} peerInfo
+   * @param {PeerInfo} peerInfo
    * @param {*} keychain
    * @param {*} options
    */

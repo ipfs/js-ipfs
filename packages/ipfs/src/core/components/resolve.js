@@ -18,7 +18,7 @@ const { withTimeoutOption } = require('../utils')
  * @typedef {Object} Config
  * @property {*} ipld - An instance of IPLD
  * @property {*} [name] - An IPFS core interface name API
- * 
+ *
  * IPFS Resolve factory
  *
  * @param {Config} config
@@ -26,9 +26,8 @@ const { withTimeoutOption } = require('../utils')
  */
 module.exports = ({ ipld, name }) => {
   /**
-   * 
-   * @param {*} path 
-   * @param {*} opts 
+   * @param {*} path
+   * @param {*} opts
    */
   async function resolve (path, opts) {
     opts = opts || {}

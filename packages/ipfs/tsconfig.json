@@ -55,7 +55,9 @@
     "../../node_modules/datastore-pubsub/src/**/**.js",
     "../../node_modules/datastore-core/src/**/**.js",
     "../../node_modules/is-domain-name/**/**.js",
-    "../../node_modules/ipfs-utils/src/http.js"
+    "../../node_modules/ipfs-utils/src/http.js",
+    "../../node_modules/ipfs-utils/src/files/glob-source.js",
+    "node_modules/ipfs-core-utils/src/files/normalise-input.js"
   ],
   "compileOnSave": false
 }

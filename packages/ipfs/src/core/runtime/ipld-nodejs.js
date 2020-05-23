@@ -38,6 +38,7 @@ const IpldFormats = {
 
 /**
  * @typedef {import("ipfs-block-service")} BlockService
+ * @typedef {import("debug").Debugger} Log
  */
 
 /**
@@ -53,7 +54,7 @@ const IpldFormats = {
 /**
  * @param {BlockService} blockService
  * @param {IPLDOptions<Object>} [options]
- * @param {import("debug").Debugger} log
+ * @param {Log} log
  * @returns {IPLDOptions<Object>}
  */
 module.exports = (blockService, options, log) => {

@@ -155,10 +155,10 @@ const resolvePath = async function (dag, ipfsPaths, options) {
 }
 
 /**
- * @typedef {import("ipfs-unixfs-exporter").Entry<Object>} ExportEntry
- * @typedef {import("ipfs-unixfs")} UnixFS
- * @typedef {ExportEntry & {unixfs?:UnixFS}} InputFile
- * @typedef {Object} OutputFile
+ * @typedef {import("ipfs-unixfs-exporter").ExporterEntry} ExporterEntry
+ * @typedef {import("ipfs-unixfs-exporter").UnixFSEntry} UnixFSEntry
+ * @typedef {import("ipfs-unixfs-exporter").UnixFSFile} UnixFSFile
+ * @typedef {Object} MappedFile
  * @property {AsyncIterable<Buffer>} [content]
  * @property {CID} cid
  * @property {string} path
@@ -175,25 +175,27 @@ const resolvePath = async function (dag, ipfsPaths, options) {
  * @property {boolean} [includeContent]
  */
 /**
- * @param {InputFile} file
+ * @param {ExporterEntry} input
  * @param {MapFileOptions} [options]
- * @returns {OutputFile}
+ * @returns {MappedFile}
  */
-const mapFile = (file, options) => {
+const mapFile = (input, options) => {
   options = options || {}
 
-  /** @type {OutputFile} */
+  /** @type {MappedFile} */
   const output = {
-    cid: file.cid,
-    path: file.path,
-    name: file.name,
-    depth: file.path.split('/').length,
+    cid: input.cid,
+    path: input.path,
+    name: input.name,
+    depth: input.path.split('/').length,
     size: 0,
     type: 'dir'
   }
 
-  if (file.unixfs) {
-    if (file.unixfs.type === 'file') {
+  if (input.unixfs) {
+    const entry = /** @type {UnixFSEntry} */(input)
+    if (entry.unixfs.type === 'file') {
+      const file = /** @type {UnixFSFile} */(entry)
       output.size = file.unixfs.fileSize()
       output.type = 'file'
 
@@ -202,8 +204,8 @@ const mapFile = (file, options) => {
       }
     }
 
-    output.mode = file.unixfs.mode
-    output.mtime = file.unixfs.mtime
+    output.mode = entry.unixfs.mode
+    output.mtime = entry.unixfs.mtime
   }
 
   return output
@@ -212,7 +214,7 @@ const mapFile = (file, options) => {
 /**
  *
  * @typedef {Object} WithTimeoutOptions
- * @property {number|string} timeout
+ * @property {number|string} [timeout]
  * @property {AbortSignal} [signal]
  */
 

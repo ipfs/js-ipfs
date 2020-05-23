@@ -6,10 +6,52 @@ const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {import('ipfs-interface').CID} CID
+ */
+/**
+ * @typedef {Object} AddConfig
+ *
+ * @param {AddConfig} config
+ * @returns {Add}
+ */
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
-
-  return withTimeoutOption(async function * add (source, options) {
+  /**
+   * @typedef {Object} AddOptions
+   * @property {string} [chunker="size-262144"]
+   * @property {number} [cidVersion=0]
+   * @property {boolean} [enableShardingExperiment]
+   * @property {string} [hashAlg="sha2-256"]
+   * @property {boolean} [onlyHash=false]
+   * @property {boolean} [pin=true]
+   * @property {function(number):void} [progress]
+   * @property {boolean} [rawLeaves=false]
+   * @property {number} [shardSplitThreshold=1000]
+   * @property {boolean} [trickle=false]
+   * @property {boolean} [wrapWithDirectory=false]
+   *
+   * @typedef {any} AddInput
+   * @typedef {Object} AddOutput
+   * @property {string} path
+   * @property {CID} cid
+   * @property {Mode} mode
+   * @property {Time} mtime
+   *
+   * @typedef {string} Mode
+   *
+   * @typedef {Object} Time
+   * @property {number} secs
+   * @property {number} nsecs
+   *
+   * @callback Add
+   * @param {AddInput} source
+   * @param {AddOptions} [options]
+   * @returns {AsyncIterable<AddOutput>}
+   *
+   * @type {Add}
+   */
+  async function * add (source, options) {
     options = options || {}
 
     const opts = {
@@ -58,7 +100,9 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     } finally {
       releaseLock()
     }
-  })
+  }
+
+  return withTimeoutOption(add)
 }
 
 function transformFile (opts) {

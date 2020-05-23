@@ -14,7 +14,6 @@ const defaultRecordLifetime = 60 * 60 * 1000
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
   /**
-   *
    * @param {*} routing
    * @param {*} datastore
    */

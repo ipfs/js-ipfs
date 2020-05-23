@@ -1,13 +1,21 @@
 import CID from "cids"
 import { IPLDService } from "ipld"
+import IPNSService from "ipns"
 import BlockService from "ipfs-block-service"
 import {Connection} from "interface-connection"
+import {Store} from "interface-datastore"
 import PeerInfo from "peer-info"
 import PeerId from "peer-id"
 import Multiaddr from "multiaddr"
 import { BigNumber } from "bignumber.js"
 
-export { CID, BlockService }
+export { CID, BlockService, PeerId, PeerInfo, Multiaddr, Store }
+
+export type TimeoutOptions = {
+  timeout?:number|string
+  abort?:AbortSignal
+}
+
 
 export type Extends<B, A extends B> = A
 
@@ -134,13 +142,16 @@ export interface LibP2PService {
   on(type:'peer:connect', onconnect:(peer:PeerInfo) => void):void,
   on(type:'peer:disconnect', ondisconnect:(peer:PeerInfo) => void):void,
 
+  // Not in docs but being used
+  isStarted():boolean
+
   peerStore:any
 }
 
-export {IPLDService}
+export { IPLDService, IPNSService }
 
 export interface PinService {
-  add(cid:CID, options?:{lock?:boolean}):Promise<any>
+  add(cid:CID, options?:{lock?:boolean, recursive?:boolean, signal?:AbortSignal}):Promise<any>
 
 }
 

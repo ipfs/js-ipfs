@@ -7,33 +7,41 @@ const isIPFS = require('is-ipfs')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {Object} PutConfig
- * @property {import("ipfs-interface").BlockService} blockService
- * @property {import("ipfs-interface").GCLock} gcLock
- * @property {import("ipfs-interface").PreloadService} preload
- * @property {import("ipfs-interface").PinService} pin
- *
- * @typedef {Object} PutOptions
- * @property {CID} [cid]
- * @property {string} [format="dag-pb"]
- * @property {string} [mhtype="sha2-256"]
- * @property {number} [mhlen]
- * @property {0|1} [version=0]
- * @property {boolean} [pin=false]
- * @property {number} [timeout]
- * @property {boolean} [preload]
- * @property {AbortSignal} [signal]
+ * @typedef {import("ipfs-interface").BlockService} BlockService
+ * @typedef {import("ipfs-interface").GCLock} GCLock
+ * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ * @typedef {import("ipfs-interface").PinService} PinService
  */
 
 /**
+ * @typedef {Object} PutConfig
+ * @property {BlockService} blockService
+ * @property {GCLock} gcLock
+ * @property {PreloadService} preload
+ * @property {PinService} pin
+ *
  * @param {PutConfig} config
- * @returns {*}
+ * @returns {Put}
  */
 module.exports = ({ blockService, pin, gcLock, preload }) => {
   /**
+   * @typedef {Object} PutOptions
+   * @property {CID} [cid]
+   * @property {string} [format="dag-pb"]
+   * @property {string} [mhtype="sha2-256"]
+   * @property {number} [mhlen]
+   * @property {0|1} [version=0]
+   * @property {boolean} [pin=false]
+   * @property {number} [timeout]
+   * @property {boolean} [preload]
+   * @property {AbortSignal} [signal]
+   *
+   * @callback Put
    * @param {Block|Buffer} block
-   * @param {PutOptions} options
+   * @param {PutOptions} [options]
    * @returns {Promise<Block>}
+   *
+   * @type {Put}
    */
   async function put (block, options) {
     options = options || {}
@@ -68,6 +76,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
     const release = await gcLock.readLock()
 
     try {
+      // @ts-ignore - blockService.put doesn't take second arg yet.
       await blockService.put(block, {
         signal: options.signal
       })

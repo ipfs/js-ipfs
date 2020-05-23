@@ -3,6 +3,11 @@
 const multibase = require('multibase')
 const ipns = require('ipns')
 
+/**
+ * @typedef {Object} Record
+ * @todo Figure out actual structure
+ */
+
 module.exports = {
   /**
    * @param {Buffer} buf
@@ -15,16 +20,17 @@ module.exports = {
   },
   validator: {
     /**
-     * @param {*} key
-     * @param {*} record
+     * @param {string} key
+     * @param {Record} record
+     * @returns {Promise<boolean>}
      */
     // Note: - cb seems to be gone in `ipns.validator.validate`
     func: (key, record) => ipns.validator.validate(record, key)
   },
   /**
-   * @param {*} k
-   * @param {*} records
-   * @returns {*}
+   * @param {string} k
+   * @param {[Record, Record]} records
+   * @returns {0|1}
    */
   selector: (k, records) => ipns.validator.select(records[0], records[1])
 }
