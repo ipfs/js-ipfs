@@ -10,21 +10,48 @@ const { withTimeoutOption } = require('../../utils')
 
 const PIN_LS_CONCURRENCY = 8
 
+/**
+ * @typedef {import('../index').DAG} DAG
+ * @typedef {import('./pin-manager').PinType} PinType
+ */
+/**
+ * @typedef {Object} PinEntry
+ * @property {string} type
+ * @property {CID} cid
+ *
+ * @param {Object} config
+ * @param {PinManager} config.pinManager
+ * @param {DAG} config.dag
+ * @returns {LS}
+ */
 module.exports = ({ pinManager, dag }) => {
-  return withTimeoutOption(async function * ls (paths, options) {
+  /**
+   * @typedef {Object} Options
+   * @property {PinType} [type]
+   * @property {boolean} [preload]
+   *
+   * @callback LS
+   * @param {string[]|string} [paths]
+   * @param {Options} [options]
+   * @returns {AsyncIterator<PinEntry>}
+   *
+   * @type {LS}
+   */
+  async function * ls (paths, options) {
     options = options || {}
 
     let type = PinTypes.all
 
     if (paths && !Array.isArray(paths) && !CID.isCID(paths) && typeof paths !== 'string') {
       options = paths
+      // @ts-ignore - type is string|string[] and null is not allowed.
       paths = null
     }
 
     if (options.type) {
       type = options.type
       if (typeof options.type === 'string') {
-        type = options.type.toLowerCase()
+        type = /** @type {PinType} */(options.type.toLowerCase())
       }
       const err = PinManager.checkPinType(type)
       if (err) {
@@ -33,6 +60,7 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     if (paths) {
+      /** @type {string[]} */
       paths = Array.isArray(paths) ? paths : [paths]
 
       // check the pinned state of specific hashes
@@ -56,6 +84,7 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     // show all pinned items of type
+    /** @type {PinEntry[]} */
     let pins = []
 
     if (type === PinTypes.direct || type === PinTypes.all) {
@@ -88,5 +117,7 @@ module.exports = ({ pinManager, dag }) => {
 
     // FIXME: https://github.com/ipfs/js-ipfs/issues/2244
     yield * pins
-  })
+  }
+
+  return withTimeoutOption(ls)
 }

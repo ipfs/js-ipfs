@@ -9,27 +9,30 @@ const { withTimeoutOption } = require('../../utils')
  */
 /**
  * @typedef {import('cids')} CID
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
- * @typedef {import("ipfs-interface").IPLDService} IPLDService
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').PreloadService} PreloadService
  * @typedef {Object} Config
- * @property {IPLDService} ipld
+ * @property {IPLD} ipld
  * @property {PreloadService} preload
- *
- * @typedef {Object} ResloveOptions
- * @property {boolean} [preload]
- * @property {AbortSignal} [signal]
  */
 
 /**
  * @param {Config} config
- * @returns {*}
+ * @returns {Resolve}
  */
 module.exports = ({ ipld, preload }) => {
   /**
+   * @typedef {Object} ResloveOptions
+   * @property {boolean} [preload]
+   * @property {AbortSignal} [signal]
+   *
+   * @callback Resolve
    * @param {string|Buffer|CID} cid
-   * @param {string} [path]
-   * @param {ResloveOptions} [options]
+   * @param {string=} [path]
+   * @param {ResloveOptions=} [options]
    * @returns {AsyncIterable<ResolvedIPLDNode<Object>>}
+   *
+   * @type {Resolve}
    */
   async function * resolve (cid, path, options) { // eslint-disable-line require-await
     [cid, path, options] = parseArgs(cid, path, options)
@@ -40,5 +43,6 @@ module.exports = ({ ipld, preload }) => {
 
     yield * ipld.resolve(cid, path, { signal: options.signal })
   }
+
   return withTimeoutOption(resolve)
 }

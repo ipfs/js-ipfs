@@ -4,7 +4,7 @@ const errCode = require('err-code')
 const { Buffer } = require('buffer')
 const globalThis = require('ipfs-utils/src/globalthis')
 
-/*
+/**
  * Transform one of:
  *
  * ```
@@ -43,8 +43,17 @@ const globalThis = require('ipfs-utils/src/globalthis')
  * AsyncIterable<{ path, content: AsyncIterable<Buffer> }>
  * ```
  *
- * @param input Object
- * @return AsyncInterable<{ path, content: AsyncIterable<Buffer> }>
+ * @typedef {Buffer|ArrayBuffer|ArrayBufferView} Bytes
+ * @typedef {Object} FileInput
+ * @property {string} path
+ * @property {FileContent} content
+ * @typedef {ReadableStream|Iterable<number>|Iterable<ArrayBuffer>|Iterable<ArrayBufferView>|AsyncIterator<ArrayBuffer>|AsyncIterable<ArrayBufferView>} ChunkedContent
+ * @typedef {string|String|ArrayBuffer|ArrayBufferView|Blob|ChunkedContent} FileContent
+ * @typedef {FileContent|FileInput} Input
+ *
+ *
+ * @param {Input} input
+ * @returns {AsyncIterable<FileObject>}
  */
 module.exports = function normaliseInput (input) {
   // must give us something
@@ -150,6 +159,22 @@ module.exports = function normaliseInput (input) {
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
 }
+
+/**
+ * @typedef {Object} Time
+ * @property {number} secs
+ * @property {number} nsecs
+ *
+ *
+ * @typedef {Object} FileObject
+ * @property {string} path
+ * @property {mode} [number]
+ * @property {Time|Date|[number]|[number,number]} mtime
+ * @property {AsyncIterable<Buffer>} content
+ *
+ * @param {*} input
+ * @returns {FileObject}
+ */
 
 function toFileObject (input) {
   const obj = {

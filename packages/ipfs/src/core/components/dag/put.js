@@ -12,15 +12,15 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @typedef {import('cids')} CID
- * @typedef {import("ipfs-interface").IPLDService} IPLDService
- * @typedef {import("ipfs-interface").PinService} PinService
- * @typedef {import("ipfs-interface").GCLock} GCLock
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ * @typedef {import("../init").IPLD} IPLDService
+ * @typedef {import("../init").PinService} PinService
+ * @typedef {import("../init").GCLock} GCLock
+ * @typedef {import("../init").PreloadService} PreloadService
  *
  * @typedef {Object} PutConfig
  * @property {IPLDService} ipld
  * @property {PinService} pin
- * @property {GCLock} gcLock:any
+ * @property {GCLock} gcLock
  * @property {PreloadService} preload
  *
  * @typedef {Object} OptionsWithFormat
@@ -44,14 +44,17 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {PutConfig} config
- * @returns {*}
+ * @returns {Put}
  */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
    * Store an IPLD format node
+   * @callback Put
    * @param {Object} dagNode
    * @param {PutOptions} [putOptions]
    * @returns {Promise<CID>}
+   *
+   * @type {Put}
    */
   async function put (dagNode, putOptions) {
     /** @type {OthePutOptions & {format:number|string, hashAlg:number|string, cid?:CID}} */

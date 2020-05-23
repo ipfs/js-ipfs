@@ -3,8 +3,35 @@
 
 const { resolvePath, withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import('./pin-manager')} PinManager
+ * @typedef {import('../init').GCLock} GCLock
+ * @typedef {import('../index').DAGService} DAGService
+ */
+/**
+ * @param {Object} config
+ * @param {PinManager} config.pinManager
+ * @param {GCLock} config.gcLock
+ * @param {DAGService} config.dag
+ * @returns {Add}
+ */
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return withTimeoutOption(async function add (paths, options) {
+  /**
+   * @typedef {Object} Options
+   * @property {boolean} [lock]
+   * @property {boolean} [recursive]
+   * @property {AbortSignal} [signal]
+   * @property {boolean} [preload]
+   *
+   * @callback Add
+   * @param {string[]} paths
+   * @param {Options} [options]
+   * @returns {Promise<{ cid:CID }[]>}
+   *
+   * @type {Add}
+   */
+  async function add (paths, options) {
     options = options || {}
 
     const recursive = options.recursive !== false
@@ -38,7 +65,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 
           if (!pinManager.directPins.has(key)) {
             // make sure we have the object
-            await dag.get(cid, { preload: options.preload })
+            await dag.get(cid, '/', { preload: options.preload })
           }
 
           results.push(cid)
@@ -66,9 +93,11 @@ module.exports = ({ pinManager, gcLock, dag }) => {
     const release = await gcLock.readLock()
 
     try {
-      await pinAdd()
+      return await pinAdd()
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(add)
 }

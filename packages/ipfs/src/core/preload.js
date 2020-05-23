@@ -17,7 +17,15 @@ log.error = debug('ipfs:preload:error')
  * @property {boolean} [enabled]
  * @property {string[]} [addresses]
  *
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ * @callback Preload
+ * @param {string|CID} path
+ * @returns {void|Promise<void>}
+ *
+ * @typedef {Object} PreloadExt
+ * @property {function():void} start
+ * @property {function():void} stop
+ *
+ * @typedef {Preload & PreloadExt} PreloadService
  */
 
 /**
@@ -45,8 +53,8 @@ module.exports = options => {
   const apiUris = options.addresses.map(toUri)
 
   /**
-   * @param {*} path
-   * @returns {Promise<*>}
+   * @param {string|CID} path
+   * @returns {Promise<void>}
    */
   const api = async path => {
     try {

@@ -92,7 +92,7 @@ interface ImporterOptions {
    * a function that will be called with the byte length of chunks as a file is
    * added to ipfs.
    */
-  progress?:() => void,
+  progress?:(value:number) => void,
 
   /**
    * (boolean, defaults to false): Only chunk and hash - do not write to disk
@@ -153,9 +153,6 @@ interface ImporterOptions {
   format?: Codec
 
   wrapWithDirectory?: boolean
-  
-  chunkerOptions?: ChunkerOptions,
-  builderOptions?: BuilderOptions,
 }
 
 interface ImporterInput {

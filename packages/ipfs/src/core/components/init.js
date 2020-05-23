@@ -31,7 +31,13 @@ const Components = require('./')
 
 /**
  * @typedef {string} Multiaddr
+ * @typedef {import('../preload').PreloadService} PreloadService
+ * @typedef {import('mortice').Mutex} GCLock
+ * @typedef {import('ipld').IPLDService} IPLD
+ * @typedef {import('./index').DAG} DAG
+ * @typedef {import('ipfs-interface').LibP2PService} LibP2P
  *
+ * @typedef {import('ipfs-interface').PinService} PinService
  * @typedef {Object} DiscoverConfig
  * @property {{Enabled:boolean, Interval?:number, }} MDNS
  * @property {{Enabled:boolean}} webRTCStar
@@ -77,6 +83,8 @@ const Components = require('./')
  * @property {import("ipld").IPLDOptions<Object>} [ipld]
  * @property {import("../preload").PreloadConfig} [preload]
  * @property {IPFSConfig} [config]
+ * @property {Object} [EXPERIMENTAL]
+ * @property {boolean} [EXPERIMENTAL.sharding]
  *
  * @typedef {Object} InitSettings
  * @property {boolean} [emptyRepo]
@@ -159,6 +167,7 @@ module.exports = ({
     // Make sure GC lock is specific to repo, for tests where there are
     // multiple instances of IPFS
     const gcLock = mortice(repo.path, { singleProcess: constructorOptions.repoOwner !== false })
+
     const dag = {
       get: Components.dag.get({ ipld, preload }),
       resolve: Components.dag.resolve({ ipld, preload }),

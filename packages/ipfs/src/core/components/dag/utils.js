@@ -11,13 +11,13 @@ const { Buffer } = require('buffer')
 
 /**
  * @template T
- * @typedef {[CID, string|undefined, Extends<Object, T>]} Args
+ * @typedef {[CID, string, Extends<Object, T>]} Args
  */
 
 /**
  * @template T
  * @param {string|CID|Buffer} cid
- * @param {string} [path]
+ * @param {string|Extends<Object, T>} [path]
  * @param {Extends<Object, T>} [options]
  * @returns {Args<T>}
  */
@@ -60,6 +60,7 @@ exports.parseArgs = (cid, path, options) => {
 
   return [
     cid,
+    // @ts-ignore - path could be an object
     path,
     options
   ]

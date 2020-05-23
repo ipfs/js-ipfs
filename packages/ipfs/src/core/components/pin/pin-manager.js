@@ -27,6 +27,10 @@ function invalidPinTypeErr (type) {
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
+/**
+ * @typedef {'direct'|'recursive'|'indirect'|'all'} PinType
+ * @type {Record<string, PinType>}
+ */
 const PinTypes = {
   direct: 'direct',
   recursive: 'recursive',
@@ -44,6 +48,12 @@ class PinManager {
     this.recursivePins = new Set()
   }
 
+  /**
+   * @param {Object} options
+   * @param {CID} options.cid
+   * @param {boolean} [options.preload]
+   * @param {function(CID):void} [options.onCid]
+   */
   async _walkDag ({ cid, preload = false, onCid = () => {} }) {
     if (!CID.isCID(cid)) {
       cid = new CID(cid)
@@ -83,6 +93,11 @@ class PinManager {
     return Array.from(this.recursivePins, key => new CID(key).buffer)
   }
 
+  /**
+   * @param {Object} options
+   * @param {boolean} [options.preload]
+   * @returns {Promise<string[]>}
+   */
   async getIndirectKeys ({ preload }) {
     const indirectKeys = new Set()
 
@@ -90,8 +105,11 @@ class PinManager {
       await this._walkDag({
         cid: new CID(multihash),
         preload: preload || false,
-        onCid: (cid) => {
-          cid = cid.toString()
+        /**
+         * @param {CID} input
+         */
+        onCid: (input) => {
+          const cid = input.toString()
 
           // recursive pins pre-empt indirect pins
           if (!this.recursivePins.has(cid)) {

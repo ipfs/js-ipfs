@@ -5,7 +5,7 @@ const basePacket = { success: true, time: 0, text: '' }
 const { withTimeoutOption } = require('../utils')
 
 /**
- * @typedef {import("ipfs-interface").LibP2PService} LibP2P
+ * @typedef {import("./init").LibP2P} LibP2P
  */
 
 /**
@@ -23,13 +23,16 @@ const { withTimeoutOption } = require('../utils')
 
 /**
  * @param {PingConfig} config
- * @returns {*}
+ * @returns {Ping}
  */
 module.exports = ({ libp2p }) => {
   /**
+   * @callback Ping
    * @param {PeerId} peerId
    * @param {PingOptions} [options]
    * @returns {AsyncIterable<Packet>}
+   *
+   * @type {Ping}
    */
   async function * ping (peerId, options) {
     options = options || {}

@@ -8,11 +8,32 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @typedef {import('ipfs-interface').CID} CID
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input').Input} AddInput
+ * @typedef {import('../init').PreloadService} PreloadService
+ * @typedef {import('../init').PinService} PinService
+ * @typedef {import('../init').GCLock} GCLock
+ * @typedef {import('../init').Block} Block
+ * @typedef {import('../init').ConstructorOptions} ConstructorOptions
  */
 /**
- * @typedef {Object} AddConfig
+ * @typedef {Object} AddOutput
+ * @property {string} path
+ * @property {CID} cid
+ * @property {number} size
+ * @property {Mode} mode
+ * @property {Time} mtime
  *
- * @param {AddConfig} config
+ * @typedef {string} Mode
+ * @typedef {Object} Time
+ * @property {number} secs
+ * @property {number} nsecs
+ *
+ * @param {Object} config
+ * @param {Block} config.block
+ * @param {GCLock} config.gcLock
+ * @param {PreloadService} config.preload
+ * @param {PinService} config.pin
+ * @param {ConstructorOptions} config.options
  * @returns {Add}
  */
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
@@ -31,19 +52,6 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
    * @property {boolean} [trickle=false]
    * @property {boolean} [wrapWithDirectory=false]
    *
-   * @typedef {any} AddInput
-   * @typedef {Object} AddOutput
-   * @property {string} path
-   * @property {CID} cid
-   * @property {Mode} mode
-   * @property {Time} mtime
-   *
-   * @typedef {string} Mode
-   *
-   * @typedef {Object} Time
-   * @property {number} secs
-   * @property {number} nsecs
-   *
    * @callback Add
    * @param {AddInput} source
    * @param {AddOptions} [options]
@@ -54,6 +62,8 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
   async function * add (source, options) {
     options = options || {}
 
+    /** @type {AddOptions & {shardSplitThreshold:number, strategy:'balanced'|'trickle', chunker:'fixed'|'rabin'}} */
+    // @ts-ignore - chunker field of AddOptions and this are incompatible
     const opts = {
       shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
       ...options,
@@ -105,8 +115,20 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
   return withTimeoutOption(add)
 }
 
+/**
+ * @param {Object} opts
+ * @param {number} [opts.cidVersion]
+ * @param {boolean} [opts.wrapWithDirectory]
+ * @returns {TransformFile}
+ */
 function transformFile (opts) {
-  return async function * (source) {
+  /**
+   * @callback TransformFile
+   * @param {AsyncIterable<?>} source
+   * @returns {AsyncIterable<AddOutput>}
+   * @type {TransformFile}
+   */
+  async function * transformFile (source) {
     for await (const file of source) {
       let cid = file.cid
 
@@ -129,10 +151,26 @@ function transformFile (opts) {
       }
     }
   }
+
+  return transformFile
 }
 
+/**
+ * @param {PreloadService} preload
+ * @param {Object} opts
+ * @param {boolean} [opts.wrapWithDirectory]
+ * @param {boolean} [opts.onlyHash]
+ * @param {boolean} [opts.preload]
+ * @returns {Preloader}
+ */
 function preloadFile (preload, opts) {
-  return async function * (source) {
+  /**
+   * @callback Preloader
+   * @param {AsyncIterable<AddOutput>} source
+   * @returns {AsyncIterable<AddOutput>}
+   * @type {Preloader}
+   */
+  async function * preloader (source) {
     for await (const file of source) {
       const isRootFile = !file.path || opts.wrapWithDirectory
         ? file.path === ''
@@ -147,10 +185,25 @@ function preloadFile (preload, opts) {
       yield file
     }
   }
+
+  return preloader
 }
 
+/**
+ * @param {PinService} pin
+ * @param {Object} opts
+ * @param {boolean} [opts.pin]
+ * @param {boolean} [opts.onlyHash]
+ * @returns {Pinner}
+ */
 function pinFile (pin, opts) {
-  return async function * (source) {
+  /**
+   * @callback Pinner
+   * @param {AsyncIterable<AddOutput>} source
+   * @returns {AsyncIterable<AddOutput>}
+   * @type {Pinner}
+   */
+  async function * pinner (source) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
@@ -169,4 +222,6 @@ function pinFile (pin, opts) {
       yield file
     }
   }
+
+  return pinner
 }

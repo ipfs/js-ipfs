@@ -8,7 +8,6 @@ import PeerInfo from "peer-info"
 import PeerId from "peer-id"
 import Multiaddr from "multiaddr"
 import { BigNumber } from "bignumber.js"
-
 export { CID, BlockService, PeerId, PeerInfo, Multiaddr, Store }
 
 export type TimeoutOptions = {
@@ -28,11 +27,25 @@ export type UnionToIntersection<U> =
   (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never
 
 
-export interface PreloadService {
-  (path:string|CID):void
-  start:() => void,
-  stop?:() => void
+
+
+export interface PinService {
+  add(cid: CID, options?: { lock: boolean, preload?:boolean }):Promise<{cid:CID}>
 }
+
+type DagResolve = {
+  value:CID
+}
+
+type DagResolveOptions = {
+  preload?:boolean
+  signal?:AbortSignal
+}
+
+export interface DagService {
+  resolve(path:string, options?:DagResolveOptions):AsyncIterable<DagResolve>
+}
+
 
 type DialOptions = {
   signal?:AbortSignal
@@ -149,26 +162,3 @@ export interface LibP2PService {
 }
 
 export { IPLDService, IPNSService }
-
-export interface PinService {
-  add(cid:CID, options?:{lock?:boolean, recursive?:boolean, signal?:AbortSignal}):Promise<any>
-
-}
-
-type DagResolve = {
-  value:CID
-}
-
-type DagResolveOptions = {
-  preload?:boolean
-  signal?:AbortSignal
-}
-
-export interface DagService {
-  resolve(path:string, options?:DagResolveOptions):AsyncIterable<DagResolve>
-}
-
-export interface GCLock {
-  readLock():() => void
-}
-

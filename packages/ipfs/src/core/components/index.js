@@ -1,24 +1,55 @@
 'use strict'
 
+/**
+ * @typedef {ReturnType<import('./add')>} Add
+ */
 exports.add = require('./add')
+
+/**
+ * @typedef {Object} Block
+ */
 exports.block = {
   get: require('./block/get'),
   put: require('./block/put'),
   rm: require('./block/rm'),
   stat: require('./block/stat')
 }
+
+/**
+ * @typedef {Object} BitSwap
+ */
 exports.bitswap = {
   stat: require('./bitswap/stat'),
   unwant: require('./bitswap/unwant'),
   wantlist: require('./bitswap/wantlist')
 }
+
+/**
+ * @typedef {Object} Bootstrap
+ */
 exports.bootstrap = {
   add: require('./bootstrap/add'),
   list: require('./bootstrap/list'),
   rm: require('./bootstrap/rm')
 }
+
+/**
+ * @typedef {Object} Cat
+ */
 exports.cat = require('./cat')
+
+/**
+ * @typedef {Object} Config
+ */
 exports.config = require('./config')
+
+/**
+ * @typedef {Object} DAG
+ * @property {ReturnType<import('./dag/get')>} get
+ * @property {ReturnType<import('./dag/put')>} put
+ * @property {ReturnType<import('./dag/resolve')>} resolve
+ * @property {ReturnType<import('./dag/tree')>} tree
+ */
 exports.dag = {
   get: require('./dag/get'),
   put: require('./dag/put'),
@@ -66,11 +97,22 @@ exports.object = {
   put: require('./object/put'),
   stat: require('./object/stat')
 }
+
+/**
+ * @typedef Pin
+ * @property {ReturnType<import("./pin/add")>} add
+ * @property {ReturnType<import("./pin/ls")>} ls
+ * @property {ReturnType<import("./pin/rm")>} rm
+ */
 exports.pin = {
   add: require('./pin/add'),
   ls: require('./pin/ls'),
   rm: require('./pin/rm')
 }
+
+/**
+ * @typedef {ReturnType<import('./ping')>} Ping
+ */
 exports.ping = require('./ping')
 exports.pubsub = require('./pubsub')
 
@@ -96,4 +138,8 @@ exports.swarm = {
   localAddrs: require('./swarm/local-addrs'),
   peers: require('./swarm/peers')
 }
+
+/**
+ * @typedef {ReturnType<import('./version')>} Version
+ */
 exports.version = require('./version')
