@@ -5,13 +5,34 @@ const multiaddr = require('multiaddr')
 const { withTimeoutOption } = require('../utils')
 
 /**
- * @param {*} config
- * @returns {*}
+ * @typedef {import("peer-info")} PeerInfo
+ * @typedef {import('multiaddr')} Multiaddr
+ * @typedef {import("./init").LibP2P} LibP2P
+ */
+
+/**
+ * @param {Object} config
+ * @param {PeerInfo} config.peerInfo
+ * @param {LibP2P} config.libp2p
+ * @returns {ID}
  */
 module.exports = ({ peerInfo, libp2p }) => {
-  return withTimeoutOption(async function id () { // eslint-disable-line require-await
+  /**
+   * @typedef {Object} IDInfo
+   * @property {string} id
+   * @property {string} publicKey
+   * @property {Multiaddr[]} addresses
+   * @property {string} agentVersion
+   * @property {string} protocolVersion
+   *
+   * @callback ID
+   * @returns {IDInfo}
+   *
+   * @type {ID}
+   */
+  async function id () { // eslint-disable-line require-await
     const id = peerInfo.id.toB58String()
-    /** @type {Buffer[]} */
+    /** @type {Multiaddr[]} */
     let addresses = []
 
     if (libp2p) {
@@ -39,5 +60,7 @@ module.exports = ({ peerInfo, libp2p }) => {
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
     }
-  })
+  }
+
+  return withTimeoutOption(id)
 }

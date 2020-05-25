@@ -7,18 +7,18 @@ const isIPFS = require('is-ipfs')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {import("ipfs-interface").BlockService} BlockService
- * @typedef {import("ipfs-interface").GCLock} GCLock
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
- * @typedef {import("ipfs-interface").PinService} PinService
+ * @typedef {import("ipfs-block-service")} BlockService
+ * @typedef {import("../init").GCLock} GCLock
+ * @typedef {import("../init").PreloadService} Preload
+ * @typedef {import("../index").Pin} Pin
  */
 
 /**
  * @typedef {Object} PutConfig
  * @property {BlockService} blockService
  * @property {GCLock} gcLock
- * @property {PreloadService} preload
- * @property {PinService} pin
+ * @property {Preload} preload
+ * @property {Pin} pin
  *
  * @param {PutConfig} config
  * @returns {Put}

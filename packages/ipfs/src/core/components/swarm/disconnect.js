@@ -22,7 +22,7 @@ module.exports = ({ libp2p }) => {
    * @type {Disconnect}
    */
   function disconnect (addr, options) {
-    return libp2p.hangUp(addr)
+    return libp2p.hangUp(addr, options)
   }
 
   return withTimeoutOption(disconnect)

@@ -44,7 +44,7 @@ module.exports = ({ repo }) => {
       throw err
     }
 
-    return repo.version.get()
+    return repo.version.get(options)
   }
 
   return withTimeoutOption(version)

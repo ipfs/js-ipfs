@@ -13,7 +13,8 @@ const { parallelMerge, transform, map } = require('streaming-iterables')
 const BLOCK_RM_CONCURRENCY = 256
 
 /**
- * @typedef {import("interface-datastore").Key} Key
+ * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('../../utils').WithTimeoutOptions} WithTimeoutOptions
  * @typedef {Object} BlockID
  * @property {CID} cid
  * @property {err} [void]
@@ -27,13 +28,17 @@ const BLOCK_RM_CONCURRENCY = 256
 /**
  * Perform mark and sweep garbage collection
  * @param {*} config
- * @returns {function():AsyncIterable<Notification>}
+ * @returns {GC}
  */
 module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
   /**
+   * @callback GC
+   * @param {WithTimeoutOptions} [options]
    * @returns {AsyncIterable<Notification>}
+   *
+   * @type {GC}
    */
-  async function * gc () {
+  async function * gc (options) {
     const start = Date.now()
     log('Creating set of marked blocks')
 

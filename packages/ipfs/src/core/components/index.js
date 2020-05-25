@@ -7,6 +7,10 @@ exports.add = require('./add')
 
 /**
  * @typedef {Object} Block
+ * @property {ReturnType<import('./block/get')>} get
+ * @property {ReturnType<import('./block/put')>} put
+ * @property {ReturnType<import('./block/rm')>} rm
+ * @property {ReturnType<import('./block/stat')>} stat
  */
 exports.block = {
   get: require('./block/get'),
@@ -60,8 +64,10 @@ exports.dht = require('./dht')
 exports.dns = require('./dns')
 exports.files = require('./files')
 exports.get = require('./get')
+/** @typedef {ReturnType<import('./id')>} ID */
 exports.id = require('./id')
 exports.init = require('./init')
+/** @typedef {ReturnType<import('./is-online')>} IsOnline */
 exports.isOnline = require('./is-online')
 exports.key = {
   export: require('./key/export'),
@@ -125,11 +131,15 @@ exports.repo = {
   stat: require('./repo/stat'),
   version: require('./repo/version')
 }
+
+/** @typedef {ReturnType<import('./ping')>} Resolve */
 exports.resolve = require('./resolve')
+/** @typedef {ReturnType<import('./start')>} Start */
 exports.start = require('./start')
 exports.stats = {
   bw: require('./stats/bw')
 }
+/** @typedef {ReturnType<import('./stop')>} Stop */
 exports.stop = require('./stop')
 exports.swarm = {
   addrs: require('./swarm/addrs'),

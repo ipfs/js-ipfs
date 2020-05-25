@@ -134,13 +134,16 @@ interface Metrics {
 }
 
 export interface LibP2PService {
+  transportManager: {
+    getAddrs():Multiaddr[]
+  }
   start():Promise<void>
   stop():Promise<void>
   connections:Map<string, Connection[]>
 
   dial(address:Address, options?:DialOptions):Promise<Connection>
   dialProtocol(address:Address, protocols:string[], options?:DialOptions):Promise<{stream:DuplexStream<Buffer, Buffer>, protocol:string}>
-  hangUp(peer:Address):Promise<void>
+  hangUp(peer:Address, options?:DialOptions):Promise<void>
   handler(protocols:string, handler:LibP2PHandler):void
   unhandle(protocols:string):void
   ping(address:Address):Promise<number>

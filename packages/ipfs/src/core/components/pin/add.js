@@ -7,13 +7,13 @@ const { resolvePath, withTimeoutOption } = require('../../utils')
  * @typedef {import('cids')} CID
  * @typedef {import('./pin-manager')} PinManager
  * @typedef {import('../init').GCLock} GCLock
- * @typedef {import('../index').DAGService} DAGService
+ * @typedef {import('../index').DAG} DAG
  */
 /**
  * @param {Object} config
  * @param {PinManager} config.pinManager
  * @param {GCLock} config.gcLock
- * @param {DAGService} config.dag
+ * @param {DAG} config.dag
  * @returns {Add}
  */
 module.exports = ({ pinManager, gcLock, dag }) => {
@@ -25,7 +25,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
    * @property {boolean} [preload]
    *
    * @callback Add
-   * @param {string[]} paths
+   * @param {string[]|CID} paths
    * @param {Options} [options]
    * @returns {Promise<{ cid:CID }[]>}
    *
