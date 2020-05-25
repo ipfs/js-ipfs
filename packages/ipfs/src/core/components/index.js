@@ -21,6 +21,9 @@ exports.block = {
 
 /**
  * @typedef {Object} BitSwap
+ * @property {ReturnType<import('./bitswap/stat')>} stat
+ * @property {ReturnType<import('./bitswap/unwant')>} unwant
+ * @property {ReturnType<import('./bitswap/wantlist')>} wantlist
  */
 exports.bitswap = {
   stat: require('./bitswap/stat'),
@@ -43,7 +46,7 @@ exports.bootstrap = {
 exports.cat = require('./cat')
 
 /**
- * @typedef {Object} Config
+ * @typedef {import('./config').IPFSConfig} Config
  */
 exports.config = require('./config')
 
@@ -60,7 +63,10 @@ exports.dag = {
   resolve: require('./dag/resolve'),
   tree: require('./dag/tree')
 }
+
+/** @typedef {import('./dht').DHT} DHT */
 exports.dht = require('./dht')
+/** @typedef {import('./dns').DNS} DNS */
 exports.dns = require('./dns')
 exports.files = require('./files')
 exports.get = require('./get')
@@ -69,6 +75,17 @@ exports.id = require('./id')
 exports.init = require('./init')
 /** @typedef {ReturnType<import('./is-online')>} IsOnline */
 exports.isOnline = require('./is-online')
+
+/**
+ * @typedef {Object} Key
+ * @property {ReturnType<import('./key/export')>} export
+ * @property {ReturnType<import('./key/gen')>} gen
+ * @property {ReturnType<import('./key/import')>} import
+ * @property {ReturnType<import('./key/info')>} info
+ * @property {ReturnType<import('./key/list')>} list
+ * @property {ReturnType<import('./key/rename')>} rename
+ * @property {ReturnType<import('./key/rm')>} rm
+ */
 exports.key = {
   export: require('./key/export'),
   gen: require('./key/gen'),
@@ -141,6 +158,15 @@ exports.stats = {
 }
 /** @typedef {ReturnType<import('./stop')>} Stop */
 exports.stop = require('./stop')
+
+/**
+ * @typedef {Object} Swarm
+ * @property {ReturnType<import('./swarm/addrs')>} addrs
+ * @property {ReturnType<import('./swarm/connect')>} connect
+ * @property {ReturnType<import('./swarm/disconnect')>} disconnect
+ * @property {ReturnType<import('./swarm/local-addrs')>} localAddrs
+ * @property {ReturnType<import('./swarm/peers')>} peers
+*/
 exports.swarm = {
   addrs: require('./swarm/addrs'),
   connect: require('./swarm/connect'),

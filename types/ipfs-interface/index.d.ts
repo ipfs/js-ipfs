@@ -29,10 +29,6 @@ export type UnionToIntersection<U> =
 
 
 
-export interface PinService {
-  add(cid: CID, options?: { lock: boolean, preload?:boolean }):Promise<{cid:CID}>
-}
-
 type DagResolve = {
   value:CID
 }
@@ -162,6 +158,8 @@ export interface LibP2PService {
   isStarted():boolean
 
   peerStore:any
+
+  _dht:any
 }
 
 export { IPLDService, IPNSService }

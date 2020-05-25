@@ -13,7 +13,7 @@ const { withTimeoutOption } = require('../utils')
 /**
  * @param {Object} config
  * @param {PeerInfo} config.peerInfo
- * @param {LibP2P} config.libp2p
+ * @param {LibP2P} [config.libp2p]
  * @returns {ID}
  */
 module.exports = ({ peerInfo, libp2p }) => {

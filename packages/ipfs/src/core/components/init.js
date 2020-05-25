@@ -30,14 +30,16 @@ const PinManager = require('./pin/pin-manager')
 const Components = require('./')
 
 /**
- * @typedef {string} Multiaddr
+ * @typedef {import('multiaddr')} Multiaddr
+ * @typedef {import('libp2p-keychain/src/keychain')} Keychain
+ * @typedef {import('libp2p-keychain/src/keychain').KeyInfo} KeyInfo
  * @typedef {import('../preload').PreloadService} PreloadService
  * @typedef {import('mortice').Mutex} GCLock
  * @typedef {import('ipld').IPLDService} IPLD
  * @typedef {import('./index').DAG} DAG
  * @typedef {import('ipfs-interface').LibP2PService} LibP2P
- *
- * @typedef {import('ipfs-interface').PinService} PinService
+ ** @typedef {import('./index').Block} Block
+ * @typedef {import('./index').Pin} Pin
  * @typedef {Object} DiscoverConfig
  * @property {{Enabled:boolean, Interval?:number, }} MDNS
  * @property {{Enabled:boolean}} webRTCStar

@@ -7,13 +7,19 @@ const { withTimeoutOption } = require('../utils')
 
 /**
  * @typedef {import('../api-manager')} ApiManage
+ * @typedef {import('./index').DAG} DAG
  * @typedef {import('ipfs-interface').BlockService} BlockService
- * @typedef {import('ipfs-interface').GCLock} GCLock
+ * @typedef {import('./init').GCLock} GCLock
+ * @typedef {import('./init').Keychain} Keychain
+ * @typedef {import('./init').PreloadService} Preload
  * @typedef {import('./init').Options} InitOptions
+ * @typedef {import('ipfs-bitswap')} BitSwap
+ * @typedef {import('./pin/pin-manager')} PinManager
  * @typedef {import('ipfs-interface').IPLDService} IPLDService
  * @typedef {import('ipfs-interface').IPNSService} IPNSService
  * @typedef {import('ipfs-interface').LibP2PService} LibP2PService
  * @typedef {import('ipfs-interface').PeerInfo} PeerInfo
+ * @typedef {import('ipfs-repo')} Repo
  */
 
 /**
@@ -23,15 +29,18 @@ const { withTimeoutOption } = require('../utils')
  * @typedef {Object} StopConfig
  * @property {ApiManage} apiManager
  * @property {Object} options
- * @property {Object} bitswap
+ * @property {BitSwap} bitswap
  * @property {BlockService} blockService
  * @property {GCLock} gcLock
  * @property {InitOptions} initOptions
  * @property {IPLDService} ipld
  * @property {IPNSService} ipns
- * @property {KeychainService} keychain
+ * @property {Keychain} keychain
  * @property {LibP2PService} libp2p
  * @property {PeerInfo} peerInfo
+ * @property {Preload} preload
+ * @property {PinManager} pinManager
+ * @property {Repo} repo
  */
 
 /**
@@ -122,7 +131,7 @@ function createApi ({
     resolve: Components.dag.resolve({ ipld, preload }),
     tree: Components.dag.tree({ ipld, preload }),
     // FIXME: resolve this circular dependency
-    get value () {
+    get put () {
       const value = Components.dag.put({ ipld, pin, gcLock, preload })
       Object.defineProperty(this, 'put', { value })
       return value

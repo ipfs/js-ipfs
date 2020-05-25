@@ -10,14 +10,33 @@ const { PinTypes } = require('./pin-manager')
 const PIN_RM_CONCURRENCY = 8
 
 /**
- * @param {*} config
- * @returns {*}
+ * @typedef {import('cids')} CID
+ */
+/**
+ * @typedef {Object} RmConfig
+ * @property {import("./pin-manager")} pinManager
+ * @property {import("../init").GCLock} gcLock
+ * @property {import('../index').DAG} dag
+ */
+
+/**
+ * @param {RmConfig} config
+ * @returns {RM}
  */
 module.exports = ({ pinManager, gcLock, dag }) => {
   /**
+   * @typedef {Object} RMOptions
+   * @property {boolean} [recursive]
+   * @property {string} [cidBase]
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
    *
-   * @param {*} paths
-   * @param {*} options
+   * @callback RM
+   * Unpin this block from your repo
+   * @param {CID} paths
+   * @param {RMOptions} [options]
+   *
+   * @type {RM}
    */
   async function rm (paths, options) {
     options = options || {}

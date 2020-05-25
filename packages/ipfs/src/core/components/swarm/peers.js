@@ -12,11 +12,14 @@ const { withTimeoutOption } = require('../../utils')
  * @property {boolean} [direction]
  *
  * @param {PeersConfig} config
- * @returns {*}
+ * @returns {Peers}
  */
 module.exports = ({ libp2p }) => {
   /**
-   * @param {PeersOptions} options
+   * @callback Peers
+   * @param {PeersOptions} [options]
+   *
+   * @type {Peers}
    */
   async function peers (options) { // eslint-disable-line require-await
     options = options || {}

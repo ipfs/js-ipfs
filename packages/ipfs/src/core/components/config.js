@@ -6,12 +6,71 @@ const log = require('debug')('ipfs:core:config')
 
 /**
  * @typedef {import("ipfs-repo")} IPFSRepo
+ * @typedef {import("../utils").WithTimeoutOptions} WithTimeoutOptions
  * @typedef {Object} Config
  * @property {IPFSRepo} repo
  */
+
+/**
+ * @typedef {Object} IPFSConfig
+ * @property {Get} get
+ * @property {Set} set
+ * @property {Replace} replace
+ * @property {Profiles} profiles
+ *
+ * @typedef {Object} Profiles
+ * @property {ListProfiles} list
+ * @property {ApplyProfile} apply
+ */
+
+/**
+ * @callback Get
+ * Returns the currently being used config. If the daemon is off, it returns
+ * the stored config.
+ * @param {string} [key] - The key of the value that should be fetched from the
+ * config file. If no key is passed, then the whole config will be returned.
+ * @param {WithTimeoutOptions} [options]
+ * @returns {Promise<JSON>}
+ */
+
+/**
+ * @callback Set
+ * Adds or replaces a config value.
+ * @param {string} key - The key of the value that should be fetched from the
+ * config file. If no key is passed, then the whole config will be returned.
+ * @param {JSON} value - The value to be set
+ * @param {WithTimeoutOptions} [options]
+ * @returns {Promise<void>}
+ */
+
+/**
+ * @callback Replace
+ * Adds or replaces a config file
+ * @param {JSON} value - The value to be set
+ * @param {WithTimeoutOptions} [options]
+ * @returns {Promise<void>}
+ */
+
+/**
+ * @callback ListProfiles
+ * List available config profiles
+ * @param {WithTimeoutOptions} [options]
+ * @returns {Promise<{name:string, description:string}[]>}
+ */
+
+/**
+ * @typedef {Object} ApplyOptions
+ * @property {boolean} [dryRun=false]
+ * @callback ApplyProfile
+ * List available config profiles
+ * @param {string} name
+ * @param {ApplyOptions & WithTimeoutOptions} [options]
+ * @returns {Promise<{name:string, description:string}[]>}
+ */
+
 /**
  * @param {Config} config
- * @returns {*}
+ * @returns {IPFSConfig}
  */
 module.exports = ({ repo }) => {
   return {

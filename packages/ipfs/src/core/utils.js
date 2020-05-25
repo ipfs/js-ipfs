@@ -92,7 +92,7 @@ const normalizeCidPath = (path) => {
 
 /**
  *
- * @typedef {import('./components/init').DAGService} DAGService
+ * @typedef {import('./components/init').DAG} DAG
  */
 
 /**
@@ -105,27 +105,27 @@ const normalizeCidPath = (path) => {
  *  - /ipfs/<base58 string>/link/to/pluto
  *  - multihash Buffer
  *  - Arrays of the above
- * @param {DAGService} dag The IPFS dag api
- * @param {Array<string>} ipfsPaths A single or collection of ipfs-paths
+ * @param {DAG} dag The IPFS dag api
+ * @param {Array<string>|string|CID|CID[]} input A single or collection of ipfs-paths
  * @param {Object} [options] Optional options passed directly to dag.resolve
  * @return {Promise<Array<CID>>}
  */
-const resolvePath = async function (dag, ipfsPaths, options) {
+const resolvePath = async function (dag, input, options) {
   options = options || {}
 
-  if (!Array.isArray(ipfsPaths)) {
-    ipfsPaths = [ipfsPaths]
-  }
+  const ipfsPaths = Array.isArray(input)
+    ? input
+    : /** @type{CID[]|string[]} */ ([input])
 
   const cids = []
 
   for (const path of ipfsPaths) {
     if (isIpfs.cid(path)) {
-      cids.push(new CID(path))
+      cids.push(new CID(/** @type {CID} */(path)))
       continue
     }
 
-    const { hash, links } = parseIpfsPath(path)
+    const { hash, links } = parseIpfsPath(/** @type {string} */(path))
 
     if (!links.length) {
       cids.push(new CID(hash))

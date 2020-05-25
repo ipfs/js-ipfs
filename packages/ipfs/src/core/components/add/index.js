@@ -10,7 +10,7 @@ const { withTimeoutOption } = require('../../utils')
  * @typedef {import('ipfs-interface').CID} CID
  * @typedef {import('ipfs-core-utils/src/files/normalise-input').Input} AddInput
  * @typedef {import('../init').PreloadService} PreloadService
- * @typedef {import('../init').PinService} PinService
+ * @typedef {import('../init').Pin} Pin
  * @typedef {import('../init').GCLock} GCLock
  * @typedef {import('../init').Block} Block
  * @typedef {import('../init').ConstructorOptions} ConstructorOptions
@@ -32,7 +32,7 @@ const { withTimeoutOption } = require('../../utils')
  * @param {Block} config.block
  * @param {GCLock} config.gcLock
  * @param {PreloadService} config.preload
- * @param {PinService} config.pin
+ * @param {Pin} config.pin
  * @param {ConstructorOptions} config.options
  * @returns {Add}
  */
@@ -190,7 +190,7 @@ function preloadFile (preload, opts) {
 }
 
 /**
- * @param {PinService} pin
+ * @param {Pin} pin
  * @param {Object} opts
  * @param {boolean} [opts.pin]
  * @param {boolean} [opts.onlyHash]

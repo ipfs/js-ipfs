@@ -13,13 +13,13 @@ const { withTimeoutOption } = require('../../utils')
 /**
  * @typedef {import('cids')} CID
  * @typedef {import("../init").IPLD} IPLDService
- * @typedef {import("../init").PinService} PinService
+ * @typedef {import("../init").Pin} Pin
  * @typedef {import("../init").GCLock} GCLock
  * @typedef {import("../init").PreloadService} PreloadService
  *
  * @typedef {Object} PutConfig
  * @property {IPLDService} ipld
- * @property {PinService} pin
+ * @property {Pin} pin
  * @property {GCLock} gcLock
  * @property {PreloadService} preload
  *

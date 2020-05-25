@@ -11,12 +11,19 @@ const log = debug('ipfs:preload')
 // we don't want preload calls to exhaust the limit (~6)
 const httpQueue = new PQueue({ concurrency: 4 })
 
+/**
+ * @param {string} url
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
+ * @returns {Promise<void>}
+ */
 module.exports = function preload (url, options) {
   log(url)
-  options = options || {}
+  const { signal } = options || {}
 
   return httpQueue.add(async () => {
-    const res = await HTTP.get(url, { signal: options.signal })
+    const res = await HTTP.get(url, { signal })
+    // @ts-ignore - `res.body` could be null
     const reader = res.body.getReader()
 
     try {
