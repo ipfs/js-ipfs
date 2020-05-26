@@ -12,6 +12,6 @@ module.exports = ({ blockService, preload }) => {
       preload(cid)
     }
 
-    return blockService.get(cid)
+    return blockService.get(cid, options)
   })
 }
