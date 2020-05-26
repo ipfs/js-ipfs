@@ -182,7 +182,7 @@
     "form-data": "^3.0.0",
     "go-ipfs-dep": "0.5.1",
     "interface-ipfs-core": "^0.135.0",
-    "ipfs-interop": "ipfs/interop#fix/remote-http-path",
+    "ipfs-interop": "^1.0.4",
     "ipfsd-ctl": "^4.1.1",
     "iso-random-stream": "^1.1.1",
     "it-first": "^1.0.1",
