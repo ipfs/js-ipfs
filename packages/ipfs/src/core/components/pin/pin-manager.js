@@ -22,6 +22,10 @@ const WALK_DAG_CONCURRENCY_LIMIT = 300
 const IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT = 300
 const PIN_DS_KEY = new Key('/local/pins')
 
+/**
+ * @param {string} type
+ * @returns {Error}
+ */
 function invalidPinTypeErr (type) {
   const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
@@ -38,7 +42,16 @@ const PinTypes = {
   all: 'all'
 }
 
+/**
+ * @typedef {import('../index').DAG} DAG
+ * @typedef {import('ipfs-repo')} Repo
+ */
+
 class PinManager {
+  /**
+   * @param {Repo} repo
+   * @param {DAG} dag
+   */
   constructor (repo, dag) {
     this.repo = repo
     this.dag = dag
@@ -59,15 +72,20 @@ class PinManager {
       cid = new CID(cid)
     }
 
+    /**
+     * @param {CID} cid
+     * @returns {*}
+     */
     const walk = (cid) => {
       return async () => {
-        const { value: node } = await this.dag.get(cid, { preload })
+        const { value: node } = await this.dag.get(cid, '/', { preload })
 
         onCid(cid)
 
         if (cid.codec === 'dag-pb') {
+          const dagPBNode = /** @type {DAGNode} */(node)
           queue.addAll(
-            node.Links.map(link => walk(link.Hash))
+            dagPBNode.Links.map(link => walk(link.Hash))
           )
         } else if (cid.codec === 'dag-cbor') {
           for (const [_, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
@@ -187,6 +205,16 @@ class PinManager {
     this.log('Loaded pins from the datastore')
   }
 
+  /**
+   * @typedef {Object} PinInfo
+   * @property {string} key
+   * @property {boolean} pinned
+   * @property {CID|string|void} [reason]
+   *
+   * @param {Buffer|CID} multihash
+   * @param {PinType} type
+   * @returns {Promise<PinInfo>}
+   */
   async isPinnedWithType (multihash, type) {
     const key = cidToString(multihash)
     const { recursive, direct, all } = PinTypes
@@ -234,13 +262,13 @@ class PinManager {
     queue.addAll(
       this.recursiveKeys()
         .map(childKey => {
-          childKey = new CID(childKey)
+          const childCID = new CID(childKey)
 
           return async () => {
-            const has = await this.pinset.hasDescendant(childKey, key)
+            const has = await this.pinset.hasDescendant(childKey, childCID)
 
             if (has) {
-              cid = childKey
+              cid = childCID
               queue.clear()
             }
           }
@@ -285,6 +313,11 @@ class PinManager {
     return cids.concat(cid)
   }
 
+  /**
+   * @param {CID} cid
+   * @param {Object} options
+   * @param {boolean} [options.preload]
+   */
   async fetchCompleteDag (cid, options) {
     await this._walkDag({
       cid,
@@ -293,6 +326,10 @@ class PinManager {
   }
 
   // Returns an error if the pin type is invalid
+  /**
+   * @param {PinType} type
+   * @returns {void|Error}
+   */
   static checkPinType (type) {
     if (typeof type !== 'string' || !Object.keys(PinTypes).includes(type)) {
       return invalidPinTypeErr(type)

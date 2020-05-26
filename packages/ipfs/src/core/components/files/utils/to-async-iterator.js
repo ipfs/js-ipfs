@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict'
 
 const errCode = require('err-code')
@@ -7,6 +8,10 @@ const {
   MFS_MAX_CHUNK_SIZE
 } = require('../../../utils')
 
+/**
+ * @param {*} content
+ * @returns {AsyncIterable<Buffer>}
+ */
 const toAsyncIterator = (content) => {
   if (!content) {
     throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')

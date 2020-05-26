@@ -72,12 +72,14 @@ async function create (options) {
     return api
   }
 
+  // @ts-ignore - disable for now
   await api.init()
 
   if (!options.start) {
     return api
   }
 
+  // @ts-ignore - disable for now
   return api.start()
 }
 

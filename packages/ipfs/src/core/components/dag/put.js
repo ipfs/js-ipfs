@@ -24,8 +24,8 @@ const { withTimeoutOption } = require('../../utils')
  * @property {PreloadService} preload
  *
  * @typedef {Object} OptionsWithFormat
- * @property {string} format
- * @property {string} hashAlg
+ * @property {string|number} format
+ * @property {string|number} hashAlg
  *
  * @typedef {Object} OptionsWithCID
  * @property {CID} cid

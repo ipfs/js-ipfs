@@ -11,8 +11,10 @@ const { withTimeoutOption } = require('../utils')
  * @typedef {import('ipfs-interface').BlockService} BlockService
  * @typedef {import('./init').GCLock} GCLock
  * @typedef {import('./init').Keychain} Keychain
+ * @typedef {import('../mfs-preload').MFSPreload} MFSPreload
  * @typedef {import('./init').PreloadService} Preload
  * @typedef {import('./init').Options} InitOptions
+ * @typedef {import('./init').Log} Log
  * @typedef {import('ipfs-bitswap')} BitSwap
  * @typedef {import('./pin/pin-manager')} PinManager
  * @typedef {import('ipfs-interface').IPLDService} IPLDService
@@ -39,8 +41,10 @@ const { withTimeoutOption } = require('../utils')
  * @property {LibP2PService} libp2p
  * @property {PeerInfo} peerInfo
  * @property {Preload} preload
- * @property {PinManager} pinManager
+ * @property {PinManager} [pinManager]
+ * @property {MFSPreload} mfsPreload
  * @property {Repo} repo
+ * @property {Log} print
  */
 
 /**

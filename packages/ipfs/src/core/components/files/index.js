@@ -76,6 +76,21 @@ function createMfs (options) {
   return mfs
 }
 
+/**
+ * @typedef {ReturnType<import('./stat')>} Stat
+ * @typedef {ReturnType<import('./touch')>} MFSTouch
+ * @typedef {ReturnType<import('./write')>} Write
+ * @typedef {ReturnType<import('./chmod')>} Chmod
+ */
+
+/**
+ * @typedef {Object} Files
+ * @property {Stat} stat
+ * @property {Touch} touch
+ * @property {Write} write
+ * @property {Chmod} chmod
+ */
+
 module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {
   const methods = createMfs({
     ipld,

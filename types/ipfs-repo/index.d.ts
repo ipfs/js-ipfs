@@ -13,8 +13,8 @@ type BlockStore = Store<CID, Block>
 type RootStore = Store<string|Buffer|Key, Buffer>
 type DataStore = Store<Key, Buffer>
 interface ConfigStore extends Store<string, void|any>  {
-  replace(value:any, options?:{signal?:AbortSignal}):Promise<void>
-  get():Promise<any>
+  replace(value:any, options?:TimeoutOptions):Promise<void>
+  get(key?:string, options?:TimeoutOptions):Promise<any>
   set(value:any):Promise<void>
   getAll(options?:{signal?:AbortSignal}):Promise<any>
   exists():Promise<boolean>

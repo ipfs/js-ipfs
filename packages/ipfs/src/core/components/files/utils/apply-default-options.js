@@ -1,12 +1,25 @@
+// @ts-ignore
 'use strict'
 
 const errCode = require('err-code')
 
+/**
+ * @template A, B
+ * @typedef {Partial<A> & B} Applied
+ */
+
+/**
+ * @template T,D
+ * @param {Partial<T>} options
+ * @param {D} defaults
+ * @returns {Applied<T, D>}
+ */
 module.exports = (options = {}, defaults) => {
   if (Array.isArray(options)) {
     options = options.filter(arg => typeof arg === 'object').pop() || {}
   }
 
+  /** @type {Applied<T, D>} */
   const output = {}
 
   for (const key in defaults) {

@@ -22,8 +22,35 @@ const defaultOptions = {
   hashAlg: 'sha2-256'
 }
 
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').Block} Block
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ */
+/**
+ *
+ * @typedef {Object} TouchOptions
+ * @property {boolean} [flush]
+ * @property {number} [shardSplitThreshold]
+ *
+ * @param {Context} context
+ * @returns {Touch}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsTouch (path, options) {
+  /**
+   * @callback MFSTouch
+   * @param {string} path
+   * @param {TouchOptions} options
+   * @returns {Promise<CID>}
+   *
+   * @type {MFSTouch}
+   */
+  async function mfsTouch (path, options) {
     options = options || {}
     options = applyDefaultOptions(options, defaultOptions)
     options.mtime = options.mtime || new Date()
@@ -74,6 +101,7 @@ module.exports = (context) => {
       })
     }
 
+    // @ts-ignore - toTrail takes two arguments
     const trail = await toTrail(context, mfsDirectory, options)
     const parent = trail[trail.length - 1]
     const parentNode = await context.ipld.get(parent.cid)
@@ -96,5 +124,7 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  })
+  }
+
+  return withTimeoutOption(mfsTouch)
 }

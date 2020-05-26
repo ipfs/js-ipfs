@@ -17,10 +17,10 @@ const BLOCK_RM_CONCURRENCY = 256
  * @typedef {import('../../utils').WithTimeoutOptions} WithTimeoutOptions
  * @typedef {Object} BlockID
  * @property {CID} cid
- * @property {err} [void]
+ * @property {void} [err]
  *
  * @typedef {Object} Err
- * @property {cid} [void]
+ * @property {void} [cid]
  * @property {Error} err
  * @typedef {Err|BlockID} Notification
  */

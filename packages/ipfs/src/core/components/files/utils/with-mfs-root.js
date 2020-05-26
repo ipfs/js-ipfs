@@ -13,6 +13,18 @@ const {
   MFS_ROOT_KEY
 } = require('../../../utils')
 
+/**
+ * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('../../init').IPLD} IPLD
+ */
+/**
+ * @typedef {Object} Context
+ * @property {Repo} repo
+ * @property {IPLD} ipld
+ *
+ * @param {Context} context
+ * @returns {Promise<CID>}
+ */
 const loadMfsRoot = async (context) => {
   // Open the repo if it's been closed
   await context.repo.datastore.open()

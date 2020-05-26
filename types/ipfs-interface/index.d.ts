@@ -10,6 +10,7 @@ import Multiaddr from "multiaddr"
 import { BigNumber } from "bignumber.js"
 export { CID, BlockService, PeerId, PeerInfo, Multiaddr, Store }
 
+
 export type TimeoutOptions = {
   timeout?:number|string
   abort?:AbortSignal
@@ -25,7 +26,6 @@ export type Values<T> = T[keyof T];
 // e.g. UnionToIntersection<A|B|C> => A & B & C
 export type UnionToIntersection<U> = 
   (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never
-
 
 
 
@@ -92,7 +92,7 @@ type Notification = {
   key: Buffer
 }
 
-type Subscriber = (notification:Notification) => void
+export type Subscriber = (notification:Notification) => void
 
 export interface PubSub {
   getSubscribers(topic:string):Array<string>
@@ -145,7 +145,7 @@ export interface LibP2PService {
   ping(address:Address):Promise<number>
   peerRouting:PeerRouting
   contentRouting: ContentRouting
-  pubSub:PubSub
+  pubsub:PubSub
   connectionManager:ConnectionManager
   metrics:Metrics
 

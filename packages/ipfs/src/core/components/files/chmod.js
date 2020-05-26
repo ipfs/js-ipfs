@@ -18,6 +18,7 @@ const exporter = require('ipfs-unixfs-exporter')
 const last = require('it-last')
 const cp = require('./cp')
 const rm = require('./rm')
+// @ts-ignore
 const persist = require('ipfs-unixfs-importer/src/utils/persist')
 const { withTimeoutOption } = require('../../utils')
 
@@ -29,6 +30,16 @@ const defaultOptions = {
   recursive: false
 }
 
+/**
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @param {*} mode
+ * @param {*} originalMode
+ * @param {*} isDirectory
+ * @returns {*}
+ */
 function calculateModification (mode, originalMode, isDirectory) {
   let modification = 0
 
@@ -47,6 +58,11 @@ function calculateModification (mode, originalMode, isDirectory) {
   return modification
 }
 
+/**
+ * @param {*} references
+ * @param {*} modification
+ * @returns {*}
+ */
 function calculateUGO (references, modification) {
   let ugo = 0
 
@@ -65,6 +81,12 @@ function calculateUGO (references, modification) {
   return ugo
 }
 
+/**
+ * @param {*} references
+ * @param {*} mode
+ * @param {*} modification
+ * @returns {*}
+ */
 function calculateSpecial (references, mode, modification) {
   if (mode.includes('t')) {
     modification += parseInt('1000', 8)
@@ -84,6 +106,12 @@ function calculateSpecial (references, mode, modification) {
 }
 
 // https://en.wikipedia.org/wiki/Chmod#Symbolic_modes
+/**
+ * @param {*} input
+ * @param {*} originalMode
+ * @param {*} isDirectory
+ * @returns {*}
+ */
 function parseSymbolicMode (input, originalMode, isDirectory) {
   if (!originalMode) {
     originalMode = 0
@@ -147,10 +175,16 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
   }
 }
 
+/**
+ * @param {number|string|String} mode
+ * @param {*} metadata
+ * @return {number}
+ */
 function calculateMode (mode, metadata) {
+  // @ts-ignore
   if (typeof mode === 'string' || mode instanceof String) {
     if (mode.match(/^\d+$/g)) {
-      mode = parseInt(mode, 8)
+      mode = parseInt(/** @type {string} */(mode), 8)
     } else {
       mode = mode.split(',').reduce((curr, acc) => {
         return parseSymbolicMode(acc, curr, metadata.isDirectory())
@@ -158,12 +192,42 @@ function calculateMode (mode, metadata) {
     }
   }
 
+  // @ts-ignore - mode type changed to number
   return mode
 }
 
+/**
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {Repo} repo *
+ * @typedef {Object} ChmodOptions
+ * @property {boolean} [recursive]
+ * @property {boolean} [mfsChmod]
+ * @property {string} [hashAlg='sha2-256']
+ * @property {0|1} [cidVersion=0]
+ * @property {number} [timeout]
+ * @property {AbortSignal} [signal]
+ *
+ * @param {Context} context
+ * @returns {Chmod}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsChmod (path, mode, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * @callback Chmod
+   * @param {string|CID} path
+   * @param {string|number} mode
+   * @param {ChmodOptions} [opts]
+   *
+   * @type {Chmod}
+   */
+  async function mfsChmod (path, mode, opts) {
+    const options = applyDefaultOptions(opts, defaultOptions)
 
     log(`Fetching stats for ${path}`)
 
@@ -184,8 +248,10 @@ module.exports = (context) => {
         async function * () {
           for await (const entry of exporter.recursive(cid, context.ipld)) {
             let node = await context.ipld.get(entry.cid)
-            entry.unixfs.mode = calculateMode(mode, entry.unixfs)
-            node = new DAGNode(entry.unixfs.marshal(), node.Links)
+            /** @type {UnixFS} */
+            const unixfs = (entry.unixfs)
+            unixfs.mode = calculateMode(mode, entry.unixfs)
+            node = new DAGNode(unixfs.marshal(), node.Links)
 
             yield {
               path: entry.path,
@@ -196,16 +262,21 @@ module.exports = (context) => {
         (source) => importer(source, context.block, {
           ...options,
           pin: false,
+          // @ts-ignore - not sure what the API here is.
           dagBuilder: async function * (source, block, options) {
             for await (const entry of source) {
               yield async function () {
-                const cid = await persist(entry.content.serialize(), block, options)
+                // @ts-ignore
+                /** @type {DAGNode} */
+                const content = (entry.content)
+                /** @type {CID} */
+                const cid = await persist(content.serialize(), block, options)
 
                 return {
                   cid,
                   path: entry.path,
-                  unixfs: UnixFS.unmarshal(entry.content.Data),
-                  node: entry.content
+                  unixfs: UnixFS.unmarshal(content.Data),
+                  node: content
                 }
               }
             }
@@ -230,10 +301,12 @@ module.exports = (context) => {
 
     const updatedCid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: cid.version,
+      // @ts-ignore hashAlg is string instead of name
       hashAlg: mh.names[options.hashAlg],
       onlyHash: !options.flush
     })
 
+    // @ts-ignore - Takes only two args
     const trail = await toTrail(context, mfsDirectory, options)
     const parent = trail[trail.length - 1]
     const parentNode = await context.ipld.get(parent.cid)
@@ -255,5 +328,7 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  })
+  }
+
+  return withTimeoutOption(mfsChmod)
 }

@@ -19,6 +19,7 @@ module.exports = async function preload (url, options) {
   // @ts-ignore - signal options isn't documented.
   const res = await HTTP.get(url, { signal: options.signal })
 
+  // @ts-ignore - body maybe void
   for await (const _ of res.body) { // eslint-disable-line no-unused-vars
     // Read to completion but do not cache
   }

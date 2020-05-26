@@ -7,7 +7,31 @@ const defaultOptions = {
   shardSplitThreshold: 1000
 }
 
-// loop backwards through the trail, replacing links of all components to update CIDs
+/**
+ * @typedef {import('./to-trail').Trail} Trail
+ * @typedef {import('../../init').IPLD} IPLD
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ *
+ * @typedef {Object} Options
+ * @property {boolean} [flush]
+ * @property {number} [shardSplitThreshold]
+ * @property {string} [hashAlg]
+ * @property {0|1} [cidVersion]
+ */
+
+/**
+ * loop backwards through the trail, replacing links of all components to
+ * update CIDs
+ * @param {Context} context
+ * @param {Trail} trail
+ * @param {Options} options
+ * @returns {Promise<CID>}
+ */
 const updateTree = async (context, trail, options) => {
   options = Object.assign({}, defaultOptions, options)
 
@@ -26,6 +50,7 @@ const updateTree = async (context, trail, options) => {
       child = {
         cid,
         name,
+        // @ts-ignore - node may not have size field
         size: node.size
       }
 

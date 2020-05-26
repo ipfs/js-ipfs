@@ -12,8 +12,59 @@ const createMfsPreload = require('../mfs-preload')
 const { withTimeoutOption } = require('../utils')
 
 /**
- * @param {*} config
- * @returns {*}
+ * @typedef {import("./init").IPFSConfig} IPFSConfig
+ * @typedef {import('../api-manager')} ApiManage
+ * @typedef {import('./index').DAG} DAG
+ * @typedef {import('./index').Block} Block
+ * @typedef {import('./index').Pin} Pin
+ * @typedef {import('./index').Files} Files
+ * @typedef {import('ipfs-interface').BlockService} BlockService
+ * @typedef {import('./init').GCLock} GCLock
+ * @typedef {import('./init').Keychain} Keychain
+ * @typedef {import('../mfs-preload').MFSPreload} MFSPreload
+ * @typedef {import('./init').PreloadService} Preload
+ * @typedef {import('./init').Options} InitOptions
+ * @typedef {import('./init').Log} Log
+ * @typedef {import('ipfs-bitswap')} BitSwap
+ * @typedef {import('./pin/pin-manager')} PinManager
+ * @typedef {import('ipfs-interface').IPLDService} IPLDService
+ * @typedef {import('ipfs-interface').IPNSService} IPNSService
+ * @typedef {import('ipfs-interface').LibP2PService} LibP2PService
+ * @typedef {import('ipfs-interface').PeerInfo} PeerInfo
+ * @typedef {import('ipfs-repo')} Repo
+ *
+ * @typedef {import('./index').IPFSAPI} IPFSAPI
+ */
+
+/**
+ * @callback Start
+ * @returns {Promise<IPFSAPI>}
+ *
+ * @typedef {Object} StartConfig
+ * @property {ApiManage} apiManager
+ * @property {ConstructorOptions} options
+ * @property {BitSwap} bitswap
+ * @property {BlockService} blockService
+ * @property {GCLock} gcLock
+ * @property {InitOptions} initOptions
+ * @property {IPLDService} ipld
+ * @property {IPNSService} ipns
+ * @property {Keychain} keychain
+ * @property {LibP2PService} libp2p
+ * @property {PeerInfo} peerInfo
+ * @property {Preload} preload
+ * @property {PinManager} [pinManager]
+ * @property {MFSPreload} mfsPreload
+ * @property {Repo} repo
+ * @property {Log} print
+ *
+ * @typedef {Object} ConstructorOptions
+ * @property {import('../mfs-preload').Options} preload
+ */
+
+/**
+ * @param {StartConfig} config
+ * @returns {Start}
  */
 module.exports = ({
   apiManager,
@@ -38,7 +89,7 @@ module.exports = ({
       await repo.open()
     }
 
-    /** @type {import("./init").IPFSConfig} */
+    /** @type {IPFSConfig} */
     const config = await repo.config.get()
 
     if (config.Addresses && config.Addresses.Swarm) {
@@ -149,8 +200,33 @@ module.exports = ({
 })
 
 /**
- * @param {*} config
- * @returns {*}
+ * @typedef {Object} CreateConfig
+ * @property {ApiManage} apiManager
+ * @property {BitSwap} bitswap
+ * @property {Block} block
+ * @property {BlockService} blockService
+ * @property {IPFSConfig} config
+ * @property {ConstructorOptions} constructorOptions
+ * @property {DAG} dag
+ * @property {Files} files
+ * @property {GCLock} gcLock
+ * @property {InitOptions} initOptions
+ * @property {IPLDService} ipld
+ * @property {IPNSService} ipns
+ * @property {Keychain} keychain
+ * @property {LibP2PService} libp2p
+ * @property {MFSPreload} mfsPreload
+ * @property {PeerInfo} peerInfo
+ * @property {Pin} pin
+ * @property {PinManager} [pinManager]
+ * @property {Preload} preload
+ * @property {Repo} repo
+ * @property {Log} print
+ */
+
+/**
+ * @param {CreateConfig} config
+ * @returns {IPFSAPI}
  */
 function createApi ({
   apiManager,
@@ -318,5 +394,6 @@ function createApi ({
     version: Components.version({ repo })
   }
 
+  // @ts-ignore
   return api
 }

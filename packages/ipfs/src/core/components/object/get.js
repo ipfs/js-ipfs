@@ -5,6 +5,11 @@ const errCode = require('err-code')
 const { Buffer } = require('buffer')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @param {*} multihash
+ * @param {*} enc
+ * @returns {*}
+ */
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
     if (enc === 'base58' || !enc) {
@@ -19,8 +24,36 @@ function normalizeMultihash (multihash, enc) {
   throw new Error('unsupported multihash')
 }
 
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
+ * @typedef {import('../../utils').WithTimeoutOptions} WithTimeoutOptions
+ * @typedef {Object} Context
+ * @property {import('../init').IPLD} ipld
+ * @property {import('../init').PreloadService} preload
+ *
+ * @typedef {Object} GetOptions
+ * @property {string} [enc]
+ * @property {number} [cidVersion]
+ * @property {boolean} [preload]
+ *
+ * @typedef {WithTimeoutOptions & GetOptions} Options
+ */
+
+/**
+ * @param {Context} context
+ * @returns {Get}
+ **/
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function get (multihash, options) { // eslint-disable-line require-await
+  /**
+   * @callback Get
+   * @param {CID} multihash
+   * @param {Options} [options]
+   * @returns {Promise<DAGNode>}
+   *
+   * @type {Get}
+   */
+  async function get (multihash, options) { // eslint-disable-line require-await
     options = options || {}
 
     let mh, cid
@@ -46,5 +79,7 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return ipld.get(cid, { signal: options.signal })
-  })
+  }
+
+  return withTimeoutOption(get)
 }

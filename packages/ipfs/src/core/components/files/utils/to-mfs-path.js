@@ -7,12 +7,67 @@ const errCode = require('err-code')
 
 const IPFS_PREFIX = 'ipfs'
 
-const toMfsPath = async (context, path) => {
-  const outputArray = Array.isArray(path)
-  let paths = Array.isArray(path) ? path : [path]
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../init').IPLD} IPLD
+ * @typedef {import('../../init').IPFSRepo} Repo
+ * @typedef {import('ipfs-unixfs-exporter').UnixFSValue} UnixFSValue
+ * @typedef {import('ipfs-unixfs-exporter').ExporterEntry} ExporterEntry
+ * @typedef {Pick<ExporterEntry, 'content'>} Content
+ */
+
+/**
+ * @typedef {Object} PathInfo
+ * @property {'ipfs'|'mfs'} type
+ * @property {number} depth
+ * @property {string} mfsPath
+ * @property {CID} cid
+ * @property {string} mfsDirectory
+ * @property {string[]} parts
+ * @property {string} path
+ * @property {string} name
+ * @property {boolean} exists
+ * @property {UnixFSValue|void} unixfs
+ * @property {Content|void} content
+ *
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Repo} repo
+ */
+
+/**
+ * @callback ToOneMFSPath
+ * @param {Context} context
+ * @param {string|CID} input
+ * @returns {Promise<PathInfo>}
+ */
+
+/**
+ * @callback ToManyMFSPaths
+ * @param {Context} context
+ * @param {string[]|CID[]} input
+ * @returns {Promise<PathInfo[]>}
+ */
+
+/**
+ * @typedef {ToOneMFSPath & ToManyMFSPaths} ToMFSPaths
+ */
+
+/** @type {ToMFSPaths} */
+// @ts-ignore
+const toMfsPath =
+/**
+ * @param {Context} context
+ * @param {string|string[]} input
+ * @returns {Promise<PathInfo|PathInfo[]>}
+ */
+async (context, input) => {
+  const outputArray = Array.isArray(input)
+  /** @type {string[]} */
+  const paths = Array.isArray(input) ? input : [input]
   const root = await loadMfsRoot(context)
 
-  paths = paths.map(path => {
+  const details = paths.map(path => {
     path = (path || '').trim()
     path = path.replace(/(\/\/+)/g, '/')
 
@@ -44,7 +99,7 @@ const toMfsPath = async (context, path) => {
         mfsDirectory = `/${pathComponents.slice(0, pathComponents.length - 1).join('/')}`
       }
 
-      return {
+      return /** @type {PathInfo} */ ({
         type: 'ipfs',
         depth: pathComponents.length - 2,
 
@@ -53,13 +108,13 @@ const toMfsPath = async (context, path) => {
         parts: pathComponents,
         path: `/${pathComponents.join('/')}`,
         name: pathComponents[pathComponents.length - 1]
-      }
+      })
     }
 
     const mfsPath = `/${IPFS_PREFIX}/${root}${pathComponents.length ? '/' + pathComponents.join('/') : ''}`
     const mfsDirectory = `/${IPFS_PREFIX}/${root}/${pathComponents.slice(0, pathComponents.length - 1).join('/')}`
 
-    return {
+    return /** @type {PathInfo} */ ({
       type: 'mfs',
       depth: pathComponents.length,
 
@@ -68,11 +123,11 @@ const toMfsPath = async (context, path) => {
       parts: pathComponents,
       path: `/${pathComponents.join('/')}`,
       name: pathComponents[pathComponents.length - 1]
-    }
+    })
   })
 
   await Promise.all(
-    paths.map(async (path) => {
+    details.map(async (path) => {
       const cidPath = path.type === 'mfs' ? path.mfsPath : path.path
 
       try {
@@ -81,6 +136,7 @@ const toMfsPath = async (context, path) => {
         path.cid = res.cid
         path.mfsPath = `/ipfs/${res.path}`
         path.unixfs = res.unixfs
+        // @ts-ignore - not sure what is TS complaining about here
         path.content = res.content
       } catch (err) {
         if (err.code !== 'ERR_NOT_FOUND') {
@@ -93,10 +149,10 @@ const toMfsPath = async (context, path) => {
   )
 
   if (outputArray) {
-    return paths
+    return details
   }
 
-  return paths[0]
+  return details[0]
 }
 
 module.exports = toMfsPath

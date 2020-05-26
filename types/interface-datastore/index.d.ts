@@ -18,6 +18,9 @@ export interface StoreQuery<Key, Value> {
   orders?:Array<(input:Value[]) => Value[]>,
   limit?:number,
   offset?:number,
+
+  timeout?:number,
+  signal?:AbortSignal
 }
 
 export interface EntriesQuery<Key, Value> extends StoreQuery<Key, Value> {

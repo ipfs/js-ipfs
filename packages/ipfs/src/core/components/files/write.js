@@ -40,30 +40,102 @@ const defaultOptions = {
   mtime: undefined
 }
 
+/**
+ * @typedef {import('./utils/to-mfs-path').PathInfo} PathInfo
+ * @typedef {import('ipfs-unixfs-importer').InputTime} InputTime
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ */
+/**
+ * @typedef {Object} WriteContext
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {Repo} repo
+ *
+ * @typedef {String|Buffer|AsyncIterable<Buffer>|Blob} Content
+ *
+ * @typedef {Object} WriteOptions
+ * @property {number} [offset] - An offset to start writing to file at.
+ * @property {number} [length] - How many bytes to write from the `content`.
+ * @property {boolean} [create=false] - Create the MFS path if it does not exist
+ * @property {boolean} [parents=false] - Create intermediate MFS paths if they
+ * do not exist.
+ * @property {boolean} [truncate=false] - Truncate the file at the MFS path if
+ * it would have been larger than the passed `content`.
+ * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
+ * file data and not be wrapped in a protobuf.
+ * @property {number} [mode] - An integer that represents the file mode.
+ * @property {InputTime} [mtime] - Modification time.
+ * @property {boolean} [flush=true] - If true the changes will be immediately
+ * flushed to disk.
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any
+ * updated entries
+ * @property {0|1} [cidVersion=0] The CID version to use for any updated
+ * entries
+ * @property {number} [shardSplitThreshold]
+ * @property {'file' | 'raw'} [leafType]
+ * @property {'balanced' | 'flat' | 'trickle'} [strategy]
+ * @property {boolean} [reduceSingleLeafToSelf]
+ * @property {function(number):void} [progress]
+ * @property {number} [timeout] - A timeout in ms
+ * @property {AbortSignal} [signal] - Can be used to cancel any long running
+ * requests started as a result of this call
+ *
+ * @param {WriteContext} context
+ * @returns {Write}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsWrite (path, content, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * @callback Write
+   * @param {string} path
+   * @param {Content} content
+   * @param {WriteOptions} [opts]
+   * @returns {Promise<void>}
+   *
+   * @type {Write}
+   */
+  async function mfsWrite (path, content, opts) {
+    const options = applyDefaultOptions(opts, defaultOptions)
 
-    let source, destination, parent
+    /** @type {AsyncIterable<Buffer>} */
+    let source
+    /** @type {PathInfo} */
+    let destination
+    /** @type {PathInfo} */
+    let parent
     log('Reading source, destination and parent')
     await createLock().readLock(async () => {
+      // @ts-ignore - toAsyncIterator takes single argument
       source = await toAsyncIterator(content, options)
       destination = await toMfsPath(context, path)
       parent = await toMfsPath(context, destination.mfsDirectory)
     })()
     log('Read source, destination and parent')
+    // @ts-ignore - TS can't tell assignment to `parent` occured
     if (!options.parents && !parent.exists) {
       throw errCode(new Error('directory does not exist'), 'ERR_NO_EXIST')
     }
 
+    // @ts-ignore - TS can't tell that assignemnt to `destination` occured
     if (!options.create && !destination.exists) {
       throw errCode(new Error('file does not exist'), 'ERR_NO_EXIST')
     }
 
+    // @ts-ignore - TS can't tell that assignemnt to `source` occured
     return updateOrImport(context, path, source, destination, options)
-  })
+  }
+
+  return withTimeoutOption(mfsWrite)
 }
 
+/**
+ * @param {WriteContext} context
+ * @param {string} path
+ * @param {AsyncIterable<Buffer>} source
+ * @param {PathInfo} destination
+ * @param {WriteOptions} options
+ */
 const updateOrImport = async (context, path, source, destination, options) => {
   const child = await write(context, source, destination, options)
 
@@ -89,6 +161,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
 
     // get an updated mfs path in case the root changed while we were writing
     const updatedPath = await toMfsPath(context, path)
+    // @ts-ignore - toTrail takes two arguments
     const trail = await toTrail(context, updatedPath.mfsDirectory, options)
     const parent = trail[trail.length - 1]
 
@@ -119,6 +192,12 @@ const updateOrImport = async (context, path, source, destination, options) => {
   })()
 }
 
+/**
+ * @param {WriteContext} context
+ * @param {AsyncIterable<Buffer>} source
+ * @param {PathInfo} destination
+ * @param {WriteOptions} options
+ */
 const write = async (context, source, destination, options) => {
   if (destination.exists) {
     log(`Overwriting file ${destination.cid} offset ${options.offset} length ${options.length}`)
@@ -135,6 +214,7 @@ const write = async (context, source, destination, options) => {
 
       sources.push(
         () => {
+          // @ts-ignore - CBOR does not' have content method
           return destination.content({
             offset: 0,
             length: options.offset
@@ -171,6 +251,7 @@ const write = async (context, source, destination, options) => {
       if (fileSize > bytesWritten) {
         log(`Writing last ${fileSize - bytesWritten} of ${fileSize} bytes from original file starting at offset ${bytesWritten}`)
 
+        // @ts-ignore - CBOR does not' have content method
         return destination.content({
           offset: bytesWritten
         })
@@ -194,7 +275,7 @@ const write = async (context, source, destination, options) => {
 
   let mtime
 
-  if (options.mtime !== undefined && options.mtine !== null) {
+  if (options.mtime !== undefined && options.mtime !== null) {
     mtime = options.mtime
   } else if (destination && destination.unixfs) {
     mtime = destination.unixfs.mtime
@@ -225,6 +306,11 @@ const write = async (context, source, destination, options) => {
   }
 }
 
+/**
+ * @param {AsyncIterable<Buffer>} stream
+ * @param {number} limit
+ * @returns {function():AsyncIterable<Buffer>}
+ */
 const limitAsyncStreamBytes = (stream, limit) => {
   return async function * _limitAsyncStreamBytes () {
     let emitted = 0
@@ -243,10 +329,18 @@ const limitAsyncStreamBytes = (stream, limit) => {
   }
 }
 
+/**
+ * @param {number} count
+ * @param {number} [chunkSize]
+ * @return {function():AsyncIterable<Buffer>}
+ */
 const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
   const buf = Buffer.alloc(chunkSize, 0)
 
   const stream = {
+    /**
+     * @type {function():AsyncIterator<Buffer>}
+     */
     [Symbol.asyncIterator]: function * _asyncZeroes () {
       while (true) {
         yield buf.slice()
@@ -257,12 +351,21 @@ const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
   return limitAsyncStreamBytes(stream, count)
 }
 
+/**
+ * @param {Array<function():AsyncIterable<Buffer>>} sources
+ * @returns {AsyncIterable<Buffer>}
+ */
 const catAsyncIterators = async function * (sources) { // eslint-disable-line require-await
   for (let i = 0; i < sources.length; i++) {
     yield * sources[i]()
   }
 }
 
+/**
+ * @param {AsyncIterable<Buffer>} source
+ * @param {function(number):AsyncIterable<Buffer>} notify
+ * @returns {AsyncIterable<Buffer>}
+ */
 const countBytesStreamed = async function * (source, notify) {
   let wrote = 0
 

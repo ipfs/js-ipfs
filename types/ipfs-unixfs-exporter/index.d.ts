@@ -44,6 +44,11 @@ interface UnixFSDirectory extends Entry<DAGPBNode> {
   unixfs:UnixFS<'directory'>|UnixFS<'hamt-sharded-directory'>
 }
 
+type UnixFSValue =
+  | UnixFS<'file'>
+  | UnixFS<'directory'>
+  | UnixFS<'hamt-sharded-directory'>
+
 type UnixFSEntry =
   | UnixFSFile
   | UnixFSDirectory
@@ -58,7 +63,7 @@ type ExporterEntry =
   | CBOREntry
   | UnixFSEntry
 
-declare function exporter(cid:CID, ipld:IPLDService, options?: ExportOptions): Promise<ExporterEntry>;
+declare function exporter(cid:CID|string, ipld:IPLDService, options?: ExportOptions): Promise<ExporterEntry>;
 
 declare namespace exporter {
   export function path(path: CID | Buffer | string, ipld: IPLDService, options?: ExportOptions): AsyncIterable<ExporterEntry>;
@@ -68,6 +73,7 @@ declare namespace exporter {
     ExporterEntry,
     Entry,
     UnixFSEntry,
+    UnixFSValue,
     RawEntry,
     CBOREntry,
     ExportOptions,

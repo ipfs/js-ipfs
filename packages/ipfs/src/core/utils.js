@@ -134,9 +134,9 @@ const resolvePath = async function (dag, input, options) {
 
     let cid = new CID(hash)
     try {
-      for await (const { value } of dag.resolve(path, options)) {
+      for await (const { value } of dag.resolve(path, '/', options)) {
         if (CID.isCID(value)) {
-          cid = value
+          cid = /** @type {CID} */(value)
         }
       }
     } catch (err) {
@@ -167,7 +167,7 @@ const resolvePath = async function (dag, input, options) {
  * @property {number} size
  * @property {'dir'|'file'} type
  * @property {number} [mode]
- * @property {{secs:number, nsecs:number}} [mtime]
+ * @property {{secs:number, nsecs:number}|Date} [mtime]
  */
 
 /**

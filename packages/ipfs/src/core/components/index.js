@@ -33,6 +33,9 @@ exports.bitswap = {
 
 /**
  * @typedef {Object} Bootstrap
+ * @property {ReturnType<import('./bootstrap/add')>} add
+ * @property {ReturnType<import('./bootstrap/list')>} list
+ * @property {ReturnType<import('./bootstrap/rm')>} rm
  */
 exports.bootstrap = {
   add: require('./bootstrap/add'),
@@ -68,10 +71,13 @@ exports.dag = {
 exports.dht = require('./dht')
 /** @typedef {import('./dns').DNS} DNS */
 exports.dns = require('./dns')
+/** @typedef {import('./files').Files} Files */
 exports.files = require('./files')
+/** @typedef {ReturnType<import('./get')>} Get */
 exports.get = require('./get')
 /** @typedef {ReturnType<import('./id')>} ID */
 exports.id = require('./id')
+/** @typedef {ReturnType<import('./init')>} Init */
 exports.init = require('./init')
 /** @typedef {ReturnType<import('./is-online')>} IsOnline */
 exports.isOnline = require('./is-online')
@@ -95,8 +101,25 @@ exports.key = {
   rename: require('./key/rename'),
   rm: require('./key/rm')
 }
+
+/**
+ * @typedef {ReturnType<import('./libp2p')>} LibP2P
+ */
 exports.libp2p = require('./libp2p')
+/** @typedef {ReturnType<import('./ls')>} LS */
 exports.ls = require('./ls')
+
+/**
+ * @typedef {Object} Name
+ * @property {ReturnType<import('./name/publish')>} publish
+ * @property {NamePubSub} pubsub
+ * @property {ReturnType<import('./name/resolve')>} reslove
+ *
+ * @typedef {Object} NamePubSub
+ * @property {ReturnType<import('./name/pubsub/cancel')>} cancel
+ * @property {ReturnType<import('./name/pubsub/state')>} state
+ * @property {ReturnType<import('./name/pubsub/subs')>} subs
+ */
 exports.name = {
   publish: require('./name/publish'),
   pubsub: {
@@ -106,6 +129,23 @@ exports.name = {
   },
   resolve: require('./name/resolve')
 }
+
+/**
+ * @typedef {Object} ObjectAPI
+ * @property {ReturnType<import('./object/data')>} data
+ * @property {ReturnType<import('./object/get')>} get
+ * @property {ReturnType<import('./object/links')>} links
+ * @property {ReturnType<import('./object/new')>} new
+ * @property {ReturnType<import('./object/put')>} put
+ * @property {ReturnType<import('./object/stat')>} stat
+ * @property {ObjectPath} patch
+ *
+ * @typedef {Object} ObjectPath
+ * @property {ReturnType<import('./object/patch/add-link')>} addLink
+ * @property {ReturnType<import('./object/patch/rm-link')>} rmLink
+ * @property {ReturnType<import('./object/patch/append-data')>} appendData
+ * @property {ReturnType<import('./object/patch/set-data')>} setData
+ */
 exports.object = {
   data: require('./object/data'),
   get: require('./object/get'),
@@ -137,12 +177,25 @@ exports.pin = {
  * @typedef {ReturnType<import('./ping')>} Ping
  */
 exports.ping = require('./ping')
+/**
+ * @typedef {ReturnType<import('./pubsub')>} PubSub
+ */
 exports.pubsub = require('./pubsub')
 
-/** @type {import('./refs') & {local:import('./refs/local')}} */
-// @ts-ignore
+/**
+ * @typedef {import('./refs') & {local:import('./refs/local')}} Refs
+ * @type {Refs}
+ */
+// @ts-ignore - TS can't infer type change from mutation below.
 exports.refs = require('./refs')
 exports.refs.local = require('./refs/local')
+
+/**
+ * @typedef {Object} Repo
+ * @property {ReturnType<import("./repo/gc")>} gc
+ * @property {ReturnType<import("./repo/stat")>} stat
+ * @property {ReturnType<import("./repo/version")>} version
+*/
 exports.repo = {
   gc: require('./repo/gc'),
   stat: require('./repo/stat'),
@@ -153,6 +206,11 @@ exports.repo = {
 exports.resolve = require('./resolve')
 /** @typedef {ReturnType<import('./start')>} Start */
 exports.start = require('./start')
+
+/**
+ * @typedef {Object} Stats
+ * @property {ReturnType<import('./starts/bw')>} bw
+ */
 exports.stats = {
   bw: require('./stats/bw')
 }
@@ -179,3 +237,38 @@ exports.swarm = {
  * @typedef {ReturnType<import('./version')>} Version
  */
 exports.version = require('./version')
+
+/**
+ * @typedef {Object} IPFSAPI
+ * @property {Add} add
+ * @property {BitSwap} bitswap
+ * @property {Block} block
+ * @property {Bootstrap} bootstrap
+ * @property {Cat} cat
+ * @property {Config} config
+ * @property {DAG} dag
+ * @property {DHT} dht
+ * @property {DNS} dns
+ * @property {Files} files
+ * @property {Get} get
+ * @property {ID} id
+ * @property {IsOnline} isOnline
+ * @property {Key} key
+ * @property {LibP2P} libp2p
+ * @property {LS} ls
+ * @property {Name} name
+ * @property {ObjectAPI} object
+ * @property {Pin} pin
+ * @property {Ping} ping
+ * @property {PubSub} pubsub
+ * @property {Refs} refs
+ * @property {Repo} repo
+ * @property {Resolve} resolve
+ * @property {Stats} stats
+ * @property {Swarm} swarm
+ * @property {Version} version
+ *
+ * @property {Init} init
+ * @property {Start} start
+ * @property {Stop} stop
+ */

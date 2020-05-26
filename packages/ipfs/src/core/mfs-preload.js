@@ -5,8 +5,26 @@ const { cidToString } = require('../utils/cid')
 const log = debug('ipfs:mfs-preload')
 
 /**
- * @param {*} config
- * @returns {*}
+ * @typedef {import('./components/init').PreloadService} Preload
+ * @typedef {import('./components/files').Files} Files
+ */
+
+/**
+ * @typedef {Object} Config
+ * @property {Preload} preload
+ * @property {Files} files
+ * @property {Options} options
+ *
+ * @typedef {Object} Options
+ * @property {number} [interval]
+ * @property {boolean} [enabled]
+ *
+ * @typedef {Object} MFSPreload
+ * @property {function():Promise<void>} start
+ * @property {function():void} stop
+ *
+ * @param {Config} config
+ * @returns {MFSPreload}
  */
 module.exports = ({ preload, files, options }) => {
   options = options || {}

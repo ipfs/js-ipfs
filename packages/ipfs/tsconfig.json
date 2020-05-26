@@ -25,12 +25,6 @@
     },
     "outDir": "./dist/"
   },
-  "exclude": [
-    "dist",
-    "test",
-    "src/http",
-    "src/cli"
-  ],
   "include": [
     "src",
     "../../node_modules/ipfs-block-service/src/**/**.js",
@@ -51,13 +45,27 @@
     "../../node_modules/ipld-raw/src/**/**.js",
     "../../node_modules/ipld-dag-cbor/src/**/**.js",
     "../../node_modules/ipns/src/**/**.js",
+    "../../node_modules/multihashes",
     "../../node_modules/multihashes/src/**/**.js",
+    "../../node_modules/multihashing-async",
+    "../../node_modules/multihashing-async/src/**/**.js",
     "../../node_modules/datastore-pubsub/src/**/**.js",
     "../../node_modules/datastore-core/src/**/**.js",
     "../../node_modules/is-domain-name/**/**.js",
-    "../../node_modules/ipfs-utils/src/http.js",
     "../../node_modules/ipfs-utils/src/files/glob-source.js",
-    "node_modules/ipfs-core-utils/src/files/normalise-input.js"
+    "../../node_modules/ipfs-utils/src/http.js",
+    "node_modules/ipfs-core-utils/src/files/normalise-input.js",
+    "../../node_modules/bignumber.js/**/**.js",
+    "../../node_modules/dag-cbor-links/src/**/**.js",
+    "../../node_modules/hamt-sharding/src/**/**.js"
+  ],
+  "exclude": [
+    "dist",
+    "test",
+    "src/http/**/**.js",
+    "src/cli/**/**.js",
+    "node_modules",
+    "src/core/components/object/**/*.js"
   ],
   "compileOnSave": false
 }

@@ -20,6 +20,38 @@ const mc = require('multicodec')
 const mh = require('multihashes')
 const last = require('it-last')
 
+/**
+ * @typedef {import('../../init').IPLD} IPLD
+ * @typedef {import('../../init').Block} Block
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ *
+ * @typedef {Object} Parent
+ * @property {DAGLink[]} Links
+ * @property {Buffer} Data
+ * @property {function(string):void} rmLink
+ * @property {function(DAGLink):void} addLink
+ * @property {number} size
+ *
+ * @typedef {Object} Options
+ * @property {Parent} [parent]
+ * @property {CID} [parentCid]
+ * @property {CID} [cid]
+ * @property {string|void} [name]
+ * @property {number} [size]
+ * @property {number} [shardSplitThreshold]
+ * @property {string} [hashAlg]
+ * @property {number|void} [cidVersion]
+ * @property {boolean} [flush]
+ * @property {Date|UnixFS.UnixFSTime} [mtime]
+ * @property {number} [mode]
+ *
+ * @param {Context} context
+ * @param {Options} options
+ */
 const addLink = async (context, options) => {
   if (!options.parentCid && !options.parent) {
     throw errCode(new Error('No parent node or CID passed to addLink'), 'EINVALIDPARENT')
@@ -44,7 +76,7 @@ const addLink = async (context, options) => {
   }
 
   if (!CID.isCID(options.cid)) {
-    options.cid = new CID(options.cid)
+    options.cid = new CID(/** @type {CID} */(options.cid))
   }
 
   if (!options.size && options.size !== 0) {
@@ -74,6 +106,10 @@ const addLink = async (context, options) => {
   return addToDirectory(context, options)
 }
 
+/**
+ * @param {Context} context
+ * @param {Options} options
+ */
 const convertToShardedDirectory = async (context, options) => {
   const result = await createShard(context, options.parent.Links.map(link => ({
     name: link.Name,
@@ -90,6 +126,11 @@ const convertToShardedDirectory = async (context, options) => {
   return result
 }
 
+/**
+ * @param {Context} context
+ * @param {Options} options
+ * @returns {Promise<{node:Parent, cid:CID, size:number}>}
+ */
 const addToDirectory = async (context, options) => {
   options.parent.rmLink(options.name)
   options.parent.addLink(new DAGLink(options.name, options.size, options.cid))
@@ -103,6 +144,10 @@ const addToDirectory = async (context, options) => {
     options.parent = new DAGNode(node.marshal(), options.parent.Links)
   }
 
+  /** @type {number} */
+  // @ts-ignore - hashAlg is string|void but mh.names is table with concrete
+  // keys so `hashAlg` is not specific enough (as it can be string that is not
+  // a key of `mh.names`).
   const hashAlg = mh.names[options.hashAlg]
 
   // Persist the new parent DAGNode
@@ -119,12 +164,18 @@ const addToDirectory = async (context, options) => {
   }
 }
 
+/**
+ * @param {Context} context
+ * @param {Options} options
+ */
 const addToShardedDirectory = async (context, options) => {
   const {
     shard, path
   } = await addFileToShardedDirectory(context, options)
 
   const result = await last(shard.flush('', context.block))
+
+  /** @type {Parent} */
   const node = await context.ipld.get(result.cid)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
@@ -138,11 +189,16 @@ const addToShardedDirectory = async (context, options) => {
     options.parent.rmLink(oldLink.Name)
   }
 
+  // @ts-ignore - newLink could be undefined
   options.parent.addLink(newLink)
 
   return updateHamtDirectory(context, options.parent.Links, path[0].bucket, options)
 }
 
+/**
+ * @param {Context} context
+ * @param {Options} options
+ */
 const addFileToShardedDirectory = async (context, options) => {
   const file = {
     name: options.name,
@@ -248,6 +304,14 @@ const addFileToShardedDirectory = async (context, options) => {
   }
 }
 
+/**
+ * @typedef {Object} Bucket
+ * @property {Bucket} _parent
+ * @property {number} _posAtParent
+ *
+ * @param {{bucket:Bucket, pos:number}} position
+ * @returns {Array<{prefix:string, bucket:Bucket}>}
+ */
 const toBucketPath = (position) => {
   let bucket = position.bucket
   let positionInBucket = position.pos

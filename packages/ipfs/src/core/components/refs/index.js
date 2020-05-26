@@ -15,7 +15,7 @@ const Format = {
 
 /**
  * @typedef {import("ipfs-interface").IPLDService} IPLDService
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ * @typedef {import("../init").PreloadService} Preload
  * @typedef {import("../resolve").Resolve} Resolve
  *
  * @typedef {Object} Ref
@@ -31,7 +31,7 @@ const Format = {
  * @property {null|Link} parent
  * @typedef {Object} RefsConfig
  * @property {IPLDService} ipld
- * @property {PreloadService} preload
+ * @property {Preload} preload
  * @property {Resolve} resolve
  *
  * @typedef {Object} RefsOptions
@@ -83,7 +83,7 @@ module.exports = function ({ ipld, resolve, preload }) {
 module.exports.Format = Format
 
 /**
- * @param {PreloadService} preload
+ * @param {Preload} preload
  * @param {string} ipfsPath
  * @param {RefsOptions} options
  * @returns {string}

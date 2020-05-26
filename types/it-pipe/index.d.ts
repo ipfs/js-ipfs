@@ -1,6 +1,7 @@
 type Source<T> =
   | Iterable<T>
   | AsyncIterable<T>
+  | (() => AsyncIterable<T>)
 
 interface Transform <I, O> {
   (source:AsyncIterable<I>):AsyncIterable<O>

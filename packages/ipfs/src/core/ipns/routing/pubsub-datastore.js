@@ -89,11 +89,11 @@ class IpnsPubsubDatastore {
    * @returns {*}
    */
   _handleSubscriptionKey (key) {
-    if (Buffer.isBuffer(key)) {
-      key = toB58String(key)
-    }
+    const id = Buffer.isBuffer(key)
+      ? toB58String(key)
+      : key
 
-    const subscriber = this._subscriptions[key]
+    const subscriber = this._subscriptions[id]
 
     if (!subscriber) {
       throw errcode(new Error(`key ${key} does not correspond to a subscription`), 'ERR_INVALID_KEY')

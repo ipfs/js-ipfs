@@ -11,7 +11,7 @@ export class DAGLink {
   constructor(name:string, size:number, cid:string|CID)
   Name:string;
   Tsize:number;
-  Hash:string;
+  Hash:CID;
 
   toJSON():DagLinkJSON;
   toString():string;
@@ -36,7 +36,7 @@ export class DAGNode {
   constructor(data:Buffer|string, links?:DAGLink[],  serializedSize?:number)
 
   readonly Data:Buffer
-  readonly Links:DagLinkJSON[]
+  readonly Links:DAGLink[]
   readonly data:Buffer
   readonly size:number
   toJSON():DAGNodeJSON

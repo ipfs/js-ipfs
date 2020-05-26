@@ -4,8 +4,32 @@ const defaultConfig = require('../../runtime/config-nodejs.js')
 const { isValidMultiaddr } = require('./utils')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {import('../init').IPFSRepo} Repo
+ */
+
+/**
+ * @typedef {Object} Context
+ * @property {Repo} repo
+ *
+ * @typedef {Object} AddOptions
+ * @property {boolean} [default]
+ * @property {number} [timeout]
+ * @property {AbortSignal} [signal]
+ *
+ * @param {Context} context
+ * @returns {Add}
+ */
 module.exports = ({ repo }) => {
-  return withTimeoutOption(async function add (multiaddr, options) {
+  /**
+   * @callback Add
+   * @param {string} multiaddr
+   * @param {AddOptions} [options]
+   * @returns {Promise<{Peers:string[]}>}
+   *
+   * @type {Add}
+   */
+  async function add (multiaddr, options) {
     options = options || {}
 
     if (multiaddr && !isValidMultiaddr(multiaddr)) {
@@ -23,5 +47,7 @@ module.exports = ({ repo }) => {
     return {
       Peers: options.default ? defaultConfig().Bootstrap : [multiaddr]
     }
-  })
+  }
+
+  return withTimeoutOption(add)
 }

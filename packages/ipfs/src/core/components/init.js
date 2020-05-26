@@ -44,11 +44,13 @@ const Components = require('./')
  * @property {{Enabled:boolean, Interval?:number, }} MDNS
  * @property {{Enabled:boolean}} webRTCStar
  *
+ * @typedef {(...args:any[]) => void} Log
+ *
  * @typedef {Object} AddressConfig
- * @property {Multiaddr} API
- * @property {Multiaddr[]} Delegates
- * @property {Multiaddr[]|Multiaddr} Gateway
- * @property {Multiaddr[]} Swarm
+ * @property {string} API
+ * @property {string[]} Delegates
+ * @property {string[]|string} Gateway
+ * @property {string[]} Swarm
  *
  * @typedef {Object} PubsubConfig
  * @property {'gossipsub'|'floodsub'} [Router='gossipsub']
@@ -61,13 +63,15 @@ const Components = require('./')
  * @typedef {Object} Datastore
  * @typedef {Object} KeychainConfig
  *
+ * @typedef {Object} DatastoreConfig
+ *
  * @typedef {Object} SwarmConfig
  * @property {{LowWater?:number, HighWater?:number}} ConnMgr
  *
  * @typedef {Object} IPFSConfig
  * @property {AddressConfig} [Addresses]
  * @property {string} [Profiles]
- * @property {Multiaddr[]} [Bootstrap]
+ * @property {string[]} [Bootstrap]
  * @property {DiscoverConfig} [Discovery]
  * @property {DatastoreConfig} [Datastore]
  * @property {IdentityConfig} [Identity]
@@ -99,7 +103,7 @@ const Components = require('./')
  *
  * @typedef {Object} InitConfig
  * @property {import("../api-manager")} apiManager
- * @property {(...args:any[]) => void} print
+ * @property {Log} print
  * @property {ConstructorOptions} options
  *
  * @typedef {InitSettings & ConstructorOptions} Options

@@ -12,6 +12,29 @@ const mh = require('multihashes')
 const last = require('it-last')
 const { Buffer } = require('buffer')
 
+/**
+ * @typedef {import('ipld-dag-pb').DAGLink} DAGLink
+ * @typedef {import('../../init').IPLD} IPLD
+ * @typedef {import('../../init').Block} Block
+ * @typedef {import('cids')} CID
+ */
+/**
+ * @typedef {number} Position
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @typedef {Object} UpdateHamtDirOptions
+ * @property {DAGNode} parent
+ * @property {string} hashAlg
+ * @property {0|1} [cidVersion]
+ * @property {boolean} [flush]
+ *
+ * @param {Context} context
+ * @param {DAGLink[]} links
+ * @param {Bucket} bucket
+ * @param {UpdateHamtDirOptions} options
+ * @returns {Promise<{node:DAGNode, cid:CID, size:number}>}
+ */
 const updateHamtDirectory = async (context, links, bucket, options) => {
   // update parent with new bit field
   const data = Buffer.from(bucket._children.bitField().reverse())
@@ -25,6 +48,8 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     mtime: node.mtime
   })
 
+  // @ts-ignore - `hashAlg` should be specefic code intsead of
+  // string
   const hashAlg = mh.names[options.hashAlg]
   const parent = new DAGNode(dir.marshal(), links)
   const cid = await context.ipld.put(parent, mc.DAG_PB, {
@@ -40,6 +65,12 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   }
 }
 
+/**
+ * @param {DAGLink[]} links
+ * @param {Bucket|null|void} [rootBucket]
+ * @param {Bucket|null|void} [parentBucket]
+ * @param {Position|null|void} [positionAtParent]
+ */
 const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtParent) => {
   // recreate this level of the HAMT
   const bucket = new Bucket({
@@ -56,6 +87,11 @@ const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtPare
   return bucket
 }
 
+/**
+ * @param {DAGLink[]} links
+ * @param {Bucket} bucket
+ * @param {Bucket|null|void} [rootBucket]
+ */
 const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
   await Promise.all(
     links.map(link => {
@@ -77,20 +113,38 @@ const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
   )
 }
 
+/**
+ * @param {number} position
+ * @returns {string}
+ */
 const toPrefix = (position) => {
   return position
+    // @ts-ignore - should be number 16
     .toString('16')
     .toUpperCase()
     .padStart(2, '0')
     .substring(0, 2)
 }
 
+/**
+ * @typedef {Object} PathSegment
+ * @property {Bucket} bucket
+ * @property {string} prefix
+ * @property {DAGNode} [node]
+ */
+/**
+ * @param {Context} context
+ * @param {string} fileName
+ * @param {DAGNode} rootNode
+ * @returns {Promise<{path:PathSegment[], rootBucket:Bucket}>}
+ */
 const generatePath = async (context, fileName, rootNode) => {
   // start at the root bucket and descend, loading nodes as we go
   const rootBucket = await recreateHamtLevel(rootNode.Links, null, null, null)
   const position = await rootBucket._findNewBucketAndPos(fileName)
 
   // the path to the root bucket
+  /** @type {PathSegment[]} */
   const path = [{
     bucket: position.bucket,
     prefix: toPrefix(position.pos)
@@ -173,6 +227,15 @@ const generatePath = async (context, fileName, rootNode) => {
   }
 }
 
+/**
+ * @typedef {Object} ShardOptions
+ * @property {Date|UnixFS.UnixFSTime} [mtime]
+ * @property {number} [mode]
+ *
+ * @param {Context} context
+ * @param {Array<{name:string, size:number, cid:CID}>} contents
+ * @param {ShardOptions} options
+ */
 const createShard = async (context, contents, options) => {
   const shard = new DirSharded({
     root: true,

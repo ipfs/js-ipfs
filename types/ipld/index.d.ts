@@ -18,7 +18,7 @@ type TreeOptions = TaskOptions & {
 }
 
 
-interface IPLDService<IPLDNode=Object> {
+interface IPLDService<IPLDNode=any> {
   /**
    * Stores the given IPLD Node of a recognized IPLD Format.
    */
@@ -38,7 +38,7 @@ interface IPLDService<IPLDNode=Object> {
   /**
    * Retrieve several IPLD Nodes at once.
    */
-  getMany(source:AsyncIterable<CID>, options?:TaskOptions):AsyncIterable<IPLDNode>
+  getMany(source:Many<CID>, options?:TaskOptions):AsyncIterable<IPLDNode>
   /**
    * Remove an IPLD Node by the given cid
    */
@@ -86,7 +86,7 @@ interface IPLDFormatUtil<IPLDNode> {
   /**
    * Serialize an IPLD Node into a binary blob.
    */
-  serialize(ipldNode:IPLDNode):Wait<Buffer>,
+  serialize(ipldNode:IPLDNode):Buffer,
   /**
    * Deserialize a binary blob into an IPLD Node.
    */
@@ -116,13 +116,17 @@ type IPLDOptions<IPLDNode> = {
   loadFormat?: (codec:number) => IPLDFormat<IPLDNode>
 }
 
+type Many<T> =
+  | Iterable<T>
+  | AsyncIterable<T>
+
 declare class IPLD implements IPLDService<Object> {
   constructor(options:IPLDOptions<Object>)
   put(dagNode: Object, format: string | number, options: PutOptions): Promise<CID>
   putMany(source: AsyncIterable<Object>, format: string | number, options: PutOptions): AsyncIterable<CID>
   resolve(cid: CID, path: string, options?: TaskOptions | undefined): AsyncIterable<ResolvedIPLDNode<Object>>
   get(cid: CID, options?: TaskOptions | undefined): Promise<Object>
-  getMany(source: AsyncIterable<CID>, options?: TaskOptions | undefined): AsyncIterable<Object>
+  getMany(source: Many<CID>, options?: TaskOptions | undefined): AsyncIterable<Object>
   remove(cid: CID, options?: TaskOptions | undefined): Promise<CID>
   removeMany(cids: AsyncIterable<CID>, options?: TaskOptions | undefined): AsyncIterable<CID>
   tree(cid: CID, path?: string | undefined, options?: TreeOptions | undefined): AsyncIterable<string>

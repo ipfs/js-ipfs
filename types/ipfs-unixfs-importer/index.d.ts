@@ -1,8 +1,11 @@
 import { Readable } from 'stream'
 import { IPLDService } from "ipfs-interface"
+import { DAG, Block } from "../../packages/ipfs/src/core/components/init"
 import { DAGNode as DAGPBNode } from "ipld-dag-pb"
 import CID from 'cids'
 import UnixFS from 'ipfs-unixfs'
+import { InputTime } from "ipfs-unixfs"
+
 
 type Codec = 'dag-pb' | 'dag-cbor' | 'raw'
 
@@ -155,9 +158,12 @@ interface ImporterOptions {
   wrapWithDirectory?: boolean
 }
 
+
 interface ImporterInput {
-  path: string
+  path?: string
   content: Buffer | Iterable<Buffer> | Readable | AsyncIterable<Buffer>
+  mode?:number
+  mtime?: InputTime
 }
 
 interface ImporterOutput {
@@ -167,12 +173,17 @@ interface ImporterOutput {
   size: number
 }
 
-declare function importer(source: AsyncIterable<ImporterInput>, ipld: IPLDService, options: ImporterOptions): AsyncIterable<ImporterOutput>
+declare function importer(
+  source: AsyncIterable<ImporterInput> | Iterable<ImporterInput>,
+  ipld: IPLDService | DAG | Block,
+  options: ImporterOptions
+): AsyncIterable<ImporterOutput>
 declare namespace importer {
   export {
     ImporterOptions,
     ImporterOutput,
     ImporterInput,
+    InputTime,
 
 
     ChunkValidator,
@@ -183,5 +194,6 @@ declare namespace importer {
     TreeBuilder,
   }
 }
+
 
 export=importer
