@@ -7,6 +7,7 @@ const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
 const AbortController = require('abort-controller')
 const CID = require('cids')
+const delay = require('delay')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -73,6 +74,36 @@ module.exports = (common, options) => {
       controller.abort()
 
       await expect(getPromise).to.eventually.be.rejectedWith(/aborted/)
+
+      await waitForWantlistKeyToBeRemoved(ipfsA, cid.toString())
+    })
+
+    it('should keep blocks in the wantlist when only one request is cancelled', async () => {
+      const controller = new AbortController()
+      const otherController = new AbortController()
+      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
+
+      const getPromise = ipfsA.dag.get(cid, {
+        signal: controller.signal
+      })
+      const otherGetPromise = ipfsA.dag.get(cid, {
+        signal: otherController.signal
+      })
+
+      await waitForWantlistKey(ipfsA, cid.toString())
+
+      controller.abort()
+
+      await expect(getPromise).to.eventually.be.rejectedWith(/aborted/)
+
+      await delay(1000)
+
+      // cid should still be in the wantlist
+      await waitForWantlistKey(ipfsA, cid.toString())
+
+      otherController.abort()
+
+      await expect(otherGetPromise).to.eventually.be.rejectedWith(/aborted/)
 
       await waitForWantlistKeyToBeRemoved(ipfsA, cid.toString())
     })
