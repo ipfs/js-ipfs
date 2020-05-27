@@ -11,6 +11,8 @@ const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
 const { withTimeoutOption } = require('../utils')
 
+const WEBSOCKET_STAR_PROTO_CODE = 479
+
 module.exports = ({
   apiManager,
   options: constructorOptions,
@@ -40,6 +42,12 @@ module.exports = ({
     if (config.Addresses && config.Addresses.Swarm) {
       config.Addresses.Swarm.forEach(addr => {
         let ma = multiaddr(addr)
+
+        // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
+        // websocket-star support was removed from ipfs and libp2p
+        if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
+          throw new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779')
+        }
 
         // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
         // webrtc-star) can have the intermediary's peer ID in the address, so append our
@@ -133,7 +141,6 @@ module.exports = ({
     apiManager.update(api, () => undefined)
   } catch (err) {
     cancel()
-    startPromise.reject(err)
     throw err
   }
 
