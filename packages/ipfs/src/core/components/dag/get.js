@@ -12,7 +12,7 @@ module.exports = ({ ipld, preload }) => {
     }
 
     if (path == null || path === '/') {
-      const value = await ipld.get(cid)
+      const value = await ipld.get(cid, options)
 
       return {
         value,
