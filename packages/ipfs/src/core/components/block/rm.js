@@ -79,6 +79,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
             }
 
             // remove has check when https://github.com/ipfs/js-ipfs-block-service/pull/88 is merged
+            // @ts-ignore - _repo is not available on blockService
             const has = await blockService._repo.blocks.has(cid)
 
             if (!has) {

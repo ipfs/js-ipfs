@@ -6,7 +6,7 @@ const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 /**
  * @typedef {import("ipfs-interface").IPLDService} IPLDService
- * @typedef {import("ipfs-interface").PreloadService} PreloadService
+ * @typedef {import("./init").PreloadService} PreloadService
  * @typedef {import("../utils").WithTimeoutOptions} WithTimeoutOptions
  * @typedef {import("ipfs-unixfs-exporter").UnixFSEntry} UnixFSEntry
  * @typedef {import("ipfs-unixfs-exporter").UnixFSDirectory} UnixFSDirectory

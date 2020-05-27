@@ -1,11 +1,11 @@
-// @ts-ignore
+// @ts-nocheck
 'use strict'
 
 const errCode = require('err-code')
 
 /**
  * @template A, B
- * @typedef {Partial<A> & B} Applied
+ * @typedef {A & B} Applied
  */
 
 /**

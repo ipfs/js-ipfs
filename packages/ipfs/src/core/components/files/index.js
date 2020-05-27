@@ -26,6 +26,9 @@ const unwrappedOperations = {
   ls: require('./ls')
 }
 
+/**
+ * @param {*} context
+ */
 const wrap = ({
   options, mfs, operations, lock
 }) => {
@@ -40,6 +43,10 @@ const defaultOptions = {
   repo: null
 }
 
+/**
+ * @param {*} options
+ * @returns {Files}
+ */
 function createMfs (options) {
   const {
     repoOwner
@@ -52,14 +59,23 @@ function createMfs (options) {
 
   const lock = createLock(repoOwner)
 
+  /**
+   * @param {*} operation
+   * @returns {Promise<*>}
+   */
   const readLock = (operation) => {
     return lock.readLock(operation)
   }
 
+  /**
+   * @param {*} operation
+   * @returns {Promise<*>}
+   */
   const writeLock = (operation) => {
     return lock.writeLock(operation)
   }
 
+  /** @type {any} */
   const mfs = {}
 
   wrap({
@@ -70,6 +86,7 @@ function createMfs (options) {
   })
 
   Object.keys(unwrappedOperations).forEach(key => {
+    // @ts-ignore
     mfs[key] = unwrappedOperations[key](options)
   })
 
@@ -77,18 +94,54 @@ function createMfs (options) {
 }
 
 /**
+ * @typedef {ReturnType<import('./chmod')>} Chmod
+ * @typedef {ReturnType<import('./cp')>} Cp
+ * @typedef {ReturnType<import('./flush')>} Flush
+ * @typedef {ReturnType<import('./ls')>} Ls
+ * @typedef {ReturnType<import('./mkdir')>} Mkdir
+ * @typedef {ReturnType<import('./mv')>} Mv
+ * @typedef {ReturnType<import('./read')>} Read
+ * @typedef {ReturnType<import('./rm')>} Rm
  * @typedef {ReturnType<import('./stat')>} Stat
  * @typedef {ReturnType<import('./touch')>} MFSTouch
  * @typedef {ReturnType<import('./write')>} Write
- * @typedef {ReturnType<import('./chmod')>} Chmod
  */
 
 /**
  * @typedef {Object} Files
+ * @property {Chmod} chmod
+ * @property {Cp} cp
+ * @property {Flush} flush
+ * @property {Ls} ls
+ * @property {Mkdir} mkdir
+ * @property {Mkdir} mv
+ * @property {Read} read
+ * @property {Rm} rm
  * @property {Stat} stat
  * @property {Touch} touch
  * @property {Write} write
- * @property {Chmod} chmod
+ */
+
+/**
+* @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ * @typedef {import('ipfs-block-service')} BlockService
+ * @typedef {import('../init').PreloadService} Preload
+ * @typedef {import('../init').ConstructorOptions} ConstructorOptions
+ */
+
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {BlockService} blockService
+ * @property {Repo} repo
+ * @property {Preload} preload
+ * @property {ConstructorOptions} options
+ *
+ * @param {Context} context
+ * @returns {Files}
  */
 
 module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {
@@ -100,6 +153,12 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     repoOwner: constructorOptions.repoOwner
   })
 
+  /**
+   * @template F
+   * @param {F} fn
+   * @returns {F}
+   */
+  // @ts-ignore - don't want to type args
   const withPreload = fn => (...args) => {
     const paths = args.filter(arg => isIpfs.ipfsPath(arg) || isIpfs.cid(arg))
 
@@ -110,6 +169,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
       }
     }
 
+    // @ts-ignore fn was not constraint to be a function
     return fn(...args)
   }
 

@@ -21,12 +21,44 @@ const defaultOptions = {
   shardSplitThreshold: 1000
 }
 
+/**
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ * @typedef {import('cids')} CID
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {Repo} repo
+ * @typedef {Object} CpOptions
+ * @property {boolean} [parents=false] - If true, create intermediate directories
+ * @property {boolean} [p] - Same as `parents` option.
+ * @property {boolean} [flush=true] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ * @property {number} [timeout]
+ * @property {AbortSignal} [signal]
+ *
+ * @param {Context} context
+ * @returns {Cp}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsCp (...args) {
-    const options = applyDefaultOptions(args, defaultOptions)
-    let {
-      sources, destination
-    } = await toSourcesAndDestination(context, args)
+  /**
+   * @callback Cp
+   * @param {string|CID|string[]|CID[]} from
+   * @param {string|CID} to
+   * @param {CpOptions} options
+   * @return {Promise<void>}
+   *
+   * @type {Cp}
+   */
+  async function mfsCp (...args) {
+    /** @type {CpOptions} */
+    const options = (applyDefaultOptions(args, defaultOptions))
+    // @ts-ignore - toSourcesAndDestination doesn't expect options
+    let { sources, destination } = await toSourcesAndDestination(context, args)
 
     if (!sources.length) {
       throw errCode(new Error('Please supply at least one source'), 'ERR_INVALID_PARAMS')
@@ -35,6 +67,7 @@ module.exports = (context) => {
     options.parents = options.p || options.parents
 
     // make sure all sources exist
+    // @ts-ignore - TS fails to inver type of source
     const missing = sources.find(source => !source.exists)
 
     if (missing) {
@@ -82,6 +115,7 @@ module.exports = (context) => {
     }
 
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
+    // @ts-ignore - toTrail takes two args
     const trail = await toTrail(context, destinationPath, options)
 
     if (sources.length === 1) {
@@ -95,15 +129,28 @@ module.exports = (context) => {
 
     log('Multiple sources, wrapping in a directory')
     return copyToDirectory(context, sources, destination, trail, options)
-  })
+  }
+
+  return withTimeoutOption(mfsCp)
 }
 
+/**
+ * @param {*} destination
+ * @returns {boolean}
+ */
 const isDirectory = (destination) => {
   return destination.unixfs &&
     destination.unixfs.type &&
     destination.unixfs.type.includes('directory')
 }
 
+/**
+ * @param {Context} context
+ * @param {*} source
+ * @param {*} destination
+ * @param {*} destinationTrail
+ * @param {CpOptions} options
+ */
 const copyToFile = async (context, source, destination, destinationTrail, options) => {
   let parent = destinationTrail.pop()
 
@@ -118,6 +165,13 @@ const copyToFile = async (context, source, destination, destinationTrail, option
   await updateMfsRoot(context, newRootCid)
 }
 
+/**
+ * @param {Context} context
+ * @param {*} sources
+ * @param {*} destination
+ * @param {*} destinationTrail
+ * @param {CpOptions} options
+ */
 const copyToDirectory = async (context, sources, destination, destinationTrail, options) => {
   // copy all the sources to the destination
   for (let i = 0; i < sources.length; i++) {
@@ -135,6 +189,13 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
   await updateMfsRoot(context, newRootCid)
 }
 
+/**
+ * @param {Context} context
+ * @param {*} source
+ * @param {*} childName
+ * @param {*} parent
+ * @param {CpOptions} options
+ */
 const addSourceToParent = async (context, source, childName, parent, options) => {
   const sourceBlock = await context.repo.blocks.get(source.cid)
 

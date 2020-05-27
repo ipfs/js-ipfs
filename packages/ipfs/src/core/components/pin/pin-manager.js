@@ -63,12 +63,13 @@ class PinManager {
 
   /**
    * @param {Object} options
-   * @param {CID} options.cid
+   * @param {CID|string} options.cid
    * @param {boolean} [options.preload]
    * @param {function(CID):void} [options.onCid]
    */
   async _walkDag ({ cid, preload = false, onCid = () => {} }) {
     if (!CID.isCID(cid)) {
+      // @ts-ignore
       cid = new CID(cid)
     }
 
@@ -98,7 +99,7 @@ class PinManager {
     const queue = new Queue({
       concurrency: WALK_DAG_CONCURRENCY_LIMIT
     })
-    queue.add(walk(cid))
+    queue.add(walk(/** @type {CID} */(cid)))
 
     await queue.onIdle()
   }
@@ -314,9 +315,10 @@ class PinManager {
   }
 
   /**
-   * @param {CID} cid
+   * @param {CID|string} cid
    * @param {Object} options
    * @param {boolean} [options.preload]
+   * @param {AbortSignal} [options.signal]
    */
   async fetchCompleteDag (cid, options) {
     await this._walkDag({

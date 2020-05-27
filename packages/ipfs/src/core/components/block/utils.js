@@ -3,6 +3,10 @@
 const CID = require('cids')
 const errCode = require('err-code')
 
+/**
+ * @param {*} cid
+ * @returns {CID}
+ */
 exports.cleanCid = cid => {
   if (CID.isCID(cid)) {
     return cid

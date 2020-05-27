@@ -27,37 +27,8 @@
   },
   "include": [
     "src",
-    "../../node_modules/ipfs-block-service/src/**/**.js",
-    "../../node_modules/multihashing-async/src/**/**.js",
-    "../../node_modules/timeout-abort-controller/**/**.js",
-    "../../node_modules/abort-controller/**/**.js",
-    "../../node_modules/any-signal/**/**.js",
-    "../../node_modules/ipfs-bitswap/src/**/**.js",
-    "../../node_modules/libp2p-keychain/src/**/**.js",
-    "../../node_modules/libp2p-floodsub/src/**/**.js",
-    "../../node_modules/libp2p-tcp/src/**/**.js",
-    "../../node_modules/libp2p-mdns/src/**/**.js",
-    "../../node_modules/libp2p-websockets/src/**/**.js",
-    "../../node_modules/libp2p-kad-dht/src/**/**.js",
-    "../../node_modules/libp2p-mplex/src/**/**.js",
-    "../../node_modules/libp2p-secio/src/**/**.js",
-    "../../node_modules/libp2p-*/src/**/**.js",
-    "../../node_modules/ipld-raw/src/**/**.js",
-    "../../node_modules/ipld-dag-cbor/src/**/**.js",
-    "../../node_modules/ipns/src/**/**.js",
-    "../../node_modules/multihashes",
-    "../../node_modules/multihashes/src/**/**.js",
-    "../../node_modules/multihashing-async",
-    "../../node_modules/multihashing-async/src/**/**.js",
-    "../../node_modules/datastore-pubsub/src/**/**.js",
-    "../../node_modules/datastore-core/src/**/**.js",
-    "../../node_modules/is-domain-name/**/**.js",
-    "../../node_modules/ipfs-utils/src/files/glob-source.js",
-    "../../node_modules/ipfs-utils/src/http.js",
     "node_modules/ipfs-core-utils/src/files/normalise-input.js",
-    "../../node_modules/bignumber.js/**/**.js",
-    "../../node_modules/dag-cbor-links/src/**/**.js",
-    "../../node_modules/hamt-sharding/src/**/**.js"
+    "../../node_modules/dag-cbor-links/src/**/**.js"
   ],
   "exclude": [
     "dist",
@@ -65,7 +36,7 @@
     "src/http/**/**.js",
     "src/cli/**/**.js",
     "node_modules",
-    "src/core/components/object/**/*.js"
+    "src/core/components/object/**/*.js",
   ],
   "compileOnSave": false
 }

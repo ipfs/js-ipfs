@@ -205,7 +205,7 @@ function calculateMode (mode, metadata) {
  * @typedef {Object} Context
  * @property {IPLD} ipld
  * @property {Block} block
- * @property {Repo} repo *
+ * @property {Repo} repo
  * @typedef {Object} ChmodOptions
  * @property {boolean} [recursive]
  * @property {boolean} [mfsChmod]

@@ -75,6 +75,7 @@ declare class Repo {
   put(key:string|Buffer|Key, value:Buffer):Promise<void>;
   get(key:string|Buffer|Key):Promise<Buffer>;
 
+  root: DataStore;
   blocks: BlockStore;
   datastore: DataStore;
   config: ConfigStore;

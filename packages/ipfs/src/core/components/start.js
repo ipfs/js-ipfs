@@ -43,18 +43,14 @@ const { withTimeoutOption } = require('../utils')
  * @typedef {Object} StartConfig
  * @property {ApiManage} apiManager
  * @property {ConstructorOptions} options
- * @property {BitSwap} bitswap
  * @property {BlockService} blockService
  * @property {GCLock} gcLock
  * @property {InitOptions} initOptions
  * @property {IPLDService} ipld
- * @property {IPNSService} ipns
  * @property {Keychain} keychain
- * @property {LibP2PService} libp2p
  * @property {PeerInfo} peerInfo
  * @property {Preload} preload
  * @property {PinManager} [pinManager]
- * @property {MFSPreload} mfsPreload
  * @property {Repo} repo
  * @property {Log} print
  *

@@ -67,7 +67,7 @@ declare function exporter(cid:CID|string, ipld:IPLDService, options?: ExportOpti
 
 declare namespace exporter {
   export function path(path: CID | Buffer | string, ipld: IPLDService, options?: ExportOptions): AsyncIterable<ExporterEntry>;
-  export function recursive(cid: CID, ipld: IPLDService, options?: ExportOptions): AsyncIterable<ExporterEntry>;
+  export function recursive(cid: string | CID, ipld: IPLDService, options?: ExportOptions): AsyncIterable<ExporterEntry>;
 
   export {
     ExporterEntry,

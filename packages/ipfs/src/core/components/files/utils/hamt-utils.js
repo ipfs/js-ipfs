@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict'
 
 const {
@@ -228,12 +229,17 @@ const generatePath = async (context, fileName, rootNode) => {
 }
 
 /**
+ * @typedef {Object} Input
+ * @property {string|void} [name]
+ * @property {number} size
+ * @property {CID} cid
+ *
  * @typedef {Object} ShardOptions
  * @property {Date|UnixFS.UnixFSTime} [mtime]
  * @property {number} [mode]
  *
  * @param {Context} context
- * @param {Array<{name:string, size:number, cid:CID}>} contents
+ * @param {Array<Input>} contents
  * @param {ShardOptions} options
  */
 const createShard = async (context, contents, options) => {

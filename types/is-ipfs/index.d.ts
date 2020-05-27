@@ -15,7 +15,7 @@ export function cid(hash: any): any;
 
 export function cidPath(path: any): void;
 
-export function ipfsPath(path: any): void;
+export function ipfsPath(path: any): boolean;
 
 export function ipfsSubdomain(url: any): void;
 

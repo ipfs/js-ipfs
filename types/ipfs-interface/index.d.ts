@@ -43,7 +43,7 @@ export interface DagService {
 }
 
 
-type DialOptions = {
+export type DialOptions = {
   signal?:AbortSignal
 }
 
@@ -59,12 +59,20 @@ type ProviderOptions = {
 
 export type Address = PeerInfo|PeerId|Multiaddr|string
 
+export type TransportListener = any
+export interface Transport {
+    dial(address: Multiaddr, options?: DialOptions): Connection | Promise<Connection>
+    createListener(options: any, handler?: LibP2PHandler): TransportListener
+    filter(multiaddrs: Multiaddr[]): Multiaddr[]
+  }
+
+
 export interface DuplexStream<I, O, R=void> {
   source:AsyncIterable<I>
   sink(output:AsyncIterable<O>):Promise<R>
 }
 
-type LibP2PHandler =
+export type LibP2PHandler =
   (info:{connection:Connection, stream:DuplexStream<Buffer, Buffer>, protocol:string}) => void
 
 export interface PeerRouting {
@@ -162,4 +170,4 @@ export interface LibP2PService {
   _dht:any
 }
 
-export { IPLDService, IPNSService }
+export { IPLDService, IPNSService, Connection }

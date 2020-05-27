@@ -24,22 +24,27 @@ const defaultOptions = {
 
 /**
  * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-unixfs').UnixFSTime} UnixFSTime
  * @typedef {import('../init').IPLD} IPLD
  * @typedef {import('../init').Block} Block
+ * @typedef {import('../init').IPFSRepo} Repo
  */
 /**
  * @typedef {Object} Context
  * @property {IPLD} ipld
  * @property {Block} block
+ * @property {Repo} repo
  */
 /**
  *
  * @typedef {Object} TouchOptions
  * @property {boolean} [flush]
  * @property {number} [shardSplitThreshold]
+ * @property {0|1} [cidVersion]
+ * @property {Date|UnixFSTime} [mtime]
  *
  * @param {Context} context
- * @returns {Touch}
+ * @returns {MFSTouch}
  */
 module.exports = (context) => {
   /**

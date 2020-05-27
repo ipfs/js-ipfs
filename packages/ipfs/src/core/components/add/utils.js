@@ -69,6 +69,11 @@ const parseRabinString = (chunker) => {
   return options
 }
 
+/**
+ * @param {string} str
+ * @param {string} name
+ * @returns {number}
+ */
 const parseChunkSize = (str, name) => {
   const size = parseInt(str)
   if (isNaN(size)) {

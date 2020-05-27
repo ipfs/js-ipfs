@@ -22,8 +22,44 @@ const defaultOptions = {
   mtime: null
 }
 
+/**
+ * @typedef {import('./utils/to-mfs-path').PathInfo} PathInfo
+ * @typedef {import('ipfs-unixfs-importer').InputTime} InputTime
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {Repo} repo
+ *
+ * @typedef {Object} MkdirOptions
+ * @property {boolean} [parents=false] - If true, create intermediate directories
+ * @property {number} [mode] - An integer that represents the file mode
+ * @property {InputTime} [mtime] - Modification time
+ * @property {boolean} [flush=true] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ * @property {number} [timeout] - A timeout in ms
+ * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call
+ */
+
+/**
+ * @param {Context} context
+ * @returns {Mkdir}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsMkdir (path, options) {
+  /**
+   * @callback Mkdir
+   * @param {string} path
+   * @param {MkdirOptions} [options]
+   * @returns {Promise<void>}
+   *
+   * @type {Mkdir}
+   */
+  async function mfsMkdir (path, options) {
     options = applyDefaultOptions(options, defaultOptions)
 
     if (!path) {
@@ -65,6 +101,7 @@ module.exports = (context) => {
       try {
         parent = await exporter(subPath, context.ipld)
         log(`${subPath} existed`)
+        // @ts-ignore - Could be non dab-pb node
         log(`${subPath} had children ${parent.node.Links.map(link => link.Name)}`)
 
         if (i === pathComponents.length) {
@@ -101,9 +138,20 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid)
-  })
+  }
+
+  return withTimeoutOption(mfsMkdir)
 }
 
+/**
+ * @param {Context} context
+ * @param {string} childName
+ * @param {*} emptyDir
+ * @param {*} parent
+ * @param {*} trail
+ * @param {MkdirOptions} options
+ * @returns {Promise<void>}
+ */
 const addEmptyDir = async (context, childName, emptyDir, parent, trail, options) => {
   log(`Adding empty dir called ${childName} to ${parent.cid}`)
 

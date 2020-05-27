@@ -40,7 +40,7 @@ declare class UnixFS<T extends UnixFS.DataType = UnixFS.DataType> {
 
   type:T
   mode:number
-  mtime:UnixFSTime | Date
+  mtime: UnixFSTime | Date
 
 
   addBlockSize(size:number): void;

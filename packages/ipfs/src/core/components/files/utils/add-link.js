@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict'
 
 const {
@@ -111,6 +112,7 @@ const addLink = async (context, options) => {
  * @param {Options} options
  */
 const convertToShardedDirectory = async (context, options) => {
+  // @ts-ignore - options.size and options.cid might be omitted
   const result = await createShard(context, options.parent.Links.map(link => ({
     name: link.Name,
     size: link.Tsize,

@@ -17,19 +17,48 @@ const defaultOptions = {
   flush: true
 }
 
+/**
+ * @typedef {import('../init').IPLD} IPLD
+ * @typedef {import('../init').IPFSRepo} Repo
+ * @typedef {import('../index').Block} Block
+ * @typedef {import('cids')} CID
+ */
+/**
+ * @typedef {Object} Context
+ * @property {IPLD} ipld
+ * @property {Block} block
+ * @property {Repo} repo
+ * @typedef {Object} RmOptions
+ * @property {boolean} [recursive=false] - If true all paths under the specifed path(s) will be removed
+ * @property {boolean} [flush=true] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ * @property {number} [timeout]
+ * @property {AbortSignal} [signal]
+ *
+ * @param {Context} context
+ * @returns {Rm}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsRm () {
-    const args = Array.from(arguments)
-
-    const {
-      sources
-    } = await toSources(context, args, defaultOptions)
-    const options = applyDefaultOptions(args, defaultOptions)
+  /**
+   * @callback Rm
+   * @param {string|string[]|CID|CID[]} paths
+   * @param {RmOptions} [options]
+   * @returns {Promise<void>}
+   *
+   * @type {Rm}
+   */
+  async function mfsRm (...args) {
+    // @ts-ignore - toSources doesn't expect options
+    const { sources } = await toSources(context, args, defaultOptions)
+    /** @type {RmOptions} */
+    const options = (applyDefaultOptions(args, defaultOptions))
 
     if (!sources.length) {
       throw errCode(new Error('Please supply at least one path to remove'), 'ERR_INVALID_PARAMS')
     }
 
+    // @ts-ignore - fails to infer source
     sources.forEach(source => {
       if (source.path === '/') {
         throw errCode(new Error('Cannot delete root'), 'ERR_INVALID_PARAMS')
@@ -39,11 +68,19 @@ module.exports = (context) => {
     for (const source of sources) {
       await removePath(context, source.path, options)
     }
-  })
+  }
+
+  return withTimeoutOption(mfsRm)
 }
 
+/**
+ * @param {Context} context
+ * @param {string} path
+ * @param {RmOptions} options
+ */
 const removePath = async (context, path, options) => {
   const mfsPath = await toMfsPath(context, path)
+  // @ts-ignore - two args are expected
   const trail = await toTrail(context, mfsPath.mfsPath, options)
   const child = trail.pop()
   const parent = trail[trail.length - 1]
