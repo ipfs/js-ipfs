@@ -48,7 +48,8 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
     try {
       const cid = await ipld.put(dagNode, options.format, {
         hashAlg: options.hashAlg,
-        cidVersion: options.version
+        cidVersion: options.version,
+        signal: options.signal
       })
 
       if (options.pin) {

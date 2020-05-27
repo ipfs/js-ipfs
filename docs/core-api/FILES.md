@@ -613,7 +613,7 @@ An optional object which may have the following keys:
 | ---- | ---- | ------- | ----------- |
 | hash | `boolean` | `false` | If true, return only the CID |
 | size | `boolean` | `false` | If true, return only the size |
-| withLocal | `boolean` | `false` | If true, compute the amount of the DAG that is local and if popssible the total size |
+| withLocal | `boolean` | `false` | If true, compute the amount of the DAG that is local and if possible the total size |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
