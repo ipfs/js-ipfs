@@ -807,7 +807,12 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
+| `Promise<Object>` | If action is successfully completed. Otherwise an error will be thrown |
+
+The returned object has the following keys:
+
+- `cid` a [CID][cid] instance
+- `size` is an integer with the file size in Bytes
 
 #### Example
 
