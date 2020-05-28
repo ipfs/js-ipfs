@@ -4,6 +4,7 @@ const Bitswap = require('ipfs-bitswap')
 const multiaddr = require('multiaddr')
 const get = require('dlv')
 const defer = require('p-defer')
+const errCode = require('err-code')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
 const { AlreadyInitializedError, NotEnabledError } = require('../errors')
@@ -46,7 +47,7 @@ module.exports = ({
         // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
         // websocket-star support was removed from ipfs and libp2p
         if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
-          throw new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779')
+          throw errCode(new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
         }
 
         // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
@@ -141,6 +142,7 @@ module.exports = ({
     apiManager.update(api, () => undefined)
   } catch (err) {
     cancel()
+    startPromise.reject(err)
     throw err
   }
 

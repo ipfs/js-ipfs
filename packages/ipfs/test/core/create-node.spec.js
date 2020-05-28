@@ -265,13 +265,6 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    try {
-      await node.start()
-    } catch (err) {
-      expect(err).to.exist()
-      return
-    }
-
-    throw new Error('should error when receiving websocket-star swarm addresses')
+    await expect(node.start()).to.eventually.be.rejected().with.property('code', 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
   })
 })
