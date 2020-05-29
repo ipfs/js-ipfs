@@ -17,7 +17,7 @@
     "terser-webpack-plugin": "^1.2.1",
     "test-ipfs-example": "^2.0.1",
     "webpack": "^4.28.4",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "ipfs": "^0.44.0",
