@@ -2,6 +2,7 @@
   "name": "example-browser-video-streaming",
   "description": "IPFS browser video streaming example",
   "main": "index.html",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "serve": "http-server . -a 127.0.0.1 -p 8888",

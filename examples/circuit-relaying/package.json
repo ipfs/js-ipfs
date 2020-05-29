@@ -1,6 +1,7 @@
 {
   "name": "example-circuit-relaying",
   "description": "IPFS quick msg",
+  "version": "0.1.1",
   "main": "index.js",
   "private": true,
   "scripts": {

@@ -1,6 +1,7 @@
 {
   "name": "example-ipfs-101",
   "description": "this package.json needs to exist because of new npm config https://github.com/ipfs/js-ipfs/issues/977#issuecomment-326741092",
+  "version": "1.0.0",
   "main": "1.js",
   "private": true,
   "scripts": {

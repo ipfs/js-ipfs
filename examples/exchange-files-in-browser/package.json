@@ -1,5 +1,6 @@
 {
   "name": "example-exchange-files-in-browser",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "clean": "rm -rf public/bundle.js",

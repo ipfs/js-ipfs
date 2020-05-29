@@ -1,6 +1,7 @@
 {
   "name": "example-explore-ethereum-blockchain",
   "description": "Exploring the ethereum blockchain with ipld",
+  "version": "1.0.2",
   "main": "index.js",
   "private": true,
   "scripts": {

@@ -1,6 +1,7 @@
 {
   "name": "example-running-multiple-nodes",
   "description": "How to run multiple IPFS nodes at the same time",
+  "version": "2.0.1",
   "main": "index.js",
   "private": true,
   "scripts": {

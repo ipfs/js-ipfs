@@ -1,6 +1,7 @@
 {
   "name": "example-traverse-ipld-graphs",
   "description": "How to traverse IPLD graphs",
+  "version": "2.0.1",
   "main": "index.js",
   "private": true,
   "scripts": {

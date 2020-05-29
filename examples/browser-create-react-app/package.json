@@ -1,5 +1,6 @@
 {
   "name": "example-browser-create-react-app",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "dot-prop": "^5.0.0",

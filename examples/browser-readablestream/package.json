@@ -2,6 +2,7 @@
   "name": "example-browser-readablestream",
   "description": "An example of how to play a video in a browser using a readable stream",
   "main": "index.js",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
