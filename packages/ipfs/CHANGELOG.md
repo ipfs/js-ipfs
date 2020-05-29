@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
+
+
+### Features
+
+* upgrade bitswap to use 1.2.0 and better wantlist performance ([18283dd](https://github.com/ipfs/js-ipfs/commit/18283dd8fb70af5ed93236482b2a5f89515c24e0))
+
+
+
+
+
 # [0.44.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.3...ipfs@0.44.0) (2020-05-18)
 
 
