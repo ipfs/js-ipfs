@@ -37,7 +37,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs-beta.ipfs.io for tips, how-tos and more
+* Check out https://docs.ipfs.io for tips, how-tos and more
 
 ## Lead Maintainer <!-- omit in toc -->
 

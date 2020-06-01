@@ -30,7 +30,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs-beta.ipfs.io for tips, how-tos and more
+* Check out https://docs.ipfs.io for tips, how-tos and more
 
 ## Lead Maintainer <!-- omit in toc -->
 
@@ -56,7 +56,7 @@ This project is broken into several modules, their purposes are:
 
 * [`/packages/ipfs`](./packages/ipfs) The core implementation
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
-* [`/packages/interface-ipfs-core`](./packages/interface-ipfs-core) Tests to ensure adherance of an implementation to the spec
+* [`/packages/interface-ipfs-core`](./packages/interface-ipfs-core) Tests to ensure adherence of an implementation to the spec
 * [`/packages/ipfs-core-utils`](./packages/ipfs-core-utils) Helpers and utilities common to core and the HTTP RPC API client
 
 ## Want to hack on IPFS?

@@ -1,6 +1,7 @@
 {
   "name": "example-browser-parceljs",
   "description": "",
+  "version": "1.0.2",
   "main": "index.js",
   "private": true,
   "browserslist": [
@@ -17,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ipfs": "^0.44.0"
+    "ipfs": "^0.45.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
@@ -28,6 +29,6 @@
     "babel-polyfill": "^6.26.0",
     "parcel-bundler": "^1.12.4",
     "standard": "^13.1.0",
-    "test-ipfs-example": "^2.0.1"
+    "test-ipfs-example": "^2.0.3"
   }
 }

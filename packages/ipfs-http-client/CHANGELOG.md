@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [44.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.0...ipfs-http-client@44.1.1) (2020-05-29)
+
+**Note:** Version bump only for package ipfs-http-client
+
+
+
+
+
 # [44.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.3...ipfs-http-client@44.1.0) (2020-05-18)
 
 

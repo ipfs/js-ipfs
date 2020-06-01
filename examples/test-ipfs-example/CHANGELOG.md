@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.2...test-ipfs-example@2.0.3) (2020-05-29)
+
+**Note:** Version bump only for package test-ipfs-example
+
+
+
+
+
 ## [2.0.2](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.1...test-ipfs-example@2.0.2) (2020-05-18)
 
 
