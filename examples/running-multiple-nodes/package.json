@@ -10,9 +10,9 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "test-ipfs-example": "^2.0.1"
+    "test-ipfs-example": "^2.0.3"
   },
   "dependencies": {
-    "ipfs": "^0.44.0"
+    "ipfs": "^0.45.0"
   }
 }

@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "dot-prop": "^5.0.0",
-    "ipfs": "^0.44.0",
+    "ipfs": "^0.45.0",
     "ipfs-css": "^0.13.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -12,7 +12,7 @@
     "tachyons": "^4.11.1"
   },
   "devDependencies": {
-    "test-ipfs-example": "^2.0.1"
+    "test-ipfs-example": "^2.0.3"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -11,12 +11,12 @@
   "license": "MIT",
   "dependencies": {
     "datastore-fs": "^1.1.0",
-    "ipfs": "^0.44.0",
+    "ipfs": "^0.45.0",
     "ipfs-repo": "^3.0.0",
     "it-all": "^1.0.1"
   },
   "devDependencies": {
     "execa": "^4.0.0",
-    "test-ipfs-example": "^2.0.1"
+    "test-ipfs-example": "^2.0.3"
   }
 }
