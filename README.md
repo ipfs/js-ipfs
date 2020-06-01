@@ -56,7 +56,7 @@ This project is broken into several modules, their purposes are:
 
 * [`/packages/ipfs`](./packages/ipfs) The core implementation
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
-* [`/packages/interface-ipfs-core`](./packages/interface-ipfs-core) Tests to ensure adherence of an implementation to the spec
+* [`/packages/interface-ipfs-core`](./packages/interface-ipfs-core) Tests to ensure adherance of an implementation to the spec
 * [`/packages/ipfs-core-utils`](./packages/ipfs-core-utils) Helpers and utilities common to core and the HTTP RPC API client
 
 ## Want to hack on IPFS?
