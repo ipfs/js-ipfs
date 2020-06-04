@@ -45,7 +45,7 @@ module.exports = (common, options) => {
       expect(config).to.be.an('object')
     })
 
-    it.only('should retrieve the whole config with options', async () => {
+    it('should retrieve the whole config with options', async () => {
       const config = await ipfs.config.get('', { signal: null })
 
       expect(config).to.be.an('object')
