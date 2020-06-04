@@ -26,7 +26,7 @@
   - [Returns](#returns-4)
   - [Example](#example-4)
 
-## `ipfs.config.get([key,] [options])`
+## `ipfs.config.get(key, [options])`
 
 > Returns the currently being used config. If the daemon is off, it returns the stored config.
 
@@ -34,7 +34,7 @@
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | `String` | The key of the value that should be fetched from the config file. If no key is passed, then the whole config will be returned.  |
+| key | `String` | The key of the value that should be fetched from the config file. An `undefined` or empty `string` value will return the full config object.  |
 
 ### Options
 

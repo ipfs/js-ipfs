@@ -18,7 +18,7 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, timeout }) {
-    const config = await ipfs.config.get({
+    const config = await ipfs.config.get('', {
       timeout
     })
     print(JSON.stringify(config, null, 4))

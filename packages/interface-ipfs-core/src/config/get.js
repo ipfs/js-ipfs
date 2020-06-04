@@ -7,7 +7,7 @@ const testTimeout = require('../utils/test-timeout')
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
- * @param {Object} options
+ * @param {object} options
  */
 module.exports = (common, options) => {
   const describe = getDescribe(options)
@@ -29,6 +29,24 @@ module.exports = (common, options) => {
 
     it('should retrieve the whole config', async () => {
       const config = await ipfs.config.get()
+
+      expect(config).to.be.an('object')
+    })
+
+    it('should retrieve the whole config with empty string', async () => {
+      const config = await ipfs.config.get('')
+
+      expect(config).to.be.an('object')
+    })
+
+    it('should retrieve the whole config with undefined', async () => {
+      const config = await ipfs.config.get(undefined)
+
+      expect(config).to.be.an('object')
+    })
+
+    it('should retrieve the whole config with options', async () => {
+      const config = await ipfs.config.get('', { timeout: 0 })
 
       expect(config).to.be.an('object')
     })
