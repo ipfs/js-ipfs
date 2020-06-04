@@ -51,7 +51,12 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.bitswap(commonFactory)
+  tests.bitswap(commonFactory, {
+    skip: [{
+      name: 'should get the wantlist by peer ID for a different node',
+      reason: 'unskip when https://github.com/ipfs/go-bitswap/pull/390 is released in go-ipfs'
+    }]
+  })
 
   tests.block(commonFactory, {
     skip: [{

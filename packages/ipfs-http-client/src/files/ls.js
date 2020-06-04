@@ -17,12 +17,8 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: CID.isCID(path) ? `/ipfs/${path}` : path,
-
-        // TODO the args below are not in the go-ipfs or interface core docs
-        long: options.long == null ? true : options.long,
-
-        // TODO: remove after go-ipfs 0.5 is released
-        l: options.long == null ? true : options.long,
+        // default long to true, diverges from go-ipfs where its false by default
+        long: true,
         ...options,
         stream: true
       }),

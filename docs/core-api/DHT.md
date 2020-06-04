@@ -126,7 +126,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | Buffer | The key associated with the value to find |
+| key | `Buffer` or `string` | The key associated with the value to find |
 
 ### Options
 
