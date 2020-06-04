@@ -8,6 +8,7 @@ const factory = require('../utils/factory')
 
 describe('id', function () {
   this.timeout(60 * 1000)
+
   const df = factory()
   let node
 
@@ -20,6 +21,8 @@ describe('id', function () {
       servers = [
         multiaddr('/ip4/127.0.0.1/tcp/14579/wss/p2p-webrtc-star')
       ]
+    } else if (isWebWorker) { // webworker does not support webrtc
+      servers = []
     }
 
     node = (await df.spawn({
