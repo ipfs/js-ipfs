@@ -9,12 +9,20 @@ const { collect } = require('./util')
  */
 /**
  * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-message-port-protocol/src/data').JSONValue} JSONValue
  * @typedef {import('ipfs-message-port-protocol/src/dag').DAGAPI} DAGAPI
- * @typedef {import('ipfs-message-port-protocol/src/dag').DAGNode} DAGNode
  * @typedef {import('ipfs-message-port-protocol/src/dag').PutDAG} PutDAG
  * @typedef {import('ipfs-message-port-protocol/src/dag').GetDAG} GetDAG
- * @typedef {import('ipfs-message-port-protocol/src/dag').DAGEntry} DAGEntry
  * @typedef {import('ipfs-message-port-protocol/src/dag').EnumerateDAG} EnumerateDAG
+ *
+ * @typedef {Object} ToJSON
+ * @property {function():JSONValue} toJSON
+ *
+ * @typedef {ToJSON|JSONValue} DAGNode
+ *
+ * @typedef {Object} DAGEntry
+ * @property {DAGNode} value
+ * @property {string} remainderPath
  */
 
 /**
@@ -29,8 +37,15 @@ class DAG {
   }
 
   /**
-   *
-   * @param {PutDAG} query
+   * @param {Object} query
+   * @param {JSONValue} query.dagNode
+   * @param {string} [query.format]
+   * @param {string} [query.hashAlg]
+   * @param {StringEncoded<CID>|void} [query.cid]
+   * @param {boolean} [query.pin]
+   * @param {boolean} [query.preload]
+   * @param {number} [query.timeout]
+   * @param {AbortSignal} [query.signal]
    * @returns {Promise<StringEncoded<CID>>}
    */
   async put (query) {
@@ -47,17 +62,28 @@ class DAG {
   }
 
   /**
+   * @typedef {Object} GetResult
+   * @property {Transferable[]} transfer
+   * @property {string} remainderPath
+   * @property {DAGNode} value
+   *
    * @param {GetDAG} query
-   * @returns {Promise<DAGEntry>}
+   * @returns {Promise<GetResult>}
    */
   async get (query) {
     const { cid, path, localResolve, timeout, signal } = query
-    const result = await this.ipfs.dag.get(new CID(cid), path, {
-      localResolve,
-      timeout,
-      signal
-    })
-    return result
+    const { value, remainderPath } = await this.ipfs.dag.get(
+      new CID(cid),
+      path,
+      {
+        localResolve,
+        timeout,
+        signal
+      }
+    )
+
+    const transfer = ArrayBuffer.isView(value) ? [value.buffer] : []
+    return { remainderPath, value, transfer }
   }
 
   /**

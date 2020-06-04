@@ -7,12 +7,11 @@ const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const CID = require('cids')
-const { activate } = require('./client')
+const { activate } = require('./util/client')
 
-let ipfs = null
-
-describe('.dag', () => {
-  this.timeout(20 * 1000)
+describe('dag', function () {
+  this.timeout(10 * 1000)
+  let ipfs = null
   before(() => {
     ipfs = activate()
   })
@@ -21,51 +20,50 @@ describe('.dag', () => {
     ipfs = null
   })
 
-  it('should be able to put and get a DAG node with format dag-pb', async () => {
-    const data = Buffer.from('some data')
-    const node = new DAGNode(data)
+  // describe('get', () => {
+  //   it('should throw error for invalid string CID input', () => {
+  //     return expect(ipfs.dag.get('INVALID CID'))
+  //       .to.eventually.be.rejected()
+  //       .and.to.have.property('code')
+  //       .that.equals('ERR_INVALID_CID')
+  //   })
 
-    let cid = await ipfs.dag.put(node, {
-      format: 'dag-pb',
-      hashAlg: 'sha2-256'
+  //   // it('should throw error for invalid buffer CID input', () => {
+  //   //   return expect(ipfs.dag.get(Buffer.from('INVALID CID')))
+  //   //     .to.eventually.be.rejected()
+  //   //     .and.to.have.property('code')
+  //   //     .that.equals('ERR_INVALID_CID')
+  //   // })
+  // })
+
+  // describe('tree', () => {
+  //   it('should throw error for invalid CID input', () => {
+  //     return expect(all(ipfs.dag.tree('INVALID CID')))
+  //       .to.eventually.be.rejected()
+  //       .and.to.have.property('code')
+  //       .that.equals('ERR_INVALID_CID')
+  //   })
+  // })
+
+  describe('ipfs.dag', () => {
+    it('should be able to put and get a DAG node with format dag-pb', async () => {
+      const data = Buffer.from('some data')
+      const { Data, Links } = new DAGNode(data)
+      const node = { Data, Links }
+
+      let cid = await ipfs.dag.put(node, {
+        format: 'dag-pb',
+        hashAlg: 'sha2-256'
+      })
+      cid = cid.toV0()
+      expect(cid.codec).to.equal('dag-pb')
+      cid = cid.toBaseEncodedString('base58btc')
+      // expect(cid).to.equal('bafybeig3t3eugdchignsgkou3ly2mmy4ic4gtfor7inftnqn3yq4ws3a5u')
+      expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+
+      const result = await ipfs.dag.get(cid)
+
+      expect(result.value.Data).to.deep.equal(data)
     })
-    expect(cid).to.be.instanceOf(CID)
-    cid = cid.toV0()
-    expect(cid.codec).to.equal('dag-pb')
-    cid = cid.toBaseEncodedString('base58btc')
-    // expect(cid).to.equal('bafybeig3t3eugdchignsgkou3ly2mmy4ic4gtfor7inftnqn3yq4ws3a5u')
-    expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
-
-    const result = await ipfs.dag.get(cid)
-
-    expect(result.value.Data).to.deep.equal(data)
   })
-
-  // it('should be able to put and get a DAG node with format dag-cbor', async () => {
-  //   const cbor = { foo: 'dag-cbor-bar' }
-  //   let cid = await ipfs.dag.put(cbor, {
-  //     format: 'dag-cbor',
-  //     hashAlg: 'sha2-256'
-  //   })
-
-  //   expect(cid.codec).to.equal('dag-cbor')
-  //   cid = cid.toBaseEncodedString('base32')
-  //   expect(cid).to.equal(
-  //     'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
-  //   )
-
-  //   const result = await ipfs.dag.get(cid)
-
-  //   expect(result.value).to.deep.equal(cbor)
-  // })
-
-  // it('should error when missing DAG resolver for multicodec from requested CID', async () => {
-  //   const block = await ipfs.block.put(Buffer.from([0, 1, 2, 3]), {
-  //     cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
-  //   })
-
-  //   await expect(ipfs.dag.get(block.cid)).to.be.rejectedWith(
-  //     'Missing IPLD format "git-raw"'
-  //   )
-  // })
 })

@@ -4,12 +4,12 @@ const IPFS = require('ipfs')
 const { IPFSService } = require('ipfs-message-port-server')
 const { Server } = require('ipfs-message-port-server/src/server')
 
-const main = async context => {
+const main = async connections => {
   const ipfs = await IPFS.create({ offline: true, start: false })
   const service = new IPFSService(ipfs)
   const server = new Server(service)
 
-  for (const event of listen(context, 'connect')) {
+  for await (const event of connections) {
     const port = event.ports[0]
     if (port) {
       server.connect(port)
@@ -17,18 +17,33 @@ const main = async context => {
   }
 }
 
-const listen = async function * (target, type, options) {
-  let next = () => {}
-  const read = () => new Promise(resolve => (next = resolve))
-  const write = event => next(event)
-  target.addEventListener(type, write, options)
-  try {
-    while (true) {
-      yield * await read()
-    }
-  } finally {
-    target.removeEventListener(type, write, options)
+const listen = function (target, type, options) {
+  const events = []
+  let resume
+  let ready = new Promise(resolve => (resume = resolve))
+
+  const write = event => {
+    events.push(event)
+    resume()
   }
+  const read = async () => {
+    await ready
+    ready = new Promise(resolve => (resume = resolve))
+    return events.splice(0)
+  }
+
+  const reader = async function * () {
+    try {
+      while (true) {
+        yield * await read()
+      }
+    } finally {
+      target.removeEventListener(type, write, options)
+    }
+  }
+
+  target.addEventListener(type, write, options)
+  return reader()
 }
 
-main(self)
+main(listen(self, 'connect'))

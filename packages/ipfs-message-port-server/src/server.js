@@ -177,7 +177,7 @@ class Server {
           data.id,
           new Query(data.namespace, data.method, data.input),
           /** @type {MessagePort} */
-          (event.source)
+          (event.target)
         )
         return undefined
       }
@@ -217,8 +217,8 @@ class Server {
           { type: 'result', id, result: { ok: true, value } },
           value.transfer || []
         )
-      } catch ({ name, message, stack }) {
-        const error = { name, message, stack }
+      } catch ({ name, message, stack, code }) {
+        const error = { name, message, stack, code }
         port.postMessage({ type: 'result', id, result: { ok: false, error } })
       }
     }
@@ -238,7 +238,7 @@ class Server {
       const procedure = service[method]
       if (typeof procedure === 'function') {
         try {
-          Promise.resolve(procedure.call(service, query)).then(
+          Promise.resolve(procedure.call(service, query.input)).then(
             query.succeed,
             query.fail
           )

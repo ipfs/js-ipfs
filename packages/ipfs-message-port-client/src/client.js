@@ -2,7 +2,24 @@
 
 /* eslint-env browser */
 
-class RemoteError extends Error {}
+class RemoteError extends Error {
+  /**
+   *
+   * @param {Object} info
+   * @param {string} info.message
+   * @param {string} info.stack
+   * @param {string} info.name
+   * @param {string} [info.code]
+   */
+  constructor ({ message, stack, name, code }) {
+    super(message)
+    this.stack = stack
+    this.name = name
+    if (code) {
+      this.code = code
+    }
+  }
+}
 
 class TimeoutError extends Error {}
 
@@ -34,18 +51,19 @@ class DisconnectError extends Error {}
 
 /**
  * @template I,O
- * @extends {Promise<O>}
+ * @class
  */
-class Query extends Promise {
+class Query {
   /**
    * @param {string} namespace
    * @param {string} method
    * @param {QueryInput<I>} input
    */
   constructor (namespace, method, input) {
-    super((succeed, fail) => {
-      this.succeed = succeed
-      this.fail = fail
+    /** @type {Promise<O>} */
+    this.result = new Promise((resolve, reject) => {
+      this.succeed = resolve
+      this.fail = reject
       this.abortController = new AbortController()
       this.signal = this.abortController.signal
       this.input = input
@@ -84,6 +102,9 @@ class Transport {
   constructor (port) {
     this.port = null
     this.nextID = 0
+    this.id = Math.random()
+      .toString(32)
+      .slice(2)
     /** @type {Record<string, Query<any, any>>} */
     this.queries = Object.create(null)
     if (port) {
@@ -94,10 +115,10 @@ class Transport {
   /**
    * @template I, O
    * @param {Query<I, O>} query
-   * @returns {Query<I, O>}
+   * @returns {Promise<O>}
    */
   execute (query) {
-    const id = `@${this.nextID++}`
+    const id = `${this.id}@${this.nextID++}`
     this.queries[id] = query
 
     if (query.timeout > 0 && query.timeout < Infinity) {
@@ -110,7 +131,7 @@ class Transport {
       Transport.postQuery(this.port, id, query)
     }
 
-    return query
+    return query.result
   }
 
   /**
@@ -149,9 +170,10 @@ class Transport {
     port.postMessage(
       {
         type: 'query',
+        namespace: query.namespace,
         method: query.method,
         id,
-        query: query.toJSON()
+        input: query.toJSON()
       },
       query.transfer()
     )
@@ -231,7 +253,7 @@ class Service {
       /**
        * @template I, O
        * @param {I} input
-       * @returns {Query<I, O>}
+       * @returns {Promise<O>}
        */
       self[method] = input =>
         this.transport.execute(new Query(namespace, method.toString(), input))

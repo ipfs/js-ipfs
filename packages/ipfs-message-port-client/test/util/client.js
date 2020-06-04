@@ -5,7 +5,7 @@
 const IPFSClient = require('../../src/index')
 
 const activate = () => {
-  const worker = new SharedWorker(process.env.WORKER_SERVICE)
+  const worker = new SharedWorker(process.env.IPFS_WORKER_URL, 'IPFSService')
   const client = IPFSClient.from(worker.port)
   return client
 }

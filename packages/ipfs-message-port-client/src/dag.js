@@ -5,7 +5,9 @@ const CID = require('cids')
 
 /**
  * @typedef {import('ipfs-message-port-protocol/src/data').JSONValue} JSONValue
- * @typedef {import('ipfs-message-port-protocol/src/dag').DAGAPI} API
+ * @typedef {import('ipfs-message-port-server/src/dag').DAGNode} DAGNode
+ * @typedef {import('ipfs-message-port-server/src/dag').DAGEntry} DAGEntry
+ * @typedef {import('ipfs-message-port-server/src/dag').DAG} API
  * @typedef {import('./client').ClientTransport} Transport
  */
 
@@ -43,7 +45,7 @@ class DAG extends Client {
   }
 
   /**
-   * @param {JSONValue} dagNode
+   * @param {DAGNode} dagNode
    * @param {Object} [options]
    * @param {string} [options.format="dag-cbor"] - The IPLD format multicodec
    * @param {string} [options.hashAlg="sha2-256"] - The hash algorithm to be used over the serialized DAG node
@@ -56,16 +58,18 @@ class DAG extends Client {
    */
   async put (dagNode, options = {}) {
     const { format, hashAlg, cid, pin, preload, timeout, signal } = options
+    const transfer = ArrayBuffer.isView(dagNode) ? [dagNode.buffer] : []
 
     const encodedCID = await this.remote.put({
-      dagNode,
+      dagNode: encodeDAGNode(dagNode),
       format,
       hashAlg,
       cid: cid != null ? cid.toString() : undefined,
       pin,
       preload,
       timeout,
-      signal
+      signal,
+      transfer
     })
 
     return new CID(encodedCID)
@@ -78,7 +82,7 @@ class DAG extends Client {
    * @param {boolean} [options.localResolve]
    * @param {number} [options.timeout]
    * @param {AbortSignal} [options.signal]
-   * @returns {Promise<{value:JSONValue, remainderPath:string}>}
+   * @returns {Promise<DAGEntry>}
    */
   get (cid, path, options = {}) {
     const [nodePath, { localResolve, timeout, signal }] = read(path, options)
@@ -138,6 +142,20 @@ const read = (path, options) => {
     return [path, options]
   } else {
     return ['/', path == null ? options : path]
+  }
+}
+
+/**
+ * @param {DAGNode} dagNode
+ * @returns {JSONValue}
+ */
+const encodeDAGNode = dagNode => {
+  /** @type {any|null} */
+  const object = (dagNode != null ? dagNode : null)
+  if (object && typeof object.toJSON === 'function') {
+    return object.toJSON()
+  } else {
+    return object
   }
 }
 
