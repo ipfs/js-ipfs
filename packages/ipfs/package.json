@@ -136,7 +136,6 @@
     "libp2p-floodsub": "^0.21.0",
     "libp2p-gossipsub": "^0.4.0",
     "libp2p-kad-dht": "^0.19.1",
-    "libp2p-keychain": "^0.6.0",
     "libp2p-mdns": "^0.14.1",
     "libp2p-mplex": "^0.9.3",
     "libp2p-record": "^0.7.3",
