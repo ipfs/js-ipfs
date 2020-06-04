@@ -246,7 +246,6 @@ module.exports = (common, options) => {
         ])
 
         await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
-        await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, Buffer.from(expectedString))
 
         const [sub1Msg] = await all(msgStream1)
@@ -280,7 +279,6 @@ module.exports = (common, options) => {
         ])
 
         await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
-        await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, buffer)
 
         const [sub1Msg] = await all(msgStream1)
@@ -318,7 +316,6 @@ module.exports = (common, options) => {
         ])
 
         await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
-        await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         outbox.forEach(msg => ipfs2.pubsub.publish(topic, Buffer.from(msg)))
 
         const sub1Msgs = await all(msgStream1)
@@ -352,7 +349,6 @@ module.exports = (common, options) => {
         ])
 
         await waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000)
-        await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         const startTime = new Date().getTime()
 
         for (let i = 0; i < count; i++) {
