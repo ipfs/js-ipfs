@@ -59,7 +59,7 @@ module.exports = (common, options) => {
       const node1bCid = await ipfs.object.put(node1b)
 
       const links = await ipfs.object.links(node1bCid)
-      expect(node1b.Links[0]).to.eql({
+      expect(node1b.Links[0]).to.containSubset({
         Hash: links[0].Hash,
         Tsize: links[0].Tsize,
         Name: links[0].Name
