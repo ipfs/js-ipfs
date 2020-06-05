@@ -6,7 +6,14 @@ const log = require('debug')('ipfs:core:config')
 
 module.exports = ({ repo }) => {
   return {
-    get: withTimeoutOption(repo.config.get),
+    get: withTimeoutOption((key, options) => {
+      if (!options && key && typeof key === 'object') {
+        options = key
+        key = undefined
+      }
+
+      return repo.config.get(key, options)
+    }),
     set: withTimeoutOption(repo.config.set),
     replace: withTimeoutOption(repo.config.replace),
     profiles: {
