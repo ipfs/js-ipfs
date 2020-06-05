@@ -13,7 +13,7 @@
     "ipfs": "^0.46.0",
     "libp2p": "^0.28.0",
     "libp2p-bootstrap": "^0.11.0",
-    "libp2p-kad-dht": "libp2p/js-libp2p-kad-dht#fix/providers-leaking-resources-on-dht-construction",
+    "libp2p-kad-dht": "^0.19.5",
     "libp2p-mdns": "^0.14.1",
     "libp2p-mplex": "^0.9.5",
     "libp2p-secio": "^0.12.4",
