@@ -50,7 +50,7 @@
     "ipfs-utils": "^2.2.2",
     "ipld-block": "^0.9.1",
     "ipld-dag-cbor": "^0.15.2",
-    "ipld-dag-pb": "^0.18.5",
+    "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "ipld-raw": "^4.0.1",
     "iso-url": "^0.4.7",
     "it-tar": "^1.2.2",
