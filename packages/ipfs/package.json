@@ -92,7 +92,7 @@
     "hapi-pino": "^6.1.0",
     "hashlru": "^2.3.0",
     "interface-datastore": "^1.0.2",
-    "ipfs-bitswap": "ipfs/js-ipfs-bitswap#chore/use-libp2p-0.28",
+    "ipfs-bitswap": "^2.0.0",
     "ipfs-block-service": "^0.17.1",
     "ipfs-core-utils": "^0.2.3",
     "ipfs-http-client": "^44.2.0",
