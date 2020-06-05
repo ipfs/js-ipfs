@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [44.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.1...ipfs-http-client@44.2.0) (2020-06-05)
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
 ## [44.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.0...ipfs-http-client@44.1.1) (2020-05-29)
 
 **Note:** Version bump only for package ipfs-http-client
