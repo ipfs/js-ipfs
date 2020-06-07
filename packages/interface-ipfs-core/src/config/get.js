@@ -27,10 +27,8 @@ module.exports = (common, options) => {
       }))
     })
 
-    it('should retrieve the whole config', async () => {
-      const config = await ipfs.config.get()
-
-      expect(config).to.be.an('object')
+    it('should fail with error', async () => {
+      await expect(ipfs.config.get()).to.eventually.rejectedWith('key argument is required')
     })
 
     it('should retrieve a value through a key', async () => {
@@ -49,6 +47,33 @@ module.exports = (common, options) => {
 
     it('should fail on non existent key', () => {
       return expect(ipfs.config.get('Bananas')).to.eventually.be.rejected()
+    })
+  })
+
+  describe('.config.getAll', function () {
+    this.timeout(30 * 1000)
+    let ipfs
+
+    before(async () => { ipfs = (await common.spawn()).api })
+
+    after(() => common.clean())
+
+    it('should respect timeout option when getting config values', () => {
+      return testTimeout(() => ipfs.config.getAll({
+        timeout: 1
+      }))
+    })
+
+    it('should retrieve the whole config', async () => {
+      const config = await ipfs.config.getAll()
+
+      expect(config).to.be.an('object')
+    })
+
+    it('should retrieve the whole config with options', async () => {
+      const config = await ipfs.config.getAll({ signal: undefined })
+
+      expect(config).to.be.an('object')
     })
   })
 }
