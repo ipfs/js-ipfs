@@ -22,7 +22,7 @@
     ["ipfs/js-ipfs-bitswap", "ipfs-bitswap"],
 
     "IPNS",
-    ["ipfs/js-ipfs-name", "ipfs-name"],
+    ["ipfs/js-ipns", "ipns"],
 
     "Generics/Utils",
     ["ipfs/js-ipfs", "ipfs-utils"],
@@ -36,10 +36,7 @@
     "libp2p",
     ["libp2p/js-libp2p", "libp2p"],
     ["libp2p/js-peer-id", "peer-id"],
-    ["libp2p/js-peer-info", "peer-info"],
     ["libp2p/js-libp2p-crypto", "libp2p-crypto"],
-    ["libp2p/js-libp2p-keychain", "libp2p-keychain"],
-    ["libp2p/js-libp2p-circuit", "libp2p-circuit"],
     ["libp2p/js-libp2p-floodsub", "libp2p-floodsub"],
     ["ChainSafe/gossipsub-js", "libp2p-gossipsub"],
     ["libp2p/js-libp2p-kad-dht", "libp2p-kad-dht"],
@@ -48,9 +45,10 @@
     ["libp2p/js-libp2p-secio", "libp2p-secio"],
     ["libp2p/js-libp2p-tcp", "libp2p-tcp"],
     ["libp2p/js-libp2p-webrtc-star", "libp2p-webrtc-star"],
-    ["libp2p/js-libp2p-websocket-star", "libp2p-websocket-star"],
     ["libp2p/js-libp2p-websockets", "libp2p-websockets"],
-    ["libp2p/pull-mplex", "pull-mplex"],
+    ["libp2p/js-libp2p-mplex", "libp2p-mplex"],
+    ["libp2p/js-libp2p-delegated-content-routing", "libp2p-delegated-content-routing"],
+    ["libp2p/js-libp2p-delegated-peer-routing", "libp2p-delegated-peer-routing"],
 
     "IPLD",
     ["ipld/js-ipld", "ipld"],
