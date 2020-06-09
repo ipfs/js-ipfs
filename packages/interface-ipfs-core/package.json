@@ -18,17 +18,12 @@
     "test": "exit 0",
     "dep-check": "aegir dep-check"
   },
-  "files": [
-    "src/",
-    "test/"
-  ],
+  "files": ["src/", "test/"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
-  "keywords": [
-    "IPFS"
-  ],
+  "keywords": ["IPFS"],
   "license": "MIT",
   "dependencies": {
     "abort-controller": "^3.0.0",
@@ -43,7 +38,7 @@
     "ipfs-unixfs-importer": "^2.0.1",
     "ipfs-utils": "^2.2.2",
     "ipld-block": "^0.9.1",
-    "ipld-dag-cbor": "^0.15.2",
+    "ipld-dag-cbor": "git://github.com/gozala/js-ipld-dag-cbor.git#uint8array",
     "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "is-ipfs": "^1.0.3",
     "iso-random-stream": "^1.1.1",

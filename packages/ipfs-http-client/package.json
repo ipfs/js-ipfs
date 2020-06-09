@@ -2,17 +2,12 @@
   "name": "ipfs-http-client",
   "version": "44.1.1",
   "description": "A client library for the IPFS HTTP API",
-  "keywords": [
-    "ipfs"
-  ],
+  "keywords": ["ipfs"],
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist"
-  ],
+  "files": ["src", "dist"],
   "main": "src/index.js",
   "browser": {
     "./src/lib/to-stream.js": "./src/lib/to-stream.browser.js",
@@ -49,7 +44,7 @@
     "ipfs-core-utils": "^0.2.3",
     "ipfs-utils": "^2.2.2",
     "ipld-block": "^0.9.1",
-    "ipld-dag-cbor": "^0.15.2",
+    "ipld-dag-cbor": "git://github.com/gozala/js-ipld-dag-cbor.git#uint8array",
     "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "ipld-raw": "^4.0.1",
     "iso-url": "^0.4.7",
