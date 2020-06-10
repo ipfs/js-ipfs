@@ -1,0 +1,13 @@
+name: Checks
+
+on: [push]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: npm i
+    - uses: ipfs/aegir/actions/bundle-size@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
