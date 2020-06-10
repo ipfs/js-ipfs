@@ -34,7 +34,7 @@ module.exports = ({
       await repo.open()
     }
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     const addrs = []
 
     if (config.Addresses && config.Addresses.Swarm) {

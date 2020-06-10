@@ -38,7 +38,7 @@ describe('init', function () {
     const res = await repo.exists()
     expect(res).to.equal(true)
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
 
     expect(config.Identity).to.exist()
     expect(config.Keychain).to.exist()
@@ -49,14 +49,14 @@ describe('init', function () {
 
     await ipfs.init({ bits: 1024, pass: nanoid() })
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     expect(config.Identity.PrivKey.length).is.above(256)
   })
 
   it('should allow a pregenerated key to be used', async () => {
     await ipfs.init({ privateKey })
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     expect(config.Identity.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
@@ -79,14 +79,14 @@ describe('init', function () {
   it('should apply one profile', async () => {
     await ipfs.init({ bits: 512, profiles: ['test'] })
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()
   })
 
   it('should apply multiple profiles', async () => {
     await ipfs.init({ bits: 512, profiles: ['test', 'local-discovery'] })
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()
     expect(config.Discovery.MDNS.Enabled).to.be.true()
   })
