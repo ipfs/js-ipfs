@@ -49,15 +49,7 @@ class DAG {
    * @returns {Promise<StringEncoded<CID>>}
    */
   async put (query) {
-    const { dagNode, format, hashAlg, pin, preload, timeout, signal } = query
-    const cid = await this.ipfs.dag.put(dagNode, {
-      format,
-      hashAlg,
-      pin,
-      preload,
-      timeout,
-      signal
-    })
+    const cid = await this.ipfs.dag.put(query.dagNode, query)
     return cid.toString()
   }
 

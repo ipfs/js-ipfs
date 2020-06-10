@@ -57,18 +57,13 @@ class DAG extends Client {
    * @returns {Promise<CID>}
    */
   async put (dagNode, options = {}) {
-    const { format, hashAlg, cid, pin, preload, timeout, signal } = options
+    const { cid } = options
     const transfer = ArrayBuffer.isView(dagNode) ? [dagNode.buffer] : []
 
     const encodedCID = await this.remote.put({
+      ...options,
       dagNode: encodeDAGNode(dagNode),
-      format,
-      hashAlg,
       cid: cid != null ? cid.toString() : undefined,
-      pin,
-      preload,
-      timeout,
-      signal,
       transfer
     })
 

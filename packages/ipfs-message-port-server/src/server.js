@@ -238,7 +238,10 @@ class Server {
       const procedure = service[method]
       if (typeof procedure === 'function') {
         try {
-          Promise.resolve(procedure.call(service, query.input)).then(
+          const { signal } = query
+          // @ts-ignore
+          const input = { ...query.input, signal }
+          Promise.resolve(procedure.call(service, input)).then(
             query.succeed,
             query.fail
           )
