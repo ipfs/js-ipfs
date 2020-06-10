@@ -36,14 +36,14 @@ module.exports = (common, options) => {
     it('should replace the whole config', async () => {
       await ipfs.config.replace(config)
 
-      const _config = await ipfs.config.get()
+      const _config = await ipfs.config.getAll()
       expect(_config).to.deep.equal(config)
     })
 
     it('should replace to empty config', async () => {
       await ipfs.config.replace({})
 
-      const _config = await ipfs.config.get()
+      const _config = await ipfs.config.getAll()
       expect(_config).to.deep.equal({})
     })
   })

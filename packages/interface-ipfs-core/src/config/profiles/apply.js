@@ -33,12 +33,12 @@ module.exports = (common, options) => {
       const diff = await ipfs.config.profiles.apply('lowpower')
       expect(diff.original.Swarm.ConnMgr.LowWater).to.not.equal(diff.updated.Swarm.ConnMgr.LowWater)
 
-      const newConfig = await ipfs.config.get()
+      const newConfig = await ipfs.config.getAll()
       expect(newConfig.Swarm.ConnMgr.LowWater).to.equal(diff.updated.Swarm.ConnMgr.LowWater)
     })
 
     it('should strip private key from diff output', async () => {
-      const originalConfig = await ipfs.config.get()
+      const originalConfig = await ipfs.config.getAll()
       const diff = await ipfs.config.profiles.apply('default-networking', { dryRun: true })
 
       // should have stripped private key from diff output
@@ -48,11 +48,11 @@ module.exports = (common, options) => {
     })
 
     it('should not apply a config profile in dry-run mode', async () => {
-      const originalConfig = await ipfs.config.get()
+      const originalConfig = await ipfs.config.getAll()
 
       await ipfs.config.profiles.apply('server', { dryRun: true })
 
-      const updatedConfig = await ipfs.config.get()
+      const updatedConfig = await ipfs.config.getAll()
 
       expect(updatedConfig).to.deep.equal(originalConfig)
     })
