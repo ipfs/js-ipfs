@@ -4,6 +4,7 @@ const fs = require('fs')
 const concat = require('it-concat')
 const multibase = require('multibase')
 const { cidToString } = require('../../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'set-data <root> [data]',
@@ -15,23 +16,25 @@ module.exports = {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print, getStdin } = argv.ctx
-    let data
-
-    if (argv.data) {
-      data = fs.readFileSync(argv.data)
+  async handler ({ ctx: { ipfs, print, getStdin }, root, data, cidBase, timeout }) {
+    if (data) {
+      data = fs.readFileSync(data)
     } else {
       data = (await concat(getStdin())).slice()
     }
 
-    const cid = await ipfs.object.patch.setData(argv.root, data, {
-      enc: 'base58'
+    const cid = await ipfs.object.patch.setData(root, data, {
+      enc: 'base58',
+      timeout
     })
 
-    print(cidToString(cid, { base: argv.cidBase, upgrade: false }))
+    print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }

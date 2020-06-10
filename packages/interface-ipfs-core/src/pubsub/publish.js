@@ -4,7 +4,8 @@
 const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
-const { getDescribe, getIt } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,9 +27,20 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when publishing a pubsub message', () => {
+      return testTimeout(() => ipfs.pubsub.publish(getTopic(), 'derp', {
+        timeout: 1
+      }))
+    })
+
     it('should publish message from string', () => {
       const topic = getTopic()
       return ipfs.pubsub.publish(topic, 'hello friend')
+    })
+
+    it('should fail with undefined msg', async () => {
+      const topic = getTopic()
+      await expect(ipfs.pubsub.publish(topic)).to.eventually.rejectedWith('argument "data" is required')
     })
 
     it('should publish message from buffer', () => {

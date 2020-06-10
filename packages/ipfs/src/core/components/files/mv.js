@@ -4,6 +4,7 @@ const applyDefaultOptions = require('./utils/apply-default-options')
 const toSources = require('./utils/to-sources')
 const cp = require('./cp')
 const rm = require('./rm')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   parents: false,
@@ -15,7 +16,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsMv (...args) {
+  return withTimeoutOption(async function mfsMv (...args) {
     if (Array.isArray(args[0])) {
       args = args[0].concat(args.slice(1))
     }
@@ -38,5 +39,5 @@ module.exports = (context) => {
 
     await cp(context).apply(null, cpArgs)
     await rm(context).apply(null, rmArgs)
-  }
+  })
 }

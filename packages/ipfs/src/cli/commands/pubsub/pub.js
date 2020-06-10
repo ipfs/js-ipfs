@@ -1,5 +1,6 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
 const { Buffer } = require('buffer')
 
 module.exports = {
@@ -7,9 +8,17 @@ module.exports = {
 
   describe: 'Publish data to a topic',
 
-  async handler (argv) {
-    const { ipfs } = argv.ctx
-    const data = Buffer.from(String(argv.data))
-    await ipfs.pubsub.publish(argv.topic, data)
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs }, topic, data, timeout }) {
+    data = Buffer.from(String(data))
+    await ipfs.pubsub.publish(topic, data, {
+      timeout
+    })
   }
 }

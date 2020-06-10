@@ -5,6 +5,12 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
+const { AbortSignal } = require('abort-controller')
+
+const defaultOptions = {
+  signal: sinon.match.instanceOf(AbortSignal),
+  timeout: undefined
+}
 
 describe('/id', () => {
   let ipfs
@@ -20,7 +26,7 @@ describe('/id', () => {
   })
 
   it('get the id', async () => {
-    ipfs.id.returns({
+    ipfs.id.withArgs(defaultOptions).returns({
       id: 'id',
       publicKey: 'publicKey',
       addresses: 'addresses',
@@ -38,5 +44,25 @@ describe('/id', () => {
     expect(res).to.have.nested.property('result.Addresses', 'addresses')
     expect(res).to.have.nested.property('result.AgentVersion', 'agentVersion')
     expect(res).to.have.nested.property('result.ProtocolVersion', 'protocolVersion')
+  })
+
+  it('accepts a timeout', async () => {
+    ipfs.id.withArgs({
+      ...defaultOptions,
+      timeout: 1000
+    }).returns({
+      id: 'id',
+      publicKey: 'publicKey',
+      addresses: 'addresses',
+      agentVersion: 'agentVersion',
+      protocolVersion: 'protocolVersion'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/id?timeout=1s'
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
   })
 })

@@ -1,13 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'ls',
 
   describe: 'List available config profiles',
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    for (const profile of await ipfs.config.profiles.list()) {
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    for (const profile of await ipfs.config.profiles.list({
+      timeout
+    })) {
       print(`${profile.name}:\n ${profile.description}`)
     }
   }

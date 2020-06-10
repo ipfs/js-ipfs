@@ -1,5 +1,7 @@
 'use strict'
 
+const { withTimeoutOption } = require('../../utils')
+
 module.exports = ({ keychain }) => {
-  return name => keychain.findKeyByName(name)
+  return withTimeoutOption((name, options) => keychain.findKeyByName(name, options))
 }

@@ -1,9 +1,10 @@
 'use strict'
 
 const { parseArgs } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, preload }) => {
-  return async function get (cid, path, options) {
+  return withTimeoutOption(async function get (cid, path, options) {
     [cid, path, options] = parseArgs(cid, path, options)
 
     if (options.preload !== false) {
@@ -11,7 +12,7 @@ module.exports = ({ ipld, preload }) => {
     }
 
     if (path == null || path === '/') {
-      const value = await ipld.get(cid)
+      const value = await ipld.get(cid, options)
 
       return {
         value,
@@ -30,5 +31,5 @@ module.exports = ({ ipld, preload }) => {
 
       return result
     }
-  }
+  })
 }

@@ -9,7 +9,6 @@ const { Key } = require('interface-datastore')
 const last = require('it-last')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
-const PeerInfo = require('peer-info')
 const getIpnsRoutingConfig = require('../../src/core/ipns/routing/config')
 const IpnsPublisher = require('../../src/core/ipns/publisher')
 const IpnsRepublisher = require('../../src/core/ipns/republisher')
@@ -256,7 +255,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: sinon.stub(),
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {}
       })
 
@@ -268,7 +267,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: sinon.stub(),
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {
           offline: true
         }
@@ -284,7 +283,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: { pubsub: sinon.stub() },
         repo: { datastore: sinon.stub() },
-        peerInfo: new PeerInfo(peerId),
+        peerId,
         options: {
           EXPERIMENTAL: {
             ipnsPubsub: true
@@ -303,7 +302,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: { _dht: dht },
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {
           libp2p: {
             config: {

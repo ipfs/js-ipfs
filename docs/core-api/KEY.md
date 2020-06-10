@@ -1,32 +1,64 @@
-# Key API
+# Key API <!-- omit in toc -->
 
-* [key.gen](#keygen)
-* [key.list](#keylist)
-* [key.rm](#keyrm)
-* [key.rename](#keyrename)
-* [key.export](#keyexport)
-* [key.import](#keyimport)
+- [`ipfs.key.gen(name, [options])`](#ipfskeygenname-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.key.list([options])`](#ipfskeylistoptions)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.key.rm(name, [options])`](#ipfskeyrmname-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
+- [`ipfs.key.rename(oldName, newName, [options])`](#ipfskeyrenameoldname-newname-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
+- [`ipfs.key.export(name, password, [options])`](#ipfskeyexportname-password-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
+- [`ipfs.key.import(name, pem, password, [options])`](#ipfskeyimportname-pem-password-options)
+  - [Parameters](#parameters-5)
+  - [Options](#options-5)
+  - [Returns](#returns-5)
+  - [Example](#example-5)
 
-#### `key.gen`
+## `ipfs.key.gen(name, [options])`
 
 > Generate a new key
 
-##### `ipfs.key.gen(name, options)`
+### Parameters
 
-Where:
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | String | The name to give the key |
 
-- `name` is a local name for the key
-- `options` is an object that contains following properties
-  - 'type' - the key type, one of 'rsa', 'ed25519' (Note: `js-ipfs` will not support 'ed25519' until [libp2p/js-libp2p-crypto#145](https://github.com/libp2p/js-libp2p-crypto/issues/145) is resolved)
-  - 'size' - the key size in bits
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| type | `String` | `'rsa'` | The key type, one of `'rsa'` or `'ed25519'` |
+| size | `Number` | `2048` | The key size in bits |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object that describes the key; `name` and `id` |
 
-**Example:**
+### Example
 
 ```JavaScript
 const key = await ipfs.key.gen('my-key', {
@@ -41,13 +73,24 @@ console.log(key)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `key.list`
+## `ipfs.key.list([options])`
 
 > List all the keys
 
-##### `ipfs.key.list()`
+### Parameters
 
-**Returns**
+None
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -62,7 +105,7 @@ example of the returned array:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const keys = await ipfs.key.list()
@@ -78,16 +121,26 @@ console.log(keys)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `key.rm`
+## `ipfs.key.rm(name, [options])`
 
 > Remove a key
 
-##### `ipfs.key.rm(name)`
+### Parameters
 
-Where:
-- `name` is the local name for the key
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | String | The name of the key to remove |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -102,7 +155,7 @@ example of the returned object:
 }
 ```
 
-**Example:**
+### Example
 
 ```JavaScript
 const key = await ipfs.key.rm('my-key')
@@ -114,23 +167,33 @@ console.log(key)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `key.rename`
+## `ipfs.key.rename(oldName, newName, [options])`
 
 > Rename a key
 
-##### `ipfs.key.rename(oldName, newName)`
+### Parameters
 
-Where:
-- `oldName` is the local name for the key
-- `newName` a new name for key
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| oldName | String | The current key name |
+| newName | String | The desired key name |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object that describes the renamed key |
 
-**Example:**
+### Example
 
 ```JavaScript
 const key = await ipfs.key.rename('my-key', 'my-new-key')
@@ -144,23 +207,33 @@ console.log(key)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `key.export`
+## `ipfs.key.export(name, password, [options])`
 
 > Export a key in a PEM encoded password protected PKCS #8
 
-##### `ipfs.key.export(name, password)`
+### Parameters
 
-Where:
-- `name` is the local name for the key
-- `password` is the password to protect the key
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | String | The name of the key to export |
+| password | String | Password to set on the PEM output |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<String>` | The string representation of the key |
 
-**Example:**
+### Example
 
 ```JavaScript
 const pem = await ipfs.key.export('self', 'password')
@@ -175,24 +248,34 @@ console.log(pem)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `key.import`
+## `ipfs.key.import(name, pem, password, [options])`
 
 > Import a PEM encoded password protected PKCS #8 key
 
-##### `ipfs.key.import(name, pem, password)`
+### Parameters
 
-Where:
-- `name` is a local name for the key
-- `pem` is the PEM encoded key
-- `password` is the password that protects the PEM key
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | String | The name of the key to export |
+| pem | String | The PEM encoded key |
+| password | String | The password that protects the PEM key |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Object>` | An object that describes the new key |
 
-**Example:**
+### Example
 
 ```JavaScript
 const key = await ipfs.key.import('clone', 'password')
@@ -205,3 +288,5 @@ console.log(key)
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/key
+[cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

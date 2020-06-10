@@ -1,27 +1,62 @@
-# DHT API
+# DHT API <!-- omit in toc -->
 
-* [dht.findPeer](#dhtfindpeer)
-* [dht.findProvs](#dhtfindprovs)
-* [dht.get](#dhtget)
-* [dht.provide](#dhtprovide)
-* [dht.put](#dhtput)
-* [dht.query](#dhtquery)
+- [`ipfs.dht.findPeer(peerId, [options])`](#ipfsdhtfindpeerpeerid-options)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.dht.findProvs(cid, [options])`](#ipfsdhtfindprovscid-options)
+  - [Parameters](#parameters-1)
+  - [Options](#options-1)
+  - [Returns](#returns-1)
+  - [Example](#example-1)
+- [`ipfs.dht.get(key, [options])`](#ipfsdhtgetkey-options)
+  - [Parameters](#parameters-2)
+  - [Options](#options-2)
+  - [Returns](#returns-2)
+  - [Example](#example-2)
+- [`ipfs.dht.provide(cid, [options])`](#ipfsdhtprovidecid-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
+- [`ipfs.dht.put(key, value, [options])`](#ipfsdhtputkey-value-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
+- [`ipfs.dht.query(peerId, [options])`](#ipfsdhtquerypeerid-options)
+  - [Parameters](#parameters-5)
+  - [Options](#options-5)
+  - [Returns](#returns-5)
+  - [Example](#example-5)
 
-#### `dht.findPeer`
+## `ipfs.dht.findPeer(peerId, [options])`
 
 > Find the multiaddresses associated with a Peer ID
 
-##### `ipfs.dht.findPeer(peerId)`
+### Parameters
 
-Where `peerId` is a Peer ID in `String`, [`CID`](https://github.com/multiformats/js-cid) or [`PeerId`](https://github.com/libp2p/js-peer-id) format.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| peerId | [PeerID][] or [CID][] | The Peer ID of the node to find |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<{ id: String, addrs: Multiaddr[] }>` | A promise that resolves to an object with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
-**Example:**
+### Example
 
 ```JavaScript
 const info = await ipfs.dht.findPeer('QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt')
@@ -43,26 +78,35 @@ info.addrs.forEach(addr => console.log(addr.toString()))
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.findProvs`
+## `ipfs.dht.findProvs(cid, [options])`
 
 > Find peers that can provide a specific value, given a CID.
 
-##### `ipfs.dht.findProvs(cid, [options])`
+### Parameters
 
-Where `cid` is a CID as a `String`, `Buffer` or [`CID`](https://github.com/multiformats/js-cid) instance.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] | The CID of the content to find |
 
-`options` an optional object with the following properties:
-  - `numProviders` - the number of providers to find. Default: 20
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| numProviders | `Number` | 20 | How many providers to find |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
 Note that if `options.numProviders` are not found an error will be thrown.
 
-**Returns**
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `AsyncIterable<{ id: String, addrs: Multiaddr[] }>` | A async iterable that yields objects with `id` and `addrs`. `id` is a String - the peer's ID and `addrs` is an array of [Multiaddr](https://github.com/multiformats/js-multiaddr/) - addresses for the peer. |
 
-**Example:**
+### Example
 
 ```JavaScript
 const providers = ipfs.dht.findProvs('QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9')
@@ -74,21 +118,32 @@ for await (const provider of providers) {
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.get`
+## `ipfs.dht.get(key, [options])`
 
 > Given a key, query the routing system for its best value.
 
-##### `ipfs.dht.get(key)`
+### Parameters
 
-Where `key` is a `Buffer`.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | `Buffer` or `string` | The key associated with the value to find |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `Promise<Buffer>` | The value that was stored under that key |
 
-**Example:**
+### Example
 
 ```JavaScript
 const value = await ipfs.dht.get(key)
@@ -96,18 +151,27 @@ const value = await ipfs.dht.get(key)
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.provide`
+## `ipfs.dht.provide(cid, [options])`
 
 > Announce to the network that you are providing given values.
 
-##### `ipfs.dht.provide(cid, [options])`
+### Parameters
 
-Where `cid` is a CID or array of CIDs as a `String`, `Buffer` or [`CID`](https://github.com/multiformats/js-cid) instance.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| cid | [CID][] or Array<[CID][]> | The key associated with the value to find |
 
-`options` an optional object with the following properties:
-  - `recursive` - boolean, set to `true` to recursively provide the entire graph. Default `false`.
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recursive | `boolean` | false | If `true` the entire graph will be provided recursively |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -115,7 +179,7 @@ Where `cid` is a CID or array of CIDs as a `String`, `Buffer` or [`CID`](https:/
 
 Note: You must consume the iterable to completion to complete the provide operation.
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const message of ipfs.dht.provide('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR')) {
@@ -155,21 +219,34 @@ await consume(ipfs.dht.provide('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR')
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.put`
+## `ipfs.dht.put(key, value, [options])`
 
 > Write a key/value pair to the routing system.
 
-##### `ipfs.dht.put(key, value)`
 
-Where `key` is a `Buffer` and `value` is a `Buffer`.
+### Parameters
 
-**Returns**
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | Buffer | The key to put the value as |
+| value | Buffer | Value to put |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `AsyncIterable<Object>` | DHT query messages. See example below for structure. |
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const message of ipfs.dht.put(key, value)) {
@@ -209,21 +286,32 @@ await consume(ipfs.dht.put(key, value))
 
 A great source of [examples][] can be found in the tests for this API.
 
-#### `dht.query`
+## `ipfs.dht.query(peerId, [options])`
 
 > Find the closest Peer IDs to a given Peer ID by querying the DHT.
 
-##### `ipfs.dht.query(peerId)`
+### Parameters
 
-Where `peerId` is a Peer ID in `String`, [`CID`](https://github.com/multiformats/js-cid) or [`PeerId`](https://github.com/libp2p/js-peer-id) format.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| peerId | [PeerID][] or [CID][] | The peer id to query |
 
-**Returns**
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
 | `AsyncIterable<Object>` | DHT query messages. See example below for structure. |
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const info of ipfs.dht.query('QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt')) {
@@ -257,3 +345,6 @@ https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b9
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dht
+[peerid]: https://www.npmjs.com/package/peer-id
+[cid]: https://www.npmjs.com/package/cids
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

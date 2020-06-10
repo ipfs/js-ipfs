@@ -5,7 +5,6 @@ const IPFS = require('ipfs')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const Bootstrap = require('libp2p-bootstrap')
-const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
@@ -13,8 +12,7 @@ const SECIO = require('libp2p-secio')
 /**
  * Options for the libp2p bundle
  * @typedef {Object} libp2pBundle~options
- * @property {PeerInfo} peerInfo - The PeerInfo of the IPFS node
- * @property {PeerBook} peerBook - The PeerBook of the IPFS node
+ * @property {PeerId} peerId - The PeerId of the IPFS node
  * @property {Object} config - The config of the IPFS node
  * @property {Object} options - The options given to the IPFS node
  */
@@ -27,15 +25,16 @@ const SECIO = require('libp2p-secio')
  */
 const libp2pBundle = (opts) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
-  const peerInfo = opts.peerInfo
-  const peerBook = opts.peerBook
+  const peerId = opts.peerId
   const bootstrapList = opts.config.Bootstrap
 
   // Build and return our libp2p node
   // n.b. for full configuration options, see https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md
   return new Libp2p({
-    peerInfo,
-    peerBook,
+    peerId,
+    addresses: {
+      listen: ['/ip4/127.0.0.1/tcp/0']
+    },
     // Lets limit the connection managers peers and have it check peer health less frequently
     connectionManager: {
       minPeers: 25,
@@ -47,8 +46,7 @@ const libp2pBundle = (opts) => {
         TCP
       ],
       streamMuxer: [
-        MPLEX,
-        SPDY
+        MPLEX
       ],
       connEncryption: [
         SECIO

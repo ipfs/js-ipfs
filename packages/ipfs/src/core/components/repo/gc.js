@@ -3,7 +3,7 @@
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:repo:gc')
-const { MFS_ROOT_KEY } = require('../../utils')
+const { MFS_ROOT_KEY, withTimeoutOption } = require('../../utils')
 const Repo = require('ipfs-repo')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
@@ -14,7 +14,7 @@ const BLOCK_RM_CONCURRENCY = 256
 
 // Perform mark and sweep garbage collection
 module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
-  return async function * gc () {
+  return withTimeoutOption(async function * gc (options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
 
@@ -33,7 +33,7 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
     } finally {
       release()
     }
-  }
+  })
 }
 
 // Get Set of CIDs of blocks to keep

@@ -1,10 +1,10 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const { normalizeCidPath } = require('../utils')
+const { normalizeCidPath, withTimeoutOption } = require('../utils')
 
 module.exports = function ({ ipld, preload }) {
-  return async function * cat (ipfsPath, options) {
+  return withTimeoutOption(async function * cat (ipfsPath, options) {
     options = options || {}
 
     ipfsPath = normalizeCidPath(ipfsPath)
@@ -26,5 +26,5 @@ module.exports = function ({ ipld, preload }) {
     }
 
     yield * file.content(options)
-  }
+  })
 }

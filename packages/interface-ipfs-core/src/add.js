@@ -6,6 +6,7 @@ const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')
 const last = require('it-last')
+const drain = require('it-drain')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -14,7 +15,7 @@ const globSource = require('ipfs-utils/src/files/glob-source')
 const urlSource = require('ipfs-utils/src/files/url-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-
+const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 
@@ -61,6 +62,12 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
+
+    it('should respect timeout option when adding files', () => {
+      return testTimeout(() => drain(ipfs.add(Buffer.from('Hello'), {
+        timeout: 1
+      })))
+    })
 
     it('should add a File', async function () {
       if (!supportsFileReader) return this.skip('skip in node')

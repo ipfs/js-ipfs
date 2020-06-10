@@ -1,33 +1,46 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
-const Boom = require('@hapi/boom')
-
-// common pre request handler that parses the args and returns `addr` which is assigned to `request.pre.args`
-exports.parseAddrs = (request, h) => {
-  if (!request.query.arg) {
-    throw Boom.badRequest('Argument `addr` is required')
-  }
-
-  try {
-    multiaddr(request.query.arg)
-  } catch (err) {
-    throw Boom.boomify(err, { statusCode: 400 })
-  }
-
-  return {
-    addr: request.query.arg
-  }
-}
+const Joi = require('../../utils/joi')
 
 exports.peers = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        verbose: Joi.boolean().default(false),
+        direction: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('v', 'verbose', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
   async handler (request, h) {
-    const rawVerbose = request.query.v || request.query.verbose
-    const verbose = rawVerbose === 'true'
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        verbose,
+        direction,
+        timeout
+      }
+    } = request
 
     const peers = await ipfs.swarm.peers({
-      verbose
+      verbose,
+      signal,
+      timeout
     })
 
     return h.response({
@@ -37,7 +50,7 @@ exports.peers = {
           Addr: p.addr.toString()
         }
 
-        if (verbose || request.query.direction === 'true') {
+        if (verbose || direction) {
           res.Direction = p.direction
         }
 
@@ -53,9 +66,36 @@ exports.peers = {
 }
 
 exports.addrs = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const peers = await ipfs.swarm.addrs()
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const peers = await ipfs.swarm.addrs({
+      signal,
+      timeout
+    })
 
     return h.response({
       Addrs: peers.reduce((addrs, peer) => {
@@ -67,9 +107,36 @@ exports.addrs = {
 }
 
 exports.localAddrs = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const addrs = await ipfs.swarm.localAddrs()
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const addrs = await ipfs.swarm.localAddrs({
+      signal,
+      timeout
+    })
 
     return h.response({
       Strings: addrs.map((addr) => addr.toString())
@@ -78,15 +145,42 @@ exports.localAddrs = {
 }
 
 exports.connect = {
-  // uses common parseAddr method that returns a `addr`
-  parseArgs: exports.parseAddrs,
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        addr: Joi.multiaddr().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'addr', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
   async handler (request, h) {
-    const { addr } = request.pre.args
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        addr,
+        timeout
+      }
+    } = request
 
-    await ipfs.swarm.connect(addr)
+    await ipfs.swarm.connect(addr, {
+      signal,
+      timeout
+    })
 
     return h.response({
       Strings: [`connect ${addr} success`]
@@ -95,15 +189,42 @@ exports.connect = {
 }
 
 exports.disconnect = {
-  // uses common parseAddr method that returns a `addr`
-  parseArgs: exports.parseAddrs,
-
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        addr: Joi.multiaddr().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'addr', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
   async handler (request, h) {
-    const { addr } = request.pre.args
-    const { ipfs } = request.server.app
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        addr,
+        timeout
+      }
+    } = request
 
-    await ipfs.swarm.disconnect(addr)
+    await ipfs.swarm.disconnect(addr, {
+      signal,
+      timeout
+    })
 
     return h.response({
       Strings: [`disconnect ${addr} success`]

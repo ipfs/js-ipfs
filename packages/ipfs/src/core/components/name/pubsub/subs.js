@@ -1,6 +1,7 @@
 'use strict'
 
 const { getPubsubRouting } = require('./utils')
+const { withTimeoutOption } = require('../../../utils')
 
 module.exports = ({ ipns, options: constructorOptions }) => {
   /**
@@ -9,8 +10,8 @@ module.exports = ({ ipns, options: constructorOptions }) => {
    * @param {function(Error)} [callback]
    * @returns {Promise<string[]>}
    */
-  return async function subs () { // eslint-disable-line require-await
+  return withTimeoutOption(async function subs (options) { // eslint-disable-line require-await
     const pubsub = getPubsubRouting(ipns, constructorOptions)
-    return pubsub.getSubscriptions()
-  }
+    return pubsub.getSubscriptions(options)
+  })
 }

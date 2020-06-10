@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,6 +24,12 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
+
+    it('should respect timeout option when removing bootstrap nodes', () => {
+      return testTimeout(() => ipfs.bootstrap.rm(validIp4, {
+        timeout: 1
+      }))
+    })
 
     it('should return an error when called with an invalid arg', () => {
       return expect(ipfs.bootstrap.rm(invalidArg)).to.eventually.be.rejected
@@ -54,7 +61,7 @@ module.exports = (common, options) => {
       const rmRes = await ipfs.bootstrap.rm(null, { all: true })
       const removedPeers = rmRes.Peers
 
-      expect(removedPeers).to.eql(addedPeers)
+      expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
     })
   })
 }

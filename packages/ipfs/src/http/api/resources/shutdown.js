@@ -6,7 +6,9 @@
  * Returns an empty response to the caller then
  * on the next 'tick' emits SIGTERM.
  */
-module.exports = (request, h) => {
-  setImmediate(() => process.emit('SIGTERM'))
-  return h.response()
+module.exports = {
+  handler: (request, h) => {
+    setImmediate(() => process.emit('SIGTERM'))
+    return h.response()
+  }
 }

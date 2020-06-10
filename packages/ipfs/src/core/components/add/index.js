@@ -4,10 +4,12 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
-  return async function * add (source, options) {
+
+  return withTimeoutOption(async function * add (source, options) {
     options = options || {}
 
     const opts = {
@@ -56,7 +58,7 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     } finally {
       releaseLock()
     }
-  }
+  })
 }
 
 function transformFile (opts) {

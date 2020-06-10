@@ -6,67 +6,56 @@ module.exports = [
   {
     method: 'POST',
     path: '/api/v0/files/chmod',
-    options: resources.files.chmod.options,
-    handler: resources.files.chmod.handler
+    ...resources.files.chmod
   },
   {
     method: 'POST',
     path: '/api/v0/files/cp',
-    options: resources.files.cp.options,
-    handler: resources.files.cp.handler
+    ...resources.files.cp
   },
   {
     method: 'POST',
     path: '/api/v0/files/flush',
-    options: resources.files.flush.options,
-    handler: resources.files.flush.handler
+    ...resources.files.flush
   },
   {
     method: 'POST',
     path: '/api/v0/files/ls',
-    options: resources.files.ls.options,
-    handler: resources.files.ls.handler
+    ...resources.files.ls
   },
   {
     method: 'POST',
     path: '/api/v0/files/mkdir',
-    options: resources.files.mkdir.options,
-    handler: resources.files.mkdir.handler
+    ...resources.files.mkdir
   },
   {
     method: 'POST',
     path: '/api/v0/files/mv',
-    options: resources.files.mv.options,
-    handler: resources.files.mv.handler
+    ...resources.files.mv
   },
   {
     method: 'POST',
     path: '/api/v0/files/read',
-    options: resources.files.read.options,
-    handler: resources.files.read.handler
+    ...resources.files.read
   },
   {
     method: 'POST',
     path: '/api/v0/files/rm',
-    options: resources.files.rm.options,
-    handler: resources.files.rm.handler
+    ...resources.files.rm
   },
   {
     method: 'POST',
     path: '/api/v0/files/stat',
-    options: resources.files.stat.options,
-    handler: resources.files.stat.handler
+    ...resources.files.stat
   },
   {
     method: 'POST',
     path: '/api/v0/files/touch',
-    options: resources.files.touch.options,
-    handler: resources.files.touch.handler
+    ...resources.files.touch
   },
   {
     method: 'POST',
     path: '/api/v0/files/write',
-    options: resources.files.write.options,
-    handler: resources.files.write.handler
+    ...resources.files.write
   }
 ]

@@ -2,10 +2,11 @@
 
 const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
+const { withTimeoutOption } = require('../utils')
 
-module.exports = ({ peerInfo, libp2p }) => {
-  return async function id () { // eslint-disable-line require-await
-    const id = peerInfo.id.toB58String()
+module.exports = ({ peerId, libp2p }) => {
+  return withTimeoutOption(async function id () { // eslint-disable-line require-await
+    const id = peerId.toB58String()
     let addresses = []
 
     if (libp2p) {
@@ -15,7 +16,7 @@ module.exports = ({ peerInfo, libp2p }) => {
 
     return {
       id,
-      publicKey: peerInfo.id.pubKey.bytes.toString('base64'),
+      publicKey: peerId.pubKey.bytes.toString('base64'),
       addresses: addresses
         .map(ma => {
           const str = ma.toString()
@@ -33,5 +34,5 @@ module.exports = ({ peerInfo, libp2p }) => {
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000'
     }
-  }
+  })
 }

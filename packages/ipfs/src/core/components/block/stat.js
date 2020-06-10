@@ -1,9 +1,10 @@
 'use strict'
 
 const { cleanCid } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ blockService, preload }) => {
-  return async function stat (cid, options) {
+  return withTimeoutOption(async function stat (cid, options) {
     options = options || {}
     cid = cleanCid(cid)
 
@@ -14,5 +15,5 @@ module.exports = ({ blockService, preload }) => {
     const block = await blockService.get(cid)
 
     return { cid, size: block.data.length }
-  }
+  })
 }

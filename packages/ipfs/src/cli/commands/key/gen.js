@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'gen <name>',
 
@@ -16,16 +18,19 @@ module.exports = {
       describe: 'size of the key to generate.',
       default: 2048,
       type: 'number'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const opts = {
-      type: argv.type,
-      size: argv.size
-    }
-    const key = await ipfs.key.gen(argv.name, opts)
+  async handler ({ ctx: { ipfs, print }, name, type, size, timeout }) {
+    const key = await ipfs.key.gen(name, {
+      type,
+      size,
+      timeout
+    })
     print(`generated ${key.id} ${key.name}`)
   }
 }

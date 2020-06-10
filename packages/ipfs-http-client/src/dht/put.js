@@ -5,6 +5,7 @@ const multiaddr = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const multipartRequest = require('../lib/multipart-request')
 
 module.exports = configure(api => {
   return async function * put (key, value, options = {}) {
@@ -12,13 +13,12 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: [
-          key,
-          value
-        ],
+        arg: key,
         ...options
       }),
-      headers: options.headers
+      ...(
+        await multipartRequest(value, options.headers)
+      )
     })
 
     for await (let message of res.ndjson()) {

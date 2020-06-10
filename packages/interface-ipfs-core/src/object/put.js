@@ -7,6 +7,7 @@ const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -27,6 +28,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when putting an object', () => {
+      return testTimeout(() => ipfs.object.put({ Data: Buffer.from('derp') }, {
+        timeout: 1
+      }))
+    })
 
     it('should put an object', async () => {
       const obj = {

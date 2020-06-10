@@ -5,6 +5,7 @@ const {
 } = require('../../utils')
 const formatMode = require('ipfs-core-utils/src/files/format-mode')
 const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'stat [path]',
@@ -47,22 +48,26 @@ Mtime: <mtime>`,
     },
     'cid-base': {
       describe: 'CID base to use.'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs, print },
-      path,
-      format,
-      hash,
-      size,
-      withLocal,
-      cidBase
-    } = argv
-
+  handler ({
+    ctx: { ipfs, print },
+    path,
+    format,
+    hash,
+    size,
+    withLocal,
+    cidBase,
+    timeout
+  }) {
     return ipfs.files.stat(path, {
-      withLocal
+      withLocal,
+      timeout
     })
       .then((stats) => {
         if (hash) {

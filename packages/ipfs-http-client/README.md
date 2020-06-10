@@ -35,7 +35,7 @@
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs-beta.ipfs.io for tips, how-tos and more
+* Check out https://docs.ipfs.io for tips, how-tos and more
 
 ## Lead Maintainer
 
@@ -58,6 +58,7 @@
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
       - [Example](#example-1)
+  - [IPLD Formats](#ipld-formats)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
@@ -94,9 +95,9 @@ Both the Current and Active LTS versions of Node.js are supported. Please see [n
 All core API methods take _additional_ `options` specific to the HTTP API:
 
 * `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
-* `signal` - An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) that can be used to abort the request on demand.
-* `timeout` - A number or string specifying a timeout for the request. If the timeout is reached before data is received a [`TimeoutError`](https://github.com/sindresorhus/ky/blob/2f37c3f999efb36db9108893b8b3d4b3a7f5ec45/index.js#L127-L132) is thrown. If a number is specified it is interpreted as milliseconds, if a string is passed, it is intepreted according to [`parse-duration`](https://www.npmjs.com/package/parse-duration). Note that this option can also be [configured globally](#global-timeouts) via the constructor options.
 * `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+* `ipld.formats` - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+* `ipld.loadFormat` an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
 
 ### Instance Utils
 
@@ -193,6 +194,53 @@ for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.sv
 */
 ```
 
+### IPLD Formats
+
+By default an instance of the client supports the following [IPLD formats](https://github.com/ipld/interface-ipld-format), which are enough to do all core IPFS operations:
+
+  * [dag-pb](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-pb.md)
+  * [dag-cbor](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
+  * [raw](https://github.com/ipld/specs/issues/223)
+
+If your application requires support for extra codecs, you can configure them as follows:
+
+1. Configure the [IPLD layer](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionsipld) of your IPFS daemon to support the codec. This step is necessary so the node knows how to prepare data received over HTTP to be passed to IPLD for serialization:
+    ```javascript
+    const ipfs = require('ipfs')
+
+    const node = await ipfs({
+      ipld: {
+        // either specify them as part of the `formats` list
+        formats: [
+          require('my-format')
+        ],
+
+        // or supply a function to load them dynamically
+        loadFormat: async (format) => {
+          return require(format)
+        }
+      }
+    })
+2. Configure your IPFS HTTP API Client to support the codec. This is necessary so that the client can send the data to the IPFS node over HTTP:
+    ```javascript
+    const ipfsHttpClient = require('ipfs-http-client')
+
+    const client = ipfsHttpClient({
+      url: 'http://127.0.0.1:5002',
+      ipld: {
+        // either specify them as part of the `formats` list
+        formats: [
+          require('my-format')
+        ],
+
+        // or supply a function to load them dynamically
+        loadFormat: async (format) => {
+          return require(format)
+        }
+      }
+    })
+    ```
+
 ### Running the daemon with the right port
 
 To interact with the API, you need to have a local daemon running. It needs to be open on the right port. `5001` is the default, and is used in the examples below, but it can be set to whatever you need.
@@ -257,9 +305,6 @@ To always request the latest version, use one of the following examples:
 ```html
 <!-- loading the minified version using jsDelivr -->
 <script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
-
-<!-- loading the human-readable (not minified) version jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.js"></script>
 ```
 
 For maximum security you may also decide to:

@@ -3,6 +3,8 @@
 
 const { Buffer } = require('buffer')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
+const testTimeout = require('../../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,6 +25,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when setting the data of an object', () => {
+      return testTimeout(() => ipfs.object.patch.setData(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), Buffer.from('derp'), {
+        timeout: 1
+      }))
+    })
 
     it('should set data for an existing node', async () => {
       const obj = {

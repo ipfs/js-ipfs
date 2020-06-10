@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'new [<template>]',
@@ -13,12 +14,17 @@ module.exports = {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
       choices: multibase.names
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, template, cidBase }) {
-    const { ipfs, print } = ctx
-    const cid = await ipfs.object.new(template)
+  async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
+    const cid = await ipfs.object.new(template, {
+      timeout
+    })
     print(cidToString(cid, { base: cidBase, upgrade: false }))
   }
 }

@@ -6,6 +6,8 @@ const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const all = require('it-all')
+const drain = require('it-drain')
+const testTimeout = require('./utils/test-timeout')
 
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
@@ -65,10 +67,17 @@ module.exports = (common, options) => {
 
         const refs = await all(ipfs.refs(p, params))
 
+        // Sort the refs not to lock-in the iteration order
         // Check there was no error and the refs match what was expected
-        expect(refs.map(r => r.ref)).to.eql(expected)
+        expect(refs.map(r => r.ref).sort()).to.eql(expected.sort())
       })
     }
+
+    it('should respect timeout option when listing refs', () => {
+      return testTimeout(() => drain(ipfs.refs('/ipfs/QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1/foo/bar/baz.txt', {
+        timeout: 1
+      })))
+    })
 
     it('should get refs with cbor links', async function () {
       this.timeout(20 * 1000)
@@ -199,19 +208,19 @@ function getRefsTests () {
     },
 
     'should get refs with recursive and unique option': {
-      params: { format: '<linkname>', recursive: true, unique: true },
+      params: { format: '<dst>', recursive: true, unique: true },
       expected: [
-        'animals',
-        'land',
-        'african.txt',
-        'americas.txt',
-        'australian.txt',
-        'sea',
-        'atlantic.txt',
-        'indian.txt',
-        'fruits',
-        'tropical.txt',
-        'mushroom.txt'
+        'QmRfqT4uTUgFXhWbfBZm6eZxi2FQ8pqYK5tcWRyTZ7RcgY',
+        'QmUXzZKa3xhTauLektUiK4GiogHskuz1c57CnnoP4TgYJD',
+        'QmVX54jfjB8eRxLVxyQSod6b1FyDh7mR4mQie9j97i2Qk3',
+        'QmWEuXAjUGyndgr4MKqMBgzMW36XgPgvitt2jsXgtuc7JE',
+        'QmYEJ7qQNZUvBnv4SZ3rEbksagaan3sGvnUq948vSG8Z34',
+        'QmYLvZrFn8KE2bcJ9UFhthScBVbbcXEgkJnnCBeKWYkpuQ',
+        'Qma5z9bmwPcrWLJxX6Vj6BrcybaFg84c2riNbUKrSVf8h1',
+        'QmbrFTo4s6H23W6wmoZKQC2vSogGeQ4dYiceSqJddzrKVa',
+        'QmdHVR8M4zAdGctnTYq4fyPZjTwwzdcBpGWAfMAhAVfT9n',
+        'Qmf6MrqT2oAve9diagLTMCYFPEcSx7fnUdW3xAjhXm32vo',
+        'QmfP6D9bRV4FEYDL4EHZtZG58kDwDfnzmyjuyK5d1pvzbM'
       ]
     },
 

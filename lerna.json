@@ -1,5 +1,5 @@
 {
-  "lerna": "3.20.2",
+  "lerna": "3.22.0",
   "packages": [
     "packages/*",
     "examples/*"
@@ -9,9 +9,10 @@
     "bootstrap": {
       "hoist": true,
       "nohoist": [
-        "ipfs-interop",
         "ipfs-css",
-        "tachyons"
+        "tachyons",
+        "libp2p-delegated-content-routing",
+        "libp2p-delegated-peer-routing"
       ]
     },
     "run": {
@@ -19,7 +20,11 @@
     },
     "publish": {
       "message": "chore: publish",
-      "createRelease": "github"
+      "createRelease": "github",
+      "conventionalCommits": true
+    },
+    "version": {
+      "private": false
     }
   }
 }

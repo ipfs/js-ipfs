@@ -1,6 +1,7 @@
 {
   "name": "example-browser-mfs",
   "description": "",
+  "version": "1.0.2",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -15,12 +16,12 @@
     "html-webpack-plugin": "^3.2.0",
     "http-server": "^0.11.1",
     "terser-webpack-plugin": "^1.2.1",
-    "test-ipfs-example": "^2.0.1",
+    "test-ipfs-example": "^2.0.3",
     "webpack": "^4.28.4",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "ipfs": "^0.43.0",
+    "ipfs": "^0.46.0",
     "mime-sniffer": "~0.0.3"
   }
 }

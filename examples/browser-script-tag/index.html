@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>IPFS in the Browser</title>
-  <script src="./node_modules/ipfs/dist/index.js"></script>
+  <script src="./node_modules/ipfs/dist/index.min.js"></script>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', async () => {
       const node = await Ipfs.create({ repo: 'ipfs-' + Math.random() })
@@ -31,8 +31,9 @@
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
     async function addFile () {
-      const filesAdded = await node.add('Hello world!')
-      filesAdded.forEach((file) => console.log('successfully stored', file.hash))
+      for await (const { cid } of node.add('Hello world!')) {
+        console.log('successfully stored', cid)
+      }
     }
 
     addFile()
@@ -42,8 +43,9 @@
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
     async function catFile () {
-      const data = await node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY')
-      console.log(data.toString())
+      for await (const data of node.cat('QmQzCQn4puG4qu8PVysxZmscmQ5vT1ZXpqo7f58Uh9QfyY')) {
+        console.log(data.toString())
+      }
     }
 
     catFile()

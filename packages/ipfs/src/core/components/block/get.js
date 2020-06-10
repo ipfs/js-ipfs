@@ -1,9 +1,10 @@
 'use strict'
 
 const { cleanCid } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ blockService, preload }) => {
-  return async function get (cid, options) { // eslint-disable-line require-await
+  return withTimeoutOption(async function get (cid, options) { // eslint-disable-line require-await
     options = options || {}
     cid = cleanCid(cid)
 
@@ -11,6 +12,6 @@ module.exports = ({ blockService, preload }) => {
       preload(cid)
     }
 
-    return blockService.get(cid)
-  }
+    return blockService.get(cid, options)
+  })
 }

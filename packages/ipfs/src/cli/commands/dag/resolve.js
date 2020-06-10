@@ -1,6 +1,7 @@
 'use strict'
 
 const CID = require('cids')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'resolve <ref>',
@@ -10,12 +11,17 @@ module.exports = {
   builder: {
     ref: {
       type: 'string'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, ref }) {
-    const { ipfs, print } = ctx
-    const options = {}
+  async handler ({ ctx: { ipfs, print }, ref, timeout }) {
+    const options = {
+      timeout
+    }
 
     try {
       let lastCid

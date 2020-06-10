@@ -8,6 +8,10 @@ const { isNode } = require('ipfs-utils/src/env')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
+const defaultOptions = {
+  timeout: undefined
+}
+
 describe('ls', () => {
   if (!isNode) {
     return
@@ -36,7 +40,8 @@ describe('ls', () => {
 
     expect(ipfs.files.ls.callCount).to.equal(1)
     expect(ipfs.files.ls.getCall(0).args).to.deep.equal([
-      path
+      path,
+      defaultOptions
     ])
   })
 
@@ -45,7 +50,8 @@ describe('ls', () => {
 
     expect(ipfs.files.ls.callCount).to.equal(1)
     expect(ipfs.files.ls.getCall(0).args).to.deep.equal([
-      '/'
+      '/',
+      defaultOptions
     ])
   })
 
@@ -61,7 +67,7 @@ describe('ls', () => {
       }
     }]
 
-    ipfs.files.ls = sinon.stub().returns(files)
+    ipfs.files.ls = sinon.stub().withArgs('/foo', defaultOptions).returns(files)
 
     await cli('files ls --long /foo', { ipfs, print })
 
@@ -83,7 +89,7 @@ describe('ls', () => {
       }
     }]
 
-    ipfs.files.ls = sinon.stub().returns(files)
+    ipfs.files.ls = sinon.stub().withArgs('/foo', defaultOptions).returns(files)
 
     await cli('files ls -l /foo', { ipfs, print })
 
@@ -105,7 +111,7 @@ describe('ls', () => {
       }
     }]
 
-    ipfs.files.ls = sinon.stub().returns(files)
+    ipfs.files.ls = sinon.stub().withArgs('/foo', defaultOptions).returns(files)
 
     await cli('files ls --long /foo', { ipfs, print })
 
@@ -127,7 +133,7 @@ describe('ls', () => {
       }
     }]
 
-    ipfs.files.ls = sinon.stub().returns(files)
+    ipfs.files.ls = sinon.stub().withArgs('/foo', defaultOptions).returns(files)
 
     await cli('files ls -l /foo', { ipfs, print })
 
@@ -137,87 +143,17 @@ describe('ls', () => {
     expect(output).to.include(files[0].size)
   })
 
-  it('should list a path without sorting', async () => {
-    const files = [{
-      cid: fileCid,
-      name: 'file-name',
-      size: 'file-size',
-      mode: 0o755,
-      mtime: {
-        secs: Date.now() / 1000,
-        nsecs: 0
-      }
-    }]
+  it('should list a path with a timeout', async () => {
+    const path = '/foo'
 
-    ipfs.files.ls = sinon.stub().returns(files)
-
-    await cli('files ls --sort false /foo', { ipfs, print })
+    await cli(`files ls ${path} --timeout=1s`, { ipfs, print })
 
     expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].name)
-  })
-
-  it('should list a path without sorting (short option)', async () => {
-    const files = [{
-      cid: fileCid,
-      name: 'file-name',
-      size: 'file-size',
-      mode: 0o755,
-      mtime: {
-        secs: Date.now() / 1000,
-        nsecs: 0
+    expect(ipfs.files.ls.getCall(0).args).to.deep.equal([
+      path, {
+        ...defaultOptions,
+        timeout: 1000
       }
-    }]
-
-    ipfs.files.ls = sinon.stub().returns(files)
-
-    await cli('files ls -s false /foo', { ipfs, print })
-
-    expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].name)
-  })
-
-  it('should list a path with details without sorting', async () => {
-    const files = [{
-      cid: fileCid,
-      name: 'file-name',
-      size: 'file-size',
-      mode: 0o755,
-      mtime: {
-        secs: Date.now() / 1000,
-        nsecs: 0
-      }
-    }]
-
-    ipfs.files.ls = sinon.stub().returns(files)
-
-    await cli('files ls --long --sort false /foo', { ipfs, print })
-
-    expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].cid.toString())
-    expect(output).to.include(files[0].name)
-    expect(output).to.include(files[0].size)
-  })
-
-  it('should list a path with details without sorting (short option)', async () => {
-    const files = [{
-      cid: fileCid,
-      name: 'file-name',
-      size: 'file-size',
-      mode: 0o755,
-      mtime: {
-        secs: Date.now() / 1000,
-        nsecs: 0
-      }
-    }]
-
-    ipfs.files.ls = sinon.stub().returns(files)
-
-    await cli('files ls -l -s false /foo', { ipfs, print })
-
-    expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].cid.toString())
-    expect(output).to.include(files[0].name)
-    expect(output).to.include(files[0].size)
+    ])
   })
 })

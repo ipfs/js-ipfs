@@ -1,13 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'ls',
 
   describe: 'Get your list of subscriptions',
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const subscriptions = await ipfs.pubsub.ls()
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    const subscriptions = await ipfs.pubsub.ls({
+      timeout
+    })
     subscriptions.forEach(sub => print(sub))
   }
 }

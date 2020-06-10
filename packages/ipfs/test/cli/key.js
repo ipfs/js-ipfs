@@ -21,89 +21,154 @@ describe('key', () => {
     }
   })
 
-  it('gen', async () => {
+  describe('gen', () => {
     const name = 'key-name'
     const id = 'key-id'
-
-    ipfs.key.gen.withArgs(name, {
+    const defaultOptions = {
       type: 'rsa',
-      size: 2048
-    }).resolves({
-      id,
-      name
+      size: 2048,
+      timeout: undefined
+    }
+
+    it('should generate a key', async () => {
+      ipfs.key.gen.withArgs(name, defaultOptions).resolves({
+        id,
+        name
+      })
+
+      const out = await cli(`key gen ${name}`, { ipfs })
+      expect(out).to.equal(`generated ${id} ${name}\n`)
     })
 
-    const out = await cli(`key gen ${name}`, { ipfs })
-    expect(out).to.equal(`generated ${id} ${name}\n`)
-  })
+    it('gen with args', async () => {
+      ipfs.key.gen.withArgs(name, {
+        ...defaultOptions,
+        type: 'rsb',
+        size: 7
+      }).resolves({
+        id,
+        name
+      })
 
-  it('gen with args', async () => {
-    const name = 'key-name'
-    const id = 'key-id'
-
-    ipfs.key.gen.withArgs(name, {
-      type: 'rsb',
-      size: 7
-    }).resolves({
-      id,
-      name
+      const out = await cli(`key gen ${name} --type rsb --size 7`, { ipfs })
+      expect(out).to.equal(`generated ${id} ${name}\n`)
     })
 
-    const out = await cli(`key gen ${name} --type rsb --size 7`, { ipfs })
-    expect(out).to.equal(`generated ${id} ${name}\n`)
-  })
+    it('gen with short args', async () => {
+      ipfs.key.gen.withArgs(name, {
+        ...defaultOptions,
+        type: 'rsc',
+        size: 5
+      }).resolves({
+        id,
+        name
+      })
 
-  it('gen with short args', async () => {
-    const name = 'key-name'
-    const id = 'key-id'
-
-    ipfs.key.gen.withArgs(name, {
-      type: 'rsc',
-      size: 5
-    }).resolves({
-      id,
-      name
+      const out = await cli(`key gen ${name} -t rsc -s 5`, { ipfs })
+      expect(out).to.equal(`generated ${id} ${name}\n`)
     })
 
-    const out = await cli(`key gen ${name} -t rsc -s 5`, { ipfs })
-    expect(out).to.equal(`generated ${id} ${name}\n`)
+    it('gen with a timeout', async () => {
+      ipfs.key.gen.withArgs(name, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        id,
+        name
+      })
+
+      const out = await cli(`key gen ${name} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`generated ${id} ${name}\n`)
+    })
   })
 
-  it('list', async () => {
+  describe('list', () => {
     const name = 'key-name'
     const id = 'key-id'
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-    ipfs.key.list.resolves([{
-      id,
-      name
-    }])
-    const out = await cli('key list', { ipfs })
-    expect(out).to.equal(`${id} ${name}\n`)
+    it('should list keys', async () => {
+      ipfs.key.list.withArgs(defaultOptions).resolves([{
+        id,
+        name
+      }])
+      const out = await cli('key list', { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
+    })
+
+    it('should list keys with a timeout', async () => {
+      ipfs.key.list.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves([{
+        id,
+        name
+      }])
+      const out = await cli('key list --timeout=1s', { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
+    })
   })
 
-  it('rename', async () => {
+  describe('rename', () => {
     const name = 'key-name'
     const newName = 'new-key-name'
     const id = 'key-id'
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-    ipfs.key.rename.withArgs(name, newName).resolves({
-      id,
-      now: newName
+    it('should rename a key', async () => {
+      ipfs.key.rename.withArgs(name, newName, defaultOptions).resolves({
+        id,
+        now: newName
+      })
+      const out = await cli(`key rename ${name} ${newName}`, { ipfs })
+      expect(out).to.equal(`renamed to ${id} ${newName}\n`)
     })
-    const out = await cli(`key rename ${name} ${newName}`, { ipfs })
-    expect(out).to.equal(`renamed to ${id} ${newName}\n`)
+
+    it('should rename a key with a timeout', async () => {
+      ipfs.key.rename.withArgs(name, newName, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        id,
+        now: newName
+      })
+      const out = await cli(`key rename ${name} ${newName} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`renamed to ${id} ${newName}\n`)
+    })
   })
 
-  it('rm', async () => {
+  describe('rm', () => {
     const name = 'key-name'
     const id = 'key-id'
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-    ipfs.key.rm.withArgs(name).resolves({
-      id,
-      name
+    it('should remove a key', async () => {
+      ipfs.key.rm.withArgs(name, defaultOptions).resolves({
+        id,
+        name
+      })
+
+      const out = await cli(`key rm ${name}`, { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
     })
 
-    const out = await cli(`key rm ${name}`, { ipfs })
-    expect(out).to.equal(`${id} ${name}\n`)
+    it('should remove a key with a timeout', async () => {
+      ipfs.key.rm.withArgs(name, {
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        id,
+        name
+      })
+
+      const out = await cli(`key rm ${name} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
+    })
   })
 })

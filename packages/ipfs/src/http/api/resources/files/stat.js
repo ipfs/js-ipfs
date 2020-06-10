@@ -1,8 +1,24 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 
 const mfsStat = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        arg: Joi.string().default('/'),
+        hash: Joi.boolean().default(false),
+        size: Joi.boolean().default(false),
+        withLocal: Joi.boolean().default(false),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+    }
+  },
   async handler (request, h) {
     const {
       ipfs
@@ -12,13 +28,16 @@ const mfsStat = {
       hash,
       size,
       withLocal,
-      cidBase
+      cidBase,
+      timeout
     } = request.query
 
     const stats = await ipfs.files.stat(arg, {
       hash,
       size,
-      withLocal
+      withLocal,
+      signal: request.app.signal,
+      timeout
     })
 
     const output = {
@@ -45,21 +64,6 @@ const mfsStat = {
     }
 
     return h.response(output)
-  },
-  options: {
-    validate: {
-      options: {
-        allowUnknown: true,
-        stripUnknown: true
-      },
-      query: Joi.object().keys({
-        arg: Joi.string().default('/'),
-        hash: Joi.boolean().default(false),
-        size: Joi.boolean().default(false),
-        withLocal: Joi.boolean().default(false),
-        cidBase: Joi.string()
-      })
-    }
   }
 }
 

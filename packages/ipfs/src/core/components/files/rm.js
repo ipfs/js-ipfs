@@ -8,6 +8,7 @@ const removeLink = require('./utils/remove-link')
 const toMfsPath = require('./utils/to-mfs-path')
 const toTrail = require('./utils/to-trail')
 const applyDefaultOptions = require('./utils/apply-default-options')
+const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   recursive: false,
@@ -17,7 +18,7 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return async function mfsRm () {
+  return withTimeoutOption(async function mfsRm () {
     const args = Array.from(arguments)
 
     const {
@@ -38,7 +39,7 @@ module.exports = (context) => {
     for (const source of sources) {
       await removePath(context, source.path, options)
     }
-  }
+  })
 }
 
 const removePath = async (context, path, options) => {

@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
+
+
+### Bug Fixes
+
+* handle optional key to config.get ([#3069](https://github.com/ipfs/js-ipfs/issues/3069)) ([d043138](https://github.com/ipfs/js-ipfs/commit/d043138be2c0c7fd458131d56e235edec1504ca3))
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
+# [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
+
+
+### Features
+
+* upgrade bitswap to use 1.2.0 and better wantlist performance ([18283dd](https://github.com/ipfs/js-ipfs/commit/18283dd8fb70af5ed93236482b2a5f89515c24e0))
+
+
+
+
+
+# [0.44.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.3...ipfs@0.44.0) (2020-05-18)
+
+
+### Bug Fixes
+
+* fixes browser script tag example ([#3034](https://github.com/ipfs/js-ipfs/issues/3034)) ([ee8b769](https://github.com/ipfs/js-ipfs/commit/ee8b769b96f7e3c8414bbf85853ab4e21e8fd11c)), closes [#3027](https://github.com/ipfs/js-ipfs/issues/3027)
+* remove ipld all formats and fix traverse ipld example ([#3025](https://github.com/ipfs/js-ipfs/issues/3025)) ([e6079c1](https://github.com/ipfs/js-ipfs/commit/e6079c17d5656e92dd5191f0581000c6a782c7ed))
+* remove node globals ([#2932](https://github.com/ipfs/js-ipfs/issues/2932)) ([d0d2f74](https://github.com/ipfs/js-ipfs/commit/d0d2f74cef4e439c6d2baadba1f1f9f52534fcba))
+
+
+### Features
+
+* cancellable api calls ([#2993](https://github.com/ipfs/js-ipfs/issues/2993)) ([2b24f59](https://github.com/ipfs/js-ipfs/commit/2b24f590041a0df9da87b75ae2344232fe22fe3a)), closes [#3015](https://github.com/ipfs/js-ipfs/issues/3015)
+
+
+
+
+
 ## [0.43.3](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.2...ipfs@0.43.3) (2020-05-05)
 
 **Note:** Version bump only for package ipfs

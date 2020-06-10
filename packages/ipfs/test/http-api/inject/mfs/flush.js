@@ -7,6 +7,12 @@ const sinon = require('sinon')
 const CID = require('cids')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 const testHttpMethod = require('../../../utils/test-http-method')
+const { AbortSignal } = require('abort-controller')
+
+const defaultOptions = {
+  timeout: undefined,
+  signal: sinon.match.instanceOf(AbortSignal)
+}
 
 describe('/files/flush', () => {
   const path = '/foo'
@@ -31,10 +37,7 @@ describe('/files/flush', () => {
     }, { ipfs })
 
     expect(ipfs.files.flush.callCount).to.equal(1)
-    expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
-      path,
-      {}
-    ])
+    expect(ipfs.files.flush.calledWith(path, defaultOptions)).to.be.true()
     expect(response).to.have.nested.property('result.Cid', cid.toString())
   })
 
@@ -45,24 +48,34 @@ describe('/files/flush', () => {
     }, { ipfs })
 
     expect(ipfs.files.flush.callCount).to.equal(1)
-    expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
-      '/',
-      {}
-    ])
+    expect(ipfs.files.flush.calledWith('/', defaultOptions)).to.be.true()
     expect(response).to.have.nested.property('result.Cid', cid.toString())
   })
 
   it('should flush with a different CID base', async () => {
+    ipfs.files.flush.resolves(cid.toV1())
+
     const response = await http({
       method: 'POST',
-      url: '/api/v0/files/flush?cidBase=base64'
+      url: '/api/v0/files/flush?cid-base=base64'
     }, { ipfs })
 
     expect(ipfs.files.flush.callCount).to.equal(1)
-    expect(ipfs.files.flush.getCall(0).args).to.deep.equal([
-      '/',
-      {}
-    ])
+    expect(ipfs.files.flush.calledWith('/', defaultOptions)).to.be.true()
     expect(response).to.have.nested.property('result.Cid', cid.toV1().toString('base64'))
+  })
+
+  it('accepts a timeout', async () => {
+    const response = await http({
+      method: 'POST',
+      url: '/api/v0/files/flush?timeout=1s'
+    }, { ipfs })
+
+    expect(ipfs.files.flush.callCount).to.equal(1)
+    expect(ipfs.files.flush.calledWith('/', {
+      ...defaultOptions,
+      timeout: 1000
+    })).to.be.true()
+    expect(response).to.have.nested.property('result.Cid', cid.toString())
   })
 })

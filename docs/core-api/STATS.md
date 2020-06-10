@@ -1,36 +1,47 @@
-# Stats API
+# Stats API <!-- omit in toc -->
 
-* [stats.bitswap](#statsbitswap)
-* [stats.repo](#statsrepo)
-* [stats.bw](#statsbw)
+- [`ipfs.stats.bitswap([options]`](#ipfsstatsbitswapoptions)
+- [`ipfs.stats.repo([options])`](#ipfsstatsrepooptions)
+- [`ipfs.stats.bw([options])`](#ipfsstatsbwoptions)
+  - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
 
-#### `stats.bitswap`
+## `ipfs.stats.bitswap([options]`
 
 > Show diagnostic information on the bitswap agent.
 
 Note: `stats.bitswap` and `bitswap.stat` can be used interchangeably. See [`bitswap.stat`](./BITSWAP.md#bitswapstat) for more details.
 
-#### `stats.repo`
+## `ipfs.stats.repo([options])`
 
 > Get stats for the currently used repo.
 
 Note: `stats.repo` and `repo.stat` can be used interchangeably. See [`repo.stat`](./REPO.md#repostat) for more details.
 
-#### `stats.bw`
+## `ipfs.stats.bw([options])`
 
 > Get IPFS bandwidth information.
 
-##### `ipfs.stats.bw([options])`
+### Parameters
 
-Where:
+None
 
-- `options` is an optional object that might contain the following keys:
-  - `peer` specifies a peer to print bandwidth for.
-  - `proto` specifies a protocol to print bandwidth for.
-  - `poll` is used to yield bandwidth info at an interval.
-  - `interval` is the time interval to wait between updating output, if `poll` is `true`.
+### Options
 
-**Returns**
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| peer | [PeerId][], [CID][] or `String` | `undefined` | Specifies a peer to print bandwidth for |
+| proto | `String` | `undefined` | Specifies a protocol to print bandwidth for |
+| poll | `boolean` | `undefined` | Is used to yield bandwidth info at an interval |
+| interval | `Number` | `undefined` | The time interval to wait between updating output, if `poll` is `true` |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -43,7 +54,7 @@ Each yielded object contains the following keys:
 - `rateIn` - is a [BigNumber Int][bigNumber], in bytes.
 - `rateOut` - is a [BigNumber Int][bigNumber], in bytes.
 
-**Example:**
+### Example
 
 ```JavaScript
 for await (const stats of ipfs.stats.bw()) {
@@ -59,3 +70,6 @@ A great source of [examples][] can be found in the tests for this API.
 
 [bigNumber]: https://github.com/MikeMcl/bignumber.js/
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/stats
+[AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
+[cid]: https://www.npmjs.com/package/cids
+[peerid]: https://www.npmjs.com/package/peer-id

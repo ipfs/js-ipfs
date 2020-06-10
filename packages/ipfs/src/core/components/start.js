@@ -9,6 +9,7 @@ const routingConfig = require('../ipns/routing/config')
 const { AlreadyInitializedError, NotEnabledError } = require('../errors')
 const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
+const { withTimeoutOption } = require('../utils')
 
 module.exports = ({
   apiManager,
@@ -18,12 +19,12 @@ module.exports = ({
   initOptions,
   ipld,
   keychain,
-  peerInfo,
+  peerId,
   pinManager,
   preload,
   print,
   repo
-}) => async function start () {
+}) => withTimeoutOption(async function start () {
   const startPromise = defer()
   const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
@@ -34,6 +35,7 @@ module.exports = ({
     }
 
     const config = await repo.config.get()
+    const addrs = []
 
     if (config.Addresses && config.Addresses.Swarm) {
       config.Addresses.Swarm.forEach(addr => {
@@ -43,37 +45,54 @@ module.exports = ({
         // webrtc-star) can have the intermediary's peer ID in the address, so append our
         // peer ID to the end of it
         const maId = ma.getPeerId()
-        if (maId && maId !== peerInfo.id.toB58String()) {
-          ma = ma.encapsulate(`/p2p/${peerInfo.id.toB58String()}`)
+        if (maId && maId !== peerId.toB58String()) {
+          ma = ma.encapsulate(`/p2p/${peerId.toB58String()}`)
         }
 
-        peerInfo.multiaddrs.add(ma)
+        addrs.push(ma)
       })
     }
 
     const libp2p = Components.libp2p({
       options: constructorOptions,
       repo,
-      peerInfo,
-      print,
+      peerId: peerId,
+      multiaddrs: addrs,
       config
     })
 
+    libp2p.keychain && await libp2p.loadKeychain()
+
     await libp2p.start()
 
-    peerInfo.multiaddrs.forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerInfo.id.toB58String()}`))
+    libp2p.transportManager.getAddrs().forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`))
 
-    const ipnsRouting = routingConfig({ libp2p, repo, peerInfo, options: constructorOptions })
-    const ipns = new IPNS(ipnsRouting, repo.datastore, peerInfo, keychain, { pass: initOptions.pass })
+    const ipnsRouting = routingConfig({ libp2p, repo, peerId, options: constructorOptions })
+    const ipns = new IPNS(ipnsRouting, repo.datastore, peerId, keychain, { pass: initOptions.pass })
     const bitswap = new Bitswap(libp2p, repo.blocks, { statsEnabled: true })
 
     await bitswap.start()
 
     blockService.setExchange(bitswap)
 
+    const dag = {
+      get: Components.dag.get({ ipld, preload }),
+      resolve: Components.dag.resolve({ ipld, preload }),
+      tree: Components.dag.tree({ ipld, preload })
+    }
+
+    const pin = {
+      add: Components.pin.add({ pinManager, gcLock, dag }),
+      ls: Components.pin.ls({ pinManager, dag }),
+      rm: Components.pin.rm({ pinManager, gcLock, dag })
+    }
+
+    // FIXME: resolve this circular dependency
+    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+
     const block = {
       get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, gcLock, preload }),
+      put: Components.block.put({ blockService, pin, gcLock, preload }),
       rm: Components.block.rm({ blockService, gcLock, pinManager }),
       stat: Components.block.stat({ blockService, preload })
     }
@@ -94,6 +113,7 @@ module.exports = ({
       blockService,
       config,
       constructorOptions,
+      dag,
       files,
       gcLock,
       initOptions,
@@ -102,7 +122,8 @@ module.exports = ({
       keychain,
       libp2p,
       mfsPreload,
-      peerInfo,
+      peerId,
+      pin,
       pinManager,
       preload,
       print,
@@ -118,7 +139,7 @@ module.exports = ({
 
   startPromise.resolve(apiManager.api)
   return apiManager.api
-}
+})
 
 function createApi ({
   apiManager,
@@ -127,6 +148,7 @@ function createApi ({
   blockService,
   config,
   constructorOptions,
+  dag,
   files,
   gcLock,
   initOptions,
@@ -135,17 +157,13 @@ function createApi ({
   keychain,
   libp2p,
   mfsPreload,
-  peerInfo,
+  peerId,
+  pin,
   pinManager,
   preload,
   print,
   repo
 }) {
-  const dag = {
-    get: Components.dag.get({ ipld, preload }),
-    resolve: Components.dag.resolve({ ipld, preload }),
-    tree: Components.dag.tree({ ipld, preload })
-  }
   const object = {
     data: Components.object.data({ ipld, preload }),
     get: Components.object.get({ ipld, preload }),
@@ -160,13 +178,7 @@ function createApi ({
     put: Components.object.put({ ipld, gcLock, preload }),
     stat: Components.object.stat({ ipld, preload })
   }
-  const pin = {
-    add: Components.pin.add({ pinManager, gcLock, dag }),
-    ls: Components.pin.ls({ pinManager, dag }),
-    rm: Components.pin.rm({ pinManager, gcLock, dag })
-  }
-  // FIXME: resolve this circular dependency
-  dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
+
   const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
 
@@ -190,8 +202,8 @@ function createApi ({
       state: Components.name.pubsub.state({ ipns, options: constructorOptions }),
       subs: Components.name.pubsub.subs({ ipns, options: constructorOptions })
     },
-    publish: Components.name.publish({ ipns, dag, peerInfo, isOnline, keychain, options: constructorOptions }),
-    resolve: Components.name.resolve({ dns, ipns, peerInfo, isOnline, options: constructorOptions })
+    publish: Components.name.publish({ ipns, dag, peerId, isOnline, keychain, options: constructorOptions }),
+    resolve: Components.name.resolve({ dns, ipns, peerId, isOnline, options: constructorOptions })
   }
   const resolve = Components.resolve({ name, ipld })
   const refs = Components.refs({ ipld, resolve, preload })
@@ -231,7 +243,7 @@ function createApi ({
     dns,
     files,
     get: Components.get({ ipld, preload }),
-    id: Components.id({ peerInfo, libp2p }),
+    id: Components.id({ peerId, libp2p }),
     init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
     isOnline,
     key: {
@@ -279,7 +291,7 @@ function createApi ({
       keychain,
       libp2p,
       mfsPreload,
-      peerInfo,
+      peerId,
       preload,
       print,
       repo
@@ -288,7 +300,7 @@ function createApi ({
       addrs: Components.swarm.addrs({ libp2p }),
       connect: Components.swarm.connect({ libp2p }),
       disconnect: Components.swarm.disconnect({ libp2p }),
-      localAddrs: Components.swarm.localAddrs({ peerInfo }),
+      localAddrs: Components.swarm.localAddrs({ multiaddrs: libp2p.multiaddrs }),
       peers: Components.swarm.peers({ libp2p })
     },
     version: Components.version({ repo })

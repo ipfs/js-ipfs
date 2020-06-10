@@ -15,7 +15,7 @@ let sigServerB
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '601kB' },
+  bundlesize: { maxSize: '446kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -23,7 +23,7 @@ module.exports = {
       served: true,
       included: false
     }],
-    browserNoActivityTimeout: 100 * 1000,
+    browserNoActivityTimeout: 100 * 1000
   },
   hooks: {
     node: {

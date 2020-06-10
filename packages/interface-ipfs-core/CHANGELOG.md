@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.136.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.135.1...interface-ipfs-core@0.136.0) (2020-06-05)
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
+## [0.135.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.135.0...interface-ipfs-core@0.135.1) (2020-05-29)
+
+**Note:** Version bump only for package interface-ipfs-core
+
+
+
+
+
+# [0.135.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.134.3...interface-ipfs-core@0.135.0) (2020-05-18)
+
+
+### Bug Fixes
+
+* fixes browser script tag example ([#3034](https://github.com/ipfs/js-ipfs/issues/3034)) ([ee8b769](https://github.com/ipfs/js-ipfs/commit/ee8b769b96f7e3c8414bbf85853ab4e21e8fd11c)), closes [#3027](https://github.com/ipfs/js-ipfs/issues/3027)
+* remove node globals ([#2932](https://github.com/ipfs/js-ipfs/issues/2932)) ([d0d2f74](https://github.com/ipfs/js-ipfs/commit/d0d2f74cef4e439c6d2baadba1f1f9f52534fcba))
+* typeof bug when passing timeout to dag.get ([#3035](https://github.com/ipfs/js-ipfs/issues/3035)) ([026a542](https://github.com/ipfs/js-ipfs/commit/026a5423e00992968840c9236afe47bdab9ee834))
+
+
+### Features
+
+* cancellable api calls ([#2993](https://github.com/ipfs/js-ipfs/issues/2993)) ([2b24f59](https://github.com/ipfs/js-ipfs/commit/2b24f590041a0df9da87b75ae2344232fe22fe3a)), closes [#3015](https://github.com/ipfs/js-ipfs/issues/3015)
+
+
+
+
+
 ## [0.134.3](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.134.2...interface-ipfs-core@0.134.3) (2020-05-05)
 
 **Note:** Version bump only for package interface-ipfs-core

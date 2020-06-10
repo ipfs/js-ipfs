@@ -1,15 +1,24 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'get <key>',
 
   describe: 'Get a raw IPFS block',
 
-  builder: {},
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
 
-  async handler ({ ctx, key }) {
+  async handler ({ ctx, key, timeout }) {
     const { ipfs, print } = ctx
-    const block = await ipfs.block.get(key)
+    const block = await ipfs.block.get(key, {
+      timeout
+    })
     if (block) {
       print(block.data, false)
     } else {

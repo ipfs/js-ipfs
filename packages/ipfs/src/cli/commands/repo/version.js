@@ -1,13 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'version',
 
   describe: 'Shows IPFS repo version information',
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const version = await ipfs.repo.version()
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
+
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    const version = await ipfs.repo.version({
+      timeout
+    })
     print(version)
   }
 }

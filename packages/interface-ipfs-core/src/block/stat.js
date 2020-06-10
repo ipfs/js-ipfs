@@ -4,6 +4,7 @@
 const { Buffer } = require('buffer')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,6 +26,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when statting a block', () => {
+      return testTimeout(() => ipfs.block.stat(new CID('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
+        timeout: 1
+      }))
+    })
 
     it('should stat by CID', async () => {
       const cid = new CID(hash)

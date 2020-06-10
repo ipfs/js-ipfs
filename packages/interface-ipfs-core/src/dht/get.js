@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
-const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -14,9 +14,7 @@ module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe.skip('.dht.get', function () {
-    this.timeout(80 * 1000)
-
+  describe('.dht.get', function () {
     let nodeA
     let nodeB
 
@@ -28,22 +26,26 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when getting a value from the DHT', async () => {
+      const [data] = await all(nodeA.add('should put a value to the DHT'))
+      const publish = await nodeA.name.publish(data.cid)
+
+      await testTimeout(() => nodeB.dht.get(`/ipns/${publish.name}`, {
+        timeout: 1
+      }))
+    })
+
     it('should error when getting a non-existent key from the DHT', () => {
       return expect(nodeA.dht.get('non-existing', { timeout: 100 })).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
     })
 
-    // TODO: revisit this test - it puts an invalid key and so go-ipfs throws
-    // "invalid record keytype" - it needs to put a valid key and value for it to
-    // be a useful test.
-    it.skip('should get a value after it was put on another node', async () => {
-      const key = Buffer.from(nanoid())
-      const value = Buffer.from(nanoid())
+    it('should get a value after it was put on another node', async () => {
+      const [data] = await all(nodeA.add('should put a value to the DHT'))
+      const publish = await nodeA.name.publish(data.cid)
+      const record = await nodeA.dht.get(`/ipns/${publish.name}`)
 
-      await nodeB.dht.put(key, value)
-      const result = await nodeA.dht.get(key)
-
-      expect(result).to.eql(value)
+      expect(record.toString()).to.contain(data.cid.toString())
     })
   })
 }

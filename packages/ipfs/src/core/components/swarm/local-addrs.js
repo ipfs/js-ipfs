@@ -1,7 +1,9 @@
 'use strict'
 
-module.exports = ({ peerInfo }) => {
-  return async function localAddrs () { // eslint-disable-line require-await
-    return peerInfo.multiaddrs.toArray()
-  }
+const { withTimeoutOption } = require('../../utils')
+
+module.exports = ({ multiaddrs }) => {
+  return withTimeoutOption(async function localAddrs () { // eslint-disable-line require-await
+    return multiaddrs
+  })
 }

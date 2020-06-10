@@ -7,6 +7,7 @@ const createShardedDirectory = require('../utils/create-sharded-directory')
 const concat = require('it-concat')
 const randomBytes = require('iso-random-stream/src/random')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -266,6 +267,20 @@ module.exports = (common, options) => {
       } catch (error) {
         expect(error.message).to.contain('does not exist')
       }
+    })
+
+    it('should respect timeout option when moving files', async () => {
+      const source = `/source-file-${Math.random()}.txt`
+      const destination = `/dest-file-${Math.random()}.txt`
+      const data = randomBytes(500)
+
+      await ipfs.files.write(source, data, {
+        create: true
+      })
+
+      await testTimeout(() => ipfs.files.mv(source, destination, {
+        timeout: 1
+      }))
     })
   })
 }

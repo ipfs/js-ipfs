@@ -6,6 +6,11 @@ const cli = require('../utils/cli')
 const sinon = require('sinon')
 const CID = require('cids')
 
+const defaultOptions = {
+  recursive: false,
+  timeout: undefined
+}
+
 describe('ls', () => {
   let ipfs
 
@@ -14,8 +19,26 @@ describe('ls', () => {
       ls: sinon.stub()
     }
 
+    ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', defaultOptions).returns([{
+      mode: 0o755,
+      mtime: null,
+      cid: new CID('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
+      type: 'dir',
+      name: 'blocks',
+      depth: 0
+    }, {
+      mode: 0o644,
+      mtime: null,
+      cid: new CID('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
+      type: 'file',
+      name: 'config',
+      size: 3928,
+      depth: 0
+    }])
+
     ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', {
-      recursive: false
+      ...defaultOptions,
+      timeout: 1000
     }).returns([{
       mode: 0o755,
       mtime: null,
@@ -33,9 +56,7 @@ describe('ls', () => {
       depth: 0
     }])
 
-    ipfs.ls.withArgs('/ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', {
-      recursive: false
-    }).returns([{
+    ipfs.ls.withArgs('/ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', defaultOptions).returns([{
       mode: 0o755,
       mtime: null,
       cid: new CID('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
@@ -52,9 +73,7 @@ describe('ls', () => {
       depth: 0
     }])
 
-    ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/blocks', {
-      recursive: false
-    }).returns([{
+    ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/blocks', defaultOptions).returns([{
       mode: 0o644,
       mtime: null,
       cid: new CID('QmQ8ag7ysVyCMzJGFjxrUStwWtniQ69c7G9aezbmsKeNYD'),
@@ -73,6 +92,7 @@ describe('ls', () => {
     }])
 
     ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', {
+      ...defaultOptions,
       recursive: true
     }).returns([{
       mode: 0o755,
@@ -172,6 +192,14 @@ describe('ls', () => {
     expect(out).to.eql(
       'drwxr-xr-x - mAXASILidvV1YroHLqBvmuXko1Ly1UVenZV1K+MvhsjXhdvZQ - blocks/\n' +
       '-rw-r--r-- - mAXASIBT4ZYkQw0IApLoNHBxSjpezyayKZHJyxmFKpt0I3sK5 3928 config\n'
+    )
+  })
+
+  it('prints added files with a timeout', async () => {
+    const out = await cli('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z --timeout=1s', { ipfs })
+    expect(out).to.eql(
+      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
+      '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n'
     )
   })
 })

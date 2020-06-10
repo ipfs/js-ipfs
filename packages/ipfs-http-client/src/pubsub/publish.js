@@ -1,25 +1,29 @@
 'use strict'
 
-const { Buffer } = require('buffer')
-const encodeBuffer = require('../lib/encode-buffer-uri-component')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const multipartRequest = require('../lib/multipart-request')
+const anySignal = require('any-signal')
+const AbortController = require('abort-controller')
 
 module.exports = configure(api => {
   return async (topic, data, options = {}) => {
-    data = Buffer.from(data)
-
     const searchParams = toUrlSearchParams({
-      arg: [
-        topic
-      ],
+      arg: topic,
       ...options
     })
 
-    const res = await api.post(`pubsub/pub?${searchParams}&arg=${encodeBuffer(data)}`, {
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
+
+    const res = await api.post('pubsub/pub', {
       timeout: options.timeout,
-      signal: options.signal,
-      headers: options.headers
+      signal,
+      searchParams,
+      ...(
+        await multipartRequest(data, controller, options.headers)
+      )
     })
 
     await res.text()

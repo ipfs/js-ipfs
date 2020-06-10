@@ -3,6 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'mv <source> <dest>',
@@ -47,29 +48,33 @@ module.exports = {
       type: 'number',
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  handler (argv) {
-    const {
-      ctx: { ipfs },
-      source,
-      dest,
-      parents,
-      recursive,
-      cidVersion,
-      hashAlg,
-      flush,
-      shardSplitThreshold
-    } = argv
-
+  handler ({
+    ctx: { ipfs },
+    source,
+    dest,
+    parents,
+    recursive,
+    cidVersion,
+    hashAlg,
+    flush,
+    shardSplitThreshold,
+    timeout
+  }) {
     return ipfs.files.mv(source, dest, {
       parents,
       recursive,
       cidVersion,
       hashAlg,
       flush,
-      shardSplitThreshold
+      shardSplitThreshold,
+      timeout
     })
   }
 }

@@ -5,19 +5,12 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const cli = require('../../utils/cli')
 const sinon = require('sinon')
 
-function defaultOptions (modification = {}) {
-  const options = {
-    parents: false,
-    hashAlg: 'sha2-256',
-    flush: true,
-    shardSplitThreshold: 1000
-  }
-
-  Object.keys(modification).forEach(key => {
-    options[key] = modification[key]
-  })
-
-  return options
+const defaultOptions = {
+  parents: false,
+  hashAlg: 'sha2-256',
+  flush: true,
+  shardSplitThreshold: 1000,
+  timeout: undefined
 }
 
 describe('cp', () => {
@@ -40,7 +33,7 @@ describe('cp', () => {
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
       dest,
-      defaultOptions()
+      defaultOptions
     ])
   })
 
@@ -50,10 +43,10 @@ describe('cp', () => {
     expect(ipfs.files.cp.callCount).to.equal(1)
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -63,10 +56,10 @@ describe('cp', () => {
     expect(ipfs.files.cp.callCount).to.equal(1)
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         parents: true
-      })
+      }
     ])
   })
 
@@ -76,10 +69,10 @@ describe('cp', () => {
     expect(ipfs.files.cp.callCount).to.equal(1)
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -89,10 +82,10 @@ describe('cp', () => {
     expect(ipfs.files.cp.callCount).to.equal(1)
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         hashAlg: 'sha3-256'
-      })
+      }
     ])
   })
 
@@ -102,10 +95,23 @@ describe('cp', () => {
     expect(ipfs.files.cp.callCount).to.equal(1)
     expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
       source,
-      dest,
-      defaultOptions({
+      dest, {
+        ...defaultOptions,
         shardSplitThreshold: 10
-      })
+      }
+    ])
+  })
+
+  it('should copy files with a timeout', async () => {
+    await cli(`files cp ${source} ${dest} --timeout=1s`, { ipfs })
+
+    expect(ipfs.files.cp.callCount).to.equal(1)
+    expect(ipfs.files.cp.getCall(0).args).to.deep.equal([
+      source,
+      dest, {
+        ...defaultOptions,
+        timeout: 1000
+      }
     ])
   })
 })

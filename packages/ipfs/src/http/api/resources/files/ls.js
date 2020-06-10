@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('../../../utils/joi')
 const all = require('it-all')
 const map = require('it-map')
 const pipe = require('it-pipe')
@@ -32,31 +32,6 @@ const mapEntry = (entry, options) => {
 }
 
 const mfsLs = {
-  async handler (request, h) {
-    const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
-      long,
-      cidBase,
-      stream
-    } = request.query
-
-    if (stream) {
-      return streamResponse(request, h, () => pipe(
-        ipfs.files.ls(arg),
-        source => map(source, (entry) => mapEntry(entry, { cidBase, long })),
-        source => map(source, (entry) => JSON.stringify(entry) + '\n')
-      ))
-    }
-
-    const files = await all(ipfs.files.ls(arg))
-
-    return h.response({
-      Entries: files.map(entry => mapEntry(entry, { cidBase, long }))
-    })
-  },
   options: {
     validate: {
       options: {
@@ -64,20 +39,56 @@ const mfsLs = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.string().default('/'),
+        path: Joi.string().default('/'),
         long: Joi.boolean().default(false),
-        cidBase: Joi.string(),
-        stream: Joi.boolean().default(false)
+        cidBase: Joi.cidBase(),
+        stream: Joi.boolean().default(false),
+        timeout: Joi.timeout()
       })
-        .rename('l', 'long', {
-          override: true,
-          ignoreUndefined: true
-        })
-        .rename('s', 'stream', {
+        .rename('arg', 'path', {
           override: true,
           ignoreUndefined: true
         })
     }
+  },
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        path,
+        long,
+        cidBase,
+        stream,
+        timeout
+      }
+    } = request
+
+    if (stream) {
+      return streamResponse(request, h, () => pipe(
+        ipfs.files.ls(path, {
+          signal,
+          timeout
+        }),
+        source => map(source, (entry) => mapEntry(entry, { cidBase, long })),
+        source => map(source, (entry) => JSON.stringify(entry) + '\n')
+      ))
+    }
+
+    const files = await all(ipfs.files.ls(path, {
+      signal,
+      timeout
+    }))
+
+    return h.response({
+      Entries: files.map(entry => mapEntry(entry, { cidBase, long }))
+    })
   }
 }
 

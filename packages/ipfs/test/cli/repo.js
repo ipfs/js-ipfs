@@ -21,8 +21,12 @@ describe('repo', () => {
   })
 
   describe('stat', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
     it('get repo stats', async () => {
-      ipfs.repo.stat.resolves({
+      ipfs.repo.stat.withArgs(defaultOptions).resolves({
         numObjects: BigNumber(10),
         repoSize: BigNumber(10),
         storageMax: BigNumber(10),
@@ -39,7 +43,7 @@ describe('repo', () => {
     })
 
     it('get human readable repo stats', async () => {
-      ipfs.repo.stat.resolves({
+      ipfs.repo.stat.withArgs(defaultOptions).resolves({
         numObjects: BigNumber(10),
         repoSize: BigNumber(10),
         storageMax: BigNumber(10),
@@ -54,24 +58,63 @@ describe('repo', () => {
       expect(stats).to.match(/^RepoPath:\s.+$/m)
       expect(stats).to.match(/^Version:\s\d+$/m)
     })
+
+    it('get repo with timeout', async () => {
+      ipfs.repo.stat.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves({
+        numObjects: BigNumber(10),
+        repoSize: BigNumber(10),
+        storageMax: BigNumber(10),
+        repoPath: '/foo',
+        version: 5
+      })
+
+      const stats = await cli('repo stat --timeout=1s', { ipfs })
+      expect(stats).to.match(/^NumObjects:\s\d+$/m)
+      expect(stats).to.match(/^RepoSize:\s\d+$/m)
+      expect(stats).to.match(/^StorageMax:\s\d+$/m)
+      expect(stats).to.match(/^RepoPath:\s.+$/m)
+      expect(stats).to.match(/^Version:\s\d+$/m)
+    })
   })
 
   describe('version', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
     it('get the repo version', async () => {
       const repoVersion = 5
 
-      ipfs.repo.version.resolves(repoVersion)
+      ipfs.repo.version.withArgs(defaultOptions).resolves(repoVersion)
 
       const out = await cli('repo version', { ipfs })
+      expect(out).to.eql(`${repoVersion}\n`)
+    })
+
+    it('get the repo version with timeout', async () => {
+      const repoVersion = 5
+
+      ipfs.repo.version.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).resolves(repoVersion)
+
+      const out = await cli('repo version --timeout=1s', { ipfs })
       expect(out).to.eql(`${repoVersion}\n`)
     })
   })
 
   describe('gc', () => {
-    it('gc with no flags prints errors and outputs hashes', async () => {
-      const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const defaultOptions = {
+      timeout: undefined
+    }
 
-      ipfs.repo.gc.returns([{
+    it('gc with no flags prints errors and outputs hashes', async () => {
+      ipfs.repo.gc.withArgs(defaultOptions).returns([{
         err: new Error('err')
       }, {
         cid
@@ -82,9 +125,7 @@ describe('repo', () => {
     })
 
     it('gc with --quiet prints hashes only', async () => {
-      const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-
-      ipfs.repo.gc.returns([{
+      ipfs.repo.gc.withArgs(defaultOptions).returns([{
         err: new Error('err')
       }, {
         cid
@@ -95,9 +136,7 @@ describe('repo', () => {
     })
 
     it('gc with -q prints hashes only', async () => {
-      const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-
-      ipfs.repo.gc.returns([{
+      ipfs.repo.gc.withArgs(defaultOptions).returns([{
         err: new Error('err')
       }, {
         cid
@@ -108,9 +147,7 @@ describe('repo', () => {
     })
 
     it('gc with --stream-errors=false does not print errors', async () => {
-      const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-
-      ipfs.repo.gc.returns([{
+      ipfs.repo.gc.withArgs(defaultOptions).returns([{
         err: new Error('err')
       }, {
         cid
@@ -118,6 +155,20 @@ describe('repo', () => {
 
       const out = await cli('repo gc --stream-errors=false', { ipfs })
       expect(out).to.equal(`removed ${cid.toString()}\n`)
+    })
+
+    it('should run gc with timeout', async () => {
+      ipfs.repo.gc.withArgs({
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{
+        err: new Error('err')
+      }, {
+        cid
+      }])
+
+      const out = await cli('repo gc --timeout=1s', { ipfs })
+      expect(out).to.equal(`err\nremoved ${cid.toString()}\n`)
     })
   })
 })

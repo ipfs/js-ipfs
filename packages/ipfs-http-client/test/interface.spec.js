@@ -51,7 +51,12 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.bitswap(commonFactory)
+  tests.bitswap(commonFactory, {
+    skip: [{
+      name: 'should get the wantlist by peer ID for a different node',
+      reason: 'unskip when https://github.com/ipfs/go-bitswap/pull/390 is released in go-ipfs'
+    }]
+  })
 
   tests.block(commonFactory, {
     skip: [{
@@ -79,6 +84,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'replace',
         reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-http-client/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
+      },
+      {
+        name: 'should respect timeout option when listing config profiles',
+        reason: 'TODO: Not implemented in go-ipfs'
       },
       {
         name: 'should list config profiles',
@@ -157,6 +166,10 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should ls from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should respect timeout option when changing the mode of a file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -249,6 +262,10 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should respect metadata when copying from outside of mfs',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should respect timeout option when updating the modification time of files',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
