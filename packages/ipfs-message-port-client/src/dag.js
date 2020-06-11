@@ -142,7 +142,7 @@ const read = (path, options) => {
   if (typeof path === 'string') {
     return [path, options]
   } else {
-    return ['/', path == null ? options : path]
+    return ['', path == null ? options : path]
   }
 }
 

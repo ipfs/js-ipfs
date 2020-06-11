@@ -109,7 +109,9 @@ class DAG {
       timeout,
       signal
     })
-    return await collect(result)
+    const entries = await collect(result)
+
+    return entries
   }
 }
 

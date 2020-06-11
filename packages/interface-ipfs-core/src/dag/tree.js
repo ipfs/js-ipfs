@@ -66,34 +66,27 @@ module.exports = (common, options) => {
       expect(paths).to.eql(['pb', 'someData'])
     })
 
-    // it('should get tree with CID and path', async () => {
-    //   const paths = await all(ipfs.dag.tree(cidCbor, 'someData'))
-    //   expect(paths).to.eql([])
-    // })
+    it('should get tree with CID and path', async () => {
+      const paths = await all(ipfs.dag.tree(cidCbor, 'someData'))
+      expect(paths).to.eql([])
+    })
 
-    // it('should get tree with CID and path as String', async () => {
-    //   const cidCborStr = cidCbor.toBaseEncodedString()
+    // TODO: CID as string isn't supported yet
+    it.skip('should get tree with CID and path as String', async () => {
+      const cidCborStr = cidCbor.toBaseEncodedString()
 
-    //   const paths = await all(ipfs.dag.tree(cidCborStr + '/someData'))
-    //   expect(paths).to.eql([])
-    // })
+      const paths = await all(ipfs.dag.tree(cidCborStr + '/someData'))
+      expect(paths).to.eql([])
+    })
 
-    // it('should get tree with CID recursive (accross different formats)', async () => {
-    //   const paths = await all(ipfs.dag.tree(cidCbor, { recursive: true }))
-    //   expect(paths).to.have.members([
-    //     'pb',
-    //     'someData',
-    //     'pb/Links',
-    //     'pb/Data'
-    //   ])
-    // })
+    it('should get tree with CID recursive (accross different formats)', async () => {
+      const paths = await all(ipfs.dag.tree(cidCbor, { recursive: true }))
+      expect(paths).to.have.members(['pb', 'someData', 'pb/Links', 'pb/Data'])
+    })
 
-    // it('should get tree with CID and path recursive', async () => {
-    //   const paths = await all(ipfs.dag.tree(cidCbor, 'pb', { recursive: true }))
-    //   expect(paths).to.have.members([
-    //     'Links',
-    //     'Data'
-    //   ])
-    // })
+    it('should get tree with CID and path recursive', async () => {
+      const paths = await all(ipfs.dag.tree(cidCbor, 'pb', { recursive: true }))
+      expect(paths).to.have.members(['Links', 'Data'])
+    })
   })
 }
