@@ -19,6 +19,6 @@
     "noEmit": true
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["src/**/*.js"],
+  "include": ["src/**/*.js", "../ipfs-message-port-protocol/src/**/*.js"],
   "compileOnSave": false
 }

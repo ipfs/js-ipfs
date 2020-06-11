@@ -1,11 +1,17 @@
 'use strict'
 
 const { Client } = require('./client')
-const CID = require('cids')
+const {
+  encodeNode,
+  encodeCID,
+  decodeCID,
+  decodeNode
+} = require('ipfs-message-port-protocol/src/dag')
 
 /**
- * @typedef {import('ipfs-message-port-protocol/src/data').JSONValue} JSONValue
+ * @typedef {import('cids')} CID
  * @typedef {import('ipfs-message-port-server/src/dag').DAGNode} DAGNode
+ * @typedef {import('ipfs-message-port-server/src/dag').EncodedDAGNode} EncodedDAGNode
  * @typedef {import('ipfs-message-port-server/src/dag').DAGEntry} DAGEntry
  * @typedef {import('ipfs-message-port-server/src/dag').DAG} API
  * @typedef {import('./client').ClientTransport} Transport
@@ -58,16 +64,14 @@ class DAG extends Client {
    */
   async put (dagNode, options = {}) {
     const { cid } = options
-    const transfer = ArrayBuffer.isView(dagNode) ? [dagNode.buffer] : []
 
     const encodedCID = await this.remote.put({
       ...options,
-      dagNode: encodeDAGNode(dagNode),
-      cid: cid != null ? cid.toString() : undefined,
-      transfer
+      dagNode: encodeNode(dagNode),
+      cid: cid != null ? encodeCID(cid) : undefined
     })
 
-    return new CID(encodedCID)
+    return decodeCID(encodedCID)
   }
 
   /**
@@ -79,16 +83,18 @@ class DAG extends Client {
    * @param {AbortSignal} [options.signal]
    * @returns {Promise<DAGEntry>}
    */
-  get (cid, path, options = {}) {
+  async get (cid, path, options = {}) {
     const [nodePath, { localResolve, timeout, signal }] = read(path, options)
 
-    return this.remote.get({
-      cid: cid.toString(),
+    const { value, remainderPath } = await this.remote.get({
+      cid: encodeCID(cid),
       path: nodePath,
       localResolve,
       timeout,
       signal
     })
+
+    return { value: decodeNode(value), remainderPath }
   }
 
   /**
@@ -105,7 +111,7 @@ class DAG extends Client {
     const [nodePath, { recursive, timeout, signal }] = read(path, options)
 
     const paths = await this.remote.tree({
-      cid: cid.toString(),
+      cid: encodeCID(cid),
       path: nodePath,
       recursive,
       timeout,
@@ -137,20 +143,6 @@ const read = (path, options) => {
     return [path, options]
   } else {
     return ['/', path == null ? options : path]
-  }
-}
-
-/**
- * @param {DAGNode} dagNode
- * @returns {JSONValue}
- */
-const encodeDAGNode = dagNode => {
-  /** @type {any|null} */
-  const object = (dagNode != null ? dagNode : null)
-  if (object && typeof object.toJSON === 'function') {
-    return object.toJSON()
-  } else {
-    return object
   }
 }
 

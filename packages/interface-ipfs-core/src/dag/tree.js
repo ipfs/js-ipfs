@@ -61,13 +61,10 @@ module.exports = (common, options) => {
       )
     })
 
-    // it('should get tree with CID', async () => {
-    //   const paths = await all(ipfs.dag.tree(cidCbor))
-    //   expect(paths).to.eql([
-    //     'pb',
-    //     'someData'
-    //   ])
-    // })
+    it('should get tree with CID', async () => {
+      const paths = await all(ipfs.dag.tree(cidCbor))
+      expect(paths).to.eql(['pb', 'someData'])
+    })
 
     // it('should get tree with CID and path', async () => {
     //   const paths = await all(ipfs.dag.tree(cidCbor, 'someData'))

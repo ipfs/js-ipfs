@@ -21,6 +21,7 @@ export interface IPFSFactory {
 type PutOptions = {
   format?: string | void
   hashAlg?: string | void
+  cid?: CID | void
   preload?: boolean
   pin?: boolean
   timeout?: number

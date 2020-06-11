@@ -1,7 +1,12 @@
 'use strict'
 
-const CID = require('cids')
 const { collect } = require('./util')
+const {
+  decodeNode,
+  encodeNode,
+  encodeCID,
+  decodeCID
+} = require('ipfs-message-port-protocol/src/dag')
 
 /**
  * @template T
@@ -9,16 +14,11 @@ const { collect } = require('./util')
  */
 /**
  * @typedef {import('./ipfs').IPFS} IPFS
- * @typedef {import('ipfs-message-port-protocol/src/data').JSONValue} JSONValue
- * @typedef {import('ipfs-message-port-protocol/src/dag').DAGAPI} DAGAPI
- * @typedef {import('ipfs-message-port-protocol/src/dag').PutDAG} PutDAG
- * @typedef {import('ipfs-message-port-protocol/src/dag').GetDAG} GetDAG
- * @typedef {import('ipfs-message-port-protocol/src/dag').EnumerateDAG} EnumerateDAG
+ * @typedef {import('ipfs-message-port-protocol/src/dag').JSONValue} JSONValue
+ * @typedef {import('ipfs-message-port-protocol/src/dag').DAGNode} DAGNode
+ * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedDAGNode} EncodedDAGNode
  *
- * @typedef {Object} ToJSON
- * @property {function():JSONValue} toJSON
- *
- * @typedef {ToJSON|JSONValue} DAGNode
  *
  * @typedef {Object} DAGEntry
  * @property {DAGNode} value
@@ -38,26 +38,38 @@ class DAG {
 
   /**
    * @param {Object} query
-   * @param {JSONValue} query.dagNode
+   * @param {EncodedDAGNode} query.dagNode
    * @param {string} [query.format]
    * @param {string} [query.hashAlg]
-   * @param {StringEncoded<CID>|void} [query.cid]
+   * @param {EncodedCID|void} [query.cid]
    * @param {boolean} [query.pin]
    * @param {boolean} [query.preload]
    * @param {number} [query.timeout]
    * @param {AbortSignal} [query.signal]
-   * @returns {Promise<StringEncoded<CID>>}
+   * @returns {Promise<EncodedCID>}
    */
   async put (query) {
-    const cid = await this.ipfs.dag.put(query.dagNode, query)
-    return cid.toString()
+    const dagNode = decodeNode(query.dagNode)
+
+    const cid = await this.ipfs.dag.put(dagNode, {
+      ...query,
+      cid: query.cid ? decodeCID(query.cid) : undefined
+    })
+    return encodeCID(cid)
   }
 
   /**
    * @typedef {Object} GetResult
    * @property {Transferable[]} transfer
    * @property {string} remainderPath
-   * @property {DAGNode} value
+   * @property {EncodedDAGNode} value
+   *
+   * @typedef {Object} GetDAG
+   * @property {EncodedCID} cid
+   * @property {string} path
+   * @property {boolean} localResolve
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
    *
    * @param {GetDAG} query
    * @returns {Promise<GetResult>}
@@ -65,7 +77,7 @@ class DAG {
   async get (query) {
     const { cid, path, localResolve, timeout, signal } = query
     const { value, remainderPath } = await this.ipfs.dag.get(
-      new CID(cid),
+      decodeCID(cid),
       path,
       {
         localResolve,
@@ -74,17 +86,25 @@ class DAG {
       }
     )
 
-    const transfer = ArrayBuffer.isView(value) ? [value.buffer] : []
-    return { remainderPath, value, transfer }
+    /** @type {Transferable[]} */
+    const transfer = []
+    return { remainderPath, value: encodeNode(value, transfer), transfer }
   }
 
   /**
+   * @typedef {Object} EnumerateDAG
+   * @property {EncodedCID} cid
+   * @property {string} path
+   * @property {boolean} recursive
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
+   *
    * @param {EnumerateDAG} query
    * @returns {Promise<string[]>}
    */
   async tree (query) {
     const { cid, path, recursive, timeout, signal } = query
-    const result = await this.ipfs.dag.tree(new CID(cid), path, {
+    const result = await this.ipfs.dag.tree(decodeCID(cid), path, {
       recursive,
       timeout,
       signal
@@ -92,4 +112,10 @@ class DAG {
     return await collect(result)
   }
 }
+
+/**
+ * @param {EncodedDAGNode} value
+ * @returns {DAGNode}
+ */
+
 exports.DAG = DAG
