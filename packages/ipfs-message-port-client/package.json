@@ -31,8 +31,9 @@
     "cids": "^0.8.0"
   },
   "devDependencies": {
-    "ipfs-message-port-protocol": "^0.0.1",
-    "ipfs-message-port-server": "^0.0.1",
+    "ipfs-message-port-protocol": "~0.0.1",
+    "ipfs-message-port-server": "~0.0.1",
+    "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "ipfs": "^0.45.0",
     "aegir": "^22.0.0",
     "cross-env": "^7.0.0",
