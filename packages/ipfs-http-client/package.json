@@ -43,7 +43,7 @@
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.2.3",
     "ipfs-utils": "^2.2.2",
-    "ipld-block": "^0.9.1",
+    "ipld-block": "git://github.com/gozala/js-ipld-block.git#uint8array",
     "ipld-dag-cbor": "git://github.com/gozala/js-ipld-dag-cbor.git#uint8array",
     "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "ipld-raw": "^4.0.1",

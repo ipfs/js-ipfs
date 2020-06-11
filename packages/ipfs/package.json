@@ -100,7 +100,7 @@
     "ipfs-utils": "^2.2.2",
     "ipld": "^0.26.2",
     "ipld-bitcoin": "^0.3.0",
-    "ipld-block": "^0.9.1",
+    "ipld-block": "git://github.com/gozala/js-ipld-block.git#uint8array",
     "ipld-dag-cbor": "git://github.com/gozala/js-ipld-dag-cbor.git#uint8array",
     "ipld-dag-pb": "git://github.com/gozala/js-ipld-dag-pb.git#pure-data-model",
     "ipld-ethereum": "^4.0.0",
