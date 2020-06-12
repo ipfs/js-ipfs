@@ -3,24 +3,35 @@
 /* eslint-env browser */
 
 const {
-  decodeRemoteIterable,
-  encodeAsyncIterable,
-  mapAsyncIterable
+  decodeAsyncIterable,
+  encodeAsyncIterable
 } = require('ipfs-message-port-protocol/src/core')
-const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
+const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/dag')
 
 /**
 
 /**
  * @typedef {import("./ipfs").IPFS} IPFS
  * @typedef {import("ipfs-message-port-protocol/src/data").Time} Time
+ * @typedef {import("ipfs-message-port-protocol/src/data").UnixFSTime} UnixFSTime
  * @typedef {import("ipfs-message-port-protocol/src/data").Mode} Mode
  * @typedef {import("ipfs-message-port-protocol/src/data").HashAlg} HashAlg
+ * @typedef {import('ipfs-message-port-protocol/src/data').FileType} FileType
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
  * @typedef {import("./ipfs").FileOutput} FileOutput
  * @typedef {import('./ipfs').FileObject} FileObject
  * @typedef {import('./ipfs').FileContent} DecodedFileContent
  * @typedef {import('./ipfs').FileInput} DecodedFileInput
+ */
+
+/**
+ * @template T
+ * @typedef {import('ipfs-message-port-protocol/src/core').RemoteCallback<T>} RemoteCallback
+ */
+
+/**
+ * @template T
+ * @typedef {import('ipfs-message-port-protocol/src/core').RemoteIterable<T>} RemoteIterable
  */
 
 /**
@@ -32,7 +43,7 @@ const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @property {HashAlg} [hashAlg]
  * @property {boolean} [onlyHash]
  * @property {boolean} [pin]
- * @property {RemoteCallback<number>} [progress]
+ * @property {RemoteCallback<number>|void} [progress]
  * @property {boolean} [rawLeaves]
  * @property {number} [shardSplitThreshold]
  * @property {boolean} [trickle]
@@ -59,14 +70,10 @@ const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @property {UnixFSTime} mtime
  * @property {number} size
  *
- * @typedef {RemoteIterable<AddedEntry>} AddResult
- *
  * @typedef {Object} CatQuery
  * @property {string} path
  * @property {number} [offset]
  * @property {number} [length]
- *
- * @typedef {RemoteIterable<Uint8Array>} CatResult
  *
  * @typedef {Object} GetQuery
  * @property {string} path
@@ -76,7 +83,7 @@ const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @typedef {Object} FileEntry
  * @property {string} path
  * @property {RemoteIterable<Uint8Array>} content
- * @property {Mtime} [mode]
+ * @property {Mode} [mode]
  * @property {UnixFSTime} [mtime]
  *
  * @typedef {Object} LsQuery
@@ -96,11 +103,6 @@ const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
  */
 
 /**
- * @template T
- * @typedef {import('ipfs-message-port-protocol/src/data').RemoteIterable<T>} RemoteIterable
- */
-
-/**
  * @class
  */
 class Core {
@@ -113,7 +115,10 @@ class Core {
   }
 
   /**
-   *
+   * @typedef {Object} AddResult
+   * @property {RemoteIterable<AddedEntry>} data
+   * @property {Transferable[]} transfer
+
    * @param {AddQuery} query
    * @returns {AddResult}
    */
@@ -155,19 +160,23 @@ class Core {
   }
 
   /**
+   * @typedef {Object} CatResult
+   * @property {RemoteIterable<Uint8Array>} data
+   * @property {Transferable[]} transfer
+   *
    * @param {Object} query
    * @param {string|EncodedCID} query.path
    * @param {number} [query.offset]
    * @param {number} [query.length]
    * @param {number} [query.timeout]
    * @param {AbortSignal} [query.signal]
-   * @returns {RemoteIterable<Uint8Array>}
+   * @returns {CatResult}
    */
   cat (query) {
     const { path, offset, length, timeout, signal } = query
     const location = typeof path === 'string' ? path : decodeCID(path)
     const content = this.ipfs.cat(location, { offset, length, timeout, signal })
-    return encodeAsyncIterable(content)
+    return encodeCatResult(content)
   }
 }
 
@@ -182,11 +191,7 @@ const decodeAddInput = input =>
      * @param {*} data
      * @returns {*}
      */
-    data => {
-      const iterable = decodeRemoteIterable(data)
-      const decoded = mapAsyncIterable(iterable, decodFileInput)
-      return decoded
-    }
+    data => decodeAsyncIterable(data, decodFileInput)
   )
 
 /**
@@ -208,7 +213,8 @@ const decodFileInput = input =>
  * @param {FileContent} content
  * @returns {DecodedFileContent}
  */
-const decodeFileContent = content => matchInput(content, decodeRemoteIterable)
+const decodeFileContent = content =>
+  matchInput(content, input => decodeAsyncIterable(input, identity))
 
 /**
  * @template I,O
@@ -232,19 +238,55 @@ const matchInput = (input, decode) => {
 /**
  *
  * @param {AsyncIterable<FileOutput>} out
- * @returns {RemoteIterable<FileOutput>}
+ * @returns {AddResult}
  */
-const encodeAddResult = out =>
-  encodeAsyncIterable(mapAsyncIterable(out, encodeFileOutput))
+const encodeAddResult = out => {
+  /** @type {Transferable[]} */
+  const transfer = []
+  return {
+    data: encodeAsyncIterable(out, encodeFileOutput, transfer),
+    transfer
+  }
+}
+
+/**
+ *
+ * @param {AsyncIterable<Buffer>} content
+ * @returns {CatResult}
+ */
+const encodeCatResult = content => {
+  /** @type {Transferable[]} */
+  const transfer = []
+  return { data: encodeAsyncIterable(content, moveBuffer, transfer), transfer }
+}
+
+/**
+ * Adds underlying `ArrayBuffer` to the transfer list.
+ * @param {Buffer} buffer
+ * @param {Transferable[]} transfer
+ * @returns {Buffer}
+ */
+const moveBuffer = (buffer, transfer) => {
+  transfer.push(buffer.buffer)
+  return buffer
+}
 
 /**
  *
  * @param {FileOutput} file
+ * @param {Transferable[]} _transfer
  */
 
-const encodeFileOutput = file => ({
+const encodeFileOutput = (file, _transfer) => ({
   ...file,
-  cid: file.cid.toString()
+  cid: encodeCID(file.cid)
 })
+
+/**
+ * @template T
+ * @param {T} v
+ * @returns {T}
+ */
+const identity = v => v
 
 exports.Core = Core

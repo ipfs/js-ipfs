@@ -64,7 +64,7 @@ type AddOptions = {
   pin?: boolean
   progress?: (progress: number) => void
   rawLeaves?: boolean
-  shardSplitThreshold?: boolean
+  shardSplitThreshold?: number
   trickle?: boolean
   wrapWithDirectory?: boolean
 

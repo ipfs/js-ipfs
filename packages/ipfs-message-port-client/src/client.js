@@ -4,6 +4,8 @@
 
 class RemoteError extends Error {
   /**
+   * Represents error that occured in the worker thread which was structure
+   * cloned over the message channel.
    *
    * @param {Object} info
    * @param {string} info.message

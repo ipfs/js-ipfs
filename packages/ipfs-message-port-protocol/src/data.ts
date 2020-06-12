@@ -29,17 +29,6 @@ export type HashAlg = string
 export type FileType = 'directory' | 'file'
 export type CIDVersion = 0 | 1
 
-export type RemoteIterable<_T> = {
-  type: 'RemoteIterable'
-  port: MessagePort
-  transfer: [MessagePort]
-}
-
-export type RemoteCallback<_T> = {
-  type: 'RemoteCallback'
-  port: MessagePort
-}
-
 export type Result<X, T> = { ok: true; value: T } | { ok: false; error: X }
 
 export type EncodedError = {

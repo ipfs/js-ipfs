@@ -6,8 +6,7 @@ const CID = require('cids')
 const { Client } = require('./client')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/dag')
 const {
-  decodeRemoteIterable,
-  mapAsyncIterable,
+  decodeAsyncIterable,
   encodeCallback
 } = require('ipfs-message-port-protocol/src/core')
 
@@ -84,8 +83,10 @@ class CoreService extends Client {
    */
   async * add (input, options = {}) {
     const { timeout, signal } = options
+    /** @type {Transferable[]} */
+    const transfer = []
     const progress = options.progress
-      ? encodeCallback(options.progress)
+      ? encodeCallback(options.progress, transfer)
       : undefined
 
     if (input instanceof Blob) {
@@ -93,10 +94,11 @@ class CoreService extends Client {
         ...options,
         input,
         progress,
+        transfer,
         timeout,
         signal
       })
-      yield * mapAsyncIterable(decodeRemoteIterable(result), decode)
+      yield * decodeAsyncIterable(result.data, decodeAddedData)
     } else {
       throw Error('Input type is not supported')
     }
@@ -109,12 +111,12 @@ class CoreService extends Client {
    * @param {number} [options.length]
    * @param {number} [options.timeout]
    * @param {AbortSignal} [options.signal]
-   * @returns {AsyncIterable<ArrayBuffer>}
+   * @returns {AsyncIterable<Uint8Array>}
    */
   async * cat (inputPath, options = {}) {
     const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
     const result = await this.remote.cat({ ...options, path: input })
-    yield * decodeRemoteIterable(result)
+    yield * decodeAsyncIterable(result.data, identity)
   }
 }
 
@@ -123,7 +125,7 @@ class CoreService extends Client {
  * @param {AddedEntry} data
  * @returns {AddedData}
  */
-const decode = ({ path, cid, mode, mtime }) => {
+const decodeAddedData = ({ path, cid, mode, mtime }) => {
   return {
     path,
     cid: decodeCID(cid),
@@ -131,5 +133,12 @@ const decode = ({ path, cid, mode, mtime }) => {
     mtime
   }
 }
+
+/**
+ * @template T
+ * @param {T} v
+ * @returns {T}
+ */
+const identity = v => v
 
 module.exports = CoreService

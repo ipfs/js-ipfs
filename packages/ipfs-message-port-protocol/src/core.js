@@ -1,36 +1,61 @@
 'use strict'
 
-// import {
-//   HashAlg,
-//   RemoteCallback,
-//   Time,
-//   Mode,
-//   StringEncoded,
-//   UnixFSTime,
-//   FileType
-// } from 'ipfs-message-port-protocol/src/data'
-
 /**
  * @template T
- * @typedef {import("./data").RemoteIterable<T>} RemoteIterable
+ * @typedef {Object} RemoteIterable
+ * @property {'RemoteIterable'} type
+ * @property {MessagePort} port
  */
 
 /**
  * @template T
- * @typedef {import('./data').RemoteCallback<T>} RemoteCallback
+ * @typedef {Object} RemoteCallback
+ * @property {'RemoteCallback'} type
+ * @property {MessagePort} port
  */
 
 /**
  * @template T
- * @param {RemoteIterable<T>} remote
- * @returns {AsyncIterable<T>}
+ * @typedef {Object} RemoteYield
+ * @property {false} done
+ * @property {T} value
+ * @property {void} error
  */
-const decodeRemoteIterable = async function * ({ port }) {
+
+/**
+ * @template T
+ * @typedef {Object} RemoteDone
+ * @property {true} done
+ * @property {T|void} value
+ * @property {void} error
+ */
+
+/**
+ * @typedef {Object} RemoteError
+ * @property {true} done
+ * @property {void} value
+ * @property {Error} error
+ */
+
+/**
+ * @template T
+ * @typedef {RemoteYield<T>|RemoteDone<T>|RemoteError} RemoteNext
+ */
+
+/**
+ * @template I, O
+ * @param {RemoteIterable<I>} remote
+ * @param {function(I):O} decode
+ * @returns {AsyncIterable<O>}
+ */
+const decodeAsyncIterable = async function * ({ port }, decode) {
   /**
-   * @param {{done:false, value:T}|{done:true, value:void}} _data
-   * @returns {void}
+   * @param {RemoteNext<I>} _data
    */
   let receive = _data => {}
+  /**
+   * @returns {Promise<RemoteNext<I>>}
+   */
   const wait = () => new Promise(resolve => (receive = resolve))
   const next = () => {
     port.postMessage({ method: 'next' })
@@ -43,46 +68,61 @@ const decodeRemoteIterable = async function * ({ port }) {
    */
   port.onmessage = event => receive(event.data)
 
-  const abort = () => {
-    port.postMessage({ method: 'return' })
-    port.close()
-  }
-
   let isDone = false
   try {
     while (!isDone) {
-      const { done, value } = await next()
+      const { done, value, error } = await next()
       isDone = done
-      if (!done) {
-        yield value
+      if (error != null) {
+        throw error
+      } else if (value != null) {
+        yield decode(value)
       }
     }
   } finally {
     if (!isDone) {
-      abort()
+      port.postMessage({ method: 'return' })
     }
+    port.close()
   }
 }
-exports.decodeRemoteIterable = decodeRemoteIterable
+exports.decodeAsyncIterable = decodeAsyncIterable
 
 /**
- * @template T
- * @param {AsyncIterable<T>} iterable
- * @returns {RemoteIterable<T>}
+ * @template I,O
+ * @param {AsyncIterable<I>} iterable
+ * @param {function(I, Transferable[]):O} encode
+ * @param {Transferable[]} transfer
+ * @returns {RemoteIterable<O>}
  */
-const encodeAsyncIterable = iterable => {
+const encodeAsyncIterable = (iterable, encode, transfer) => {
   // eslint-disable-next-line no-undef
   const { port1: port, port2: remote } = new MessageChannel()
   const iterator = iterable[Symbol.asyncIterator]()
+  /** @type {Transferable[]} */
+  const itemTransfer = []
   port.onmessage = async ({ data: { method } }) => {
     switch (method) {
       case 'next': {
-        const { done, value } = await iterator.next()
-        if (done) {
-          port.postMessage({ done: true })
+        try {
+          const { done, value } = await iterator.next()
+          if (done) {
+            port.postMessage({ type: 'next', done: true })
+            port.close()
+          } else {
+            itemTransfer.length = 0
+            port.postMessage(
+              {
+                type: 'next',
+                done: false,
+                value: encode(value, itemTransfer)
+              },
+              itemTransfer
+            )
+          }
+        } catch (error) {
+          port.postMessage({ type: 'throw', error })
           port.close()
-        } else {
-          port.postMessage({ done: false, value })
         }
         break
       }
@@ -99,33 +139,42 @@ const encodeAsyncIterable = iterable => {
     }
   }
   port.start()
+  transfer.push(remote)
 
-  return { type: 'RemoteIterable', port: remote, transfer: [remote] }
+  return { type: 'RemoteIterable', port: remote }
 }
 exports.encodeAsyncIterable = encodeAsyncIterable
 
 /**
  * @template T
  * @param {function(T):void} callback
- * @returns {RemoteCalback<T>}
+ * @param {Transferable[]} transfer
+ * @returns {RemoteCallback<T>}
  */
-const encodeCallback = callback => {
+const encodeCallback = (callback, transfer) => {
   // eslint-disable-next-line no-undef
   const { port1: port, port2: remote } = new MessageChannel()
   port.onmessage = ({ data }) => callback(data)
+  transfer.push(remote)
   return { type: 'RemoteCallback', port: remote }
 }
 exports.encodeCallback = encodeCallback
 
 /**
- * @template A,B
- * @param {AsyncIterable<A>} source
- * @param {function(A): B} f
- * @returns {AsyncIterable<B>}
+ * @template T
+ * @param {RemoteCallback<T>} remote
+ * @returns {function(T):void | function(T, Transferable[]):void}
  */
-const mapAsyncIterable = async function * (source, f) {
-  for await (const item of source) {
-    yield f(item)
+const decodeCallback = ({ port }) => {
+  /**
+   * @param {T} value
+   * @param {Transferable[]} [transfer]
+   * @returns {void}
+   */
+  const callback = (value, transfer = []) => {
+    port.postMessage(value, transfer)
   }
+
+  return callback
 }
-exports.mapAsyncIterable = mapAsyncIterable
+exports.decodeCallback = decodeCallback

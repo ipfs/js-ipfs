@@ -98,7 +98,6 @@
 /**
  * @template T
  * @extends {ServiceQuery<T>}
- * @implements {ServiceQuery<T>}
  */
 class Query {
   /**
