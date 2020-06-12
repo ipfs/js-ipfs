@@ -1,5 +1,6 @@
 'use strict'
 
+const log = require('debug')('ipfs:components:start')
 const Bitswap = require('ipfs-bitswap')
 const multiaddr = require('multiaddr')
 const get = require('dlv')
@@ -29,6 +30,8 @@ module.exports = ({
   repo
 }) => withTimeoutOption(async function start () {
   const startPromise = defer()
+  startPromise.promise.catch((err) => log(err))
+
   const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
   try {
