@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sendMsg = helpers.sendMsg
   const updatePeers = helpers.updatePeers
   const updateAddrs = helpers.updateAddrs
+  const updateSwarmPeers = helpers.updateSwarmPeers
 
   const info = await ipfs.id()
   console.log('IPFS node ready with id ' + info.id)
@@ -54,7 +55,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   let room = createRoom(roomName)
 
   $peerId.innerHTML = `<li>${info.id}</li>`
-  updateAddrs(info.addresses)
 
   $send.addEventListener('click', () => {
     sendMsg(room)
@@ -95,13 +95,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   })
 
   $connect.addEventListener('click', async () => {
-    const peer = $peer.value
+    const peer = $peer.value.trim()
     $peer.value = ''
     try {
       await ipfs.swarm.connect(peer)
+      await updateAddrs(ipfs)
+      await updateSwarmPeers(ipfs)
     } catch (err) {
       return console.error(err)
     }
-    $pAddrs.innerHTML += `<li>${peer.trim()}</li>`
   })
 })
