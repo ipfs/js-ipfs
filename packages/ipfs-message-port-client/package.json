@@ -15,13 +15,12 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "test": "aegir build -- --config ./test/util/webpack.config.js && aegir build -- cross-env ECHO_SERVER_PORT=37490 aegir test -t browser",
-    "test:browser": "cross-env ECHO_SERVER_PORT=37492 aegir test -t browser",
-    "test:electron-main": "cross-env ECHO_SERVER_PORT=37494 aegir test -t electron-main",
-    "test:electron-renderer": "cross-env ECHO_SERVER_PORT=37495 aegir test -t electron-renderer",
-    "test:chrome": "cross-env ECHO_SERVER_PORT=37496 aegir test -t browser -- --browsers ChromeHeadless",
-    "test:firefox": "cross-env ECHO_SERVER_PORT=37497 aegir test -t browser -- --browsers FirefoxHeadless",
+    "test": "npm run test:browser",
+    "test:browser": "npm run build:test-worker && aegir test -t browser",
+    "test:chrome": "aegir test -t browser -- --browsers ChromeHeadless",
+    "test:firefox": "aegir test -t browser -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
+    "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
     "build": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
