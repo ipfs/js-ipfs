@@ -33,7 +33,7 @@ class DummyDiscovery extends EE {
   }
 }
 
-describe.only('libp2p customization', function () {
+describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
   this.timeout(25 * 1000)
 
@@ -78,7 +78,7 @@ describe.only('libp2p customization', function () {
           libp2p: (opts) => {
             return new Libp2p({
               peerId: opts.peerId,
-              modules: { transport: [DummyTransport], connEncryption: [ Crypto ] },
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
@@ -102,7 +102,7 @@ describe.only('libp2p customization', function () {
           libp2p: (opts) => {
             return new Libp2p({
               peerId: opts.peerId,
-              modules: { transport: [DummyTransport], connEncryption: [ Crypto ] },
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
