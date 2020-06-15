@@ -6,10 +6,10 @@ const log = require('debug')('ipfs:core:config')
 
 module.exports = ({ repo }) => {
   return {
+    getAll: withTimeoutOption(repo.config.getAll),
     get: withTimeoutOption((key, options) => {
-      if (!options && key && typeof key === 'object') {
-        options = key
-        key = undefined
+      if (!key) {
+        return Promise.reject(new Error('key argument is required'))
       }
 
       return repo.config.get(key, options)

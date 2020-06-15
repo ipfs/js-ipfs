@@ -12,7 +12,7 @@ module.exports = ({ repo }) => {
       throw new Error(`${multiaddr} is not a valid Multiaddr`)
     }
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     if (options.default) {
       config.Bootstrap = defaultConfig().Bootstrap
     } else if (multiaddr && config.Bootstrap.indexOf(multiaddr) === -1) {

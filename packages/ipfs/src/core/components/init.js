@@ -227,7 +227,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
 }
 
 async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
-  let config = await repo.config.get()
+  let config = await repo.config.getAll()
 
   if (newConfig || profiles) {
     if (profiles) {

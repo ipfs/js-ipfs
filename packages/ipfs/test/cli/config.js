@@ -14,6 +14,7 @@ describe('config', () => {
     ipfs = {
       config: {
         set: sinon.stub(),
+        getAll: sinon.stub(),
         get: sinon.stub(),
         replace: sinon.stub(),
         profiles: {
@@ -87,7 +88,7 @@ describe('config', () => {
 
   describe('show', function () {
     it('returns the full config', async () => {
-      ipfs.config.get.withArgs({
+      ipfs.config.getAll.withArgs({
         timeout: undefined
       }).returns({ foo: 'bar' })
       const out = await cli('config show', { ipfs })
@@ -95,7 +96,7 @@ describe('config', () => {
     })
 
     it('returns the full config with a timeout', async () => {
-      ipfs.config.get.withArgs({
+      ipfs.config.getAll.withArgs({
         timeout: 1000
       }).returns({ foo: 'bar' })
       const out = await cli('config show --timeout=1s', { ipfs })
