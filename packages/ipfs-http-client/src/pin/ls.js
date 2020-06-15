@@ -25,14 +25,7 @@ module.exports = configure(api => {
     })
 
     for await (const pin of res.ndjson()) {
-      if (pin.Keys) { // non-streaming response
-        // eslint-disable-next-line guard-for-in
-        for (const key in pin.Keys) {
-          yield { cid: new CID(key), type: pin.Keys[key].Type }
-        }
-      } else {
-        yield { cid: new CID(pin.Cid), type: pin.Type }
-      }
+      yield { cid: new CID(pin.Cid), type: pin.Type }
     }
   }
 })

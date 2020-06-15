@@ -34,7 +34,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     await node.stop()
   })
@@ -53,7 +53,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     await node.stop()
   })
@@ -104,7 +104,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     expect(config.Identity.PrivKey.length).is.below(1024)
     await node.stop()
@@ -152,7 +152,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/9977'])
     expect(config.Bootstrap).to.eql([])
     await node.stop()

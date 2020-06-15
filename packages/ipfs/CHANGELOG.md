@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
+
+
+### Bug Fixes
+
+* handle optional key to config.get ([#3069](https://github.com/ipfs/js-ipfs/issues/3069)) ([d043138](https://github.com/ipfs/js-ipfs/commit/d043138be2c0c7fd458131d56e235edec1504ca3))
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
 # [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
 
 

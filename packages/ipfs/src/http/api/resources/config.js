@@ -99,7 +99,7 @@ exports.getOrSet = {
 
     let originalConfig
     try {
-      originalConfig = await ipfs.config.get(undefined, {
+      originalConfig = await ipfs.config.getAll({
         signal,
         timeout
       })
@@ -172,7 +172,7 @@ exports.get = {
 
     let config
     try {
-      config = await ipfs.config.get(undefined, {
+      config = await ipfs.config.getAll({
         signal,
         timeout
       })
@@ -215,7 +215,7 @@ exports.show = {
 
     let config
     try {
-      config = await ipfs.config.get(undefined, {
+      config = await ipfs.config.getAll({
         signal,
         timeout
       })

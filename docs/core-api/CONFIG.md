@@ -1,7 +1,11 @@
 # Config API <!-- omit in toc -->
 
-- [`ipfs.config.get([key,] [options])`](#ipfsconfiggetkey-options)
+- [`ipfs.config.get(key, [options])`](#ipfsconfiggetkey-options)
   - [Parameters](#parameters)
+  - [Options](#options)
+  - [Returns](#returns)
+  - [Example](#example)
+- [`ipfs.config.getAll([options])`](#ipfsconfiggetkey-options)
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
@@ -26,7 +30,7 @@
   - [Returns](#returns-4)
   - [Example](#example-4)
 
-## `ipfs.config.get([key,] [options])`
+## `ipfs.config.get(key, [options])`
 
 > Returns the currently being used config. If the daemon is off, it returns the stored config.
 
@@ -34,7 +38,7 @@
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | `String` | The key of the value that should be fetched from the config file. If no key is passed, then the whole config will be returned.  |
+| key | `String` | The key of the value that should be fetched from the config file.  |
 
 ### Options
 
@@ -59,6 +63,35 @@ console.log(config)
 ```
 
 A great source of [examples][] can be found in the tests for this API.
+
+## `ipfs.config.getAll([options])`
+
+> Returns the full config been used. If the daemon is off, it returns the stored config.
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<Object>` | An object containing the configuration of the IPFS node |
+
+### Example
+
+```JavaScript
+const config = await ipfs.config.getAll()
+console.log(config)
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 
 ## `ipfs.config.set(key, value, [options])`
 

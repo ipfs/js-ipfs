@@ -21,10 +21,10 @@ const { resolvePath } = require('./utils')
  * @param {IPFS} self
  * @returns {Object}
  */
-module.exports = ({ ipns, dag, peerInfo, isOnline, keychain, options: constructorOptions }) => {
+module.exports = ({ ipns, dag, peerId, isOnline, keychain, options: constructorOptions }) => {
   const lookupKey = async keyName => {
     if (keyName === 'self') {
-      return peerInfo.id.privKey
+      return peerId.privKey
     }
 
     try {

@@ -31,7 +31,7 @@ const appendRemainder = async (result, remainder) => {
  * @param {IPFS} self
  * @returns {Object}
  */
-module.exports = ({ dns, ipns, peerInfo, isOnline, options: constructorOptions }) => {
+module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) => {
   /**
    * Given a key, query the DHT for its best value.
    *
@@ -57,7 +57,7 @@ module.exports = ({ dns, ipns, peerInfo, isOnline, options: constructorOptions }
 
     // Set node id as name for being resolved, if it is not received
     if (!name) {
-      name = peerInfo.id.toB58String()
+      name = peerId.toB58String()
     }
 
     if (!name.startsWith('/ipns/')) {

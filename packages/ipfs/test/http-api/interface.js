@@ -6,6 +6,7 @@ const factory = require('../utils/factory')
 const { isNode, isBrowser } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
+
 describe('interface-ipfs-core over ipfs-http-client tests', function () {
   this.timeout(20000)
 
@@ -112,13 +113,17 @@ describe('interface-ipfs-core over ipfs-http-client tests', function () {
     }]
   })
 
-  tests.pubsub(factory({
-    type: 'js',
-    ipfsBin: './src/cli/bin.js',
-    go: {
-      args: ['--enable-pubsub-experiment']
+  tests.pubsub(factory(
+    {
+      type: 'js',
+      ipfsBin: './src/cli/bin.js'
+    },
+    {
+      go: {
+        args: ['--enable-pubsub-experiment']
+      }
     }
-  }))
+  ))
 
   tests.repo(commonFactory)
 

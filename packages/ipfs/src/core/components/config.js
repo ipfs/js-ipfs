@@ -6,7 +6,14 @@ const log = require('debug')('ipfs:core:config')
 
 module.exports = ({ repo }) => {
   return {
-    get: withTimeoutOption(repo.config.get),
+    getAll: withTimeoutOption(repo.config.getAll),
+    get: withTimeoutOption((key, options) => {
+      if (!key) {
+        return Promise.reject(new Error('key argument is required'))
+      }
+
+      return repo.config.get(key, options)
+    }),
     set: withTimeoutOption(repo.config.set),
     replace: withTimeoutOption(repo.config.replace),
     profiles: {

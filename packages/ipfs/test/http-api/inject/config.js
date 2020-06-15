@@ -23,6 +23,7 @@ describe('/config', () => {
   beforeEach(() => {
     ipfs = {
       config: {
+        getAll: sinon.stub(),
         get: sinon.stub(),
         replace: sinon.stub(),
         profiles: {
@@ -58,7 +59,7 @@ describe('/config', () => {
   })
 
   it('returns value for request with valid arg', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       API: {
         HTTPHeaders: 'value'
       }
@@ -75,7 +76,7 @@ describe('/config', () => {
   })
 
   it('returns value for request as subcommand', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       API: {
         HTTPHeaders: 'value'
       }
@@ -92,7 +93,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -114,7 +115,7 @@ describe('/config', () => {
   })
 
   it('returns 400 value for request with both args and JSON flag with invalid JSON argument', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -132,7 +133,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args and JSON flag with valid JSON argument', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -156,7 +157,7 @@ describe('/config', () => {
   })
 
   it('updates null json value', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -178,7 +179,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args and bool flag and true argument', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -200,7 +201,7 @@ describe('/config', () => {
   })
 
   it('updates value for request with both args and bool flag and false argument', async () => {
-    ipfs.config.get.withArgs(undefined, defaultOptions).returns({
+    ipfs.config.getAll.withArgs(defaultOptions).returns({
       Datastore: {
         Path: 'not-kitten'
       }
@@ -224,7 +225,7 @@ describe('/config', () => {
   it('accepts a timeout', async () => {
     const key = 'Datastore.Path'
     const value = 'value'
-    ipfs.config.get.withArgs(undefined, {
+    ipfs.config.getAll.withArgs({
       ...defaultOptions,
       timeout: 1000
     }).returns({
@@ -262,7 +263,7 @@ describe('/config', () => {
         }
       }
 
-      ipfs.config.get.withArgs(undefined, defaultOptions).returns(config)
+      ipfs.config.getAll.withArgs(defaultOptions).returns(config)
 
       const res = await http({
         method: 'POST',
@@ -280,7 +281,7 @@ describe('/config', () => {
         }
       }
 
-      ipfs.config.get.withArgs(undefined, {
+      ipfs.config.getAll.withArgs({
         ...defaultOptions,
         timeout: 1000
       }).returns(config)

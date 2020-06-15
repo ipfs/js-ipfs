@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "44.1.1",
+  "version": "44.2.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": ["ipfs"],
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client#readme",
@@ -63,10 +63,10 @@
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {
-    "aegir": "^22.0.0",
+    "aegir": "^22.1.0",
     "cross-env": "^7.0.0",
-    "go-ipfs-dep": "0.4.23-3",
-    "interface-ipfs-core": "^0.135.1",
+    "go-ipfs-dep": "^0.5.1",
+    "interface-ipfs-core": "^0.136.0",
     "ipfsd-ctl": "^4.1.1",
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",

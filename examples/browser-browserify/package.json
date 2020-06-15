@@ -18,7 +18,7 @@
     "concat-stream": "^2.0.0",
     "execa": "^4.0.0",
     "http-server": "^0.11.1",
-    "ipfs": "^0.45.0",
+    "ipfs": "^0.46.0",
     "test-ipfs-example": "^2.0.3"
   },
   "browser": {

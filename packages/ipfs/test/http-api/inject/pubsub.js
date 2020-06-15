@@ -5,32 +5,22 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
+const FormData = require('form-data')
 const sinon = require('sinon')
 const { AbortSignal } = require('abort-controller')
 const randomBytes = require('iso-random-stream/src/random')
 const { Buffer } = require('buffer')
+const streamToPromise = require('stream-to-promise')
 
-function encodeBuffer (buf) {
-  let uriEncoded = ''
-  for (const byte of buf) {
-    // https://tools.ietf.org/html/rfc3986#page-14
-    // ALPHA (%41-%5A and %61-%7A), DIGIT (%30-%39), hyphen (%2D), period (%2E),
-    // underscore (%5F), or tilde (%7E)
-    if (
-      (byte >= 0x41 && byte <= 0x5A) ||
-      (byte >= 0x61 && byte <= 0x7A) ||
-      (byte >= 0x30 && byte <= 0x39) ||
-      (byte === 0x2D) ||
-      (byte === 0x2E) ||
-      (byte === 0x5F) ||
-      (byte === 0x7E)
-    ) {
-      uriEncoded += String.fromCharCode(byte)
-    } else {
-      uriEncoded += `%${byte.toString(16).padStart(2, '0')}`
-    }
+const sendData = async (data) => {
+  const form = new FormData()
+  form.append('data', data)
+  const headers = form.getHeaders()
+  const payload = await streamToPromise(form)
+  return {
+    headers,
+    payload
   }
-  return uriEncoded
 }
 
 describe('/pubsub', () => {
@@ -104,7 +94,8 @@ describe('/pubsub', () => {
     it('returns 200 with topic and buffer', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}&arg=${buf}`
+        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        ...await sendData(buf)
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -115,7 +106,8 @@ describe('/pubsub', () => {
       const buf = randomBytes(10)
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}&arg=${encodeBuffer(buf)}`
+        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        ...await sendData(buf)
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -125,7 +117,8 @@ describe('/pubsub', () => {
     it('returns 400 with topic and empty buffer', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}&arg=${encodeBuffer([])}`
+        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        ...await sendData(Buffer.from(''))
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 400)
@@ -134,7 +127,8 @@ describe('/pubsub', () => {
     it('accepts a timeout', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}&arg=${buf}&timeout=1s`
+        url: `/api/v0/pubsub/pub?arg=${topic}&timeout=1s`,
+        ...await sendData(buf)
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

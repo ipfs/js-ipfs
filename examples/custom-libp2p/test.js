@@ -4,12 +4,9 @@ const path = require('path')
 const execa = require('execa')
 const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
-const SPDY = require('libp2p-spdy')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
-const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
-const multiaddr = require('multiaddr')
 
 async function test () {
   let output = ''
@@ -29,18 +26,18 @@ async function test () {
 
       console.info('Dialling', address)
 
-      const peerInfo = new PeerInfo(await PeerId.create())
-      peerInfo.multiaddrs.add(multiaddr('/ip4/127.0.0.1/tcp/0'))
-
+      const peerId = await PeerId.create()
       const libp2p = new Libp2p({
-        peerInfo,
+        peerId,
+        addresses: {
+          listen: ['/ip4/127.0.0.1/tcp/0']
+        },
         modules: {
           transport: [
             TCP
           ],
           streamMuxer: [
-            MPLEX,
-            SPDY
+            MPLEX
           ],
           connEncryption: [
             SECIO

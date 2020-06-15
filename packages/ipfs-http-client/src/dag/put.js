@@ -1,6 +1,8 @@
 'use strict'
 
 const dagCBOR = require('ipld-dag-cbor')
+const dagPB = require('ipld-dag-pb')
+const ipldRaw = require('ipld-raw')
 const CID = require('cids')
 const multihash = require('multihashes')
 const configure = require('../lib/configure')
@@ -8,8 +10,21 @@ const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const anySignal = require('any-signal')
 const AbortController = require('abort-controller')
+const multicodec = require('multicodec')
 
-module.exports = configure(api => {
+module.exports = configure((api, opts) => {
+  const formats = {
+    [multicodec.DAG_PB]: dagPB,
+    [multicodec.DAG_CBOR]: dagCBOR,
+    [multicodec.RAW]: ipldRaw
+  }
+
+  const ipldOptions = (opts && opts.ipld) || {}
+  const configuredFormats = (ipldOptions && ipldOptions.formats) || []
+  configuredFormats.forEach(format => {
+    formats[format.codec] = format
+  })
+
   return async (dagNode, options = {}) => {
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Failed to put DAG node. Provide either `cid` OR `format` and `hashAlg` options')
@@ -34,16 +49,24 @@ module.exports = configure(api => {
       ...options
     }
 
-    let serialized
+    const number = multicodec.getNumber(options.format)
+    let format = formats[number]
 
-    if (options.format === 'dag-cbor') {
-      serialized = dagCBOR.util.serialize(dagNode)
-    } else if (options.format === 'dag-pb') {
-      serialized = dagNode.serialize()
-    } else {
-      // FIXME Hopefully already serialized...can we use IPLD to serialise instead?
-      serialized = dagNode
+    if (!format) {
+      if (opts && opts.ipld && opts.ipld.loadFormat) {
+        format = await opts.ipld.loadFormat(options.format)
+      }
+
+      if (!format) {
+        throw new Error('Format unsupported - please add support using the options.ipld.formats or options.ipld.loadFormat options')
+      }
     }
+
+    if (!format.util || !format.util.serialize) {
+      throw new Error('Format does not support utils.serialize function')
+    }
+
+    const serialized = format.util.serialize(dagNode)
 
     // allow aborting requests on body errors
     const controller = new AbortController()
