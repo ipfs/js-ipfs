@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "aegir": "^22.0.0",
-    "interface-ipfs-core": "^0.135.1"
+    "interface-ipfs-core": "^0.136.0"
   },
   "engines": {
     "node": ">=10.3.0",
