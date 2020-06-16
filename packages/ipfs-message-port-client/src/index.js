@@ -3,6 +3,7 @@
 /* eslint-env browser */
 
 const DAG = require('./dag')
+const Core = require('./core')
 const { Transport } = require('./client')
 
 /**
@@ -10,11 +11,12 @@ const { Transport } = require('./client')
  * @property {MessagePort} port
  */
 
-class IPFSClient {
+class IPFSClient extends Core {
   /**
    * @param {Transport} [transport]
    */
   constructor (transport) {
+    super(transport)
     this.transport = transport
     this.dag = new DAG(this.transport)
   }
@@ -50,25 +52,5 @@ class IPFSClient {
     return new IPFSClient(new Transport(port))
   }
 }
-/**
- *
- */
-// class IPFSClient {
-//   /**
-//    * @param {ClientOptions} options
-//    */
-//   constructor (options) {
-//     this.connection = new RPCConnection(options.port)
-//   }
-//   get files () {
-//     const value = new FilesClient(this.connection)
-//     Object.defineProperty(this, 'files', { value })
-//     return value
-//   }
-// }
-// Object.assign(IPFSClient.prototype, FilesTopClient.prototype)
-// Object.assign(IPFSClient.prototype, FilesClient.prototype)
-
-// // Object.assign(ipfsClient, { Buffer, CID, multiaddr, multibase, multicodec, multihash, globSource, urlSource })
 
 module.exports = IPFSClient

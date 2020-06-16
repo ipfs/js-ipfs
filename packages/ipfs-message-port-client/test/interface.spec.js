@@ -2,6 +2,7 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
+const { core } = require('./interface.core')
 const { activate } = require('./util/client')
 
 describe('interface-ipfs-core tests', () => {
@@ -41,6 +42,65 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should get tree with CID and path as String',
         reason: 'Passing CID as strings is not supported'
+      }
+    ]
+  })
+
+  core(commonFactory, {
+    skip: [
+      {
+        name: 'should add with only-hash=true',
+        reason: 'ipfs.object.get is not implemented'
+      },
+      {
+        name: 'should add a directory with only-hash=true',
+        reason: 'ipfs.object.get is not implemented'
+      },
+      {
+        name: 'should add with mode as string',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+      {
+        name: 'should add with mode as number',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+      {
+        name: 'should add with mtime as Date',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+      {
+        name: 'should add with mtime as { nsecs, secs }',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+      {
+        name: 'should add with mtime as timespec',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+      {
+        name: 'should add with mtime as hrtime',
+        reason: 'ipfs.files.stat is not implemented'
+      },
+
+      {
+        name: 'should add from a HTTP URL',
+        reason: 'echo server is not enabled'
+      },
+      {
+        name: 'should add from a HTTP URL with redirection',
+        reason: 'echo server is not enabled'
+      },
+      {
+        name: 'should add from a URL with only-hash=true',
+        reason: 'echo server is not enabled'
+      },
+      {
+        name: 'should add from a URL with wrap-with-directory=true',
+        reason: 'echo server is not enabled'
+      },
+      {
+        name:
+          'should add from a URL with wrap-with-directory=true and URL-escaped file name',
+        reason: 'echo server is not enabled'
       }
     ]
   })

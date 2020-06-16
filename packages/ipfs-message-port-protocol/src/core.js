@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-env browser */
+
 /**
  * @template T
  * @typedef {Object} RemoteIterable
@@ -48,7 +50,7 @@
  * @param {function(I):O} decode
  * @returns {AsyncIterable<O>}
  */
-const decodeAsyncIterable = async function * ({ port }, decode) {
+const decodeIterable = async function * ({ port }, decode) {
   /**
    * @param {RemoteNext<I>} _data
    */
@@ -86,21 +88,22 @@ const decodeAsyncIterable = async function * ({ port }, decode) {
     port.close()
   }
 }
-exports.decodeAsyncIterable = decodeAsyncIterable
+exports.decodeIterable = decodeIterable
 
 /**
  * @template I,O
- * @param {AsyncIterable<I>} iterable
+ * @param {AsyncIterable<I>|Iterable<I>} iterable
  * @param {function(I, Transferable[]):O} encode
  * @param {Transferable[]} transfer
  * @returns {RemoteIterable<O>}
  */
-const encodeAsyncIterable = (iterable, encode, transfer) => {
-  // eslint-disable-next-line no-undef
+const encodeIterable = (iterable, encode, transfer) => {
   const { port1: port, port2: remote } = new MessageChannel()
-  const iterator = iterable[Symbol.asyncIterator]()
   /** @type {Transferable[]} */
   const itemTransfer = []
+  /** @type {Iterator<I>|AsyncIterator<I>} */
+  const iterator = toIterator(iterable)
+
   port.onmessage = async ({ data: { method } }) => {
     switch (method) {
       case 'next': {
@@ -143,7 +146,26 @@ const encodeAsyncIterable = (iterable, encode, transfer) => {
 
   return { type: 'RemoteIterable', port: remote }
 }
-exports.encodeAsyncIterable = encodeAsyncIterable
+exports.encodeIterable = encodeIterable
+
+/**
+ * @template I
+ * @param {any} iterable
+ * @returns {Iterator<I>|AsyncIterator<I>}
+ */
+const toIterator = iterable => {
+  if (iterable != null) {
+    if (typeof iterable[Symbol.asyncIterator] === 'function') {
+      return iterable[Symbol.asyncIterator]()
+    }
+
+    if (typeof iterable[Symbol.iterator] === 'function') {
+      return iterable[Symbol.iterator]()
+    }
+  }
+
+  throw TypeError('Value must be async or sync iterable')
+}
 
 /**
  * @template T

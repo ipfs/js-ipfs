@@ -3,8 +3,9 @@
 /* eslint-env browser */
 
 const {
-  decodeAsyncIterable,
-  encodeAsyncIterable
+  decodeIterable,
+  encodeIterable,
+  decodeCallback
 } = require('ipfs-message-port-protocol/src/core')
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/dag')
 
@@ -52,16 +53,16 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @property {AbortSignal} [signal]
  *
  * @typedef {SingleFileInput | MultiFileInput} AddInput
- * @typedef {ArrayBuffer|ArrayBufferView|Blob|string|RemoteIterable<ArrayBufferView>|RemoteIterable<ArrayBuffer>} SingleFileInput
+ * @typedef {ArrayBuffer|ArrayBufferView|Blob|string|FileInput|RemoteIterable<ArrayBufferView>|RemoteIterable<ArrayBuffer>} SingleFileInput
  * @typedef {RemoteIterable<Blob>|RemoteIterable<string>|RemoteIterable<FileInput>} MultiFileInput
  *
  * @typedef {Object} FileInput
  * @property {string} [path]
  * @property {FileContent} content
- * @property {Mode} mode
- * @property {Time} mtim
+ * @property {Mode} [mode]
+ * @property {Time} [mtime]
  *
- * @typedef {ArrayBufferView|ArrayBuffer|string|RemoteIterable<ArrayBufferView>|RemoteIterable<ArrayBuffer>} FileContent
+ * @typedef {ArrayBufferView|ArrayBuffer|Blob|string|RemoteIterable<ArrayBufferView>|RemoteIterable<ArrayBuffer>} FileContent
  *
  * @typedef {Object} AddedEntry
  * @property {string} path
@@ -131,7 +132,7 @@ class Core {
       hashAlg,
       onlyHash,
       pin,
-      // progress,
+      progress,
       rawLeaves,
       shardSplitThreshold,
       trickle,
@@ -152,6 +153,7 @@ class Core {
       trickle,
       wrapWithDirectory,
       timeout,
+      progress: progress != null ? decodeCallback(progress) : undefined,
       signal
     }
 
@@ -191,7 +193,13 @@ const decodeAddInput = input =>
      * @param {*} data
      * @returns {*}
      */
-    data => decodeAsyncIterable(data, decodFileInput)
+    data => {
+      if (data.type === 'RemoteIterable') {
+        return decodeIterable(data, decodeFileInput)
+      } else {
+        return decodeFileInput(data)
+      }
+    }
   )
 
 /**
@@ -203,7 +211,7 @@ const decodeAddInput = input =>
  * @param {ArrayBufferView|ArrayBuffer|string|Blob|FileInput} input
  * @returns {string|ArrayBuffer|ArrayBufferView|Blob|FileObject}
  */
-const decodFileInput = input =>
+const decodeFileInput = input =>
   matchInput(input, file => ({
     ...file,
     content: decodeFileContent(file.content)
@@ -214,7 +222,7 @@ const decodFileInput = input =>
  * @returns {DecodedFileContent}
  */
 const decodeFileContent = content =>
-  matchInput(content, input => decodeAsyncIterable(input, identity))
+  matchInput(content, input => decodeIterable(input, identity))
 
 /**
  * @template I,O
@@ -244,7 +252,7 @@ const encodeAddResult = out => {
   /** @type {Transferable[]} */
   const transfer = []
   return {
-    data: encodeAsyncIterable(out, encodeFileOutput, transfer),
+    data: encodeIterable(out, encodeFileOutput, transfer),
     transfer
   }
 }
@@ -257,7 +265,7 @@ const encodeAddResult = out => {
 const encodeCatResult = content => {
   /** @type {Transferable[]} */
   const transfer = []
-  return { data: encodeAsyncIterable(content, moveBuffer, transfer), transfer }
+  return { data: encodeIterable(content, moveBuffer, transfer), transfer }
 }
 
 /**
