@@ -60,27 +60,9 @@ describe('interface-ipfs-core tests', () => {
         name: 'should add with mtime as hrtime',
         reason: 'process.hrtime is not a function in browser'
       },
-
-      {
-        name: 'should add from a HTTP URL',
-        reason: 'echo server is not enabled'
-      },
-      {
-        name: 'should add from a HTTP URL with redirection',
-        reason: 'echo server is not enabled'
-      },
       {
         name: 'should add from a URL with only-hash=true',
-        reason: 'echo server is not enabled'
-      },
-      {
-        name: 'should add from a URL with wrap-with-directory=true',
-        reason: 'echo server is not enabled'
-      },
-      {
-        name:
-          'should add from a URL with wrap-with-directory=true and URL-escaped file name',
-        reason: 'echo server is not enabled'
+        reason: 'ipfs.object.get is not implemented'
       }
     ]
   })

@@ -1,5 +1,8 @@
 'use strict'
 
+const EchoServer = require('aegir/utils/echo-server')
+const echoServer = new EchoServer()
+
 module.exports = {
   bundlesize: { maxSize: '89kB' },
   karma: {
@@ -28,12 +31,17 @@ module.exports = {
   hooks: {
     browser: {
       pre: async () => {
+        await echoServer.start()
+
         return {
           env: {
             IPFS_WORKER_URL: `/base/dist/worker.bundle.js`,
-            ECHO_SERVER: `http://localhost:8080`
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
           }
         }
+      },
+      post: async () => {
+        await echoServer.stop()
       }
     }
   }
