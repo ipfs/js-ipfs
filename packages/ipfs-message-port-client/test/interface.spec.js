@@ -32,7 +32,7 @@ describe('interface-ipfs-core tests', () => {
       },
       {
         name: 'should get a node added as CIDv1 with a CIDv0',
-        reason: 'TODO: Guessing unifxs expects Buffer and fails on Uint8Array'
+        reason: 'ipfs.block API is not implemented'
       },
       {
         name: 'should be able to get part of a dag-cbor node',
