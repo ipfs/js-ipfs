@@ -22,12 +22,16 @@ class RemoteError extends Error {
     }
   }
 }
+exports.RemoteError = RemoteError
 
 class TimeoutError extends Error {}
+exports.TimeoutError = TimeoutError
 
 class AbortError extends Error {}
+exports.AbortError = AbortError
 
 class DisconnectError extends Error {}
+exports.DisconnectError = DisconnectError
 
 /**
  * @template T
@@ -227,6 +231,7 @@ class Transport {
     }
   }
 }
+exports.Transport = Transport
 
 /**
  * @template T
@@ -277,5 +282,4 @@ class Client {
     this.remote = (new Service(namespace, methods, transport))
   }
 }
-
-module.exports = { Client, Transport, RemoteError, AbortError, DisconnectError }
+exports.Client = Client

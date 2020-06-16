@@ -5,13 +5,16 @@
 const CID = require('cids')
 const { Client } = require('./client')
 const {
-  decodeRemoteIterable,
-  encodeAsyncIterable
-} = require('ipfs-message-port-server/src/util')
+  decodeIterable,
+  encodeIterable
+} = require('ipfs-message-port-protocol/src/core')
+const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
 
 /**
  * @typedef {import('ipfs-message-port-server/src/files').Files} API
  * @typedef {import('ipfs-message-port-server/src/files').EncodedContent} EncodedContent
+ * @typedef {import('ipfs-message-port-server/src/files').Entry} EncodedEntry
+ * @typedef {import('ipfs-message-port-server/src/files').EncodedStat} EncodedStat
  * @typedef {import('ipfs-message-port-protocol/src/data').UnixFSTime} UnixFSTime
  * @typedef {import('ipfs-message-port-protocol/src/data').FileType} FileType
  * @typedef {import('ipfs-message-port-protocol/src/data').Time} Time
@@ -30,14 +33,20 @@ class Files extends Client {
    * @param {Transport} transport
    */
   constructor (transport) {
-    super('files', ['chmod'], transport)
+    super('files', ['chmod', 'stat'], transport)
   }
 
   /**
    * Change mode for files and directories
    * @param {ContentAddress} path - The path to the entry to modify
    * @param {Mode} mode
-   * @param {ChmodOptions} [options]
+   * @param {Object} [options]
+   * @param {boolean} [options.recursive=false]
+   * @param {string} [options.hashAlg]
+   * @param {boolean} [options.flush=true]
+   * @param {number} [options.cidVersion=0]
+   * @param {number} [options.timeout]
+   * @param {AbortSignal} [options.signal]
    * @returns {Promise<void>}
    */
   chmod (path, mode, options = {}) {
@@ -74,59 +83,173 @@ class Files extends Client {
    * @param {CIDVersion} [options.cidVersion] - The CID version to use for any updated entries
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call
+   * @param {Transferable[]} [options.transfer] - Provide transferables for transfer
    * @returns {Promise<{cid: CID, size:number}>}
    */
   async write (path, content, options = {}) {
-    const [data, transfer] = encodeContent(content)
-    const { cid, size } = await this.remote.write({
+    const transfer = [...options.transfer]
+    const result = await this.remote.write({
       ...options,
       path,
-      content: data,
-      transfer: transfer
+      content: encodeContent(content, transfer),
+      transfer
     })
 
-    return { cid: new CID(cid), size }
+    return { ...result, cid: decodeCID(result.cid) }
   }
 
   /**
+   * @typedef {Object} Entry
+   * @property {string} name
+   * @property {FileType} type
+   * @property {number} size
+   * @property {CID} cid
+   * @property {number} mode
+   * @property {UnixFSTime} mtime
    *
    * @param {string} [path='/']
-   * @param {LsOptions} [options]
-   * @returns {AsyncIterable<LsEntry>}
+   * @param {Object} [options]
+   * @param {boolean} [options.sort=false]
+   * @param {number} [options.timeout]
+   * @param {AbortSignal} [options.signal]
+   * @returns {AsyncIterable<Entry>}
    */
   async * ls (path = '/', options = {}) {
     const { sort, timeout, signal } = options
-    const entries = await this.remote.ls({
+    const { entries } = await this.remote.ls({
       path,
       sort,
       timeout,
       signal
     })
 
-    for await (const entry of decodeRemoteIterable(entries)) {
-      const cid = new CID(entry.cid)
-      yield { ...entry, cid }
-    }
+    yield * decodeIterable(entries, decodeLsEntry)
+  }
+
+  // /**
+  //  * Copy files.
+  //  * @param {ContentAddress} from
+  //  * @param {string} to
+  //  * @param {Object} [options]
+  //  * @param {boolean} [options.parents=false]
+  //  * @param {string} [options.hashAlg]
+  //  * @param {boolean} [options.flush=true]
+  //  * @param {number} [options.timeout]
+  //  * @param {AbortSignal} [options.signal]
+  //  * @returns {Promise<void>}
+  //  */
+  // // @ts-ignore
+  // cp (from, to, options, ...etc) {
+  //   const args = [from, to, options, ...etc]
+  //   const last = args.pop()
+  //   const [sources, destination, opts] =
+  //     typeof last === 'string' ? [args, last, {}] : [args, args.pop(), last]
+
+  //   const { parents, hashAlg, flush } = opts
+  //   return this.remote.cp(
+  //     {
+  //       // @ts-ignore could be called without any arguments.
+  //       from: sources.map(toPath),
+  //       to: destination,
+  //       parents,
+  //       hashAlg,
+  //       flush
+  //     },
+  //     options
+  //   )
+  // }
+  // /**
+  //  * Make a directory.
+  //  * @param {string} path The path to the directory to make
+  //  * @param {Object} [options]
+  //  * @param {boolean} [options.parents=false]
+  //  * @param {string} [options.hashAlg]
+  //  * @param {boolean} [options.flush=true]
+  //  * @param {Mode} [options.mode]
+  //  * @param {Time|Date} [options.mtime]
+  //  * @param {number} [options.timeout]
+  //  * @param {AbortSignal} [options.signal]
+  //  * @returns {Promise<void>}
+  //  */
+  // mkdir (path, options = {}) {
+  //   const { mtime, parents, flush, hashAlg, mode } = options
+
+  //   return this.remote.mkdir(
+  //     {
+  //       path: toPath(path),
+  //       mtime,
+  //       parents,
+  //       flush,
+  //       hashAlg,
+  //       mode
+  //     },
+  //     options
+  //   )
+  // }
+
+  /**
+   * @typedef {Object} Stat
+   * @property {CID} cid Content identifier.
+   * @property {number} size File size in bytes.
+   * @property {number} cumulativeSize Size of the DAGNodes making up the file in bytes.
+   * @property {"directory"|"file"} type
+   * @property {number} blocks Number of files making up directory (when a direcotry)
+   * or number of blocks that make up the file (when a file)
+   * @property {boolean} withLocality True when locality information is present
+   * @property {boolean} local True if the queried dag is fully present locally
+   * @property {number} sizeLocal Cumulative size of the data present locally
+   *
+   * @param {ContentAddress} path
+   * @param {Object} [options]
+   * @param {boolean} [options.hash=false] If true will only return hash
+   * @param {boolean} [options.size=false] If true will only return size
+   * @param {boolean} [options.withLocal=false] If true computes size of the dag that is local, and total size when possible
+   * @param {number} [options.timeout]
+   * @param {AbortSignal} [options.signal]
+   * @returns {Promise<Stat>}
+   */
+  async stat (path, options = {}) {
+    const { size, hash, withLocal, timeout, signal } = options
+    const { stat } = await this.remote.stat({
+      path: toPath(path),
+      size,
+      hash,
+      withLocal,
+      timeout,
+      signal
+    })
+    return decodeStat(stat)
   }
 }
-exports.Files = Files
+module.exports = Files
+
+/**
+ * @param {EncodedEntry} entry
+ * @returns {Entry}
+ */
+const decodeLsEntry = entry => {
+  return {
+    ...entry,
+    cid: decodeCID(entry.cid)
+  }
+}
 
 /**
  * @param {WriteContent} content - The content to write to the path
- * @returns {[EncodedContent] | [EncodedContent, Transferable[]]}
+ * @param {Transferable[]} transfer
+ * @returns {EncodedContent}
  */
-const encodeContent = content => {
+const encodeContent = (content, transfer) => {
   if (typeof content === 'string') {
-    return [content]
+    return content
   } else if (ArrayBuffer.isView(content)) {
-    return [content, [content.buffer]]
+    return content
   } else if (content instanceof ArrayBuffer) {
-    return [content, [content]]
+    return content
   } else if (content instanceof Blob) {
-    return [content]
+    return content
   } else {
-    const data = encodeAsyncIterable(content)
-    return [data, [data.port]]
+    return encodeIterable(content, identity, transfer)
   }
 }
 
@@ -134,18 +257,7 @@ const encodeContent = content => {
  *
  * @typedef {string|CID} ContentAddress
  *
- * @typedef {Object} ChmodOptions
- * @property {boolean} [recursive=false]
- * @property {string} [hashAlg]
- * @property {boolean} [flush=true]
- * @property {number} [cidVersion=0]
- * @property {number} [timeout]
- * @property {AbortSignal} [signal]
  *
- * @typedef {Object} LsOptions
- * @property {boolean} [sort=false]
- * @property {number} [timeout]
- * @property {AbortSignal} [signal]
  * @typedef {Object} LsEntry
  * @property {string} name
  * @property {FileType} type
@@ -155,164 +267,6 @@ const encodeContent = content => {
  * @property {UnixFSTime} mtime
  */
 
-// /**
-//  * @typedef {import('./connection')} RPCConnection
-//  * @typedef {import('./connection').RPCRequestOptions} RPCRequestOptions
-//  *
-//  * @typedef {number|string} Mode
-//  * @typedef {{ secs:number, nsecs:number }} Time
-//  *
-//  * @typedef {string|CID} ContentAddress
-//  *
-//  * @typedef {Object} Chmod
-//  * @property {boolean} [recursive=false]
-//  * @property {string} [hashAlg]
-//  * @property {boolean} [flush=true]
-//  * @property {number} [cidVersion=0]
-//  *
-//  * @typedef {Object} CP
-//  * @property {boolean} [parents=false]
-//  * @property {string} [hashAlg]
-//  * @property {boolean} [flush=true]
-//  *
-//  * @typedef {Object} Mkdir
-//  * @property {boolean} [parents=false]
-//  * @property {string} [hashAlg]
-//  * @property {boolean} [flush=true]
-//  * @property {Mode} [mode]
-//  * @property {Time|Date} [mtime]
-//  *
-//  * @typedef {Object} StatQuery
-//  * @property {boolean} [hash=false] If true will only return hash
-//  * @property {boolean} [size=false] If true will only return size
-//  * @property {boolean} [withLocal=false] If true computes size of the dag that is local, and total size when possible
-//  *
-//  * @typedef {Object} Stat
-//  * @property {CID} cid Content identifier.
-//  * @property {number} size File size in bytes.
-//  * @property {number} cumulativeSize Size of the DAGNodes making up the file in bytes.
-//  * @property {"directory"|"file"} type
-//  * @property {number} blocks Number of files making up directory (when a direcotry)
-//  * or number of blocks that make up the file (when a file)
-//  * @property {boolean} withLocality True when locality information is present
-//  * @property {boolean} local True if the queried dag is fully present locally
-//  * @property {number} sizeLocal Cumulative size of the data present locally
-//  */
-
-// /**
-//  * @template T
-//  * @typedef {T & RPCRequestOptions} Options
-//  */
-
-// class FilesClient {
-//   /**
-//    *
-//    * @param {RPCConnection} connection
-//    */
-//   constructor (connection) {
-//     this.connection = connection
-//   }
-
-//   /**
-//    * Change mode for files and directories
-//    * @param {ContentAddress} path The path to the entry to modify
-//    * @param {Mode} mode
-//    * @param {Options<Chmod>} [options]
-//    * @returns {Promise<void>}
-//    */
-//   chmod (path, mode, options = {}) {
-//     const { recursive, hashAlg, flush, cidVersion, signal, timeout } = options
-//     return this.connection.call(
-//       'files/chmod',
-//       {
-//         path: toPath(path),
-//         mode,
-//         recursive,
-//         hashAlg,
-//         flush,
-//         cidVersion,
-//         timeout
-//       },
-//       {
-//         signal
-//       }
-//     )
-//   }
-//   /**
-//    * Copy files.
-//    * // @ts-ignore
-//    * @param {ContentAddress} from
-//    * @param {string} to
-//    * @param {Options<CP>} [options]
-//    * @returns {Promise<void>}
-//    */
-//   // @ts-ignore
-//   cp (from, to, options, ...etc) {
-//     const args = [from, to, options, ...etc]
-//     const last = args.pop()
-//     /** @type [string[], string, Options<CP>] */
-//     const [sources, destination, opts] =
-//       typeof last === 'string' ? [args, last, {}] : [args, args.pop(), last]
-
-//     const { parents, hashAlg, flush } = opts
-//     return this.connection.call(
-//       'files/cp',
-//       {
-//         // @ts-ignore could be called without any arguments.
-//         from: sources.map(toPath),
-//         to: destination,
-//         parents,
-//         hashAlg,
-//         flush
-//       },
-//       options
-//     )
-//   }
-//   /**
-//    * Make a directory.
-//    * @param {string} path The path to the directory to make
-//    * @param {Options<Mkdir>} [options]
-//    * @returns {Promise<void>}
-//    */
-//   mkdir (path, options = {}) {
-//     const { mtime, parents, flush, hashAlg, mode } = options
-
-//     return this.connection.call(
-//       'files/mkdir',
-//       {
-//         path: toPath(path),
-//         mtime,
-//         parents,
-//         flush,
-//         hashAlg,
-//         mode
-//       },
-//       options
-//     )
-//   }
-
-//   /**
-//    *
-//    * @param {ContentAddress} path
-//    * @param {Options<StatQuery>} options
-//    * @returns {Promise<Stat>}
-//    */
-//   async stat (path, options = {}) {
-//     const { size, hash, withLocal } = options
-//     const data = await this.connection.call(
-//       'files/stat',
-//       {
-//         path: toPath(path),
-//         size,
-//         hash,
-//         withLocal
-//       },
-//       options
-//     )
-//     return decodeStat(data)
-//   }
-// }
-
 /**
  * Turns content address (path or CID) into path.
  * @param {ContentAddress} address
@@ -321,14 +275,18 @@ const encodeContent = content => {
 const toPath = address =>
   CID.isCID(address) ? `/ipfs/${address.toString()}` : address.toString()
 
-// /**
-//  *
-//  * @param {Stat} data
-//  * @returns {Stat}
-//  */
-// const decodeStat = data => {
-//   data.cid = new CID(data.cid)
-//   return data
-// }
+/**
+ *
+ * @param {EncodedStat} data
+ * @returns {Stat}
+ */
+const decodeStat = data => {
+  return { ...data, cid: decodeCID(data.cid) }
+}
 
-// module.exports = FilesClient
+/**
+ * @template T
+ * @param {T} a
+ * @returns {T}
+ */
+const identity = a => a

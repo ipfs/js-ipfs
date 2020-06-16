@@ -1,24 +1,27 @@
-// @ts-nocheck
 'use strict'
 /* eslint-env browser */
 
 const DAG = require('./dag')
 const Core = require('./core')
+const Files = require('./files')
 const { Transport } = require('./client')
 
 /**
+ * @typedef {import('./client').Transport} ClientTransport
+ *
  * @typedef {Object} ClientOptions
  * @property {MessagePort} port
  */
 
 class IPFSClient extends Core {
   /**
-   * @param {Transport} [transport]
+   * @param {ClientTransport} transport
    */
   constructor (transport) {
     super(transport)
     this.transport = transport
     this.dag = new DAG(this.transport)
+    this.files = new Files(this.transport)
   }
 
   /**
@@ -39,7 +42,7 @@ class IPFSClient extends Core {
    * @returns {IPFSClient}
    */
   static detached () {
-    return new IPFSClient(new Transport(null))
+    return new IPFSClient(new Transport(undefined))
   }
 
   /**

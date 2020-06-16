@@ -57,28 +57,8 @@ describe('interface-ipfs-core tests', () => {
         reason: 'ipfs.object.get is not implemented'
       },
       {
-        name: 'should add with mode as string',
-        reason: 'ipfs.files.stat is not implemented'
-      },
-      {
-        name: 'should add with mode as number',
-        reason: 'ipfs.files.stat is not implemented'
-      },
-      {
-        name: 'should add with mtime as Date',
-        reason: 'ipfs.files.stat is not implemented'
-      },
-      {
-        name: 'should add with mtime as { nsecs, secs }',
-        reason: 'ipfs.files.stat is not implemented'
-      },
-      {
-        name: 'should add with mtime as timespec',
-        reason: 'ipfs.files.stat is not implemented'
-      },
-      {
         name: 'should add with mtime as hrtime',
-        reason: 'ipfs.files.stat is not implemented'
+        reason: 'process.hrtime is not a function in browser'
       },
 
       {

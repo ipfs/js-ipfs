@@ -104,6 +104,8 @@ export interface Files {
   ): Promise<WriteResult>
 
   ls(path?: string, opitons?: LsOptions): AsyncIterable<LsEntry>
+
+  stat(path: string, options?: StatOptions): Promise<Stat>
 }
 
 type ChmodOptions = {
@@ -128,6 +130,25 @@ type LsEntry = {
   cid: CID
   mode: Mode
   mtime: UnixFSTime
+}
+
+type StatOptions = {
+  hash?: boolean
+  size?: boolean
+  withLocal?: boolean
+  timeout?: number
+  signal?: AbortSignal
+}
+
+type Stat = {
+  cid: CID
+  size: number
+  cumulativeSize: number
+  type: 'file' | 'directory'
+  blocks: number
+  withLocality: boolean
+  local: boolean
+  sizeLocal: number
 }
 
 type WriteContent =
