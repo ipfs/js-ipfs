@@ -16,8 +16,8 @@ stages:
   - test-external
 
 node_js:
-  - '10'
-  - '12'
+  - 'lts/*'
+  - 'node'
 
 os:
   - linux
