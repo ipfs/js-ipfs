@@ -1,5 +1,6 @@
 'use strict'
 
+const Bootstrap = require('libp2p-bootstrap')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
@@ -38,13 +39,10 @@ module.exports = () => {
     config: {
       peerDiscovery: {
         autoDial: true,
-        mdns: {
+        [MulticastDNS.tag]: {
           enabled: true
         },
-        bootstrap: {
-          enabled: true
-        },
-        websocketStar: {
+        [Bootstrap.tag]: {
           enabled: true
         }
       },
