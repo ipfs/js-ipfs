@@ -9,6 +9,7 @@ const concat = require('it-concat')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
+const importer = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,8 +27,8 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfs = (await common.spawn()).api
-      await all(ipfs.add(fixtures.smallFile.data))
-      await all(ipfs.add(fixtures.bigFile.data))
+      await all(importer([{ content: fixtures.smallFile.data }], ipfs.block))
+      await all(importer([{ content: fixtures.bigFile.data }], ipfs.block))
     })
 
     after(() => common.clean())
@@ -57,7 +58,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv0 with a CIDv1', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
-      const res = await all(ipfs.add(input, { cidVersion: 0 }))
+      const res = await all(importer([{ content: input }], ipfs.block))
 
       const cidv0 = res[0].cid
       expect(cidv0.version).to.equal(0)
@@ -71,7 +72,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv1 with a CIDv0', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
-      const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
@@ -110,7 +111,7 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(ipfs.add(dirs))
+      const res = await all(importer(dirs, ipfs.block))
       const root = res[res.length - 1]
 
       expect(root.path).to.equal('test-folder')
@@ -161,7 +162,7 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      for await (const fileAdded of ipfs.add(file)) {
+      for await (const fileAdded of importer([file], ipfs.block)) {
         if (fileAdded.path === 'a') {
           const files = await all(ipfs.get(`/ipfs/${fileAdded.cid.toString()}/testfile.txt`))
           expect(files).to.be.length(1)
@@ -176,7 +177,7 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      const filesAdded = await all(ipfs.add([file]))
+      const filesAdded = await all(importer([file], ipfs.block))
 
       filesAdded.forEach(async (file) => {
         if (file.path === 'a') {
