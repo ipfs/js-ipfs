@@ -1,12 +1,8 @@
 'use strict'
 
 const { Client } = require('./client')
-const {
-  encodeNode,
-  encodeCID,
-  decodeCID,
-  decodeNode
-} = require('ipfs-message-port-protocol/src/dag')
+const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
 
 /**
  * @typedef {import('cids')} CID
@@ -42,7 +38,7 @@ const {
  * @class
  * @extends {Client<API>}
  */
-class DAG extends Client {
+class DAGClient extends Client {
   /**
    * @param {Transport} transport
    */
@@ -146,4 +142,4 @@ const read = (path, options) => {
   }
 }
 
-module.exports = DAG
+module.exports = DAGClient

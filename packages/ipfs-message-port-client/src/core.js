@@ -4,7 +4,7 @@
 
 const CID = require('cids')
 const { Client } = require('./client')
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/dag')
+const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,
   encodeIterable,
@@ -83,7 +83,7 @@ const {
  * @class
  * @extends {Client<API>}
  */
-class Core extends Client {
+class CoreClient extends Client {
   /**
    * @param {Transport} transport
    */
@@ -371,4 +371,4 @@ const asFileObject = input => {
   }
 }
 
-module.exports = Core
+module.exports = CoreClient

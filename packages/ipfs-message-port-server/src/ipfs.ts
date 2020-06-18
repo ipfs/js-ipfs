@@ -7,37 +7,38 @@ import {
   Time,
   CIDVersion
 } from 'ipfs-message-port-protocol/src/data'
+import { EncodedCID } from './block'
 
 type Mode = string | number
 export interface IPFS extends Core {
   dag: DAG
   files: Files
+  block: BlockService
 }
 
 export interface IPFSFactory {
   create(): Promise<IPFS>
 }
 
-type PutOptions = {
+interface AbortOptions {
+  timeout?: number
+  signal?: AbortSignal
+}
+
+interface PutOptions extends AbortOptions {
   format?: string | void
   hashAlg?: string | void
   cid?: CID | void
   preload?: boolean
   pin?: boolean
-  timeout?: number
-  signal?: AbortSignal
 }
 
-type GetOptions = {
+interface GetOptions extends AbortOptions {
   localResolve?: boolean
-  timeout?: number
-  signal?: AbortSignal
 }
 
-type TreeOptions = {
+interface TreeOptions extends AbortOptions {
   recursive?: boolean
-  timeout?: number
-  signal?: AbortSignal | void
 }
 
 export interface DAG {
@@ -55,7 +56,7 @@ export interface Core {
   cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Buffer>
 }
 
-type AddOptions = {
+interface AddOptions extends AbortOptions {
   chunker?: string
   cidVersion?: number
   enableShardingExperiment?: boolean
@@ -67,9 +68,6 @@ type AddOptions = {
   shardSplitThreshold?: number
   trickle?: boolean
   wrapWithDirectory?: boolean
-
-  timeout?: number
-  signal?: AbortSignal
 }
 
 export type FileInput = {
@@ -87,11 +85,9 @@ export type FileOutput = {
   size: number
 }
 
-export type CatOptions = {
+interface CatOptions extends AbortOptions {
   offset?: number
   length?: number
-  timeout?: number
-  signal?: AbortSignal
 }
 
 export interface Files {
@@ -108,19 +104,15 @@ export interface Files {
   stat(path: string, options?: StatOptions): Promise<Stat>
 }
 
-type ChmodOptions = {
-  recursive: boolean
-  flush: boolean
-  hashAlg: string
-  cidVersion: number
-  timeout: number
-  signal: AbortSignal
+interface ChmodOptions extends AbortOptions {
+  recursive?: boolean
+  flush?: boolean
+  hashAlg?: string
+  cidVersion?: number
 }
 
-type LsOptions = {
+interface LsOptions extends AbortOptions {
   sort?: boolean
-  timeout?: number
-  signal?: AbortSignal
 }
 
 type LsEntry = {
@@ -132,12 +124,10 @@ type LsEntry = {
   mtime: UnixFSTime
 }
 
-type StatOptions = {
+interface StatOptions extends AbortOptions {
   hash?: boolean
   size?: boolean
   withLocal?: boolean
-  timeout?: number
-  signal?: AbortSignal
 }
 
 type Stat = {
@@ -198,7 +188,7 @@ export type FileContent =
   | AsyncIterable<ArrayBufferView>
   | AsyncIterable<ArrayBuffer>
 
-type WriteOptions = {
+interface WriteOptions extends AbortOptions {
   offset?: number
   length?: number
   create?: boolean
@@ -216,3 +206,41 @@ type WriteResult = {
   cid: CID
   size: number
 }
+
+interface Block {
+  cid: CID
+  data: Buffer
+}
+
+interface BlockService {
+  get(cid: CID, options?: GetBlockOptions): Promise<Block>
+  put(block: Block, options?: PutBlockOptions): Promise<Block>
+  put(buffer: Buffer, options?: PutBufferOptions): Promise<Block>
+  rm(
+    cid: CID | CID[],
+    options?: RmBlockOptions
+  ): AsyncIterable<{ cid: CID; error?: Error }>
+  stat(
+    cid: CID,
+    options?: StatBlockOptions
+  ): Promise<{ cid: CID; size: number }>
+}
+
+interface GetBlockOptions extends AbortOptions {}
+interface PutBlockOptions extends AbortOptions {
+  format?: string
+  mhtype?: string
+  mhlen?: number
+  version?: number
+  pin?: boolean
+}
+interface PutBufferOptions extends PutBlockOptions {
+  cid?: EncodedCID | void
+}
+
+interface RmBlockOptions extends AbortOptions {
+  force?: boolean
+  quiet?: boolean
+}
+
+interface StatBlockOptions extends AbortOptions {}

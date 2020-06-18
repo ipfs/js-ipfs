@@ -1,11 +1,5 @@
-import {
-  StringEncoded,
-  Time,
-  Mode,
-  HashAlg,
-  RemoteIterable,
-  FileType
-} from './data'
+import { StringEncoded, Time, Mode, HashAlg, FileType } from './data'
+import { RemoteIterable } from './core'
 import CID from 'cids'
 
 interface Files {

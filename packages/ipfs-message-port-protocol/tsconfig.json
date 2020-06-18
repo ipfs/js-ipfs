@@ -16,6 +16,6 @@
     "outDir": "./dist/"
   },
   "exclude": ["dist"],
-  "include": ["src"],
+  "include": ["src", "../../node_modules/ipld-block/src/index.js"],
   "compileOnSave": false
 }

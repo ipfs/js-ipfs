@@ -8,7 +8,7 @@ const {
   decodeIterable,
   encodeIterable
 } = require('ipfs-message-port-protocol/src/core')
-const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
+const { decodeCID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
  * @typedef {import('ipfs-message-port-server/src/files').Files} API
@@ -28,7 +28,7 @@ const { decodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @class
  * @extends {Client<API>}
  */
-class Files extends Client {
+class FilesClient extends Client {
   /**
    * @param {Transport} transport
    */
@@ -221,7 +221,7 @@ class Files extends Client {
     return decodeStat(stat)
   }
 }
-module.exports = Files
+module.exports = FilesClient
 
 /**
  * @param {EncodedEntry} entry

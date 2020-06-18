@@ -7,7 +7,7 @@ const {
   encodeIterable,
   decodeIterable
 } = require('ipfs-message-port-protocol/src/core')
-const { encodeCID } = require('ipfs-message-port-protocol/src/dag')
+const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID

@@ -1,10 +1,11 @@
 'use strict'
 /* eslint-env browser */
 
-const DAG = require('./dag')
-const Core = require('./core')
-const Files = require('./files')
 const { Transport } = require('./client')
+const BlockClient = require('./block')
+const DAGClient = require('./dag')
+const CoreClient = require('./core')
+const FilesClient = require('./files')
 
 /**
  * @typedef {import('./client').Transport} ClientTransport
@@ -13,15 +14,16 @@ const { Transport } = require('./client')
  * @property {MessagePort} port
  */
 
-class IPFSClient extends Core {
+class IPFSClient extends CoreClient {
   /**
    * @param {ClientTransport} transport
    */
   constructor (transport) {
     super(transport)
     this.transport = transport
-    this.dag = new DAG(this.transport)
-    this.files = new Files(this.transport)
+    this.dag = new DAGClient(this.transport)
+    this.files = new FilesClient(this.transport)
+    this.block = new BlockClient(this.transport)
   }
 
   /**

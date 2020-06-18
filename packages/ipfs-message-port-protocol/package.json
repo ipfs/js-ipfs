@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "buffer": "^5.6.0",
-    "cids": "^0.8.0"
+    "cids": "^0.8.0",
+    "ipld-block": "^0.9.2"
   },
   "devDependencies": {
     "aegir": "^22.0.0",

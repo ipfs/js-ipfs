@@ -1,22 +1,13 @@
 'use strict'
 
 const { collect } = require('./util')
-const {
-  decodeNode,
-  encodeNode,
-  encodeCID,
-  decodeCID
-} = require('ipfs-message-port-protocol/src/dag')
+const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
 
 /**
- * @template T
- * @typedef {import('ipfs-message-port-protocol/src/data').StringEncoded<T>} StringEncoded
- */
-/**
  * @typedef {import('./ipfs').IPFS} IPFS
- * @typedef {import('ipfs-message-port-protocol/src/dag').JSONValue} JSONValue
+ * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/dag').DAGNode} DAGNode
- * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedDAGNode} EncodedDAGNode
  *
  *

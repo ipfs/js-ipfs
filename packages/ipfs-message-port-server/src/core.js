@@ -7,7 +7,7 @@ const {
   encodeIterable,
   decodeCallback
 } = require('ipfs-message-port-protocol/src/core')
-const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/dag')
+const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
 
@@ -18,7 +18,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/dag')
  * @typedef {import("ipfs-message-port-protocol/src/data").Mode} Mode
  * @typedef {import("ipfs-message-port-protocol/src/data").HashAlg} HashAlg
  * @typedef {import('ipfs-message-port-protocol/src/data').FileType} FileType
- * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import("./ipfs").FileOutput} FileOutput
  * @typedef {import('./ipfs').FileObject} FileObject
  * @typedef {import('./ipfs').FileContent} DecodedFileContent

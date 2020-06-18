@@ -63,6 +63,47 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should add from a URL with only-hash=true',
         reason: 'ipfs.object.get is not implemented'
+      },
+      {
+        name: 'should cat with a Buffer multihash',
+        reason: 'Passing CID as Buffer is not supported'
+      }
+    ]
+  })
+
+  tests.block(commonFactory, {
+    skip: [
+      {
+        name: 'should get by CID in string',
+        reason: 'Passing CID as strings is not supported'
+      },
+      {
+        name: 'should return an error for an invalid CID',
+        reason: 'Passing CID as strings is not supported'
+      },
+      {
+        name: 'should put a buffer, using CID string',
+        reason: 'Passing CID as strings is not supported'
+      },
+      {
+        name: 'should put a buffer, using options',
+        reason: 'ipfs.pin.ls is not implemented'
+      },
+      {
+        name: 'should remove by CID object',
+        reason: 'ipfs.refs.local is not implemented'
+      },
+      {
+        name: 'should remove by CID in string',
+        reason: 'Passing CID as strings is not supported'
+      },
+      {
+        name: 'should remove by CID in buffer',
+        reason: 'Passing CID as Buffer is not supported'
+      },
+      {
+        name: 'should error when removing pinned blocks',
+        reason: 'ipfs.pin.add is not implemented'
       }
     ]
   })
