@@ -780,7 +780,7 @@ console.log(Buffer.concat(chunks).toString())
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| path | `String` or `Array<String>` | The [MFS path] where you will write to |
+| path | `String` | The [MFS path] where you will write to |
 | content | `String`, `Buffer`, `AsyncIterable<Buffer>` or [`Blob`][blob] | The content to write to the path |
 
 #### Options
