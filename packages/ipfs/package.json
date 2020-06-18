@@ -66,7 +66,7 @@
     "@hapi/boom": "^7.4.3",
     "@hapi/content": "^4.1.0",
     "@hapi/hapi": "^18.4.0",
-    "@hapi/joi": "^15.1.0",
+    "@hapi/joi": "^17.1.1",
     "abort-controller": "^3.0.0",
     "any-signal": "^1.1.0",
     "array-shuffle": "^1.0.1",
