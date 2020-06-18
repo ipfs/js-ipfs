@@ -59,10 +59,17 @@ describe('interface-ipfs-core tests', () => {
   })
 
   tests.block(commonFactory, {
-    skip: [{
-      name: 'should get a block added as CIDv1 with a CIDv0',
-      reason: 'go-ipfs does not support the `version` param'
-    }]
+    skip: [
+      {
+        name: 'should get a block added as CIDv1 with a CIDv0',
+        reason: 'go-ipfs does not support the `version` param'
+      },
+      {
+        name: 'should return an error for an invalid CID',
+        reason:
+          'Intermittent failure: https://github.com/ipfs/js-ipfs/issues/3100'
+      }
+    ]
   })
 
   tests.bootstrap(commonFactory, {
