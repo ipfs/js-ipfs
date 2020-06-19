@@ -2,7 +2,7 @@
 
 /* eslint-env browser */
 
-// const CID = require('cids')
+const { encodeError } = require('ipfs-message-port-protocol/src/error')
 
 /**
  * @typedef {import('./ipfs').IPFS} IPFS
@@ -216,9 +216,12 @@ class Server {
           { type: 'result', id, result: { ok: true, value } },
           value.transfer || []
         )
-      } catch ({ name, message, stack, code }) {
-        const error = { name, message, stack, code }
-        port.postMessage({ type: 'result', id, result: { ok: false, error } })
+      } catch (error) {
+        port.postMessage({
+          type: 'result',
+          id,
+          result: { ok: false, error: encodeError(error) }
+        })
       }
     }
   }
@@ -261,7 +264,7 @@ class Server {
    */
   execute (data) {
     const query = Query.from(data)
-    this.execute(query)
+    this.run(query)
 
     return query.result
   }

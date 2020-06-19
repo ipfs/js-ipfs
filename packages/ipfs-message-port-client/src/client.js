@@ -1,28 +1,7 @@
 'use strict'
 
 /* eslint-env browser */
-
-class RemoteError extends Error {
-  /**
-   * Represents error that occured in the worker thread which was structure
-   * cloned over the message channel.
-   *
-   * @param {Object} info
-   * @param {string} info.message
-   * @param {string} info.stack
-   * @param {string} info.name
-   * @param {string} [info.code]
-   */
-  constructor ({ message, stack, name, code }) {
-    super(message)
-    this.stack = stack
-    this.name = name
-    if (code) {
-      this.code = code
-    }
-  }
-}
-exports.RemoteError = RemoteError
+const { decodeError } = require('ipfs-message-port-protocol/src/error')
 
 class TimeoutError extends Error {}
 exports.TimeoutError = TimeoutError
@@ -70,12 +49,11 @@ class Query {
     this.result = new Promise((resolve, reject) => {
       this.succeed = resolve
       this.fail = reject
-      this.abortController = new AbortController()
-      this.signal = this.abortController.signal
+      this.signal = input.signal
       this.input = input
       this.namespace = namespace
       this.method = method
-      this.timeout = Infinity
+      this.timeout = input.timeout == null ? Infinity : input.timeout
     })
   }
 
@@ -91,11 +69,6 @@ class Query {
    */
   transfer () {
     return this.input.transfer
-  }
-
-  abort () {
-    this.abortController.abort()
-    this.fail(new AbortError())
   }
 }
 
@@ -131,7 +104,11 @@ class Transport {
       setTimeout(Transport.timeout, query.timeout, this, id)
     }
 
-    query.signal.addEventListener('abort', () => this.abort(id), { once: true })
+    if (query.signal) {
+      query.signal.addEventListener('abort', () => this.abort(id), {
+        once: true
+      })
+    }
 
     if (this.port) {
       Transport.postQuery(this.port, id, query)
@@ -148,8 +125,11 @@ class Transport {
     const { queries } = self
     const query = queries[id]
     if (query) {
-      self.abort(id)
-      query.fail(new TimeoutError())
+      delete queries[id]
+      query.fail(new TimeoutError('request timed out'))
+      if (self.port) {
+        self.port.postMessage({ type: 'abort', id })
+      }
     }
   }
 
@@ -158,9 +138,11 @@ class Transport {
    * @param {string} id
    */
   abort (id) {
-    const query = this.queries[id]
+    const { queries } = this
+    const query = queries[id]
     if (query) {
-      delete this.queries[id]
+      delete queries[id]
+      query.fail(new AbortError())
       if (this.port) {
         this.port.postMessage({ type: 'abort', id })
       }
@@ -224,10 +206,10 @@ class Transport {
       if (result.ok) {
         query.succeed(result.value)
       } else {
-        query.fail(new RemoteError(result.error))
+        query.fail(decodeError(result.error))
       }
     } else {
-      throw new RangeError(`Received response${id} for unknown query`)
+      // throw new RangeError(`Received response${id} for unknown query`)
     }
   }
 }

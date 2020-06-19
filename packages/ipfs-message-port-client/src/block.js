@@ -2,6 +2,7 @@
 
 const { Client } = require('./client')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { decodeError } = require('ipfs-message-port-protocol/src/error')
 const {
   encodeBlock,
   decodeBlock
@@ -11,6 +12,7 @@ const {
  * @typedef {import('cids')} CID
  * @typedef {import('ipfs-message-port-server/src/block').Block} Block
  * @typedef {import('ipfs-message-port-server/src/block').EncodedBlock} EncodedBlock
+ * @typedef {import('ipfs-message-port-server/src/block').Rm} EncodedRmEntry
  * @typedef {import('ipfs-message-port-server/src/block').BlockService} API
  * @typedef {import('./client').ClientTransport} Transport
  */
@@ -103,12 +105,7 @@ class BlockClient extends Client {
         : [encodeCID(cids)]
     })
 
-    for (const entry of entries) {
-      yield {
-        ...entry,
-        cid: decodeCID(entry.cid)
-      }
-    }
+    yield * entries.map(decodeRmEntry)
   }
 
   /**
@@ -135,4 +132,19 @@ class BlockClient extends Client {
     return { ...result, cid: decodeCID(result.cid) }
   }
 }
+
+/**
+ *
+ * @param {EncodedRmEntry} entry
+ * @returns {RmEntry}
+ */
+const decodeRmEntry = entry => {
+  const cid = decodeCID(entry.cid)
+  if (entry.error) {
+    return { cid, error: decodeError(entry.error) }
+  } else {
+    return { cid }
+  }
+}
+
 module.exports = BlockClient

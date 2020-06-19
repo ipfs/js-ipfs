@@ -2,6 +2,7 @@
 
 const { Buffer } = require('buffer')
 const { collect } = require('./util')
+const { encodeError } = require('ipfs-message-port-protocol/src/error')
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeBlock,
@@ -11,6 +12,7 @@ const {
 /**
  * @typedef {import('./ipfs').IPFS} IPFS
  * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-message-port-protocol/src/error').EncodedError} EncodedError
  * @typedef {import('ipfs-message-port-protocol/src/block').Block} Block
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/block').EncodedBlock} EncodedBlock
@@ -96,11 +98,17 @@ class BlockService {
    * @typedef {RmEntry[]} RmResult
    *
    * @typedef {Object} RmEntry
-   * @property {CID} cid
-   * @property {Error|undefined} [error]
+   * @property {EncodedCID} cid
+   * @property {EncodedError|undefined} [error]
    */
-  rm (query) {
-    return collect(this.ipfs.block.rm(query.cids.map(decodeCID), query))
+  async rm (query) {
+    /** @type {Transferable[]} */
+    const transfer = []
+    const result = await collect(
+      this.ipfs.block.rm(query.cids.map(decodeCID), query)
+    )
+
+    return result.map(entry => encodeRmEntry(entry, transfer))
   }
 
   /**
@@ -119,6 +127,22 @@ class BlockService {
     const cid = decodeCID(query.cid)
     const result = await this.ipfs.block.stat(cid, query)
     return { ...result, cid: encodeCID(result.cid) }
+  }
+}
+
+/**
+ * @param {Object} entry
+ * @param {CID} entry.cid
+ * @param {Error|void} [entry.error]
+ * @param {Transferable[]} transfer
+ * @returns {RmEntry}
+ */
+const encodeRmEntry = (entry, transfer) => {
+  const cid = encodeCID(entry.cid, transfer)
+  if (entry.error) {
+    return { cid, error: encodeError(entry.error) }
+  } else {
+    return { cid }
   }
 }
 

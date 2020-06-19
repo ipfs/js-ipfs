@@ -1,6 +1,7 @@
 'use strict'
 
 /* eslint-env browser */
+const { encodeError, decodeError } = require('./error')
 
 /**
  * @template T
@@ -33,10 +34,11 @@
  */
 
 /**
+ * @typedef {import('./error').EncodedError} EncodedError
  * @typedef {Object} RemoteError
  * @property {true} done
  * @property {void} value
- * @property {Error} error
+ * @property {EncodedError} error
  */
 
 /**
@@ -76,7 +78,7 @@ const decodeIterable = async function * ({ port }, decode) {
       const { done, value, error } = await next()
       isDone = done
       if (error != null) {
-        throw error
+        throw decodeError(error)
       } else if (value != null) {
         yield decode(value)
       }
@@ -124,7 +126,10 @@ const encodeIterable = (iterable, encode, transfer) => {
             )
           }
         } catch (error) {
-          port.postMessage({ type: 'throw', error })
+          port.postMessage({
+            type: 'throw',
+            error: encodeError(error)
+          })
           port.close()
         }
         break
