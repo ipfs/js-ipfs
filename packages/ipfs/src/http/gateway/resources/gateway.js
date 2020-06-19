@@ -62,6 +62,7 @@ module.exports = {
           throw Boom.boomify(err, { statusCode: 404 })
         case (errorToString.startsWith('Error: multihash length inconsistent')):
         case (errorToString.startsWith('Error: Non-base58 character')):
+        case (errorToString.startsWith('Error: invalid character')):
           throw Boom.boomify(err, { statusCode: 400 })
         default:
           log.error(err)

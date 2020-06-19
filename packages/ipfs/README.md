@@ -33,7 +33,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Getting started
 
-* Look into the [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Look into the [examples repo](https://github.com/ipfs-shipyard/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
@@ -99,7 +99,7 @@ main()
 
 ### Browser bundle
 
-Learn how to bundle IPFS into your application with webpack, parceljs and browserify in the [examples](https://github.com/ipfs/js-ipfs/tree/master/examples) folder.
+Learn how to bundle IPFS into your application with webpack, parceljs and browserify in the [examples repo](https://github.com/ipfs-shipyard/js-ipfs-examples).
 
 ## Documentation
 
