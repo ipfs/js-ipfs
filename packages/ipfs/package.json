@@ -65,7 +65,7 @@
     "@hapi/ammo": "^3.1.2",
     "@hapi/boom": "^7.4.3",
     "@hapi/content": "^4.1.0",
-    "@hapi/hapi": "^18.4.0",
+    "@hapi/hapi": "^19.1.1",
     "@hapi/joi": "^15.1.0",
     "abort-controller": "^3.0.0",
     "any-signal": "^1.1.0",
