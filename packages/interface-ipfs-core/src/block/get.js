@@ -92,7 +92,7 @@ module.exports = (common, options) => {
       return expect(ipfs.block.get('invalid')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.have.property('message')
-        .that.includes('invalid')
+        .that.includes('Non-base58 character')
     })
   })
 }
