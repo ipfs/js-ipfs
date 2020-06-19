@@ -137,7 +137,7 @@ Prevents all logging output from the IPFS node.
 |------|---------|
 | object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/examples/circuit-relaying) to learn more).
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-shipyard/js-ipfs-examples/tree/master/examples/circuit-relaying) to learn more).
 
 - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
@@ -316,11 +316,11 @@ const node = await self.IPFS.create({
 | Type | Default |
 |------|---------|
 | object | [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in browsers |
-| function | [`libp2p bundle`](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p) |
+| function | [`libp2p bundle`](https://github.com/ipfs-shipyard/js-ipfs-examples/tree/master/examples/custom-libp2p) |
 
 The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
 
-You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs-shipyard/js-ipfs-examples/tree/master/examples/custom-libp2p).
 
 Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md) for the list of options libp2p supports.
 

@@ -127,12 +127,6 @@ jobs:
       script:
         - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
 
-    - stage: test
-      name: examples
-      script:
-        - npm run build
-        - npm run test -- --scope=example* --concurrency=1
-
     - stage: release-rc-npm
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
@@ -212,6 +206,13 @@ jobs:
       name: external - sidetree
       script:
         - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
+
+    - stage: test-examples
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: external - sidetree
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-shipyard/js-ipfs-examples.git --deps=ipfs@next  --deps=ipfs-http-client@next
 
 notifications:
   email: false
