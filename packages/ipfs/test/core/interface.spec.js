@@ -19,7 +19,14 @@ describe('interface-ipfs-core tests', function () {
 
   tests.bitswap(commonFactory)
 
-  tests.block(commonFactory)
+  tests.block(commonFactory, {
+    skip: [
+      {
+        name: 'should return an error for an invalid CID',
+        reason: 'Intermittent failure: https://github.com/ipfs/js-ipfs/issues/3100'
+      }
+    ]
+  })
 
   tests.bootstrap(commonFactory)
 
