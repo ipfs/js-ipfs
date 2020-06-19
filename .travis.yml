@@ -17,7 +17,8 @@ stages:
 
 node_js:
   - 'lts/*'
-  - 'node'
+  # cannot support node 14 until hapi > 19.1.1 is released
+  # - 'node'
 
 os:
   - linux
