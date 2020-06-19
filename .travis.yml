@@ -207,10 +207,10 @@ jobs:
       script:
         - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
-    - stage: test-examples
+    - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
-      name: external - sidetree
+      name: external - examples
       script:
         - npm run test:external -- -- -- https://github.com/ipfs-shipyard/js-ipfs-examples.git --deps=ipfs@next  --deps=ipfs-http-client@next
 
