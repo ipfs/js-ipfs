@@ -60,7 +60,9 @@ describe('/block', () => {
       return testHttpMethod('/api/v0/block/put')
     })
 
-    it('returns 400 if no node is provided', async () => {
+    // Intermittent timeouts
+    // https://github.com/ipfs/js-ipfs/issues/3105
+    it.skip('returns 400 if no node is provided', async () => {
       const form = new FormData()
       const headers = form.getHeaders()
       const payload = await streamToPromise(form)
