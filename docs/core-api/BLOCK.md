@@ -151,18 +151,22 @@ Each object yielded is of the form:
 
 ```js
 {
-  hash: string,
-  error: string
+  cid: CID,
+  error?: Error
 }
 ```
 
-Note: If an error string is present for a given object, the block with that hash was not removed and the string will contain the reason why, for example if the block was pinned.
+Note: If an error is present for a given object, the block with that cid was not removed and the `error` will contain the reason why, for example if the block was pinned.
 
 ### Example
 
 ```JavaScript
 for await (const result of ipfs.block.rm(cid)) {
-  console.log(result.hash)
+  if (result.error) {
+    console.error(`Failed to remove block ${result.cid} due to ${result.error.message}`)
+  } else {
+    console.log(`Removed block ${result.cid}`)
+  }
 }
 ```
 
@@ -197,8 +201,8 @@ the returned object has the following keys:
 
 ```JavaScript
 {
-  key: 'QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD',
-  size: 10
+  cid: CID
+  size: number
 }
 ```
 
@@ -209,12 +213,10 @@ const multihashStr = 'QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ'
 const cid = new CID(multihashStr)
 
 const stats = await ipfs.block.stat(cid)
-console.log(stats)
-// Logs:
-// {
-//   key: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ,
-//    size: 3739
-// }
+console.log(stats.cid.toString())
+// Logs: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ
+console.log(stat.size)
+// Logs: 3739
 ```
 
 A great source of [examples][] can be found in the tests for this API.
