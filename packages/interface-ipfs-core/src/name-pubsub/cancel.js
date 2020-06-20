@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const PeerId = require('peer-id')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
@@ -16,17 +17,11 @@ module.exports = (common, options) => {
 
   describe('.name.pubsub.cancel', () => {
     let ipfs
-    let otherIpfs
     let nodeId
-    let otherNodeId
 
     before(async () => {
       ipfs = (await common.spawn()).api
       nodeId = ipfs.peerId.id
-      otherIpfs = (await common.spawn()).api
-      otherNodeId = otherIpfs.peerId.id
-
-      await ipfs.swarm.connect(otherIpfs.peerId.addresses[0])
     })
 
     after(() => common.clean())
@@ -49,12 +44,14 @@ module.exports = (common, options) => {
     it('should cancel a subscription correctly returning true', async function () {
       this.timeout(300 * 1000)
 
-      const ipnsPath = `/ipns/${otherNodeId}`
+      const peerId = await PeerId.create({ bits: 512 })
+      const id = peerId.toB58String()
+      const ipnsPath = `/ipns/${id}`
 
       const subs = await ipfs.name.pubsub.subs()
       expect(subs).to.be.an('array').that.does.not.include(ipnsPath)
 
-      await expect(all(ipfs.name.resolve(otherNodeId))).to.eventually.be.rejected()
+      await expect(all(ipfs.name.resolve(id))).to.eventually.be.rejected()
 
       const subs1 = await ipfs.name.pubsub.subs()
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)
