@@ -7,6 +7,7 @@ const CID = require('cids')
 const all = require('it-all')
 const concat = require('it-concat')
 const drain = require('it-drain')
+const last = require('it-last')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const importer = require('ipfs-unixfs-importer')
@@ -162,30 +163,12 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      for await (const fileAdded of importer([file], ipfs.block)) {
-        if (fileAdded.path === 'a') {
-          const files = await all(ipfs.get(`/ipfs/${fileAdded.cid.toString()}/testfile.txt`))
-          expect(files).to.be.length(1)
-          expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
-        }
-      }
-    })
+      const fileAdded = await last(importer([file], ipfs.block))
+      expect(fileAdded).to.have.property('path', 'a')
 
-    it('should get with ipfs path, as array and nested value', async () => {
-      const file = {
-        path: 'a/testfile.txt',
-        content: fixtures.smallFile.data
-      }
-
-      const filesAdded = await all(importer([file], ipfs.block))
-
-      filesAdded.forEach(async (file) => {
-        if (file.path === 'a') {
-          const files = await all(ipfs.get(`/ipfs/${file.cid}/testfile.txt`))
-          expect(files).to.be.length(1)
-          expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
-        }
-      })
+      const files = await all(ipfs.get(`/ipfs/${fileAdded.cid}/testfile.txt`))
+      expect(files).to.be.length(1)
+      expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
     })
 
     it('should error on invalid key', async () => {
