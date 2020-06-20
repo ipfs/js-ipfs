@@ -161,7 +161,7 @@ describe('utils', () => {
 
     it('should error on invalid hashes', () => {
       return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
-        .to.eventuallybe.rejected()
+        .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
