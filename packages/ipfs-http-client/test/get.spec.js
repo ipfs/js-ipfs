@@ -52,7 +52,7 @@ describe('.get (specific go-ipfs features)', function () {
     await expect(all(ipfs.get(smallFile.cid, {
       compress: true,
       compressionLevel: 10
-    }))).to.be.rejectedWith('compression level must be between 1 and 9')
+    }))).to.eventually.be.rejectedWith('compression level must be between 1 and 9')
   })
 
   // TODO Understand why this test started failing

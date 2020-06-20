@@ -191,7 +191,7 @@ module.exports = (common, options) => {
     it('should error on invalid key', async () => {
       const invalidCid = 'somethingNotMultihash'
 
-      const err = await expect(all(ipfs.get(invalidCid))).to.be.rejected()
+      const err = await expect(all(ipfs.get(invalidCid))).to.eventually.be.rejected()
 
       switch (err.toString()) {
         case 'Error: invalid ipfs ref path':

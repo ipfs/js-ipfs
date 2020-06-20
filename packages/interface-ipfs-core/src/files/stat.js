@@ -41,15 +41,15 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('refuses to stat files with an empty path', async () => {
-      await expect(ipfs.files.stat('')).to.be.rejected()
+      await expect(ipfs.files.stat('')).to.eventually.be.rejected()
     })
 
     it('refuses to lists files with an invalid path', async () => {
-      await expect(ipfs.files.stat('not-valid')).to.be.rejectedWith(/paths must start with a leading slash/)
+      await expect(ipfs.files.stat('not-valid')).to.eventually.be.rejectedWith(/paths must start with a leading slash/)
     })
 
     it('fails to stat non-existent file', async () => {
-      await expect(ipfs.files.stat('/i-do-not-exist')).to.be.rejectedWith(/does not exist/)
+      await expect(ipfs.files.stat('/i-do-not-exist')).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('stats an empty directory', async () => {
