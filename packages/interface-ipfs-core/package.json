@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "aegir": "^22.1.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#chore/print-logs-on-failure"
+    "ipfsd-ctl": "^4.1.1"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

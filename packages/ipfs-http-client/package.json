@@ -72,7 +72,7 @@
     "cross-env": "^7.0.0",
     "go-ipfs-dep": "^0.5.1",
     "interface-ipfs-core": "^0.136.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#chore/print-logs-on-failure",
+    "ipfsd-ctl": "^4.1.1",
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",
     "it-pipe": "^1.1.0",

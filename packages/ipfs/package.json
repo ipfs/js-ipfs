@@ -180,7 +180,7 @@
     "go-ipfs-dep": "^0.5.1",
     "interface-ipfs-core": "^0.136.0",
     "ipfs-interop": "^1.0.4",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#chore/print-logs-on-failure",
+    "ipfsd-ctl": "^4.1.1",
     "iso-random-stream": "^1.1.1",
     "it-first": "^1.0.1",
     "it-to-buffer": "^1.0.0",
