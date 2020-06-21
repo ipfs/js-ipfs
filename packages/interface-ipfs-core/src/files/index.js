@@ -4,16 +4,16 @@ const { createSuite } = require('../utils/suite')
 
 const tests = {
   chmod: require('./chmod'),
-  mkdir: require('./mkdir'),
-  write: require('./write'),
   cp: require('./cp'),
+  flush: require('./flush'),
+  ls: require('./ls'),
+  mkdir: require('./mkdir'),
   mv: require('./mv'),
+  read: require('./read'),
   rm: require('./rm'),
   stat: require('./stat'),
-  read: require('./read'),
-  ls: require('./ls'),
-  flush: require('./flush'),
-  touch: require('./touch')
+  touch: require('./touch'),
+  write: require('./write')
 }
 
 module.exports = createSuite(tests)
