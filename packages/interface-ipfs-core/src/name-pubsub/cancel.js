@@ -57,9 +57,6 @@ module.exports = (common, options) => {
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)
       const subs2 = await ipfs.name.pubsub.subs()
 
-      console.info('subs1', subs1) // eslint-disable-line
-      console.info('subs2', subs2) // eslint-disable-line
-
       expect(subs1).to.be.an('array').that.does.include(ipnsPath)
       expect(cancel).to.have.property('canceled')
       expect(cancel.canceled).to.eql(true)

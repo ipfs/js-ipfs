@@ -64,11 +64,7 @@ describe('interface-ipfs-core tests', function () {
         ipnsPubsub: true
       }
     }
-  }), {
-    only: [
-      'should cancel a subscription correctly returning true'
-    ]
-  })
+  }))
 
   tests.object(commonFactory)
 
