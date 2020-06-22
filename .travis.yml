@@ -62,7 +62,7 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client} -- -- --bundlesize
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
         - npm run lint -- $RUN_SINCE --concurrency 1
 
@@ -127,6 +127,14 @@ jobs:
       os: osx
       script:
         - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
+
+    - stage: test
+      name: examples
+      script:
+        - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
+        - npm run reset
+        - npm install
+        - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc-npm
       # only run on changes to master
@@ -207,13 +215,6 @@ jobs:
       name: external - sidetree
       script:
         - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
-
-    - stage: test-external
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: external - examples
-      script:
-        - npm run test:external -- -- -- https://github.com/ipfs-shipyard/js-ipfs-examples.git --deps=ipfs@next  --deps=ipfs-http-client@next
 
 notifications:
   email: false

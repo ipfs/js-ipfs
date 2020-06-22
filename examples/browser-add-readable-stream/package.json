@@ -1,0 +1,18 @@
+{
+  "name": "example-browser-add-readable-stream",
+  "description": "How to add readable streams in the browser",
+  "version": "2.0.1",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "serve": "http-server public -a 127.0.0.1 -p 8888",
+    "start": "npm run serve",
+    "test": "test-ipfs-example"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "ipfs": "^0.46.0",
+    "test-ipfs-example": "^2.0.3"
+  }
+}

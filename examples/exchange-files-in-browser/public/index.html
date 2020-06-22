@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="app.css">
+    <title>IPFS - Exchange Files</title>
+  </head>
+
+  <body ondragover="event.preventDefault()">
+    <header>
+      <img width=200 src="assets/ipfs-logo.svg" alt="IPFS" />
+    </header>
+
+    <main>
+      <div class="box node">
+        <h2>Node</h2>
+
+        <div>
+          <h3>ID</h3>
+          <pre class="node-id"></pre>
+        </div>
+
+        <div>
+          <h3>Addresses</h3>
+          <ul class="node-addresses"></ul>
+        </div>
+
+        <div>
+          <h3>Logs</h3>
+          <div>
+            <pre id="logs" class="success">Initializing node...</pre>
+          </div>
+        </div>
+
+        <div>
+          <h3>Workspace</h3>
+          <div class="input-button">
+            <input id="workspace-input" type="text" placeholder="Enter workspace name" disabled />
+            <button id="workspace-btn" disabled>Join</button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="columns">
+        <div id="peers" class="box disabled">
+          <h2>Workspace Peers</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Connected Peers</th>
+              </tr>
+            </thead>
+            <tbody id="workspace-peers"></tbody>
+          </table>
+
+          <h2>Network Peers</h2>
+
+          <div class="input-button">
+            <input id="multiaddr-input" type="text" placeholder="Multiaddr" disabled />
+            <button id="peer-btn" disabled>Connect</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Connected Peers</th>
+              </tr>
+            </thead>
+            <tbody id="connected-peers"></tbody>
+          </table>
+        </div>
+
+        <div id="files" class="box disabled" ondragover="event.preventDefault()">
+          <h2>Files</h2>
+
+          <div class="input-button">
+            <input id="cid-input" type="text" placeholder="CID" disabled />
+            <button id="fetch-btn" type="button" disabled>Fetch</button>
+          </div>
+
+          <div id="drag-container">
+            <img width=100 src="assets/upload.svg" alt="Upload" />
+            <p><b>Drag &amp; drop</b> a file to upload it.</p>
+          </div>
+
+          <div id="progress-container">
+            <div id="progress-bar"></div>
+          </div>
+
+          <table id="file-history">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>CID</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="empty-row">
+                <td colspan="4">There are no files in this workspace.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- The app bundled with IPFS -->
+    <script src="bundle.js"></script>
+  </body>
+</html>

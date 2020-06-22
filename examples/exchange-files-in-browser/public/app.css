@@ -1,0 +1,298 @@
+
+/* ===========================================================================
+   Layout
+   =========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: sans-serif;
+  color: #0B3A53;
+  background: #141E30; /* Fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #243B55, #141E30); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  pointer-events: auto;
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 300;
+}
+
+h2 {
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.0em;
+  font-weight: 700;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2em 0;
+}
+
+main {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+/* ===========================================================================
+   Buttons & Inputs
+   =========================================================================== */
+
+button {
+  padding: 0.625em 1.5em;
+  border: 2px solid #69C4CD;
+  border-radius: 2px;
+  background-color: #69C4CD;
+  color: #FFF;
+  font-size: 0.9em;
+  cursor: pointer;
+  outline: none;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+input {
+  width: 100%;
+  margin-right: 3px;
+  padding: 0.7em;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  color: #000;
+  outline: none;
+}
+
+input:hover,
+input:focus,
+input:active {
+  border-color: #69C4CD;
+}
+
+.input-button {
+  display: flex;
+}
+
+.disabled *,
+input:disabled,
+button:disabled {
+  opacity: 0.2;
+}
+
+/* ===========================================================================
+   Tables
+   =========================================================================== */
+
+table {
+  width: 100%;
+  margin: 1em 0;
+  padding: 1em;
+  border-spacing: 0;
+  background-color: #FFF;
+  word-break: break-all;
+}
+
+table th,
+table td {
+  padding: 1em;
+  font-size: 0.8em;
+  text-align: left;
+  font-weight: normal;
+}
+
+table th {
+  padding-top: 0;
+  font-size: 0.7em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #F7F8FA;
+}
+
+table tbody tr:hover {
+  background-color: rgb(100, 196, 205);
+  background-color: rgba(100, 196, 205, 0.2);
+}
+
+.table-action {
+  opacity: 0.5;
+}
+
+.table-action:hover {
+  opacity: 1;
+}
+
+/* ===========================================================================
+   Box
+   =========================================================================== */
+
+.box {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 2px;
+  background-color: #F7F8FA;
+}
+
+.box > h2 {
+  display: block;
+  border-bottom: 1px solid #B7BBC8;
+  text-align: center;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+
+/* Node
+   =========================================================================== */
+
+.box.node > div {
+  display: flex;
+  margin-bottom: 1em;
+}
+
+.box.node > div:last-child {
+  margin-bottom: 0;
+}
+
+.box.node > div > h3 {
+  flex: 0 0 15%;
+}
+
+.box.node > div pre,
+.box.node > div > ul {
+  flex: 0 0 85%;
+  margin: 0;
+}
+
+.box.node ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.node-addresses li {
+  margin-bottom: 0.5em;
+  font-size: 0.7em;
+  word-wrap: break-word;
+}
+
+#logs {
+  margin: 0;
+  color: #EA5037;
+}
+
+#logs.success {
+    color: #0CB892;
+}
+
+/* Peers
+   =========================================================================== */
+
+#peers {
+  flex: 0 0 calc(35% - 1em);
+}
+
+/* Files
+   =========================================================================== */
+
+#files {
+  flex: 0 0 65%;
+  min-height: 500px;
+}
+
+#file-status {
+  font-style: italic;
+  color: #6ACAD1;
+  font-size: 0.8em;
+  margin: 1em 0;
+}
+
+#files table th:nth-child(1),
+#files table td:nth-child(1) {
+  width: 35%;
+}
+
+#files table th:nth-child(2),
+#files table td:nth-child(2) {
+  width: 50%;
+}
+
+#files table th:nth-child(3),
+#files table td:nth-child(3) {
+  width: 15%;
+}
+
+#files .empty-row td {
+  text-align: center;
+  opacity: 0.5;
+}
+
+#drag-container {
+  height: 10em;
+  margin-top: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+
+#drag-container.dragging {
+  background-color: #E7E8EE;
+  opacity: 1;
+
+}
+
+#drag-container p {
+  margin-left: 1em;
+}
+
+#progress-container {
+  margin-top: 1em;
+  border-radius: 0.5em;
+  background-color: #0B3A53;
+  overflow-x: hidden;
+}
+
+#progress-bar {
+  height: 1em;
+  border-radius: 0.5em;
+  background-color: #6ACAD1;
+  transform: translateX(-100%);
+}
+
+/* ===========================================================================
+   Responsiveness
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .columns {
+    flex-direction: column-reverse;
+  }
+}

@@ -71,4 +71,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 ```
 
-More advanced examples and tutorials can be found in the [examples repo](https://github.com/ipfs-shipyard/js-ipfs-examples)
+More advanced examples and tutorials can be found in the [examples](../examples)
