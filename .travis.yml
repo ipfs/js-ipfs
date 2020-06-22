@@ -28,8 +28,7 @@ os:
 env:
   # This stops Windows builds from hanging
   # https://travis-ci.community/t/timeout-after-build-finished-and-succeeded/1336
-  - YARN_GPG=no
-  - DEBUG=ipfs*,libp2p*
+  - YARN_GPG=no DEBUG=ipfs*,libp2p*
 
 addons:
   apt:
