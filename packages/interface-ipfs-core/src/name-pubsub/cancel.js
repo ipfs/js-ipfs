@@ -41,7 +41,7 @@ module.exports = (common, options) => {
       expect(res.canceled).to.eql(false)
     })
 
-    it.only('should cancel a subscription correctly returning true', async function () { // eslint-disable-line
+    it('should cancel a subscription correctly returning true', async function () {
       this.timeout(300 * 1000)
 
       const peerId = await PeerId.create({ bits: 512 })
