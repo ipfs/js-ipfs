@@ -132,6 +132,7 @@ jobs:
       name: examples
       script:
         - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
+        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist.push('ipfs-css', 'tachyons')"
         - npm run reset
         - npm install
         - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
