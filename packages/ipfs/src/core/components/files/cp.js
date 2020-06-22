@@ -7,7 +7,6 @@ const errCode = require('err-code')
 const updateTree = require('./utils/update-tree')
 const updateMfsRoot = require('./utils/update-mfs-root')
 const addLink = require('./utils/add-link')
-const applyDefaultOptions = require('./utils/apply-default-options')
 const toMfsPath = require('./utils/to-mfs-path')
 const toSourcesAndDestination = require('./utils/to-sources-and-destination')
 const toTrail = require('./utils/to-trail')
@@ -18,15 +17,17 @@ const defaultOptions = {
   flush: true,
   hashAlg: 'sha2-256',
   cidVersion: 0,
-  shardSplitThreshold: 1000
+  shardSplitThreshold: 1000,
+  signal: undefined
 }
 
 module.exports = (context) => {
   return withTimeoutOption(async function mfsCp (...args) {
-    const options = applyDefaultOptions(args, defaultOptions)
     let {
-      sources, destination
-    } = await toSourcesAndDestination(context, args)
+      sources,
+      destination,
+      options
+    } = await toSourcesAndDestination(context, args, defaultOptions)
 
     if (!sources.length) {
       throw errCode(new Error('Please supply at least one source'), 'ERR_INVALID_PARAMS')
@@ -59,7 +60,7 @@ module.exports = (context) => {
         }
 
         await mkdir(context)(destination.path, options)
-        destination = await toMfsPath(context, destination.path)
+        destination = await toMfsPath(context, destination.path, options)
       } else if (destination.parts.length > 1) {
         // copying to a folder, create it if necessary
         const parentFolder = `/${destination.parts.slice(0, -1).join('/')}`
@@ -76,7 +77,7 @@ module.exports = (context) => {
           }
 
           await mkdir(context)(parentFolder, options)
-          destination = await toMfsPath(context, destination.path)
+          destination = await toMfsPath(context, destination.path, options)
         }
       }
     }
@@ -115,7 +116,7 @@ const copyToFile = async (context, source, destination, destinationTrail, option
   const newRootCid = await updateTree(context, destinationTrail, options)
 
   // Update the MFS record with the new CID for the root of the tree
-  await updateMfsRoot(context, newRootCid)
+  await updateMfsRoot(context, newRootCid, options)
 }
 
 const copyToDirectory = async (context, sources, destination, destinationTrail, options) => {
@@ -132,7 +133,7 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
   const newRootCid = await updateTree(context, destinationTrail, options)
 
   // Update the MFS record with the new CID for the root of the tree
-  await updateMfsRoot(context, newRootCid)
+  await updateMfsRoot(context, newRootCid, options)
 }
 
 const addSourceToParent = async (context, source, childName, parent, options) => {

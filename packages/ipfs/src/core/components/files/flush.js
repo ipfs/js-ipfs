@@ -4,7 +4,9 @@ const applyDefaultOptions = require('./utils/apply-default-options')
 const stat = require('./stat')
 const { withTimeoutOption } = require('../../utils')
 
-const defaultOptions = {}
+const defaultOptions = {
+  signal: undefined
+}
 
 module.exports = (context) => {
   return withTimeoutOption(async function mfsFlush (path = '/', options = defaultOptions) {

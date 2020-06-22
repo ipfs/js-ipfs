@@ -51,7 +51,7 @@ module.exports = (common, options) => {
       const subs = await ipfs.name.pubsub.subs()
       expect(subs).to.be.an('array').that.does.not.include(ipnsPath)
 
-      await expect(all(ipfs.name.resolve(id))).to.be.rejected()
+      await expect(all(ipfs.name.resolve(id))).to.eventually.be.rejected()
 
       const subs1 = await ipfs.name.pubsub.subs()
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)

@@ -27,13 +27,13 @@ module.exports = (fn) => {
 
         reject(new Error(`API call did not time out after ${timeTaken}ms, got ${JSON.stringify(result, null, 2)}`))
       }, (err) => {
-        if (err.message.includes('timed out')) {
+        if (err.name === 'TimeoutError') {
           return resolve()
         }
 
         const timeTaken = Date.now() - start
 
-        reject(new Error(`Expected error to include 'timed out' after ${timeTaken}ms, got ${err.stack}`))
+        reject(new Error(`Expected TimeoutError after ${timeTaken}ms, got ${err.stack}`))
       })
     }, 10)
   })

@@ -45,7 +45,7 @@ module.exports = (context) => {
       path = '/'
     }
 
-    const mfsPath = await toMfsPath(context, path)
+    const mfsPath = await toMfsPath(context, path, options)
     const fsDir = await exporter(mfsPath.mfsPath, context.ipld)
 
     // single file/node
