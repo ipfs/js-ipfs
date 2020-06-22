@@ -5,6 +5,7 @@ const { nanoid } = require('nanoid')
 const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
+const last = require('it-last')
 const MockPreloadNode = require('../utils/mock-preload-node-utils')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')
@@ -304,9 +305,9 @@ describe('preload disabled', function () {
   after(() => repo.teardown())
 
   it('should not preload if disabled', async () => {
-    const res = await all(ipfs.add(Buffer.from(nanoid())))
+    const { cid } = await last(ipfs.add(Buffer.from(nanoid())))
 
-    return expect(MockPreloadNode.waitForCids(res[0].cid))
+    return expect(MockPreloadNode.waitForCids(cid))
       .to.eventually.be.rejected()
       .and.have.property('code')
       .that.equals('ERR_TIMEOUT')

@@ -26,7 +26,8 @@ const defaultOptions = {
   shardSplitThreshold: 1000,
   hashAlg: 'sha2-256',
   cidVersion: 0,
-  recursive: false
+  recursive: false,
+  signal: undefined
 }
 
 function calculateModification (mode, originalMode, isDirectory) {
@@ -171,7 +172,7 @@ module.exports = (context) => {
       cid,
       mfsDirectory,
       name
-    } = await toMfsPath(context, path)
+    } = await toMfsPath(context, path, options)
 
     if (cid.codec !== 'dag-pb') {
       throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
@@ -254,6 +255,6 @@ module.exports = (context) => {
     const newRootCid = await updateTree(context, trail, options)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid)
+    await updateMfsRoot(context, newRootCid, options)
   })
 }

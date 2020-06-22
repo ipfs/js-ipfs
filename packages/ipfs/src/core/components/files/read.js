@@ -8,7 +8,8 @@ const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   offset: 0,
-  length: Infinity
+  length: Infinity,
+  signal: undefined
 }
 
 module.exports = (context) => {
@@ -17,7 +18,7 @@ module.exports = (context) => {
 
     return {
       [Symbol.asyncIterator]: async function * read () {
-        const mfsPath = await toMfsPath(context, path)
+        const mfsPath = await toMfsPath(context, path, options)
         const result = await exporter(mfsPath.mfsPath, context.ipld)
 
         if (result.unixfs.type !== 'file') {

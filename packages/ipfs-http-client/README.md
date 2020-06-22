@@ -31,7 +31,7 @@
 
 ## Getting started
 
-* Look into the [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Look into the [examples repo](https://github.com/ipfs-shipyard/js-ipfs-examples/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
@@ -58,6 +58,7 @@
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
       - [Example](#example-1)
+  - [IPLD Formats](#ipld-formats)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
@@ -95,6 +96,8 @@ All core API methods take _additional_ `options` specific to the HTTP API:
 
 * `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
 * `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+* `ipld.formats` - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+* `ipld.loadFormat` an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
 
 ### Instance Utils
 
@@ -190,6 +193,53 @@ for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.sv
 }
 */
 ```
+
+### IPLD Formats
+
+By default an instance of the client supports the following [IPLD formats](https://github.com/ipld/interface-ipld-format), which are enough to do all core IPFS operations:
+
+  * [dag-pb](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-pb.md)
+  * [dag-cbor](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
+  * [raw](https://github.com/ipld/specs/issues/223)
+
+If your application requires support for extra codecs, you can configure them as follows:
+
+1. Configure the [IPLD layer](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionsipld) of your IPFS daemon to support the codec. This step is necessary so the node knows how to prepare data received over HTTP to be passed to IPLD for serialization:
+    ```javascript
+    const ipfs = require('ipfs')
+
+    const node = await ipfs({
+      ipld: {
+        // either specify them as part of the `formats` list
+        formats: [
+          require('my-format')
+        ],
+
+        // or supply a function to load them dynamically
+        loadFormat: async (format) => {
+          return require(format)
+        }
+      }
+    })
+2. Configure your IPFS HTTP API Client to support the codec. This is necessary so that the client can send the data to the IPFS node over HTTP:
+    ```javascript
+    const ipfsHttpClient = require('ipfs-http-client')
+
+    const client = ipfsHttpClient({
+      url: 'http://127.0.0.1:5002',
+      ipld: {
+        // either specify them as part of the `formats` list
+        formats: [
+          require('my-format')
+        ],
+
+        // or supply a function to load them dynamically
+        loadFormat: async (format) => {
+          return require(format)
+        }
+      }
+    })
+    ```
 
 ### Running the daemon with the right port
 

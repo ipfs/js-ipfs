@@ -34,7 +34,7 @@ describe('--migrate', () => {
   let ipfs, repoPath
 
   async function setRepoVersion (version) {
-    await fs.writeFile(path.join(repoPath, 'version'), version)
+    await fs.writeFile(path.join(repoPath, 'version'), version.toString())
   }
 
   async function getRepoVersion () {

@@ -7,6 +7,7 @@ const PeerId = require('peer-id')
 const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
+const Crypto = require('libp2p-secio')
 
 class DummyTransport {
   get [Symbol.toStringTag] () {
@@ -77,7 +78,7 @@ describe('libp2p customization', function () {
           libp2p: (opts) => {
             return new Libp2p({
               peerId: opts.peerId,
-              modules: { transport: [DummyTransport] },
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
@@ -101,7 +102,7 @@ describe('libp2p customization', function () {
           libp2p: (opts) => {
             return new Libp2p({
               peerId: opts.peerId,
-              modules: { transport: [DummyTransport] },
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }

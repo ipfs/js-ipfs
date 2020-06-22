@@ -161,13 +161,13 @@ describe('utils', () => {
 
     it('should error on invalid hashes', () => {
       return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
-        .to.be.rejected()
+        .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
       return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
-        .to.be.rejected()
-        .and.eventually.have.property('message')
+        .to.eventually.be.rejected()
+        .and.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })

@@ -68,6 +68,9 @@ module.exports = () => {
     },
     metrics: {
       enabled: true
+    },
+    peerStore: {
+      persistence: true
     }
   }
 }

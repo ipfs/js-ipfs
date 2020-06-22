@@ -8,6 +8,7 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const CID = require('cids')
 const f = require('./utils/factory')()
+const ipfsHttpClient = require('../src')
 
 let ipfs
 
@@ -27,7 +28,6 @@ describe('.dag', function () {
     cid = cid.toV0()
     expect(cid.codec).to.equal('dag-pb')
     cid = cid.toBaseEncodedString('base58btc')
-    // expect(cid).to.equal('bafybeig3t3eugdchignsgkou3ly2mmy4ic4gtfor7inftnqn3yq4ws3a5u')
     expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
 
     const result = await ipfs.dag.get(cid)
@@ -48,11 +48,54 @@ describe('.dag', function () {
     expect(result.value).to.deep.equal(cbor)
   })
 
+  it('should be able to put and get a DAG node with format raw', async () => {
+    const node = Buffer.from('some data')
+    let cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
+
+    expect(cid.codec).to.equal('raw')
+    cid = cid.toBaseEncodedString('base32')
+    expect(cid).to.equal('bafkreiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
+
+    const result = await ipfs.dag.get(cid)
+
+    expect(result.value).to.deep.equal(node)
+  })
+
   it('should error when missing DAG resolver for multicodec from requested CID', async () => {
     const block = await ipfs.block.put(Buffer.from([0, 1, 2, 3]), {
       cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })
 
-    await expect(ipfs.dag.get(block.cid)).to.be.rejectedWith('Missing IPLD format "git-raw"')
+    await expect(ipfs.dag.get(block.cid)).to.eventually.be.rejectedWith('Missing IPLD format "git-raw"')
+  })
+
+  it('should error when putting node with esoteric format', () => {
+    const node = Buffer.from('some data')
+
+    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/Format unsupported/)
+  })
+
+  it('should attempt to load an unsupported format', async () => {
+    let askedToLoadFormat
+    const ipfs2 = ipfsHttpClient({
+      url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
+      ipld: {
+        loadFormat: (format) => {
+          askedToLoadFormat = format === 'git-raw'
+          return {
+            util: {
+              serialize: (buf) => buf
+            }
+          }
+        }
+      }
+    })
+
+    const node = Buffer.from('some data')
+
+    // error is from go-ipfs, this means the client serialized it ok
+    await expect(ipfs2.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/no parser for format "git-raw"/)
+
+    expect(askedToLoadFormat).to.be.true()
   })
 })

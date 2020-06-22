@@ -54,7 +54,7 @@ class HttpApi {
 
     const ipfs = this._ipfs
 
-    const config = await ipfs.config.get()
+    const config = await ipfs.config.getAll()
     config.Addresses = config.Addresses || {}
 
     const apiAddrs = config.Addresses.API

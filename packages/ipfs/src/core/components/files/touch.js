@@ -19,7 +19,8 @@ const defaultOptions = {
   flush: true,
   shardSplitThreshold: 1000,
   cidVersion: 0,
-  hashAlg: 'sha2-256'
+  hashAlg: 'sha2-256',
+  signal: undefined
 }
 
 module.exports = (context) => {
@@ -35,7 +36,7 @@ module.exports = (context) => {
       mfsDirectory,
       name,
       exists
-    } = await toMfsPath(context, path)
+    } = await toMfsPath(context, path, options)
 
     let node
     let updatedCid
@@ -95,6 +96,6 @@ module.exports = (context) => {
     const newRootCid = await updateTree(context, trail, options)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid)
+    await updateMfsRoot(context, newRootCid, options)
   })
 }
