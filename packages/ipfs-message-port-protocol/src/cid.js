@@ -45,3 +45,5 @@ const decodeCID = encodedCID => {
   return cid
 }
 exports.decodeCID = decodeCID
+
+exports.CID = CID
