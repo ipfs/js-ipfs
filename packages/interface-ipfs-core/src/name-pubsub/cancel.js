@@ -41,7 +41,7 @@ module.exports = (common, options) => {
       expect(res.canceled).to.eql(false)
     })
 
-    it('should cancel a subscription correctly returning true', async function () {
+    it.only('should cancel a subscription correctly returning true', async function () { // eslint-disable-line
       this.timeout(300 * 1000)
 
       const peerId = await PeerId.create({ bits: 512 })
@@ -56,6 +56,9 @@ module.exports = (common, options) => {
       const subs1 = await ipfs.name.pubsub.subs()
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)
       const subs2 = await ipfs.name.pubsub.subs()
+
+      console.info('subs1', subs1) // eslint-disable-line
+      console.info('subs2', subs2) // eslint-disable-line
 
       expect(subs1).to.be.an('array').that.does.include(ipnsPath)
       expect(cancel).to.have.property('canceled')
