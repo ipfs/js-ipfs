@@ -2,18 +2,6 @@
 
 /* eslint-env browser */
 
-// Chrome implements structure clonning of native error types,
-// Firefox does not https://bugzilla.mozilla.org/show_bug.cgi?id=1556604
-// This does a runtime check to detect if cloning is supported.
-const isErrorCloningSupported = (() => {
-  try {
-    new MessageChannel().port1.postMessage(new Error())
-    return true
-  } catch (error) {
-    return false
-  }
-})()
-
 /**
  * @typedef {Error|ErrorData} EncodedError
  *
@@ -39,12 +27,8 @@ const isErrorCloningSupported = (() => {
  * @returns {EncodedError}
  */
 const encodeError = error => {
-  if (isErrorCloningSupported) {
-    return error
-  } else {
-    const { name, message, stack, code, detail } = error
-    return { name, message, stack, code, detail }
-  }
+  const { name, message, stack, code, detail } = error
+  return { name, message, stack, code, detail }
 }
 exports.encodeError = encodeError
 
