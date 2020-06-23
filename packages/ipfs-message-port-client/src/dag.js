@@ -14,27 +14,6 @@ const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
  */
 
 /**
- * @typedef {PutWithFormat|PutWithCID} PutOptions
- *
- * @typedef {Object} PutWithFormat
- * An optional object which may be passed to `ipfs.dag.put`.
- * @property {string} [format="dag-cbor"] - The IPLD format multicodec
- * @property {string} [hashAlg="sha2-256"] - The hash algorithm to be used over the serialized DAG node
- * @property {boolean} [pin=false] - Pin this node when adding to the blockstore
- * @property {boolean} [preload=true]
- * @property {number} [timeout] - A timeout in ms
- * @property {void} [cid]
- * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call.
- *
- * @typedef {Object} PutWithCID
- * @property {CID} cid - The IPLD format multicodec
- * @property {boolean} [pin=false] - Pin this node when adding to the blockstore
- * @property {boolean} [preload=true]
- * @property {number} [timeout] - A timeout in ms
- * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call.
- */
-
-/**
  * @class
  * @extends {Client<API>}
  */

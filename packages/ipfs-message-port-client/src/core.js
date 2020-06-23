@@ -44,33 +44,9 @@ const {
  * @typedef {SingleFileInput | MultiFileInput} AddInput
  *
  */
-/** @type {(input:AddInput) => AsyncIterable<NoramilzedFileInput>} */
 
 /**
  * @typedef {import("./files").Time} Time
- *
- * @typedef {Object} AddOptions
- * @property {string} [chunker="size-262144"]
- * @property {number} [cidVersion=0]
- * @property {boolean} [enableShardingExperiment]
- * @property {string} [hashAlg="sha2-256"]
- * @property {boolean} [onlyHash=false]
- * @property {boolean} [pin=true]
- * @property {(added:number) => void} [progress]
- * @property {boolean} [rawLeaves=false]
- * @property {number} [shardSplitThreshold=1000]
- * @property {boolean} [trickle=false]
- * @property {boolean} [wrapWithDirectory=false]
- * @property {number} [timeout]
- * @property {Transferable[]} [transfer]
- * @property {AbortSignal} [signal]
- *
- * @typedef {Object} AddedData
- * @property {string} path
- * @property {CID} cid
- * @property {number} mode
- * @property {number} size
- * @property {Time} mtime
  */
 
 /**
@@ -92,9 +68,36 @@ class CoreClient extends Client {
   }
 
   /**
+   * Import files and data into IPFS.
+   *
+   * If you pass binary data like `Uint8Array` it is recommended to provide
+   * `transfer: [input.buffer]` which would allow transferring it instead of
+   * copying.
+   *
    * @param {AddInput} input
-   * @param {AddOptions} [options]
+   * @param {Object} [options]
+   * @param {string} [options.chunker="size-262144"]
+   * @param {number} [options.cidVersion=0]
+   * @param {boolean} [options.enableShardingExperiment]
+   * @param {string} [options.hashAlg="sha2-256"]
+   * @param {boolean} [options.onlyHash=false]
+   * @param {boolean} [options.pin=true]
+   * @param {function(number):void} [options.progress]
+   * @param {boolean} [options.rawLeaves=false]
+   * @param {number} [options.shardSplitThreshold=1000]
+   * @param {boolean} [options.trickle=false]
+   * @param {boolean} [options.wrapWithDirectory=false]
+   * @param {number} [options.timeout]
+   * @param {Transferable[]} [options.transfer]
+   * @param {AbortSignal} [options.signal]
    * @returns {AsyncIterable<AddedData>}
+   *
+   * @typedef {Object} AddedData
+   * @property {string} path
+   * @property {CID} cid
+   * @property {number} mode
+   * @property {number} size
+   * @property {Time} mtime
    */
   async * add (input, options = {}) {
     const { timeout, signal } = options
@@ -115,6 +118,7 @@ class CoreClient extends Client {
   }
 
   /**
+   * Returns content addressed by a valid IPFS Path.
    * @param {string|CID} inputPath
    * @param {Object} [options]
    * @param {number} [options.offset]
@@ -131,7 +135,7 @@ class CoreClient extends Client {
 }
 
 /**
- *
+ * Decodes values yield by `ipfs.add`.
  * @param {AddedEntry} data
  * @returns {AddedData}
  */
@@ -153,12 +157,15 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
 const identity = v => v
 
 /**
+ * Encodes input passed to the `ipfs.add` via the best possible strategy for the
+ * given input.
+ *
  * @param {AddInput} input
  * @param {Transferable[]} transfer
  * @returns {EncodedAddInput}
  */
 const encodeAddInput = (input, transfer) => {
-  // We want to get a Blob as input
+  // We want to get a Blob as input. If we got it we're set.
   if (input instanceof Blob) {
     return input
   } else if (typeof input === 'string') {
@@ -166,8 +173,12 @@ const encodeAddInput = (input, transfer) => {
   } else if (input instanceof ArrayBuffer) {
     return input
   } else if (ArrayBuffer.isView(input)) {
+    // Note we are not adding `input.buffer` into transfer list, it's on user.
     return input
   } else {
+    // If input is (async) iterable or `ReadableStream` or "FileObject" it will
+    // be encoded via own specific encoder.
+
     const iterable = asIterable(input)
     if (iterable) {
       return encodeIterable(iterable, encodeIterableContent, transfer)
@@ -197,6 +208,8 @@ const encodeAddInput = (input, transfer) => {
 }
 
 /**
+ * Function encodes individual item of some `AsyncIterable` by choosing most
+ * effective strategy.
  * @param {ArrayBuffer|ArrayBufferView|Blob|string|FileObject} content
  * @param {Transferable[]} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
@@ -318,6 +331,8 @@ const iterateReadableStream = async function * (stream) {
 }
 
 /**
+ * Pattern matches given input as `Iterable<I>` and returns back either matched
+ * iterable or `null`.
  * @template I
  * @param {Iterable<I>|AddInput} input
  * @returns {Iterable<I>|null}
@@ -333,6 +348,8 @@ const asIterable = input => {
 }
 
 /**
+ * Pattern matches given `input` as `AsyncIterable<I>` and returns back either
+ * matched `AsyncIterable` or `null`.
  * @template I
  * @param {AsyncIterable<I>|AddInput} input
  * @returns {AsyncIterable<I>|null}
@@ -348,6 +365,9 @@ const asAsyncIterable = input => {
 }
 
 /**
+ * Pattern matches given `input` as `ReadableStream` and return back either
+ * matched input or `null`.
+ *
  * @param {any} input
  * @returns {ReadableStream<Uint8Array>|null}
  */
@@ -360,6 +380,8 @@ const asReadableStream = input => {
 }
 
 /**
+ * Pattern matches given input as "FileObject" and returns back eithr matched
+ * input or `null`.
  * @param {*} input
  * @returns {FileObject|null}
  */

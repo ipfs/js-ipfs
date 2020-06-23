@@ -36,14 +36,15 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.tranfer] - References to transfer to the
+   * @param {Transferable[]} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Block>}
    */
   async get (cid, options = {}) {
+    const { transfer } = options
     const { block } = await this.remote.get({
       ...options,
-      cid: encodeCID(cid)
+      cid: encodeCID(cid, transfer)
     })
     return decodeBlock(block)
   }
@@ -65,17 +66,19 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.tranfer] - References to transfer to the
+   * @param {Transferable[]} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Block>}
    */
   async put (block, options = {}) {
-    // @ts-ignore - ipfs-unixfs-importer passes this causing errors
+    const { transfer } = options
+    // @ts-ignore - ipfs-unixfs-importer passes `progress` which causing errors
+    // because functions can't be transferred.
     delete options.progress
     const result = await this.remote.put({
       ...options,
-      cid: options.cid == null ? undefined : encodeCID(options.cid),
-      block: block instanceof Uint8Array ? block : encodeBlock(block)
+      cid: options.cid == null ? undefined : encodeCID(options.cid, transfer),
+      block: block instanceof Uint8Array ? block : encodeBlock(block, transfer)
     })
     return decodeBlock(result.block)
   }
@@ -89,7 +92,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.tranfer] - References to transfer to the
+   * @param {Transferable[]} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {AsyncIterable<RmEntry>}
    *
@@ -98,11 +101,12 @@ class BlockClient extends Client {
    * @property {Error|void} [error]
    */
   async * rm (cids, options = {}) {
+    const { transfer } = options
     const entries = await this.remote.rm({
       ...options,
       cids: Array.isArray(cids)
-        ? cids.map(cid => encodeCID(cid))
-        : [encodeCID(cids)]
+        ? cids.map(cid => encodeCID(cid, transfer))
+        : [encodeCID(cids, transfer)]
     })
 
     yield * entries.map(decodeRmEntry)
@@ -115,7 +119,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.tranfer] - References to transfer to the
+   * @param {Transferable[]} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Stat>}
    *
@@ -124,9 +128,10 @@ class BlockClient extends Client {
    * @property {number} size
    */
   async stat (cid, options = {}) {
+    const { transfer } = options
     const result = await this.remote.stat({
       ...options,
-      cid: encodeCID(cid)
+      cid: encodeCID(cid, transfer)
     })
 
     return { ...result, cid: decodeCID(result.cid) }
@@ -134,7 +139,6 @@ class BlockClient extends Client {
 }
 
 /**
- *
  * @param {EncodedRmEntry} entry
  * @returns {RmEntry}
  */

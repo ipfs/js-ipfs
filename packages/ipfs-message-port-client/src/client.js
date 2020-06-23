@@ -3,15 +3,6 @@
 /* eslint-env browser */
 const { decodeError } = require('ipfs-message-port-protocol/src/error')
 
-class TimeoutError extends Error {}
-exports.TimeoutError = TimeoutError
-
-class AbortError extends Error {}
-exports.AbortError = AbortError
-
-class DisconnectError extends Error {}
-exports.DisconnectError = DisconnectError
-
 /**
  * @template T
  * @typedef {import('ipfs-message-port-protocol/src/rpc').Remote<T>} Remote
@@ -35,14 +26,17 @@ exports.DisconnectError = DisconnectError
  */
 
 /**
+ * Represents server query, encapsulating inputs to the server endpoint and
+ * promise of it's result.
+ *
  * @template I,O
  * @class
  */
 class Query {
   /**
-   * @param {string} namespace
-   * @param {string} method
-   * @param {QueryInput<I>} input
+   * @param {string} namespace - component namespace on the server.
+   * @param {string} method - remote method this is a query of.
+   * @param {QueryInput<I>} input - query input.
    */
   constructor (namespace, method, input) {
     /** @type {Promise<O>} */
@@ -58,6 +52,7 @@ class Query {
   }
 
   /**
+   * Data that will be structure cloned over message channel.
    * @returns {Object}
    */
   toJSON () {
@@ -65,6 +60,7 @@ class Query {
   }
 
   /**
+   * Data that will be transferred over message channel.
    * @returns {Transferable[]}
    */
   transfer () {
@@ -73,6 +69,17 @@ class Query {
 }
 
 /** @typedef {Transport} ClientTransport */
+
+/**
+ * RPC Transport over `MessagePort` that can execute queries. It takes care of
+ * executing queries by issuing a message with unique ID and fullfilling a
+ * query when corresponding response message is received. It also makes sure
+ * that aborted / timed out queries are calcelled out as needed.
+ *
+ * It is expected that there will be at most one transport for a message port
+ * instance.
+ * @class
+ */
 class Transport {
   /**
    * Create transport for the underlying message port.
@@ -80,18 +87,31 @@ class Transport {
    */
   constructor (port) {
     this.port = null
-    this.nextID = 0
+    // Assigining a random enough identifier to the transport, to ensure that
+    // query.id will be unique when multiple tabs are communicating with a
+    // a server in the SharedWorker.
     this.id = Math.random()
       .toString(32)
       .slice(2)
+
+    // Local unique id on the transport which is incremented for each query.
+    this.nextID = 0
+
+    // Dictionary of pending requests
     /** @type {Record<string, Query<any, any>>} */
     this.queries = Object.create(null)
+
+    // If port is provided connect this transport to it. If not transport can
+    // queue queries and execute those once it's connected.
     if (port) {
       this.connect(port)
     }
   }
 
   /**
+   * Executes given query with this transport and returns promise for it's
+   * result. Promise fails with an error if query fails.
+   *
    * @template I, O
    * @param {Query<I, O>} query
    * @returns {Promise<O>}
@@ -100,6 +120,7 @@ class Transport {
     const id = `${this.id}@${this.nextID++}`
     this.queries[id] = query
 
+    // If query has a timeout is a timer.
     if (query.timeout > 0 && query.timeout < Infinity) {
       setTimeout(Transport.timeout, query.timeout, this, id)
     }
@@ -110,6 +131,8 @@ class Transport {
       })
     }
 
+    // If transport is connected (it has port) post a query, otherwise it
+    // will remain in the pending queries queue.
     if (this.port) {
       Transport.postQuery(this.port, id, query)
     }
@@ -118,6 +141,54 @@ class Transport {
   }
 
   /**
+   * Connects this transport to the given message port. Throws `RangeError` if
+   * transport is already connected. All the pending queries will be executed
+   * as connection occurs.
+   *
+   * @param {MessagePort} port
+   */
+  connect (port) {
+    if (this.port) {
+      throw new RangeError('Transport is already open')
+    } else {
+      this.port = port
+      this.port.addEventListener('message', this)
+      this.port.start()
+
+      // Go ever pending queries (that were submitted before transport was
+      // connected) and post them. This loop is safe because messages will not
+      // arrive while this loop is running so no mutation can occur.
+      for (const [id, query] of Object.entries(this.queries)) {
+        Transport.postQuery(port, id, query)
+      }
+    }
+  }
+
+  /**
+   * Disconnects this transport. This will cause all the pending queries
+   * to be aborted and undelying message port to be closed.
+   *
+   * Once disconnected transport can not be reconnected back.
+   */
+  disconnect () {
+    const error = new DisconnectError()
+    for (const [id, query] of Object.entries(this.queries)) {
+      query.fail(error)
+      this.abort(id)
+    }
+
+    // Note that reference to port is kept that ensures that attempt to
+    // reconnect will throw an error.
+    if (this.port) {
+      this.port.removeEventListener('message', this)
+      this.port.close()
+    }
+  }
+
+  /**
+   * Invoked on query timeout. If query is still pending it will fail and
+   * abort message will be send to a the server.
+   *
    * @param {Transport} self
    * @param {string} id
    */
@@ -134,7 +205,8 @@ class Transport {
   }
 
   /**
-   *
+   * Aborts this query by failing with `AbortError` and sending an abort message
+   * to the server. If query is no longen pending this has no effect.
    * @param {string} id
    */
   abort (id) {
@@ -150,6 +222,7 @@ class Transport {
   }
 
   /**
+   * Sends a given `query` with a given `id` over the message channel.
    * @param {MessagePort} port
    * @param {string} id
    * @param {Query<any, any>} query
@@ -168,39 +241,16 @@ class Transport {
   }
 
   /**
-   * @param {MessagePort} port
-   */
-  connect (port) {
-    if (this.port) {
-      throw new RangeError('Transport is already open')
-    } else {
-      this.port = port
-      this.port.addEventListener('message', this)
-      this.port.start()
-      for (const [id, query] of Object.entries(this.queries)) {
-        Transport.postQuery(port, id, query)
-      }
-    }
-  }
-
-  disconnect () {
-    if (this.port) {
-      const error = new DisconnectError()
-      for (const [id, query] of Object.entries(this.queries)) {
-        query.fail(error)
-        this.abort(id)
-      }
-      this.port.removeEventListener('message', this)
-      this.port.close()
-    }
-  }
-
-  /**
+   * Handler is invoked when message on the message port is received.
    * @param {MessageEvent} event
    */
   handleEvent (event) {
     const { id, result } = event.data
     const query = this.queries[id]
+    // If query with a the given ID is found it is completed with the result,
+    // otherwise it is cancelled.
+    // Note: query may not be found when it was aborted on the client and at the
+    // same time server posted response.
     if (query) {
       delete this.queries[id]
       if (result.ok) {
@@ -208,8 +258,6 @@ class Transport {
       } else {
         query.fail(decodeError(result.error))
       }
-    } else {
-      // throw new RangeError(`Received response${id} for unknown query`)
     }
   }
 }
@@ -226,31 +274,43 @@ exports.Transport = Transport
  */
 
 /**
+ * Service represents an API to a remote service `T`. It will have all the
+ * methods with the same signatures as `T`.
+ *
+ * @class
  * @template T
  */
 class Service {
   /**
-   * @param {string} namespace
-   * @param {ProcedureNames<T>} methods
-   * @param {Transport} transport
+   * @param {string} namespace - Namespace that remote API is served under.
+   * @param {ProcedureNames<T>} methods - Method names of the remote API.
+   * @param {Transport} transport - Transport to issue queries over.
    */
   constructor (namespace, methods, transport) {
     this.transport = transport
-    /** @type {any} */
-    const self = (this)
+    // Type script does not like using classes as some dicitionaries, so
+    // we explicitly type it as dictionary.
+    /** @type {Object.<ProcedureNames<T>, Function>} */
+    const api = this
     for (const method of methods) {
       /**
        * @template I, O
        * @param {I} input
        * @returns {Promise<O>}
        */
-      self[method] = input =>
+      api[method] = input =>
         this.transport.execute(new Query(namespace, method.toString(), input))
     }
   }
 }
 
 /**
+ * Client represents the client to remote `T` service. It is a base clase that
+ * specific API clients will subclass to provide a higher level API for end
+ * user. Client implementations take care of encoding arguments into quries
+ * and issing those to `remote` service.
+ *
+ * @class
  * @template T
  */
 class Client {
@@ -265,3 +325,12 @@ class Client {
   }
 }
 exports.Client = Client
+
+class TimeoutError extends Error {}
+exports.TimeoutError = TimeoutError
+
+class AbortError extends Error {}
+exports.AbortError = AbortError
+
+class DisconnectError extends Error {}
+exports.DisconnectError = DisconnectError

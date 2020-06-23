@@ -126,67 +126,6 @@ class FilesClient extends Client {
     yield * decodeIterable(entries, decodeLsEntry)
   }
 
-  // /**
-  //  * Copy files.
-  //  * @param {ContentAddress} from
-  //  * @param {string} to
-  //  * @param {Object} [options]
-  //  * @param {boolean} [options.parents=false]
-  //  * @param {string} [options.hashAlg]
-  //  * @param {boolean} [options.flush=true]
-  //  * @param {number} [options.timeout]
-  //  * @param {AbortSignal} [options.signal]
-  //  * @returns {Promise<void>}
-  //  */
-  // // @ts-ignore
-  // cp (from, to, options, ...etc) {
-  //   const args = [from, to, options, ...etc]
-  //   const last = args.pop()
-  //   const [sources, destination, opts] =
-  //     typeof last === 'string' ? [args, last, {}] : [args, args.pop(), last]
-
-  //   const { parents, hashAlg, flush } = opts
-  //   return this.remote.cp(
-  //     {
-  //       // @ts-ignore could be called without any arguments.
-  //       from: sources.map(toPath),
-  //       to: destination,
-  //       parents,
-  //       hashAlg,
-  //       flush
-  //     },
-  //     options
-  //   )
-  // }
-  // /**
-  //  * Make a directory.
-  //  * @param {string} path The path to the directory to make
-  //  * @param {Object} [options]
-  //  * @param {boolean} [options.parents=false]
-  //  * @param {string} [options.hashAlg]
-  //  * @param {boolean} [options.flush=true]
-  //  * @param {Mode} [options.mode]
-  //  * @param {Time|Date} [options.mtime]
-  //  * @param {number} [options.timeout]
-  //  * @param {AbortSignal} [options.signal]
-  //  * @returns {Promise<void>}
-  //  */
-  // mkdir (path, options = {}) {
-  //   const { mtime, parents, flush, hashAlg, mode } = options
-
-  //   return this.remote.mkdir(
-  //     {
-  //       path: toPath(path),
-  //       mtime,
-  //       parents,
-  //       flush,
-  //       hashAlg,
-  //       mode
-  //     },
-  //     options
-  //   )
-  // }
-
   /**
    * @typedef {Object} Stat
    * @property {CID} cid Content identifier.
@@ -256,15 +195,6 @@ const encodeContent = (content, transfer) => {
 /**
  *
  * @typedef {string|CID} ContentAddress
- *
- *
- * @typedef {Object} LsEntry
- * @property {string} name
- * @property {FileType} type
- * @property {number} size
- * @property {CID} cid
- * @property {number} mode
- * @property {UnixFSTime} mtime
  */
 
 /**
