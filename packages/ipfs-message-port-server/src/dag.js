@@ -19,7 +19,7 @@ const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
 /**
  * @class
  */
-class DAG {
+class DAGService {
   /**
    * @param {IPFS} ipfs
    */
@@ -111,4 +111,4 @@ class DAG {
  * @returns {DAGNode}
  */
 
-exports.DAG = DAG
+exports.DAGService = DAGService

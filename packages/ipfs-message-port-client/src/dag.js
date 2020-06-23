@@ -9,13 +9,13 @@ const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
  * @typedef {import('ipfs-message-port-server/src/dag').DAGNode} DAGNode
  * @typedef {import('ipfs-message-port-server/src/dag').EncodedDAGNode} EncodedDAGNode
  * @typedef {import('ipfs-message-port-server/src/dag').DAGEntry} DAGEntry
- * @typedef {import('ipfs-message-port-server/src/dag').DAG} API
+ * @typedef {import('ipfs-message-port-server/src/dag').DAGService} DagService
  * @typedef {import('./client').ClientTransport} Transport
  */
 
 /**
  * @class
- * @extends {Client<API>}
+ * @extends {Client<DagService>}
  */
 class DAGClient extends Client {
   /**

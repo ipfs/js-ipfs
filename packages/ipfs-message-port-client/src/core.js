@@ -16,6 +16,8 @@ const {
  * @typedef {import('ipfs-message-port-protocol/src/core').RemoteIterable<T>} RemoteIterable
  */
 /**
+ * @typedef {import('ipfs-message-port-protocol/src/data').Time} Time
+ * @typedef {import('ipfs-message-port-protocol/src/data').UnixFSTime} UnixFSTime
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-server/src/core').AddInput} EncodedAddInput
  * @typedef {import('ipfs-message-port-server/src/core').FileInput} FileInput
@@ -33,9 +35,8 @@ const {
  * @property {string} [path]
  * @property {FileContent} [content]
  * @property {string|number} [mode]
- * @property {UnixTime} [mtime]
+ * @property {UnixFSTime} [mtime]
  *
- * @typedef {Date|Time|[number, number]} UnixTime
  *
  * @typedef {Blob|Bytes|string|FileObject|Iterable<Number>|Iterable<Bytes>|AsyncIterable<Bytes>|ReadableStream} SingleFileInput
  *
@@ -46,18 +47,14 @@ const {
  */
 
 /**
- * @typedef {import("./files").Time} Time
- */
-
-/**
- * @typedef {import('ipfs-message-port-server/src/core').Core} API
+ * @typedef {import('ipfs-message-port-server/src/core').CoreService} CoreService
  * @typedef {import('ipfs-message-port-server/src/core').AddedEntry} AddedEntry
  * @typedef {import('./client').ClientTransport} Transport
  */
 
 /**
  * @class
- * @extends {Client<API>}
+ * @extends {Client<CoreService>}
  */
 class CoreClient extends Client {
   /**

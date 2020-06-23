@@ -106,7 +106,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 /**
  * @class
  */
-class Core {
+class CoreService {
   /**
    *
    * @param {IPFS} ipfs
@@ -297,4 +297,4 @@ const encodeFileOutput = (file, _transfer) => ({
  */
 const identity = v => v
 
-exports.Core = Core
+exports.CoreService = CoreService

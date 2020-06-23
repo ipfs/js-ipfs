@@ -20,14 +20,6 @@ export type TransferOptions = {
   transfer?: Transferable[]
 }
 
-// export type ServiceProvider<T extends object> = {
-//   [K in keyof T]: ProcedureProvider<T[K]>
-// }
-
-// export type ProcedureProvider<T> = T extends (arg: infer I) => infer O
-//   ? (input: I & CallOptions) => O
-//   : never
-
 export type NonUndefined<A> = A extends undefined ? never : A
 
 export type ProcedureNames<T extends object> = {

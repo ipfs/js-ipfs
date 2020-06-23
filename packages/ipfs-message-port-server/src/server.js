@@ -5,7 +5,6 @@
 const { encodeError } = require('ipfs-message-port-protocol/src/error')
 
 /**
- * @typedef {import('./ipfs').IPFS} IPFS
  * @typedef {import('ipfs-message-port-protocol/src/data').EncodedError} EncodedError
  */
 
@@ -95,7 +94,9 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
  * @template T, K
  * @typedef {import('ipfs-message-port-protocol/src/rpc').NamespacedQuery<T, K>} NamespacedQuery
  */
+
 /**
+ * Represents a client query received on the server.
  * @template T
  * @extends {ServiceQuery<T>}
  */
@@ -119,14 +120,8 @@ class Query {
   }
 
   /**
-   * @template T
-   * @param {RPCQuery<T>} value
-   * @returns {Query<T>}
+   * Aborts this query if it is still pending.
    */
-  static from (value) {
-    return new Query(value.namespace, value.method, value.input)
-  }
-
   abort () {
     this.abortController.abort()
     this.fail(new AbortError())
@@ -134,6 +129,7 @@ class Query {
 }
 
 /**
+ * Server wraps `T` service and executes queries received from connected ports.
  * @template T
  */
 
@@ -164,6 +160,7 @@ class Server {
   }
 
   /**
+   * Handles messages received from connected clients
    * @param {MessageEvent} event
    * @returns {void}
    */
@@ -190,6 +187,7 @@ class Server {
   }
 
   /**
+   * Abort query for the given id.
    * @param {string} id
    */
   abort (id) {
@@ -201,6 +199,7 @@ class Server {
   }
 
   /**
+   * Handles query received from the client.
    * @param {string} id
    * @param {Query<T>} query
    * @param {MessagePort} port
@@ -241,7 +240,7 @@ class Server {
       if (typeof procedure === 'function') {
         try {
           const { signal } = query
-          // @ts-ignore
+          // @ts-ignore - TS doesn't know qury.input is an object
           const input = { ...query.input, signal }
           Promise.resolve(procedure.call(service, input)).then(
             query.succeed,
@@ -263,7 +262,7 @@ class Server {
    * @returns {Out<T>}
    */
   execute (data) {
-    const query = Query.from(data)
+    const query = new Query(data.namespace, data.method, data.input)
     this.run(query)
 
     return query.result

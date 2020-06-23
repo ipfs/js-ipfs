@@ -2,9 +2,9 @@
 
 /* eslint-env browser */
 
-const { DAG } = require('./dag')
-const { Core } = require('./core')
-const { Files } = require('./files')
+const { DAGService } = require('./dag')
+const { CoreService } = require('./core')
+const { FilesService } = require('./files')
 const { BlockService } = require('./block')
 
 /**
@@ -17,9 +17,9 @@ class IPFSService {
    * @param {IPFS} ipfs
    */
   constructor (ipfs) {
-    this.dag = new DAG(ipfs)
-    this.core = new Core(ipfs)
-    this.files = new Files(ipfs)
+    this.dag = new DAGService(ipfs)
+    this.core = new CoreService(ipfs)
+    this.files = new FilesService(ipfs)
     this.block = new BlockService(ipfs)
   }
 }
