@@ -59,7 +59,7 @@
     "merge-options": "^2.0.0",
     "multiaddr": "^7.4.3",
     "multiaddr-to-uri": "^5.1.0",
-    "multibase": "^0.7.0",
+    "multibase": "^1.0.1",
     "multicodec": "^1.0.0",
     "multihashes": "^0.4.19",
     "nanoid": "^3.0.2",
