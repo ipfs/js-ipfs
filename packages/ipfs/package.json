@@ -192,7 +192,7 @@
     "qs": "^6.9.3",
     "rimraf": "^3.0.0",
     "sinon": "^9.0.1",
-    "stream-to-promise": "^2.2.0",
+    "stream-to-promise": "^3.0.0",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
     "wrtc": "^0.4.4"
