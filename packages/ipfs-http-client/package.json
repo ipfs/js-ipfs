@@ -51,7 +51,7 @@
     "ipld-block": "^0.9.1",
     "ipld-dag-cbor": "^0.15.2",
     "ipld-dag-pb": "^0.18.5",
-    "ipld-raw": "^4.0.1",
+    "ipld-raw": "^5.0.0",
     "iso-url": "^0.4.7",
     "it-tar": "^1.2.2",
     "it-to-buffer": "^1.0.0",
