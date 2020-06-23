@@ -15,11 +15,6 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
 
 /**
  * @template T
- * @typedef {import('ipfs-message-port-protocol/src/rpc').Input<T>} Input
- */
-
-/**
- * @template T
  * @typedef {import('ipfs-message-port-protocol/src/rpc').ProcedureNames<T>} ProcedureNames
  */
 
@@ -86,11 +81,6 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
  */
 
 /**
- * @template T
- * @typedef {import('ipfs-message-port-protocol/src/rpc').Service<T>} Service
- */
-
-/**
  * @template T, K
  * @typedef {import('ipfs-message-port-protocol/src/rpc').NamespacedQuery<T, K>} NamespacedQuery
  */
@@ -129,13 +119,18 @@ class Query {
 }
 
 /**
+ * @template T
+ * @typedef {import('ipfs-message-port-protocol/src/rpc').MultiService<T>} MultiService
+ */
+
+/**
  * Server wraps `T` service and executes queries received from connected ports.
  * @template T
  */
 
 class Server {
   /**
-   * @param {Service<T>} services
+   * @param {MultiService<T>} services
    */
   constructor (services) {
     this.services = services
@@ -233,19 +228,12 @@ class Server {
     const { services } = this
     const { namespace, method } = query
 
-    // @ts-ignore - seems to fail to infer
-    const service = namespace == null ? services : services[namespace]
+    const service = services[namespace]
     if (service) {
-      const procedure = service[method]
-      if (typeof procedure === 'function') {
+      if (typeof service[method] === 'function') {
         try {
-          const { signal } = query
-          // @ts-ignore - TS doesn't know qury.input is an object
-          const input = { ...query.input, signal }
-          Promise.resolve(procedure.call(service, input)).then(
-            query.succeed,
-            query.fail
-          )
+          const result = service[method]({ ...query.input, signal: query.signal })
+          Promise.resolve(result).then(query.succeed, query.fail)
         } catch (error) {
           query.fail(error)
         }

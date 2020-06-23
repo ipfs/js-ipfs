@@ -26,33 +26,7 @@ export type ProcedureNames<T extends object> = {
   [K in keyof T]-?: NonUndefined<T[K]> extends Function ? K : never
 }[keyof T][]
 
-export type Input<T extends Object> = Values<
-  {
-    [K in keyof T]: T[K] extends (input: infer I) => infer _O
-      ? I & { method: K } & QueryOptions
-      : never
-  }
->
 
-export type Output<T extends Object> = Values<
-  {
-    [K in keyof T]: T[K] extends (input: infer _I) => infer O
-      ? Return<O>
-      : never
-  }
->
-
-export type Service<T> = {
-  [K in keyof T]: T[K]
-}
-
-export type ProcedureProvider<T> = T extends (arg: infer I) => infer O
-  ? (input: I & QueryOptions) => O
-  : never
-
-export type AsProcedure<T> = T extends (arg: infer I) => infer O
-  ? (query: I & QueryOptions) => Return<O>
-  : never
 
 /**
  * Any method name of the associated with RPC service.
@@ -75,40 +49,21 @@ export type RPCQuery<T extends object> = Pick<
   'method' | 'namespace' | 'input' | 'timeout' | 'signal'
 >
 
-export type ProcedureName<T extends object> = Values<
-  {
-    [K in keyof T]-?: NonUndefined<T[K]> extends (input: any) => any ? K : never
-  }
->
 
 export type ServiceQuery<T> = Values<
   {
-    [K in keyof T]: T[K] extends (input: infer I) => infer O
-      ? Query<T>
-      : NamespacedQuery<T[K], K>
+    [NS in keyof T]: NamespacedQuery<T[NS], NS>
   }
 >
 
-export type Query<T> = Values<
-  {
-    [K in keyof T]-?: T[K] extends (input: infer I) => infer O
-      ? {
-          namespace?: void
-          method: K
-          input: I
-          result: R<O>
-        } & QueryOptions
-      : never
-  }
->
 
-export type NamespacedQuery<T, NS> = Values<
+export type NamespacedQuery<S, NS> = Values<
   {
-    [K in keyof T]-?: T[K] extends (input: infer I) => infer O
+    [M in keyof S]-?: S[M] extends (input: infer I) => infer O
       ? {
           namespace: NS
-          method: K
-          input: I
+          method: M
+          input: I & QueryOptions
           result: R<O>
         } & QueryOptions
       : never
@@ -120,3 +75,16 @@ type R<O> = O extends Promise<infer T>
   : Promise<WithTransferOptions<O>>
 
 type WithTransferOptions<O> = O extends object ? O & TransferOptions : O
+
+
+export type MultiService <T> = {
+  [NS in keyof T]: NamespacedService<NS, T[NS]>
+}
+
+type NamespacedService<NS, S> = {
+  [M in keyof S]: NamespacedMethod<NS, S, S[M]>
+}
+
+export type NamespacedMethod<NS, M, T> = T extends (arg: infer I) => infer O
+  ? (query: I & QueryOptions) => Return<O>
+  : never

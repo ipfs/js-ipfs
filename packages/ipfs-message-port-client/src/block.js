@@ -13,13 +13,13 @@ const {
  * @typedef {import('ipfs-message-port-server/src/block').Block} Block
  * @typedef {import('ipfs-message-port-server/src/block').EncodedBlock} EncodedBlock
  * @typedef {import('ipfs-message-port-server/src/block').Rm} EncodedRmEntry
- * @typedef {import('ipfs-message-port-server/src/block').BlockService} API
+ * @typedef {import('ipfs-message-port-server/src/block').BlockService} BlockService
  * @typedef {import('./client').ClientTransport} Transport
  */
 
 /**
  * @class
- * @extends {Client<API>}
+ * @extends {Client<BlockService>}
  */
 class BlockClient extends Client {
   /**
