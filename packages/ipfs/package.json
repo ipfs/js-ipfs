@@ -62,7 +62,7 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "@hapi/ammo": "^3.1.2",
+    "@hapi/ammo": "^5.0.1",
     "@hapi/boom": "^7.4.3",
     "@hapi/content": "^4.1.0",
     "@hapi/hapi": "^18.4.0",
