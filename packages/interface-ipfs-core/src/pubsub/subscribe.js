@@ -319,7 +319,10 @@ module.exports = (common, options) => {
 
         await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
-        outbox.forEach(msg => ipfs2.pubsub.publish(topic, Buffer.from(msg)))
+
+        for (let i = 0; i < outbox.length; i++) {
+          await ipfs2.pubsub.publish(topic, Buffer.from(outbox[i]))
+        }
 
         const sub1Msgs = await all(msgStream1)
         sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))

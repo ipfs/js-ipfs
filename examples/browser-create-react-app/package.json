@@ -1,0 +1,33 @@
+{
+  "name": "example-browser-create-react-app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "dot-prop": "^5.0.0",
+    "ipfs": "^0.46.0",
+    "ipfs-css": "^0.13.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "^3.2.0",
+    "tachyons": "^4.11.1"
+  },
+  "devDependencies": {
+    "test-ipfs-example": "^2.0.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "test": "test-ipfs-example",
+    "clean": "rm -rf ./build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

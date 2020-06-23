@@ -250,4 +250,21 @@ describe('create node', function () {
 
     await node.stop()
   })
+
+  it('should error when receiving websocket-star swarm addresses', async () => {
+    const node = await IPFS.create({
+      repo: tempRepo,
+      init: { bits: 512 },
+      start: false,
+      config: {
+        Addresses: {
+          Swarm: ['/ip4/127.0.0.1/tcp/13579/wss/p2p-websocket-star']
+        },
+        Bootstrap: []
+      },
+      preload: { enabled: false }
+    })
+
+    await expect(node.start()).to.eventually.be.rejected().with.property('code', 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
+  })
 })

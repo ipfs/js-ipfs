@@ -1,0 +1,17 @@
+{
+  "name": "test-ipfs-example",
+  "version": "2.0.3",
+  "description": "Examples of how to use IPFS",
+  "bin": {
+    "test-ipfs-example": "./test.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chromedriver": "^83.0.0",
+    "execa": "^4.0.0",
+    "fs-extra": "^8.1.0",
+    "http-server": "^0.11.1",
+    "nightwatch": "^1.2.4",
+    "which": "^2.0.1"
+  }
+}

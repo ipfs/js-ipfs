@@ -66,7 +66,7 @@ describe('.dag', function () {
       cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })
 
-    await expect(ipfs.dag.get(block.cid)).to.be.rejectedWith('Missing IPLD format "git-raw"')
+    await expect(ipfs.dag.get(block.cid)).to.eventually.be.rejectedWith('Missing IPLD format "git-raw"')
   })
 
   it('should error when putting node with esoteric format', () => {

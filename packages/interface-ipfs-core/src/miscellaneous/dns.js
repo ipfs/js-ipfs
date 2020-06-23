@@ -30,25 +30,49 @@ module.exports = (common, options) => {
       }))
     })
 
-    it('should non-recursively resolve ipfs.io', async () => {
-      const res = await ipfs.dns('ipfs.io', { recursive: false })
+    it('should non-recursively resolve ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('ipfs.io', { recursive: false })
 
-      // matches pattern /ipns/<ipnsaddress>
-      expect(res).to.match(/\/ipns\/.+$/)
+        // matches pattern /ipns/<ipnsaddress>
+        expect(res).to.match(/\/ipns\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should recursively resolve ipfs.io', async () => {
-      const res = await ipfs.dns('ipfs.io', { recursive: true })
+    it('should recursively resolve ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('ipfs.io', { recursive: true })
 
-      // matches pattern /ipfs/<hash>
-      expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve subdomain docs.ipfs.io', async () => {
-      const res = await ipfs.dns('docs.ipfs.io')
+    it('should resolve subdomain docs.ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('docs.ipfs.io')
 
-      // matches pattern /ipfs/<hash>
-      expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
   })
 }

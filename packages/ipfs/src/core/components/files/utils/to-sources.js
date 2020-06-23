@@ -1,19 +1,26 @@
 'use strict'
 
 const toMfsPath = require('./to-mfs-path')
+const applyDefaultOptions = require('./apply-default-options')
 
-async function toSources (context, args) {
-  // Support weird mfs.mv([source, dest], options, callback) signature
-  if (Array.isArray(args[0])) {
-    args = args[0]
+async function toSources (context, args, defaultOptions) {
+  const sources = []
+  let options
+
+  // takes string arguments and a final optional non-string argument
+  for (let i = 0; i < args.length; i++) {
+    if (typeof args[i] === 'string' || args[i] instanceof String) {
+      sources.push(args[i].trim())
+    } else if (i === args.length - 1) {
+      options = args[i]
+    }
   }
 
-  const sources = args
-    .filter(arg => typeof arg === 'string')
-    .map(source => source.trim())
+  options = applyDefaultOptions(options, defaultOptions)
 
   return {
-    sources: await toMfsPath(context, sources)
+    sources: await toMfsPath(context, sources, options),
+    options
   }
 }
 

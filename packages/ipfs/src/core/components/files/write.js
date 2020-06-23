@@ -37,7 +37,8 @@ const defaultOptions = {
   leafType: 'raw',
   shardSplitThreshold: 1000,
   mode: undefined,
-  mtime: undefined
+  mtime: undefined,
+  signal: undefined
 }
 
 module.exports = (context) => {
@@ -48,8 +49,8 @@ module.exports = (context) => {
     log('Reading source, destination and parent')
     await createLock().readLock(async () => {
       source = await toAsyncIterator(content, options)
-      destination = await toMfsPath(context, path)
-      parent = await toMfsPath(context, destination.mfsDirectory)
+      destination = await toMfsPath(context, path, options)
+      parent = await toMfsPath(context, destination.mfsDirectory, options)
     })()
     log('Read source, destination and parent')
     if (!options.parents && !parent.exists) {
@@ -88,7 +89,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
     }
 
     // get an updated mfs path in case the root changed while we were writing
-    const updatedPath = await toMfsPath(context, path)
+    const updatedPath = await toMfsPath(context, path, options)
     const trail = await toTrail(context, updatedPath.mfsDirectory, options)
     const parent = trail[trail.length - 1]
 
@@ -115,7 +116,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
     const newRootCid = await updateTree(context, trail, options)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid)
+    await updateMfsRoot(context, newRootCid, options)
   })()
 }
 

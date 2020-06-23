@@ -152,7 +152,7 @@ module.exports = (common, options) => {
 
       const dir = files[0]
 
-      const err = await expect(concat(ipfs.cat(dir.cid))).to.be.rejected()
+      const err = await expect(concat(ipfs.cat(dir.cid))).to.eventually.be.rejected()
       expect(err.message).to.contain('this dag node is a directory')
     })
 

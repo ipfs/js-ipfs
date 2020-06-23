@@ -89,7 +89,7 @@ module.exports = (common, options) => {
     })
 
     it('should return an error for an invalid CID', () => {
-      return expect(ipfs.block.get('invalid')).to.eventually.be.rejected
+      return expect(ipfs.block.get('Non-base58 character')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.have.property('message')
         .that.includes('Non-base58 character')
