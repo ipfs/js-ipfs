@@ -13,7 +13,7 @@ const {
 } = require('./hamt-utils')
 const errCode = require('err-code')
 const mc = require('multicodec')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 
 const removeLink = async (context, options) => {
   if (!options.parentCid && !options.parent) {

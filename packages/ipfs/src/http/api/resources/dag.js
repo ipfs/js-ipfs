@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const multipart = require('../../utils/multipart-request-parser')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const Joi = require('../../utils/joi')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')

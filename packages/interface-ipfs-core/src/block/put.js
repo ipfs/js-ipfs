@@ -3,7 +3,7 @@
 
 const { Buffer } = require('buffer')
 const Block = require('ipld-block')
-const multihash = require('multihashes')
+const multihash = require('multihashing-async').multihash
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')

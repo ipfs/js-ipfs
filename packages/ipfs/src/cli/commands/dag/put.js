@@ -1,6 +1,6 @@
 'use strict'
 const { Buffer } = require('buffer')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')

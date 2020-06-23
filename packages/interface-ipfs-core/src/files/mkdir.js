@@ -3,7 +3,7 @@
 
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const multihash = require('multihashes')
+const multihash = require('multihashing-async').multihash
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
