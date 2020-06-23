@@ -32,6 +32,10 @@ module.exports = configure((api, options) => {
       )
     }
 
+    if (block.cid.codec === 'raw' && !resolved.remPath) {
+      resolved.remPath = '/'
+    }
+
     return dagResolver.resolve(block.data, resolved.remPath)
   }
 })

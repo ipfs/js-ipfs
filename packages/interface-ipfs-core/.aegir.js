@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  bundlesize: { maxSize: '260kB' },
+  bundlesize: { maxSize: '262kB' },
   lint: {
     files: [
       'src/**/*.js',
