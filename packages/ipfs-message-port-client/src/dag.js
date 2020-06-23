@@ -59,7 +59,7 @@ class DAGClient extends Client {
    * @returns {Promise<DAGEntry>}
    */
   async get (cid, path, options = {}) {
-    const [nodePath, { localResolve, timeout, signal }] = read(path, options)
+    const [nodePath, { localResolve, timeout, signal }] = read(path, options, '/')
 
     const { value, remainderPath } = await this.remote.get({
       cid: encodeCID(cid),
@@ -83,7 +83,7 @@ class DAGClient extends Client {
    * @returns {AsyncIterable<string>}
    */
   async * tree (cid, path, options = {}) {
-    const [nodePath, { recursive, timeout, signal }] = read(path, options)
+    const [nodePath, { recursive, timeout, signal }] = read(path, options, '')
 
     const paths = await this.remote.tree({
       cid: encodeCID(cid),
@@ -111,13 +111,14 @@ class DAGClient extends Client {
  * param {[Maybe<string>, T]|[NonNullable<T>, T]} params
  * @param {Maybe<string>|NonNullable<T>} path
  * @param {T} options
+ * @param {string} defaultPath
  * @returns {[string, T]}
  */
-const read = (path, options) => {
+const read = (path, options, defaultPath) => {
   if (typeof path === 'string') {
     return [path, options]
   } else {
-    return ['', path == null ? options : path]
+    return [defaultPath, path == null ? options : path]
   }
 }
 
