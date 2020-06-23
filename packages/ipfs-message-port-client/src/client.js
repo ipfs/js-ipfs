@@ -326,11 +326,23 @@ class Client {
 }
 exports.Client = Client
 
-class TimeoutError extends Error {}
+class TimeoutError extends Error {
+  get name () {
+    return this.constructor.name
+  }
+}
 exports.TimeoutError = TimeoutError
 
-class AbortError extends Error {}
+class AbortError extends Error {
+  get name () {
+    return this.constructor.name
+  }
+}
 exports.AbortError = AbortError
 
-class DisconnectError extends Error {}
+class DisconnectError extends Error {
+  get name () {
+    return this.constructor.name
+  }
+}
 exports.DisconnectError = DisconnectError

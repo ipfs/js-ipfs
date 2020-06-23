@@ -265,9 +265,17 @@ class UnsupportedMessageError extends RangeError {
     super('Unexpected message was received by the server')
     this.event = event
   }
+
+  get name () {
+    return this.constructor.name
+  }
 }
 
-class AbortError extends Error {}
+class AbortError extends Error {
+  get name () {
+    return this.constructor.name
+  }
+}
 
 exports.Query = Query
 exports.Server = Server
