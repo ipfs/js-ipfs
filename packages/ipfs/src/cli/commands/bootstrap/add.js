@@ -20,10 +20,20 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, peer, default: defaultPeers, timeout }) {
-    const list = await ipfs.bootstrap.add(peer, {
-      default: defaultPeers,
-      timeout
-    })
+    let list
+
+    if (peer) {
+      list = await ipfs.bootstrap.add(peer, {
+        timeout
+      })
+    } else if (defaultPeers) {
+      list = await ipfs.bootstrap.reset({
+        timeout
+      })
+    } else {
+      throw new Error('Please specify a peer or the --default flag')
+    }
+
     list.Peers.forEach((peer) => print(peer))
   }
 }

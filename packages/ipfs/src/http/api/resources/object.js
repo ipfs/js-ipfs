@@ -87,7 +87,8 @@ exports.new = {
 
     let cid, node
     try {
-      cid = await ipfs.object.new(template, {
+      cid = await ipfs.object.new({
+        template,
         signal,
         timeout
       })

@@ -78,7 +78,7 @@ module.exports = (common, options) => {
       expect(block.cid.version).to.equal(1)
       expect(block.cid.codec).to.equal('raw')
       expect(multihash.decode(block.cid.multihash).name).to.equal('sha2-512')
-      expect(await all(ipfs.pin.ls(block.cid))).to.have.lengthOf(1)
+      expect(await all(ipfs.pin.ls({ paths: block.cid }))).to.have.lengthOf(1)
     })
 
     it('should put a Block instance', async () => {

@@ -23,10 +23,20 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, all, peer, timeout }) {
-    const list = await ipfs.bootstrap.rm(peer, {
-      all,
-      timeout
-    })
+    let list
+
+    if (peer) {
+      list = await ipfs.bootstrap.rm(peer, {
+        timeout
+      })
+    } else if (all) {
+      list = await ipfs.bootstrap.clear({
+        timeout
+      })
+    } else {
+      throw new Error('Please specify a peer or the --all flag')
+    }
+
     list.Peers.forEach((peer) => print(peer))
   }
 }

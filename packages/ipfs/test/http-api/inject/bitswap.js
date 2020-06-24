@@ -16,6 +16,7 @@ describe('/bitswap', () => {
     ipfs = {
       bitswap: {
         wantlist: sinon.stub(),
+        wantlistForPeer: sinon.stub(),
         stat: sinon.stub(),
         unwant: sinon.stub()
       }
@@ -33,7 +34,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist', async () => {
-      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
+      ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
         cid
       ])
 
@@ -47,7 +48,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist?timeout=1s', async () => {
-      ipfs.bitswap.wantlist.withArgs(undefined, {
+      ipfs.bitswap.wantlist.withArgs({
         ...defaultOptions,
         timeout: 1000
       }).returns([
@@ -65,7 +66,7 @@ describe('/bitswap', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('/wantlist?cid-base=base64', async () => {
-      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
+      ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
         cid
       ])
 
@@ -79,7 +80,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist?cid-base=invalid', async () => {
-      ipfs.bitswap.wantlist.withArgs(undefined, defaultOptions).returns([
+      ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
         cid
       ])
 
@@ -95,13 +96,32 @@ describe('/bitswap', () => {
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlist.withArgs(peerId, defaultOptions).returns([
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).returns([
         cid
       ])
 
       const res = await http({
         method: 'POST',
         url: `/api/v0/bitswap/wantlist?peer=${peerId}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
+    })
+
+    it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D&timeout=1s', async () => {
+      const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([
+        cid
+      ])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bitswap/wantlist?peer=${peerId}&timeout=1s`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

@@ -72,11 +72,11 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Options](#options-12)
     - [Returns](#returns-11)
     - [Example](#example-8)
-  - [`ipfs.files.flush([path,] [options])`](#ipfsfilesflushpath-options)
+  - [`ipfs.files.flush(path, [options])`](#ipfsfilesflushpath-options)
     - [Parameters](#parameters-13)
     - [Options](#options-13)
     - [Returns](#returns-12)
-  - [`ipfs.files.ls([path], [options])`](#ipfsfileslspath-options)
+  - [`ipfs.files.ls(path, [options])`](#ipfsfileslspath-options)
     - [Parameters](#parameters-14)
     - [Options](#options-14)
     - [Returns](#returns-13)
@@ -869,7 +869,7 @@ If `from` is an IPFS path and the content does not exist in your node's repo, on
 
 All values of `from` will be removed after the operation is complete unless they are an IPFS path.
 
-### `ipfs.files.flush([path,] [options])`
+### `ipfs.files.flush(path, [options])`
 
 > Flush a given path's data to the disk
 
@@ -877,7 +877,7 @@ All values of `from` will be removed after the operation is complete unless they
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| path | `String` | Optional [MFS path][] to flush, defaults to `'/'` |
+| path | `String` | The [MFS path][] to flush |
 
 #### Options
 
@@ -900,7 +900,7 @@ An optional object which may have the following keys:
 const cid = await ipfs.files.flush('/')
 ```
 
-### `ipfs.files.ls([path], [options])`
+### `ipfs.files.ls(path, [options])`
 
 > List directories in the local mutable namespace
 
@@ -908,7 +908,7 @@ const cid = await ipfs.files.flush('/')
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| path | `String` | Optional [MFS path][] to list, defaults to `'/'` |
+| path | `String` | The [MFS path][] to list |
 
 #### Options
 

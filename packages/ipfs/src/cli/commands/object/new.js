@@ -22,7 +22,8 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
-    const cid = await ipfs.object.new(template, {
+    const cid = await ipfs.object.new({
+      template,
       timeout
     })
     print(cidToString(cid, { base: cidBase, upgrade: false }))
