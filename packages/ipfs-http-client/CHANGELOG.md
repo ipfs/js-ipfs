@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [44.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.2.0...ipfs-http-client@44.3.0) (2020-06-24)
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+* support loading arbitrary ipld formats in the http client ([#3073](https://github.com/ipfs/js-ipfs/issues/3073)) ([bd12773](https://github.com/ipfs/js-ipfs/commit/bd127730039ab79dd7ad22b31245939ee01a6514))
+
+
+
+
+
 # [44.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.1...ipfs-http-client@44.2.0) (2020-06-05)
 
 
