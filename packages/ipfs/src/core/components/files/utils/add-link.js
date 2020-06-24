@@ -17,7 +17,7 @@ const {
 } = require('./hamt-utils')
 const errCode = require('err-code')
 const mc = require('multicodec')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const last = require('it-last')
 
 const addLink = async (context, options) => {

@@ -1,7 +1,7 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const multihash = require('multihashes')
+const multihash = require('multihashing-async').multihash
 const codecs = require('multicodec/src/base-table.json')
 const multipart = require('../../utils/multipart-request-parser')
 const Joi = require('../../utils/joi')

@@ -4,7 +4,7 @@
 const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const {
   createProgressBar,

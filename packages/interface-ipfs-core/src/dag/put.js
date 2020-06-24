@@ -6,7 +6,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
-const multihash = require('multihashes')
+const multihash = require('multihashing-async').multihash
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
