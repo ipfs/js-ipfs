@@ -4,7 +4,6 @@ const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:repo:gc')
 const { MFS_ROOT_KEY, withTimeoutOption } = require('../../utils')
-const Repo = require('ipfs-repo')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const { parallelMerge, transform, map } = require('streaming-iterables')
@@ -79,11 +78,10 @@ async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
   let blocksCount = 0
   let removedBlocksCount = 0
 
-  const removeBlock = async ({ key: k }) => {
+  const removeBlock = async (cid) => {
     blocksCount++
 
     try {
-      const cid = Repo.utils.blockstore.keyToCid(k)
       const b32 = cid.toV1().toString('base32')
       if (markedSet.has(b32)) return null
       const res = { cid }
@@ -97,7 +95,7 @@ async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
 
       return res
     } catch (err) {
-      const msg = `Could not convert block with key '${k}' to CID`
+      const msg = `Could delete block with CID ${cid}`
       log(msg, err)
       return { err: new Error(msg + `: ${err.message}`) }
     }

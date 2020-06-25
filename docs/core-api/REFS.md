@@ -65,7 +65,7 @@ for await (const ref of ipfs.refs(ipfsPath, { recursive: true })) {
 
 ## `ipfs.refs.local([options])`
 
-> Output all local references (CIDs of all blocks in the blockstore)
+> Output all local references (base32 encoded multihashes of all blocks in the blockstore)
 
 ### Parameters
 
