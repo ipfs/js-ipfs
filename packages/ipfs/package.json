@@ -150,7 +150,7 @@
     "multiaddr-to-uri": "^5.1.0",
     "multibase": "^0.7.0",
     "multicodec": "^1.0.0",
-    "multihashing-async": "^0.8.0",
+    "multihashing-async": "^1.0.0",
     "p-defer": "^3.0.0",
     "p-queue": "^6.1.0",
     "parse-duration": "^0.1.2",
