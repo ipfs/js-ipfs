@@ -1,12 +1,12 @@
 'use strict'
 
 const CID = require('cids')
-const { cidToString } = require('../../../utils/cid')
 const log = require('debug')('ipfs:repo:gc')
 const { MFS_ROOT_KEY, withTimeoutOption } = require('../../utils')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const { parallelMerge, transform, map } = require('streaming-iterables')
+const multibase = require('multibase')
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
@@ -35,7 +35,7 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
   })
 }
 
-// Get Set of CIDs of blocks to keep
+// Get Set of multihashes of blocks to keep
 async function createMarkedSet ({ pin, pinManager, refs, repo }) {
   const pinsSource = map(({ cid }) => cid, pin.ls())
 
@@ -66,7 +66,7 @@ async function createMarkedSet ({ pin, pinManager, refs, repo }) {
 
   const output = new Set()
   for await (const cid of parallelMerge(pinsSource, pinInternalsSource, mfsSource)) {
-    output.add(cidToString(cid, { base: 'base32' }))
+    output.add(multibase.encode('base32', cid.multihash).toString())
   }
   return output
 }
@@ -82,7 +82,7 @@ async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
     blocksCount++
 
     try {
-      const b32 = cid.toV1().toString('base32')
+      const b32 = multibase.encode('base32', cid.multihash).toString()
       if (markedSet.has(b32)) return null
       const res = { cid }
 
