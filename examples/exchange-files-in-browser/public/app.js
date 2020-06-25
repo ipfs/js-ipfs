@@ -52,8 +52,8 @@ async function start () {
         Addresses: {
           Swarm: [
             // This is a public webrtc-star server
-            // '/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star'
-            '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
+            '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+            '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star'
           ]
         },
         // If you want to connect to the public bootstrap nodes, remove the next line

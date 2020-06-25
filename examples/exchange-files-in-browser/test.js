@@ -1,6 +1,5 @@
 'use strict'
 
-const http = require('http')
 const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
