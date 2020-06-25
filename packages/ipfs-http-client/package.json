@@ -64,7 +64,7 @@
     "multihashes": "^1.0.1",
     "nanoid": "^3.0.2",
     "node-fetch": "^2.6.0",
-    "parse-duration": "^0.1.2",
+    "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.0"
   },
   "devDependencies": {

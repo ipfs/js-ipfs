@@ -153,7 +153,7 @@
     "multihashing-async": "^1.0.0",
     "p-defer": "^3.0.0",
     "p-queue": "^6.1.0",
-    "parse-duration": "^0.1.2",
+    "parse-duration": "^0.4.4",
     "peer-id": "^0.13.12",
     "pretty-bytes": "^5.3.0",
     "progress": "^2.0.1",
