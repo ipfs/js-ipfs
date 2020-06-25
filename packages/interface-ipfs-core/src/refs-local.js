@@ -56,8 +56,21 @@ module.exports = (common, options) => {
       const refs = await all(ipfs.refs.local())
       const cids = refs.map(r => r.ref)
 
-      expect(cids).to.deep.include(new CID(1, 'raw', imported[0].cid.multihash).toString())
-      expect(cids).to.deep.include(new CID(1, 'raw', imported[1].cid.multihash).toString())
+      expect(
+        cids.find(cid => {
+          const multihash = new CID(cid).multihash
+
+          return imported[0].cid.multihash.equals(multihash)
+        })
+      ).to.be.ok()
+
+      expect(
+        cids.find(cid => {
+          const multihash = new CID(cid).multihash
+
+          return imported[1].cid.multihash.equals(multihash)
+        })
+      ).to.be.ok()
     })
   })
 }
