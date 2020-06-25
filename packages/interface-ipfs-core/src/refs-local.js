@@ -7,7 +7,6 @@ const all = require('it-all')
 const importer = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
-const multibase = require('multibase')
 const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
