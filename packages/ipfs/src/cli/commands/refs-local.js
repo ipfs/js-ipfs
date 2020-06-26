@@ -2,6 +2,7 @@
 
 const parseDuration = require('parse-duration')
 const multibase = require('multibase')
+const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'refs-local',
