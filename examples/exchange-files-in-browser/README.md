@@ -135,25 +135,7 @@ Daemon is ready
 
 Check the `/ws` in line 5, that means it is listening. Cool.
 
-### 3. Start a `libp2p-webrtc-star` signaling server
-
-This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions.
-
-First install the `libp2p-webrtc-star` module globally:
-
-```sh
-> npm install -g libp2p-webrtc-star
-```
-
-This will give you the `webrtc-star` command.  Use this to start a signaling server:
-
-```sh
-> webrtc-star
-```
-
-By default it will listen to all incoming connections on port 13579.  Override this with the `--host` and/or `--port` options.
-
-### 4. Start the app
+### 3. Start the app
 
 Make sure you're in `js-ipfs/examples/exchange-files-in-browser`.
 
@@ -177,7 +159,7 @@ Hit CTRL-C to stop the server
 
 Now go to http://127.0.0.1:12345 in a modern browser and you're on!
 
-### 5. Dial to a node using WebSockets (your desktop ones)
+### 4. Dial to a node using WebSockets (your desktop ones)
 
 Make sure you have a daemon running. If you don't, run:
 
@@ -209,7 +191,7 @@ Check that you got connected:
 
 [js-libp2p-crypto#105]: https://github.com/libp2p/js-libp2p-crypto/issues/105
 
-### 6. Transfer files between all of your nodes!
+### 5. Transfer files between all of your nodes!
 
 Now you can add files through the CLI with:
 
@@ -235,3 +217,27 @@ http://127.0.0.1:12345/#file-exchange
 Now every file that you upload in one tab will appear in the other! You can even open a new tab in that workspace and it will sync the files that were added before!
 
 ![](img/pubsub.png)
+
+## Going to production?
+
+This example uses public webrtc-star servers. These servers should be used for experimenting and demos, they **MUST** not be used in production as there is no guarantee on availability.
+
+### Use your own `libp2p-webrtc-star` signaling server
+
+This server allows the two browser nodes to talk to each other by doing the initial handshake and network introductions.
+
+First install the `libp2p-webrtc-star` module globally:
+
+```sh
+> npm install -g libp2p-webrtc-star
+```
+
+This will give you the `webrtc-star` command.  Use this to start a signaling server:
+
+```sh
+> webrtc-star
+```
+
+By default it will listen to all incoming connections on port 13579. Override this with the `--host` and/or `--port` options. That is, the following multiaddr: `/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star`.
+
+You should add your signaling server in the IPFS config swarm addresses, so that you listen for new connections through it.
