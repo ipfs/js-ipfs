@@ -1,3 +1,13 @@
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.0...v0.5.1) (2020-06-30)
+
+
+### Bug Fixes
+
+* **ci:** add empty commit to fix lint checks on master ([1db03b0](https://github.com/ipfs/js-ipfs-http-response/commit/1db03b0))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.4.0...v0.5.0) (2020-01-07)
 
