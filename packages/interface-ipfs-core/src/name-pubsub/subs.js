@@ -3,6 +3,7 @@
 
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,6 +23,12 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when getting IPNS pubsub subscriptions', () => {
+      return testTimeout(() => ipfs.name.pubsub.subs({
+        timeout: 1
+      }))
+    })
+
     it('should get an empty array as a result of subscriptions before any resolve', async function () {
       this.timeout(60 * 1000)
 
@@ -37,7 +44,7 @@ module.exports = (common, options) => {
       const subs = await ipfs.name.pubsub.subs()
       expect(subs).to.eql([]) // initally empty
 
-      await expect(all(ipfs.name.resolve(id))).to.be.rejected()
+      await expect(all(ipfs.name.resolve(id))).to.eventually.be.rejected()
 
       const res = await ipfs.name.pubsub.subs()
       expect(res).to.be.an('array').that.does.include(`/ipns/${id}`)

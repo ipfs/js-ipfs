@@ -1,23 +1,24 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (subsystem, level, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', subsystem)
-    searchParams.append('arg', level)
-
-    const res = await ky.post('log/level', {
+module.exports = configure(api => {
+  return async (subsystem, level, options = {}) => {
+    const res = await api.post('log/level', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: [
+          subsystem,
+          level
+        ],
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
 })

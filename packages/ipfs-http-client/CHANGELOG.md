@@ -1,3 +1,164 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [44.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.2.0...ipfs-http-client@44.3.0) (2020-06-24)
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+* support loading arbitrary ipld formats in the http client ([#3073](https://github.com/ipfs/js-ipfs/issues/3073)) ([bd12773](https://github.com/ipfs/js-ipfs/commit/bd127730039ab79dd7ad22b31245939ee01a6514))
+
+
+
+
+
+# [44.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.1...ipfs-http-client@44.2.0) (2020-06-05)
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
+## [44.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.0...ipfs-http-client@44.1.1) (2020-05-29)
+
+**Note:** Version bump only for package ipfs-http-client
+
+
+
+
+
+# [44.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.3...ipfs-http-client@44.1.0) (2020-05-18)
+
+
+### Bug Fixes
+
+* fixes browser script tag example ([#3034](https://github.com/ipfs/js-ipfs/issues/3034)) ([ee8b769](https://github.com/ipfs/js-ipfs/commit/ee8b769b96f7e3c8414bbf85853ab4e21e8fd11c)), closes [#3027](https://github.com/ipfs/js-ipfs/issues/3027)
+* remove node globals ([#2932](https://github.com/ipfs/js-ipfs/issues/2932)) ([d0d2f74](https://github.com/ipfs/js-ipfs/commit/d0d2f74cef4e439c6d2baadba1f1f9f52534fcba))
+* typeof bug when passing timeout to dag.get ([#3035](https://github.com/ipfs/js-ipfs/issues/3035)) ([026a542](https://github.com/ipfs/js-ipfs/commit/026a5423e00992968840c9236afe47bdab9ee834))
+
+
+### Features
+
+* cancellable api calls ([#2993](https://github.com/ipfs/js-ipfs/issues/2993)) ([2b24f59](https://github.com/ipfs/js-ipfs/commit/2b24f590041a0df9da87b75ae2344232fe22fe3a)), closes [#3015](https://github.com/ipfs/js-ipfs/issues/3015)
+
+
+
+
+
+## [44.0.3](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.2...ipfs-http-client@44.0.3) (2020-05-05)
+
+**Note:** Version bump only for package ipfs-http-client
+
+
+
+
+
+## [44.0.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.1...ipfs-http-client@44.0.2) (2020-05-05)
+
+
+### Bug Fixes
+
+* pass headers to request ([#3018](https://github.com/ipfs/js-ipfs/issues/3018)) ([3ba00f8](https://github.com/ipfs/js-ipfs/commit/3ba00f8c6a8a057c5776d539a671a74d9565fb29)), closes [#3017](https://github.com/ipfs/js-ipfs/issues/3017)
+
+
+
+
+
+## [44.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.0...ipfs-http-client@44.0.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* do not abort dht operation on error responses ([#3001](https://github.com/ipfs/js-ipfs/issues/3001)) ([a69f782](https://github.com/ipfs/js-ipfs/commit/a69f7828ccd77ab502689e45ed1112c9f804b386)), closes [#2991](https://github.com/ipfs/js-ipfs/issues/2991)
+* fix gc tests ([#3008](https://github.com/ipfs/js-ipfs/issues/3008)) ([9f7f03e](https://github.com/ipfs/js-ipfs/commit/9f7f03e1ea672834b7f984657c7d7d7c768bcd6c))
+
+
+
+
+
+# [44.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.1...ipfs-http-client@44.0.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* make http api only accept POST requests ([#2977](https://github.com/ipfs/js-ipfs/issues/2977)) ([943d4a8](https://github.com/ipfs/js-ipfs/commit/943d4a8cf2d4c4ff5ecd4814c59cb0aae0cfa1fd))
+* pass timeout arg to server ([#2979](https://github.com/ipfs/js-ipfs/issues/2979)) ([049f085](https://github.com/ipfs/js-ipfs/commit/049f085fd206a1afb729fa825d8df38bf7aa8549))
+
+
+### BREAKING CHANGES
+
+* Where we used to accept all and any HTTP methods, now only POST is
+accepted.  The API client will now only send POST requests too.
+
+* test: add tests to make sure we are post-only
+
+* chore: upgrade ipfs-utils
+
+* fix: return 405 instead of 404 for bad methods
+
+* fix: reject browsers that do not send an origin
+
+Also fixes running interface tests over http in browsers against
+js-ipfs
+
+
+
+
+
+## [43.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.0...ipfs-http-client@43.0.1) (2020-04-08)
+
+
+### Bug Fixes
+
+* dht.findPeer API endpoint returns ndjson ([#2965](https://github.com/ipfs/js-ipfs/issues/2965)) ([524ff32](https://github.com/ipfs/js-ipfs/commit/524ff32901e43460fe5b364bc4903ab249792874))
+
+
+
+
+
+# 43.0.0 (2020-03-31)
+
+
+### Bug Fixes
+
+* add default args for ipfs.add ([#2950](https://github.com/ipfs/js-ipfs/issues/2950)) ([a01f5b6](https://github.com/ipfs/js-ipfs/commit/a01f5b63cd92d225b10eff497f79caf4baab1973))
+* dont include util.textencoder in the browser ([#2919](https://github.com/ipfs/js-ipfs/issues/2919)) ([3207e3b](https://github.com/ipfs/js-ipfs/commit/3207e3b35c9c250332c03dd2a066e8ebcda35e43))
+
+
+### chore
+
+* move mfs and multipart files into core ([#2811](https://github.com/ipfs/js-ipfs/issues/2811)) ([82b9e08](https://github.com/ipfs/js-ipfs/commit/82b9e085330e6c6290e6f3dd29678247984ffdce))
+* update dep version and ignore interop test for raw leaves ([#2747](https://github.com/ipfs/js-ipfs/issues/2747)) ([6376cec](https://github.com/ipfs/js-ipfs/commit/6376cec2b4beccef4751c498088f600ec7788118))
+
+
+### Features
+
+* remove ky from http-client and utils ([#2810](https://github.com/ipfs/js-ipfs/issues/2810)) ([9bc9625](https://github.com/ipfs/js-ipfs/commit/9bc96252686d0bbbfdb2a3300bb17b80eafdaf00)), closes [#2801](https://github.com/ipfs/js-ipfs/issues/2801)
+
+
+### BREAKING CHANGES
+
+* When the path passed to `ipfs.files.stat(path)` was a hamt sharded dir, the resovled
+value returned by js-ipfs previously had a `type` property of with a value of
+`'hamt-sharded-directory'`.  To bring it in line with go-ipfs this value is now
+`'directory'`.
+* Files that fit into one block imported with either `--cid-version=1`
+or `--raw-leaves=true` previously returned a CID that resolved to
+a raw node (e.g. a buffer). Returned CIDs now resolve to a `dag-pb`
+node that contains a UnixFS entry. This is to allow setting metadata
+on small files with CIDv1.
+
+
+
+
+
 <a name="42.0.0"></a>
 # [42.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v42.0.0-pre.2...v42.0.0) (2020-02-04)
 
@@ -11,19 +172,19 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `add` results now include `mode` and `mtime` properties if they were set.
 
-* `files.chmod` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileschmod) for info.
+* `files.chmod` has been added. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileschmod) for info.
 
 *  `files.flush` now returns the root CID for the path that was flushed (`/` by default)
 
-* `files.ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+* `files.ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#ls) for more info.
 
-* `files.mkdir` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesmkdir) for more info.
+* `files.mkdir` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesmkdir) for more info.
 
-* `files.stat` result now includes `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filesstat) for more info.
+* `files.stat` result now includes `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesstat) for more info.
 
-* `files.touch` has been added. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#filestouch) for info.
+* `files.touch` has been added. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filestouch) for info.
 
-* `files.write` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#fileswrite) for more info.
+* `files.write` now accepts `mode` and `mtime` options to allow setting mode and mtime metadata. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#fileswrite) for more info.
 
 * `object.get` now accepts a `timeout` option. It will cause the method to throw with a `TimeoutError` if no data is received within the timeout window. It can be passed as a `number` or a `string`. If a `number` is passed it is interpreted as milliseconds, if a string is passed it is interpreted as a [human readable duration](https://www.npmjs.com/package/parse-duration).
 
@@ -37,7 +198,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `add` now returns an async iterable.
 
-* `add` now accepts `mode` and `mtime` options on inputs to allow setting mode and mtime metadata for added files. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#add) for more info.
+* `add` now accepts `mode` and `mtime` options on inputs to allow setting mode and mtime metadata for added files. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#add) for more info.
 
 * `add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
 
@@ -92,7 +253,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 * `ls` results now contain a `cid` property (whose value is a [CID instance](https://github.com/multiformats/js-cid)) instead of a `hash` property.
 
-* `ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ls) for more info.
+* `ls` results now include `mode` and `mtime` properties if they were set. See the [core interface docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#ls) for more info.
 
 * `pin.add` results now contain a `cid` property (a [CID instance](https://github.com/multiformats/js-cid)) instead of a string `hash` property.
 
@@ -229,7 +390,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
         * Node.js style address e.g. `{ host: '127.0.0.1', port: 5001, protocol: 'http' }`
 * Errors returned from request failures are now all [`HTTPError`](https://github.com/sindresorhus/ky/blob/c0d9d2bb07e4c122a08f019b39e9c55a4c9324f3/index.js#L117-L123)s which carry a `response` property. This is a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) that can be used to inspect _all_ information relating to the HTTP response. This means that the `err.status` or `err.statusCode` property should now be accessed via `err.response.status`.
 * files in `src/files-regular` have moved to `src`. The `src/files-mfs` directory has been renamed to `src/files`. If you were previously requiring files from these directories e.g. `require('ipfs-http-client/src/files-regular/add')` then please be aware that they have moved.
-* Kebab case options are no longer supported. Please use camel case option names as defined in the [`interface-ipfs-core`](https://github.com/ipfs/interface-js-ipfs-core/tree/master/SPEC) docs. e.g. the `allow-offline` option to `name.publish` should be passed as `allowOffline`.
+* Kebab case options are no longer supported. Please use camel case option names as defined in the [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/SPEC) docs. e.g. the `allow-offline` option to `name.publish` should be passed as `allowOffline`.
   * Note that you can pass [additional query string parameters](https://github.com/ipfs/js-ipfs-http-client#additional-options) in the `searchParams` option available to all API methods.
 
 
@@ -760,7 +921,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 * `ipfs.dht.findprovs` renamed to `ipfs.dht.findProvs` and returns an array of [PeerInfo](https://github.com/libp2p/js-peer-info)
 * `ipfs.dht.findpeer` renamed to `ipfs.dht.findPeer` and returns a [PeerInfo](https://github.com/libp2p/js-peer-info)
 * `ipfs.dht.query` now returns an array of [PeerId](https://github.com/libp2p/js-peer-id)
-* [More info](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/DHT.md)
+* [More info](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/DHT.md)
 
 
 

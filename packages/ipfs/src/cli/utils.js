@@ -55,6 +55,7 @@ print.error = (msg, newline) => {
 
 // used by ipfs.add to interrupt the progress bar
 print.isTTY = process.stdout.isTTY
+print.columns = process.stdout.columns
 
 const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
@@ -116,6 +117,62 @@ async function getIpfs (argv) {
   }
 }
 
+const asBoolean = (value) => {
+  if (value === false || value === true) {
+    return value
+  }
+
+  if (value === undefined) {
+    return true
+  }
+
+  return false
+}
+
+const asOctal = (value) => {
+  return parseInt(value, 8)
+}
+
+const asMtimeFromSeconds = (secs, nsecs) => {
+  if (secs === null || secs === undefined) {
+    return undefined
+  }
+
+  const output = {
+    secs
+  }
+
+  if (nsecs !== null && nsecs !== undefined) {
+    output.nsecs = nsecs
+  }
+
+  return output
+}
+
+const coerceMtime = (value) => {
+  value = parseInt(value)
+
+  if (isNaN(value)) {
+    throw new Error('mtime must be a number')
+  }
+
+  return value
+}
+
+const coerceMtimeNsecs = (value) => {
+  value = parseInt(value)
+
+  if (isNaN(value)) {
+    throw new Error('mtime-nsecs must be a number')
+  }
+
+  if (value < 0 || value > 999999999) {
+    throw new Error('mtime-nsecs must be in the range [0,999999999]')
+  }
+
+  return value
+}
+
 module.exports = {
   getIpfs,
   isDaemonOn,
@@ -124,5 +181,10 @@ module.exports = {
   print,
   createProgressBar,
   rightpad,
-  ipfsPathHelp
+  ipfsPathHelp,
+  asBoolean,
+  asOctal,
+  asMtimeFromSeconds,
+  coerceMtime,
+  coerceMtimeNsecs
 }

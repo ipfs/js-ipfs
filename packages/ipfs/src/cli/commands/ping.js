@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'ping <peerId>',
 
@@ -10,13 +12,15 @@ module.exports = {
       alias: 'n',
       type: 'integer',
       default: 10
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, count, peerId }) {
-    const { ipfs, print } = ctx
-
-    for await (const pong of ipfs.ping(peerId, { count })) {
+  async handler ({ ctx: { ipfs, print }, count, peerId, timeout }) {
+    for await (const pong of ipfs.ping(peerId, { count, timeout })) {
       const { success, time, text } = pong
       // Check if it's a pong
       if (success && !text) {

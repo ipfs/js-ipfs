@@ -4,6 +4,7 @@ const fs = require('fs')
 const multibase = require('multibase')
 const concat = require('it-concat')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'put [block]',
@@ -26,26 +27,42 @@ module.exports = {
     },
     version: {
       describe: 'cid version',
-      type: 'number'
+      type: 'number',
+      default: 0
     },
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
       choices: multibase.names
+    },
+    pin: {
+      describe: 'Pin this block recursively',
+      type: 'boolean',
+      default: false
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print, getStdin } = argv.ctx
+  async handler ({ ctx: { ipfs, print, getStdin }, block, timeout, format, mhtype, mhlen, version, cidBase, pin }) {
     let data
 
-    if (argv.block) {
-      data = fs.readFileSync(argv.block)
+    if (block) {
+      data = fs.readFileSync(block)
     } else {
       data = (await concat(getStdin())).slice()
     }
 
-    const { cid } = await ipfs.block.put(data, argv)
-    print(cidToString(cid, { base: argv.cidBase }))
+    const { cid } = await ipfs.block.put(data, {
+      timeout,
+      format,
+      mhtype,
+      mhlen,
+      version,
+      pin
+    })
+    print(cidToString(cid, { base: cidBase }))
   }
 }

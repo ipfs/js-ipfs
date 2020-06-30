@@ -4,7 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
-const fromB58String = require('multihashes').fromB58String
+const { fromB58String } = require('multihashing-async').multihash
 const all = require('it-all')
 
 // This gets replaced by `create-repo-browser.js` in the browser
@@ -148,13 +148,13 @@ describe('utils', () => {
 
     it('should error on invalid hashes', () => {
       return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
-        .to.be.rejected()
+        .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
       return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
-        .to.be.rejected()
-        .and.eventually.have.property('message')
+        .to.eventually.be.rejected()
+        .and.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })

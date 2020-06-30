@@ -2,30 +2,27 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, path, options) => {
-    if (typeof path === 'object') {
+module.exports = configure(api => {
+  return async (cid, path, options = {}) => {
+    if (path && typeof path === 'object') {
       options = path
       path = null
     }
 
-    options = options || {}
-
-    const cidPath = path
-      ? [cid, path].join(path.startsWith('/') ? '' : '/')
-      : `${cid}`
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', cidPath)
-
-    const res = await ky.post('dag/resolve', {
+    const res = await api.post('dag/resolve', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: path ? [cid, path].join(path.startsWith('/') ? '' : '/') : `${cid}`,
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return { cid: new CID(res.Cid['/']), remPath: res.RemPath }
+    const data = await res.json()
+
+    return { cid: new CID(data.Cid['/']), remPath: data.RemPath }
   }
 })

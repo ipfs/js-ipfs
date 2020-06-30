@@ -1,7 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { getDescribe, getIt } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
+const all = require('it-all')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -13,8 +16,6 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.dht.put', function () {
-    this.timeout(80 * 1000)
-
     let nodeA
     let nodeB
 
@@ -26,13 +27,24 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when putting a value into the DHT', async () => {
+      const { cid } = await last(nodeA.add('should respect timeout option when putting a value into the DH'))
+      const publish = await nodeA.name.publish(cid)
+      const record = await nodeA.dht.get(`/ipns/${publish.name}`)
+
+      await testTimeout(() => nodeA.dht.put(`/ipns/${publish.name}`, record, {
+        timeout: 1
+      }))
+    })
+
     it('should put a value to the DHT', async function () {
-      this.timeout(80 * 1000)
-
-      const key = Buffer.from('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-      const data = Buffer.from('data')
-
-      await nodeA.dht.put(key, data)
+      const { cid } = await last(nodeA.add('should put a value to the DHT'))
+      const publish = await nodeA.name.publish(cid)
+      const record = await nodeA.dht.get(`/ipns/${publish.name}`)
+      const value = await all(nodeA.dht.put(`/ipns/${publish.name}`, record, { verbose: true }))
+      expect(value).to.has.length(3)
+      expect(value[2].id.toString()).to.be.equal(nodeB.peerId.id)
+      expect(value[2].type).to.be.equal(5)
     })
   })
 }

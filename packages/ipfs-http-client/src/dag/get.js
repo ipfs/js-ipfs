@@ -11,31 +11,31 @@ const resolvers = {
   raw: raw.resolver
 }
 
-module.exports = config => {
-  const getBlock = require('../block/get')(config)
-  const dagResolve = require('./resolve')(config)
+module.exports = configure((api, options) => {
+  const getBlock = require('../block/get')(options)
+  const dagResolve = require('./resolve')(options)
 
-  return configure(({ ky }) => {
-    return async (cid, path, options) => {
-      if (typeof path === 'object') {
-        options = path
-        path = null
-      }
-
-      options = options || {}
-
-      const resolved = await dagResolve(cid, path, options)
-      const block = await getBlock(resolved.cid, options)
-      const dagResolver = resolvers[block.cid.codec]
-
-      if (!dagResolver) {
-        throw Object.assign(
-          new Error(`Missing IPLD format "${block.cid.codec}"`),
-          { missingMulticodec: cid.codec }
-        )
-      }
-
-      return dagResolver.resolve(block.data, resolved.remPath)
+  return async (cid, path, options = {}) => {
+    if (path && typeof path === 'object') {
+      options = path
+      path = null
     }
-  })(config)
-}
+
+    const resolved = await dagResolve(cid, path, options)
+    const block = await getBlock(resolved.cid, options)
+    const dagResolver = resolvers[block.cid.codec]
+
+    if (!dagResolver) {
+      throw Object.assign(
+        new Error(`Missing IPLD format "${block.cid.codec}"`),
+        { missingMulticodec: cid.codec }
+      )
+    }
+
+    if (block.cid.codec === 'raw' && !resolved.remPath) {
+      resolved.remPath = '/'
+    }
+
+    return dagResolver.resolve(block.data, resolved.remPath)
+  }
+})

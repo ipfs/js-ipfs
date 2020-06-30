@@ -6,7 +6,7 @@ const get = require('dlv')
 const PubsubDatastore = require('./pubsub-datastore')
 const OfflineDatastore = require('./offline-datastore')
 
-module.exports = ({ libp2p, repo, peerInfo, options }) => {
+module.exports = ({ libp2p, repo, peerId, options }) => {
   // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
   const ipnsStores = []
 
@@ -15,7 +15,6 @@ module.exports = ({ libp2p, repo, peerInfo, options }) => {
   if (get(options, 'EXPERIMENTAL.ipnsPubsub', false)) {
     const pubsub = libp2p.pubsub
     const localDatastore = repo.datastore
-    const peerId = peerInfo.id
 
     pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId)
     ipnsStores.push(pubsubDs)
@@ -26,7 +25,7 @@ module.exports = ({ libp2p, repo, peerInfo, options }) => {
     const offlineDatastore = new OfflineDatastore(repo)
     ipnsStores.push(offlineDatastore)
   } else {
-    ipnsStores.push(libp2p.dht)
+    ipnsStores.push(libp2p._dht)
   }
 
   // Create ipns routing with a set of datastores

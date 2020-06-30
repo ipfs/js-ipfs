@@ -6,6 +6,19 @@ In this tutorial, we go through spawning an IPFS node, adding a file and cat'ing
 
 You can find a complete version of this tutorial in [1.js](./1.js). For this tutorial, you need to install `ipfs` using `npm install ipfs`.
 
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
+
 Creating an IPFS instance can be done in one line, after requiring the module, you simply have to:
 
 ```js
@@ -46,7 +59,7 @@ Version: 0.31.2
 
 Now let's make it more interesting and add a file to IPFS using `node.add`. A file consists of a path and content.
 
-You can learn about the IPFS File API at [interface-ipfs-core](https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md).
+You can learn about the IPFS File API at [interface-ipfs-core](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md).
 
 ```js
 const IPFS = require('ipfs')
@@ -98,9 +111,12 @@ async function main () {
 
   console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
 
-  const fileBuffer = await node.cat(filesAdded[0].hash)
+  const chunks = []
+  for await (const chunk of node.cat(filesAdded[0].hash)) {
+      chunks.push(chunk)
+  }
 
-  console.log('Added file contents:', fileBuffer.toString())
+  console.log('Added file contents:', Buffer.concat(chunks).toString())
 }
 
 main()

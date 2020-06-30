@@ -9,7 +9,7 @@ const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_c
 
 // Endpoint for handling debug metrics
 module.exports = {
-  method: 'GET',
+  method: 'POST',
   path: '/debug/metrics/prometheus',
   async handler (request, h) {
     if (!process.env.IPFS_MONITORING) {

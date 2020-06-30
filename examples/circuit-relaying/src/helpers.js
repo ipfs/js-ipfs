@@ -6,6 +6,8 @@ const $message = document.querySelector('#message')
 const $msgs = document.querySelector('#msgs')
 const $addrs = document.querySelector('#addrs')
 const $peers = document.querySelector('#peers')
+const $pAddrs = document.querySelector('#peers-addrs')
+const delay = require('delay')
 
 const NAMESPACE = 'ipfs-quick-msg'
 
@@ -53,22 +55,27 @@ module.exports = (ipfs, peersSet) => {
     const tags = Array.from(peersSet).map((p) => {
       return `<li>${p}</li>`
     })
-    $peers.innerHTML = tags
+    $peers.innerHTML = tags.join('')
   }
 
-  const updateAddrs = (addrs) => {
-    $addrs.innerHTML = `
-        <div>
-            <ul>
-                ${addrs.map((addr) => `<li>${addr.toString()}</li>`)}
-            <ul>
-        </div>`
+  const updateSwarmPeers = async (ipfs) => {
+    const peers = await ipfs.swarm.peers()
+
+    $pAddrs.innerHTML = peers.map(peer => `<li>${peer.peer}</li>`).join('')
+  }
+
+  const updateAddrs = async (ipfs) => {
+    const info = await ipfs.id()
+    const relayAddrs = []
+
+    $addrs.innerHTML = relayAddrs.map((addr) => `<li>${addr.toString()}</li>`).join('')
   }
 
   return {
     createRoom,
     sendMsg,
     updatePeers,
+    updateSwarmPeers,
     updateAddrs
   }
 }

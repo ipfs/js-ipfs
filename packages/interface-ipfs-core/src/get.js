@@ -1,11 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const CID = require('cids')
 const all = require('it-all')
 const concat = require('it-concat')
+const drain = require('it-drain')
+const last = require('it-last')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
+const testTimeout = require('./utils/test-timeout')
+const importer = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,11 +28,17 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfs = (await common.spawn()).api
-      await all(ipfs.add(fixtures.smallFile.data))
-      await all(ipfs.add(fixtures.bigFile.data))
+      await all(importer([{ content: fixtures.smallFile.data }], ipfs.block))
+      await all(importer([{ content: fixtures.bigFile.data }], ipfs.block))
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when getting files', () => {
+      return testTimeout(() => drain(ipfs.get(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+        timeout: 1
+      })))
+    })
 
     it('should get with a base58 encoded multihash', async () => {
       const files = await all(ipfs.get(fixtures.smallFile.cid))
@@ -48,7 +59,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv0 with a CIDv1', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
-      const res = await all(ipfs.add(input, { cidVersion: 0 }))
+      const res = await all(importer([{ content: input }], ipfs.block))
 
       const cidv0 = res[0].cid
       expect(cidv0.version).to.equal(0)
@@ -62,7 +73,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv1 with a CIDv0', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
-      const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
@@ -101,7 +112,7 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(ipfs.add(dirs))
+      const res = await all(importer(dirs, ipfs.block))
       const root = res[res.length - 1]
 
       expect(root.path).to.equal('test-folder')
@@ -152,38 +163,18 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      const filesAdded = await all(ipfs.add(file))
+      const fileAdded = await last(importer([file], ipfs.block))
+      expect(fileAdded).to.have.property('path', 'a')
 
-      filesAdded.forEach(async (file) => {
-        if (file.path === 'a') {
-          const files = await all(ipfs.get(`/ipfs/${file.cid}/testfile.txt`))
-          expect(files).to.be.length(1)
-          expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
-        }
-      })
-    })
-
-    it('should get with ipfs path, as array and nested value', async () => {
-      const file = {
-        path: 'a/testfile.txt',
-        content: fixtures.smallFile.data
-      }
-
-      const filesAdded = await all(ipfs.add([file]))
-
-      filesAdded.forEach(async (file) => {
-        if (file.path === 'a') {
-          const files = await all(ipfs.get(`/ipfs/${file.cid}/testfile.txt`))
-          expect(files).to.be.length(1)
-          expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
-        }
-      })
+      const files = await all(ipfs.get(`/ipfs/${fileAdded.cid}/testfile.txt`))
+      expect(files).to.be.length(1)
+      expect((await concat(files[0].content)).toString()).to.contain('Plz add me!')
     })
 
     it('should error on invalid key', async () => {
       const invalidCid = 'somethingNotMultihash'
 
-      const err = await expect(all(ipfs.get(invalidCid))).to.be.rejected()
+      const err = await expect(all(ipfs.get(invalidCid))).to.eventually.be.rejected()
 
       switch (err.toString()) {
         case 'Error: invalid ipfs ref path':

@@ -2,27 +2,25 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (peerId, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-
-    if (peerId) {
-      if (typeof peerId === 'string') {
-        searchParams.set('peer', peerId)
-      } else {
-        searchParams.set('peer', new CID(peerId).toString())
-      }
+module.exports = configure(api => {
+  return async (peer, options = {}) => {
+    if (peer && (peer.timeout || peer.signal)) {
+      options = peer
+      peer = undefined
     }
 
-    const res = await ky.post('bitswap/wantlist', {
+    if (peer) {
+      options.peer = typeof peer === 'string' ? peer : new CID(peer).toString()
+    }
+
+    const res = await (await api.post('bitswap/wantlist', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
+    })).json()
 
     return (res.Keys || []).map(k => new CID(k['/']))
   }

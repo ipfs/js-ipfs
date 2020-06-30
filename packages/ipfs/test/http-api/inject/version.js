@@ -2,25 +2,63 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const pkgversion = require('./../../../package.json').version
+const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
+const sinon = require('sinon')
+const { AbortSignal } = require('abort-controller')
 
-module.exports = (http) => {
-  describe('/version', () => {
-    let api
-
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
-    })
-
-    it('get the version', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/version'
-      })
-
-      expect(res.result).to.have.a.property('Version', pkgversion)
-      expect(res.result).to.have.a.property('Commit')
-      expect(res.result).to.have.a.property('Repo')
-    })
-  })
+const defaultOptions = {
+  signal: sinon.match.instanceOf(AbortSignal),
+  timeout: undefined
 }
+
+describe('/version', () => {
+  let ipfs
+
+  beforeEach(() => {
+    ipfs = {
+      version: sinon.stub()
+    }
+  })
+
+  it('only accepts POST', () => {
+    return testHttpMethod('/api/v0/version')
+  })
+
+  it('get the version', async () => {
+    ipfs.version.withArgs(defaultOptions).returns({
+      version: 'version',
+      commit: 'commit',
+      repo: 'repo'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/version'
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Version', 'version')
+    expect(res).to.have.nested.property('result.Commit', 'commit')
+    expect(res).to.have.nested.property('result.Repo', 'repo')
+  })
+
+  it('accepts a timeout', async () => {
+    ipfs.version.withArgs({
+      ...defaultOptions,
+      timeout: 1000
+    }).returns({
+      version: 'version',
+      commit: 'commit',
+      repo: 'repo'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/version?timeout=1s'
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.Version', 'version')
+    expect(res).to.have.nested.property('result.Commit', 'commit')
+    expect(res).to.have.nested.property('result.Repo', 'repo')
+  })
+})

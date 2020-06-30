@@ -3,13 +3,13 @@
 module.exports = config => ({
   chmod: require('./chmod')(config),
   cp: require('./cp')(config),
-  mkdir: require('./mkdir')(config),
   flush: require('./flush')(config),
-  stat: require('./stat')(config),
-  rm: require('./rm')(config),
   ls: require('./ls')(config),
+  mkdir: require('./mkdir')(config),
+  mv: require('./mv')(config),
   read: require('./read')(config),
+  rm: require('./rm')(config),
+  stat: require('./stat')(config),
   touch: require('./touch')(config),
-  write: require('./write')(config),
-  mv: require('./mv')(config)
+  write: require('./write')(config)
 })

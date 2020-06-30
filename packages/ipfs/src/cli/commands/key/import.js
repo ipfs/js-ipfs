@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'import <name>',
@@ -19,12 +20,17 @@ module.exports = {
       type: 'string',
       demandOption: true,
       coerce: ('input', input => fs.readFileSync(input, 'utf8'))
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const key = await ipfs.key.import(argv.name, argv.input, argv.passin)
+  async handler ({ ctx: { ipfs, print }, name, input, passin, timeout }) {
+    const key = await ipfs.key.import(name, input, passin, {
+      timeout
+    })
     print(`imported ${key.id} ${key.name}`)
   }
 }

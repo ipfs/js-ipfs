@@ -1,7 +1,7 @@
 {
   "name": "example-browser-parceljs",
-  "version": "1.0.0",
   "description": "",
+  "version": "1.0.2",
   "main": "index.js",
   "private": true,
   "browserslist": [
@@ -18,17 +18,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ipfs": "^0.41.0"
+    "ipfs": "^0.47.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
-    "@babel/core": "^7.1.6",
-    "@babel/preset-env": "^7.1.6",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-polyfill": "^6.26.0",
-    "parcel-bundler": "^1.10.3",
+    "parcel-bundler": "^1.12.4",
     "standard": "^13.1.0",
-    "test-ipfs-example": "^1.0.0"
+    "test-ipfs-example": "^2.0.3"
   }
 }

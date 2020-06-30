@@ -5,14 +5,12 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const fs = require('fs')
 const clean = require('../utils/clean')
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 const tempWrite = require('temp-write')
 
 describe('init', function () {
-  this.timeout(100 * 1000)
-
   let repoPath
   let ipfs
 
@@ -32,7 +30,7 @@ describe('init', function () {
   }
 
   beforeEach(() => {
-    repoPath = os.tmpdir() + '/ipfs-' + hat()
+    repoPath = os.tmpdir() + '/ipfs-' + nanoid()
     ipfs = ipfsExec(repoPath)
   })
 
@@ -66,23 +64,17 @@ describe('init', function () {
   })
 
   it('profile', async function () {
-    this.timeout(40 * 1000)
-
     await ipfs('init --profile lowpower')
     expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
   })
 
   it('profile multiple', async function () {
-    this.timeout(40 * 1000)
-
     await ipfs('init --profile server,lowpower')
     expect(repoConfSync().Discovery.MDNS.Enabled).to.equal(false)
     expect(repoConfSync().Swarm.ConnMgr.LowWater).to.equal(20)
   })
 
   it('profile non-existent', async function () {
-    this.timeout(40 * 1000)
-
     await expect(ipfs('init --profile doesnt-exist'))
       .to.eventually.be.rejected()
       .and.to.have.property('stderr').that.includes('Could not find profile')

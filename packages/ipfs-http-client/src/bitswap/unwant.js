@@ -2,26 +2,20 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-
-    if (typeof cid === 'string') {
-      searchParams.set('arg', cid)
-    } else {
-      searchParams.set('arg', new CID(cid).toString())
-    }
-
-    const res = await ky.post('bitswap/unwant', {
+module.exports = configure(api => {
+  return async (cid, options = {}) => {
+    const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return res
+    return res.json()
   }
 })

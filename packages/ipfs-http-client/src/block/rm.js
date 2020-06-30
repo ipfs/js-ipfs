@@ -1,35 +1,27 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * rm (cid, options) {
-    options = options || {}
-
+module.exports = configure(api => {
+  return async function * rm (cid, options = {}) {
     if (!Array.isArray(cid)) {
       cid = [cid]
     }
 
-    const searchParams = new URLSearchParams()
-    searchParams.set('stream-channels', true)
-    searchParams.set('force', options.force || false)
-    searchParams.set('quiet', options.quiet || false)
-
-    cid.forEach(cid => {
-      searchParams.append('arg', new CID(cid).toString())
-    })
-
-    const res = await ky.post('block/rm', {
+    const res = await api.post('block/rm', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: cid.map(cid => new CID(cid).toString()),
+        'stream-channels': true,
+        ...options
+      }),
+      headers: options.headers
     })
 
-    for await (const removed of ndjson(toIterable(res.body))) {
+    for await (const removed of res.ndjson()) {
       yield toCoreInterface(removed)
     }
   }

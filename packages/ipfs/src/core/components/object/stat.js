@@ -1,10 +1,11 @@
 'use strict'
 
 const dagPB = require('ipld-dag-pb')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, preload }) => {
   const get = require('./get')({ ipld, preload })
-  return async function stat (multihash, options) {
+  return withTimeoutOption(async function stat (multihash, options) {
     options = options || {}
 
     const node = await get(multihash, options)
@@ -24,5 +25,5 @@ module.exports = ({ ipld, preload }) => {
       DataSize: node.Data.length,
       CumulativeSize: blockSize + linkLength
     }
-  }
+  })
 }

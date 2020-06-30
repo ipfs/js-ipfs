@@ -1,23 +1,21 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const configure = require('../lib/configure')
 const toIterable = require('stream-to-it/source')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * read (path, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.append('arg', `${path}`)
-    if (options.length != null) searchParams.set('length', options.length)
-    if (options.offset != null) searchParams.set('offset', options.offset)
-
-    const res = await ky.post('files/read', {
+module.exports = configure(api => {
+  return async function * read (path, options = {}) {
+    const res = await api.post('files/read', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: path,
+        count: options.count || options.length,
+        ...options
+      }),
+      headers: options.headers
     })
 
     for await (const chunk of toIterable(res.body)) {

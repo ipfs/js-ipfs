@@ -2,6 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,25 +24,55 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should non-recursively resolve ipfs.io', async () => {
-      const res = await ipfs.dns('ipfs.io', { recursive: false })
-
-      // matches pattern /ipns/<ipnsaddress>
-      expect(res).to.match(/\/ipns\/.+$/)
+    it('should respect timeout option when resolving a DNS name', () => {
+      return testTimeout(() => ipfs.dns('derp.io', {
+        timeout: 1
+      }))
     })
 
-    it('should recursively resolve ipfs.io', async () => {
-      const res = await ipfs.dns('ipfs.io', { recursive: true })
+    it('should non-recursively resolve ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('ipfs.io', { recursive: false })
 
-      // matches pattern /ipfs/<hash>
-      expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ipns/<ipnsaddress>
+        expect(res).to.match(/\/ipns\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve subdomain docs.ipfs.io', async () => {
-      const res = await ipfs.dns('docs.ipfs.io')
+    it('should recursively resolve ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('ipfs.io', { recursive: true })
 
-      // matches pattern /ipfs/<hash>
-      expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
+    })
+
+    it('should resolve subdomain docs.ipfs.io', async function () {
+      try {
+        const res = await ipfs.dns('docs.ipfs.io')
+
+        // matches pattern /ipfs/<hash>
+        expect(res).to.match(/\/ipfs\/.+$/)
+      } catch (err) {
+        if (err.message.includes('could not resolve name')) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
   })
 }

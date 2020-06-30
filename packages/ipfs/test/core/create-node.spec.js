@@ -4,10 +4,8 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
-const os = require('os')
-const path = require('path')
-const hat = require('hat')
 const { isNode } = require('ipfs-utils/src/env')
+const tmpDir = require('ipfs-utils/src/temp-dir')
 const IPFS = require('../../src/core')
 
 // This gets replaced by `create-repo-browser.js` in the browser
@@ -26,7 +24,7 @@ describe('create node', function () {
     this.timeout(80 * 1000)
 
     const node = await IPFS.create({
-      repo: path.join(os.tmpdir(), 'ipfs-repo-' + hat()),
+      repo: tmpDir(),
       init: { bits: 512 },
       config: {
         Addresses: {
@@ -36,7 +34,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     await node.stop()
   })
@@ -55,7 +53,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     await node.stop()
   })
@@ -106,14 +104,14 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     expect(config.Identity.PrivKey.length).is.below(1024)
     await node.stop()
   })
 
   it('should be silent', async function () {
-    if (process && process.env && process.env.DEBUG) return this.skip()
+    if (process.env.DEBUG) return this.skip()
 
     this.timeout(30 * 1000)
 
@@ -154,7 +152,7 @@ describe('create node', function () {
       preload: { enabled: false }
     })
 
-    const config = await node.config.get()
+    const config = await node.config.getAll()
     expect(config.Addresses.Swarm).to.eql(['/ip4/127.0.0.1/tcp/9977'])
     expect(config.Bootstrap).to.eql([])
     await node.stop()
@@ -251,5 +249,22 @@ describe('create node', function () {
     })
 
     await node.stop()
+  })
+
+  it('should error when receiving websocket-star swarm addresses', async () => {
+    const node = await IPFS.create({
+      repo: tempRepo,
+      init: { bits: 512 },
+      start: false,
+      config: {
+        Addresses: {
+          Swarm: ['/ip4/127.0.0.1/tcp/13579/wss/p2p-websocket-star']
+        },
+        Bootstrap: []
+      },
+      preload: { enabled: false }
+    })
+
+    await expect(node.start()).to.eventually.be.rejected().with.property('code', 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
   })
 })

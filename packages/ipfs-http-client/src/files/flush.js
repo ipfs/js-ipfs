@@ -1,27 +1,27 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const CID = require('cids')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
+module.exports = configure(api => {
+  return async (path, options = {}) => {
     if (typeof path !== 'string') {
-      options = path
+      options = path || {}
       path = '/'
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', path)
-
-    const res = await ky.post('files/flush', {
+    const res = await api.post('files/flush', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: path,
+        ...options
+      }),
+      headers: options.headers
+    })
+    const data = await res.json()
 
-    return new CID(res.Cid)
+    return new CID(data.Cid)
   }
 })

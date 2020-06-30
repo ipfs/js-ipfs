@@ -1,25 +1,25 @@
 'use strict'
 
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
+module.exports = configure(api => {
+  return async (cid, options = {}) => {
     cid = new CID(cid)
-    options = options || {}
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${cid}`)
-
-    const data = await ky.post('block/get', {
+    const res = await api.post('block/get', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).arrayBuffer()
+      searchParams: toUrlSearchParams({
+        arg: cid.toString(),
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return new Block(Buffer.from(data), cid)
+    return new Block(Buffer.from(await res.arrayBuffer()), cid)
   }
 })

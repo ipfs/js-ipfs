@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'stat <key>',
@@ -13,12 +14,18 @@ module.exports = {
       describe: 'Number base to display CIDs in.',
       type: 'string',
       choices: multibase.names
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, key, cidBase }) {
+  async handler ({ ctx, key, cidBase, timeout }) {
     const { ipfs, print } = ctx
-    const stats = await ipfs.block.stat(key)
+    const stats = await ipfs.block.stat(key, {
+      timeout
+    })
     print('Key: ' + cidToString(stats.cid, { base: cidBase }))
     print('Size: ' + stats.size)
   }

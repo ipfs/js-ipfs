@@ -1,28 +1,30 @@
-# Dependency tools
-package-lock.json
-yarn.lock
-
 # Logs
 logs
 *.log
 npm-debug.log*
+package-lock.json
+yarn.lock
 
 # Coverage directory used by tools like istanbul
 coverage
 .nyc_output
 tests_output
+cache
+.cache
 
 # Dependency directory
 node_modules
 
 # Build artefacts
 dist
-
-# Doc generation
-docs
+build
+bundle.js
 
 # Deployment files
 .npmrc
 
 # Editor files
 .vscode
+
+# Operating system files
+.DS_Store

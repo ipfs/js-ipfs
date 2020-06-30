@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const all = require('it-all')
+const { Buffer } = require('buffer')
 const concat = require('it-concat')
 
 const factory = require('../utils/factory')

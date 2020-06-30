@@ -3,8 +3,10 @@
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const multicodec = require('multicodec')
+const { withTimeoutOption } = require('../../utils')
+const { Buffer } = require('buffer')
 
 function parseBuffer (buf, encoding) {
   switch (encoding) {
@@ -44,7 +46,7 @@ function parseProtoBuffer (buf) {
 }
 
 module.exports = ({ ipld, gcLock, preload }) => {
-  return async function put (obj, options) {
+  return withTimeoutOption(async function put (obj, options) {
     options = options || {}
 
     const encoding = options.enc
@@ -81,5 +83,5 @@ module.exports = ({ ipld, gcLock, preload }) => {
     } finally {
       release()
     }
-  }
+  })
 }

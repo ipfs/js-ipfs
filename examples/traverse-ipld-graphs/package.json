@@ -1,7 +1,7 @@
 {
   "name": "example-traverse-ipld-graphs",
-  "version": "1.0.0",
   "description": "How to traverse IPLD graphs",
+  "version": "2.0.1",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -10,9 +10,13 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "test-ipfs-example": "^1.0.0"
+    "test-ipfs-example": "^2.0.3"
   },
   "dependencies": {
-    "ipfs": "^0.41.0"
+    "cids": "^0.8.2",
+    "ipfs": "^0.47.0",
+    "ipld-block": "^0.9.1",
+    "ipld-dag-pb": "^0.18.5",
+    "multihashing-async": "^0.8.1"
   }
 }

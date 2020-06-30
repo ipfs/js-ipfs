@@ -1,14 +1,16 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
-const normaliseAddInput = require('ipfs-utils/src/files/normalise-input')
+const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const pipe = require('it-pipe')
 const drain = require('it-drain')
+const { withTimeoutOption } = require('../../utils')
 
-module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) => {
+module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
-  return async function * add (source, options) {
+
+  return withTimeoutOption(async function * add (source, options) {
     options = options || {}
 
     const opts = {
@@ -19,7 +21,7 @@ module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) =
     }
 
     // CID v0 is for multihashes encoded with sha2-256
-    if (opts.hashAlg && opts.cidVersion !== 1) {
+    if (opts.hashAlg && opts.hashAlg !== 'sha2-256' && opts.cidVersion !== 1) {
       opts.cidVersion = 1
     }
 
@@ -41,7 +43,10 @@ module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) =
 
     const iterator = pipe(
       normaliseAddInput(source),
-      source => importer(source, ipld, opts),
+      source => importer(source, block, {
+        ...opts,
+        pin: false
+      }),
       transformFile(opts),
       preloadFile(preload, opts),
       pinFile(pin, opts)
@@ -54,7 +59,7 @@ module.exports = ({ ipld, gcLock, preload, pin, options: constructorOptions }) =
     } finally {
       releaseLock()
     }
-  }
+  })
 }
 
 function transformFile (opts) {

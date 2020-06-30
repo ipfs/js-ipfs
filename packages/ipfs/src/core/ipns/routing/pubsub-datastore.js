@@ -1,7 +1,8 @@
 'use strict'
 
 const ipns = require('ipns')
-const { fromB58String, toB58String } = require('multihashes')
+const { Buffer } = require('buffer')
+const { fromB58String, toB58String } = require('multihashing-async').multihash
 const PubsubDatastore = require('datastore-pubsub')
 
 const withIs = require('class-is')

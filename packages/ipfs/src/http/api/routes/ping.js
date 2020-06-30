@@ -3,10 +3,7 @@
 const resources = require('../resources')
 
 module.exports = {
-  method: '*',
+  method: 'POST',
   path: '/api/v0/ping',
-  config: {
-    handler: resources.ping.handler,
-    validate: resources.ping.validate
-  }
+  ...resources.ping
 }

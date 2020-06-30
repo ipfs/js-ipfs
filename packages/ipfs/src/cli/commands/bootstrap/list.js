@@ -1,15 +1,23 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'list',
 
   describe: 'Show peers in the bootstrap list',
 
-  builder: {},
+  builder: {
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
+    }
+  },
 
-  async handler (argv) {
-    const { ipfs, print } = argv.ctx
-    const list = await ipfs.bootstrap.list()
+  async handler ({ ctx: { ipfs, print }, timeout }) {
+    const list = await ipfs.bootstrap.list({
+      timeout
+    })
     list.Peers.forEach((node) => print(node))
   }
 }

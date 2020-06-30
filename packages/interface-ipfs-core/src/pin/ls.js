@@ -6,6 +6,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
 const last = require('it-last')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -39,6 +40,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when listing pins', () => {
+      return testTimeout(() => ipfs.pin.ls({
+        timeout: 1
+      }))
+    })
 
     // 1st, because ipfs.add pins automatically
     it('should list all recursive pins', async () => {

@@ -11,12 +11,14 @@ branches:
 stages:
   - check
   - test
-  - release-rc
+  - release-rc-npm
+  - release-rc-docker
   - test-external
 
 node_js:
-  - '10'
-  - '12'
+  - 'lts/*'
+  # cannot support node 14 until hapi > 19.1.1 is released
+  # - 'node'
 
 os:
   - linux
@@ -42,10 +44,10 @@ addons:
 before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
+  # only run jobs in packages that have changed since master in PR builds
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
-script: npx nyc -s npm run test:node -- -- -- --timeout 10000 --bail
-after_success:
-  - npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
+script: npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 
 jobs:
   allow_failures:
@@ -60,141 +62,161 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- --scope={ipfs,ipfs-http-client} -- -- --bundlesize
-        - npm run dep-check -- -- -- -- -i wrtc -i electron-webrtc
-        - npm run lint -- --concurrency 1
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
+        - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
+        - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
       name: chrome
       addons:
         chrome: stable
       script:
-        - npm run test:browser -- -- -- --bail
+        - npm run test:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: chrome webworker
       addons:
         chrome: stable
       script:
-        - npm run test:webworker -- -- -- --bail
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
       script:
-        - npm run test:browser -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: firefox webworker
       addons:
         firefox: latest
       script:
-        - npm run test:webworker -- -- -- --bail --browsers FirefoxHeadless
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npm run test:electron-main -- -- -- --bail
+        - npm run test:electron-main -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npm run test:electron-renderer -- -- -- --bail
+        - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - node
       script:
-        - npm run test:interop:node -- -- -- --bail
+        - npm run test:interop:node -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - browser
       script:
-        - npm run test:interop:browser -- -- -- --bail
+        - npm run test:interop:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - npm run test:interop:electron-main -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run test:interop:electron-renderer -- -- -- --bail --timeout 10000
+        - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
 
     - stage: test
       name: examples
       script:
-        - npm run build -- --scope={ipfs,ipfs-http-client}
+        - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
+        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist.push('ipfs-css', 'tachyons')"
+        - npm run reset
+        - npm install
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
         - npm run test -- --scope=example* --concurrency=1
 
-    - stage: release-rc
+    - stage: release-rc-npm
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
-      name: release rc
+      name: release npm rc
       script:
+        # travis does not fetch the whole repo history, but we need that to work out the
+        # ref count to publish canary releases properly
+        - git fetch --unshallow
+        - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - npm run release:rc -- --yes
+
+    - stage: release-rc-docker
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: release docker rc
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build . --tag js-ipfs:next --file ./Dockerfile.next
+        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next
+        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`
+        - docker push ipfs/js-ipfs:next
+        - docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-webui
       script:
-        - E2E_IPFSD_TYPE=js npm run test:external -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next
+        - E2E_IPFSD_TYPE=js npm run test:external -- -- -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-companion
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - npm-on-ipfs
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - peer-base
       script:
-        - npm run test:external -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - service-worker-gateway
       script:
-        - npm run test:external -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run test:external -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run test:external -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - sidetree
       script:
-        - npm run test:external -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false

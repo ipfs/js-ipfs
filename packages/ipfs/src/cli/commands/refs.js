@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'refs <key> [keys..]',
 
@@ -32,19 +34,21 @@ module.exports = {
     'max-depth': {
       desc: 'Only for recursive refs, limits fetch and listing to the given depth.',
       type: 'number'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, key, keys, recursive, format, edges, unique, maxDepth }) {
-    const { ipfs, print } = ctx
-
+  async handler ({ ctx: { ipfs, print }, key, keys, recursive, format, edges, unique, maxDepth, timeout }) {
     if (maxDepth === 0) {
       return
     }
 
     const k = [key].concat(keys)
 
-    for await (const ref of ipfs.refs(k, { recursive, format, edges, unique, maxDepth })) {
+    for await (const ref of ipfs.refs(k, { recursive, format, edges, unique, maxDepth, timeout })) {
       if (ref.err) {
         print(ref.err, true, true)
       } else {

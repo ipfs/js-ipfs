@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'publish <ipfsPath>',
 
@@ -28,12 +30,21 @@ module.exports = {
       describe: 'Time duration this record should be cached for (caution: experimental).',
       default: '',
       type: 'string'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, ipfsPath, resolve, lifetime, key, ttl }) {
-    const { ipfs, print } = ctx
-    const result = await ipfs.name.publish(ipfsPath, { resolve, lifetime, key, ttl })
+  async handler ({ ctx: { ipfs, print }, ipfsPath, resolve, lifetime, key, ttl, timeout }) {
+    const result = await ipfs.name.publish(ipfsPath, {
+      resolve,
+      lifetime,
+      key,
+      ttl,
+      timeout
+    })
     print(`Published to ${result.name}: ${result.value}`)
   }
 }

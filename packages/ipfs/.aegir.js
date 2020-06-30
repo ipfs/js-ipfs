@@ -2,13 +2,12 @@
 
 const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
-const EchoServer = require('interface-ipfs-core/src/utils/echo-http-server')
+const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
-const webpack = require('webpack')
 
 let preloadNode
-let echoServer
+let echoServer = new EchoServer()
 
 // the second signalling server is needed for the inferface test 'should list peers only once even if they have multiple addresses'
 let sigServerA
@@ -16,18 +15,7 @@ let sigServerB
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '652kB' },
-  webpack: {
-    resolve: {
-      mainFields: ['browser', 'main'],
-      aliasFields: ['browser', 'browser-all-ipld-formats'],
-    },
-    ...(process.env.NODE_ENV === 'test' ? {
-      plugins: [
-        new webpack.EnvironmentPlugin(['DEBUG', 'ECHO_SERVER_PORT'])
-      ]
-    } : {})
-  },
+  bundlesize: { maxSize: '530kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -35,16 +23,20 @@ module.exports = {
       served: true,
       included: false
     }],
-    browserNoActivityTimeout: 100 * 1000,
+    browserNoActivityTimeout: 100 * 1000
   },
   hooks: {
     node: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
-        echoServer = EchoServer.createServer()
 
         await preloadNode.start(),
         await echoServer.start()
+        return {
+          env: {
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+          }
+        }
       },
       post: async () => {
         await preloadNode.stop(),
@@ -54,7 +46,6 @@ module.exports = {
     browser: {
       pre: async () => {
         preloadNode = MockPreloadNode.createNode()
-        echoServer = EchoServer.createServer()
 
         await preloadNode.start()
         await echoServer.start()
@@ -90,6 +81,12 @@ module.exports = {
             ipfsBin: require('go-ipfs-dep').path()
           }
         }).start()
+
+        return {
+          env: {
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+          }
+        }
       },
       post: async () => {
         await ipfsdServer.stop()

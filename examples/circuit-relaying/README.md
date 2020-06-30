@@ -64,21 +64,21 @@ A circuit relay address is a [multiaddress](https://multiformats.io/multiaddr/) 
 
 Circuit relay addresses are very flexible and can describe many different aspects of how to esablish the relayed connection. In its simplest form, it looks something like this:
 
-- `/p2p-circuit/ipfs/QmPeer`
+- `/p2p-circuit/p2p/QmPeer`
 
 If we want to be specific as to which transport we want to use to establish the relay, we can encode that in the address as well:
 
-- `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit/ipfs/QmPeer`
+- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/p2p/QmPeer`
 
 This tells us that we want to use `QmRelay` located at address 127.0.0.1 and port 65000.
 
-- `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit/ip4/127.0.0.1/tcp/8080/ws/ipfs/QmPeer`
+- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/ip4/127.0.0.1/tcp/8080/ws/p2p/QmPeer`
 
 We can take it a step further and encode the same information for the destination peer. In this case, we have it located at 127.0.0.1 on port 8080 and using a Web sockets transport!
 
-- `/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay/p2p-circuit`
+- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit`
 
-If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/ipfs/QmRelay`) as a relay and it will be reachable over this relay.
+If a node is configured with this address, it will use the specified host (`/ip4/127.0.0.1/tcp/65000/p2p/QmRelay`) as a relay and it will be reachable over this relay.
   - There could multiple addresses of this sort specified in the config, in which case the node will be reachable over all of them.
   - This is useful if, for example, the node is behind a firewall but wants to be reachable from the outside over a specific relay.
 
@@ -100,6 +100,19 @@ Here's what we are going to be doing, today:
 ![](./img/img7.png)
 
 Let's go.
+
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 ### 1. Set up
 
@@ -196,7 +209,7 @@ Initializing daemon...
 Swarm listening on /ip4/127.0.0.1/tcp/4001
 Swarm listening on /ip4/192.168.1.132/tcp/4001
 Swarm listening on /ip6/::1/tcp/4001
-Swarm listening on /p2p-circuit/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF
+Swarm listening on /p2p-circuit/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF
 Swarm announcing /ip4/127.0.0.1/tcp/4001
 Swarm announcing /ip4/186.4.18.182/tcp/58986
 Swarm announcing /ip4/192.168.1.132/tcp/4001
@@ -206,7 +219,7 @@ Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
 Daemon is ready
 ```
 
-In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
+In the case of go ipfs, the crucial `/p2p/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
 
 ```console
 $ ipfs id
@@ -214,46 +227,42 @@ $ ipfs id
         "ID": "QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
         "PublicKey": "CAASpgIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC84qPFzqajCfnvaJunqt48S1LIBRthXV60q5QClL+dUfOOU/m7v1ZcpNhvFFUN6tVCDaoT5AxEv0czxZiVx/njl6FVIc6tE1J+HWpc8cbAXNY6QbbyzKl/rjp7V8/QClE0JqgjIk84wnWGTwFhOEt0hnpu2XFt9iHaenSfg3EAa8K9MlbxmbawuxNLJJf7VZXkJrUNl6WOglAVU8Sqc4QaahCLVK5Dzo98zDBq1KDBxMbUgH0LTqzr6i+saxkEHZmBKO+mMVT3LzOUx1DQR4pLAw1qgoJstsIZEaJ2XLh975IiI7OKqWYH7+3NyNK2sldJK/4Zko4rH3irmnkAxLcFAgMBAAE=",
         "Addresses": [
-                "/ip4/127.0.0.1/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
-                "/ip4/192.168.1.132/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
-                "/ip6/::1/tcp/4001/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
-                "/ip4/186.4.18.182/tcp/13285/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
-                "/ip4/186.4.18.182/tcp/13285/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF"
+                "/ip4/127.0.0.1/tcp/4001/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/192.168.1.132/tcp/4001/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip6/::1/tcp/4001/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/186.4.18.182/tcp/13285/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF",
+                "/ip4/186.4.18.182/tcp/13285/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF"
         ],
         "AgentVersion": "go-ipfs/0.4.14-dev/cb5bb7dd8",
         "ProtocolVersion": "ipfs/0.1.0"
 }
 ```
 
-We can then grab the resolved multiaddr from the `Addresses` array — `/ip4/127.0.0.1/tcp/4004/ws/ipfs/Qm...`. Let's note it down somewhere and move to the next step.
+We can then grab the resolved multiaddr from the `Addresses` array — `/ip4/127.0.0.1/tcp/4004/ws/p2p/Qm...`. Let's note it down somewhere and move to the next step.
 
 **js ipfs**
 
 ```console
 $ jsipfs daemon
 Initializing daemon...
-Swarm listening on /p2p-circuit/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
-Swarm listening on /p2p-circuit/ip4/0.0.0.0/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
-Swarm listening on /p2p-circuit/ip4/127.0.0.1/tcp/4003/ws/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
-Swarm listening on /ip4/127.0.0.1/tcp/4003/ws/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
-Swarm listening on /ip4/127.0.0.1/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
-Swarm listening on /ip4/192.168.1.132/tcp/4002/ipfs/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /p2p-circuit/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /p2p-circuit/ip4/0.0.0.0/tcp/4002/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /p2p-circuit/ip4/127.0.0.1/tcp/4003/ws/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/127.0.0.1/tcp/4003/ws/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/127.0.0.1/tcp/4002/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
+Swarm listening on /ip4/192.168.1.132/tcp/4002/p2p/QmfQj8YwDdy1uP2DpZBa7k38rSGPvhHiC52cdAGWBqoVpq
 API is listening on: /ip4/127.0.0.1/tcp/5002
 Gateway (readonly) is listening on: /ip4/127.0.0.1/tcp/9090
 Daemon is ready
 ```
 
-Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/ipfs/Qm...`. Note it down somewhere, and let's move on to the next step.
+Look out for an address similar to `/ip4/127.0.0.1/tcp/4003/ws/p2p/Qm...`. Note it down somewhere, and let's move on to the next step.
 
 ### 2. Configure and run the bundled example
 
-Now that we have ipfs installed and initialized, let's set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Let's `cd` into the `examples/circuit-relaying` directory and run:
+Now that we have ipfs installed and initialized, let's set up the included example. This is a standard npm package, so the usual `npm install` should get us going. Let's `cd` into the `examples/circuit-relaying` directory.
 
-```sh
-npm install
-```
-
-After it finishes, we should be able to run the project with `npm start` and get output similar to:
+We should be able to run the project with `npm start` and get output similar to:
 
 ```sh
 npm start
@@ -270,11 +279,11 @@ In order for our browser nodes to be able to messages each other, we need to get
 
 Remember the caveat above `Currently a Relay will only work if it already has a connection to the STOP node`? This means that we need to connect our browser nodes to the relay node first.
 
-Having both browsers running side by side (as shown in the first screenshot), enter the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` address noted above into the `Connect to Peer` field and hit the `Connect` button:
+Having both browsers running side by side (as shown in the first screenshot), enter the `/ip4/127.0.0.1/tcp/4003/ws/p2p/...` address noted above into the `Connect to Peer` field and hit the `Connect` button:
 
 ![](./img/img3.png)
 
-After connecting to the IPFS node, we should see the relay peer show up under the `Peers Connected` box.
+After connecting to the IPFS node, we should see the relay peer show up under the `Swarm Peers` box.
 
 ![](./img/img4.png)
 
@@ -282,7 +291,15 @@ Let's repeat the same steps with the second tab. Now, both of our browser nodes 
 
 ### 4. Dial the two browser nodes using a `/p2p-circuit` address
 
-Now that our browsers are both connected to the relay peer, let's get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
+Now that our browsers are both connected to the relay peer, let's get them connected to each other.  Create the p2p circuit address as follows:
+
+```
+${RELAY_ADDR}/p2p-circuit/p2p/${PEER_ID}
+```
+
+Here `${RELAY_ADDR}` is the multiaddr of the circuit relay node that you pasted into the "Connect to Peer" box in step 3, and `${PEER_ID}` is the id of the node we wish to connect to which can be found in the "Peer id" box of the browser window.
+
+Use the id from the "Peer id" box in the second browser window in the relay address you paste into the first browser, then repeat this step using the relay address of the first window in the second.
 
 ![](./img/img5.png)
 
@@ -322,9 +339,9 @@ const ipfs = await IPFS.create({
 })
 ```
 
-- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
+- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/p2p/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
 
-- And finally we connected the two browser nodes using the `/p2p-circuit/ipfs/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L103...L108) - lines 103-108
+- And finally we connected the two browser nodes using the `/p2p-circuit/p2p/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L103...L108) - lines 103-108
 
 ```js
 try {

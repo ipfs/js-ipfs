@@ -1,7 +1,6 @@
 'use strict'
 
-const multibase = require('multibase')
-const Joi = require('@hapi/joi')
+const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { map, reduce } = require('streaming-iterables')
 const pipe = require('it-pipe')
@@ -26,94 +25,125 @@ function toPin (type, cid, comments) {
   return output
 }
 
-function parseArgs (request, h) {
-  let { arg, comments, recursive } = request.query
-
-  if (!arg) {
-    throw Boom.badRequest("Argument 'arg' is required")
-  }
-
-  arg = Array.isArray(arg) ? arg : [arg]
-
-  return arg.map(arg => {
-    return {
-      path: arg,
-      comments,
-      recursive: Boolean(recursive !== 'false')
-    }
-  })
-}
-
 exports.ls = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names),
-      stream: Joi.boolean().default(false)
-    }).unknown()
-  },
-
-  parseArgs: (request) => {
-    let { arg, type } = request.query
-
-    if (arg) {
-      arg = Array.isArray(arg) ? arg : [arg]
-      arg = arg.map(arg => arg)
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        paths: Joi.array().single().items(Joi.ipfsPath()),
+        recursive: Joi.boolean().default(true),
+        cidBase: Joi.cidBase(),
+        type: Joi.string().valid('all', 'direct', 'indirect', 'recursive').default('all'),
+        stream: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'paths', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
-
-    return {
-      source: arg,
-      type: type || 'all'
-    }
   },
-
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const { source, type } = request.pre.args
-
-    if (!request.query.stream) {
-      try {
-        const res = await pipe(
-          ipfs.pin.ls(source, { type }),
-          reduce((res, { type, cid, comments }) => {
-            res.Keys[cidToString(cid, { base: request.query['cid-base'] })] = toPin(type, null, comments)
-            return res
-          }, { Keys: {} })
-        )
-
-        return h.response(res)
-      } catch (err) {
-        if (err.code === 'ERR_BAD_PATH') {
-          throw Boom.boomify(err, { statusCode: 400 })
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
         }
-
-        throw Boom.boomify(err, { message: 'Failed to list pins' })
+      },
+      query: {
+        paths,
+        type,
+        cidBase,
+        stream,
+        timeout
       }
+    } = request
+
+    if (!stream) {
+      const res = await pipe(
+        ipfs.pin.ls(paths, {
+          type,
+          signal,
+          timeout
+        }),
+        reduce((res, { type, cid }) => {
+          res.Keys[cidToString(cid, { base: cidBase })] = { Type: type }
+          return res
+        }, { Keys: {} })
+      )
+
+      return h.response(res)
     }
 
     return streamResponse(request, h, () => pipe(
-      ipfs.pin.ls(source, { type }),
-      map(({ type, cid, comments }) => toPin(type, cidToString(cid, { base: request.query['cid-base'] }), comments)),
+      ipfs.pin.ls(paths, {
+        type,
+        signal,
+        timeout
+      }),
+      map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: cidBase }) })),
       ndjson.stringify
     ))
   }
 }
 
 exports.add = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cids: Joi.array().single().items(Joi.cid()).min(1).required(),
+        recursive: Joi.boolean().default(true),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'cids', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
-  parseArgs,
-
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const source = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cids,
+        recursive,
+        cidBase,
+        timeout
+      }
+    } = request
 
     let result
     try {
-      result = await all(ipfs.pin.add(source))
+      result = await all(ipfs.pin.add(cids.map(cid => ({ cid, recursive })), {
+        signal,
+        timeout
+      }))
     } catch (err) {
       if (err.code === 'ERR_BAD_PATH') {
         throw Boom.boomify(err, { statusCode: 400 })
@@ -127,27 +157,58 @@ exports.add = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: request.query['cid-base'] }))
+      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
     })
   }
 }
 
 exports.rm = {
-  validate: {
-    query: Joi.object().keys({
-      'cid-base': Joi.string().valid(...multibase.names)
-    }).unknown()
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        cids: Joi.array().single().items(Joi.cid()).min(1).required(),
+        recursive: Joi.boolean().default(true),
+        cidBase: Joi.cidBase(),
+        timeout: Joi.timeout()
+      })
+        .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'cids', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
   },
-
-  parseArgs,
-
   async handler (request, h) {
-    const { ipfs } = request.server.app
-    const source = request.pre.args
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        cids,
+        recursive,
+        cidBase,
+        timeout
+      }
+    } = request
 
     let result
     try {
-      result = await all(ipfs.pin.rm(source))
+      result = await all(ipfs.pin.rm(cids.map(cid => ({ cid, recursive })), {
+        signal,
+        timeout
+      }))
     } catch (err) {
       if (err.code === 'ERR_BAD_PATH') {
         throw Boom.boomify(err, { statusCode: 400 })
@@ -157,7 +218,7 @@ exports.rm = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: request.query['cid-base'] }))
+      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
     })
   }
 }

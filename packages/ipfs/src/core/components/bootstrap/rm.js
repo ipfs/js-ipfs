@@ -1,9 +1,10 @@
 'use strict'
 
 const { isValidMultiaddr } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ repo }) => {
-  return async function rm (multiaddr, options) {
+  return withTimeoutOption(async function rm (multiaddr, options) {
     options = options || {}
 
     if (multiaddr && !isValidMultiaddr(multiaddr)) {
@@ -11,7 +12,7 @@ module.exports = ({ repo }) => {
     }
 
     let res = []
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
 
     if (options.all) {
       res = config.Bootstrap || []
@@ -27,5 +28,5 @@ module.exports = ({ repo }) => {
     }
 
     return { Peers: res }
-  }
+  })
 }

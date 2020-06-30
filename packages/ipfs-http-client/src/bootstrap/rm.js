@@ -2,27 +2,25 @@
 
 const Multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (addr, options) => {
+module.exports = configure(api => {
+  return async (addr, options = {}) => {
     if (addr && typeof addr === 'object' && !Multiaddr.isMultiaddr(addr)) {
       options = addr
       addr = null
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (addr) searchParams.set('arg', `${addr}`)
-    if (options.all != null) searchParams.set('all', options.all)
-
-    const res = await ky.post('bootstrap/rm', {
+    const res = await api.post('bootstrap/rm', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: addr,
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return res
+    return res.json()
   }
 })

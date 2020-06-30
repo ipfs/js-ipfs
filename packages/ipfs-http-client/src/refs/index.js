@@ -1,61 +1,31 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = config => {
-  const refs = (configure(({ ky }) => {
-    return async function * refs (args, options) {
-      options = options || {}
-
-      const searchParams = new URLSearchParams()
-
-      if (options.format !== undefined) {
-        searchParams.set('format', options.format)
-      }
-
-      if (options.edges !== undefined) {
-        searchParams.set('edges', options.edges)
-      }
-
-      if (options.unique !== undefined) {
-        searchParams.set('unique', options.unique)
-      }
-
-      if (options.recursive !== undefined) {
-        searchParams.set('recursive', options.recursive)
-      }
-
-      if (options.maxDepth !== undefined) {
-        searchParams.set('max-depth', options.maxDepth)
-      }
-
-      if (!Array.isArray(args)) {
-        args = [args]
-      }
-
-      for (const arg of args) {
-        searchParams.append('arg', `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`)
-      }
-
-      const res = await ky.post('refs', {
-        timeout: options.timeout,
-        signal: options.signal,
-        headers: options.headers,
-        searchParams
-      })
-
-      for await (const file of ndjson(toIterable(res.body))) {
-        yield toCamel(file)
-      }
+module.exports = configure((api, options) => {
+  const refs = async function * (args, options = {}) {
+    if (!Array.isArray(args)) {
+      args = [args]
     }
-  }))(config)
 
-  refs.local = require('./local')(config)
+    const res = await api.post('refs', {
+      timeout: options.timeout,
+      signal: options.signal,
+      searchParams: toUrlSearchParams({
+        arg: args.map(arg => `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`),
+        ...options
+      }),
+      headers: options.headers,
+      transform: toCamel
+    })
+
+    yield * res.ndjson()
+  }
+  refs.local = require('./local')(options)
 
   return refs
-}
+})

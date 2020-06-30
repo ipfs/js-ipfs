@@ -1,13 +1,16 @@
 'use strict'
 
 const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
+const errCode = require('err-code')
+const multibase = require('multibase')
+const { parallelMap, collect } = require('streaming-iterables')
+const pipe = require('it-pipe')
+const { resolvePath, withTimeoutOption } = require('../../utils')
 const { PinTypes } = require('./pin-manager')
 const { resolvePath } = require('../../utils')
 
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return async function * rm (source, options) {
-    options = options || {}
-
+  return withTimeoutOption(async function rm (source, options = {}) {
     const release = await gcLock.readLock()
 
     try {
@@ -48,5 +51,5 @@ module.exports = ({ pinManager, gcLock, dag }) => {
     } finally {
       release()
     }
-  }
+  })
 }

@@ -5,6 +5,8 @@ const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
+const Boom = require('@hapi/boom')
+const AbortController = require('abort-controller')
 
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
@@ -45,15 +47,6 @@ class HttpApi {
     this._options = options || {}
     this._log = debug(LOG)
     this._log.error = debug(LOG_ERROR)
-
-    if (process.env.IPFS_MONITORING) {
-      // Setup debug metrics collection
-      const prometheusClient = require('prom-client')
-      const prometheusGcStats = require('prometheus-gc-stats')
-      const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
-      collectDefaultMetrics({ timeout: 5000 })
-      prometheusGcStats(prometheusClient.register)()
-    }
   }
 
   async start () {
@@ -61,7 +54,7 @@ class HttpApi {
 
     const ipfs = this._ipfs
 
-    const config = await ipfs.config.get()
+    const config = await ipfs.config.getAll()
     config.Addresses = config.Addresses || {}
 
     const apiAddrs = config.Addresses.API
@@ -96,6 +89,55 @@ class HttpApi {
         prettyPrint: process.env.NODE_ENV !== 'production',
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
         level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
+      }
+    })
+
+    // https://github.com/ipfs/go-ipfs-cmds/pull/193/files
+    server.ext({
+      type: 'onRequest',
+      method: function (request, h) {
+        // This check affects POST as we should never get POST requests from a
+        // browser without Origin or Referer, but we might:
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=429594
+        if (request.method !== 'post') {
+          return h.continue
+        }
+
+        const headers = request.headers || {}
+        const origin = headers.origin || ''
+        const referrer = headers.referrer || ''
+        const userAgent = headers['user-agent'] || ''
+
+        // If these are set, we leave up to CORS and CSRF checks.
+        if (origin || referrer) {
+          return h.continue
+        }
+
+        // Allow if the user agent does not start with Mozilla... (i.e. curl)
+        if (!userAgent.startsWith('Mozilla')) {
+          return h.continue
+        }
+
+        // Disallow otherwise.
+        //
+        // This means the request probably came from a browser and thus, it
+        // should have included Origin or referer headers.
+        throw Boom.forbidden()
+      }
+    })
+
+    server.ext({
+      type: 'onRequest',
+      method: function (request, h) {
+        const controller = new AbortController()
+        request.app.signal = controller.signal
+
+        // abort the reqest if the client disconnects
+        request.events.once('disconnect', () => {
+          controller.abort()
+        })
+
+        return h.continue
       }
     })
 

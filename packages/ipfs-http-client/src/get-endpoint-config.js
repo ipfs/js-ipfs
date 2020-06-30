@@ -2,12 +2,15 @@
 
 const configure = require('./lib/configure')
 
-module.exports = configure(({ apiAddr, apiPath }) => {
-  const url = new URL(apiAddr)
-  return () => ({
-    host: url.hostname,
-    port: url.port,
-    protocol: url.protocol.split(':')[0], // remove ":"
-    'api-path': apiPath
-  })
+module.exports = configure(api => {
+  return () => {
+    const url = new URL(api.opts.base)
+    return {
+      host: url.hostname,
+      port: url.port,
+      protocol: url.protocol,
+      pathname: url.pathname,
+      'api-path': url.pathname
+    }
+  }
 })

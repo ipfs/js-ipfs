@@ -1,36 +1,38 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (key, value, options) => {
-    options = options || {}
-
+module.exports = configure(api => {
+  return async (key, value, options = {}) => {
     if (typeof key !== 'string') {
       throw new Error('Invalid key type')
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
-
-    if (typeof value === 'boolean') {
-      searchParams.set('bool', true)
-      value = value.toString()
-    } else if (typeof value !== 'string') {
-      searchParams.set('json', true)
-      value = JSON.stringify(value)
+    const params = {
+      arg: [
+        key,
+        value
+      ],
+      ...options
     }
 
-    searchParams.set('arg', key)
-    searchParams.append('arg', value)
+    if (typeof value === 'boolean') {
+      params.arg[1] = value.toString()
+      params.bool = true
+    } else if (typeof value !== 'string') {
+      params.arg[1] = JSON.stringify(value)
+      params.json = true
+    }
 
-    const res = await ky.post('config', {
+    const res = await api.post('config', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(params),
+      headers: options.headers
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
 })

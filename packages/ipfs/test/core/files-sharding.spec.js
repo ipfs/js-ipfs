@@ -4,6 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const last = require('it-last')
+const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 
 describe('files directory (sharding tests)', function () {
@@ -20,7 +21,9 @@ describe('files directory (sharding tests)', function () {
     let ipfsd
 
     before(async function () {
-      ipfsd = await df.spawn()
+      ipfsd = await df.spawn({
+        ipfsOptions: { EXPERIMENTAL: { sharding: false } }
+      })
       ipfs = ipfsd.api
     })
 

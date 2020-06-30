@@ -1,27 +1,22 @@
 'use strict'
 
-const ndjson = require('iterable-ndjson')
-const configure = require('./lib/configure')
-const toIterable = require('stream-to-it/source')
 const toCamel = require('./lib/object-to-camel')
+const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * ping (peerId, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${peerId}`)
-    if (options.count != null) searchParams.set('count', options.count)
-
-    const res = await ky.post('ping', {
+module.exports = configure(api => {
+  return async function * ping (peerId, options = {}) {
+    const res = await api.post('ping', {
       timeout: options.timeout,
       signal: options.signal,
+      searchParams: toUrlSearchParams({
+        arg: `${peerId}`,
+        ...options
+      }),
       headers: options.headers,
-      searchParams
+      transform: toCamel
     })
 
-    for await (const chunk of ndjson(toIterable(res.body))) {
-      yield toCamel(chunk)
-    }
+    yield * res.ndjson()
   }
 })

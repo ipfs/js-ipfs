@@ -1,13 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -27,6 +29,12 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when resoving an ipfs path', () => {
+      return testTimeout(() => ipfs.resolve('/ipfs/Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ/herp/derp', {
+        timeout: 1
+      }))
+    })
 
     it('should resolve an IPFS hash', async () => {
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
@@ -55,7 +63,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve up to the last node', async () => {
-      const content = { path: { to: { file: hat() } } }
+      const content = { path: { to: { file: nanoid() } } }
       const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
       const cid = await ipfs.dag.put(content, options)
       const path = `/ipfs/${cid}/path/to/file`
@@ -66,7 +74,7 @@ module.exports = (common, options) => {
 
     it('should resolve up to the last node across multiple nodes', async () => {
       const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
-      const childCid = await ipfs.dag.put({ node: { with: { file: hat() } } }, options)
+      const childCid = await ipfs.dag.put({ node: { with: { file: nanoid() } } }, options)
       const parentCid = await ipfs.dag.put({ path: { to: childCid } }, options)
       const resolved = await ipfs.resolve(`/ipfs/${parentCid}/path/to/node/with/file`)
 

@@ -1,36 +1,31 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
-const configure = require('../lib/configure')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * ls (path, options) {
+module.exports = configure(api => {
+  return async function * ls (path, options = {}) {
     if (typeof path !== 'string') {
-      options = path
+      options = path || {}
       path = '/'
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', CID.isCID(path) ? `/ipfs/${path}` : path)
-    searchParams.set('stream', options.stream == null ? true : options.stream)
-    if (options.cidBase) searchParams.set('cid-base', options.cidBase)
-    searchParams.set('long', options.long == null ? true : options.long)
-    // TODO: remove after go-ipfs 0.5 is released
-    searchParams.set('l', options.long == null ? true : options.long)
-
-    const res = await ky.post('files/ls', {
+    const res = await api.post('files/ls', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: CID.isCID(path) ? `/ipfs/${path}` : path,
+        // default long to true, diverges from go-ipfs where its false by default
+        long: true,
+        ...options,
+        stream: true
+      }),
+      headers: options.headers
     })
 
-    for await (const result of ndjson(toIterable(res.body))) {
+    for await (const result of res.ndjson()) {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {

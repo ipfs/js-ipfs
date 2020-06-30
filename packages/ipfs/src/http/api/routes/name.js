@@ -4,37 +4,28 @@ const resources = require('../resources')
 
 module.exports = [
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/name/resolve',
-    options: {
-      validate: resources.name.resolve.validate
-    },
-    handler: resources.name.resolve.handler
+    ...resources.name.resolve
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/name/publish',
-    options: {
-      validate: resources.name.publish.validate
-    },
-    handler: resources.name.publish.handler
+    ...resources.name.publish
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/name/pubsub/state',
-    handler: resources.name.pubsub.state.handler
+    ...resources.name.pubsub.state
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/name/pubsub/subs',
-    handler: resources.name.pubsub.subs.handler
+    ...resources.name.pubsub.subs
   },
   {
-    method: '*',
+    method: 'POST',
     path: '/api/v0/name/pubsub/cancel',
-    options: {
-      validate: resources.name.pubsub.cancel.validate
-    },
-    handler: resources.name.pubsub.cancel.handler
+    ...resources.name.pubsub.cancel
   }
 ]

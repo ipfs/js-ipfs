@@ -7,14 +7,13 @@ const globSource = require('ipfs-utils/src/files/glob-source')
 const urlSource = require('ipfs-utils/src/files/url-source')
 const { Buffer } = require('buffer')
 const PeerId = require('peer-id')
-const PeerInfo = require('peer-info')
 const crypto = require('libp2p-crypto')
 const isIPFS = require('is-ipfs')
 const multiaddr = require('multiaddr')
-const multihash = require('multihashes')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
 const multihashing = require('multihashing-async')
+const multihash = multihashing.multihash
 const CID = require('cids')
 const { NotInitializedError } = require('./errors')
 const Components = require('./components')
@@ -28,7 +27,9 @@ const getDefaultOptions = () => ({
     enabled: !isTest, // preload by default, unless in test env
     addresses: [
       '/dns4/node0.preload.ipfs.io/https',
-      '/dns4/node1.preload.ipfs.io/https'
+      '/dns4/node1.preload.ipfs.io/https',
+      '/dns4/node2.preload.ipfs.io/https',
+      '/dns4/node3.preload.ipfs.io/https'
     ]
   }
 })
@@ -72,7 +73,6 @@ module.exports = {
   multihashing,
   multicodec,
   PeerId,
-  PeerInfo,
   globSource,
   urlSource
 }

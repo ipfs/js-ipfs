@@ -1,29 +1,24 @@
 'use strict'
 
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
 const configure = require('../lib/configure')
-const toIterable = require('stream-to-it/source')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * gc (peerId, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.streamErrors) searchParams.set('stream-errors', options.streamErrors)
-
-    const res = await ky.post('repo/gc', {
+module.exports = configure(api => {
+  return async function * gc (options = {}) {
+    const res = await api.post('repo/gc', {
       timeout: options.timeout,
       signal: options.signal,
+      searchParams: toUrlSearchParams(options),
       headers: options.headers,
-      searchParams
+      transform: (res) => {
+        return {
+          err: res.Error ? new Error(res.Error) : null,
+          cid: (res.Key || {})['/'] ? new CID(res.Key['/']) : null
+        }
+      }
     })
 
-    for await (const gcResult of ndjson(toIterable(res.body))) {
-      yield {
-        err: gcResult.Error ? new Error(gcResult.Error) : null,
-        cid: (gcResult.Key || {})['/'] ? new CID(gcResult.Key['/']) : null
-      }
-    }
+    yield * res.ndjson()
   }
 })

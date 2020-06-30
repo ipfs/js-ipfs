@@ -1,22 +1,57 @@
 'use strict'
 
-const Boom = require('@hapi/boom')
+const Joi = require('../../utils/joi')
 
-module.exports = async (request, h) => {
-  const domain = request.query.arg
+module.exports = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        domain: Joi.string().required(),
+        format: Joi.string(),
+        recursive: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('r', 'recursive', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('arg', 'domain', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        domain,
+        recursive,
+        format,
+        timeout
+      }
+    } = request
 
-  if (!domain) {
-    throw Boom.badRequest("Argument 'domain' is required")
+    const path = await ipfs.dns(domain, {
+      recursive,
+      format,
+      signal,
+      timeout
+    })
+
+    return h.response({
+      Path: path
+    })
   }
-
-  const format = request.query.format
-
-  // query parameters are passed as strings and need to be parsed to expected type
-  let recursive = request.query.recursive || request.query.r
-  recursive = !(recursive && recursive === 'false')
-
-  const path = await request.server.app.ipfs.dns(domain, { recursive, format })
-  return h.response({
-    Path: path
-  })
 }

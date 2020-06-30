@@ -6,11 +6,12 @@ const { parallelMap, filter } = require('streaming-iterables')
 const pipe = require('it-pipe')
 const { PinTypes } = require('../pin/pin-manager')
 const { cleanCid } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 const BLOCK_RM_CONCURRENCY = 8
 
 module.exports = ({ blockService, gcLock, pinManager }) => {
-  return async function * rm (cids, options) {
+  return withTimeoutOption(async function * rm (cids, options) {
     options = options || {}
 
     if (!Array.isArray(cids)) {
@@ -62,5 +63,5 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
     } finally {
       release()
     }
-  }
+  })
 }

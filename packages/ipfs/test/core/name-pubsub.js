@@ -2,10 +2,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const base64url = require('base64url')
-const { fromB58String } = require('multihashes')
+const { fromB58String } = require('multihashing-async').multihash
 const PeerId = require('peer-id')
 const { isNode } = require('ipfs-utils/src/env')
 const ipns = require('ipns')
@@ -32,8 +33,8 @@ describe('name-pubsub', function () {
     this.timeout(40 * 1000)
 
     nodes = await Promise.all([
-      df.spawn({ type: 'proc', ipfsOptions: { pass: hat(), EXPERIMENTAL: { ipnsPubsub: true } } }),
-      df.spawn({ type: 'proc', ipfsOptions: { pass: hat(), EXPERIMENTAL: { ipnsPubsub: true } } })
+      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } }),
+      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } })
     ])
 
     nodeA = nodes[0].api

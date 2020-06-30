@@ -2,30 +2,22 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * ls (path, options) {
-    options = options || {}
-
-    const searchParams = new URLSearchParams()
-    searchParams.set('arg', `${Buffer.isBuffer(path) ? new CID(path) : path}`)
-    searchParams.set('stream', options.stream == null ? true : options.stream)
-
-    if (options.long != null) searchParams.set('long', options.long)
-    if (options.unsorted != null) searchParams.set('unsorted', options.unsorted)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('ls', {
+module.exports = configure(api => {
+  return async function * ls (path, options = {}) {
+    const res = await api.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
+      searchParams: toUrlSearchParams({
+        arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
+        ...options
+      }),
+      headers: options.headers
     })
 
-    for await (let result of ndjson(toIterable(res.body))) {
+    for await (let result of res.ndjson()) {
       result = result.Objects
 
       if (!result) {

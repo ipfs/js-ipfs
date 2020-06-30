@@ -3,13 +3,14 @@
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
 const { Buffer } = require('buffer')
+const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
-const toFormData = require('../lib/buffer-to-form-data')
+const toUrlSearchParams = require('../lib/to-url-search-params')
+const anySignal = require('any-signal')
+const AbortController = require('abort-controller')
 
-module.exports = configure(({ ky }) => {
-  return async (obj, options) => {
-    options = options || {}
-
+module.exports = configure(api => {
+  return async (obj, options = {}) => {
     let tmpObj = {
       Data: null,
       Links: []
@@ -42,21 +43,24 @@ module.exports = configure(({ ky }) => {
     if (Buffer.isBuffer(obj) && options.enc) {
       buf = obj
     } else {
+      options.enc = 'json'
       buf = Buffer.from(JSON.stringify(tmpObj))
     }
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.enc) searchParams.set('inputenc', options.enc)
-    if (options.pin != null) searchParams.set('pin', options.pin)
-    if (options.quiet != null) searchParams.set('quiet', options.quiet)
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
 
-    const { Hash } = await ky.post('object/put', {
+    const res = await api.post('object/put', {
       timeout: options.timeout,
-      signal: options.signal,
-      headers: options.headers,
-      searchParams,
-      body: toFormData(buf)
-    }).json()
+      signal,
+      searchParams: toUrlSearchParams(options),
+      ...(
+        await multipartRequest(buf, controller, options.headers)
+      )
+    })
+
+    const { Hash } = await res.json()
 
     return new CID(Hash)
   }

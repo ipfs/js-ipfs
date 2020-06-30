@@ -1,25 +1,20 @@
 'use strict'
 
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${path}`)
-    if (options.cidBase) searchParams.set('cid-base', options.cidBase)
-    if (options.dhtRecordCount) searchParams.set('dht-record-count', options.dhtRecordCount)
-    if (options.dhtTimeout) searchParams.set('dht-timeout', options.dhtTimeout)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('resolve', {
+module.exports = configure(api => {
+  return async (path, options = {}) => {
+    const res = await api.post('resolve', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
-
-    return res.Path
+      searchParams: toUrlSearchParams({
+        arg: path,
+        ...options
+      }),
+      headers: options.headers
+    })
+    const { Path } = await res.json()
+    return Path
   }
 })

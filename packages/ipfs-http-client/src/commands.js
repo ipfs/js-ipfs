@@ -1,19 +1,17 @@
 'use strict'
 
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return options => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.flags != null) searchParams.set('flags', options.flags)
-
-    return ky.post('commands', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    const res = await api.post('commands', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
+    })
+
+    return res.json()
   }
 })

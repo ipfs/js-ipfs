@@ -3,9 +3,10 @@
 const multicodec = require('multicodec')
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 const drain = require('it-drain')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, pin, gcLock, preload }) => {
-  return async function put (dagNode, options) {
+  return withTimeoutOption(async function put (dagNode, options) {
     options = options || {}
 
     if (options.cid && (options.format || options.hashAlg)) {
@@ -48,7 +49,8 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
     try {
       const cid = await ipld.put(dagNode, options.format, {
         hashAlg: options.hashAlg,
-        cidVersion: options.version
+        cidVersion: options.version,
+        signal: options.signal
       })
 
       if (options.pin) {
@@ -67,5 +69,5 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
         release()
       }
     }
-  }
+  })
 }

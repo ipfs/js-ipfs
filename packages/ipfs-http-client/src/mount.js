@@ -1,23 +1,18 @@
 'use strict'
 
-const configure = require('./lib/configure')
 const toCamel = require('./lib/object-to-camel')
+const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.ipfsPath != null) searchParams.set('ipfs-path', options.ipfsPath)
-    if (options.ipnsPath != null) searchParams.set('ipns-path', options.ipnsPath)
-
-    const res = await ky.post('dns', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    const res = await api.post('dns', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
 })

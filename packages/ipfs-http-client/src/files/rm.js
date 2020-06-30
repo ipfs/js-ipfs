@@ -1,22 +1,23 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const { findSources } = require('./utils')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return (path, options) => {
-    options = options || {}
+module.exports = configure(api => {
+  return async (...args) => {
+    const { sources, options } = findSources(args)
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.append('arg', path)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-    if (options.force != null) searchParams.set('force', options.force)
-    if (options.shardSplitThreshold != null) searchParams.set('shardSplitThreshold', options.shardSplitThreshold)
-
-    return ky.post('files/rm', {
+    const res = await api.post('files/rm', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).text()
+      searchParams: toUrlSearchParams({
+        arg: sources,
+        ...options
+      }),
+      headers: options.headers
+    })
+
+    await res.text()
   }
 })

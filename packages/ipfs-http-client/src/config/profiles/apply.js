@@ -1,24 +1,23 @@
 'use strict'
 
 const configure = require('../../lib/configure')
+const toUrlSearchParams = require('../../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (profile, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', profile)
-    if (options.dryRun != null) searchParams.set('dry-run', options.dryRun)
-
-    const res = await ky.post('config/profile/apply', {
+module.exports = configure(api => {
+  return async (profile, options = {}) => {
+    const res = await api.post('config/profile/apply', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: profile,
+        ...options
+      }),
+      headers: options.headers
+    })
+    const data = await res.json()
 
     return {
-      original: res.OldCfg, updated: res.NewCfg
+      original: data.OldCfg, updated: data.NewCfg
     }
   }
 })

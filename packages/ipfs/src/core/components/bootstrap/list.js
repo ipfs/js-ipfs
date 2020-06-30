@@ -1,8 +1,10 @@
 'use strict'
 
+const { withTimeoutOption } = require('../../utils')
+
 module.exports = ({ repo }) => {
-  return async function list () {
-    const config = await repo.config.get()
-    return { Peers: config.Bootstrap || [] }
-  }
+  return withTimeoutOption(async function list (options) {
+    const peers = await repo.config.get('Bootstrap', options)
+    return { Peers: peers || [] }
+  })
 }

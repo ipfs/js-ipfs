@@ -1,22 +1,19 @@
 'use strict'
 
-const configure = require('../lib/configure')
-const ndjson = require('iterable-ndjson')
-const toIterable = require('stream-to-it/source')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async function * refsLocal (options) {
-    options = options || {}
-
-    const res = await ky.post('refs/local', {
+module.exports = configure(api => {
+  return async function * refsLocal (options = {}) {
+    const res = await api.post('refs/local', {
       timeout: options.timeout,
       signal: options.signal,
+      transform: toCamel,
+      searchParams: toUrlSearchParams(options),
       headers: options.headers
     })
 
-    for await (const file of ndjson(toIterable(res.body))) {
-      yield toCamel(file)
-    }
+    yield * res.ndjson()
   }
 })

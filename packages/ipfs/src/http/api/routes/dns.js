@@ -3,7 +3,7 @@
 const resources = require('../resources')
 
 module.exports = {
-  method: '*',
+  method: 'POST',
   path: '/api/v0/dns',
-  handler: resources.dns
+  ...resources.dns
 }

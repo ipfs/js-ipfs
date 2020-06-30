@@ -1,0 +1,18 @@
+# Checks bundlesize, does not run on master
+name: Bundlesize
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: npm i
+    - uses: ipfs/aegir/actions/bundle-size@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}

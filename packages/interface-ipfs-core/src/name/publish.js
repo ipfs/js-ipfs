@@ -1,12 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
-
+const { nanoid } = require('nanoid')
+const { Buffer } = require('buffer')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const last = require('it-last')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -18,7 +19,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.name.publish offline', () => {
-    const keyName = hat()
+    const keyName = nanoid()
     let ipfs
     let nodeId
 
@@ -29,6 +30,13 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
+
+    it('should respect timeout option when publishing an IPNS name', () => {
+      return testTimeout(() => ipfs.name.publish(fixture.cid, {
+        allowOffline: true,
+        timeout: 1
+      }))
+    })
 
     it('should publish an IPNS record with the default params', async function () {
       this.timeout(50 * 1000)

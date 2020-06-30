@@ -1,6 +1,6 @@
 'use strict'
 
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const delay = require('delay')
 
 async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
@@ -24,4 +24,4 @@ async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
 
 exports.waitForPeers = waitForPeers
 
-exports.getTopic = () => 'pubsub-tests-' + hat()
+exports.getTopic = () => 'pubsub-tests-' + nanoid()

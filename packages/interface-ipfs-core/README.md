@@ -1,68 +1,77 @@
-# interface-ipfs-core
+# interface-ipfs-core <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/interface-ipfs-core)](https://david-dm.org/ipfs/js-ipfs?path=packages/interface-ipfs-core)
 
 > A test suite and interface you can use to implement an IPFS core interface.
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
-[Alan Shaw](http://github.com/alanshaw).
+[Alex Potsides](http://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
-  - [Modules that implement the interface](#modules-that-implement-the-interface)
-  - [Badge](#badge)
+- [Core API](#core-api)
+- [Modules that implement the interface](#modules-that-implement-the-interface)
+- [Badge](#badge)
 - [Install](#install)
 - [Usage](#usage)
-  - [JavaScript](#javascript)
-  - [Go](#go)
-- [API](#api)
+- [Running tests](#running-tests)
+  - [Running tests by command](#running-tests-by-command)
+  - [Running only some tests](#running-only-some-tests)
+  - [Running only specific tests](#running-only-specific-tests)
+- [Skipping tests](#skipping-tests)
+  - [Skipping specific tests](#skipping-specific-tests)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
 
 ## Background
 
-The primary goal of this module is to define and ensure that both IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications. In addition to the definition of the expected interface, this module offers a suite of tests that can be run in order to check if the interface is used as described.
+The primary goal of this module is to define and ensure that IPFS core implementations and their respective HTTP client libraries offer the same interface, so that developers can quickly change between a local and a remote node without having to change their applications.
 
-The API is presented with both Node.js and Go primitives. However, there are no actual limitations keeping it from being extended for any other language, pushing forward cross compatibility and interoperability through different stacks.
+It offers a suite of tests that can be run in order to check if the interface is implemented as described.
 
-### Modules that implement the interface
+## Core API
 
-- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs)
-- [JavaScript IPFS HTTP Client Library](https://github.com/ipfs/js-ipfs-api)
+In order to be considered "valid", an IPFS implementation must expose the Core API as described in [/docs/core-api](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api). You can also use this loose spec as documentation for consuming the core APIs.
+
+## Modules that implement the interface
+
+- [JavaScript IPFS implementation](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs)
+- [JavaScript IPFS HTTP Client Library](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client)
 - [JavaScript IPFS postMessage proxy](https://github.com/ipfs-shipyard/ipfs-postmsg-proxy)
 
 Send in a PR if you find or write one!
 
-### Badge
+## Badge
 
 Include this badge in your readme if you make a new module that implements interface-ipfs-core API.
 
-![](/img/badge.svg)
+![](img/badge.svg)
 
 ```md
-[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/interface-ipfs-core)
+[![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
 ```
 
 ## Install
 
 In JavaScript land:
 
-```js
-npm install interface-ipfs-core
+```console
+$ npm install interface-ipfs-core
 ```
 
 If you want to run these tests against a go-ipfs daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
 
-```
-git clone https://github.com/ipfs/js-ipfs-http-client
-npm install
-npm test
+```console
+$ git clone https://github.com/ipfs/js-ipfs-http-client
+$ npm install
+$ npm test
 ```
 
 ## Usage
@@ -95,36 +104,20 @@ tests.dag(createCommon)
 // ...etc. (see src/index.js)
 ```
 
-#### Running tests by command
+## Running tests
+
+```js
+// run all the tests for the repo subsystem
+tests.repo(createCommon)
+```
+
+### Running tests by command
 
 ```js
 tests.repo.version(createCommon)
 ```
 
-#### Skipping tests
-
-```js
-tests.repo.gc(createCommon, { skip: true }) // pass an options object to skip these tests
-
-// OR, at the subsystem level
-
-// skips ALL the repo.gc tests
-tests.repo(createCommon, { skip: ['gc'] })
-// skips ALL the object.patch.addLink tests
-tests.object(createCommon, { skip: ['patch.addLink'] })
-```
-
-##### Skipping specific tests
-
-```js
-tests.repo.gc(createCommon, { skip: ['should do a thing'] }) // named test(s) to skip
-
-// OR, at the subsystem level
-
-tests.repo(createCommon, { skip: ['should do a thing'] })
-```
-
-#### Running only some tests
+### Running only some tests
 
 ```js
 tests.repo.gc(createCommon, { only: true }) // pass an options object to run only these tests
@@ -137,45 +130,46 @@ tests.repo(createCommon, { only: ['gc'] })
 tests.object(createCommon, { only: ['patch.addLink'] })
 ```
 
-##### Running only specific tests
+### Running only specific tests
 
 ```js
 tests.repo.gc(createCommon, { only: ['should do a thing'] }) // only run these named test(s)
 
 // OR, at the subsystem level
-
 tests.repo(createCommon, { only: ['should do a thing'] })
 ```
 
-## API
+## Skipping tests
 
-In order to be considered "valid", an IPFS core implementation must expose the API described in [/SPEC](/SPEC). You can also use this loose spec as documentation for consuming the core APIs. Here is an outline of the contents of that directory:
+```js
+tests.repo.gc(createCommon, { skip: true }) // pass an options object to skip these tests
 
-- **Files**
-  - [files](/SPEC/FILES.md)
-  - [block](/SPEC/BLOCK.md)
-  - [repo (not spec'ed yet)](/SPEC/REPO)
-- **Graph**
-  - [dag](/SPEC/DAG.md)
-  - [object](/SPEC/OBJECT.md)
-  - [pin](/SPEC/PIN.md)
-- [**Name**](/SPEC/NAME.md)
-- **Network**
-  - [bootstrap](/SPEC/BOOSTRAP.md)
-  - [bitswap](/SPEC/BITSWAP.md)
-  - [dht](/SPEC/DHT.md)
-  - [pubsub](/SPEC/PUBSUB.md)
-  - [swarm](/SPEC/SWARM.md)
-- **Node Management**
-  - [Miscellaneous](/SPEC/MISCELLANEOUS.md)
-  - [config](/SPEC/CONFIG.md)
-  - [key](/SPEC/KEY.md)
-  - [stats](/SPEC/STATS.md)
-  - [repo](/SPEC/REPO.md)
+// skips ALL the repo.gc tests
+tests.repo(createCommon, { skip: ['gc'] })
+// skips ALL the object.patch.addLink tests
+tests.object(createCommon, { skip: ['patch.addLink'] })
+```
+
+### Skipping specific tests
+
+```js
+tests.repo.gc(createCommon, { skip: ['should do a thing'] }) // named test(s) to skip
+
+// OR, at the subsystem level
+tests.repo(createCommon, { skip: ['should do a thing'] })
+
+// Optionally specify a reason
+tests.repo(createCommon, {
+  skip: [{
+    name: 'should do a thing',
+    reason: 'Thing is not implemented yet'
+  }]
+})
+```
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/interface-ipfs-core/issues)!
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs/issues)!
 
 This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 

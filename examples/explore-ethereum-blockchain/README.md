@@ -2,7 +2,18 @@
 
 > This is a pre-example to a full Ethereum to IPFS bridge. It shows how to resolve Ethereum hashes through the IPFS DAG get API.
 
-## Set up
+## Before you start
+
+First clone this repo, install dependencies in the project root and build the project.
+
+```console
+$ git clone https://github.com/ipfs/js-ipfs.git
+$ cd js-ipfs
+$ npm install
+$ npm run build
+```
+
+## Running the example
 
 Make sure to have the latest js-ipfs installed by doing
 

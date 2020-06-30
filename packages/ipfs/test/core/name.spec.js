@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const sinon = require('sinon')
 const delay = require('delay')
@@ -9,7 +9,6 @@ const { Key } = require('interface-datastore')
 const last = require('it-last')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
-const PeerInfo = require('peer-info')
 const getIpnsRoutingConfig = require('../../src/core/ipns/routing/config')
 const IpnsPublisher = require('../../src/core/ipns/publisher')
 const IpnsRepublisher = require('../../src/core/ipns/republisher')
@@ -81,7 +80,7 @@ describe('name', function () {
     let nodeB
     let nodeC
 
-    const createNode = () => df.spawn({ ipfsOptions: { pass: hat() } })
+    const createNode = () => df.spawn({ ipfsOptions: { pass: nanoid() } })
 
     before(async function () {
       this.timeout(70 * 1000)
@@ -104,7 +103,7 @@ describe('name', function () {
 
     it('should recursively resolve to an IPFS hash', async function () {
       this.timeout(360 * 1000)
-      const keyName = hat()
+      const keyName = nanoid()
 
       const key = await nodeA.key.gen(keyName, { type: 'rsa', size: 2048 })
 
@@ -256,7 +255,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: sinon.stub(),
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {}
       })
 
@@ -268,7 +267,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: sinon.stub(),
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {
           offline: true
         }
@@ -284,7 +283,7 @@ describe('name', function () {
       const config = getIpnsRoutingConfig({
         libp2p: { pubsub: sinon.stub() },
         repo: { datastore: sinon.stub() },
-        peerInfo: new PeerInfo(peerId),
+        peerId,
         options: {
           EXPERIMENTAL: {
             ipnsPubsub: true
@@ -301,9 +300,9 @@ describe('name', function () {
       const dht = sinon.stub()
 
       const config = getIpnsRoutingConfig({
-        libp2p: { dht },
+        libp2p: { _dht: dht },
         repo: sinon.stub(),
-        peerInfo: sinon.stub(),
+        peerId: sinon.stub(),
         options: {
           libp2p: {
             config: {

@@ -2,6 +2,7 @@
 
 // dns-nodejs gets replaced by dns-browser when webpacked/browserified
 const dns = require('../runtime/dns-nodejs')
+const { withTimeoutOption } = require('../utils')
 
 function fqdnFixups (domain) {
   // Allow resolution of .eth names via .eth.link
@@ -13,7 +14,7 @@ function fqdnFixups (domain) {
 }
 
 module.exports = () => {
-  return async (domain, opts) => { // eslint-disable-line require-await
+  return withTimeoutOption(async (domain, opts) => { // eslint-disable-line require-await
     opts = opts || {}
 
     if (typeof domain !== 'string') {
@@ -23,5 +24,5 @@ module.exports = () => {
     domain = fqdnFixups(domain)
 
     return dns(domain, opts)
-  }
+  })
 }

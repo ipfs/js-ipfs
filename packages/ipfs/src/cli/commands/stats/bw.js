@@ -1,5 +1,7 @@
 'use strict'
 
+const parseDuration = require('parse-duration')
+
 module.exports = {
   command: 'bw',
 
@@ -21,12 +23,15 @@ module.exports = {
     interval: {
       type: 'string',
       default: '1s'
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, peer, proto, poll, interval }) {
-    const { ipfs, print } = ctx
-    for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval })) {
+  async handler ({ ctx: { ipfs, print }, peer, proto, poll, interval, timeout }) {
+    for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval, timeout })) {
       print(`bandwidth status
   total in: ${chunk.totalIn}B
   total out: ${chunk.totalOut}B

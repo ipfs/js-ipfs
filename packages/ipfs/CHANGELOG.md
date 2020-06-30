@@ -1,3 +1,190 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [0.47.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.46.0...ipfs@0.47.0) (2020-06-24)
+
+
+### Bug Fixes
+
+* libp2p now requires encryption module ([#3085](https://github.com/ipfs/js-ipfs/issues/3085)) ([c567282](https://github.com/ipfs/js-ipfs/commit/c56728209f0eea63d00c68163c74cfdd350de69c))
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+* libp2p noise as fallback for secio ([#3074](https://github.com/ipfs/js-ipfs/issues/3074)) ([660d3db](https://github.com/ipfs/js-ipfs/commit/660d3db9a47bff652057762b52a25529ab37117f))
+* persist peerstore ([#3072](https://github.com/ipfs/js-ipfs/issues/3072)) ([b404974](https://github.com/ipfs/js-ipfs/commit/b40497427b7d33f52803c8fa14cc73be7f872d65))
+* webui v2.9.0 ([#3054](https://github.com/ipfs/js-ipfs/issues/3054)) ([5d9d331](https://github.com/ipfs/js-ipfs/commit/5d9d331ed42f3ac9efc243878011db871b742a4e))
+
+
+
+
+
+# [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
+
+
+### Bug Fixes
+
+* handle optional key to config.get ([#3069](https://github.com/ipfs/js-ipfs/issues/3069)) ([d043138](https://github.com/ipfs/js-ipfs/commit/d043138be2c0c7fd458131d56e235edec1504ca3))
+
+
+### Features
+
+* sync with go-ipfs 0.5 ([#3013](https://github.com/ipfs/js-ipfs/issues/3013)) ([0900bb9](https://github.com/ipfs/js-ipfs/commit/0900bb9b8123edb689a137a006c5507d8503f693))
+
+
+
+
+
+# [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
+
+
+### Features
+
+* upgrade bitswap to use 1.2.0 and better wantlist performance ([18283dd](https://github.com/ipfs/js-ipfs/commit/18283dd8fb70af5ed93236482b2a5f89515c24e0))
+
+
+
+
+
+# [0.44.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.3...ipfs@0.44.0) (2020-05-18)
+
+
+### Bug Fixes
+
+* fixes browser script tag example ([#3034](https://github.com/ipfs/js-ipfs/issues/3034)) ([ee8b769](https://github.com/ipfs/js-ipfs/commit/ee8b769b96f7e3c8414bbf85853ab4e21e8fd11c)), closes [#3027](https://github.com/ipfs/js-ipfs/issues/3027)
+* remove ipld all formats and fix traverse ipld example ([#3025](https://github.com/ipfs/js-ipfs/issues/3025)) ([e6079c1](https://github.com/ipfs/js-ipfs/commit/e6079c17d5656e92dd5191f0581000c6a782c7ed))
+* remove node globals ([#2932](https://github.com/ipfs/js-ipfs/issues/2932)) ([d0d2f74](https://github.com/ipfs/js-ipfs/commit/d0d2f74cef4e439c6d2baadba1f1f9f52534fcba))
+
+
+### Features
+
+* cancellable api calls ([#2993](https://github.com/ipfs/js-ipfs/issues/2993)) ([2b24f59](https://github.com/ipfs/js-ipfs/commit/2b24f590041a0df9da87b75ae2344232fe22fe3a)), closes [#3015](https://github.com/ipfs/js-ipfs/issues/3015)
+
+
+
+
+
+## [0.43.3](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.2...ipfs@0.43.3) (2020-05-05)
+
+**Note:** Version bump only for package ipfs
+
+
+
+
+
+## [0.43.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.1...ipfs@0.43.2) (2020-05-05)
+
+
+### Bug Fixes
+
+* pass headers to request ([#3018](https://github.com/ipfs/js-ipfs/issues/3018)) ([3ba00f8](https://github.com/ipfs/js-ipfs/commit/3ba00f8c6a8a057c5776d539a671a74d9565fb29)), closes [#3017](https://github.com/ipfs/js-ipfs/issues/3017)
+
+
+
+
+
+## [0.43.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.0...ipfs@0.43.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* correct dht reference in ipns routing ([#2996](https://github.com/ipfs/js-ipfs/issues/2996)) ([d2579c0](https://github.com/ipfs/js-ipfs/commit/d2579c0e8f1e81c1a2df578d46459c7a1eeeba53))
+
+
+### Features
+
+* webui v2.7.5, with feeling ([#2984](https://github.com/ipfs/js-ipfs/issues/2984)) ([2e0a114](https://github.com/ipfs/js-ipfs/commit/2e0a1144d9405f1a34fcd038361ad075968d841f))
+
+
+
+
+
+# [0.43.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.1...ipfs@0.43.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* make http api only accept POST requests ([#2977](https://github.com/ipfs/js-ipfs/issues/2977)) ([943d4a8](https://github.com/ipfs/js-ipfs/commit/943d4a8cf2d4c4ff5ecd4814c59cb0aae0cfa1fd))
+* regression that dht could not be enabled through conf ([#2976](https://github.com/ipfs/js-ipfs/issues/2976)) ([9d88a2e](https://github.com/ipfs/js-ipfs/commit/9d88a2ebbad4dfa58df351d31d201eaf2aaf78dc))
+
+
+### BREAKING CHANGES
+
+* Where we used to accept all and any HTTP methods, now only POST is
+accepted.  The API client will now only send POST requests too.
+
+* test: add tests to make sure we are post-only
+
+* chore: upgrade ipfs-utils
+
+* fix: return 405 instead of 404 for bad methods
+
+* fix: reject browsers that do not send an origin
+
+Also fixes running interface tests over http in browsers against
+js-ipfs
+
+
+
+
+
+## [0.42.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.0...ipfs@0.42.1) (2020-04-08)
+
+
+### Bug Fixes
+
+* use correct name for webrtc transport config ([#2966](https://github.com/ipfs/js-ipfs/issues/2966)) ([83ca42a](https://github.com/ipfs/js-ipfs/commit/83ca42a83fbe43a93d3d66d7c117123c9423359b)), closes [#2963](https://github.com/ipfs/js-ipfs/issues/2963)
+
+
+
+
+
+# 0.42.0 (2020-03-31)
+
+
+### Bug Fixes
+
+* add default args for ipfs.add ([#2950](https://github.com/ipfs/js-ipfs/issues/2950)) ([a01f5b6](https://github.com/ipfs/js-ipfs/commit/a01f5b63cd92d225b10eff497f79caf4baab1973))
+* add default for cid base and fix cid version override ([d951993](https://github.com/ipfs/js-ipfs/commit/d9519931642fbeabd4a04940e67911e346106814))
+* dont include util.textencoder in the browser ([#2919](https://github.com/ipfs/js-ipfs/issues/2919)) ([3207e3b](https://github.com/ipfs/js-ipfs/commit/3207e3b35c9c250332c03dd2a066e8ebcda35e43))
+* error when command is unknown ([#2916](https://github.com/ipfs/js-ipfs/issues/2916)) ([743a7fc](https://github.com/ipfs/js-ipfs/commit/743a7fc1630e753568e8a56a8f3580cb2b8d50ad))
+* multiaddr validation to add peer id for listening ([#2833](https://github.com/ipfs/js-ipfs/issues/2833)) ([78cbec1](https://github.com/ipfs/js-ipfs/commit/78cbec159ed84b1bc4cd86eb17d3c2d050827a6d))
+* only start prometheus metrics in one place ([#2954](https://github.com/ipfs/js-ipfs/issues/2954)) ([d52a41e](https://github.com/ipfs/js-ipfs/commit/d52a41e1db601db55cf8433c9a91c2ee6b9b3e09)), closes [#2019](https://github.com/ipfs/js-ipfs/issues/2019)
+* reuse columns value from process.stdout ([e8646d8](https://github.com/ipfs/js-ipfs/commit/e8646d874bbbdf51aa1c8df83f8d5e52a45592be))
+* tag stdin with mtime and mode when piping to cli 'add' ([#2832](https://github.com/ipfs/js-ipfs/issues/2832)) ([8c97de1](https://github.com/ipfs/js-ipfs/commit/8c97de1e85c8544976a8240bf72e850f0e49a2b0)), closes [#2763](https://github.com/ipfs/js-ipfs/issues/2763)
+
+
+### chore
+
+* move mfs and multipart files into core ([#2811](https://github.com/ipfs/js-ipfs/issues/2811)) ([82b9e08](https://github.com/ipfs/js-ipfs/commit/82b9e085330e6c6290e6f3dd29678247984ffdce))
+* update dep version and ignore interop test for raw leaves ([#2747](https://github.com/ipfs/js-ipfs/issues/2747)) ([6376cec](https://github.com/ipfs/js-ipfs/commit/6376cec2b4beccef4751c498088f600ec7788118))
+
+
+### Features
+
+* remove ky from http-client and utils ([#2810](https://github.com/ipfs/js-ipfs/issues/2810)) ([9bc9625](https://github.com/ipfs/js-ipfs/commit/9bc96252686d0bbbfdb2a3300bb17b80eafdaf00)), closes [#2801](https://github.com/ipfs/js-ipfs/issues/2801)
+* support mtime-nsecs in mfs cli ([#2958](https://github.com/ipfs/js-ipfs/issues/2958)) ([69c091d](https://github.com/ipfs/js-ipfs/commit/69c091da963d974e75638a63c36140c8e9d3c4e0)), closes [#2803](https://github.com/ipfs/js-ipfs/issues/2803)
+
+
+### BREAKING CHANGES
+
+* When the path passed to `ipfs.files.stat(path)` was a hamt sharded dir, the resovled
+value returned by js-ipfs previously had a `type` property of with a value of
+`'hamt-sharded-directory'`.  To bring it in line with go-ipfs this value is now
+`'directory'`.
+* Files that fit into one block imported with either `--cid-version=1`
+or `--raw-leaves=true` previously returned a CID that resolved to
+a raw node (e.g. a buffer). Returned CIDs now resolve to a `dag-pb`
+node that contains a UnixFS entry. This is to allow setting metadata
+on small files with CIDv1.
+
+
+
+
+
 <a name="0.41.0"></a>
 # [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
 
@@ -492,7 +679,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
     * all IPLD formats included
 * In browser application bundle `require('ipfs')` bundled with webpack/browserify/etc.
     * only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` included
-* CDN bundle `<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>`
+* CDN bundle `<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>`
     * all IPLD formats included
 
 Co-Authored-By: hugomrdias <mail@hugodias.me>
@@ -1044,9 +1231,9 @@ you need to bundle them yourself.
 
 ### Features
 
-* Added `ipfs.name.publish` and `ipfs.name.resolve`. This only works on your local node for the moment until the DHT lands. [API docs can be found here](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/NAME.md).
+* Added `ipfs.name.publish` and `ipfs.name.resolve`. This only works on your local node for the moment until the DHT lands. [API docs can be found here](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/NAME.md).
 * Added `ipfs.resolve` API. Note that this is a partial implementation allowing you to resolve IPFS paths like `/ipfs/QmRootHash/path/to/file` to `/ipfs/QmFileHash`. It does not support IPNS yet.
-* `ipfs.files.add*` now supports a `chunker` option, see [the API docs](https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#filesadd) for details
+* `ipfs.files.add*` now supports a `chunker` option, see [the API docs](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/SPEC/FILES.md#filesadd) for details
 
 
 <a name="0.31.7"></a>
@@ -2128,6 +2315,3 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 <a name="0.0.2"></a>
 ## 0.0.2 (2016-01-11)
-
-
-

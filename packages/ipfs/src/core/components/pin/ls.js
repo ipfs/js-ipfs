@@ -5,6 +5,7 @@ const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
 const { resolvePath } = require('../../utils')
+const { withTimeoutOption } = require('../../utils')
 
 function toPin (type, cid, comments) {
   const output = {
@@ -20,7 +21,7 @@ function toPin (type, cid, comments) {
 }
 
 module.exports = ({ pinManager, dag }) => {
-  return async function * ls (source, options) {
+  return withTimeoutOption(async function * ls (source, options) {
     options = options || {}
 
     let type = PinTypes.all

@@ -1,0 +1,44 @@
+{
+  "name": "ipfs-core-utils",
+  "version": "0.2.4",
+  "description": "Package to share code between ipfs and ipfs-http-client",
+  "main": "src/index.js",
+  "author": "Alex Potsides <alex@achingbrain.net>",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "scripts": {
+    "test": "aegir test",
+    "test:browser": "aegir test -t browser",
+    "test:node": "aegir test -t node",
+    "test:electron": "aegir test -t electron-main",
+    "test:electron-renderer": "aegir test -t electron-renderer",
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "clean": "rm -rf ./dist",
+    "dep-check": "aegir dep-check"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "buffer": "^5.6.0",
+    "cids": "^0.8.2",
+    "err-code": "^2.0.0",
+    "ipfs-utils": "^2.2.2"
+  },
+  "devDependencies": {
+    "aegir": "^22.1.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "delay": "^4.3.0",
+    "dirty-chai": "^2.0.1",
+    "it-all": "^1.0.1"
+  }
+}

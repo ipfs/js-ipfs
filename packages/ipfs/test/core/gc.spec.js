@@ -5,6 +5,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const last = require('it-last')
 const drain = require('it-drain')
+const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 const pEvent = require('p-event')
 

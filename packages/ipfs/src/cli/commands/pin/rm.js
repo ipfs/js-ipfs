@@ -2,6 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
+const parseDuration = require('parse-duration')
 
 module.exports = {
   command: 'rm <ipfsPath...>',
@@ -19,13 +20,17 @@ module.exports = {
       describe: 'Number base to display CIDs in.',
       type: 'string',
       choices: multibase.names
+    },
+    timeout: {
+      type: 'string',
+      coerce: parseDuration
     }
   },
 
-  async handler ({ ctx, ipfsPath, recursive, cidBase }) {
+  async handler ({ ctx, ipfsPath, timeout, recursive, cidBase }) {
     const { ipfs, print } = ctx
 
-    for await (const res of ipfs.pin.rm(ipfsPath.map(path => ({ path, recursive })))) {
+    for await (const res of ipfs.pin.rm(ipfsPath.map(path => ({ path, recursive })), { timeout })) {
       print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
     }
   }

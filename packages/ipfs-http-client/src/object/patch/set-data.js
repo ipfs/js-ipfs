@@ -2,23 +2,31 @@
 
 const { Buffer } = require('buffer')
 const CID = require('cids')
+const multipartRequest = require('../../lib/multipart-request')
 const configure = require('../../lib/configure')
-const toFormData = require('../../lib/buffer-to-form-data')
+const toUrlSearchParams = require('../../lib/to-url-search-params')
+const anySignal = require('any-signal')
+const AbortController = require('abort-controller')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, data, options) => {
-    options = options || {}
+module.exports = configure(api => {
+  return async (cid, data, options = {}) => {
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
 
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`)
-
-    const { Hash } = await ky.post('object/patch/set-data', {
+    const { Hash } = await (await api.post('object/patch/set-data', {
       timeout: options.timeout,
-      signal: options.signal,
-      headers: options.headers,
-      searchParams,
-      body: toFormData(data)
-    }).json()
+      signal,
+      searchParams: toUrlSearchParams({
+        arg: [
+          `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`
+        ],
+        ...options
+      }),
+      ...(
+        await multipartRequest(data, controller, options.headers)
+      )
+    })).json()
 
     return new CID(Hash)
   }

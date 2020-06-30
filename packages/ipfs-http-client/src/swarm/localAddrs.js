@@ -2,21 +2,18 @@
 
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.id != null) searchParams.append('id', options.id)
-
-    const res = await ky.post('swarm/addrs/local', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    const res = await api.post('swarm/addrs/local', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
+    })
+    const { Strings } = await res.json()
 
-    return (res.Strings || []).map(a => multiaddr(a))
+    return (Strings || []).map(a => multiaddr(a))
   }
 })

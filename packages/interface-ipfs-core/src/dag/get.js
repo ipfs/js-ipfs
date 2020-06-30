@@ -1,12 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
+const importer = require('ipfs-unixfs-importer')
 const Unixfs = require('ipfs-unixfs')
 const all = require('it-all')
+const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -48,6 +52,12 @@ module.exports = (common, options) => {
 
       await ipfs.dag.put(nodePb, { format: 'dag-pb', hashAlg: 'sha2-256' })
       await ipfs.dag.put(nodeCbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    })
+
+    it('should respect timeout option when getting a DAG node', () => {
+      return testTimeout(() => ipfs.dag.get(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'), {
+        timeout: 1
+      }))
     })
 
     it('should get a dag-pb node', async () => {
@@ -137,6 +147,11 @@ module.exports = (common, options) => {
       expect(result.value.equals(cidPb)).to.be.true()
     })
 
+    it('should get with options and no path', async function () {
+      const result = await ipfs.dag.get(cidCbor, { localResolve: true })
+      expect(result.value).to.deep.equal(nodeCbor)
+    })
+
     it('should get a node added as CIDv0 with a CIDv1', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
@@ -154,7 +169,10 @@ module.exports = (common, options) => {
     it('should get a node added as CIDv1 with a CIDv0', async () => {
       const input = Buffer.from(`TEST${Math.random()}`)
 
-      const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], ipfs.block, {
+        cidVersion: 1,
+        rawLeaves: false
+      }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)

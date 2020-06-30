@@ -1,25 +1,26 @@
 'use strict'
 
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (topic, options) => {
+module.exports = configure(api => {
+  return async (topic, options = {}) => {
     if (!options && typeof topic === 'object') {
-      options = topic
+      options = topic || {}
       topic = null
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', topic)
-
-    const { Strings } = await ky.post('pubsub/peers', {
+    const res = await api.post('pubsub/peers', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: topic,
+        ...options
+      }),
+      headers: options.headers
+    })
+
+    const { Strings } = await res.json()
 
     return Strings || []
   }

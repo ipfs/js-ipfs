@@ -2,16 +2,17 @@
 
 const defaultConfig = require('../../runtime/config-nodejs.js')
 const { isValidMultiaddr } = require('./utils')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ repo }) => {
-  return async function add (multiaddr, options) {
+  return withTimeoutOption(async function add (multiaddr, options) {
     options = options || {}
 
     if (multiaddr && !isValidMultiaddr(multiaddr)) {
       throw new Error(`${multiaddr} is not a valid Multiaddr`)
     }
 
-    const config = await repo.config.get()
+    const config = await repo.config.getAll()
     if (options.default) {
       config.Bootstrap = defaultConfig().Bootstrap
     } else if (multiaddr && config.Bootstrap.indexOf(multiaddr) === -1) {
@@ -22,5 +23,5 @@ module.exports = ({ repo }) => {
     return {
       Peers: options.default ? defaultConfig().Bootstrap : [multiaddr]
     }
-  }
+  })
 }

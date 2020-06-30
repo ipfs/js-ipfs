@@ -4,6 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
+const { Buffer } = require('buffer')
 const f = require('./utils/factory')()
 
 describe('.log', function () {

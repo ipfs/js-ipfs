@@ -1,22 +1,21 @@
 'use strict'
 
 const configure = require('./lib/configure')
+const toUrlSearchParams = require('./lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (domain, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', domain)
-    if (options.recursive != null) searchParams.set('recursive', options.recursive)
-
-    const res = await ky.post('dns', {
+module.exports = configure(api => {
+  return async (domain, options = {}) => {
+    const res = await api.post('dns', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: domain,
+        ...options
+      }),
+      headers: options.headers
+    })
+    const data = await res.json()
 
-    return res.Path
+    return data.Path
   }
 })

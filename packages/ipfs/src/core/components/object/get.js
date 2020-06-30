@@ -2,6 +2,7 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
+const { Buffer } = require('buffer')
 const { withTimeoutOption } = require('../../utils')
 
 function normalizeMultihash (multihash, enc) {

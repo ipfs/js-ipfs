@@ -1,6 +1,7 @@
 'use strict'
 
 const { repoVersion } = require('ipfs-repo')
+const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ repo }) => {
   /**
@@ -9,9 +10,9 @@ module.exports = ({ repo }) => {
    *
    * @returns {number}
    */
-  return async function version () {
+  return withTimeoutOption(async function version (options) {
     try {
-      await repo._checkInitialized()
+      await repo._checkInitialized(options)
     } catch (err) {
       // TODO: (dryajov) This is really hacky, there must be a better way
       const match = [
@@ -28,6 +29,6 @@ module.exports = ({ repo }) => {
       throw err
     }
 
-    return repo.version.get()
-  }
+    return repo.version.get(options)
+  })
 }

@@ -3,7 +3,9 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
+const drain = require('it-drain')
 const { fakeCid } = require('./utils')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -49,6 +51,12 @@ module.exports = (common, options) => {
       ])
     })
 
+    it('should respect timeout option when finding providers on the DHT', () => {
+      return testTimeout(() => drain(nodeA.dht.findProvs(providedCid, {
+        timeout: 1
+      })))
+    })
+
     it('should be able to find providers', async function () {
       this.timeout(20 * 1000)
 
@@ -67,8 +75,20 @@ module.exports = (common, options) => {
       }
 
       const cidV0 = await fakeCid()
+      const start = Date.now()
+      let res
 
-      await expect(all(nodeA.dht.findProvs(cidV0, options))).to.be.rejected()
+      try {
+        res = await all(nodeA.dht.findProvs(cidV0, options))
+      } catch (err) {
+        // rejected by http client
+        expect(err).to.have.property('name', 'TimeoutError')
+        return
+      }
+
+      // rejected by the server, errors don't work over http - https://github.com/ipfs/js-ipfs/issues/2519
+      expect(res).to.be.an('array').with.lengthOf(0)
+      expect(Date.now() - start).to.be.lessThan(100)
     })
   })
 }

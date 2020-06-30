@@ -4,7 +4,7 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const all = require('it-all')
 const concat = require('it-concat')
-const crypto = require('crypto')
+const randomBytes = require('iso-random-stream/src/random')
 const factory = require('../utils/factory')
 
 const df = factory()
@@ -60,7 +60,7 @@ describe('circuit relay', () => {
     after(() => df.clean())
 
     it('should transfer via relay', async () => {
-      const data = crypto.randomBytes(128)
+      const data = randomBytes(128)
       const res = await all(nodeA.add(data))
       const buffer = await concat(nodeB.cat(res[0].cid))
       expect(buffer.slice()).to.deep.equal(data)

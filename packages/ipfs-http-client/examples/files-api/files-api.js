@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 'use strict'
-
+const { Buffer } = require('buffer')
 // Run `ipfs daemon` in your terminal to start the IPFS daemon
 // Look for `API server listening on /ip4/127.0.0.1/tcp/5001`
 const ipfs = require('../../src')('/ip4/127.0.0.1/tcp/5001')

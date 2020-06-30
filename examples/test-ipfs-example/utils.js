@@ -66,29 +66,6 @@ async function startServer (dir) {
     if (fs.existsSync(f)) {
       console.info('Found bare file', f)
 
-      const distFile = path.resolve(process.cwd(), 'node_modules/ipfs/dist/index.js')
-
-      console.info('Looking for IPFS dist file at', distFile)
-
-      if (fs.existsSync(distFile)) {
-        console.info('Found IPFS dist file')
-      } else {
-        console.info('Building IPFS')
-        const proc = execa.command('npm run build', {
-          cwd: path.resolve(dir, '../../packages/ipfs'),
-          env: {
-            ...process.env,
-            CI: true // needed for some "clever" build tools
-          },
-          all: true
-        })
-        proc.all.on('data', (data) => {
-          process.stdout.write(data)
-        })
-
-        await proc
-      }
-
       return Promise.resolve({
         url: `file://${f}`,
         stop: () => {}

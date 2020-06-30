@@ -2,10 +2,10 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile } = require('../utils')
+const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 module.exports = function ({ ipld, preload }) {
-  return async function * get (ipfsPath, options) {
+  return withTimeoutOption(async function * get (ipfsPath, options) {
     options = options || {}
 
     if (options.preload !== false) {
@@ -26,5 +26,5 @@ module.exports = function ({ ipld, preload }) {
         includeContent: true
       })
     }
-  }
+  })
 }

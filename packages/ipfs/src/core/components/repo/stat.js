@@ -1,8 +1,10 @@
 'use strict'
 
+const { withTimeoutOption } = require('../../utils')
+
 module.exports = ({ repo }) => {
-  return async function stat () {
-    const stats = await repo.stat()
+  return withTimeoutOption(async function stat (options) {
+    const stats = await repo.stat(options)
 
     return {
       numObjects: stats.numObjects,
@@ -11,5 +13,5 @@ module.exports = ({ repo }) => {
       version: stats.version.toString(),
       storageMax: stats.storageMax
     }
-  }
+  })
 }

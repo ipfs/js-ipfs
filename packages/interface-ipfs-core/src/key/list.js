@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,10 +23,16 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when listing keys', () => {
+      return testTimeout(() => ipfs.key.list({
+        timeout: 1
+      }))
+    })
+
     it('should list all the keys', async function () {
       this.timeout(60 * 1000)
 
-      const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(hat(), { type: 'rsa', size: 2048 })))
+      const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(nanoid(), { type: 'rsa', size: 2048 })))
 
       const res = await ipfs.key.list()
       expect(res).to.exist()

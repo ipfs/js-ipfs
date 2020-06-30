@@ -3,10 +3,11 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const MemoryStore = require('interface-datastore').MemoryDatastore
-const PeerInfo = require('peer-info')
+const PeerId = require('peer-id')
 const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
+const Crypto = require('libp2p-secio')
 
 class DummyTransport {
   get [Symbol.toStringTag] () {
@@ -37,7 +38,7 @@ describe('libp2p customization', function () {
   this.timeout(25 * 1000)
 
   let datastore
-  let peerInfo
+  let peerId
   let testConfig
   let libp2p
 
@@ -60,7 +61,7 @@ describe('libp2p customization', function () {
       }
     }
     datastore = new MemoryStore()
-    peerInfo = await PeerInfo.create()
+    peerId = await PeerId.create()
   })
 
   afterEach(async () => {
@@ -76,13 +77,13 @@ describe('libp2p customization', function () {
         options: {
           libp2p: (opts) => {
             return new Libp2p({
-              peerInfo: opts.peerInfo,
-              modules: { transport: [DummyTransport] },
+              peerId: opts.peerId,
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
         },
-        peerInfo,
+        peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -100,13 +101,13 @@ describe('libp2p customization', function () {
         options: {
           libp2p: (opts) => {
             return new Libp2p({
-              peerInfo: opts.peerInfo,
-              modules: { transport: [DummyTransport] },
+              peerId: opts.peerId,
+              modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
         },
-        peerInfo,
+        peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -123,7 +124,7 @@ describe('libp2p customization', function () {
   describe('options', () => {
     it('should use options by default', async () => {
       libp2p = libp2pComponent({
-        peerInfo,
+        peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -161,7 +162,7 @@ describe('libp2p customization', function () {
 
     it('should allow for overriding via options', async () => {
       libp2p = libp2pComponent({
-        peerInfo,
+        peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig,
@@ -191,7 +192,7 @@ describe('libp2p customization', function () {
   describe('config', () => {
     it('should select gossipsub as pubsub router', async () => {
       libp2p = libp2pComponent({
-        peerInfo,
+        peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: {

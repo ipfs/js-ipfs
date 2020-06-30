@@ -2,25 +2,26 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (template, options) => {
+module.exports = configure(api => {
+  return async (template, options = {}) => {
     if (typeof template !== 'string') {
-      options = template
+      options = template || {}
       template = null
     }
 
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (template) searchParams.set('arg', template)
-
-    const { Hash } = await ky.post('object/new', {
+    const res = await api.post('object/new', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: template,
+        ...options
+      }),
+      headers: options.headers
+    })
+
+    const { Hash } = await res.json()
 
     return new CID(Hash)
   }

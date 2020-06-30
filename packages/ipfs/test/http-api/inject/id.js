@@ -2,35 +2,67 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const testHttpMethod = require('../../utils/test-http-method')
+const http = require('../../utils/http')
+const sinon = require('sinon')
+const { AbortSignal } = require('abort-controller')
 
-module.exports = (http) => {
-  describe('/id', () => {
-    let api
+const defaultOptions = {
+  signal: sinon.match.instanceOf(AbortSignal),
+  timeout: undefined
+}
 
-    before(() => {
-      api = http.api._httpApi._apiServers[0]
-    })
+describe('/id', () => {
+  let ipfs
 
-    it('get the id', async () => {
-      const res = await api.inject({
-        method: 'GET',
-        url: '/api/v0/id'
-      })
-
-      expect(res.result.ID).to.equal(idResult.ID)
-      expect(res.result.PublicKey).to.equal(idResult.PublicKey)
-      const agentComponents = res.result.AgentVersion.split('/')
-      expect(agentComponents).lengthOf.above(1)
-      expect(agentComponents[0]).to.equal(idResult.AgentVersion)
-      expect(res.result.ProtocolVersion).to.equal(idResult.ProtocolVersion)
-    })
+  beforeEach(() => {
+    ipfs = {
+      id: sinon.stub()
+    }
   })
-}
 
-const idResult = {
-  ID: 'QmTuh8pVDCz5kbShrK8MJsJgTycCcGwZm8hQd8SxdbYmby',
-  PublicKey: 'CAASpgIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCiyLgGRpuGiorm6FzvBbrTU60e6iPMmwXL9mXyGitepQyeN7XF8e6cooFeJI/NIyvbmpa7rHCDzTWP+6ebIMOXjUjQDAgaYdHywKbAXi2cgh96yuTN+cfPJ0IVA1/4Xsn/mnaMmSNDxqnK3fExEDxZizL9iI7KQCGOHociwjNj2cqaz+4ldTQ6QBbqa8nBMbulUNtSzwihQHTHNVwhuYFGPXIIK8UhM1VR20HcCbX+TZ9RpBWLIGZgjJl2ClW7wLW1OAb55I/9CK6AmfOriVYSBxZSFi2jiPCGQmuzfiqEke6/hSZtxe8DRo8ELOQ9K2P3L27H2az2atis2FoqVY2LAgMBAAE=',
-  Addresses: ['/ip4/0.0.0.0/tcp/0'],
-  AgentVersion: 'js-ipfs',
-  ProtocolVersion: '9000'
-}
+  it('only accepts POST', () => {
+    return testHttpMethod('/api/v0/id')
+  })
+
+  it('get the id', async () => {
+    ipfs.id.withArgs(defaultOptions).returns({
+      id: 'id',
+      publicKey: 'publicKey',
+      addresses: 'addresses',
+      agentVersion: 'agentVersion',
+      protocolVersion: 'protocolVersion'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/id'
+    }, { ipfs })
+
+    expect(res).to.have.nested.property('result.ID', 'id')
+    expect(res).to.have.nested.property('result.PublicKey', 'publicKey')
+    expect(res).to.have.nested.property('result.Addresses', 'addresses')
+    expect(res).to.have.nested.property('result.AgentVersion', 'agentVersion')
+    expect(res).to.have.nested.property('result.ProtocolVersion', 'protocolVersion')
+  })
+
+  it('accepts a timeout', async () => {
+    ipfs.id.withArgs({
+      ...defaultOptions,
+      timeout: 1000
+    }).returns({
+      id: 'id',
+      publicKey: 'publicKey',
+      addresses: 'addresses',
+      agentVersion: 'agentVersion',
+      protocolVersion: 'protocolVersion'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: '/api/v0/id?timeout=1s'
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
+  })
+})

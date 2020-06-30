@@ -2,14 +2,25 @@
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
+const { Buffer } = require('buffer')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
 const parseDuration = require('parse-duration')
+const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
 const errCode = require('err-code')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
+
+exports.MFS_FILE_TYPES = {
+  file: 0,
+  directory: 1,
+  'hamt-sharded-directory': 1
+}
+exports.MFS_ROOT_KEY = new Key('/local/filesroot')
+exports.MFS_MAX_CHUNK_SIZE = 262144
+exports.MFS_MAX_LINKS = 174
 
 /**
  * Break an ipfs-path down into it's hash and an array of links.
@@ -172,27 +183,55 @@ function withTimeoutOption (fn, optionsArgIndex) {
 
     const fnRes = fn(...args)
     const timeoutPromise = new Promise((resolve, reject) => {
-      controller.signal.addEventListener('abort', () => reject(new TimeoutError()))
+      controller.signal.addEventListener('abort', () => {
+        reject(new TimeoutError())
+      })
     })
+
+    const start = Date.now()
+
+    const maybeThrowTimeoutError = () => {
+      if (controller.signal.aborted) {
+        throw new TimeoutError()
+      }
+
+      const timeTaken = Date.now() - start
+
+      // if we have starved the event loop by adding microtasks, we could have
+      // timed out already but the TimeoutController will never know because it's
+      // setTimeout will not fire until we stop adding microtasks
+      if (timeTaken > timeout) {
+        controller.abort()
+        throw new TimeoutError()
+      }
+    }
 
     if (fnRes[Symbol.asyncIterator]) {
       return (async function * () {
         const it = fnRes[Symbol.asyncIterator]()
+
         try {
           while (true) {
             const { value, done } = await Promise.race([it.next(), timeoutPromise])
-            if (done) break
 
-            controller.clear()
+            if (done) {
+              break
+            }
+
+            maybeThrowTimeoutError()
+
             yield value
-            controller.reset()
           }
         } catch (err) {
-          if (controller.signal.aborted) throw new TimeoutError()
+          maybeThrowTimeoutError()
+
           throw err
         } finally {
           controller.clear()
-          if (it.return) it.return()
+
+          if (it.return) {
+            it.return()
+          }
         }
       })()
     }
@@ -200,9 +239,13 @@ function withTimeoutOption (fn, optionsArgIndex) {
     return (async () => {
       try {
         const res = await Promise.race([fnRes, timeoutPromise])
+
+        maybeThrowTimeoutError()
+
         return res
       } catch (err) {
-        if (controller.signal.aborted) throw new TimeoutError()
+        maybeThrowTimeoutError()
+
         throw err
       } finally {
         controller.clear()

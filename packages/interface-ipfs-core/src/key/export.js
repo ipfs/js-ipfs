@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const hat = require('hat')
+const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,8 +23,14 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when exporting a key', () => {
+      return testTimeout(() => ipfs.key.export('self', nanoid(), {
+        timeout: 1
+      }))
+    })
+
     it('should export "self" key', async function () {
-      const pem = await ipfs.key.export('self', hat())
+      const pem = await ipfs.key.export('self', nanoid())
       expect(pem).to.exist()
     })
   })

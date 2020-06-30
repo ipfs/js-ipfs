@@ -1,28 +1,21 @@
 'use strict'
 
-const configure = require('../lib/configure')
 const toCamel = require('../lib/object-to-camel')
+const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (path, options) => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', path)
-    if (options.allowOffline != null) searchParams.set('allow-offline', options.allowOffline)
-    if (options.key) searchParams.set('key', options.key)
-    if (options.lifetime) searchParams.set('lifetime', options.lifetime)
-    if (options.quieter != null) searchParams.set('quieter', options.quieter)
-    if (options.resolve != null) searchParams.set('resolve', options.resolve)
-    if (options.ttl) searchParams.set('ttl', options.ttl)
-
-    const res = await ky.post('name/publish', {
+module.exports = configure(api => {
+  return async (path, options = {}) => {
+    const res = await api.post('name/publish', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: path,
+        ...options
+      }),
+      headers: options.headers
+    })
 
-    return toCamel(res)
+    return toCamel(await res.json())
   }
 })

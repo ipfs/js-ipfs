@@ -1,27 +1,22 @@
 'use strict'
 
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async (cid, options) => {
-    options = options || {}
-
-    if (Buffer.isBuffer(cid)) {
-      cid = new CID(cid)
-    }
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    searchParams.set('arg', `${cid}`)
-
-    const res = await ky.post('block/stat', {
+module.exports = configure(api => {
+  return async (cid, options = {}) => {
+    const res = await api.post('block/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams({
+        arg: new CID(cid).toString(),
+        ...options
+      }),
+      headers: options.headers
+    })
+    const data = await res.json()
 
-    return { cid: new CID(res.Key), size: res.Size }
+    return { cid: new CID(data.Key), size: data.Size }
   }
 })

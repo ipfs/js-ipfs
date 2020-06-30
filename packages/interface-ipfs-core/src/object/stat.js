@@ -1,10 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
+const testTimeout = require('../utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,6 +29,12 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
+    it('should respect timeout option when statting an object', () => {
+      return testTimeout(() => ipfs.object.stat(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
+        timeout: 1
+      }))
+    })
+
     it('should get stats by multihash', async () => {
       const testObj = {
         Data: Buffer.from('get test object'),
@@ -43,31 +52,6 @@ module.exports = (common, options) => {
         CumulativeSize: 17
       }
       expect(expected).to.deep.equal(stats)
-    })
-
-    it('should respect timeout option', async () => {
-      const testObj = {
-        Data: Buffer.from('get test object'),
-        Links: []
-      }
-
-      await ipfs.object.put(testObj)
-
-      const timeout = 2
-      const startTime = new Date()
-      const badCid = 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ'
-
-      const err = await expect(ipfs.object.stat(badCid, { timeout: `${timeout}s` })).to.be.rejected()
-      const timeForRequest = (new Date() - startTime) / 1000
-
-      if (err.code) {
-        expect(err.code).to.equal('ERR_TIMEOUT')
-      } else {
-        expect(err.message).to.equal('failed to get block for QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3MzzzzzZ: context deadline exceeded')
-      }
-
-      expect(timeForRequest).to.not.lessThan(timeout - 0.1)
-      expect(timeForRequest).to.not.greaterThan(timeout + 1)
     })
 
     it('should get stats for object with links by multihash', async () => {

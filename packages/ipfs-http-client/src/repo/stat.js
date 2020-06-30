@@ -1,28 +1,25 @@
 'use strict'
 
-const Big = require('bignumber.js')
+const { BigNumber } = require('bignumber.js')
 const configure = require('../lib/configure')
+const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(({ ky }) => {
-  return async options => {
-    options = options || {}
-
-    const searchParams = new URLSearchParams(options.searchParams)
-    if (options.sizeOnly) searchParams.set('size-only', options.sizeOnly)
-
-    const res = await ky.post('repo/stat', {
+module.exports = configure(api => {
+  return async (options = {}) => {
+    const res = await api.post('repo/stat', {
       timeout: options.timeout,
       signal: options.signal,
-      headers: options.headers,
-      searchParams
-    }).json()
+      searchParams: toUrlSearchParams(options),
+      headers: options.headers
+    })
+    const data = await res.json()
 
     return {
-      numObjects: new Big(res.NumObjects),
-      repoSize: new Big(res.RepoSize),
-      repoPath: res.RepoPath,
-      version: res.Version,
-      storageMax: new Big(res.StorageMax)
+      numObjects: new BigNumber(data.NumObjects),
+      repoSize: new BigNumber(data.RepoSize),
+      repoPath: data.RepoPath,
+      version: data.Version,
+      storageMax: new BigNumber(data.StorageMax)
     }
   }
 })
