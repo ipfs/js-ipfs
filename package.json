@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
   "dependencies": {
-    "cids": "~0.7.1",
+    "cids": "~0.8.1",
     "debug": "^4.1.1",
     "file-type": "^8.0.0",
     "filesize": "^3.6.1",
@@ -40,16 +40,16 @@
     "it-concat": "^1.0.0",
     "it-reader": "^2.1.0",
     "it-to-stream": "^0.1.1",
-    "mime-types": "^2.1.21",
-    "multihashes": "~0.4.14",
+    "mime-types": "^2.1.27",
+    "multihashes": "~0.4.19",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^20.5.0",
+    "aegir": "^22.0.0",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
     "get-stream": "^3.0.0",
-    "ipfs": "github:ipfs/js-ipfs#refactor/async-await-roundup",
+    "ipfs": "^0.46.0",
     "ipfsd-ctl": "^1.0.2",
     "it-all": "^1.0.1"
   },
