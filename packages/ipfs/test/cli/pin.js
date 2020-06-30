@@ -32,16 +32,19 @@ describe('pin', () => {
   })
 
   describe('rm', function () {
+    const defaultPinOptions = {
+      recursive: true
+    }
+
     const defaultOptions = {
-      recursive: true,
       timeout: undefined
     }
 
     it('recursively (default)', async () => {
       ipfs.pin.rm.withArgs([{
-        ...defaultOptions,
+        ...defaultPinOptions,
         path: pins.root
-      }]).returns([{
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -51,10 +54,10 @@ describe('pin', () => {
 
     it('non recursively', async () => {
       ipfs.pin.rm.withArgs([{
-        ...defaultOptions,
+        ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }]).returns([{
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -64,10 +67,10 @@ describe('pin', () => {
 
     it('non recursively (short option)', async () => {
       ipfs.pin.rm.withArgs([{
-        ...defaultOptions,
+        ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }]).returns([{
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -77,10 +80,9 @@ describe('pin', () => {
 
     it('should rm and print CIDs encoded in specified base', async () => {
       ipfs.pin.rm.withArgs([{
-        ...defaultOptions,
-        path: pins.root,
-        recursive: true
-      }]).returns([{
+        ...defaultPinOptions,
+        path: pins.root
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -89,11 +91,14 @@ describe('pin', () => {
       expect(out).to.eql(`unpinned ${b64CidStr}\n`)
     })
 
-    it('recursively with timeout', async () => {
-      ipfs.pin.rm.withArgs([pins.root], {
+    it('with timeout', async () => {
+      ipfs.pin.rm.withArgs([{
+        ...defaultPinOptions,
+        path: pins.root
+      }], {
         ...defaultOptions,
         timeout: 1000
-      }).resolves([{
+      }).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -103,15 +108,20 @@ describe('pin', () => {
   })
 
   describe('add', function () {
-    const defaultOptions = {
+    const defaultPinOptions = {
       recursive: true,
+      metadata: undefined
+    }
+
+    const defaultOptions = {
       timeout: undefined
     }
 
     it('recursively (default)', async () => {
       ipfs.pin.add.withArgs([{
-        ...defaultOptions,
-        path: pins.root, recursive: true, comments: undefined }]).returns([{
+        ...defaultPinOptions,
+        path: pins.root
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -121,11 +131,10 @@ describe('pin', () => {
 
     it('non recursively', async () => {
       ipfs.pin.add.withArgs([{
-        ...defaultOptions,
+        ...defaultPinOptions,
         path: pins.root,
-        recursive: false,
-        comments: undefined
-      }]).returns([{
+        recursive: false
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -135,11 +144,10 @@ describe('pin', () => {
 
     it('non recursively (short option)', async () => {
       ipfs.pin.add.withArgs([{
-        ...defaultOptions,
+        ...defaultPinOptions,
         path: pins.root,
-        recursive: false,
-        comments: undefined
-      }]).returns([{
+        recursive: false
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -147,21 +155,48 @@ describe('pin', () => {
       expect(out).to.equal(`pinned ${pins.root} directly\n`)
     })
 
-    it('with a comment', async () => {
-      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: 'hello world' }]).returns([{
+    it('with metadata', async () => {
+      ipfs.pin.add.withArgs([{
+        ...defaultPinOptions,
+        path: pins.root,
+        metadata: {
+          key: 'value'
+        }
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
-      const out = await cli(`pin add --comments 'hello world' ${pins.root}`, { ipfs })
+      const out = await cli(`pin add --metadata key=value ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
     })
 
-    it('with a comment (short option)', async () => {
-      ipfs.pin.add.withArgs([{ path: pins.root, recursive: true, comments: 'hello world' }]).returns([{
+    it('with a metadata (short option)', async () => {
+      ipfs.pin.add.withArgs([{
+        ...defaultPinOptions,
+        path: pins.root,
+        metadata: {
+          key: 'value'
+        }
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
-      const out = await cli(`pin add -c 'hello world' ${pins.root}`, { ipfs })
+      const out = await cli(`pin add -m key=value ${pins.root}`, { ipfs })
+      expect(out).to.equal(`pinned ${pins.root} recursively\n`)
+    })
+
+    it('with json metadata', async () => {
+      ipfs.pin.add.withArgs([{
+        ...defaultPinOptions,
+        path: pins.root,
+        metadata: {
+          key: 'value'
+        }
+      }], defaultOptions).returns([{
+        cid: new CID(pins.root)
+      }])
+
+      const out = await cli(`pin add --metadata-json '{"key":"value"}' ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
     })
 
@@ -171,7 +206,7 @@ describe('pin', () => {
         path: pins.root,
         recursive: true,
         comments: undefined
-      }]).returns([{
+      }], defaultOptions).returns([{
         cid: new CID(pins.root)
       }])
 
@@ -181,10 +216,13 @@ describe('pin', () => {
     })
 
     it('recursively with timeout', async () => {
-      ipfs.pin.add.withArgs([pins.root], {
+      ipfs.pin.add.withArgs([{
+        ...defaultPinOptions,
+        path: pins.root
+      }], {
         ...defaultOptions,
         timeout: 1000
-      }).resolves([{
+      }).returns([{
         cid: new CID(pins.root)
       }])
 

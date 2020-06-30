@@ -1,18 +1,17 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const { resolvePath, withTimeoutOption } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
-const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
-const { resolvePath } = require('../../utils')
+const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 module.exports = ({ pinManager, gcLock, dag }) => {
   return withTimeoutOption(async function * add (source, options) {
     options = options || {}
 
     const pinAdd = async function * () {
-      for await (const { path, recursive, comments } of normaliseInput(source)) {
+      for await (const { path, recursive, metadata } of normaliseInput(source)) {
         const cid = await resolvePath(dag, path)
 
         // verify that each hash can be pinned
@@ -24,12 +23,12 @@ module.exports = ({ pinManager, gcLock, dag }) => {
         }
 
         if (recursive) {
-          await pinManager.pinRecursively(cid, { comments })
+          await pinManager.pinRecursively(cid, { metadata })
         } else {
-          await pinManager.pinDirectly(cid, { comments })
+          await pinManager.pinDirectly(cid, { metadata })
         }
 
-        yield { cid }
+        yield cid
       }
     }
 

@@ -9,7 +9,7 @@ const { cidToString } = require('../../../utils/cid')
 const streamResponse = require('../../utils/stream-response')
 const all = require('it-all')
 
-function toPin (type, cid, comments) {
+function toPin (type, cid, metadata) {
   const output = {
     Type: type
   }
@@ -18,8 +18,8 @@ function toPin (type, cid, comments) {
     output.Cid = cid
   }
 
-  if (comments) {
-    output.Comments = comments
+  if (metadata) {
+    output.Metadata = metadata
   }
 
   return output
@@ -76,8 +76,8 @@ exports.ls = {
           signal,
           timeout
         }),
-        reduce((res, { type, cid }) => {
-          res.Keys[cidToString(cid, { base: cidBase })] = { Type: type }
+        reduce((res, { type, cid, metadata }) => {
+          res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, metadata)
           return res
         }, { Keys: {} })
       )
@@ -91,7 +91,7 @@ exports.ls = {
         signal,
         timeout
       }),
-      map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: cidBase }) })),
+      map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata)),
       ndjson.stringify
     ))
   }
@@ -108,7 +108,8 @@ exports.add = {
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         recursive: Joi.boolean().default(true),
         cidBase: Joi.cidBase(),
-        timeout: Joi.timeout()
+        timeout: Joi.timeout(),
+        metadata: Joi.json()
       })
         .rename('cid-base', 'cidBase', {
           override: true,
@@ -134,13 +135,14 @@ exports.add = {
         cids,
         recursive,
         cidBase,
-        timeout
+        timeout,
+        metadata
       }
     } = request
 
     let result
     try {
-      result = await all(ipfs.pin.add(cids.map(cid => ({ cid, recursive })), {
+      result = await all(ipfs.pin.add(cids.map(cid => ({ cid, recursive, metadata })), {
         signal,
         timeout
       }))
@@ -157,7 +159,7 @@ exports.add = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
+      Pins: result.map(cid => cidToString(cid, { base: cidBase }))
     })
   }
 }
@@ -218,7 +220,7 @@ exports.rm = {
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
+      Pins: result.map(cid => cidToString(cid, { base: cidBase }))
     })
   }
 }

@@ -144,4 +144,17 @@ module.exports = Joi
           return value
         }
       }
+    },
+    (joi) => {
+      return {
+        name: 'json',
+        base: joi.string(),
+        pre (value, state, options) {
+          if (!value) {
+            return
+          }
+
+          return JSON.parse(value)
+        }
+      }
     })

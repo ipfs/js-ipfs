@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const configure = require('../lib/configure')
-const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
+const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
@@ -15,7 +15,7 @@ module.exports = configure(api => {
 
       if (recursive != null) searchParams.set('recursive', recursive)
 
-      const res = await ky.post('pin/rm', {
+      const res = await api.post('pin/rm', {
         timeout: options.timeout,
         signal: options.signal,
         headers: options.headers,
@@ -26,13 +26,12 @@ module.exports = configure(api => {
         })
       })
 
-      for await (const pin of ndjson(toIterable(res.body))) {
+      for await (const pin of res.ndjson()) {
         if (pin.Pins) { // non-streaming response
-          yield * res.Pins.map(cid => ({ cid: new CID(cid) }))
-
-          return
+          yield * pin.Pins.map(cid => new CID(cid))
+          continue
         }
-        yield { cid: new CID(pin.cid) }
+        yield new CID(pin)
       }
     }
   }

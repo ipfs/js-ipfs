@@ -4,14 +4,14 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
-function toPin (type, cid, comments) {
+function toPin (type, cid, metadata) {
   const pin = {
     type,
     cid: new CID(cid)
   }
 
-  if (comments) {
-    pin.comments = comments
+  if (metadata) {
+    pin.metadata = metadata
   }
 
   return pin
@@ -37,14 +37,15 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    for await (const pin of ndjson(toIterable(res.body))) {
+    for await (const pin of res.ndjson()) {
       if (pin.Keys) { // non-streaming response
         for (const cid of Object.keys(pin.Keys)) {
-          yield toPin(pin.Keys[cid].Type, cid, pin.Keys[cid].Comments)
+          yield toPin(pin.Keys[cid].Type, cid, pin.Keys[cid].Metadata)
         }
         return
       }
-      yield toPin(pin.Type, pin.Cid, pin.Comments)
+
+      yield toPin(pin.Type, pin.Cid, pin.Metadata)
     }
   }
 })

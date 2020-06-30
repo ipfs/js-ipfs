@@ -36,11 +36,11 @@ const fixtures = Object.freeze({
 })
 
 const clearPins = async (ipfs) => {
-  for await (const { cid } of ipfs.pin.ls({ type: pinTypes.recursive })) {
+  for await (const { cid } of ipfs.pin.ls(null, { type: pinTypes.recursive })) {
     await drain(ipfs.pin.rm(cid))
   }
 
-  for await (const { cid } of ipfs.pin.ls({ type: pinTypes.direct })) {
+  for await (const { cid } of ipfs.pin.ls(null, { type: pinTypes.direct })) {
     await drain(ipfs.pin.rm(cid))
   }
 }

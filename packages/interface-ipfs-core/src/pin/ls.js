@@ -42,7 +42,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when listing pins', () => {
-      return testTimeout(() => ipfs.pin.ls({
+      return testTimeout(() => ipfs.pin.ls(undefined, {
         timeout: 1
       }))
     })
@@ -185,17 +185,27 @@ module.exports = (common, options) => {
         // .with.property('code').that.equals('ERR_INVALID_PIN_TYPE')
     })
 
-    it('should list pins with comments', async () => {
+    it('should list pins with metadata', async () => {
       const { cid } = await last(ipfs.add(`data-${Math.random()}`, {
         pin: false
       }))
 
-      const comments = 'hello world'
+      const metadata = {
+        key: 'value',
+        one: 2,
+        array: [{
+          thing: 'subthing'
+        }],
+        obj: {
+          foo: 'bar',
+          baz: ['qux']
+        }
+      }
 
       await drain(ipfs.pin.add({
         cid: cid,
         recursive: false,
-        comments
+        metadata
       }))
 
       const pinset = await all(ipfs.pin.ls(cid))
@@ -203,7 +213,7 @@ module.exports = (common, options) => {
       expect(pinset).to.have.deep.members([{
         type: 'direct',
         cid: cid,
-        comments
+        metadata
       }])
     })
   })

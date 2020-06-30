@@ -9,6 +9,7 @@ const debug = require('debug')
 const first = require('it-first')
 const all = require('it-all')
 const cbor = require('cbor')
+const multibase = require('multibase')
 
 // arbitrary limit to the number of concurrent dag operations
 // const WALK_DAG_CONCURRENCY_LIMIT = 300
@@ -21,7 +22,7 @@ function invalidPinTypeErr (type) {
 }
 
 function toKey (cid) {
-  return '/' + cid.multihash.toString('base64')
+  return '/' + multibase.encode('base32', cid.multihash).toString().substring(1)
 }
 
 const PinTypes = {
@@ -62,7 +63,7 @@ class PinManager {
     return this.repo.pins.put(toKey(cid), cbor.encode({
       cid: cid.buffer,
       type: PinTypes.direct,
-      comments: options.comments
+      metadata: options.metadata
     }))
   }
 
@@ -76,7 +77,7 @@ class PinManager {
     await this.repo.pins.put(toKey(cid), cbor.encode({
       cid: cid.buffer,
       type: PinTypes.recursive,
-      comments: options.comments
+      metadata: options.metadata
     }))
   }
 
@@ -92,7 +93,7 @@ class PinManager {
 
       yield {
         cid: new CID(pin.cid),
-        comments: pin.comments
+        metadata: pin.metadata
       }
     }
   }
@@ -109,7 +110,7 @@ class PinManager {
 
       yield {
         cid: new CID(pin.cid),
-        comments: pin.comments
+        metadata: pin.metadata
       }
     }
   }
@@ -165,7 +166,7 @@ class PinManager {
           cid,
           pinned: true,
           reason: pin.type,
-          comments: pin.comments
+          metadata: pin.metadata
         }
       }
     }

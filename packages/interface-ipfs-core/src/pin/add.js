@@ -52,7 +52,7 @@ module.exports = (common, options) => {
     async function testAddInput (source) {
       const pinset = await all(ipfs.pin.add(source))
 
-      expect(pinset.map(p => p.cid)).to.have.deep.members([
+      expect(pinset).to.have.deep.members([
         fixtures.files[0].cid,
         fixtures.files[1].cid
       ])
@@ -60,7 +60,7 @@ module.exports = (common, options) => {
 
     it('should add a CID and return the added CID', async () => {
       const pinset = await all(ipfs.pin.add(fixtures.files[0].cid))
-      expect(pinset.map(p => p.cid)).to.deep.include(fixtures.files[0].cid)
+      expect(pinset).to.deep.include(fixtures.files[0].cid)
     })
 
     it('should add a pin with options and return the added CID', async () => {
@@ -68,7 +68,7 @@ module.exports = (common, options) => {
         cid: fixtures.files[0].cid,
         recursive: false
       }))
-      expect(pinset.map(p => p.cid)).to.deep.include(fixtures.files[0].cid)
+      expect(pinset).to.deep.include(fixtures.files[0].cid)
     })
 
     it('should add an array of CIDs', () => {

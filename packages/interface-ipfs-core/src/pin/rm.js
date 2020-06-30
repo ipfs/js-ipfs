@@ -56,7 +56,7 @@ module.exports = (common, options) => {
       await drain(ipfs.pin.add(fixtures.directory.cid))
 
       const removedPinset = await all(ipfs.pin.rm(fixtures.directory.cid, { recursive: true }))
-      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.directory.cid])
+      expect(removedPinset).to.deep.equal([fixtures.directory.cid])
 
       const pinset = await all(ipfs.pin.ls({ type: 'recursive' }))
       expect(pinset).to.not.deep.include({
@@ -69,7 +69,7 @@ module.exports = (common, options) => {
       await drain(ipfs.pin.add(fixtures.directory.cid, { recursive: false }))
 
       const removedPinset = await all(ipfs.pin.rm(fixtures.directory.cid, { recursive: false }))
-      expect(removedPinset.map(p => p.cid)).to.deep.equal([fixtures.directory.cid])
+      expect(removedPinset).to.deep.equal([fixtures.directory.cid])
 
       const pinset = await all(ipfs.pin.ls({ type: 'direct' }))
       expect(pinset.map(p => p.cid)).to.not.deep.include(fixtures.directory.cid)

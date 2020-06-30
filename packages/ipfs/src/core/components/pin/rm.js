@@ -1,16 +1,11 @@
 'use strict'
 
-const normaliseInput = require('ipfs-utils/src/pins/normalise-input')
-const errCode = require('err-code')
-const multibase = require('multibase')
-const { parallelMap, collect } = require('streaming-iterables')
-const pipe = require('it-pipe')
+const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath, withTimeoutOption } = require('../../utils')
 const { PinTypes } = require('./pin-manager')
-const { resolvePath } = require('../../utils')
 
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return withTimeoutOption(async function rm (source, options = {}) {
+  return withTimeoutOption(async function * rm (source, options = {}) {
     const release = await gcLock.readLock()
 
     try {
@@ -31,17 +26,13 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 
             await pinManager.unpin(cid)
 
-            yield {
-              cid
-            }
+            yield cid
 
             break
           case (PinTypes.direct):
             await pinManager.unpin(cid)
 
-            yield {
-              cid
-            }
+            yield cid
 
             break
           default:

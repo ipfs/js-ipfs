@@ -3,6 +3,7 @@
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
 const parseDuration = require('parse-duration')
+const { JSON } = require('ipfs-utils/src/globalthis')
 
 module.exports = {
   command: 'add <ipfsPath...>',
@@ -25,18 +26,41 @@ module.exports = {
       type: 'string',
       coerce: parseDuration
     },
-    comments: {
-      describe: 'A comment to add to the pin',
+    metadata: {
+      describe: 'Metadata to add to the pin',
       type: 'string',
-      alias: 'c'
+      alias: 'm',
+      coerce: (val) => {
+        if (!val) {
+          return
+        }
+
+        const output = {}
+
+        val.split(',').forEach(line => {
+          const parts = line.split('=')
+          output[parts[0]] = parts[1]
+        })
+
+        return output
+      }
+    },
+    'metadata-json': {
+      describe: 'Metadata to add to the pin in JSON format',
+      type: 'string',
+      coerce: JSON.parse
     }
   },
 
-  async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, comments }) {
+  async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, metadata, metadataJson }) {
     const { ipfs, print } = ctx
     const type = recursive ? 'recursive' : 'direct'
 
-    for await (const res of ipfs.pin.add(ipfsPath.map(path => ({ path, recursive, comments })), { timeout })) {
+    if (metadataJson) {
+      metadata = metadataJson
+    }
+
+    for await (const res of ipfs.pin.add(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
       print(`pinned ${cidToString(res.cid, { base: cidBase })} ${type}ly`)
     }
   }

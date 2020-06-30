@@ -9,25 +9,25 @@ const CID = require('cids')
  * ```
  * CID
  * String
- * { cid: CID recursive, comments }
- * { path: String recursive, comments }
+ * { cid: CID recursive, metadata }
+ * { path: String recursive, metadata }
  * Iterable<CID>
  * Iterable<String>
- * Iterable<{ cid: CID recursive, comments }>
- * Iterable<{ path: String recursive, comments }>
+ * Iterable<{ cid: CID recursive, metadata }>
+ * Iterable<{ path: String recursive, metadata }>
  * AsyncIterable<CID>
  * AsyncIterable<String>
- * AsyncIterable<{ cid: CID recursive, comments }>
- * AsyncIterable<{ path: String recursive, comments }>
+ * AsyncIterable<{ cid: CID recursive, metadata }>
+ * AsyncIterable<{ path: String recursive, metadata }>
  * ```
  * Into:
  *
  * ```
- * AsyncIterable<{ path: CID|String, recursive, comments }>
+ * AsyncIterable<{ path: CID|String, recursive, metadata }>
  * ```
  *
  * @param input Object
- * @return AsyncIterable<{ path: CID|String, recursive, comments }>
+ * @return AsyncIterable<{ path: CID|String, recursive, metadata }>
  */
 module.exports = function normaliseInput (input) {
   // must give us something
@@ -42,7 +42,7 @@ module.exports = function normaliseInput (input) {
     })()
   }
 
-  // { cid: CID recursive, comments }
+  // { cid: CID recursive, metadata }
   if (input.cid != null || input.path != null) {
     return (async function * () { // eslint-disable-line require-await
       yield toPin(input)
@@ -65,7 +65,7 @@ module.exports = function normaliseInput (input) {
         return
       }
 
-      // Iterable<{ cid: CID recursive, comments }>
+      // Iterable<{ cid: CID recursive, metadata }>
       if (first.value.cid != null || first.value.path != null) {
         yield toPin(first.value)
         for (const obj of iterator) {
@@ -94,7 +94,7 @@ module.exports = function normaliseInput (input) {
         return
       }
 
-      // AsyncIterable<{ cid: CID|String recursive, comments }>
+      // AsyncIterable<{ cid: CID|String recursive, metadata }>
       if (first.value.cid != null || first.value.path != null) {
         yield toPin(first.value)
         for await (const obj of iterator) {
@@ -116,8 +116,8 @@ function toPin (input) {
     recursive: input.recursive !== false
   }
 
-  if (input.comments != null) {
-    pin.comments = input.comments
+  if (input.metadata != null) {
+    pin.metadata = input.metadata
   }
 
   return pin
