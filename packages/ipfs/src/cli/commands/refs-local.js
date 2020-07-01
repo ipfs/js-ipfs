@@ -31,7 +31,7 @@ module.exports = {
         print(err, true, true)
       } else {
         if (multihash) {
-          print(multibase.encode('base32', Buffer.from(ref)).toString().substring(1).toUpperCase())
+          print(multibase.encoding('base32upper').encode(Buffer.from(ref)))
         } else {
           print(ref)
         }

@@ -52,7 +52,7 @@ describe('refs local', () => {
     const out = await cli('refs local --multihash', { ipfs })
     const lines = out.split('\n')
 
-    expect(lines.includes(multibase.encode('base32', Buffer.from(ref)).toString().substring(1).toUpperCase())).to.be.true()
+    expect(lines.includes(multibase.encoding('base32upper').encode(Buffer.from(ref))).to.be.true()
     expect(lines.includes(err)).to.be.true()
   })
 
