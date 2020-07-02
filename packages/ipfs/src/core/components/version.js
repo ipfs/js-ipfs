@@ -3,7 +3,6 @@
 const pkg = require('../../../package.json')
 const { withTimeoutOption } = require('../utils')
 
-// TODO add the commit hash of the current ipfs version to the response.
 module.exports = ({ repo }) => {
   return withTimeoutOption(async function version (options) {
     const repoVersion = await repo.version.get(options)
@@ -11,7 +10,9 @@ module.exports = ({ repo }) => {
     return {
       version: pkg.version,
       repo: repoVersion,
-      commit: ''
+      commit: pkg.gitHead || '', // is defined in published versions,
+      'interface-ipfs-core': pkg.devDependencies['interface-ipfs-core'],
+      'ipfs-http-client': pkg.dependencies['ipfs-http-client']
     }
   })
 }

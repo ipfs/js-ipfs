@@ -2,7 +2,7 @@
 
 const mafmt = require('mafmt')
 const multiaddr = require('multiaddr')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'peers',

@@ -7,7 +7,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'write <path>',

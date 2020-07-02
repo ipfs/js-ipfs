@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.137.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.136.0...interface-ipfs-core@0.137.0) (2020-06-24)
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+
+
+
+
+
 # [0.136.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.135.1...interface-ipfs-core@0.136.0) (2020-06-05)
 
 

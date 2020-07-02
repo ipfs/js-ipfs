@@ -10,8 +10,8 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "ipfs": "^0.46.0",
-    "ipfs-http-client": "^44.2.0",
+    "ipfs": "^0.47.0",
+    "ipfs-http-client": "^44.3.0",
     "ipfsd-ctl": "^4.1.1",
     "test-ipfs-example": "^2.0.3"
   }

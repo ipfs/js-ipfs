@@ -1,7 +1,7 @@
 'use strict'
 
 const os = require('os')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'version',
@@ -42,7 +42,7 @@ module.exports = {
     })
 
     const withCommit = all || commit
-    const parsedVersion = `${data.version}${withCommit ? `-${data.commit}` : ''}`
+    const parsedVersion = `${data.version}${withCommit && data.commit ? `-${data.commit}` : ''}`
 
     if (repo) {
       // go-ipfs prints only the number, even without the --number flag.
@@ -51,9 +51,15 @@ module.exports = {
       print(parsedVersion)
     } else if (all) {
       print(`js-ipfs version: ${parsedVersion}`)
+      print(`interface-ipfs-core version: ${data['interface-ipfs-core']}`)
+      print(`ipfs-http-client version: ${data['ipfs-http-client']}`)
       print(`Repo version: ${data.repo}`)
       print(`System version: ${os.arch()}/${os.platform()}`)
       print(`Node.js version: ${process.version}`)
+
+      if (data.commit) {
+        print(`Commit: ${data.commit}`)
+      }
     } else {
       print(`js-ipfs version: ${parsedVersion}`)
     }

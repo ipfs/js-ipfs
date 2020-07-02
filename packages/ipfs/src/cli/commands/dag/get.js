@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const { Buffer } = require('buffer')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 

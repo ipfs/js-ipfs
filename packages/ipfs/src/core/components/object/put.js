@@ -3,7 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const multicodec = require('multicodec')
 const { withTimeoutOption } = require('../../utils')
 const { Buffer } = require('buffer')

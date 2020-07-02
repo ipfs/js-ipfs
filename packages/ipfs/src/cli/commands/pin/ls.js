@@ -3,7 +3,7 @@
 const multibase = require('multibase')
 const all = require('it-all')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
@@ -28,7 +28,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     stream: {
       type: 'boolean',

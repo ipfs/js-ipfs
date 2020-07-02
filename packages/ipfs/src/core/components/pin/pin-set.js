@@ -1,6 +1,6 @@
 'use strict'
 
-const multihashes = require('multihashes')
+const multihashes = require('multihashing-async').multihash
 const CID = require('cids')
 const protobuf = require('protons')
 const fnv1a = require('fnv1a')
