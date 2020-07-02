@@ -92,7 +92,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Object>` | An object with the version of the implementation, the commit and the Repo |
+| `Promise<Object>` | An object with the version of the implementation, the commit and the Repo. `js-ipfs` instances will also return the version of `interface-ipfs-core` and `ipfs-http-client` supported by this node |
 
 ### Example
 
