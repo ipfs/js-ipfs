@@ -20,15 +20,8 @@ function toPin (type, cid, metadata) {
 }
 
 module.exports = ({ pinManager, dag }) => {
-  return withTimeoutOption(async function * ls (source, options) {
-    options = options || {}
-
+  return withTimeoutOption(async function * ls (options = {}) {
     let type = PinTypes.all
-
-    if (source && source.type) {
-      options = source
-      source = null
-    }
 
     if (options.type) {
       type = options.type
@@ -41,11 +34,11 @@ module.exports = ({ pinManager, dag }) => {
       options.type = PinTypes.all
     }
 
-    if (source) {
+    if (options.paths) {
       // check the pinned state of specific hashes
       let matched = false
 
-      for await (const { path } of normaliseInput(source)) {
+      for await (const { path } of normaliseInput(options.paths)) {
         const cid = await resolvePath(dag, path)
         const { reason, pinned, parent, metadata } = await pinManager.isPinnedWithType(cid, type)
 

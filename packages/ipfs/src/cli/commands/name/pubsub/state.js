@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'state',

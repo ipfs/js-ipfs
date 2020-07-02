@@ -326,7 +326,8 @@ function createApi ({
     bitswap: {
       stat: notStarted,
       unwant: notStarted,
-      wantlist: notStarted
+      wantlist: notStarted,
+      wantlistForPeer: notStarted
     },
     bootstrap: {
       add: Components.bootstrap.add({ repo }),

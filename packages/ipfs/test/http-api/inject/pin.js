@@ -21,7 +21,8 @@ describe('/pin', () => {
       pin: {
         ls: sinon.stub(),
         add: sinon.stub(),
-        rm: sinon.stub()
+        rm: sinon.stub(),
+        query: sinon.stub()
       }
     }
   })
@@ -220,7 +221,8 @@ describe('/pin', () => {
     const defaultOptions = {
       type: 'all',
       signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      timeout: undefined,
+      paths: undefined
     }
 
     it('only accepts POST', () => {
@@ -237,7 +239,7 @@ describe('/pin', () => {
     })
 
     it('finds all pinned objects', async () => {
-      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
+      ipfs.pin.ls.withArgs(defaultOptions).returns([{
         cid,
         type: 'recursive'
       }])
@@ -252,7 +254,7 @@ describe('/pin', () => {
     })
 
     it('finds all pinned objects streaming', async () => {
-      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
+      ipfs.pin.ls.withArgs(defaultOptions).returns([{
         cid: cid,
         type: 'recursive'
       }, {
@@ -273,7 +275,10 @@ describe('/pin', () => {
     })
 
     it('finds specific pinned objects', async () => {
-      ipfs.pin.ls.withArgs([`${cid}`], defaultOptions).returns([{
+      ipfs.pin.ls.withArgs({
+        ...defaultOptions,
+        paths: [`${cid}`]
+      }).returns([{
         cid,
         type: 'recursive'
       }])
@@ -292,7 +297,7 @@ describe('/pin', () => {
     })
 
     it('finds pins of type', async () => {
-      ipfs.pin.ls.withArgs(undefined, {
+      ipfs.pin.ls.withArgs({
         ...defaultOptions,
         type: 'direct'
       }).returns([{
@@ -314,7 +319,7 @@ describe('/pin', () => {
     })
 
     it('should list pins and return base64 encoded CIDs', async () => {
-      ipfs.pin.ls.withArgs(undefined, defaultOptions).returns([{
+      ipfs.pin.ls.withArgs(defaultOptions).returns([{
         cid,
         type: 'direct'
       }])
@@ -343,7 +348,7 @@ describe('/pin', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.pin.ls.withArgs(undefined, {
+      ipfs.pin.ls.withArgs({
         ...defaultOptions,
         timeout: 1000
       }).returns([{

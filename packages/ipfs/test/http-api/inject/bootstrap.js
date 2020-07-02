@@ -18,7 +18,9 @@ describe('/bootstrap', () => {
       bootstrap: {
         list: sinon.stub(),
         add: sinon.stub(),
-        rm: sinon.stub()
+        rm: sinon.stub(),
+        clear: sinon.stub(),
+        reset: sinon.stub()
       }
     }
   })
@@ -81,7 +83,6 @@ describe('/bootstrap', () => {
 
   describe('/add', () => {
     const defaultOptions = {
-      default: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -110,11 +111,27 @@ describe('/bootstrap', () => {
       expect(res).to.have.deep.nested.property('result.Peers', [validIp4])
     })
 
-    it('restores default', async () => {
-      ipfs.bootstrap.add.withArgs(undefined, {
+    it('adds a bootstrapper with a timeout', async () => {
+      ipfs.bootstrap.add.withArgs(validIp4, {
         ...defaultOptions,
-        default: true
+        timeout: 1000
       }).returns({
+        Peers: [
+          validIp4
+        ]
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bootstrap/add?arg=${validIp4}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Peers', [validIp4])
+    })
+
+    it('restores default', async () => {
+      ipfs.bootstrap.reset.withArgs(defaultOptions).returns({
         Peers: defaultList
       })
 
@@ -128,9 +145,8 @@ describe('/bootstrap', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.bootstrap.add.withArgs(undefined, {
+      ipfs.bootstrap.reset.withArgs({
         ...defaultOptions,
-        default: true,
         timeout: 1000
       }).returns({
         Peers: defaultList
@@ -147,7 +163,6 @@ describe('/bootstrap', () => {
 
     describe('/default', () => {
       const defaultOptions = {
-        default: true,
         signal: sinon.match.instanceOf(AbortSignal),
         timeout: undefined
       }
@@ -157,7 +172,7 @@ describe('/bootstrap', () => {
       })
 
       it('restores default', async () => {
-        ipfs.bootstrap.add.withArgs(null, defaultOptions).returns({
+        ipfs.bootstrap.reset.withArgs(defaultOptions).returns({
           Peers: defaultList
         })
 
@@ -171,7 +186,7 @@ describe('/bootstrap', () => {
       })
 
       it('accepts a timeout', async () => {
-        ipfs.bootstrap.add.withArgs(null, {
+        ipfs.bootstrap.reset.withArgs({
           ...defaultOptions,
           timeout: 1000
         }).returns({
@@ -191,7 +206,6 @@ describe('/bootstrap', () => {
 
   describe('/rm', () => {
     const defaultOptions = {
-      all: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -220,11 +234,27 @@ describe('/bootstrap', () => {
       expect(res).to.have.deep.nested.property('result.Peers', [validIp4])
     })
 
-    it('removes all bootstrappers', async () => {
-      ipfs.bootstrap.rm.withArgs(undefined, {
+    it('removes a bootstrapper with a timeout', async () => {
+      ipfs.bootstrap.rm.withArgs(validIp4, {
         ...defaultOptions,
-        all: true
+        timeout: 1000
       }).returns({
+        Peers: [
+          validIp4
+        ]
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/bootstrap/rm?arg=${validIp4}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Peers', [validIp4])
+    })
+
+    it('removes all bootstrappers', async () => {
+      ipfs.bootstrap.clear.withArgs(defaultOptions).returns({
         Peers: defaultList
       })
 
@@ -238,9 +268,8 @@ describe('/bootstrap', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.bootstrap.rm.withArgs(undefined, {
+      ipfs.bootstrap.clear.withArgs({
         ...defaultOptions,
-        all: true,
         timeout: 1000
       }).returns({
         Peers: defaultList
@@ -257,7 +286,6 @@ describe('/bootstrap', () => {
 
     describe('/all', () => {
       const defaultOptions = {
-        all: true,
         signal: sinon.match.instanceOf(AbortSignal),
         timeout: undefined
       }
@@ -267,7 +295,7 @@ describe('/bootstrap', () => {
       })
 
       it('removes all bootstrappers', async () => {
-        ipfs.bootstrap.rm.withArgs(null, defaultOptions).returns({
+        ipfs.bootstrap.clear.withArgs(defaultOptions).returns({
           Peers: defaultList
         })
 
@@ -281,7 +309,7 @@ describe('/bootstrap', () => {
       })
 
       it('accepts a timeout', async () => {
-        ipfs.bootstrap.rm.withArgs(null, {
+        ipfs.bootstrap.clear.withArgs({
           ...defaultOptions,
           timeout: 1000
         }).returns({

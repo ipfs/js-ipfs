@@ -38,10 +38,19 @@ exports.wantlist = {
       }
     } = request
 
-    const list = await ipfs.bitswap.wantlist(peer, {
-      signal,
-      timeout
-    })
+    let list
+
+    if (peer) {
+      list = await ipfs.bitswap.wantlistForPeer(peer, {
+        signal,
+        timeout
+      })
+    } else {
+      list = await ipfs.bitswap.wantlist({
+        signal,
+        timeout
+      })
+    }
 
     return h.response({
       Keys: list.map(cid => ({

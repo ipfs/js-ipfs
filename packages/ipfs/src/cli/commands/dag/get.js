@@ -1,8 +1,8 @@
 'use strict'
 
-const CID = require('cids')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const { Buffer } = require('buffer')
+const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 module.exports = {
   command: 'get <cid path>',
@@ -21,20 +21,22 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, cidpath, localResolve, timeout }) {
-    const refParts = cidpath.split('/')
-    const cidString = refParts[0]
-    const path = refParts.slice(1).join('/')
-    const cid = new CID(cidString)
-
     const options = {
       localResolve,
       timeout
     }
 
+    const {
+      cid, path
+    } = toCidAndPath(cidpath)
+
     let result
 
     try {
-      result = await ipfs.dag.get(cid, path, options)
+      result = await ipfs.dag.get(cid, {
+        ...options,
+        path
+      })
     } catch (err) {
       return print(`dag get failed: ${err}`)
     }

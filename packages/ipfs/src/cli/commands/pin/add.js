@@ -2,8 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
-const { JSON } = require('ipfs-utils/src/globalthis')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'add <ipfsPath...>',
@@ -20,7 +19,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     timeout: {
       type: 'string',

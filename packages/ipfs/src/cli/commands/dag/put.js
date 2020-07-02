@@ -7,7 +7,7 @@ const dagPB = require('ipld-dag-pb')
 const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 const inputDecoders = {
   json: (buf) => JSON.parse(buf.toString()),
@@ -67,7 +67,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     preload: {
       type: 'boolean',

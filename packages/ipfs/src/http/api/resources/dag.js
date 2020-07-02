@@ -126,7 +126,8 @@ exports.get = {
     let result
 
     try {
-      result = await ipfs.dag.get(cid, path, {
+      result = await ipfs.dag.get(cid, {
+        path,
         signal,
         timeout
       })
@@ -301,7 +302,8 @@ exports.resolve = {
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
         cidBase: Joi.cidBase(),
-        timeout: Joi.timeout()
+        timeout: Joi.timeout(),
+        path: Joi.string()
       })
         .rename('cid-base', 'cidBase', {
           override: true,
@@ -325,7 +327,8 @@ exports.resolve = {
           path
         },
         cidBase,
-        timeout
+        timeout,
+        path: queryPath
       }
     } = request
 
@@ -333,10 +336,11 @@ exports.resolve = {
     // along with the path inside that node as the remainder path
     try {
       let lastCid = cid
-      let lastRemainderPath = path
+      let lastRemainderPath = path || queryPath
 
-      if (path) {
-        for await (const { value, remainderPath } of ipfs.dag.resolve(lastCid, path, {
+      if (lastRemainderPath) {
+        for await (const { value, remainderPath } of ipfs.dag.resolve(lastCid, {
+          path: lastRemainderPath,
           signal,
           timeout
         })) {

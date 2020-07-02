@@ -69,13 +69,16 @@ exports.ls = {
       }
     } = request
 
+    const source = ipfs.pin.ls({
+      paths,
+      type,
+      signal,
+      timeout
+    })
+
     if (!stream) {
       const res = await pipe(
-        ipfs.pin.ls(paths, {
-          type,
-          signal,
-          timeout
-        }),
+        source,
         reduce((res, { type, cid, metadata }) => {
           res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, metadata)
           return res
@@ -86,11 +89,7 @@ exports.ls = {
     }
 
     return streamResponse(request, h, () => pipe(
-      ipfs.pin.ls(paths, {
-        type,
-        signal,
-        timeout
-      }),
+      source,
       map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata)),
       ndjson.stringify
     ))

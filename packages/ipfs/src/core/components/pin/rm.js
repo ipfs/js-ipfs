@@ -5,12 +5,12 @@ const { resolvePath, withTimeoutOption } = require('../../utils')
 const { PinTypes } = require('./pin-manager')
 
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return withTimeoutOption(async function * rm (source, options = {}) {
+  return withTimeoutOption(async function * rm (paths, options = {}) {
     const release = await gcLock.readLock()
 
     try {
       // verify that each hash can be unpinned
-      for await (const { path, recursive } of normaliseInput(source)) {
+      for await (const { path, recursive } of normaliseInput(paths)) {
         const cid = await resolvePath(dag, path)
         const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 

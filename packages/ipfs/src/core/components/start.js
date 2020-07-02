@@ -240,12 +240,15 @@ function createApi ({
     bitswap: {
       stat: Components.bitswap.stat({ bitswap }),
       unwant: Components.bitswap.unwant({ bitswap }),
-      wantlist: Components.bitswap.wantlist({ bitswap })
+      wantlist: Components.bitswap.wantlist({ bitswap }),
+      wantlistForPeer: Components.bitswap.wantlistForPeer({ bitswap })
     },
     block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
+      clear: Components.bootstrap.clear({ repo }),
       list: Components.bootstrap.list({ repo }),
+      reset: Components.bootstrap.reset({ repo }),
       rm: Components.bootstrap.rm({ repo })
     },
     cat: Components.cat({ ipld, preload }),

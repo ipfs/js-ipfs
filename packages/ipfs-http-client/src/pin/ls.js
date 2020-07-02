@@ -18,20 +18,17 @@ function toPin (type, cid, metadata) {
 }
 
 module.exports = configure(api => {
-  return async function * ls (path, options = {}) {
-    if (path && (path.type || path.timeout)) {
-      options = path || {}
-      path = []
+  return async function * ls (options = {}) {
+    if (options.paths) {
+      options.paths = Array.isArray(options.paths) ? options.paths : [options.paths]
     }
-
-    path = Array.isArray(path) ? path : [path]
 
     const res = await api.post('pin/ls', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: path.map(p => `${p}`),
         ...options,
+        arg: (options.paths || []).map(path => `${path}`),
         stream: true
       }),
       headers: options.headers

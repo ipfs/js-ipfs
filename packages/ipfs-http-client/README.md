@@ -280,7 +280,7 @@ const ipfs = ipfsClient({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' }
 ```javascript
 const bitswap = require('ipfs-http-client/src/bitswap')('/ip4/127.0.0.1/tcp/5001')
 
-const list = await bitswap.wantlist(key)
+const list = await bitswap.wantlist()
 // ...
 ```
 
