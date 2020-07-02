@@ -63,7 +63,10 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
-      ipfs.object.new.withArgs(undefined, defaultOptions).returns(cid)
+      ipfs.object.new.withArgs({
+        ...defaultOptions,
+        template: undefined
+      }).returns(cid)
       ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -79,7 +82,10 @@ describe('/object', () => {
     it('should create an object with the passed template', async () => {
       const template = 'unixfs-dir'
 
-      ipfs.object.new.withArgs(template, defaultOptions).returns(cid)
+      ipfs.object.new.withArgs({
+        ...defaultOptions,
+        template
+      }).returns(cid)
       ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -95,7 +101,10 @@ describe('/object', () => {
     it('should not reate an object with an invalid template', async () => {
       const template = 'derp'
 
-      ipfs.object.new.withArgs(template, defaultOptions).returns(cid)
+      ipfs.object.new.withArgs({
+        ...defaultOptions,
+        template
+      }).returns(cid)
       ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -108,7 +117,10 @@ describe('/object', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should create a new object and return a base64 encoded CID', async () => {
-      ipfs.object.new.withArgs(undefined, defaultOptions).returns(cid)
+      ipfs.object.new.withArgs({
+        ...defaultOptions,
+        template: undefined
+      }).returns(cid)
       ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -131,8 +143,9 @@ describe('/object', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.object.new.withArgs(undefined, {
+      ipfs.object.new.withArgs({
         ...defaultOptions,
+        template: undefined,
         timeout: 1000
       }).returns(cid)
       ipfs.object.get.withArgs(cid, {

@@ -10,11 +10,14 @@ exports.block = {
 exports.bitswap = {
   stat: require('./bitswap/stat'),
   unwant: require('./bitswap/unwant'),
-  wantlist: require('./bitswap/wantlist')
+  wantlist: require('./bitswap/wantlist'),
+  wantlistForPeer: require('./bitswap/wantlist-for-peer')
 }
 exports.bootstrap = {
   add: require('./bootstrap/add'),
+  clear: require('./bootstrap/clear'),
   list: require('./bootstrap/list'),
+  reset: require('./bootstrap/reset'),
   rm: require('./bootstrap/rm')
 }
 exports.cat = require('./cat')

@@ -47,13 +47,6 @@ module.exports = (common, options) => {
       return waitForWantlistKey(ipfsB, key)
     })
 
-    it('should get the wantlist by peer ID for a different node', function () {
-      return waitForWantlistKey(ipfsA, key, {
-        peerId: ipfsB.peerId.id,
-        timeout: 60 * 1000
-      })
-    })
-
     it('should not get the wantlist when offline', async () => {
       const node = await common.spawn()
       await node.stop()
