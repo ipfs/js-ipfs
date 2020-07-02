@@ -84,7 +84,7 @@ module.exports = (common, options) => {
       return expect(ipfs.config.set(Buffer.from('heeey'), '')).to.eventually.be.rejected()
     })
 
-    it('should fail on non valid value', async () => {
+    it('should fail on non valid value', () => {
       const val = {}
       val.val = val
       return expect(ipfs.config.set('Fruit', val)).to.eventually.be.rejected()
