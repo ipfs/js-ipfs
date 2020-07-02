@@ -4,7 +4,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const multibase = require('multibase')
 const { cidToString } = require('../../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'add-link <root> <name> <ref>',

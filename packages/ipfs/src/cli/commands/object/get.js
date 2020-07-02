@@ -2,7 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const { Buffer } = require('buffer')
 
 module.exports = {

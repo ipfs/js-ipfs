@@ -2,7 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'replace <file>',

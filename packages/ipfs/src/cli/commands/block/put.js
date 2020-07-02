@@ -4,7 +4,7 @@ const fs = require('fs')
 const multibase = require('multibase')
 const concat = require('it-concat')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'put [block]',

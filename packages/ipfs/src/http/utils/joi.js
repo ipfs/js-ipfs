@@ -2,7 +2,7 @@
 
 const Joi = require('@hapi/joi')
 const CID = require('cids')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 

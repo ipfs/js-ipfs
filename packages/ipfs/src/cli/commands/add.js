@@ -13,7 +13,7 @@ const {
 } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))

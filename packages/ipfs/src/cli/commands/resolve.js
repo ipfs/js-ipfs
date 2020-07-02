@@ -1,7 +1,7 @@
 'use strict'
 
 const multibase = require('multibase')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'resolve <name>',

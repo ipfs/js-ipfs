@@ -1,7 +1,7 @@
 'use strict'
 
 const prettyBytes = require('pretty-bytes')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'stat',

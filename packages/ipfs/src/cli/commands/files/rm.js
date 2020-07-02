@@ -3,7 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'rm <path>',

@@ -3,7 +3,7 @@
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
 const prettyBytes = require('pretty-bytes')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'stat',

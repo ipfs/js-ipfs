@@ -1,7 +1,7 @@
 'use strict'
 
 const fs = require('fs')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'import <name>',
