@@ -15,7 +15,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     'cid-version': {
       describe: 'The CID version of the DAGNode to link to',

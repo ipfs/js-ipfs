@@ -15,7 +15,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 
     const recursive = options.recursive !== false
 
-    if (options.cidBase && !multibase.names.includes(options.cidBase)) {
+    if (options.cidBase && !multibase.names[options.cidBase]) {
       throw errCode(new Error('invalid multibase'), 'ERR_INVALID_MULTIBASE')
     }
 

@@ -137,7 +137,7 @@ module.exports = Joi
             return
           }
 
-          if (!multibase.names.includes(value)) {
+          if (!multibase.names[value]) {
             throw new Error('Invalid base name')
           }
 
