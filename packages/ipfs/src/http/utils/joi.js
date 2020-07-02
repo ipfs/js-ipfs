@@ -2,7 +2,7 @@
 
 const Joi = require('@hapi/joi')
 const CID = require('cids')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 
@@ -137,7 +137,7 @@ module.exports = Joi
             return
           }
 
-          if (!multibase.names.includes(value)) {
+          if (!multibase.names[value]) {
             throw new Error('Invalid base name')
           }
 
