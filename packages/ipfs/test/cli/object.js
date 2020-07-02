@@ -321,7 +321,7 @@ describe('object', () => {
         new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
       ])
 
-      const out = await cli(`object links ${cid} --timeout=1000`, { ipfs })
+      const out = await cli(`object links ${cid} --timeout=1s`, { ipfs })
       expect(out).to.equal(
         'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
       )
