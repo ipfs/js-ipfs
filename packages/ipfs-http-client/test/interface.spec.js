@@ -569,7 +569,7 @@ describe('interface-ipfs-core tests', () => {
   tests.pin(commonFactory, {
     skip: [
       {
-        name: 'should list pins with comments',
+        name: 'should list pins with metadata',
         reason: 'not implemented in go-ipfs'
       }
     ]

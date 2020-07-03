@@ -12,8 +12,8 @@ const expect = chai.expect
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
 const PLAIN_CID = () => new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-const OBJECT_CID = () => ({ cid: new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, comments: 'hello world' })
-const OBJECT_PATH = () => ({ path: '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt', recursive: true, comments: 'hello world' })
+const OBJECT_CID = () => ({ cid: new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
+const OBJECT_PATH = () => ({ path: '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt', recursive: true, metadata: { key: 'hello world' } })
 
 async function verifyNormalisation (input, withOptions) {
   const result = await all(normalise(input))
@@ -23,7 +23,7 @@ async function verifyNormalisation (input, withOptions) {
 
   if (withOptions) {
     expect(result[0]).to.have.property('recursive', true)
-    expect(result[0]).to.have.property('comments', 'hello world')
+    expect(result[0]).to.have.deep.property('metadata', { key: 'hello world' })
   }
 }
 
