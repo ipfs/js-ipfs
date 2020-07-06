@@ -9,7 +9,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
 > A library for providing IPFS node over [message channel][]. This library enables
-applications running in the different JS context to use [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) (subset) via `ipfs-message-port-client`.
+applications running in the different JS context to use [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) (subset) via `ipfs-message-port-client`.
 
 
 ## Lead Maintainer <!-- omit in toc -->
