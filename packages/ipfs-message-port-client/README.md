@@ -31,7 +31,7 @@ $ npm install --save ipfs-message-port-client
 
 This client library works with IPFS node over the [message channel][] and assumes that IPFS node is provided via `ipfs-message-port-server` on the other end.
 
-It provides following API subseset:
+It provides following API subset:
 
 - [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md)
 - [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
