@@ -24,7 +24,7 @@ const parser = yargs
     default: false
   })
   .epilog(utils.ipfsPathHelp)
-  .demandCommand(1)
+  .demandCommand(1, 'Please specify a command')
   .showHelpOnFail(false)
   .commandDir('commands')
   .help()
