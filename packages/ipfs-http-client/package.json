@@ -15,7 +15,8 @@
   ],
   "main": "src/index.js",
   "browser": {
-    "./src/lib/to-stream.js": "./src/lib/to-stream.browser.js",
+    "./src/lib/to-body.js": "./src/lib/to-body.browser.js",
+    "ipfs-core-utils/src/files/blob.js": "ipfs-core-utils/src/files/blob.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs-dep": false
   },
@@ -54,7 +55,6 @@
     "ipld-raw": "^5.0.0",
     "iso-url": "^0.4.7",
     "it-tar": "^1.2.2",
-    "it-to-buffer": "^1.0.0",
     "it-to-stream": "^0.1.1",
     "merge-options": "^2.0.0",
     "multiaddr": "^7.4.3",

@@ -1,51 +1,35 @@
+// @ts-check
 'use strict'
 
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
-const toStream = require('./to-stream')
-const { nanoid } = require('nanoid')
-const modeToString = require('../lib/mode-to-string')
-const mtimeToObject = require('../lib/mtime-to-object')
+const toBody = require('./to-body')
+const modeToHeaders = require('../lib/mode-to-headers')
+const mtimeToHeaders = require('../lib/mtime-to-headers')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
+const { FormDataEncoder } = require('./form-data-encoder')
 
-async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
-  async function * streamFiles (source) {
+async function multipartRequest (source = '', abortController, headers = {}, boundary) {
+  async function * parts (source, abortController) {
     try {
       let index = 0
-
-      for await (const { content, path, mode, mtime } of normaliseInput(source)) {
-        let fileSuffix = ''
-        const type = content ? 'file' : 'dir'
-
-        if (index > 0) {
-          yield '\r\n'
-
-          fileSuffix = `-${index}`
+      for await (const input of normaliseInput(source)) {
+        const { kind, path, mode, mtime } = input
+        const type = kind === 'directory' ? 'dir' : 'file'
+        const suffix = index > 0 ? `-${index}` : ''
+        const name = `${type}${suffix}`
+        const filename = path !== '' ? encodeURIComponent(path) : ''
+        const headers = {
+          'Content-Type': type === 'file' ? 'application/octet-stream' : 'application/x-directory',
+          ...(mtime && mtimeToHeaders(mtime)),
+          ...(mode && modeToHeaders(mode))
         }
+        const content = input.kind === 'file' ? input : input.content
 
-        yield `--${boundary}\r\n`
-        yield `Content-Disposition: form-data; name="${type}${fileSuffix}"; filename="${encodeURIComponent(path)}"\r\n`
-        yield `Content-Type: ${content ? 'application/octet-stream' : 'application/x-directory'}\r\n`
-
-        if (mode !== null && mode !== undefined) {
-          yield `mode: ${modeToString(mode)}\r\n`
-        }
-
-        if (mtime != null) {
-          const {
-            secs, nsecs
-          } = mtimeToObject(mtime)
-
-          yield `mtime: ${secs}\r\n`
-
-          if (nsecs != null) {
-            yield `mtime-nsecs: ${nsecs}\r\n`
-          }
-        }
-
-        yield '\r\n'
-
-        if (content) {
-          yield * content
+        yield {
+          name,
+          content,
+          filename,
+          headers
         }
 
         index++
@@ -53,16 +37,20 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
     } catch (err) {
       // workaround for https://github.com/node-fetch/node-fetch/issues/753
       abortController.abort(err)
-    } finally {
-      yield `\r\n--${boundary}--\r\n`
     }
   }
 
+  const encoder = new FormDataEncoder({ boundary })
+  const data = encoder.encode(parts(source, abortController))
+  // In node this will produce readable stream, in browser it will
+  // produce a blob instance.
+  const body = await toBody(data)
+
   return {
     headers: merge(headers, {
-      'Content-Type': `multipart/form-data; boundary=${boundary}`
+      'Content-Type': encoder.type
     }),
-    body: await toStream(streamFiles(source))
+    body
   }
 }
 

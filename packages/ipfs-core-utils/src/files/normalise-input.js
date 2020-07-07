@@ -1,258 +1,360 @@
+// @ts-check
 'use strict'
 
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
-const globalThis = require('ipfs-utils/src/globalthis')
+const { File } = require('./file')
+const { Blob, readBlob } = require('./blob')
 
-/*
- * Transform one of:
- *
- * ```
- * Bytes (Buffer|ArrayBuffer|TypedArray) [single file]
- * Bloby (Blob|File) [single file]
- * String [single file]
- * { path, content: Bytes } [single file]
- * { path, content: Bloby } [single file]
- * { path, content: String } [single file]
- * { path, content: Iterable<Number> } [single file]
- * { path, content: Iterable<Bytes> } [single file]
- * { path, content: AsyncIterable<Bytes> } [single file]
- * Iterable<Number> [single file]
- * Iterable<Bytes> [single file]
- * Iterable<Bloby> [multiple files]
- * Iterable<String> [multiple files]
- * Iterable<{ path, content: Bytes }> [multiple files]
- * Iterable<{ path, content: Bloby }> [multiple files]
- * Iterable<{ path, content: String }> [multiple files]
- * Iterable<{ path, content: Iterable<Number> }> [multiple files]
- * Iterable<{ path, content: Iterable<Bytes> }> [multiple files]
- * Iterable<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * AsyncIterable<Bytes> [single file]
- * AsyncIterable<Bloby> [multiple files]
- * AsyncIterable<String> [multiple files]
- * AsyncIterable<{ path, content: Bytes }> [multiple files]
- * AsyncIterable<{ path, content: Bloby }> [multiple files]
- * AsyncIterable<{ path, content: String }> [multiple files]
- * AsyncIterable<{ path, content: Iterable<Number> }> [multiple files]
- * AsyncIterable<{ path, content: Iterable<Bytes> }> [multiple files]
- * AsyncIterable<{ path, content: AsyncIterable<Bytes> }> [multiple files]
- * ```
- * Into:
- *
- * ```
- * AsyncIterable<{ path, content: AsyncIterable<Buffer> }>
- * ```
- *
- * @param input Object
- * @return AsyncInterable<{ path, content: AsyncIterable<Buffer> }>
+/**
+ * @template T
+ * @typedef {Iterable<T>|AsyncIterable<T>|ReadableStream<T>} Multiple
  */
-module.exports = function normaliseInput (input) {
+
+/**
+ *
+ * @typedef {ExtendedFile | FileStream | Directory} FSEntry
+ */
+
+/**
+ * Normalizes input into async iterable of extended File or custom FileStream
+ * objects.
+ *
+ * @param {Input} input
+ * @return {AsyncIterable<FSEntry>}
+ *
+ * @typedef {SingleFileInput | MultiFileInput} Input
+ * @typedef {Blob|Bytes|string|FileObject|Iterable<Number>|Multiple<Bytes>} SingleFileInput
+ * @typedef {Multiple<Blob>|Multiple<string>|Multiple<FileObject>} MultiFileInput
+ *
+ * @typedef {Object} FileObject
+ * @property {string} [path]
+ * @property {FileContent} [content]
+ * @property {string|number} [mode]
+ * @property {UnixFSTime} [mtime]
+ * @typedef {Blob|Bytes|string|Iterable<number>|Multiple<Bytes>} FileContent
+ *
+ * @typedef {ArrayBuffer|ArrayBufferView} Bytes
+ *
+ * @typedef {Object} UnixFSTime
+ * @property {number} secs
+ * @property {number} [nsecs]
+ */
+// eslint-disable-next-line complexity
+module.exports = async function * normaliseInput (input) {
   // must give us something
-  if (input === null || input === undefined) {
-    throw errCode(new Error(`Unexpected input: ${input}`, 'ERR_UNEXPECTED_INPUT'))
+  if (input == null) {
+    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }
 
-  // String
-  if (typeof input === 'string' || input instanceof String) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input)
-    })()
+  // If input is a one of the following types
+  // - string
+  // - ArrayBuffer
+  // - ArrayBufferView
+  // - Blob
+  // - FileObject
+  // It is turned into collection of one file (with that content)
+  const file = asFile(input)
+  if (file != null) {
+    yield file
+    return
   }
 
-  // Buffer|ArrayBuffer|TypedArray
-  // Blob|File
-  if (isBytes(input) || isBloby(input)) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input)
-    })()
+  // If input is sync iterable we expect it to be a homogenous collection &
+  // need to probe it's first item to tell if input to be interpreted as single
+  // file with multiple chunks or multiple files.
+  // NOTE: We had to ensure that input was not string or arraybuffer view
+  // because those are also iterables.
+  /** @type {null|Iterable<*>} */
+  const iterable = asIterable(input)
+  if (iterable != null) {
+    yield * normilizeIterableInput(iterable)
+
+    // Return here since we have have exhasted an input iterator.
+    return
   }
 
-  // Iterable<?>
-  if (input[Symbol.iterator]) {
-    return (async function * () { // eslint-disable-line require-await
-      const iterator = input[Symbol.iterator]()
-      const first = iterator.next()
-      if (first.done) return iterator
+  // If we got here than we are dealing with async input, which can be either
+  // readable stream or an async iterable (casting former to later)
+  const stream = asReadableStream(input)
+  const asyncIterable = stream
+    ? iterateReadableStream(stream)
+    : asAsyncIterable(input)
 
-      // Iterable<Number>
-      // Iterable<Bytes>
-      if (Number.isInteger(first.value) || isBytes(first.value)) {
-        yield toFileObject((function * () {
-          yield first.value
-          yield * iterator
-        })())
-        return
-      }
+  // Async iterable (whech we assume to be homogenous) may represent single file
+  // with multilpe chunks or multiple files, to decide we probe it's first item.
+  if (asyncIterable != null) {
+    // Create peekable to be able to probe head without consuming it.
+    const peekable = AsyncPeekable.from(asyncIterable)
+    const { done, value } = await peekable.peek()
+    // If done input was empty so we return early.
+    if (done) {
+      return
+    }
 
-      // Iterable<Bloby>
-      // Iterable<String>
-      // Iterable<{ path, content }>
-      if (isFileObject(first.value) || isBloby(first.value) || typeof first.value === 'string') {
-        yield toFileObject(first.value)
-        for (const obj of iterator) {
-          yield toFileObject(obj)
+    // If first item is array buffer or one of it's views input represents a
+    // single file with multiple chunks.
+    if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+      yield new FileStream(peekable, '')
+    // Otherwise we interpret input as async collection of multiple files.
+    // In that case itemss of input can be either `string`, `Blob` or
+    // `FileObject`, so we normalize each to a file. If item is anything else
+    // we throw an exception.
+    } else {
+      for await (const content of peekable) {
+        // Note: If content here is `ArrayBuffer` or a view this will turn it
+        // into a file, but that can only occur if async iterable contained
+        // variadic chunks which is not supported.
+        const file = asFile(content)
+        if (file) {
+          yield file
+        } else {
+          throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
         }
-        return
       }
+    }
 
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
-  }
-
-  // window.ReadableStream
-  if (typeof input.getReader === 'function') {
-    return (async function * () {
-      for await (const obj of browserStreamToIt(input)) {
-        yield toFileObject(obj)
-      }
-    })()
-  }
-
-  // AsyncIterable<?>
-  if (input[Symbol.asyncIterator]) {
-    return (async function * () {
-      const iterator = input[Symbol.asyncIterator]()
-      const first = await iterator.next()
-      if (first.done) return iterator
-
-      // AsyncIterable<Bytes>
-      if (isBytes(first.value)) {
-        yield toFileObject((async function * () { // eslint-disable-line require-await
-          yield first.value
-          yield * iterator
-        })())
-        return
-      }
-
-      // AsyncIterable<Bloby>
-      // AsyncIterable<String>
-      // AsyncIterable<{ path, content }>
-      if (isFileObject(first.value) || isBloby(first.value) || typeof first.value === 'string') {
-        yield toFileObject(first.value)
-        for await (const obj of iterator) {
-          yield toFileObject(obj)
-        }
-        return
-      }
-
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
-  }
-
-  // { path, content: ? }
-  // Note: Detected _after_ AsyncIterable<?> because Node.js streams have a
-  // `path` property that passes this check.
-  if (isFileObject(input)) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input)
-    })()
+    return
   }
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
 }
 
-function toFileObject (input) {
-  const obj = {
-    path: input.path || '',
-    mode: input.mode,
-    mtime: input.mtime
-  }
-
-  if (input.content) {
-    obj.content = toAsyncIterable(input.content)
-  } else if (!input.path) { // Not already a file object with path or content prop
-    obj.content = toAsyncIterable(input)
-  }
-
-  return obj
-}
-
-function toAsyncIterable (input) {
-  // Bytes | String
-  if (isBytes(input) || typeof input === 'string') {
-    return (async function * () { // eslint-disable-line require-await
-      yield toBuffer(input)
-    })()
-  }
-
-  // Bloby
-  if (isBloby(input)) {
-    return blobToAsyncGenerator(input)
-  }
-
-  // Browser stream
-  if (typeof input.getReader === 'function') {
-    return browserStreamToIt(input)
-  }
-
-  // Iterator<?>
-  if (input[Symbol.iterator]) {
-    return (async function * () { // eslint-disable-line require-await
-      const iterator = input[Symbol.iterator]()
-      const first = iterator.next()
-      if (first.done) return iterator
-
-      // Iterable<Number>
-      if (Number.isInteger(first.value)) {
-        yield toBuffer(Array.from((function * () {
-          yield first.value
-          yield * iterator
-        })()))
-        return
+/**
+ *
+ * @param {Iterable<ArrayBuffer>|Iterable<ArrayBufferView>} iterable
+ * @returns {Iterable<ExtendedFile|FileStream|Directory>}
+ * @typedef {Iterable<number>|Iterable<ArrayBuffer>|Iterable<ArrayBufferView>} IterableFileContent
+ * @typedef {Iterable<string>|Iterable<Blob>|Iterable<FileObject>} IterableFiles
+ */
+const normilizeIterableInput = function * (iterable) {
+  // In order to peek at first without loosing capablitiy to iterate, we
+  // create peekable which allows us to do that.
+  const peekable = Peekable.from(iterable)
+  // First try to interpret it a single file content chunks.
+  const bytes = asIterableBytes(peekable)
+  if (bytes != null) {
+    yield new ExtendedFile(bytes, '')
+    // If first item is a `Blob`, `string`, or a `FileObject` we treat this
+    // input as collection of files. We iterate and normalize each each value
+    // into a file.
+  } else {
+    for (const content of peekable) {
+      const file = asFile(content)
+      if (file) {
+        yield file
+      } else {
+        throw errCode(new Error('Unexpected input: ' + typeof content), 'ERR_UNEXPECTED_INPUT')
       }
+    }
+  }
 
-      // Iterable<Bytes>
-      if (isBytes(first.value)) {
-        yield toBuffer(first.value)
-        for (const chunk of iterator) {
-          yield toBuffer(chunk)
-        }
-        return
+  // Otherwise eslint complains about lack of return
+  return undefined
+}
+
+/**
+ * Utility function takes any input and returns a `File|FileStream|Directoriy`
+ * (containing that input) if input was one of the following types (or `null`
+ * otherwise):
+ * - `ArrayBuffer`
+ * - `ArrayBufferView`
+ * - `string`
+ * - `Blob`
+ * - `FileObject`
+ * It will return `File` instance when content is of known size (not a stream)
+ * other it returns a `FileStream`. If input is `FileObject` with no `content`
+ * returns `Directory`.
+ * @param {any} input
+ * @param {string} [name] - optional name for the file
+ * @returns {null|ExtendedFile|FileStream|Directory}
+ */
+const asFile = (input, name) => {
+  const file = asFileFromBlobPart(input, name)
+  if (file) {
+    return file
+  } else {
+    // If input is a `FileObject`
+    const fileObject = asFileObject(input)
+    if (fileObject) {
+      return fileFromFileObject(fileObject)
+    } else {
+      return null
+    }
+  }
+}
+
+/**
+ * Utility function takes any input and returns a `File` (containing it)
+ * if `input` is of `BlobPart` type, otherwise returns `null`. If optional
+ * `name` is passed it will be used as a file name.
+ * @param {any} content
+ * @param {string} [name]
+ * @returns {ExtendedFile|null}
+ */
+const asFileFromBlobPart = (content, name) => {
+  if (
+    typeof content === 'string' ||
+    ArrayBuffer.isView(content) ||
+    content instanceof ArrayBuffer
+  ) {
+    return new ExtendedFile([content], name || '')
+  } else if (content instanceof Blob) {
+    // Third argument is passed to preserve a mime type.
+    return new ExtendedFile([content], name || '', content)
+  } else {
+    return null
+  }
+}
+
+/**
+ * Utility function takes a `FileObject` and returns a web `File` (with extended)
+ * attributes if content is of known size or a `FileStream` if content is an
+ * async stream or `Directory` if it has no content.
+ * @param {FileObject} fileObject
+ * @returns {null|ExtendedFile|FileStream|Directory}
+ */
+const fileFromFileObject = (fileObject) => {
+  const { path, mtime, mode, content } = fileObject
+  const ext = { mtime, mode, path }
+  const name = path == null ? undefined : basename(path)
+  const file = asFileFromBlobPart(content, name)
+  if (file) {
+    return Object.assign(file, ext)
+  } else {
+    // If content is empty it is a diretory
+    if (content == null) {
+      return new Directory(name, ext)
+    }
+
+    // First try to interpret it a single file content chunks.
+    const iterable = asIterable(content)
+    if (iterable != null) {
+      const peekable = Peekable.from(iterable)
+      // File object content can only contain iterable of numbers or array
+      // buffers (or it's views). If so we create an object otherwise
+      // throw an exception.
+      const bytes = asIterableBytes(peekable)
+      if (bytes != null) {
+        return new ExtendedFile(bytes, name, ext)
+      } else {
+        throw errCode(new Error('Unexpected input: ' + typeof content), 'ERR_UNEXPECTED_INPUT')
       }
+    }
 
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
+    // If we got here than we are dealing with async input, which can be either
+    // readable stream or an async iterable (casting former to later)
+    const stream = asReadableStream(content)
+    const asyncIterable = stream
+      ? iterateReadableStream(stream)
+      : asAsyncIterable(content)
+    if (asyncIterable != null) {
+      return new FileStream(asyncIterable, name, ext)
+    }
+
+    throw errCode(new Error(`Unexpected FileObject content: ${content}`), 'ERR_UNEXPECTED_INPUT')
+  }
+}
+
+/**
+ * @param {Peekable<any>} content
+ * @returns {ArrayBufferView[]|ArrayBuffer[]|null}
+ */
+const asIterableBytes = (content) => {
+  const { done, value } = content.peek()
+  // If it is done input was empty collection so we return early.
+  if (done) {
+    return []
   }
 
-  // AsyncIterable<Bytes>
-  if (input[Symbol.asyncIterator]) {
-    return (async function * () {
-      for await (const chunk of input) {
-        yield toBuffer(chunk)
-      }
-    })()
+  // If first item is an integer we treat input as a byte array and result
+  // will be collection of one file contaning those bytes.
+  if (Number.isInteger(value)) {
+    const bytes = new Uint8Array(content)
+    return [bytes]
+
+    // If first item is array buffer or it's view, it is interpreted as chunks
+    // of one file. In that case we collect all chunks and normalize input into
+    // collection with a single file containing those chunks.
+    // Note: Since this is a synchronous iterator all chunks are already in
+    // memory so by by collecting them into a single file we are not allocate
+    // new memory (unless iterator is generating content, but that is exotic
+    // enough use case that we prefer to go with File over FileStream).
+  } else if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+    return [...content]
+  } else {
+    return null
   }
-
-  throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
 }
 
-function toBuffer (chunk) {
-  return isBytes(chunk) ? chunk : Buffer.from(chunk)
-}
-
-function isBytes (obj) {
-  return Buffer.isBuffer(obj) || ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
-}
-
-function isBloby (obj) {
-  return typeof globalThis.Blob !== 'undefined' && obj instanceof globalThis.Blob
-}
-
-// An object with a path or content property
-function isFileObject (obj) {
-  return typeof obj === 'object' && (obj.path || obj.content)
-}
-
-function blobToAsyncGenerator (blob) {
-  if (typeof blob.stream === 'function') {
-    // firefox < 69 does not support blob.stream()
-    return browserStreamToIt(blob.stream())
+/**
+ * Pattern matches given `input` as `ReadableStream` and return back either
+ * matched input or `null`.
+ *
+ * @param {any} input
+ * @returns {ReadableStream<Uint8Array>|null}
+ */
+const asReadableStream = input => {
+  if (input && typeof input.getReader === 'function') {
+    return input
+  } else {
+    return null
   }
-
-  return readBlob(blob)
 }
 
-async function * browserStreamToIt (stream) {
+/**
+ * Pattern matches given `input` as `AsyncIterable<I>` and returns back either
+ * matched `AsyncIterable` or `null`.
+ * @template I
+ * @param {AsyncIterable<I>|Input} input
+ * @returns {AsyncIterable<I>|null}
+ */
+const asAsyncIterable = input => {
+  /** @type {*} */
+  const object = input
+  if (object && typeof object[Symbol.asyncIterator] === 'function') {
+    return object
+  } else {
+    return null
+  }
+}
+
+/**
+ * Pattern matches given input as `Iterable<I>` and returns back either matched
+ * iterable or `null`.
+ * @template I
+ * @param {Iterable<I>|Input} input
+ * @returns {Iterable<I>|null}
+ */
+const asIterable = input => {
+  /** @type {*} */
+  const object = input
+  if (object && typeof object[Symbol.iterator] === 'function') {
+    return object
+  } else {
+    return null
+  }
+}
+
+/**
+ * Pattern matches given input as "FileObject" and returns back eithr matched
+ * input or `null`.
+ * @param {*} input
+ * @returns {FileObject|null}
+ */
+const asFileObject = input => {
+  if (typeof input === 'object' && (input.path || input.content)) {
+    return input
+  } else {
+    return null
+  }
+}
+/**
+ * @template T
+ * @param {ReadableStream<T>} stream
+ * @returns {AsyncIterable<T>}
+ */
+
+const iterateReadableStream = async function * (stream) {
   const reader = stream.getReader()
 
   while (true) {
@@ -266,33 +368,186 @@ async function * browserStreamToIt (stream) {
   }
 }
 
-async function * readBlob (blob, options) {
-  options = options || {}
+/**
+ * @template T
+ */
+class Peekable {
+  /**
+   * @template T
+   * @template {Iterable<T>} I
+   * @param {I} iterable
+   * @returns {Peekable<T>}
+   */
+  static from (iterable) {
+    return new Peekable(iterable)
+  }
 
-  const reader = new globalThis.FileReader()
-  const chunkSize = options.chunkSize || 1024 * 1024
-  let offset = options.offset || 0
+  /**
+   * @private
+   * @param {Iterable<T>} iterable
+   */
+  constructor (iterable) {
+    const iterator = iterable[Symbol.iterator]()
+    /** @private */
+    this.first = iterator.next()
+    /** @private */
+    this.rest = iterator
+  }
 
-  const getNextChunk = () => new Promise((resolve, reject) => {
-    reader.onloadend = e => {
-      const data = e.target.result
-      resolve(data.byteLength === 0 ? null : data)
-    }
-    reader.onerror = reject
+  peek () {
+    return this.first
+  }
 
-    const end = offset + chunkSize
-    const slice = blob.slice(offset, end)
-    reader.readAsArrayBuffer(slice)
-    offset = end
-  })
+  next () {
+    const { first, rest } = this
+    this.first = rest.next()
+    return first
+  }
 
-  while (true) {
-    const data = await getNextChunk()
+  [Symbol.iterator] () {
+    return this
+  }
 
-    if (data == null) {
-      return
-    }
-
-    yield Buffer.from(data)
+  [Symbol.asyncIterator] () {
+    return this
   }
 }
+
+/**
+ * @template T
+ */
+class AsyncPeekable {
+  /**
+   * @template T
+   * @template {AsyncIterable<T>} I
+   * @param {I} iterable
+   * @returns {AsyncPeekable<T>}
+   */
+  static from (iterable) {
+    return new AsyncPeekable(iterable)
+  }
+
+  /**
+   * @private
+   * @param {AsyncIterable<T>} iterable
+   */
+  constructor (iterable) {
+    const iterator = iterable[Symbol.asyncIterator]()
+    /** @private */
+    this.first = iterator.next()
+    /** @private */
+    this.rest = iterator
+  }
+
+  peek () {
+    return this.first
+  }
+
+  next () {
+    const { first, rest } = this
+    this.first = rest.next()
+    return first
+  }
+
+  [Symbol.asyncIterator] () {
+    return this
+  }
+}
+
+/**
+ * @param {string} path
+ * @returns {string}
+ */
+const basename = (path) =>
+  path.split(/\\|\//).pop()
+
+class ExtendedFile extends File {
+  /**
+   * @param {BlobPart[]} init
+   * @param {string} name - A USVString representing the file name or the path
+   * to the file.
+   * @param {Object} [options]
+   * @param {string} [options.type] -  A DOMString representing the MIME type
+   * of the content that will be put into the file. Defaults to a value of "".
+   * @param {number} [options.lastModified] - A number representing the number
+   * of milliseconds between the Unix time epoch and when the file was last
+   * modified. Defaults to a value of Date.now().
+   * @param {string} [options.path]
+   * @param {string|number} [options.mode]
+   * @param {UnixFSTime} [options.mtime]
+   */
+  constructor (init, name, options = {}) {
+    super(init, name, options)
+    const { path, mode, mtime } = options
+    this.path = path
+    this.mode = mode
+    this.mtime = mtime
+
+    /** @type {'file'} */
+    this.kind = 'file'
+  }
+
+  /**
+   * @returns {AsyncIterable<Uint8Array>}
+   */
+  get content () {
+    return readBlob(this)
+  }
+}
+module.exports.ExtendedFile = ExtendedFile
+
+class FileStream {
+  /**
+   * @param {AsyncIterable<ArrayBuffer|ArrayBufferView>} content
+   * @param {string} name
+   * @param {Object} [options]
+   * @param {string} [options.type]
+   * @param {number} [options.lastModified]
+   * @param {string} [options.path]
+   * @param {UnixFSTime} [options.mtime]
+   * @param {string|number} [options.mode]
+   */
+  constructor (content, name, options = {}) {
+    this.content = content
+    this.name = name
+    this.type = options.type || ''
+    this.lastModified = options.lastModified || Date.now()
+    this.path = options.path || ''
+    this.mtime = options.mtime
+    this.mode = options.mode
+
+    /** @type {'file-stream'} */
+    this.kind = 'file-stream'
+  }
+
+  get size () {
+    throw Error('File size is unknown')
+  }
+}
+module.exports.FileStream = FileStream
+
+class Directory {
+  /**
+   * @param {string} name
+   * @param {Object} [options]
+   * @param {string} [options.type]
+   * @param {number} [options.lastModified]
+   * @param {string} [options.path]
+   * @param {UnixFSTime} [options.mtime]
+   * @param {string|number} [options.mode]
+   */
+  constructor (name, options = {}) {
+    this.name = name
+    this.type = options.type || ''
+    this.lastModified = options.lastModified || Date.now()
+    this.path = options.path || ''
+    this.mtime = options.mtime
+    this.mode = options.mode
+
+    /** @type {'directory'} */
+    this.kind = 'directory'
+    /** @type {void} */
+    this.content = undefined
+  }
+}
+module.exports.Directory = Directory

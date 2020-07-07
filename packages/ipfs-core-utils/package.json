@@ -11,6 +11,10 @@
     "src",
     "dist"
   ],
+  "browser": {
+    "./src/lib/blob.js": "./src/lib/blob.browser.js",
+    "./src/lib/file.js": "./src/lib/file.browser.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
