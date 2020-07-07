@@ -6,6 +6,11 @@
 - [Build a dist version](#build-a-dist-version)
 - [Publishing new versions](#publishing-new-versions)
 - [Using prerelease versions](#using-prerelease-versions)
+- [Testing strategy](#testing-strategy)
+  - [CLI](#cli)
+  - [HTTP API](#http-api)
+  - [Core](#core)
+  - [Non-Core](#non-core)
 
 ## Clone and install dependencies
 
@@ -64,3 +69,37 @@ Please run the linter before submitting a PR, the build will not pass if it fail
 ## Using prerelease versions
 
 Any changed packages from each successful build of master are published to npm as canary builds under the npm tag `next`.
+
+## Testing strategy
+
+This project has a number of components that have their own tests, then some components that share interface tests.
+
+When adding new features you may need to add tests to one or more of the test suites described below.
+
+### CLI
+
+Tests live in [/packages/ipfs/test/cli](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/test/cli).
+
+All interactions with IPFS core are stubbed so we just ensure that the correct arguments are passed in
+
+### HTTP API
+
+Tests live in [/packages/ipfs/test/http-api](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/test/http-api) and are similar to the CLI tests in that we stub out core interactions and inject requests with [shot](https://www.npmjs.com/package/@hapi/shot).
+
+### Core
+
+Anything non-implementation specific should be considered part of the 'Core API'.  For example node setup code is not Core, but anything that does useful work, e.g. network/repo/etc interactions would be Core.
+
+All Core APIs should be documented in [/docs/core-api](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api).
+
+All Core APIs should have comprehensive tests in [/packages/interface-ipfs-core](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core).
+
+`interface-ipfs-core` should ensure API compatibility across implementations. Tests are run:
+
+1. Against [/packages/ipfs/src/core](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core) directly
+1. Against [/packages/ipfs/src/http](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/http) over HTTP via `ipfs-http-client`
+1. Against `go-ipfs` over HTTP via `ipfs-http-client`
+
+### Non-Core
+
+Any non-core API functionality should have tests in the `tests` directory of the module in question, for example: [/packages/ipfs-http-api/tests](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client/test) and [/packages/ipfs/tests](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/test) for `ipfs-http-client` and `ipfs` respectively.
