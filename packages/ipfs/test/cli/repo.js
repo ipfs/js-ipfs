@@ -35,11 +35,28 @@ describe('repo', () => {
       })
 
       const stats = await cli('repo stat', { ipfs })
-      expect(stats).to.match(/^NumObjects:\s\d+$/m)
-      expect(stats).to.match(/^RepoSize:\s\d+$/m)
-      expect(stats).to.match(/^StorageMax:\s\d+$/m)
+      expect(stats).to.match(/^NumObjects:\s+\d+$/m)
+      expect(stats).to.match(/^RepoSize:\s+\d+$/m)
+      expect(stats).to.match(/^StorageMax:\s+\d+$/m)
       expect(stats).to.match(/^RepoPath:\s.+$/m)
-      expect(stats).to.match(/^Version:\s\d+$/m)
+      expect(stats).to.match(/^Version:\s+\d+$/m)
+    })
+
+    it('get repo stats with just size', async () => {
+      ipfs.repo.stat.withArgs(defaultOptions).resolves({
+        numObjects: BigNumber(10),
+        repoSize: BigNumber(10),
+        storageMax: BigNumber(10),
+        repoPath: '/foo',
+        version: 5
+      })
+
+      const stats = await cli('repo stat -s', { ipfs })
+      expect(stats).to.not.match(/^NumObjects:$/m)
+      expect(stats).to.match(/^RepoSize:\s+\d+$/m)
+      expect(stats).to.match(/^StorageMax:\s+\d+$/m)
+      expect(stats).to.not.match(/^RepoPath:$/m)
+      expect(stats).to.not.match(/^Version:$/m)
     })
 
     it('get human readable repo stats', async () => {
@@ -52,11 +69,11 @@ describe('repo', () => {
       })
 
       const stats = await cli('repo stat --human', { ipfs })
-      expect(stats).to.match(/^NumObjects:\s\d+$/m)
+      expect(stats).to.match(/^NumObjects:\s+\d+$/m)
       expect(stats).to.match(/^RepoSize:\s+[\d.]+\s[PTGMK]?B$/gm)
       expect(stats).to.match(/^StorageMax:\s+[\d.]+\s[PTGMK]?B$/gm)
       expect(stats).to.match(/^RepoPath:\s.+$/m)
-      expect(stats).to.match(/^Version:\s\d+$/m)
+      expect(stats).to.match(/^Version:\s+\d+$/m)
     })
 
     it('get repo with timeout', async () => {
@@ -72,11 +89,11 @@ describe('repo', () => {
       })
 
       const stats = await cli('repo stat --timeout=1s', { ipfs })
-      expect(stats).to.match(/^NumObjects:\s\d+$/m)
-      expect(stats).to.match(/^RepoSize:\s\d+$/m)
-      expect(stats).to.match(/^StorageMax:\s\d+$/m)
+      expect(stats).to.match(/^NumObjects:\s+\d+$/m)
+      expect(stats).to.match(/^RepoSize:\s+\d+$/m)
+      expect(stats).to.match(/^StorageMax:\s+\d+$/m)
       expect(stats).to.match(/^RepoPath:\s.+$/m)
-      expect(stats).to.match(/^Version:\s\d+$/m)
+      expect(stats).to.match(/^Version:\s+\d+$/m)
     })
   })
 
