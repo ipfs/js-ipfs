@@ -17,7 +17,7 @@ module.exports = function preload (url, options) {
   options = options || {}
 
   return httpQueue.add(async () => {
-    const res = await HTTP.get(url, { signal: options.signal })
+    const res = await HTTP.post(url, { signal: options.signal })
     const reader = res.body.getReader()
 
     try {
