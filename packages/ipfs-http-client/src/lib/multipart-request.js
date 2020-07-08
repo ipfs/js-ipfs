@@ -56,7 +56,7 @@ async function * toFormDataParts (source, abortController) {
       const type = kind === 'directory' ? 'dir' : 'file'
       const suffix = index > 0 ? `-${index}` : ''
       const name = `${type}${suffix}`
-      const filename = path !== '' ? encodeURIComponent(path) : ''
+      const filename = path
       const headers = {
         'Content-Type': type === 'file' ? 'application/octet-stream' : 'application/x-directory',
         ...(mtime && mtimeToHeaders(mtime)),
