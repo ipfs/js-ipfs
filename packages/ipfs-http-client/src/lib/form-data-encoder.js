@@ -21,20 +21,15 @@ class FormDataEncoder {
    */
   async * encode (source) {
     const { boundary } = this
-    let first = true
     for await (const part of from(source)) {
-      if (!first) {
-        yield '\r\n'
-        first = false
-      }
-
       yield `--${boundary}\r\n`
       yield * encodeHead(part)
       yield '\r\n'
       yield * encodeBody(part.content)
+      yield '\r\n'
     }
 
-    yield `\r\n--${boundary}--\r\n`
+    yield `--${boundary}--\r\n`
   }
 }
 exports.FormDataEncoder = FormDataEncoder
