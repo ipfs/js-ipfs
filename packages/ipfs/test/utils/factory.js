@@ -1,7 +1,7 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
-const { isNode, isBrowser } = require('ipfs-utils/src/env')
+const { isNode, isBrowser, isElectronMain } = require('ipfs-utils/src/env')
 
 const commonOptions = {
   test: true,
@@ -13,6 +13,11 @@ const commonOptions = {
     libp2p: {
       dialer: {
         dialTimeout: 60e3 // increase timeout because travis is slow
+      },
+      config: {
+        dht: {
+          enabled: isNode || isElectronMain
+        }
       }
     }
   },
