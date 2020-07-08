@@ -163,24 +163,20 @@ class Blob {
   stream () {
     throw Error('Not implemented')
   }
-
-  /**
-   * Non standard, but if `ReadableStream`s are extended to be
-   * made async iterable why not blobs.
-   * @returns {AsyncIterator<Uint8Array>}
-   */
-  // eslint-disable-next-line require-await
-  async * [Symbol.asyncIterator] () {
-    yield * this._parts
-  }
 }
 
+// Marking export as a DOM File object instead of custom class.
+/** @type {typeof window.Blob} */
 exports.Blob = Blob
 
 /**
  * Universal blob reading function
- * @param {Blob} blob
+ * @param {InstanceType<typeof window.Blob>} blob
  * @returns {AsyncIterable<Uint8Array>}
  */
-const readBlob = (blob) => blob
+// eslint-disable-next-line require-await
+const readBlob = async function * BlobParts (blob) {
+  // @ts-ignore - accessing private property
+  yield * blob._parts
+}
 exports.readBlob = readBlob

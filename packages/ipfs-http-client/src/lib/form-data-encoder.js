@@ -60,7 +60,10 @@ function encodeBody (content) {
  * @property {string} name
  * @property {void|Blob|AsyncIterable<ArrayBufferView|ArrayBuffer>} content
  * @property {string} [filename]
- * @property {Record<string, string>} [headers]
+ * @property {Headers} [headers]
+ *
+ * @typedef {Record<string, string|number>} Headers
+ *
  */
 
 /**

@@ -8,7 +8,8 @@
 // in the meantime we create Blob out of all parts.
 
 /**
- * Turns async iterable of the `BlobPart`s into an aggregate `Blob`.
+ * Turns async iterable of the `BlobPart`s into an aggregate `Blob`, so it can
+ * be used as fetch request body.
  * @param {AsyncIterable<BlobPart>} source
  * @returns {Promise<Blob>}
  */

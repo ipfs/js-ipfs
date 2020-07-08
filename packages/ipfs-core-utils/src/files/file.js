@@ -52,4 +52,7 @@ class File extends Blob {
     return 'File'
   }
 }
+
+// Marking export as a DOM File object instead of custom class.
+/** @type {typeof window.File} */
 exports.File = File

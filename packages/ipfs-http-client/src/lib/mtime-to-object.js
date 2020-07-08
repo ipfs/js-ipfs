@@ -1,5 +1,15 @@
+// @ts-check
 'use strict'
 
+/**
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input').MTime} MTime
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input').UnixFSTime} UnixFSTime
+ */
+
+/**
+ * @param {null|undefined|MTime} mtime
+ * @returns {UnixFSTime}
+ */
 module.exports = function parseMtime (mtime) {
   if (mtime == null) {
     return undefined
@@ -17,15 +27,12 @@ module.exports = function parseMtime (mtime) {
   }
 
   // { secs, nsecs }
-  if (Object.prototype.hasOwnProperty.call(mtime, 'secs')) {
-    return {
-      secs: mtime.secs,
-      nsecs: mtime.nsecs
-    }
+  if ('secs' in mtime && typeof mtime.secs === 'number') {
+    return { secs: mtime.secs, nsecs: mtime.nsecs }
   }
 
   // UnixFS TimeSpec
-  if (Object.prototype.hasOwnProperty.call(mtime, 'Seconds')) {
+  if ('Seconds' in mtime && typeof mtime.Seconds === 'number') {
     return {
       secs: mtime.Seconds,
       nsecs: mtime.FractionalNanoseconds

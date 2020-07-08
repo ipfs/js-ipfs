@@ -11,17 +11,7 @@ const { Blob, readBlob } = require('./blob')
  */
 
 /**
- *
- * @typedef {ExtendedFile | FileStream | Directory} FSEntry
- */
-
-/**
- * Normalizes input into async iterable of extended File or custom FileStream
- * objects.
- *
- * @param {Input} input
- * @return {AsyncIterable<FSEntry>}
- *
+ * @typedef {ExtendedFile | FileStream | Directory} NormalizedAddInput
  * @typedef {SingleFileInput | MultiFileInput} Input
  * @typedef {Blob|Bytes|string|FileObject|Iterable<Number>|Multiple<Bytes>} SingleFileInput
  * @typedef {Multiple<Blob>|Multiple<string>|Multiple<FileObject>} MultiFileInput
@@ -29,17 +19,32 @@ const { Blob, readBlob } = require('./blob')
  * @typedef {Object} FileObject
  * @property {string} [path]
  * @property {FileContent} [content]
- * @property {string|number} [mode]
+ * @property {Mode} [mode]
  * @property {UnixFSTime} [mtime]
  * @typedef {Blob|Bytes|string|Iterable<number>|Multiple<Bytes>} FileContent
  *
  * @typedef {ArrayBuffer|ArrayBufferView} Bytes
  *
+ *@typedef {string|number|InstanceType<typeof String>} Mode
+ * @typedef {Date|UnixFSTime|UnixFSTimeSpec|HRTime} MTime
  * @typedef {Object} UnixFSTime
  * @property {number} secs
  * @property {number} [nsecs]
+ *
+ * @typedef {Object} UnixFSTimeSpec
+ * @property {number} Seconds
+ * @property {number} [FractionalNanoseconds]
+ *
+ * @typedef {[number, number]} HRTime - Node process.hrtime
  */
-// eslint-disable-next-line complexity
+
+/**
+ * Normalizes input into async iterable of extended File or custom FileStream
+ * objects.
+ *
+ * @param {Input} input
+ * @return {AsyncIterable<NormalizedAddInput>}
+ */
 module.exports = async function * normaliseInput (input) {
   // must give us something
   if (input == null) {
@@ -475,8 +480,8 @@ class ExtendedFile extends File {
    * of milliseconds between the Unix time epoch and when the file was last
    * modified. Defaults to a value of Date.now().
    * @param {string} [options.path]
-   * @param {string|number} [options.mode]
-   * @param {UnixFSTime} [options.mtime]
+   * @param {Mode} [options.mode]
+   * @param {MTime} [options.mtime]
    */
   constructor (init, name, options = {}) {
     super(init, name, options)
@@ -506,8 +511,8 @@ class FileStream {
    * @param {string} [options.type]
    * @param {number} [options.lastModified]
    * @param {string} [options.path]
-   * @param {UnixFSTime} [options.mtime]
-   * @param {string|number} [options.mode]
+   * @param {MTime} [options.mtime]
+   * @param {Mode} [options.mode]
    */
   constructor (content, name, options = {}) {
     this.content = content
@@ -535,8 +540,8 @@ class Directory {
    * @param {string} [options.type]
    * @param {number} [options.lastModified]
    * @param {string} [options.path]
-   * @param {UnixFSTime} [options.mtime]
-   * @param {string|number} [options.mode]
+   * @param {MTime} [options.mtime]
+   * @param {Mode} [options.mode]
    */
   constructor (name, options = {}) {
     this.name = name
