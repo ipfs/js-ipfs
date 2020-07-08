@@ -203,6 +203,60 @@ console.log(result)
 
 A great source of [examples][] can be found in the tests for this API.
 
+## `ipfs.dag.resolve(ipfsPath, [options])`
+
+> Returns the CID and remaining path of the node at the end of the passed IPFS path
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| ipfsPath | `String` or [CID][] | An IPFS path, e.g. `/ipfs/bafy/dir/file.txt` or a [CID][] instance |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| path | `String` | `undefined` | If `ipfsPath` is a [CID][], you may pass a path here |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<{ cid: CID, remainderPath: String }>` | The last CID encountered during the traversal and the path to the end of the IPFS path inside the node referenced by the CID |
+
+### Example
+
+```JavaScript
+// example obj
+const obj = {
+  a: 1,
+  b: [1, 2, 3],
+  c: {
+    ca: [5, 6, 7],
+    cb: 'foo'
+  }
+}
+
+const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+console.log(cid.toString())
+// bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq
+
+const result = await ipfs.dag.resolve(`${cid}/c/cb`)
+console.log(result)
+// Logs:
+// {
+//   cid: CID(bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq),
+//   remainderPath: '/c/cb'
+// }
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dag
 [cid]: https://www.npmjs.com/package/cids

@@ -5,7 +5,7 @@ const { withTimeoutOption } = require('../../utils')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function resolve (cid, options = {}) {
+  return withTimeoutOption(async function resolve (ipfsPath, options = {}) {
     const {
       cid,
       path
@@ -15,11 +15,15 @@ module.exports = ({ ipld, preload }) => {
       preload(cid)
     }
 
-    let lastCid = cid
-    let lastRemainderPath = path
-
     if (path) {
-      for await (const { value, remainderPath } of ipld.resolve(cid, path, {
+      options.path = path
+    }
+
+    let lastCid = cid
+    let lastRemainderPath = options.path || ''
+
+    if (options.path) {
+      for await (const { value, remainderPath } of ipld.resolve(cid, options.path, {
         signal: options.signal
       })) {
         if (!CID.isCID(value)) {
@@ -31,8 +35,12 @@ module.exports = ({ ipld, preload }) => {
       }
     }
 
+    if (lastRemainderPath.startsWith('/')) {
+      lastRemainderPath = lastRemainderPath.substring(1)
+    }
+
     return {
-      value: lastCid,
+      cid: lastCid,
       remainderPath: lastRemainderPath || ''
     }
   })
