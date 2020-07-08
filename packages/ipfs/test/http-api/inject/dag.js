@@ -334,10 +334,10 @@ describe('/dag', () => {
     })
 
     it('resolves a node', async () => {
-      ipfs.dag.resolve.withArgs(cid, defaultOptions).returns([{
-        value: cid,
+      ipfs.dag.resolve.withArgs(cid, defaultOptions).returns({
+        cid,
         remainderPath: ''
-      }])
+      })
 
       const res = await http({
         method: 'POST',
@@ -353,10 +353,10 @@ describe('/dag', () => {
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         path: '/foo'
-      }).returns([{
-        value: cid,
+      }).returns({
+        cid,
         remainderPath: ''
-      }])
+      })
 
       const res = await http({
         method: 'POST',
@@ -372,10 +372,10 @@ describe('/dag', () => {
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         path: '/foo'
-      }).returns([{
-        value: cid,
+      }).returns({
+        cid,
         remainderPath: 'foo'
-      }])
+      })
 
       const res = await http({
         method: 'POST',
@@ -408,13 +408,10 @@ describe('/dag', () => {
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         path: '/foo/bar'
-      }).returns([{
-        value: cid,
-        remainderPath: 'foo'
-      }, {
-        value: cid2,
+      }).returns({
+        cid: cid2,
         remainderPath: 'bar'
-      }])
+      })
 
       const res = await http({
         method: 'POST',
@@ -430,10 +427,10 @@ describe('/dag', () => {
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
-        value: cid,
+      }).returns({
+        cid,
         remainderPath: ''
-      }])
+      })
 
       const res = await http({
         method: 'POST',
