@@ -251,7 +251,7 @@ console.log(result)
 // Logs:
 // {
 //   cid: CID(bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq),
-//   remainderPath: '/c/cb'
+//   remainderPath: 'c/cb'
 // }
 ```
 
