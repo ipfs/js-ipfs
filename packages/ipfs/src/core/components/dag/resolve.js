@@ -22,6 +22,10 @@ module.exports = ({ ipld, preload }) => {
     let lastCid = cid
     let lastRemainderPath = options.path || ''
 
+    if (lastRemainderPath.startsWith('/')) {
+      lastRemainderPath = lastRemainderPath.substring(1)
+    }
+
     if (options.path) {
       try {
         for await (const { value, remainderPath } of ipld.resolve(cid, options.path, {
@@ -42,10 +46,6 @@ module.exports = ({ ipld, preload }) => {
         }
         throw err
       }
-    }
-
-    if (lastRemainderPath.startsWith('/')) {
-      lastRemainderPath = lastRemainderPath.substring(1)
     }
 
     return {
