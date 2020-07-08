@@ -7,9 +7,8 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * ls (path, options = {}) {
-    if (typeof path !== 'string') {
-      options = path || {}
-      path = '/'
+    if (!path || typeof path !== 'string') {
+      throw new Error('ipfs.files.ls requires a path')
     }
 
     const res = await api.post('files/ls', {

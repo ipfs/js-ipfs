@@ -26,18 +26,50 @@ describe('dag', () => {
   describe('get', () => {
     const defaultOptions = {
       localResolve: false,
-      timeout: undefined
+      timeout: undefined,
+      path: undefined
     }
 
     it('should get a node', async () => {
-      const path = 'parentHash'
       const result = {
         value: Buffer.from('hello world')
       }
 
-      ipfs.dag.get.withArgs(cid, path, defaultOptions).returns(result)
+      ipfs.dag.get.withArgs(cid, defaultOptions).returns(result)
 
-      const out = await cli(`dag get ${cid}/${path}`, { ipfs })
+      const out = await cli(`dag get ${cid}`, { ipfs })
+
+      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+    })
+
+    it('should get a node with a deep path', async () => {
+      const path = '/parentHash'
+      const result = {
+        value: Buffer.from('hello world')
+      }
+
+      ipfs.dag.get.withArgs(cid, {
+        ...defaultOptions,
+        path
+      }).returns(result)
+
+      const out = await cli(`dag get ${cid}${path}`, { ipfs })
+
+      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+    })
+
+    it('should get a node with a deep path and an ipfs prefix', async () => {
+      const path = '/parentHash'
+      const result = {
+        value: Buffer.from('hello world')
+      }
+
+      ipfs.dag.get.withArgs(cid, {
+        ...defaultOptions,
+        path
+      }).returns(result)
+
+      const out = await cli(`dag get /ipfs/${cid}${path}`, { ipfs })
 
       expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
     })
@@ -47,7 +79,7 @@ describe('dag', () => {
         value: Buffer.from('hello world')
       }
 
-      ipfs.dag.get.withArgs(cid, '', {
+      ipfs.dag.get.withArgs(cid, {
         ...defaultOptions,
         localResolve: true
       }).returns(result)
@@ -64,7 +96,7 @@ describe('dag', () => {
         value: Buffer.from('hello world')
       }
 
-      ipfs.dag.get.withArgs(cid, '', {
+      ipfs.dag.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).returns(result)

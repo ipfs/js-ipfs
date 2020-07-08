@@ -201,7 +201,7 @@ describe('preload', () => {
 
   it('should preload content retrieved with object.get', async function () {
     this.timeout(50 * 1000)
-    const cid = await ipfs.object.new(null, { preload: false })
+    const cid = await ipfs.object.new({ preload: false })
     await ipfs.object.get(cid)
     await MockPreloadNode.waitForCids(cid)
   })

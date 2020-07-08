@@ -12,7 +12,7 @@
   "dependencies": {
     "datastore-fs": "^1.1.0",
     "ipfs": "^0.47.0",
-    "ipfs-repo": "^3.0.0",
+    "ipfs-repo": "^4.0.0",
     "it-all": "^1.0.1"
   },
   "devDependencies": {

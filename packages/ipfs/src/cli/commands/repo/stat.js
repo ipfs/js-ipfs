@@ -1,7 +1,7 @@
 'use strict'
 
 const prettyBytes = require('pretty-bytes')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'stat',
@@ -14,13 +14,18 @@ module.exports = {
       alias: 'H',
       default: false
     },
+    sizeOnly: {
+      type: 'boolean',
+      alias: 's',
+      default: false
+    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, human, timeout }) {
+  async handler ({ ctx: { ipfs, print }, human, sizeOnly, timeout }) {
     const stats = await ipfs.repo.stat({
       timeout
     })
@@ -31,11 +36,16 @@ module.exports = {
       stats.storageMax = prettyBytes(stats.storageMax.toNumber()).toUpperCase()
     }
 
-    print(
-`NumObjects: ${stats.numObjects}
-RepoSize: ${stats.repoSize}
+    if (sizeOnly) {
+      print(
+        `RepoSize:   ${stats.repoSize}
+StorageMax: ${stats.storageMax}`)
+    } else {
+      print(`NumObjects: ${stats.numObjects}
+RepoSize:   ${stats.repoSize}
 StorageMax: ${stats.storageMax}
-RepoPath: ${stats.repoPath}
-Version: ${stats.version}`)
+RepoPath:   ${stats.repoPath}
+Version:    ${stats.version}`)
+    }
   }
 }

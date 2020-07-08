@@ -1,12 +1,15 @@
 'use strict'
 
 const CID = require('cids')
-const { parseArgs } = require('./utils')
 const { withTimeoutOption } = require('../../utils')
+const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function resolve (cid, path, options) {
-    [cid, path, options] = parseArgs(cid, path, options)
+  return withTimeoutOption(async function resolve (cid, options = {}) {
+    const {
+      cid,
+      path
+    } = toCidAndPath(ipfsPath)
 
     if (options.preload !== false) {
       preload(cid)

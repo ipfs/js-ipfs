@@ -37,7 +37,9 @@ module.exports = {
     return h.response({
       Version: version.version,
       Commit: version.commit,
-      Repo: version.repo
+      Repo: version.repo,
+      'ipfs-http-client': version['ipfs-http-client'],
+      'interface-ipfs-core': version['interface-ipfs-core']
     })
   }
 }

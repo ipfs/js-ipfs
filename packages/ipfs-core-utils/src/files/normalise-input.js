@@ -49,7 +49,7 @@ const globalThis = require('ipfs-utils/src/globalthis')
 module.exports = function normaliseInput (input) {
   // must give us something
   if (input === null || input === undefined) {
-    throw errCode(new Error(`Unexpected input: ${input}`, 'ERR_UNEXPECTED_INPUT'))
+    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }
 
   // String

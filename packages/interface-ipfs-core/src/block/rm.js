@@ -40,7 +40,7 @@ module.exports = (common, options) => {
       // block should be present in the local store
       const localRefs = await all(ipfs.refs.local())
       expect(localRefs).to.have.property('length').that.is.greaterThan(0)
-      expect(localRefs.find(ref => ref.ref === cid.toString())).to.be.ok()
+      expect(localRefs.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.be.ok()
 
       const result = await all(ipfs.block.rm(cid))
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
@@ -49,7 +49,7 @@ module.exports = (common, options) => {
 
       // did we actually remove the block?
       const localRefsAfterRemove = await all(ipfs.refs.local())
-      expect(localRefsAfterRemove.find(ref => ref.ref === cid.toString())).to.not.be.ok()
+      expect(localRefsAfterRemove.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.not.be.ok()
     })
 
     it('should remove by CID in string', async () => {

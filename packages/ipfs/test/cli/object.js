@@ -39,25 +39,29 @@ describe('object', () => {
 
   describe('new', () => {
     const defaultOptions = {
+      template: undefined,
       timeout: undefined
     }
 
     it('should create a new object', async () => {
-      ipfs.object.new.withArgs(undefined, defaultOptions).resolves(cid)
+      ipfs.object.new.withArgs(defaultOptions).resolves(cid)
 
       const out = await cli('object new', { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
 
     it('new unixfs-dir', async () => {
-      ipfs.object.new.withArgs('unixfs-dir', defaultOptions).resolves(cid)
+      ipfs.object.new.withArgs({
+        ...defaultOptions,
+        template: 'unixfs-dir'
+      }).resolves(cid)
 
       const out = await cli('object new unixfs-dir', { ipfs })
       expect(out).to.equal(`${cid}\n`)
     })
 
     it('new with a timeout', async () => {
-      ipfs.object.new.withArgs(undefined, {
+      ipfs.object.new.withArgs({
         ...defaultOptions,
         timeout: 1000
       }).resolves(cid)
@@ -67,7 +71,7 @@ describe('object', () => {
     })
 
     it('should new and print CID encoded in specified base', async () => {
-      ipfs.object.new.withArgs(undefined, defaultOptions).resolves(cid.toV1())
+      ipfs.object.new.withArgs(defaultOptions).resolves(cid.toV1())
 
       const out = await cli('object new --cid-base=base64', { ipfs })
       expect(out).to.equal(
@@ -321,7 +325,7 @@ describe('object', () => {
         new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
       ])
 
-      const out = await cli(`object links ${cid} --timeout=1000`, { ipfs })
+      const out = await cli(`object links ${cid} --timeout=1s`, { ipfs })
       expect(out).to.equal(
         'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
       )

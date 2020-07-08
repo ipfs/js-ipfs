@@ -85,7 +85,9 @@ module.exports = (common, options) => {
     })
 
     it('should get a dag-pb node with path', async () => {
-      const result = await ipfs.dag.get(cidPb, '/')
+      const result = await ipfs.dag.get(cidPb, {
+        path: '/'
+      })
 
       const node = result.value
 
@@ -94,7 +96,9 @@ module.exports = (common, options) => {
     })
 
     it('should get a dag-pb node local value', async function () {
-      const result = await ipfs.dag.get(cidPb, 'Data')
+      const result = await ipfs.dag.get(cidPb, {
+        path: 'Data'
+      })
       expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
     })
 
@@ -102,7 +106,9 @@ module.exports = (common, options) => {
     it.skip('should get a dag-pb node value two levels deep', (done) => {})
 
     it('should get a dag-cbor node with path', async () => {
-      const result = await ipfs.dag.get(cidCbor, '/')
+      const result = await ipfs.dag.get(cidCbor, {
+        path: '/'
+      })
 
       const node = result.value
 
@@ -111,7 +117,9 @@ module.exports = (common, options) => {
     })
 
     it('should get a dag-cbor node local value', async () => {
-      const result = await ipfs.dag.get(cidCbor, 'someData')
+      const result = await ipfs.dag.get(cidCbor, {
+        path: 'someData'
+      })
       expect(result.value).to.eql('I am inside a Cbor object')
     })
 
@@ -120,7 +128,9 @@ module.exports = (common, options) => {
     it.skip('should get dag-cbor value via dag-pb node', (done) => {})
 
     it('should get dag-pb value via dag-cbor node', async function () {
-      const result = await ipfs.dag.get(cidCbor, 'pb/Data')
+      const result = await ipfs.dag.get(cidCbor, {
+        path: 'pb/Data'
+      })
       expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
     })
 
@@ -143,7 +153,10 @@ module.exports = (common, options) => {
     })
 
     it('should get only a CID, due to resolving locally only', async function () {
-      const result = await ipfs.dag.get(cidCbor, 'pb/Data', { localResolve: true })
+      const result = await ipfs.dag.get(cidCbor, {
+        path: 'pb/Data',
+        localResolve: true
+      })
       expect(result.value.equals(cidPb)).to.be.true()
     })
 
@@ -193,7 +206,9 @@ module.exports = (common, options) => {
       cid = cid.toBaseEncodedString('base32')
       expect(cid).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
-      const result = await ipfs.dag.get(cid, 'foo')
+      const result = await ipfs.dag.get(cid, {
+        path: 'foo'
+      })
       expect(result.value).to.equal('dag-cbor-bar')
     })
 
@@ -207,7 +222,9 @@ module.exports = (common, options) => {
 
       const cid2 = await ipfs.dag.put(cbor2, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 
-      const result = await ipfs.dag.get(cid2, 'other/foo')
+      const result = await ipfs.dag.get(cid2, {
+        path: 'other/foo'
+      })
       expect(result.value).to.equal('dag-cbor-bar')
     })
 

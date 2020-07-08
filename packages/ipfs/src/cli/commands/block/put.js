@@ -4,7 +4,7 @@ const fs = require('fs')
 const multibase = require('multibase')
 const concat = require('it-concat')
 const { cidToString } = require('../../../utils/cid')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'put [block]',
@@ -33,7 +33,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     pin: {
       describe: 'Pin this block recursively',

@@ -29,11 +29,12 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^5.6.0",
+    "cids": "^0.8.0",
     "err-code": "^2.0.0",
     "ipfs-utils": "^2.2.2"
   },
   "devDependencies": {
-    "aegir": "^22.1.0",
+    "aegir": "^23.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "delay": "^4.3.0",
