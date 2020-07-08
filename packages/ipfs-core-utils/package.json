@@ -12,8 +12,8 @@
     "dist"
   ],
   "browser": {
-    "./src/lib/blob.js": "./src/lib/blob.browser.js",
-    "./src/lib/file.js": "./src/lib/file.browser.js"
+    "./src/files/blob.js": "./src/files/blob.browser.js",
+    "./src/files/file.js": "./src/files/file.browser.js"
   },
   "repository": {
     "type": "git",
