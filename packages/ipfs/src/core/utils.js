@@ -99,22 +99,13 @@ const resolvePath = async function (dag, ipfsPaths, options) {
       continue
     }
 
-    try {
-      const result = await dag.resolve(cid, {
-        ...options,
-        path
-      })
+    const result = await dag.resolve(cid, {
+      ...options,
+      path
+    })
 
-      if (CID.isCID(result.cid)) {
-        cids.push(result.cid)
-      }
-    } catch (err) {
-      // TODO: add error codes to IPLD
-      if (err.message.startsWith('Object has no property')) {
-        err.message = `cannot resolve path "${path}" under ${cid}`
-        err.code = 'ERR_NO_LINK'
-      }
-      throw err
+    if (CID.isCID(result.cid)) {
+      cids.push(result.cid)
     }
   }
 

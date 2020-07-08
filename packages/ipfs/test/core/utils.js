@@ -90,7 +90,8 @@ describe('utils', () => {
     it('should error when a link doesn\'t exist', () => {
       return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
-        .and.have.property('code', 'ERR_NO_LINK')
+        .and.have.property('message')
+        .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })
 })

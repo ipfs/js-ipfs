@@ -23,15 +23,24 @@ module.exports = ({ ipld, preload }) => {
     let lastRemainderPath = options.path || ''
 
     if (options.path) {
-      for await (const { value, remainderPath } of ipld.resolve(cid, options.path, {
-        signal: options.signal
-      })) {
-        if (!CID.isCID(value)) {
-          break
-        }
+      try {
+        for await (const { value, remainderPath } of ipld.resolve(cid, options.path, {
+          signal: options.signal
+        })) {
+          if (!CID.isCID(value)) {
+            break
+          }
 
-        lastRemainderPath = remainderPath
-        lastCid = value
+          lastRemainderPath = remainderPath
+          lastCid = value
+        }
+      } catch (err) {
+        // TODO: add error codes to IPLD
+        if (err.message.startsWith('Object has no property')) {
+          err.message = `no link named "${lastRemainderPath.split('/')[0]}" under ${lastCid}`
+          err.code = 'ERR_NO_LINK'
+        }
+        throw err
       }
     }
 
