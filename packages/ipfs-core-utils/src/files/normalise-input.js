@@ -201,6 +201,8 @@ const asFileFromBlobPart = (content, name) => {
   } else if (content instanceof Blob) {
     // Third argument is passed to preserve a mime type.
     return new ExtendedFile([content], name || '', content)
+  } else if (content instanceof String) {
+    return new ExtendedFile([content.toString()], name || '')
   } else {
     return null
   }
@@ -479,7 +481,7 @@ class ExtendedFile extends File {
   constructor (init, name, options = {}) {
     super(init, name, options)
     const { path, mode, mtime } = options
-    this.path = path
+    this.path = path || ''
     this.mode = mode
     this.mtime = mtime
 
