@@ -89,11 +89,11 @@ describe('name-pubsub', function () {
 
   it('should self resolve, publish and then resolve correctly', async function () {
     this.timeout(6000)
-    const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
     const { path } = await last(nodeA.add(Buffer.from('pubsub records')))
 
-    const resolvesEmpty = await last(nodeB.name.resolve(idB.id))
-    expect(resolvesEmpty).to.be.eq(emptyDirCid)
+    await expect(last(nodeB.name.resolve(idB.id)))
+      .to.eventually.be.rejected()
+      .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
 
     await expect(last(nodeA.name.resolve(idB.id)))
       .to.eventually.be.rejected()
