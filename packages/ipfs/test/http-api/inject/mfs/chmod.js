@@ -43,6 +43,16 @@ describe('/files/chmod', () => {
     expect(ipfs.files.chmod.calledWith(path, mode, defaultOptions)).to.be.true()
   })
 
+  it('should update the mode for a file as a string', async () => {
+    await http({
+      method: 'POST',
+      url: `/api/v0/files/chmod?arg=${path}&mode=-x`
+    }, { ipfs })
+
+    expect(ipfs.files.chmod.callCount).to.equal(1)
+    expect(ipfs.files.chmod.calledWith(path, '-x', defaultOptions)).to.be.true()
+  })
+
   it('should update the mode recursively', async () => {
     await http({
       method: 'POST',

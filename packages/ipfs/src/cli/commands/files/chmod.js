@@ -1,8 +1,7 @@
 'use strict'
 
 const {
-  asBoolean,
-  asOctal
+  asBoolean
 } = require('../../utils')
 const parseDuration = require('parse-duration').default
 
@@ -17,8 +16,7 @@ module.exports = {
       describe: 'The MFS path to change the mode of'
     },
     mode: {
-      type: 'int',
-      coerce: asOctal,
+      type: 'string',
       describe: 'The mode to use'
     },
     recursive: {
