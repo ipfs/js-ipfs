@@ -154,7 +154,7 @@ class PinManager {
     }
 
     const mh = await this.repo.datastore.get(PIN_DS_KEY)
-    const pinRoot = await this.dag.get(new CID(mh), '', { preload: false })
+    const pinRoot = await this.dag.get(new CID(mh), { preload: false })
 
     const [
       rKeys, dKeys

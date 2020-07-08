@@ -5,11 +5,12 @@ const CID = require('cids')
 const { Buffer } = require('buffer')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
+
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
 
 exports.MFS_FILE_TYPES = {

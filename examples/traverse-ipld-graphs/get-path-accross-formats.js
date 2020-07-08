@@ -29,7 +29,9 @@ async function main () {
     hashAlg: 'sha3-512'
   })
 
-  const result = await ipfs.dag.get(cborNodeCid, 'hobbies/0/Data')
+  const result = await ipfs.dag.get(cborNodeCid, {
+    path: 'hobbies/0/Data'
+  })
 
   console.log(result.value.toString())
 }

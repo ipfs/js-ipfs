@@ -4,6 +4,15 @@ const multicodec = require('multicodec')
 
 // All known (non-default) IPLD formats
 const IpldFormats = {
+  get [multicodec.DAG_PB] () {
+    return require('ipld-dag-pb')
+  },
+  get [multicodec.DAG_CBOR] () {
+    return require('ipld-dag-cbor')
+  },
+  get [multicodec.RAW] () {
+    return require('ipld-raw')
+  },
   get [multicodec.BITCOIN_BLOCK] () {
     return require('ipld-bitcoin')
   },

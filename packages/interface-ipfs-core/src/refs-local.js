@@ -7,6 +7,7 @@ const all = require('it-all')
 const importer = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -54,8 +55,22 @@ module.exports = (common, options) => {
 
       const refs = await all(ipfs.refs.local())
       const cids = refs.map(r => r.ref)
-      expect(cids).to.include('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn')
-      expect(cids).to.include('QmR4nFjTu18TyANgC65ArNWp5Yaab1gPzQ4D8zp7Kx3vhr')
+
+      expect(
+        cids.find(cid => {
+          const multihash = new CID(cid).multihash
+
+          return imported[0].cid.multihash.equals(multihash)
+        })
+      ).to.be.ok()
+
+      expect(
+        cids.find(cid => {
+          const multihash = new CID(cid).multihash
+
+          return imported[1].cid.multihash.equals(multihash)
+        })
+      ).to.be.ok()
     })
   })
 }

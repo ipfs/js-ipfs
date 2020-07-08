@@ -75,8 +75,8 @@ An optional object which may have the following keys:
 | format | `String` | `'dag-pb'` | The codec to use to create the CID |
 | mhtype | `String` | `sha2-256` | The hashing algorithm to use to create the CID |
 | mhlen | `Number` | | |
-| version | `Number` | 0 |  The version to use to create the CID |
-| pin | `boolean` | false |  If true, pin added blocks recursively |
+| version | `Number` | `0` |  The version to use to create the CID |
+| pin | `boolean` | `false` |  If true, pin added blocks recursively |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
@@ -137,7 +137,7 @@ An optional object which may have the following keys:
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | force | `boolean` | `false` | Ignores nonexistent blocks |
-| quiet | `boolean` | `false | Write minimal output |
+| quiet | `boolean` | `false` | Write minimal output |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
