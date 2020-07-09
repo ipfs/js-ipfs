@@ -20,7 +20,7 @@ const mtimeToHeaders = (mtime) => {
     const { secs, nsecs } = data
     const headers = { mtime: secs }
     if (nsecs != null) {
-      headers.nsecs = nsecs
+      headers['mtime-nsecs'] = nsecs
     }
     return headers
   } else {
