@@ -56,6 +56,7 @@ const mfsChmod = {
         timeout
       }
     } = request
+
     await ipfs.files.chmod(path, mode, {
       recursive,
       hashAlg,
