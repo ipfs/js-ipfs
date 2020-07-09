@@ -25,7 +25,7 @@ const parser = yargs
   })
   .options('api', {
     desc: 'Remote API multiaddr to use',
-    type: 'string',
+    type: 'string'
   })
   .epilog(utils.ipfsPathHelp)
   .demandCommand(1, 'Please specify a command')
