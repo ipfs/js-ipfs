@@ -6,12 +6,12 @@ const { TextEncoder, TextDecoder } = require('util')
 class Blob {
   /**
    *
-   * @param {BlobPart[]} init
+   * @param {BlobPart[]} [init]
    * @param {Object} [options]
    * @param {string} [options.type]
    *
    */
-  constructor (init, options = {}) {
+  constructor (init = [], options = {}) {
     /** @type {Uint8Array[]} */
     const parts = []
 
@@ -44,7 +44,7 @@ class Blob {
     /** @private */
     this._size = size
     /** @private */
-    this._type = options.type || ''
+    this._type = readType(options.type)
     /** @private */
     this._parts = parts
   }
@@ -95,6 +95,11 @@ class Blob {
 
     let limit = (end < 0 ? Math.max(size + end, 0) : Math.min(end, size))
     const span = Math.max(limit - offset, 0)
+    const blob = new Blob([], { type })
+
+    if (span === 0) {
+      return blob
+    }
 
     let blobSize = 0
     const blobParts = []
@@ -117,7 +122,6 @@ class Blob {
       }
     }
 
-    const blob = new Blob([], { type })
     blob._parts = blobParts
     blob._size = blobSize
 
@@ -163,12 +167,24 @@ class Blob {
   stream () {
     throw Error('Not implemented')
   }
+
+  get [Symbol.toStringTag] () {
+    return 'Blob'
+  }
 }
 
 // Marking export as a DOM File object instead of custom class.
 /** @type {typeof window.Blob} */
 exports.Blob = Blob
 
+/**
+ * @param {string} [input]
+ * @returns {string}
+ */
+const readType = (input = '') => {
+  const type = String(input).toLowerCase()
+  return /[^\u0020-\u007E]/.test(type) ? '' : type
+}
 /**
  * Universal blob reading function
  * @param {InstanceType<typeof window.Blob>} blob
