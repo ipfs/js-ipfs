@@ -155,13 +155,14 @@ const mapFile = (file, options) => {
     name: file.name,
     depth: file.path.split('/').length,
     size: 0,
-    type: 'dir'
+    type: 'file'
   }
 
   if (file.unixfs) {
+    output.type = file.unixfs.type === 'directory' ? 'dir' : 'file'
+
     if (file.unixfs.type === 'file') {
       output.size = file.unixfs.fileSize()
-      output.type = 'file'
 
       if (options.includeContent) {
         output.content = file.content()
