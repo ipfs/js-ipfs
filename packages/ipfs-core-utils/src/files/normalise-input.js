@@ -194,20 +194,24 @@ const asFile = (input, name) => {
  * `name` is passed it will be used as a file name.
  * @param {any} content
  * @param {string} [name]
+ * @param {Object} [options]
+ * @param {string} [options.path]
+ * @param {Mode} [options.mode]
+ * @param {MTime} [options.mtime]
  * @returns {ExtendedFile|null}
  */
-const asFileFromBlobPart = (content, name) => {
+const asFileFromBlobPart = (content, name, options = {}) => {
   if (
     typeof content === 'string' ||
     ArrayBuffer.isView(content) ||
     content instanceof ArrayBuffer
   ) {
-    return new ExtendedFile([content], name || '')
+    return new ExtendedFile([content], name || '', options)
   } else if (content instanceof Blob) {
     // Third argument is passed to preserve a mime type.
-    return new ExtendedFile([content], name || '', content)
+    return new ExtendedFile([content], name || '', content, options)
   } else if (content instanceof String) {
-    return new ExtendedFile([content.toString()], name || '')
+    return new ExtendedFile([content.toString()], name || '', options)
   } else {
     return null
   }
@@ -224,9 +228,9 @@ const fileFromFileObject = (fileObject) => {
   const { path, mtime, mode, content } = fileObject
   const ext = { mtime, mode, path }
   const name = path == null ? undefined : basename(path)
-  const file = asFileFromBlobPart(content, name)
+  const file = asFileFromBlobPart(content, name, ext)
   if (file) {
-    return Object.assign(file, ext)
+    return file
   } else {
     // If content is empty it is a diretory
     if (content == null) {
@@ -501,6 +505,9 @@ class ExtendedFile extends File {
     return readBlob(this)
   }
 }
+// It appears that in electron native `File` has read-only `path` property,
+// overriding it the property so that constructor can set a `path`.
+Object.defineProperty(ExtendedFile.prototype, 'path', { writable: true })
 module.exports.ExtendedFile = ExtendedFile
 
 class FileStream {
