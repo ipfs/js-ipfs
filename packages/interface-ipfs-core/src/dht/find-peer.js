@@ -3,6 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const delay = require('delay')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,6 +30,9 @@ module.exports = (common, options) => {
 
     it('should respect timeout option when finding a peer on the DHT', async () => {
       const nodeBId = await nodeB.id()
+
+      // wait for nodeA and nodeB to be in each other's DHT routing table
+      await delay(5000)
 
       await testTimeout(() => nodeA.dht.findPeer(nodeBId.id, {
         timeout: 1
