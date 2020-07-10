@@ -9,7 +9,14 @@ const commonOptions = {
   ipfsHttpModule: require('ipfs-http-client'),
   ipfsModule: require('../../src'),
   ipfsOptions: {
-    pass: 'ipfs-is-awesome-software'
+    pass: 'ipfs-is-awesome-software',
+    config: {
+      libp2p: {
+        dialer: {
+          dialTimeout: 60e3 // increase timeout because travis is slow
+        }
+      }
+    }
   },
   endpoint: 'http://localhost:57483'
 }

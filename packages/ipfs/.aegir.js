@@ -67,7 +67,16 @@ module.exports = {
           type: 'js',
           ipfsModule: require(__dirname),
           ipfsHttpModule: require('ipfs-http-client'),
-          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js')
+          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
+          ipfsOptions: {
+            config: {
+              libp2p: {
+                dialer: {
+                  dialTimeout: 60e3 // increase timeout because travis is slow
+                }
+              }
+            }
+          }
         }, {
           go: {
             ipfsBin: require('go-ipfs-dep').path()
