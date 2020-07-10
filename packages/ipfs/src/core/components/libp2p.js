@@ -111,7 +111,12 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
-  const constructorOptions = get(options, 'libp2p', {})
+
+  let constructorOptions = get(options, 'libp2p', {})
+
+  if (typeof constructorOptions === 'function') {
+    constructorOptions = {}
+  }
 
   // Merge defaults with Node.js/browser/other environments options and configuration
   const libp2pConfig = mergeOptions(
