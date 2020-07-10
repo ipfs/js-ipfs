@@ -2,11 +2,15 @@
 
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const all = require('it-all')
 const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
+const { PassThrough } = require('stream')
+const toIterable = require('stream-to-it')
+const debug = require('debug')
+const log = debug('ipfs:http-api:dht')
+log.error = debug('ipfs:http-api:dht:error')
 
 exports.findPeer = {
   options: {
@@ -59,7 +63,7 @@ exports.findPeer = {
     return h.response({
       Responses: [{
         ID: res.id.toString(),
-        Addrs: res.addrs.map(a => a.toString())
+        Addrs: (res.addrs || []).map(a => a.toString())
       }],
       Type: 2
     })
@@ -88,7 +92,7 @@ exports.findProvs = {
         })
     }
   },
-  async handler (request, h) {
+  handler (request, h) {
     const {
       app: {
         signal
@@ -105,19 +109,51 @@ exports.findProvs = {
       }
     } = request
 
-    const res = await all(ipfs.dht.findProvs(cid, {
-      numProviders,
-      signal,
-      timeout
-    }))
+    let providersFound = false
+    const output = new PassThrough()
 
-    return h.response({
-      Responses: res.map(({ id, addrs }) => ({
-        ID: id.toString(),
-        Addrs: addrs.map(a => a.toString())
-      })),
-      Type: 4
-    })
+    pipe(
+      ipfs.dht.findProvs(cid, {
+        numProviders,
+        signal,
+        timeout
+      }),
+      map(({ id, addrs }) => {
+        providersFound = true
+
+        return {
+          Responses: [{
+            ID: id.toString(),
+            Addrs: (addrs || []).map(a => a.toString())
+          }],
+          Type: 4
+        }
+      }),
+      ndjson.stringify,
+      toIterable.sink(output)
+    )
+      .catch(err => {
+        log.error(err)
+
+        if (!providersFound && output.writable) {
+          output.write(' ')
+        }
+
+        request.raw.res.addTrailers({
+          'X-Stream-Error': JSON.stringify({
+            Message: err.message,
+            Code: 0
+          })
+        })
+      })
+      .finally(() => {
+        output.end()
+      })
+
+    return h.response(output)
+      .header('x-chunked-output', '1')
+      .header('content-type', 'application/json')
+      .header('Trailer', 'X-Stream-Error')
   }
 }
 

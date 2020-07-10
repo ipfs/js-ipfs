@@ -76,7 +76,6 @@ module.exports = {
       preload: { enabled: argv.enablePreload },
       EXPERIMENTAL: {
         ipnsPubsub: argv.enableNamesysPubsub,
-        dht: argv.enableDhtExperiment,
         sharding: argv.enableShardingExperiment
       },
       init: argv.initProfile ? { profiles: argv.initProfile } : true
