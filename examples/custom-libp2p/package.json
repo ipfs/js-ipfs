@@ -11,9 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "ipfs": "^0.47.0",
-    "libp2p": "^0.28.0",
+    "libp2p": "^0.28.5",
     "libp2p-bootstrap": "^0.11.0",
-    "libp2p-kad-dht": "^0.19.5",
+    "libp2p-kad-dht": "^0.19.9",
     "libp2p-mdns": "^0.14.1",
     "libp2p-mplex": "^0.9.5",
     "libp2p-secio": "^0.12.4",
