@@ -109,7 +109,7 @@ exports.findProvs = {
       }
     } = request
 
-    const providersFound = false
+    let providersFound = false
     const output = new PassThrough()
 
     pipe(

@@ -198,7 +198,7 @@ function createApi ({
     throw new NotEnabledError('dht not enabled')
   }
 
-  const dhtNotEnabledIterator = async function * () { // eslint-disable-line require-await
+  const dhtNotEnabledIterator = async function * () { // eslint-disable-line require-await,require-yield
     throw new NotEnabledError('dht not enabled')
   }
 

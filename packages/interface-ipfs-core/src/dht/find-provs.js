@@ -7,7 +7,6 @@ const drain = require('it-drain')
 const { fakeCid } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
 const delay = require('delay')
-const { console } = require('ipfs-utils/src/globalthis')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
