@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "aegir": "^23.0.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/allow-enabling-dht"
+    "ipfsd-ctl": "^4.1.1"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
