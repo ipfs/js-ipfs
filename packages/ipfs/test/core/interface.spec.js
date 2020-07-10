@@ -28,22 +28,7 @@ describe('interface-ipfs-core tests', function () {
   tests.dag(commonFactory)
 
   tests.dht(commonFactory, {
-    skip: isNode || isElectronMain ? [{
-      name: 'should respect timeout option when getting a value from the DHT',
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }, {
-      name: 'should error when getting a non-existent key from the DHT',
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }, {
-      name: 'should get a value after it was put on another node',
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }, {
-      name: 'should respect timeout option when putting a value into the DHT',
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }, {
-      name: 'should put a value to the DHT',
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }] : {
+    skip: {
       reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
     }
   })

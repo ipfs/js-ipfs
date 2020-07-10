@@ -10,10 +10,8 @@ const commonOptions = {
   ipfsModule: require('../../src'),
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
-    config: {
-      Experimental: {
-        DhtEnabled: isNode || isElectronMain
-      }
+    EXPERIMENTAL: {
+      dht: isNode || isElectronMain
     }
   },
   endpoint: 'http://localhost:57483'

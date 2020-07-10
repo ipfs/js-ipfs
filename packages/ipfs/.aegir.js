@@ -69,10 +69,8 @@ module.exports = {
           ipfsHttpModule: require('ipfs-http-client'),
           ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
           ipfsOptions: {
-            config: {
-              Experimental: {
-                DhtEnabled: isNode || isElectronMain
-              }
+            EXPERIMENTAL: {
+              dht: isNode || isElectronMain
             }
           }
         }, {

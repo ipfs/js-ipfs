@@ -3,7 +3,7 @@
 
 const tests = require('interface-ipfs-core')
 const factory = require('../utils/factory')
-const { isNode, isBrowser } = require('ipfs-utils/src/env')
+const { isNode, isElectronMain, isBrowser } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 

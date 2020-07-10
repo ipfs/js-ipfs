@@ -30,7 +30,7 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-dht-experiment', {
+      .option('enable-dht', {
         type: 'boolean',
         default: false
       })
@@ -80,7 +80,7 @@ module.exports = {
       preload: { enabled: argv.enablePreload },
       EXPERIMENTAL: {
         ipnsPubsub: argv.enableNamesysPubsub,
-        dht: argv.enableDhtExperiment,
+        dht: argv.enableDht,
         sharding: argv.enableShardingExperiment
       },
       init: argv.initProfile ? { profiles: argv.initProfile } : true
