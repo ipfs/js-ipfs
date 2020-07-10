@@ -85,7 +85,8 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         }
       },
       dht: {
-        enabled: get(config, 'Experimental.DhtEnabled', false) || get(options, 'EXPERIMENTAL.dht', false),
+        enabled: get(config, 'Routing.Type', 'none') !== 'none',
+        clientMode: get(config, 'Routing.Type', 'dht') !== 'dhtserver',
         kBucketSize: get(options, 'dht.kBucketSize', 20)
       },
       pubsub: {

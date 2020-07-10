@@ -1,7 +1,7 @@
 'use strict'
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
-const { isNode, isBrowser, isElectronMain } = require('ipfs-utils/src/env')
+const { isNode, isBrowser } = require('ipfs-utils/src/env')
 
 const commonOptions = {
   test: true,
@@ -9,10 +9,7 @@ const commonOptions = {
   ipfsHttpModule: require('ipfs-http-client'),
   ipfsModule: require('../../src'),
   ipfsOptions: {
-    pass: 'ipfs-is-awesome-software',
-    EXPERIMENTAL: {
-      dht: isNode || isElectronMain
-    }
+    pass: 'ipfs-is-awesome-software'
   },
   endpoint: 'http://localhost:57483'
 }

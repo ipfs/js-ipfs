@@ -67,12 +67,7 @@ module.exports = {
           type: 'js',
           ipfsModule: require(__dirname),
           ipfsHttpModule: require('ipfs-http-client'),
-          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
-          ipfsOptions: {
-            EXPERIMENTAL: {
-              dht: isNode || isElectronMain
-            }
-          }
+          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js')
         }, {
           go: {
             ipfsBin: require('go-ipfs-dep').path()

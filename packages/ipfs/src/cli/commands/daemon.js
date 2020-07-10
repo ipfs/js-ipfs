@@ -30,10 +30,6 @@ module.exports = {
         type: 'boolean',
         default: false
       })
-      .option('enable-dht', {
-        type: 'boolean',
-        default: false
-      })
       .option('offline', {
         type: 'boolean',
         desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
@@ -80,7 +76,6 @@ module.exports = {
       preload: { enabled: argv.enablePreload },
       EXPERIMENTAL: {
         ipnsPubsub: argv.enableNamesysPubsub,
-        dht: argv.enableDht,
         sharding: argv.enableShardingExperiment
       },
       init: argv.initProfile ? { profiles: argv.initProfile } : true

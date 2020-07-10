@@ -3,7 +3,6 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const delay = require('delay')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -24,22 +23,6 @@ module.exports = (common, options) => {
       nodeA = (await common.spawn()).api
       nodeB = (await common.spawn()).api
       await nodeB.swarm.connect(nodeA.peerId.addresses[0])
-
-      const nodeBId = await nodeB.id()
-
-      // wait for nodeA and nodeB to be in each other's DHT routing table
-      // seems to be required for Linux on CI
-      for (let i = 0; i < 5; i++) {
-        try {
-          await nodeA.dht.findPeer(nodeBId.id, {
-            timeout: 1000
-          })
-          return
-        } catch (err) {
-          // try again in a bit
-          await delay(1000)
-        }
-      }
     })
 
     after(() => common.clean())

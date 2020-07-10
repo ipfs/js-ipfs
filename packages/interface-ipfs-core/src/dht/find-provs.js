@@ -6,7 +6,6 @@ const all = require('it-all')
 const drain = require('it-drain')
 const { fakeCid } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
-const delay = require('delay')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -31,26 +30,6 @@ module.exports = (common, options) => {
         nodeB.swarm.connect(nodeA.peerId.addresses[0]),
         nodeC.swarm.connect(nodeB.peerId.addresses[0])
       ])
-
-      const nodeBId = await nodeB.id()
-      const nodeCId = await nodeB.id()
-
-      // wait for nodeA, nodeB and nodeC to be in each other's DHT routing table
-      // seems to be required for Linux on CI
-      for (let i = 0; i < 5; i++) {
-        try {
-          await nodeA.dht.findPeer(nodeBId.id, {
-            timeout: 1000
-          })
-          await nodeA.dht.findPeer(nodeCId.id, {
-            timeout: 1000
-          })
-          return
-        } catch (err) {
-          // try again in a bit
-          await delay(1000)
-        }
-      }
     })
 
     after(() => common.clean())

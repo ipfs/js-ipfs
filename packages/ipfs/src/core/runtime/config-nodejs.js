@@ -52,7 +52,7 @@ module.exports = () => ({
       HighWater: 500
     }
   },
-  Experimental: {
-    DhtEnabled: false
+  Routing: {
+    Type: 'none'
   }
 })
