@@ -26,7 +26,7 @@ $ jsipfs config Routing.Type dht
 The possible values for `Routing.Type` are:
 
  -  `'none'` the default, this means the DHT is turned off any you must manually dial other nodes
- -  `'dht'` start the node in DHT client mode, if it works out it is dialable from outside the network, upgrade to server mode
+ -  `'dht'` start the node in DHT client mode, if it is discovered to be publicly dialable it will automatically switch to server mode
  -  `'dhtclient'` A DHT client is able to make DHT queries but will not respond to any
  -  `'dhtserver'` A DHT server can make and respond to DHT queries.  Please only choose this option if your node is dialable from the open Internet.
 
