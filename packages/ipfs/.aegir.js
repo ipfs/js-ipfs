@@ -5,7 +5,6 @@ const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
-const { isNode, isElectronMain } = require('ipfs-utils/src/env')
 
 let preloadNode
 let echoServer = new EchoServer()
