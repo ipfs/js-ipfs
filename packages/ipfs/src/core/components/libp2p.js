@@ -35,7 +35,7 @@ module.exports = ({
   // Required inline to reduce startup time
   const Libp2p = require('libp2p')
 
-  return new Libp2p(mergeOptions(libp2pOptions, get(options, 'libp2p', {})))
+  return new Libp2p(libp2pOptions)
 }
 
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
@@ -55,7 +55,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     modules: {}
   }
 
-  const bootstrapList = get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
   const libp2pOptions = {
     modules: {
       pubsub: getPubsubRouter()
@@ -71,7 +70,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
             get(config, 'Discovery.webRTCStar.Enabled', true))
         },
         bootstrap: {
-          list: bootstrapList
+          list: get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
         }
       },
       relay: {
@@ -112,13 +111,17 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   // Required inline to reduce startup time
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
+  const constructorOptions = get(options, 'libp2p', {})
 
   // Merge defaults with Node.js/browser/other environments options and configuration
   const libp2pConfig = mergeOptions(
     libp2pDefaults,
     getEnvLibp2pOptions(),
-    libp2pOptions
+    libp2pOptions,
+    constructorOptions
   )
+
+  const bootstrapList = get(libp2pConfig, 'config.peerDiscovery.bootstrap.list', [])
 
   if (bootstrapList.length > 0) {
     libp2pConfig.modules.peerDiscovery.push(require('libp2p-bootstrap'))
