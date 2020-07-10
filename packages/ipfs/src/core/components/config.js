@@ -87,6 +87,7 @@ const profiles = {
       config.Addresses.API = defaultConfig.Addresses.API ? '/ip4/127.0.0.1/tcp/0' : ''
       config.Addresses.Gateway = defaultConfig.Addresses.Gateway ? '/ip4/127.0.0.1/tcp/0' : ''
       config.Addresses.Swarm = defaultConfig.Addresses.Swarm.length ? ['/ip4/127.0.0.1/tcp/0'] : []
+      config.Addresses.Delegates = []
       config.Bootstrap = []
       config.Discovery.MDNS.Enabled = false
       config.Discovery.webRTCStar.Enabled = false
