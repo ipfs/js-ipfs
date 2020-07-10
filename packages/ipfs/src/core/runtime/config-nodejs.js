@@ -51,5 +51,8 @@ module.exports = () => ({
       LowWater: 200,
       HighWater: 500
     }
+  },
+  Experimental: {
+    DhtEnabled: false
   }
 })

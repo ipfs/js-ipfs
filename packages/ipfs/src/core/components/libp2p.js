@@ -85,6 +85,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         }
       },
       dht: {
+        enabled: get(config, 'Experimental.DhtEnabled', false) || get(options, 'EXPERIMENTAL.dht', false),
         kBucketSize: get(options, 'dht.kBucketSize', 20)
       },
       pubsub: {
@@ -111,14 +112,10 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
 
-  // Allow overriding from config file
-  const configFileOptions = get(config, 'libp2p', {})
-
   // Merge defaults with Node.js/browser/other environments options and configuration
   const libp2pConfig = mergeOptions(
     libp2pDefaults,
     getEnvLibp2pOptions(),
-    configFileOptions,
     libp2pOptions
   )
 

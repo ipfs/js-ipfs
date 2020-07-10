@@ -11,15 +11,8 @@ const commonOptions = {
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
     config: {
-      libp2p: {
-        dialer: {
-          dialTimeout: 60e3 // increase timeout because travis is slow
-        },
-        config: {
-          dht: {
-            enabled: isNode || isElectronMain
-          }
-        }
+      Experimental: {
+        DhtEnabled: isNode || isElectronMain
       }
     }
   },

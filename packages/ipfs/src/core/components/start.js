@@ -198,13 +198,17 @@ function createApi ({
     throw new NotEnabledError('dht not enabled')
   }
 
+  const dhtNotEnabledIterator = async function * () { // eslint-disable-line require-await
+    throw new NotEnabledError('dht not enabled')
+  }
+
   const dht = get(libp2p, '_config.dht.enabled', false) ? Components.dht({ libp2p, repo }) : {
     get: dhtNotEnabled,
     put: dhtNotEnabled,
-    findProvs: dhtNotEnabled,
+    findProvs: dhtNotEnabledIterator,
     findPeer: dhtNotEnabled,
-    provide: dhtNotEnabled,
-    query: dhtNotEnabled
+    provide: dhtNotEnabledIterator,
+    query: dhtNotEnabledIterator
   }
 
   const dns = Components.dns()

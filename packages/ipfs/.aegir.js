@@ -70,15 +70,8 @@ module.exports = {
           ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
           ipfsOptions: {
             config: {
-              libp2p: {
-                dialer: {
-                  dialTimeout: 60e3 // increase timeout because travis is slow
-                },
-                config: {
-                  dht: {
-                    enabled: isNode || isElectronMain
-                  }
-                }
+              Experimental: {
+                DhtEnabled: isNode || isElectronMain
               }
             }
           }
