@@ -7,6 +7,7 @@ const drain = require('it-drain')
 const { fakeCid } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
 const delay = require('delay')
+const { console } = require('ipfs-utils/src/globalthis')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -33,12 +34,16 @@ module.exports = (common, options) => {
       ])
 
       const nodeBId = await nodeB.id()
+      const nodeCId = await nodeB.id()
 
-      // wait for nodeA and nodeB to be in each other's DHT routing table
+      // wait for nodeA, nodeB and nodeC to be in each other's DHT routing table
       // seems to be required for Linux on CI
       for (let i = 0; i < 5; i++) {
         try {
           await nodeA.dht.findPeer(nodeBId.id, {
+            timeout: 1000
+          })
+          await nodeA.dht.findPeer(nodeCId.id, {
             timeout: 1000
           })
           return

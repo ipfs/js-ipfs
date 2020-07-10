@@ -10,13 +10,15 @@ const commonOptions = {
   ipfsModule: require('../../src'),
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
-    libp2p: {
-      dialer: {
-        dialTimeout: 60e3 // increase timeout because travis is slow
-      },
-      config: {
-        dht: {
-          enabled: isNode || isElectronMain
+    config: {
+      libp2p: {
+        dialer: {
+          dialTimeout: 60e3 // increase timeout because travis is slow
+        },
+        config: {
+          dht: {
+            enabled: isNode || isElectronMain
+          }
         }
       }
     }

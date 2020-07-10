@@ -119,6 +119,8 @@ exports.findProvs = {
         timeout
       }),
       map(({ id, addrs }) => {
+        providersFound = true
+
         return {
           Responses: [{
             ID: id.toString(),
