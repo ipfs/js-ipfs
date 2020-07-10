@@ -103,6 +103,7 @@ const profiles = {
       config.Addresses.API = defaultConfig.Addresses.API
       config.Addresses.Gateway = defaultConfig.Addresses.Gateway
       config.Addresses.Swarm = defaultConfig.Addresses.Swarm
+      config.Addresses.Delegates = defaultConfig.Addresses.Delegates
       config.Bootstrap = defaultConfig.Bootstrap
       config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
       config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
