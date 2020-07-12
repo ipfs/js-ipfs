@@ -209,7 +209,7 @@ const asFileFromBlobPart = (content, name, options = {}) => {
     return new ExtendedFile([content], name || '', options)
   } else if (content instanceof Blob) {
     // Third argument is passed to preserve a mime type.
-    return new ExtendedFile([content], name || '', content, options)
+    return new ExtendedFile([content], name || '', { ...options, type: content.type })
   } else if (content instanceof String) {
     return new ExtendedFile([content.toString()], name || '', options)
   } else {
