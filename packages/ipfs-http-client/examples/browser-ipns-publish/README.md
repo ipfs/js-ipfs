@@ -32,7 +32,7 @@ With Node.js and git installed, clone the repo and install the project dependenc
 git clone https://github.com/ipfs/js-ipfs-http-client.git
 cd js-ipfs-http-client
 npm install # Installs ipfs-http-client dependencies
-cd examples/browser-pubsub
+cd examples/browser-ipns-publish
 npm install # Installs browser-pubsub app dependencies
 ```
 
@@ -42,12 +42,12 @@ Start the example application:
 npm start
 ```
 
-You should see something similar to the following in your terminal and the web app should now be available if you navigate to http://127.0.0.1:8888 using your browser:
+You should see something similar to the following in your terminal and the web app should now be available if you navigate to http://127.0.0.1:1234 using your browser:
 
 ```sh
 Starting up http-server, serving ./
 Available on:
-  http://127.0.0.1:8888
+  http://127.0.0.1:1234
 ```
 
 ## 2. Start two IPFS nodes
@@ -67,9 +67,9 @@ After installation:
 ```sh
 ipfs init
 # Configure CORS to allow ipfs-http-client to access this IPFS node
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://127.0.0.1:8888"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://127.0.0.1:1234"]'
 # Start the IPFS node, enabling pubsub
-ipfs daemon --enable-pubsub-experiment &
+ipfs daemon --enable-pubsub-experiment
 ```
 
 ## 3. Open the demo in a browser and connect to the go-node
@@ -80,4 +80,6 @@ In the "CONNECT TO GO-IPFS VIA API MULTIADDRESS" field enter `/ip4/YourServerIP/
 
 This connects the API to the go-Node and connects your js-IPFS node via websocket to the go-Node so pubsub will work. 
 
-Finally, enter `/ipfs/QmSomeHash` as the content you want to publish to IPNS.You should see the messages sent from the browser to the server appear in the logs below, ending with "Success, reolved" if it all worked.
+You can choose whether to publish this record under the PeerId of the node that is running in the browser ('self') or choose to add a custom key to the IPFS keychain and publish under that instead. Either should work.
+
+Finally, enter `/ipfs/QmSomeHash` as the content you want to publish to IPNS. You should see the messages sent from the browser to the server appear in the logs below, ending with "Success, reolved" if it all worked.
