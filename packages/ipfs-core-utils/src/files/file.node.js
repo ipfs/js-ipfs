@@ -18,8 +18,11 @@ class File extends Blob {
    */
   constructor (init, name, options = {}) {
     super(init, options)
+    // Per File API spec https://w3c.github.io/FileAPI/#file-constructor
+    // Every "/" character of file name must be replaced with a ":".
     /** @private */
     this._name = name.replace(/\//g, ':')
+    /** @private */
     this._lastModified = options.lastModified || Date.now()
   }
 
