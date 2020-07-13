@@ -85,7 +85,7 @@ module.exports = async function * normaliseInput (input) {
     ? iterateReadableStream(stream)
     : asAsyncIterable(input)
 
-  // Async iterable (whech we assume to be homogenous) may represent single file
+  // Async iterable (which we assume to be homogenous) may represent single file
   // with multilpe chunks or multiple files, to decide we probe it's first item.
   if (asyncIterable != null) {
     // Create peekable to be able to probe head without consuming it.

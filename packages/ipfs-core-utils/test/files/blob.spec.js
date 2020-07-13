@@ -103,7 +103,7 @@ describe('Blob', function () {
     })
   })
 
-  it('Blob silce', async () => {
+  it('Blob slice', async () => {
     const parts = ['hello ', 'world']
     const blob = new Blob(parts)
 
