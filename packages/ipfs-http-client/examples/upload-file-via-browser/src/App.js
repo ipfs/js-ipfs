@@ -30,17 +30,15 @@ class App extends React.Component {
   // Example #1
   // Add file to IPFS and return a CID
   async saveToIpfs (files) {
-    const source = this.ipfs.add(
-      [...files],
-      {
-        progress: (prog) => console.log(`received: ${prog}`)
-      }
-    )
     try {
-      for await (const file of source) {
-        console.log(file)
-        this.setState({ added_file_hash: file.path })
-      }
+      const file = this.ipfs.add(
+        [...files],
+        {
+          progress: (prog) => console.log(`received: ${prog}`)
+        }
+      )
+      console.log(file)
+      this.setState({ added_file_hash: file.path })
     } catch (err) {
       console.error(err)
     }
@@ -59,12 +57,10 @@ class App extends React.Component {
       progress: (prog) => console.log(`received: ${prog}`)
     }
 
-    const source = this.ipfs.add(fileDetails, options)
     try {
-      for await (const file of source) {
-        console.log(file)
-        this.setState({ added_file_hash: file.cid.toString() })
-      }
+      const file = await this.ipfs.add(fileDetails, options)
+      console.log(file)
+      this.setState({ added_file_hash: file.cid.toString() })
     } catch (err) {
       console.error(err)
     }

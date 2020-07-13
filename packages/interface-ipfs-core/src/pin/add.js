@@ -3,7 +3,6 @@
 
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
@@ -23,7 +22,7 @@ module.exports = (common, options) => {
     before(async () => {
       ipfs = (await common.spawn()).api
       await Promise.all(fixtures.files.map(file => {
-        return all(ipfs.add(file.data, { pin: false }))
+        return ipfs.add(file.data, { pin: false })
       }))
     })
 

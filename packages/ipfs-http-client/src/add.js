@@ -1,63 +1,15 @@
 'use strict'
 
-const CID = require('cids')
-const toCamel = require('./lib/object-to-camel')
+const addAll = require('./add-all')
+const last = require('it-last')
 const configure = require('./lib/configure')
-const multipartRequest = require('./lib/multipart-request')
-const toUrlSearchParams = require('./lib/to-url-search-params')
-const anySignal = require('any-signal')
-const AbortController = require('abort-controller')
 
-module.exports = configure((api) => {
-  return async function * add (input, options = {}) {
-    const progressFn = options.progress
+module.exports = (options) => {
+  const all = addAll(options)
 
-    // allow aborting requests on body errors
-    const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
-
-    const res = await api.post('add', {
-      searchParams: toUrlSearchParams({
-        'stream-channels': true,
-        ...options,
-        progress: Boolean(progressFn)
-      }),
-      timeout: options.timeout,
-      signal,
-      ...(
-        await multipartRequest(input, controller, options.headers)
-      )
-    })
-
-    for await (let file of res.ndjson()) {
-      file = toCamel(file)
-
-      if (progressFn && file.bytes) {
-        progressFn(file.bytes)
-      } else {
-        yield toCoreInterface(file)
-      }
+  return configure(() => {
+    return async function add (input, options = {}) { // eslint-disable-line require-await
+      return last(all(input, options))
     }
-  }
-})
-
-function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
-  const output = {
-    path: name,
-    cid: new CID(hash),
-    size: parseInt(size)
-  }
-
-  if (mode != null) {
-    output.mode = parseInt(mode, 8)
-  }
-
-  if (mtime != null) {
-    output.mtime = {
-      secs: mtime,
-      nsecs: mtimeNsecs || 0
-    }
-  }
-
-  return output
+  })(options)
 }

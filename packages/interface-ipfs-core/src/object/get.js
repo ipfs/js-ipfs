@@ -9,7 +9,6 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const UnixFs = require('ipfs-unixfs')
 const randomBytes = require('iso-random-stream/src/random')
 const { asDAGLink } = require('./utils')
-const all = require('it-all')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
@@ -142,12 +141,12 @@ module.exports = (common, options) => {
       // has to be big enough to span several DAGNodes
       const data = randomBytes(1024 * 3000)
 
-      const result = await all(ipfs.add({
+      const result = await ipfs.add({
         path: '',
         content: data
-      }))
+      })
 
-      const node = await ipfs.object.get(result[0].cid)
+      const node = await ipfs.object.get(result.cid)
       const meta = UnixFs.unmarshal(node.Data)
 
       expect(meta.fileSize()).to.equal(data.length)

@@ -24,19 +24,17 @@ class App extends React.Component {
       protocol_version: id.protocolVersion
     })
 
-    const source = ipfs.add(stringToUse)
-    for await (const file of source) {
-      console.log("TCL: App -> forawait -> file", file)
-      const hash = file.path
-      this.setState({ added_file_hash: hash })
+    const file = ipfs.add(stringToUse)
+    console.log("TCL: App -> forawait -> file", file)
+    const cid = file.cid
+    this.setState({ added_file_hash: `${cid}` })
 
-      const source = ipfs.cat(hash)
-      const data = []
-      for await (const chunk of source) {
-        data.push(chunk)
-      }
-      this.setState({ added_file_contents: Buffer.concat(data).toString() })
+    const source = ipfs.cat(cid)
+    const data = []
+    for await (const chunk of source) {
+      data.push(chunk)
     }
+    this.setState({ added_file_contents: Buffer.concat(data).toString() })
   }
   render () {
     return <div style={{ textAlign: 'center' }}>

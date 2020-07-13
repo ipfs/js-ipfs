@@ -259,7 +259,7 @@ module.exports = {
     let finalCid
 
     try {
-      for await (const added of ipfs.add(source, options)) {
+      for await (const added of ipfs.addAll(source, options)) {
         if (silent) {
           continue
         }

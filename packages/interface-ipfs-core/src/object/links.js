@@ -7,7 +7,6 @@ const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
-const all = require('it-all')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
@@ -96,11 +95,11 @@ module.exports = (common, options) => {
     it('should get links from CBOR object', async () => {
       const hashes = []
 
-      const res1 = await all(ipfs.add(Buffer.from('test data')))
-      hashes.push(res1[0].cid)
+      const res1 = await ipfs.add(Buffer.from('test data'))
+      hashes.push(res1.cid)
 
-      const res2 = await all(ipfs.add(Buffer.from('more test data')))
-      hashes.push(res2[0].cid)
+      const res2 = await ipfs.add(Buffer.from('more test data'))
+      hashes.push(res2.cid)
 
       const obj = {
         some: 'data',

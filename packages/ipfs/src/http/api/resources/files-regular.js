@@ -285,7 +285,7 @@ exports.add = {
         }
       },
       function (source) {
-        return ipfs.add(source, {
+        return ipfs.addAll(source, {
           cidVersion,
           rawLeaves,
           progress: progress ? progressHandler : () => {},

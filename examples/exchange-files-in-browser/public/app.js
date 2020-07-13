@@ -3,7 +3,6 @@
 
 const IPFS = require('ipfs')
 const all = require('it-all')
-const last = require('it-last')
 const { Buffer } = IPFS
 
 // Node
@@ -249,13 +248,13 @@ async function onDrop (event) {
   for (const file of files) {
     fileSize = file.size // Note: fileSize is used by updateProgress
 
-    const fileAdded = await last(node.add({
+    const fileAdded = await node.add({
       path: file.name,
       content: file
     }, {
       wrapWithDirectory: true,
       progress: updateProgress
-    }))
+    })
 
     // As we are wrapping the content we use that hash to keep
     // the original file name when adding it to the table

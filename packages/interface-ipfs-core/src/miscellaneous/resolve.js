@@ -39,13 +39,13 @@ module.exports = (common, options) => {
     it('should resolve an IPFS hash', async () => {
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
 
-      const [{ cid }] = await all(ipfs.add(content))
+      const { cid } = await ipfs.add(content)
       const path = await ipfs.resolve(`/ipfs/${cid}`)
       expect(path).to.equal(`/ipfs/${cid}`)
     })
 
     it('should resolve an IPFS hash and return a base64url encoded CID in path', async () => {
-      const [{ cid }] = await all(ipfs.add(Buffer.from('base64url encoded')))
+      const { cid } = await ipfs.add(Buffer.from('base64url encoded'))
       const path = await ipfs.resolve(`/ipfs/${cid}`, { cidBase: 'base64url' })
       const [,, cidStr] = path.split('/')
 
@@ -56,7 +56,7 @@ module.exports = (common, options) => {
     it('should resolve an IPFS path link', async () => {
       const path = 'path/to/testfile.txt'
       const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
-      const [{ cid: fileCid }, , , { cid: rootCid }] = await all(ipfs.add([{ path, content }], { wrapWithDirectory: true }))
+      const [{ cid: fileCid }, , , { cid: rootCid }] = await all(ipfs.addAll([{ path, content }], { wrapWithDirectory: true }))
       const resolve = await ipfs.resolve(`/ipfs/${rootCid}/${path}`)
 
       expect(resolve).to.equal(`/ipfs/${fileCid}`)
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
       // webworkers are not dialable because webrtc is not available
       const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfs.swarm.connect(node.peerId.addresses[0])
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive === true')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
