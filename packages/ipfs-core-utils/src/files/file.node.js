@@ -16,12 +16,12 @@ class File extends Blob {
    * of milliseconds between the Unix time epoch and when the file was last
    * modified. Defaults to a value of Date.now().
    */
-  constructor (init, name, options = {}) {
+  constructor (init, name = panic(new TypeError('File constructor requires name argument')), options = {}) {
     super(init, options)
     // Per File API spec https://w3c.github.io/FileAPI/#file-constructor
     // Every "/" character of file name must be replaced with a ":".
     /** @private */
-    this._name = name.replace(/\//g, ':')
+    this._name = String(name).replace(/\//g, ':')
     /** @private */
     this._lastModified = options.lastModified || Date.now()
   }
@@ -55,6 +55,8 @@ class File extends Blob {
     return 'File'
   }
 }
+
+const panic = (error) => { throw error }
 
 // Marking export as a DOM File object instead of custom class.
 /** @type {typeof window.File} */
