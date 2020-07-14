@@ -52,7 +52,7 @@ const { IPFSService } = require('ipfs-message-port-server')
 const { Server } = require('ipfs-message-port-server/src/server')
 
 const main = async () => {
-  const ports = []
+  const connections = []
   // queue connections that occur while node was starting.
   self.onconnect = ({ports}) => connections.push(...ports)
 
@@ -62,7 +62,7 @@ const main = async () => {
 
   // connect new ports and queued ports with the server.
   self.onconnect = ({ports}) => server.connect(ports[0])
-  for (const port of ports.splice(0)) {
+  for (const port of connections.splice(0)) {
     server.connect(port)
   }
 }
