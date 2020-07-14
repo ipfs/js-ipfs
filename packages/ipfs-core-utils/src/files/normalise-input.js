@@ -512,7 +512,7 @@ module.exports.ExtendedFile = ExtendedFile
 
 class FileStream {
   /**
-   * @param {AsyncIterable<ArrayBuffer|ArrayBufferView>} content
+   * @param {AsyncIterable<ArrayBuffer|ArrayBufferView>} source
    * @param {string} name
    * @param {Object} [options]
    * @param {string} [options.type]
@@ -521,8 +521,8 @@ class FileStream {
    * @param {MTime} [options.mtime]
    * @param {Mode} [options.mode]
    */
-  constructor (content, name, options = {}) {
-    this.content = content
+  constructor (source, name, options = {}) {
+    this.source = source
     this.name = name
     this.type = options.type || ''
     this.lastModified = options.lastModified || Date.now()
@@ -536,6 +536,22 @@ class FileStream {
 
   get size () {
     throw Error('File size is unknown')
+  }
+
+  async * [Symbol.asyncIterator] () {
+    for await (const chunk of this.source) {
+      if (ArrayBuffer.isView(chunk)) {
+        yield chunk
+      } else if (chunk instanceof ArrayBuffer) {
+        yield new Uint8Array(chunk)
+      } else {
+        throw errCode(new Error(`Unexpected file content: ${chunk}`), 'ERR_UNEXPECTED_INPUT')
+      }
+    }
+  }
+
+  get content () {
+    return this
   }
 }
 module.exports.FileStream = FileStream
