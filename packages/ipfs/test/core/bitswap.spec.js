@@ -7,7 +7,6 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const all = require('it-all')
 const concat = require('it-concat')
 const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
@@ -71,8 +70,8 @@ describe('bitswap', function () {
       const proc = (await df.spawn({ type: 'proc' })).api
       proc.swarm.connect(remote.peerId.addresses[0])
 
-      const files = await all(remote.add([{ path: 'awesome.txt', content: file }]))
-      const data = await concat(proc.cat(files[0].cid))
+      const file = await remote.add({ path: 'awesome.txt', content: file })
+      const data = await concat(proc.cat(file.cid))
       expect(data.slice()).to.eql(file)
       await df.clean()
     })
