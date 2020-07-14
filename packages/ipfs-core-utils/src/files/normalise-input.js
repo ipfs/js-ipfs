@@ -18,6 +18,7 @@ const { Blob, readBlob } = require('./blob')
  *
  * @typedef {Object} FileObject
  * @property {string} [path]
+ * @property {string} [type] - MIME type of the file.
  * @property {FileContent} [content]
  * @property {Mode} [mode]
  * @property {UnixFSTime} [mtime]
@@ -207,9 +208,19 @@ const asFileFromBlobPart = (content, name, options = {}) => {
     content instanceof ArrayBuffer
   ) {
     return new ExtendedFile([content], name || '', options)
+  } else if (content instanceof File) {
+    // Preserver file name if new name is not provided
+    return new ExtendedFile([content], name == null ? content.name : '', {
+      lastModified: content.lastModified,
+      type: content.type,
+      ...options
+    })
   } else if (content instanceof Blob) {
-    // Third argument is passed to preserve a mime type.
-    return new ExtendedFile([content], name || '', { ...options, type: content.type })
+    // Preserve a mime type.
+    return new ExtendedFile([content], name || '', {
+      type: content.type,
+      ...options
+    })
   } else if (content instanceof String) {
     return new ExtendedFile([content.toString()], name || '', options)
   } else {
@@ -225,9 +236,11 @@ const asFileFromBlobPart = (content, name, options = {}) => {
  * @returns {null|ExtendedFile|FileStream|Directory}
  */
 const fileFromFileObject = (fileObject) => {
-  const { path, mtime, mode, content } = fileObject
-  const ext = { mtime, mode, path }
-  const name = path == null ? undefined : basename(path)
+  const { path, mtime, mode, content, type } = fileObject
+  // `lastModified` is set to `undefined` as we do not want to preserve
+  // it in case `file.content` was instanceo of a `File`.
+  const ext = { mtime, mode, path, type, lastModified: undefined }
+  const name = path == null ? '' : basename(path)
   const file = asFileFromBlobPart(content, name, ext)
   if (file) {
     return file
@@ -248,7 +261,7 @@ const fileFromFileObject = (fileObject) => {
       if (bytes != null) {
         return new ExtendedFile(bytes, name, ext)
       } else {
-        throw errCode(new Error('Unexpected input: ' + typeof content), 'ERR_UNEXPECTED_INPUT')
+        throw errCode(new Error('Unexpected FileObject content: ' + typeof content), 'ERR_UNEXPECTED_INPUT')
       }
     }
 
@@ -489,10 +502,13 @@ class ExtendedFile extends File {
    */
   constructor (init, name, options = {}) {
     super(init, name, options)
-    const { path, mode, mtime } = options
-    this.path = path || ''
+    const { path, mode, mtime, lastModified } = options
+    this.path = path || name
     this.mode = mode
-    this.mtime = mtime
+    // If `mtime` isn't provided but `lastModified` is, derive `mtime` from it.
+    // If neither is provided keep `mtime` undefined. This way if input was a
+    // File it's `lastModified` is used otherwise `mtime` is not set.
+    this.mtime = mtime || (lastModified && new Date(lastModified))
 
     /** @type {'file'} */
     this.kind = 'file'
