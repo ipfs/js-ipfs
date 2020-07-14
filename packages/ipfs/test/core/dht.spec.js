@@ -17,11 +17,9 @@ describe('dht', () => {
 
       ipfsd = await df.spawn({
         ipfsOptions: {
-          libp2p: {
-            config: {
-              dht: {
-                enabled: true
-              }
+          config: {
+            Routing: {
+              Type: 'dht'
             }
           }
         }
@@ -59,11 +57,9 @@ describe('dht', () => {
 
       ipfsd = await df.spawn({
         ipfsOptions: {
-          libp2p: {
-            config: {
-              dht: {
-                enabled: false
-              }
+          config: {
+            Routing: {
+              Type: 'none'
             }
           }
         }

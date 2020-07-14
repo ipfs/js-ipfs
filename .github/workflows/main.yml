@@ -1,6 +1,11 @@
-name: Checks
+# Checks bundlesize, does not run on master
+name: Bundlesize
 
-on: [push]
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
 
 jobs:
   checks:

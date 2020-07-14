@@ -5,7 +5,7 @@ const {
   DAGNode
 } = require('ipld-dag-pb')
 const mc = require('multicodec')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 
 const createNode = async (context, type, options) => {
   const hashAlg = mh.names[options.hashAlg]

@@ -32,7 +32,18 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8),
+      mode,
+      defaultOptions
+    ])
+  })
+
+  it('should update the mode for a file with a string', async () => {
+    await cli(`files chmod +x ${path}`, { ipfs })
+
+    expect(ipfs.files.chmod.callCount).to.equal(1)
+    expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
+      path,
+      '+x',
       defaultOptions
     ])
   })
@@ -43,7 +54,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         recursive: true
       }
@@ -56,7 +67,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         recursive: true
       }
@@ -69,7 +80,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         flush: false
       }
@@ -82,7 +93,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         flush: false
       }
@@ -95,7 +106,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         hashAlg: 'sha3-256'
       }
@@ -108,7 +119,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         hashAlg: 'sha3-256'
       }
@@ -121,7 +132,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         shardSplitThreshold: 10
       }
@@ -134,7 +145,7 @@ describe('chmod', () => {
     expect(ipfs.files.chmod.callCount).to.equal(1)
     expect(ipfs.files.chmod.getCall(0).args).to.deep.equal([
       path,
-      parseInt(mode, 8), {
+      mode, {
         ...defaultOptions,
         timeout: 1000
       }

@@ -15,13 +15,8 @@ module.exports = configure((api, options) => {
   const getBlock = require('../block/get')(options)
   const dagResolve = require('./resolve')(options)
 
-  return async (cid, path, options = {}) => {
-    if (path && typeof path === 'object') {
-      options = path
-      path = null
-    }
-
-    const resolved = await dagResolve(cid, path, options)
+  return async (cid, options = {}) => {
+    const resolved = await dagResolve(cid, options)
     const block = await getBlock(resolved.cid, options)
     const dagResolver = resolvers[block.cid.codec]
 
@@ -33,9 +28,9 @@ module.exports = configure((api, options) => {
     }
 
     if (block.cid.codec === 'raw' && !resolved.remPath) {
-      resolved.remPath = '/'
+      resolved.remainderPath = '/'
     }
 
-    return dagResolver.resolve(block.data, resolved.remPath)
+    return dagResolver.resolve(block.data, resolved.remainderPath)
   }
 })

@@ -1,6 +1,6 @@
 # Object API <!-- omit in toc -->
 
-- [`ipfs.object.new([template,] [options])`](#ipfsobjectnewtemplate-options)
+- [`ipfs.object.new([options])`](#ipfsobjectnewoptions)
   - [Parameters](#parameters)
   - [Options](#options)
   - [Returns](#returns)
@@ -52,15 +52,13 @@
   - [Returns](#returns-9)
   - [Example](#example-9)
 
-## `ipfs.object.new([template,] [options])`
+## `ipfs.object.new([options])`
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
 ### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| template | `String` | If defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory |
+None.
 
 ### Options
 
@@ -68,6 +66,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
+| template | `String` | If defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory |
 | recursive | `boolean` | `false` | Resolve until the result is not an IPNS name |
 | nocache | `boolean` | `cache` | Do not use cached entries |
 | timeout | `Number` | `undefined` | A timeout in ms |
@@ -82,7 +81,9 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const cid = await ipfs.object.new('unixfs-dir')
+const cid = await ipfs.object.new({
+  template: 'unixfs-dir'
+})
 console.log(cid.toString())
 // Logs:
 // QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn

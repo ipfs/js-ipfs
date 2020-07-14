@@ -63,6 +63,7 @@ You can learn about the IPFS File API at [interface-ipfs-core](https://github.co
 
 ```js
 const IPFS = require('ipfs')
+const last = require('it-last')
 
 async function main () {
   const node = await IPFS.create()
@@ -70,12 +71,12 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const fileAdded = await last(node.add({
     path: 'hello.txt',
     content: 'Hello World 101'
-  })
+  }))
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+  console.log('Added file:', fileAdded.path, fileAdded.cid)
   // ...
 }
 
@@ -97,6 +98,7 @@ The last step of this tutorial is retrieving the file back using the `cat` 😺 
 
 ```js
 const IPFS = require('ipfs')
+const last = require('it-last')
 
 async function main () {
   const node = await IPFS.create()
@@ -104,15 +106,15 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const fileAdded = await last(node.add({
     path: 'hello.txt',
     content: 'Hello World 101'
-  })
+  }))
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+  console.log('Added file:', fileAdded.path, fileAdded.cid)
 
   const chunks = []
-  for await (const chunk of node.cat(filesAdded[0].hash)) {
+  for await (const chunk of node.cat(fileAdded.cid)) {
       chunks.push(chunk)
   }
 

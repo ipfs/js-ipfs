@@ -198,13 +198,17 @@ function createApi ({
     throw new NotEnabledError('dht not enabled')
   }
 
+  const dhtNotEnabledIterator = async function * () { // eslint-disable-line require-await,require-yield
+    throw new NotEnabledError('dht not enabled')
+  }
+
   const dht = get(libp2p, '_config.dht.enabled', false) ? Components.dht({ libp2p, repo }) : {
     get: dhtNotEnabled,
     put: dhtNotEnabled,
-    findProvs: dhtNotEnabled,
+    findProvs: dhtNotEnabledIterator,
     findPeer: dhtNotEnabled,
-    provide: dhtNotEnabled,
-    query: dhtNotEnabled
+    provide: dhtNotEnabledIterator,
+    query: dhtNotEnabledIterator
   }
 
   const dns = Components.dns()
@@ -240,12 +244,15 @@ function createApi ({
     bitswap: {
       stat: Components.bitswap.stat({ bitswap }),
       unwant: Components.bitswap.unwant({ bitswap }),
-      wantlist: Components.bitswap.wantlist({ bitswap })
+      wantlist: Components.bitswap.wantlist({ bitswap }),
+      wantlistForPeer: Components.bitswap.wantlistForPeer({ bitswap })
     },
     block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
+      clear: Components.bootstrap.clear({ repo }),
       list: Components.bootstrap.list({ repo }),
+      reset: Components.bootstrap.reset({ repo }),
       rm: Components.bootstrap.rm({ repo })
     },
     cat: Components.cat({ ipld, preload }),

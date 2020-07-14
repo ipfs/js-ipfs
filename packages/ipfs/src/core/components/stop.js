@@ -127,12 +127,15 @@ function createApi ({
     bitswap: {
       stat: notStarted,
       unwant: notStarted,
-      wantlist: notStarted
+      wantlist: notStarted,
+      wantlistForPeer: notStarted
     },
     block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
+      clear: Components.bootstrap.clear({ repo }),
       list: Components.bootstrap.list({ repo }),
+      reset: Components.bootstrap.reset({ repo }),
       rm: Components.bootstrap.rm({ repo })
     },
     cat: Components.cat({ ipld, preload }),

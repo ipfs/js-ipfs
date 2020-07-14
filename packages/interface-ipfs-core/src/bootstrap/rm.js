@@ -36,13 +36,6 @@ module.exports = (common, options) => {
         .and.be.an.instanceOf(Error)
     })
 
-    it('should return an empty list because no peers removed when called without an arg or options', async () => {
-      const res = await ipfs.bootstrap.rm(null)
-
-      const peers = res.Peers
-      expect(peers).to.have.property('length').that.is.equal(0)
-    })
-
     it('should return a list containing the peer removed when called with a valid arg (ip4)', async () => {
       const addRes = await ipfs.bootstrap.add(validIp4)
       expect(addRes).to.be.eql({ Peers: [validIp4] })
@@ -52,16 +45,6 @@ module.exports = (common, options) => {
 
       const peers = rmRes.Peers
       expect(peers).to.have.property('length').that.is.equal(1)
-    })
-
-    it('should return a list of all peers removed when all option is passed', async () => {
-      const addRes = await ipfs.bootstrap.add(null, { default: true })
-      const addedPeers = addRes.Peers
-
-      const rmRes = await ipfs.bootstrap.rm(null, { all: true })
-      const removedPeers = rmRes.Peers
-
-      expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
     })
   })
 }

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.47.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.46.0...ipfs@0.47.0) (2020-06-24)
+
+
+### Bug Fixes
+
+* libp2p now requires encryption module ([#3085](https://github.com/ipfs/js-ipfs/issues/3085)) ([c567282](https://github.com/ipfs/js-ipfs/commit/c56728209f0eea63d00c68163c74cfdd350de69c))
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+* libp2p noise as fallback for secio ([#3074](https://github.com/ipfs/js-ipfs/issues/3074)) ([660d3db](https://github.com/ipfs/js-ipfs/commit/660d3db9a47bff652057762b52a25529ab37117f))
+* persist peerstore ([#3072](https://github.com/ipfs/js-ipfs/issues/3072)) ([b404974](https://github.com/ipfs/js-ipfs/commit/b40497427b7d33f52803c8fa14cc73be7f872d65))
+* webui v2.9.0 ([#3054](https://github.com/ipfs/js-ipfs/issues/3054)) ([5d9d331](https://github.com/ipfs/js-ipfs/commit/5d9d331ed42f3ac9efc243878011db871b742a4e))
+
+
+
+
+
 # [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
 
 

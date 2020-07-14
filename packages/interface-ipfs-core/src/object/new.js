@@ -36,7 +36,7 @@ module.exports = (common, options) => {
     })
 
     it('should create a new object with unixfs-dir template', async () => {
-      const cid = await ipfs.object.new('unixfs-dir')
+      const cid = await ipfs.object.new({ template: 'unixfs-dir' })
       expect(cid.toBaseEncodedString()).to.equal('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
     })
   })

@@ -1,30 +1,33 @@
 # Bitswap API <!-- omit in toc -->
 
-- [`ipfs.bitswap.wantlist([peerId,] [options])`](#ipfsbitswapwantlistpeerid-options)
+- [`ipfs.bitswap.wantlist([options])`](#ipfsbitswapwantlistoptions)
   - [Parameters](#parameters)
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
-- [`ipfs.bitswap.unwant(cids, [options])`](#ipfsbitswapunwantcids-options)
+- [`ipfs.bitswap.wantlistForPeer(peerId, [options])`](#ipfsbitswapwantlistforpeerpeerid-options)
   - [Parameters](#parameters-1)
   - [Options](#options-1)
   - [Returns](#returns-1)
   - [Example](#example-1)
-- [`ipfs.bitswap.stat([options])`](#ipfsbitswapstatoptions)
+- [`ipfs.bitswap.unwant(cids, [options])`](#ipfsbitswapunwantcids-options)
   - [Parameters](#parameters-2)
   - [Options](#options-2)
   - [Returns](#returns-2)
   - [Example](#example-2)
+- [`ipfs.bitswap.stat([options])`](#ipfsbitswapstatoptions)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
 
-## `ipfs.bitswap.wantlist([peerId,] [options])`
+## `ipfs.bitswap.wantlist([options])`
 
-> Returns the wantlist, optionally filtered by peer ID
+> Returns the wantlist for your node
 
 ### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| peerId | [PeerId][], [CID][], `String` or `Buffer` | An optional peer ID to return the wantlist for |
+None
 
 ### Options
 
@@ -47,9 +50,40 @@ An optional object which may have the following keys:
 const list = await ipfs.bitswap.wantlist()
 console.log(list)
 // [ CID('QmHash') ]
+```
 
-const list2 = await ipfs.bitswap.wantlist(peerId)
-console.log(list2)
+A great source of [examples][] can be found in the tests for this API.
+
+## `ipfs.bitswap.wantlistForPeer(peerId, [options])`
+
+> Returns the wantlist for a connected peer
+
+### Parameters
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| peerId | [PeerId][], [CID][], `String` or `Buffer` | A peer ID to return the wantlist for |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<CID[]>` | An array of [CID][]s currently in the wantlist |
+
+### Example
+
+```JavaScript
+const list = await ipfs.bitswap.wantlistForPeer(peerId)
+console.log(list)
 // [ CID('QmHash') ]
 ```
 

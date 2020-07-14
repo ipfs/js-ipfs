@@ -35,7 +35,11 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('lists the root directory by default', async () => {
+    it('should require a path', () => {
+      expect(all(ipfs.files.ls())).to.eventually.be.rejected()
+    })
+
+    it('lists the root directory', async () => {
       const fileName = `small-file-${Math.random()}.txt`
       const content = Buffer.from('Hello world')
 
@@ -43,7 +47,7 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const files = await all(ipfs.files.ls())
+      const files = await all(ipfs.files.ls('/'))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
@@ -201,7 +205,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect timeout option when listing files', async () => {
-      await testTimeout(() => drain(ipfs.files.ls({
+      await testTimeout(() => drain(ipfs.files.ls('/', {
         timeout: 1
       })))
     })

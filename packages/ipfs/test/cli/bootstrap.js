@@ -14,7 +14,9 @@ describe('bootstrap', () => {
       bootstrap: {
         add: sinon.stub(),
         list: sinon.stub(),
-        rm: sinon.stub()
+        rm: sinon.stub(),
+        clear: sinon.stub(),
+        reset: sinon.stub()
       }
     }
   })
@@ -45,15 +47,11 @@ describe('bootstrap', () => {
 
   describe('add', () => {
     const defaultOptions = {
-      default: false,
       timeout: undefined
     }
 
     it('add default', async () => {
-      ipfs.bootstrap.add.withArgs(undefined, {
-        ...defaultOptions,
-        default: true
-      }).returns({
+      ipfs.bootstrap.reset.withArgs(defaultOptions).returns({
         Peers: defaultList
       })
 
@@ -112,7 +110,6 @@ describe('bootstrap', () => {
 
   describe('rm', () => {
     const defaultOptions = {
-      all: false,
       timeout: undefined
     }
 
@@ -128,10 +125,7 @@ describe('bootstrap', () => {
     })
 
     it('should remove all bootstrap nodes', async () => {
-      ipfs.bootstrap.rm.withArgs(undefined, {
-        ...defaultOptions,
-        all: true
-      }).returns({
+      ipfs.bootstrap.clear.withArgs(defaultOptions).returns({
         Peers: defaultList
       })
 

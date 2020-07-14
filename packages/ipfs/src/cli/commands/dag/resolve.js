@@ -1,7 +1,6 @@
 'use strict'
 
-const CID = require('cids')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'resolve <ref>',
@@ -24,13 +23,9 @@ module.exports = {
     }
 
     try {
-      let lastCid
-
-      for await (const res of ipfs.dag.resolve(ref, options)) {
-        if (CID.isCID(res.value)) {
-          lastCid = res.value
-        }
-      }
+      let {
+        cid: lastCid
+      } = await ipfs.dag.resolve(ref, options)
 
       if (!lastCid) {
         if (ref.startsWith('/ipfs/')) {

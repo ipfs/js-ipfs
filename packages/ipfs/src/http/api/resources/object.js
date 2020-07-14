@@ -87,7 +87,8 @@ exports.new = {
 
     let cid, node
     try {
-      cid = await ipfs.object.new(template, {
+      cid = await ipfs.object.new({
+        template,
         signal,
         timeout
       })
@@ -210,7 +211,7 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.string().valid(...multibase.names),
+        cidBase: Joi.string().valid(...Object.keys(multibase.names)),
         enc: Joi.string().valid('json', 'protobuf'),
         timeout: Joi.timeout()
       })

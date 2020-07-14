@@ -33,9 +33,13 @@ module.exports = (common, options) => {
       }
     })
 
+    it('should require a path', () => {
+      expect(ipfs.files.flush()).to.eventually.be.rejected()
+    })
+
     it('should flush root', async () => {
       const root = await ipfs.files.stat('/')
-      const flushed = await ipfs.files.flush()
+      const flushed = await ipfs.files.flush('/')
 
       expect(root.cid.toString()).to.equal(flushed.toString())
     })
@@ -52,7 +56,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect timeout option when flushing changes', async () => {
-      await testTimeout(() => ipfs.files.flush({
+      await testTimeout(() => ipfs.files.flush('/', {
         timeout: 1
       }))
     })

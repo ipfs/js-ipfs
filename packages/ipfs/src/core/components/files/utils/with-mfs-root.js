@@ -7,7 +7,7 @@ const {
 } = require('ipld-dag-pb')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const mc = require('multicodec')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const errCode = require('err-code')
 
 const {
