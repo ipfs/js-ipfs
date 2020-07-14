@@ -370,6 +370,33 @@ describe('/files', () => {
       })
     })
 
+    it('should list directory contents without unixfs v1.5 fields', async () => {
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
+        name: 'link',
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Objects[0]', {
+        Hash: `${cid}`,
+        Links: [{
+          Depth: 1,
+          Hash: cid.toString(),
+          Name: 'link',
+          Size: 10,
+          Type: 2
+        }]
+      })
+    })
+
     it('should list directory contents recursively', async () => {
       ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,

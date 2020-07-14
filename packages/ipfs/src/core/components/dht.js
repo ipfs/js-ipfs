@@ -21,6 +21,10 @@ module.exports = ({ libp2p, repo }) => {
 
       if (!Buffer.isBuffer(key)) {
         try {
+          key = key.toString().split('/')
+            .filter(part => part && part !== 'ipfs' && part !== 'ipns')
+            .shift()
+
           key = (new CID(key)).buffer
         } catch (err) {
           throw errCode(err, 'ERR_INVALID_CID')
@@ -44,6 +48,10 @@ module.exports = ({ libp2p, repo }) => {
     put: withTimeoutOption(async (key, value) => { // eslint-disable-line require-await
       if (!Buffer.isBuffer(key)) {
         try {
+          key = key.toString().split('/')
+            .filter(part => part && part !== 'ipfs' && part !== 'ipns')
+            .shift()
+
           key = (new CID(key)).buffer
         } catch (err) {
           throw errCode(err, 'ERR_INVALID_CID')
@@ -89,7 +97,7 @@ module.exports = ({ libp2p, repo }) => {
      * Query the DHT for all multiaddresses associated with a `PeerId`.
      *
      * @param {PeerId} peerId - The id of the peer to search for.
-     * @returns {Promise<{ id: CID, addrs: Multiaddr[] }>}
+     * @returns {Promise<{ id: String, addrs: Multiaddr[] }>}
      */
     findPeer: withTimeoutOption(async peerId => { // eslint-disable-line require-await
       if (typeof peerId === 'string') {
@@ -100,26 +108,26 @@ module.exports = ({ libp2p, repo }) => {
 
       return {
         id: peer.id.toB58String(),
-        addrs: peer.addrs
+        addrs: peer.multiaddrs
       }
     }),
 
     /**
      * Announce to the network that we are providing given values.
      *
-     * @param {CID|CID[]} keys - The keys that should be announced.
+     * @param {CID|CID[]} cids - The keys that should be announced.
      * @param {Object} [options] - provide options
      * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @returns {Promise}
      */
-    provide: withTimeoutOption(async (keys, options) => {
-      keys = Array.isArray(keys) ? keys : [keys]
+    provide: withTimeoutOption(async function * (cids, options) {
+      cids = Array.isArray(cids) ? cids : [cids]
       options = options || {}
 
-      for (var i in keys) {
-        if (typeof keys[i] === 'string') {
+      for (var i in cids) {
+        if (typeof cids[i] === 'string') {
           try {
-            keys[i] = new CID(keys[i])
+            cids[i] = new CID(cids[i])
           } catch (err) {
             throw errCode(err, 'ERR_INVALID_CID')
           }
@@ -127,18 +135,20 @@ module.exports = ({ libp2p, repo }) => {
       }
 
       // ensure blocks are actually local
-      const hasKeys = await Promise.all(keys.map(k => repo.blocks.has(k)))
-      const hasAll = hasKeys.every(has => has)
+      const hasCids = await Promise.all(cids.map(cid => repo.blocks.has(cid)))
+      const hasAll = hasCids.every(has => has)
 
       if (!hasAll) {
-        throw errCode('block(s) not found locally, cannot provide', 'ERR_BLOCK_NOT_FOUND')
+        throw errCode(new Error('block(s) not found locally, cannot provide'), 'ERR_BLOCK_NOT_FOUND')
       }
 
       if (options.recursive) {
         // TODO: Implement recursive providing
-        throw errCode('not implemented yet', 'ERR_NOT_IMPLEMENTED_YET')
-      } else {
-        await Promise.all(keys.map(k => libp2p._dht.provide(k)))
+        throw errCode(new Error('not implemented yet'), 'ERR_NOT_IMPLEMENTED_YET')
+      }
+
+      for (const cid of cids) {
+        yield libp2p._dht.provide(cid)
       }
     }),
 

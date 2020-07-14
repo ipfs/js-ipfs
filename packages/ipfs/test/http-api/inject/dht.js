@@ -10,6 +10,7 @@ const sinon = require('sinon')
 const errCode = require('err-code')
 const CID = require('cids')
 const { AbortSignal } = require('abort-controller')
+const allNdjson = require('../../utils/all-ndjson')
 
 describe('/dht', () => {
   const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
@@ -120,9 +121,13 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Type', 4)
-      expect(res).to.have.nested.property('result.Responses[0].ID', peerId)
-      expect(res).to.have.nested.property('result.Responses[0].Addrs[0]', 'addr')
+      expect(allNdjson(res)).to.deep.equal([{
+        Type: 4,
+        Responses: [{
+          ID: peerId,
+          Addrs: ['addr']
+        }]
+      }])
     })
 
     it('overrides num-providers', async () => {
@@ -142,9 +147,13 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Type', 4)
-      expect(res).to.have.nested.property('result.Responses[0].ID', peerId)
-      expect(res).to.have.nested.property('result.Responses[0].Addrs[0]', 'addr')
+      expect(allNdjson(res)).to.deep.equal([{
+        Type: 4,
+        Responses: [{
+          ID: peerId,
+          Addrs: ['addr']
+        }]
+      }])
     })
 
     it('accepts a timeout', async () => {
@@ -164,9 +173,13 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Type', 4)
-      expect(res).to.have.nested.property('result.Responses[0].ID', peerId)
-      expect(res).to.have.nested.property('result.Responses[0].Addrs[0]', 'addr')
+      expect(allNdjson(res)).to.deep.equal([{
+        Type: 4,
+        Responses: [{
+          ID: peerId,
+          Addrs: ['addr']
+        }]
+      }])
     })
   })
 
