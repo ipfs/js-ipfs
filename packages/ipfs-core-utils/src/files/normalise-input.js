@@ -72,7 +72,7 @@ module.exports = async function * normaliseInput (input) {
   /** @type {null|Iterable<*>} */
   const iterable = asIterable(input)
   if (iterable != null) {
-    yield * normilizeIterableInput(iterable)
+    yield * normaliseIterableInput(iterable)
 
     // Return here since we have have exhasted an input iterator.
     return
@@ -131,7 +131,7 @@ module.exports = async function * normaliseInput (input) {
  * @typedef {Iterable<number>|Iterable<ArrayBuffer>|Iterable<ArrayBufferView>} IterableFileContent
  * @typedef {Iterable<string>|Iterable<Blob>|Iterable<FileObject>} IterableFiles
  */
-const normilizeIterableInput = function * (iterable) {
+const normaliseIterableInput = function * (iterable) {
   // In order to peek at first without loosing capablitiy to iterate, we
   // create peekable which allows us to do that.
   const peekable = Peekable.from(iterable)
