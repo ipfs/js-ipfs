@@ -382,7 +382,7 @@ const asIterable = input => {
  * @returns {FileObject|null}
  */
 const asFileObject = input => {
-  if (typeof input === 'object' && (input.path || input.content)) {
+  if (typeof input === 'object' && input && (input.path || input.content)) {
     return input
   } else {
     return null
