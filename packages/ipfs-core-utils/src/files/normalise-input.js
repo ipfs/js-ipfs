@@ -304,9 +304,25 @@ const asIterableBytes = (content) => {
     // new memory (unless iterator is generating content, but that is exotic
     // enough use case that we prefer to go with File over FileStream).
   } else if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
-    return [...content]
+    return [...content].map(normalizeArrayBufferView)
   } else {
     return null
+  }
+}
+
+/**
+ * @param {*} input
+ * @returns {Uint8Array}
+ */
+const normalizeArrayBufferView = (input) => {
+  if (input instanceof Uint8Array) {
+    return input
+  } else if (ArrayBuffer.isView(input)) {
+    return new Uint8Array(input.buffer, input.byteOffset, input.byteLength)
+  } else if (input instanceof ArrayBuffer) {
+    return new Uint8Array(input)
+  } else {
+    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }
 }
 
