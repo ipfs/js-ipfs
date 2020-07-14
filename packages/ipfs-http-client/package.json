@@ -16,7 +16,6 @@
   "main": "src/index.js",
   "browser": {
     "./src/lib/to-body.js": "./src/lib/to-body.browser.js",
-    "ipfs-core-utils/src/files/blob.js": "ipfs-core-utils/src/files/blob.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs-dep": false
   },
