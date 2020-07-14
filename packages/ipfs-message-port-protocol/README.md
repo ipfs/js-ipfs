@@ -17,6 +17,12 @@
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)
+- [Usage](#usage)
+  - [Wire protocol codecs](#wire-protocol-codecs)
+  - [Block](#block)
+  - [DAGNode](#dagnode)
+  - [AsyncIterable](#asynciterable)
+  - [Callback][#callback]
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -59,7 +65,7 @@ port2.onmessage = ({data}) => {
 }
 ```
 
-### `Block`
+### Block
 
 Codecs for [IPLD Block][] implementation in JavaScript.
 
@@ -87,7 +93,7 @@ port2.onmessage = ({data}) => {
 }
 ```
 
-### `DAGNode`
+### DAGNode
 
 Codec for DAGNodes accepted by `ipfs.dag.put` API.
 
@@ -115,7 +121,7 @@ port2.onmessage = ({data}) => {
 }
 ```
 
-### `AsyncIterable`
+### AsyncIterable
 
 Encoder allows producer to encode [async iterables][] such that it can be transferred across threads and decoded by a consumer on the other end and take care of all the IO coordination between two. Unlike other encoders `transfer` argument is mandatory (because value is encoded to a [MessagePort][] that can only be transferred). Additionally encoder / decoder take item encoder / decoder functions to encode each item of the async iterable.
 

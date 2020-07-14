@@ -18,6 +18,8 @@
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)
+- [Usage](#usage)
+- [Notes on Performance](#notes-on-performance)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -31,7 +33,7 @@ $ npm install --save ipfs-message-port-client
 
 This client library works with IPFS node over the [message channel][] and assumes that IPFS node is provided via `ipfs-message-port-server` on the other end.
 
-It provides following API subseset:
+It provides following API subset:
 
 - [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md)
 - [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
@@ -39,12 +41,16 @@ It provides following API subseset:
 - [`ipfs.cat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfscatipfspath-options)
 - [`ipfs.files.stat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsfilesstatpath-options)
 
-Client can be instantiated from the [`MessagePort`][] instance
+Client can be instantiated from the [`MessagePort`][] instance. Primary goal of
+this library is to allow sharing a node across browsing contexts (tabs, iframes)
+and therefore most likely `ipfs-message-port-server` will be in the separate JS
+bundle and loaded in the [SharedWorker][].
 
 
 ```js
 const IPFSClient = require('ipfs-message-port-client')
-
+// URL to the script containing ipfs-message-port-server.
+const IPFS_SERVER_URL = '/bundle/ipfs-worker.js'
 
 const main = async () => {
   const worker = new SharedWorker(IPFS_SERVER_URL)
@@ -84,7 +90,7 @@ window.onmessage = ({ports}) => {
 }
 ```
 
-### Additional Options
+### Notes on Performance
 
 Since client works with IPFS node over [message channel][] all the data passed
 is copied via [structured cloning algorithm][], which may lead to suboptimal

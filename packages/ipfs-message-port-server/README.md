@@ -19,6 +19,8 @@ applications running in the different JS context to use [IPFS API](https://githu
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)
+- [Usage](#usage)
+- [Notes on Performance](#notes-on-performance)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -34,7 +36,7 @@ This library can wrap JS IPFS node and expose it over the [message channel][].
 It assumes `ipfs-message-port-client` on the other end, however it is not
 strictly necessary anything compling with wire protocol will do.
 
-It provides following API subseset:
+It provides following API subset:
 
 - [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md)
 - [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
@@ -71,7 +73,7 @@ main()
 ```
 
 
-### Additional Consideration
+### Notes on Performance
 
 Since the data over [message channel][] is copied via
 [structured cloning algorithm][] it may lead to suboptimal
