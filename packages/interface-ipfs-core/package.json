@@ -18,12 +18,17 @@
     "test": "exit 0",
     "dep-check": "aegir dep-check"
   },
-  "files": ["src/", "test/"],
+  "files": [
+    "src/",
+    "test/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
-  "keywords": ["IPFS"],
+  "keywords": [
+    "IPFS"
+  ],
   "license": "MIT",
   "dependencies": {
     "abort-controller": "^3.0.0",

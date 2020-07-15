@@ -2,12 +2,17 @@
   "name": "ipfs",
   "version": "0.47.0",
   "description": "JavaScript implementation of the IPFS specification",
-  "keywords": ["IPFS"],
+  "keywords": [
+    "IPFS"
+  ],
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": ["src", "dist"],
+  "files": [
+    "src",
+    "dist"
+  ],
   "main": "src/core/index.js",
   "browser": {
     "./src/core/runtime/init-assets-nodejs.js": "./src/core/runtime/init-assets-browser.js",

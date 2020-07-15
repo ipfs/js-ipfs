@@ -106,9 +106,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.suborigin).to.equal(undefined)
   })
 
-  // Produces intermittent failures
-  // https://github.com/ipfs/js-ipfs/issues/3101
-  it.skip('returns 400 for request with invalid argument', async () => {
+  it('returns 400 for request with invalid argument', async () => {
     const res = await gateway.inject({
       method: 'GET',
       url: '/ipfs/invalid'
