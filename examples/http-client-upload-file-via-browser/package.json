@@ -17,9 +17,10 @@
     "ipfs-http-client": "^44.3.0"
   },
   "devDependencies": {
+    "ipfs": "^0.47.0",
+    "parcel-bundler": "^1.12.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "parcel-bundler": "^1.12.4",
     "test-ipfs-example": "^2.0.3"
   },
   "browserslist": [
