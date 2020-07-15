@@ -29,8 +29,8 @@ This example is a demo web application that allows you to connect to a go-IPFS n
 With Node.js and git installed, clone the repo and install the project dependencies:
 
 ```sh
-git clone https://github.com/ipfs/js-ipfs-http-client.git
-cd js-ipfs-http-client
+git clone https://github.com/ipfs/js-ipfs.git
+cd js-ipfs
 npm install # Installs ipfs-http-client dependencies
 cd examples/browser-ipns-publish
 npm install # Installs browser-pubsub app dependencies
