@@ -290,11 +290,11 @@ const list = await bitswap.wantlist()
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/browser-browserify) to get a boilerplate.
+See the example in the [examples folder](/examples/http-client-browser-browserify) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 

@@ -1,0 +1,29 @@
+{
+  "name": "example-http-client-upload-file-via-browser",
+  "version": "1.0.0",
+  "description": "Upload file to IPFS via browser using js-ipfs-http-client with Webpack",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "parcel build index.html --public-url '.'",
+    "start": "parcel index.html",
+    "test": "test-ipfs-example"
+  },
+  "author": "Harlan T Wood <code@harlantwood.net>",
+  "contributors": [
+    "Victor Bjelkholm <victor@ipfs.io>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ipfs-http-client": "^44.3.0"
+  },
+  "devDependencies": {
+    "ipfs": "^0.47.0",
+    "parcel-bundler": "^1.12.4",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "test-ipfs-example": "^2.0.3"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
+}

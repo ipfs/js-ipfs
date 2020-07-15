@@ -29,7 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^5.6.0",
-    "cids": "^0.8.0",
+    "cids": "^0.8.3",
     "err-code": "^2.0.0",
     "ipfs-utils": "^2.2.2"
   },
