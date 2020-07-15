@@ -7,16 +7,21 @@
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
-- [`ipfs.dag.get(cid, [options])`](#ipfsdaggetcid-path-options)
+- [`ipfs.dag.get(cid, [options])`](#ipfsdaggetcid-options)
   - [Parameters](#parameters-1)
   - [Options](#options-1)
   - [Returns](#returns-1)
   - [Example](#example-1)
-- [`ipfs.dag.tree(cid, [options])`](#ipfsdagtreecid-path-options)
+- [`ipfs.dag.tree(cid, [options])`](#ipfsdagtreecid-options)
   - [Parameters](#parameters-2)
   - [Options](#options-2)
   - [Returns](#returns-2)
   - [Example](#example-2)
+- [`ipfs.dag.resolve(ipfsPath, [options])`](#ipfsdagresolveipfspath-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
 
 _Explore the DAG API through interactive coding challenges in our ProtoSchool tutorials:_
 - _[P2P data links with content addressing](https://proto.school/#/basics/) (beginner)_

@@ -1,6 +1,6 @@
 # IPFS CLI <!-- omit in toc -->
 
-## Table of contents <!-- omit in toc -->
+## Table of contents <!-- omit in toc -->
 
 - [Overview](#overview)
 - [Configuration](#configuration)

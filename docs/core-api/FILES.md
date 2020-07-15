@@ -13,6 +13,7 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Parameters](#parameters-1)
     - [Options](#options-1)
     - [Returns](#returns-1)
+    - [Example](#example)
     - [Notes](#notes)
       - [Chunking options](#chunking-options)
       - [Hash algorithms](#hash-algorithms)
@@ -22,69 +23,75 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Parameters](#parameters-2)
     - [Options](#options-2)
     - [Returns](#returns-2)
-    - [Example](#example)
+    - [Example](#example-1)
   - [`ipfs.get(ipfsPath, [options])`](#ipfsgetipfspath-options)
     - [Parameters](#parameters-3)
     - [Options](#options-3)
     - [Returns](#returns-3)
+    - [Example](#example-2)
   - [`ipfs.ls(ipfsPath)`](#ipfslsipfspath)
     - [Parameters](#parameters-4)
     - [Options](#options-4)
     - [Returns](#returns-4)
-    - [Example](#example-1)
+    - [Example](#example-3)
 - [The Mutable Files API](#the-mutable-files-api)
   - [`ipfs.files.chmod(path, mode, [options])`](#ipfsfileschmodpath-mode-options)
     - [Parameters](#parameters-5)
     - [Options](#options-5)
     - [Returns](#returns-5)
-    - [Example](#example-2)
+    - [Example](#example-4)
   - [`ipfs.files.cp(...from, to, [options])`](#ipfsfilescpfrom-to-options)
     - [Parameters](#parameters-6)
     - [Options](#options-6)
     - [Returns](#returns-6)
-    - [Example](#example-3)
+    - [Example](#example-5)
     - [Notes](#notes-1)
   - [`ipfs.files.mkdir(path, [options])`](#ipfsfilesmkdirpath-options)
     - [Parameters](#parameters-7)
     - [Options](#options-7)
     - [Returns](#returns-7)
-    - [Example](#example-4)
+    - [Example](#example-6)
   - [`ipfs.files.stat(path, [options])`](#ipfsfilesstatpath-options)
     - [Parameters](#parameters-8)
     - [Options](#options-8)
     - [Returns](#returns-8)
-    - [Example](#example-5)
+    - [Example](#example-7)
   - [`ipfs.files.touch(path, [options])`](#ipfsfilestouchpath-options)
     - [Parameters](#parameters-9)
     - [Options](#options-9)
     - [Returns](#returns-9)
-    - [Example](#example-6)
+    - [Example](#example-8)
   - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
     - [Parameters](#parameters-10)
     - [Options](#options-10)
-    - [Example](#example-7)
+    - [Returns](#returns-10)
+    - [Example](#example-9)
   - [`ipfs.files.read(path, [options])`](#ipfsfilesreadpath-options)
     - [Parameters](#parameters-11)
     - [Options](#options-11)
-    - [Returns](#returns-10)
+    - [Returns](#returns-11)
+    - [Example](#example-10)
   - [`ipfs.files.write(path, content, [options])`](#ipfsfileswritepath-content-options)
     - [Parameters](#parameters-12)
     - [Options](#options-12)
-    - [Returns](#returns-11)
+    - [Returns](#returns-12)
+    - [Example](#example-11)
   - [`ipfs.files.mv(...from, to, [options])`](#ipfsfilesmvfrom-to-options)
     - [Parameters](#parameters-13)
     - [Options](#options-13)
-    - [Returns](#returns-12)
-    - [Example](#example-8)
+    - [Returns](#returns-13)
+    - [Example](#example-12)
+    - [Notes](#notes-2)
   - [`ipfs.files.flush(path, [options])`](#ipfsfilesflushpath-options)
     - [Parameters](#parameters-14)
     - [Options](#options-14)
-    - [Returns](#returns-13)
+    - [Returns](#returns-14)
+    - [Example](#example-13)
   - [`ipfs.files.ls(path, [options])`](#ipfsfileslspath-options)
     - [Parameters](#parameters-15)
     - [Options](#options-15)
-    - [Returns](#returns-14)
-    - [Example](#example-9)
+    - [Returns](#returns-15)
+    - [Example](#example-14)
 
 ## The Regular API
 The regular, top-level API for add, cat, get and ls Files on IPFS
@@ -303,7 +310,7 @@ Each yielded object is of the form:
 }
 ```
 
-#### Example
+#### Example
 
 ```js
 const files = [{
@@ -496,7 +503,7 @@ Each yielded object is of the form:
 
 Here, each `path` corresponds to the name of a file, and `content` is an async iterable with the file contents.
 
-#### Example
+#### Example
 
 ```JavaScript
 const BufferList = require('bl/BufferList')
@@ -829,7 +836,7 @@ An optional object which may have the following keys:
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
-#### Returns
+#### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -875,7 +882,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
 
-#### Example
+#### Example
 
 ```JavaScript
 const chunks = []
@@ -925,7 +932,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
-#### Example
+#### Example
 
 ```JavaScript
 await ipfs.files.write('/hello-world', Buffer.from('Hello, world!'))
@@ -971,7 +978,7 @@ await ipfs.files.mv('/src-dir', '/dst-dir')
 await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
 ```
 
-#### Notes
+#### Notes
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -1010,7 +1017,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<CID>` | The CID of the path that has been flushed |
 
-#### Example
+#### Example
 
 ```JavaScript
 const cid = await ipfs.files.flush('/')

@@ -14,7 +14,7 @@
 
 [Alex Potsides](https://github.com/achingbrain)
 
-## Table of Contents <!-- omit in toc -->
+## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)
 - [Contribute](#contribute)
