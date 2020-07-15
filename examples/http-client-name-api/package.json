@@ -1,0 +1,27 @@
+{
+  "name": "example-http-client-name-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "parcel build index.html --public-url '.'",
+    "start": "parcel index.html -p 8888",
+    "test": "test-ipfs-example"
+  },
+  "author": "Tara Vancil <tbvanc@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ipfs-http-client": "^44.3.0"
+  },
+  "devDependencies": {
+    "execa": "^4.0.0",
+    "go-ipfs": "^0.6.0",
+    "ipfsd-ctl": "^4.1.1",
+    "parcel-bundler": "^1.12.4",
+    "test-ipfs-example": "^2.0.3"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
+}
