@@ -9,7 +9,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
 > A library for providing IPFS node over [message channel][]. This library enables
-applications running in the different JS context to use [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) (subset) via `ipfs-message-port-client`.
+applications running in the different JS context to use [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) (subset) via `ipfs-message-port-client`.
 
 
 ## Lead Maintainer <!-- omit in toc -->
@@ -46,7 +46,7 @@ It provides following API subset:
 
 Server is designed to run in the [SharedWorker][] (although it is possible to
 run it in the other JS contexts). Example below illustrates running js-ipfs
-node in [SharedWorkr][] and exposing it to all connected ports
+node in [SharedWorker][] and exposing it to all connected ports
 
 ```js
 const IPFS = require('ipfs')
@@ -102,4 +102,3 @@ Check out our [contributing document](https://github.com/ipfs/community/blob/mas
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
-

@@ -8,7 +8,7 @@
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?path=packages/ipfs-message-port-client)](https://david-dm.org/ipfs/js-ipfs?path=packages/ipfs-message-port-client)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
-> A client library for the IPFS API over [message channel][]. This client library provides (subset) of [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) enabling applications to work with js-ipfs running in the different JS e.g. [SharedWorker][].
+> A client library for the IPFS API over [message channel][]. This client library provides (subset) of [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to work with js-ipfs running in the different JS e.g. [SharedWorker][].
 
 
 ## Lead Maintainer <!-- omit in toc -->
@@ -144,4 +144,3 @@ Check out our [contributing document](https://github.com/ipfs/community/blob/mas
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
-
