@@ -41,6 +41,7 @@
   - [Options](#options-7)
   - [Returns](#returns-7)
   - [Example](#example-7)
+  - [Notes](#notes-1)
 - [`ipfs.object.patch.appendData(cid, data, [options])`](#ipfsobjectpatchappenddatacid-data-options)
   - [Parameters](#parameters-8)
   - [Options](#options-8)
@@ -405,7 +406,7 @@ const cid = await ipfs.object.patch.rmLink(node, {
 
 A great source of [examples][] can be found in the tests for this API.
 
-### Notes
+### Notes
 
 `link` is the link to be removed on the node that is identified by the `multihash`, can be passed as:
 
