@@ -72,9 +72,6 @@ async function runTest () {
 module.exports = runTest
 
 module.exports[pkg.name] = function (browser) {
-  let local = {}
-  let remote = {}
-
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)
     .waitForElementVisible('#connect-input')
