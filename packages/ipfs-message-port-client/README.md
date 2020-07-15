@@ -116,7 +116,7 @@ const example = async (data) => {
 
 It is however recommended to prefer web native [Blob][] / [File][] intances as
 most web APIs provide them as option & can be send across without copying
-underyling memory.
+underlying memory.
 
 ```js
 const example = async (url) => {
