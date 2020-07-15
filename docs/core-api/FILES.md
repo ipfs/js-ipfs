@@ -311,7 +311,7 @@ const files = [{
   content: 'ABC'
 }]
 
-for await (const result of ipfs.add(content)) {
+for await (const result of ipfs.addAll(content)) {
   console.log(result)
 }
 
@@ -376,7 +376,7 @@ const addOptions = {
   timeout: 10000
 };
 
-for await (const file of ipfs.add(globSource('./docs', globSourceOptions), addOptions)) {
+for await (const file of ipfs.addAll(globSource('./docs', globSourceOptions), addOptions)) {
   console.log(file)
 }
 
@@ -405,9 +405,8 @@ const { urlSource } = IPFS
 
 const ipfs = await IPFS.create()
 
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
 
 /*
 {

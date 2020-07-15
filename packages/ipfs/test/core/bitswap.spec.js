@@ -72,7 +72,7 @@ describe('bitswap', function () {
 
       const file = await remote.add({ path: 'awesome.txt', content })
       const data = await concat(proc.cat(file.cid))
-      expect(data.slice()).to.eql(file)
+      expect(data.slice()).to.eql(content)
       await df.clean()
     })
   })
