@@ -94,7 +94,7 @@ window.onmessage = ({ports}) => {
 
 Since client works with IPFS node over [message channel][] all the data passed
 is copied via [structured cloning algorithm][], which may lead to suboptimal
-results (espacially with large binary data). In order to avoid unecessary
+results (especially with large binary data). In order to avoid unnecessary
 copying all API options have being extended with optional `transfer` property
 that can be supplied [Transferable][]s which will be used to move corresponding
 values instead of copying.
