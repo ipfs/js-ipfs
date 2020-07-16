@@ -76,7 +76,7 @@ module.exports = {
           }
         }, {
           go: {
-            ipfsBin: require('go-ipfs-dep').path()
+            ipfsBin: require('go-ipfs').path()
           }
         }).start()
 
