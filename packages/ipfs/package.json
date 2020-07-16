@@ -105,7 +105,7 @@
     "ipld-bitcoin": "^0.3.0",
     "ipld-block": "^0.9.1",
     "ipld-dag-cbor": "^0.15.2",
-    "ipld-dag-pb": "^0.18.5",
+    "ipld-dag-pb": "^0.19.0",
     "ipld-ethereum": "^4.0.0",
     "ipld-git": "^0.5.0",
     "ipld-raw": "^5.0.0",
