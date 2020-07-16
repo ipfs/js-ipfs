@@ -12,7 +12,7 @@
   "devDependencies": {
     "ipfs": "^0.47.0",
     "ipfs-http-client": "^44.3.0",
-    "ipfsd-ctl": "^4.1.1",
+    "ipfsd-ctl": "^5.0.0",
     "test-ipfs-example": "^2.0.3"
   }
 }
