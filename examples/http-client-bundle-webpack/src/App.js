@@ -29,25 +29,23 @@ class App extends React.Component {
       protocol_version: id.protocolVersion
     })
 
-    const source = ipfs.add(stringToUse)
-    for await (const file of source) {
-      const hash = file.cid
-      this.setState({ added_file_hash: hash.toString() })
+    const file = await ipfs.add(stringToUse)
+    const hash = file.cid
+    this.setState({ added_file_hash: hash.toString() })
 
-      const source = ipfs.cat(hash)
-      let contents = ''
-      const decoder = new TextDecoder('utf-8')
+    const source = ipfs.cat(hash)
+    let contents = ''
+    const decoder = new TextDecoder('utf-8')
 
-      for await (const chunk of source) {
-        contents += decoder.decode(chunk, {
-          stream: true
-        })
-      }
-
-      contents += decoder.decode()
-
-      this.setState({ added_file_contents: contents })
+    for await (const chunk of source) {
+      contents += decoder.decode(chunk, {
+        stream: true
+      })
     }
+
+    contents += decoder.decode()
+
+    this.setState({ added_file_contents: contents })
   }
 
   render () {
