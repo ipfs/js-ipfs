@@ -46,6 +46,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Documentation
 
+* [Config](./docs/CONFIG.md)
 * [Core API](./docs/core-api)
 * [Examples](./examples)
 * [Development](./docs/DEVELOPMENT.md)
