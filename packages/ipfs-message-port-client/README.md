@@ -94,7 +94,7 @@ window.onmessage = ({ports}) => {
 
 Since client works with IPFS node over [message channel][] all the data passed
 is copied via [structured cloning algorithm][], which may lead to suboptimal
-results (espacially with large binary data). In order to avoid unecessary
+results (especially with large binary data). In order to avoid unnecessary
 copying all API options have being extended with optional `transfer` property
 that can be supplied [Transferable][]s which will be used to move corresponding
 values instead of copying.
@@ -116,7 +116,7 @@ const example = async (data) => {
 
 It is however recommended to prefer web native [Blob][] / [File][] intances as
 most web APIs provide them as option & can be send across without copying
-underyling memory.
+underlying memory.
 
 ```js
 const example = async (url) => {
