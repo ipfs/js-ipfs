@@ -9,9 +9,7 @@
       "hoist": true,
       "nohoist": [
         "libp2p-delegated-content-routing",
-        "libp2p-delegated-peer-routing",
-        "ipfs-css",
-        "tachyons"
+        "libp2p-delegated-peer-routing"
       ]
     },
     "run": {

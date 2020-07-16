@@ -3,7 +3,6 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const all = require('it-all')
 const { Buffer } = require('buffer')
 const f = require('./utils/factory')()
 
@@ -21,7 +20,7 @@ describe('.log', function () {
   it('.log.tail', async () => {
     const i = setInterval(async () => {
       try {
-        await all(ipfs.add(Buffer.from('just adding some data to generate logs')))
+        await ipfs.add(Buffer.from('just adding some data to generate logs'))
       } catch (_) {
         // this can error if the test has finished and we're shutting down the node
       }

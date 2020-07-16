@@ -388,7 +388,7 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 const IPFS = require('ipfs')
 const { globSource } = IPFS
 const ipfs = await IPFS.create()
-for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
+for await (const file of ipfs.addAll(globSource('./docs', { recursive: true }))) {
   console.log(file)
 }
 /*
@@ -422,9 +422,10 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 const IPFS = require('ipfs')
 const { urlSource } = IPFS
 const ipfs = await IPFS.create()
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
+
 /*
 {
   path: 'ipfs-logo.svg',

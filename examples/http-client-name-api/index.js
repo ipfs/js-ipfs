@@ -65,13 +65,12 @@ const addAndPublish = async (e) => {
 
   showStatus('Adding to IPFS...', COLORS.active)
   try {
-    for await (const file of ipfs.add(buffer)) {
-      showStatus('Success!', COLORS.success)
+    const file = await ipfs.add(buffer)
+    showStatus('Success!', COLORS.success)
 
-      publish(file.path)
+    publish(file.path)
 
-      input.value = ''
-    }
+    input.value = ''
   } catch (err) {
     showStatus('Failed to add the data', COLORS.error)
     console.error(err)

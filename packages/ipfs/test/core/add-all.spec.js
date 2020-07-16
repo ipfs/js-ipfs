@@ -3,9 +3,9 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const utils = require('../../src/core/components/add/utils')
+const utils = require('../../src/core/components/add-all/utils')
 
-describe('add/utils', () => {
+describe('add-all/utils', () => {
   describe('parseChunkerString', () => {
     it('handles an empty string', () => {
       const options = utils.parseChunkerString('')

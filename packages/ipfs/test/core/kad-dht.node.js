@@ -4,7 +4,6 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
-const all = require('it-all')
 const { Buffer } = require('buffer')
 const concat = require('it-concat')
 
@@ -60,8 +59,8 @@ describe.skip('kad-dht is routing content and peers correctly', () => {
       content: Buffer.from('hello kad 1')
     }
 
-    const filesAdded = await all(nodeB.add(file))
-    const data = await concat(nodeA.cat(filesAdded[0].cid))
+    const fileAdded = await nodeB.add(file)
+    const data = await concat(nodeA.cat(fileAdded.cid))
 
     expect(data.slice()).to.eql(file.content)
   })
@@ -73,8 +72,8 @@ describe.skip('kad-dht is routing content and peers correctly', () => {
       content: Buffer.from('hello kad 2')
     }
 
-    const filesAdded = await all(nodeC.add(file))
-    const data = await concat(nodeA.cat(filesAdded[0].cid))
+    const fileAdded = await nodeC.add(file)
+    const data = await concat(nodeA.cat(fileAdded.cid))
 
     expect(data.slice()).to.eql(file.content)
   })

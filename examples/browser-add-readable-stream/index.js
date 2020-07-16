@@ -52,13 +52,13 @@ const streamFiles = async (ipfs, directory, files) => {
     }
   })
 
-  for await (const data of ipfs.add(stream)) {
-    log(`Added ${data.path} hash: ${data.hash}`)
+  const data = await ipfs.add(stream)
 
-    // The last data event will contain the directory hash
-    if (data.path === directory) {
-      return data.cid
-    }
+  log(`Added ${data.path} hash: ${data.hash}`)
+
+  // The last data event will contain the directory hash
+  if (data.path === directory) {
+    return data.cid
   }
 }
 

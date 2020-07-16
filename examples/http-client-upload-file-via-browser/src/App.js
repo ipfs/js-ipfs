@@ -31,18 +31,16 @@ class App extends React.Component {
 
   // Example #1
   // Add file to IPFS and return a CID
-  async saveToIpfs (files) {
-    const source = this.state.ipfs.add(
-      [...files],
-      {
-        progress: (prog) => console.log(`received: ${prog}`)
-      }
-    )
+  async saveToIpfs ([ file ]) {
     try {
-      for await (const file of source) {
-        console.log(file)
-        this.setState({ added_file_hash: file.path })
-      }
+      const added = await this.state.ipfs.add(
+        file,
+        {
+          progress: (prog) => console.log(`received: ${prog}`)
+        }
+      )
+      console.log(added)
+      this.setState({ added_file_hash: added.cid.toString() })
     } catch (err) {
       console.error(err)
     }
@@ -50,8 +48,7 @@ class App extends React.Component {
 
   // Example #2
   // Add file to IPFS and wrap it in a directory to keep the original filename
-  async saveToIpfsWithFilename (files) {
-    const file = [...files][0]
+  async saveToIpfsWithFilename ([ file ]) {
     const fileDetails = {
       path: file.name,
       content: file
@@ -61,12 +58,10 @@ class App extends React.Component {
       progress: (prog) => console.log(`received: ${prog}`)
     }
 
-    const source = this.state.ipfs.add(fileDetails, options)
     try {
-      for await (const file of source) {
-        console.log(file)
-        this.setState({ added_file_hash: file.cid.toString() })
-      }
+      const added = await this.state.ipfs.add(fileDetails, options)
+      console.log(added)
+      this.setState({ added_file_hash: added.cid.toString() })
     } catch (err) {
       console.error(err)
     }

@@ -147,9 +147,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { globSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
-  console.log(file)
-}
+const file = await ipfs.add(globSource('./docs', { recursive: true }))
+console.log(file)
+
 /*
 {
   path: 'docs/assets/anchor.js',
@@ -182,9 +182,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { urlSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
+
 /*
 {
   path: 'ipfs-logo.svg',

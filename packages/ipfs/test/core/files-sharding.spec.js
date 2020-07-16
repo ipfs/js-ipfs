@@ -30,7 +30,7 @@ describe('files directory (sharding tests)', function () {
     after(() => df.clean())
 
     it('should be able to add dir without sharding', async () => {
-      const { path, cid } = await last(ipfs.add(testFiles))
+      const { path, cid } = await last(ipfs.addAll(testFiles))
       expect(path).to.eql('test-folder')
       expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
     })
@@ -50,7 +50,7 @@ describe('files directory (sharding tests)', function () {
     after(() => df.clean())
 
     it('should be able to add dir with sharding', async () => {
-      const { path, cid } = await last(ipfs.add(testFiles))
+      const { path, cid } = await last(ipfs.addAll(testFiles))
       expect(path).to.eql('test-folder')
       expect(cid.toString()).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
     })

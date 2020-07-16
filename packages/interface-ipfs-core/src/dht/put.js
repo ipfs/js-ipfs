@@ -4,7 +4,6 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 const all = require('it-all')
-const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -28,7 +27,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when putting a value into the DHT', async () => {
-      const { cid } = await last(nodeA.add('should respect timeout option when putting a value into the DH'))
+      const { cid } = await nodeA.add('should respect timeout option when putting a value into the DH')
       const publish = await nodeA.name.publish(cid)
       const record = await nodeA.dht.get(`/ipns/${publish.name}`)
 
@@ -38,7 +37,7 @@ module.exports = (common, options) => {
     })
 
     it('should put a value to the DHT', async function () {
-      const { cid } = await last(nodeA.add('should put a value to the DHT'))
+      const { cid } = await nodeA.add('should put a value to the DHT')
       const publish = await nodeA.name.publish(cid)
       const record = await nodeA.dht.get(`/ipns/${publish.name}`)
       const value = await all(nodeA.dht.put(`/ipns/${publish.name}`, record, { verbose: true }))

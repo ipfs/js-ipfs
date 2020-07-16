@@ -9,7 +9,7 @@ const { withTimeoutOption } = require('../../utils')
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
 
-  return withTimeoutOption(async function * add (source, options) {
+  return withTimeoutOption(async function * addAll (source, options) {
     options = options || {}
 
     const opts = {

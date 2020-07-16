@@ -3,7 +3,6 @@
 
 const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
-const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
@@ -36,7 +35,7 @@ module.exports = (common, options) => {
       })).api
     })
 
-    before(async () => { await all(ipfs.add(fixtures.smallFile.data)) })
+    before(async () => { await ipfs.add(fixtures.smallFile.data) })
 
     after(() => common.clean())
 

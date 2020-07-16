@@ -79,5 +79,23 @@ module.exports[pkg.name] = function (browser) {
 
   browser.expect.element('#gateway-link').text.to.contain('QmWGmeq2kxsXqhrPhtTEhvck6PXucPf5153PSpZZRxvTwT')
 
+  browser
+    .url(process.env.IPFS_EXAMPLE_TEST_URL)
+    .waitForElementVisible('#connect-input')
+    .clearValue('#connect-input')
+    .setValue('#connect-input', process.env.IPFS_API_MULTIADDR)
+    .pause(1000)
+    .click('#connect-submit')
+
+  // upload file with file name
+  browser
+    .waitForElementVisible('#capture-media')
+    .click('#keep-filename')
+    .pause(1000)
+    .setValue('#input-file', require('path').resolve(__dirname + '/screenshot.png'))
+    .pause(1000)
+
+  browser.expect.element('#gateway-link').text.to.contain('QmPJw5AYXfbqYXRX51zmdm7itSdt5tAWfGLSehwAhizLqp')
+
   browser.end()
 }
