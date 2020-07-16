@@ -50,8 +50,7 @@ node in [SharedWorker][] and exposing it to all connected ports
 
 ```js
 const IPFS = require('ipfs')
-const { IPFSService } = require('ipfs-message-port-server')
-const { Server } = require('ipfs-message-port-server/src/server')
+const { IPFSService, Server } = require('ipfs-message-port-server')
 
 const main = async () => {
   const connections = []

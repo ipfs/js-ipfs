@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "../test-ipfs-example",
+    "../../packages/*",
+    "."
+  ],
+  "version": "independent"
+}
