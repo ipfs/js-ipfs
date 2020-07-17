@@ -5,17 +5,20 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "test": "test-ipfs-example"
   },
   "author": "Doug Anderson",
   "license": "MIT",
   "dependencies": {
-    "ipfs": "file:../packages/ipfs",
-    "ipfs-http-client": "file:../packages/ipfs-http-client",
-    "p-retry": "^4.2.0",
-    "it-last": "^1.0.2",
     "base64url": "^3.0.1",
-    "human-crypto-keys": "^0.1.4"
+    "human-crypto-keys": "^0.1.4",
+    "ipfs": "file:../../packages/ipfs/",
+    "ipfs-http-client": "file:../../packages/ipfs-http-client/",
+    "ipfs-utils": "^2.3.1",
+    "ipns": "^0.7.3",
+    "it-last": "^1.0.2",
+    "p-retry": "^4.2.0"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"
