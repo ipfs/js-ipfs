@@ -34,7 +34,7 @@
             <p>
               Code repo for this demo
               <a
-                href="https://github.com/DougAnderson444/js-ipfs/tree/master/packages/ipfs-http-client/examples"
+                href="https://github.com/js-ipfs/examples/browser-ipns-publish/"
                 >on Github</a
               >
             </p>
@@ -43,7 +43,8 @@
               private keys, but publish to go-ipfs to benefit from the DHT.
               Since the DHT in js-ipfs isn't working yet, we need to use PubSub
               and have a go-ipfs node subscribed to that PubSub to get our IPNS
-              record onto the DHT.
+              record onto the DHT. In order to use PubSub between these two
+              nodes, you'll need a websocket to connect them.
             </p>
             <div>
               To make this demo work, you're going to need:
@@ -141,23 +142,26 @@
       <form>
         <ul style="list-style-type: none;">
           <li>
-            <input
-              type="radio"
-              id="male"
-              name="keyName"
-              value="self"
-              checked
-            />
-            <label for="male">Self (default)</label><br />
+            <input type="radio" id="male" name="keyName" value="self" checked />
+            <label for="male"
+              >Self (the
+              <a
+                href="https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/KEY.md#ipfskeylistoptions"
+                target="_blank"
+                >PeerId of the runing node</a
+              >)</label
+            ><br />
           </li>
           <li>
-            <input
-              type="radio"
-              id="female"
-              name="keyName"
-              value="custom-key"
-            />
-            <label for="female">Custom</label><br />
+            <input type="radio" id="female" name="keyName" value="custom-key" />
+            <label for="female"
+              >Custom Key (<a
+                href="https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/KEY.md#ipfskeyimportname-pem-password-options"
+                target="_blank"
+                >imported</a
+              >
+              onto the keychain) [waiting for <a href="https://github.com/ipfs/go-ipfs/issues/6360">#6360</a> to work]</label
+            ><br />
           </li>
         </ul>
       </form>

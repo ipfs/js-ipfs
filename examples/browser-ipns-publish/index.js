@@ -9,7 +9,7 @@ const last = require("it-last");
 const cryptoKeys = require("human-crypto-keys"); // { getKeyPairFromSeed }
 
 const { sleep, Logger, onEnterPress, catchAndLog } = require("./util");
-const { Date } = require("ipfs-utils/src/globalthis");
+const { Date, Element } = require("ipfs-utils/src/globalthis");
 
 async function main() {
   const apiUrlInput = document.getElementById("api-url");
@@ -36,7 +36,10 @@ async function main() {
 
   // init local browser node right away
   log(`Browser IPFS getting ready...`);
-  ipfsBrowser = await IPFS.create({ pass: "01234567890123456789", EXPERIMENTAL: { ipnsPubsub: true } });
+  ipfsBrowser = await IPFS.create({
+    pass: "01234567890123456789",
+    EXPERIMENTAL: { ipnsPubsub: true },
+  });
   const { id } = await ipfsBrowser.id();
   log(`Browser IPFS ready! Node id: ${id}`);
 
@@ -112,7 +115,7 @@ async function main() {
         let regex = "/record/";
         if (topic.match(regex) ? topic.match(regex).length > 0 : false) {
           tLog(
-            "#" +
+            "\n#" +
               ipns.unmarshal(msg.data).sequence.toString() +
               ") Topic: " +
               msg.topicIDs[0].toString()
@@ -168,22 +171,40 @@ async function main() {
   async function publish(content) {
     if (!content) throw new Error("Missing ipns content to publish");
     if (!ipfsAPI) throw new Error("Connect to a go-server node first");
-    if (!ipfsAPI.name.pubsub.state())
+    if (!ipfsAPI.name.pubsub.state() || !ipfsBrowser.name.pubsub.state())
       throw new Error(
         "IPNS Pubsub must be enabled on bother peers, use --enable-namesys-pubsub"
       );
 
+    log(`Publish to IPNS`); // subscribes the server to our IPNS topic
+
     let browserNode = await ipfsBrowser.id();
     let serverNode = await ipfsAPI.id();
 
-    let b58 = await IPFS.multihash.fromB58String(browserNode.id);
-    const keys = ipns.getIdKeys(b58);
-    const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`;
+    // get which key this will be publish under, self or an imported custom key
+    keyName = document.querySelector('input[name="keyName"]:checked').value;
+    let keys = { name: "self", id: browserNode.id }; // default init
 
-    log(`Initial Resolve ${browserNode.id}`); // subscribes the server to our IPNS topics
-    last(ipfsAPI.name.resolve(browserNode.id, { stream: false })); // save the pubsub topic to the server to make them listen
+    if (keyName != "self") {
+      if (!(await ipfsBrowser.key.list()).find((k) => k.name == keyName))
+        // skip if custom key exists already
+        await createKey(keyName);
+      let r = await ipfsBrowser.key.list();
+      keys = r.find((k) => k.name == keyName);
+      log(JSON.stringify(keys));
+    }
+
+    log(`Initial Resolve ${keys.id}`); // subscribes the server to our IPNS topic
+    last(ipfsAPI.name.resolve(keys.id, { stream: false })); // save the pubsub topic to the server to make them listen
 
     await sleep(1000); // give it a moment to save it
+
+    // set up the topic from ipns key
+    let b58 = await IPFS.multihash.fromB58String(keys.id);
+    const ipnsKeys = ipns.getIdKeys(b58);
+    const topic = `${namespace}${base64url.encode(
+      ipnsKeys.routingKey.toBuffer()
+    )}`;
 
     // subscribe and log on both nodes
     await subs(ipfsBrowser, topic, log); // browserLog
@@ -196,47 +217,43 @@ async function main() {
     await sleep(2500); // give it a moment to save it
 
     let remList = await ipfsAPI.pubsub.ls(); // API
-    if (!remList.includes(topic)) sLog(`[Fail] !Pubsub.ls ${topic}`);
+    if (!remList.includes(topic)) sLog(`<span class="red">[Fail] !Pubsub.ls ${topic}</span>`);
     else sLog(`[Pass] Pubsub.ls`);
 
     let remListSubs = await ipfsAPI.name.pubsub.subs(); // API
-    if (!remListSubs.includes(`/ipns/${browserNode.id}`))
-      sLog(`[Fail] !Name.Pubsub.subs ${browserNode.id}`);
+    if (!remListSubs.includes(`/ipns/${keys.id}`))
+      sLog(`<span class="red">[Fail] !Name.Pubsub.subs ${keys.id}</span>`);
     else sLog(`[Pass] Name.Pubsub.subs`);
 
-    keyName = document.querySelector('input[name="keyName"]:checked').value;
-    if (keyName != "self") {
-      await createKey(keyName);
-      let keys = await ipfsBrowser.key.list()
-      log(JSON.stringify(keys));
-    }
-
     // publish will send a pubsub msg to the server to update their ipns record
-    log(`Publishing ${content} to ${keyName}...`);
+    log(`Publishing ${content} to ${keys.name} /ipns/${keys.id}`);
     const results = await ipfsBrowser.name.publish(content, {
       resolve: false,
       key: keyName,
     });
-    log(`Published`); //  ${results.name} to ${results.value}
+    log(`Published ${results.name} to ${results.value}`); //
 
-    log(`Wait 5 seconds, then resolve...`);
-    await sleep(5000);
+    log(`Wait 45 seconds, then resolve...`);
+    await sleep(45000);
 
-    log(
-      `Try to resolve ${browserNode.id} on server through API to confirm published`
-    );
+    log(`Try resolve ${keys.id} on server through API`);
 
     let name = await last(
-      ipfsAPI.name.resolve(browserNode.id, {
+      ipfsAPI.name.resolve(keys.id, {
         stream: false,
       })
     );
     log(`Resolved: ${name}`);
-    if (name == content)
+    if (name == content) {
       log(`<span class="green">IPNS Publish Success!</span>`);
-    log(
-      `<span class="green">Look at that! /ipns/${browserNode.id} resolves to ${content}</span>`
-    );
+      log(
+        `<span class="green">Look at that! /ipns/${keys.id} resolves to ${content}</span>`
+      );
+    } else {
+      log(
+        `<span class="red">Error, resolve did not match ${name} !== ${content}</span>`
+      );
+    }
   }
 
   const onNodeConnectClick = catchAndLog(
@@ -257,7 +274,6 @@ async function main() {
   const onPublishClick = catchAndLog(() => publish(ipnsInput.value), log);
   ipnsInput.addEventListener("keydown", onEnterPress(onPublishClick));
   publishBtn.addEventListener("click", onPublishClick);
-
 }
 
 main();
