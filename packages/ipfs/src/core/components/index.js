@@ -1,6 +1,7 @@
 'use strict'
 
 exports.add = require('./add')
+exports.addAll = require('./add-all')
 exports.block = {
   get: require('./block/get'),
   put: require('./block/put'),

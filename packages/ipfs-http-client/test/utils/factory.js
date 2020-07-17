@@ -13,7 +13,7 @@ const commonOptions = {
 
 const commonOverrides = {
   go: {
-    ipfsBin: isNode ? require('go-ipfs-dep').path() : undefined
+    ipfsBin: isNode ? require('go-ipfs').path() : undefined
   }
 }
 

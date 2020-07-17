@@ -8,7 +8,7 @@ const last = require('it-last')
 module.exports = async (ipfs, files = 1001) => {
   const dirPath = `/sharded-dir-${Math.random()}`
 
-  const result = await last(ipfs.add(function * () {
+  const result = await last(ipfs.addAll(function * () {
     for (let i = 0; i < files; i++) {
       yield {
         path: `${dirPath}/file-${i}`,

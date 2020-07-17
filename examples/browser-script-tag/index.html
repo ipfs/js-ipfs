@@ -31,9 +31,8 @@
 
   <code style="display:block; white-space:pre-wrap; background-color:#d7d6d6">
     async function addFile () {
-      for await (const { cid } of node.add('Hello world!')) {
-        console.log('successfully stored', cid)
-      }
+      const { cid } = await node.add('Hello world!'))
+      console.log('successfully stored', cid)
     }
 
     addFile()

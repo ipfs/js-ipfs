@@ -5,7 +5,6 @@ const { Buffer } = require('buffer')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const CID = require('cids')
-const all = require('it-all')
 const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -31,7 +30,7 @@ module.exports = (common, options) => {
     it('should resolve a record default options', async function () {
       this.timeout(20 * 1000)
 
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record default options')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record default options'))
       const { id: keyId } = await ipfs.key.gen('key-name-default', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
@@ -43,7 +42,7 @@ module.exports = (common, options) => {
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
       this.timeout(20 * 1000)
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record from cidv1b32')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
       await ipfs.name.publish(path, { allowOffline: true })
 
@@ -56,7 +55,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record recursive === false', async () => {
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive === false')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive === false'))
       await ipfs.name.publish(path, { allowOffline: true })
       expect(await last(ipfs.name.resolve(`/ipns/${nodeId}`, { recursive: false })))
         .to.eq(`/ipfs/${path}`)
@@ -65,7 +64,7 @@ module.exports = (common, options) => {
     it('should resolve a record recursive === true', async function () {
       this.timeout(20 * 1000)
 
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive === true')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
@@ -78,7 +77,7 @@ module.exports = (common, options) => {
     it('should resolve a record default options with remainder', async function () {
       this.timeout(20 * 1000)
 
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record default options with remainder')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record default options with remainder'))
       const { id: keyId } = await ipfs.key.gen('key-name-remainder-default', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
@@ -89,7 +88,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record recursive === false with remainder', async () => {
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive = false with remainder')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive = false with remainder'))
       await ipfs.name.publish(path, { allowOffline: true })
       expect(await last(ipfs.name.resolve(`/ipns/${nodeId}/remainder/file.txt`, { recursive: false })))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
@@ -98,7 +97,7 @@ module.exports = (common, options) => {
     it('should resolve a record recursive === true with remainder', async function () {
       this.timeout(20 * 1000)
 
-      const [{ path }] = await all(ipfs.add(Buffer.from('should resolve a record recursive = true with remainder')))
+      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive = true with remainder'))
       const { id: keyId } = await ipfs.key.gen('key-name-remainder', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
@@ -116,7 +115,7 @@ module.exports = (common, options) => {
       }
 
       // we add new data instead of re-using fixture to make sure lifetime handling doesn't break
-      const [{ path }] = await all(ipfs.add(Buffer.from('should not get the entry if its validity time expired')))
+      const { path } = await ipfs.add(Buffer.from('should not get the entry if its validity time expired'))
       await ipfs.name.publish(path, publishOptions)
       await delay(500)
       // go only has 1 possible error https://github.com/ipfs/go-ipfs/blob/master/namesys/interface.go#L51

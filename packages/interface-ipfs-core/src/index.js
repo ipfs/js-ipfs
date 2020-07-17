@@ -4,6 +4,7 @@ const { createSuite } = require('./utils/suite')
 
 exports.root = createSuite({
   add: require('./add'),
+  addAll: require('./add-all'),
   cat: require('./cat'),
   get: require('./get'),
   ls: require('./ls'),

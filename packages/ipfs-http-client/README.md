@@ -147,9 +147,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { globSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
-  console.log(file)
-}
+const file = await ipfs.add(globSource('./docs', { recursive: true }))
+console.log(file)
+
 /*
 {
   path: 'docs/assets/anchor.js',
@@ -182,9 +182,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { urlSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
+
 /*
 {
   path: 'ipfs-logo.svg',
@@ -290,11 +290,11 @@ const list = await bitswap.wantlist()
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/browser-browserify) to get a boilerplate.
+See the example in the [examples folder](/examples/http-client-browser-browserify) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
