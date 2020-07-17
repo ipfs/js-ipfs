@@ -24,7 +24,14 @@
     "last 2 versions and not dead and > 2%"
   ],
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "delay": "^4.3.0",
+    "execa": "^4.0.0",
+    "fs-extra": "^9.0.1",
+    "ipfsd-ctl": "^5.0.0",
+    "os": "^0.1.1",
+    "parcel-bundler": "^1.12.4",
+    "path": "^0.12.7",
+    "test-ipfs-example": "file:../test-ipfs-example/"
   },
   "repository": {
     "type": "git",
