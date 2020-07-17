@@ -5,7 +5,8 @@
 
 const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { DAGNode } = require('ipld-dag-pb')
+const ipldDagPb = require('ipld-dag-pb')
+const { DAGNode } = ipldDagPb
 const CID = require('cids')
 const f = require('./utils/factory')()
 const ipfsHttpClient = require('../src')
@@ -66,7 +67,7 @@ describe('.dag', function () {
       cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })
 
-    await expect(ipfs.dag.get(block.cid)).to.be.rejectedWith('Missing IPLD format "git-raw"')
+    await expect(ipfs.dag.get(block.cid)).to.eventually.be.rejectedWith('Missing IPLD format "git-raw"')
   })
 
   it('should error when putting node with esoteric format', () => {
@@ -97,5 +98,33 @@ describe('.dag', function () {
     await expect(ipfs2.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/no parser for format "git-raw"/)
 
     expect(askedToLoadFormat).to.be.true()
+  })
+
+  it('should allow formats to be specified without overwriting others', async () => {
+    const ipfs2 = ipfsHttpClient({
+      url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
+      ipld: {
+        formats: [
+          ipldDagPb
+        ]
+      }
+    })
+
+    const dagCborNode = {
+      hello: 'world'
+    }
+    const cid1 = await ipfs2.dag.put(dagCborNode, {
+      format: 'dag-cbor',
+      hashAlg: 'sha2-256'
+    })
+
+    const dagPbNode = new DAGNode(Buffer.alloc(0), [], 0)
+    const cid2 = await ipfs2.dag.put(dagPbNode, {
+      format: 'dag-pb',
+      hashAlg: 'sha2-256'
+    })
+
+    await expect(ipfs2.dag.get(cid1)).to.eventually.have.property('value').that.deep.equals(dagCborNode)
+    await expect(ipfs2.dag.get(cid2)).to.eventually.have.property('value').that.deep.equals(dagPbNode)
   })
 })

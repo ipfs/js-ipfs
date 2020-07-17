@@ -4,7 +4,7 @@
 const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 const byteman = require('byteman')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const {
   createProgressBar,
@@ -13,7 +13,7 @@ const {
 } = require('../utils')
 const { cidToString } = require('../../utils/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
@@ -90,7 +90,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: multibase.names
+      choices: Object.keys(multibase.names)
     },
     hash: {
       type: 'string',
@@ -259,7 +259,7 @@ module.exports = {
     let finalCid
 
     try {
-      for await (const added of ipfs.add(source, options)) {
+      for await (const added of ipfs.addAll(source, options)) {
         if (silent) {
           continue
         }

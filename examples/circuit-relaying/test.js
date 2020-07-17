@@ -37,7 +37,7 @@ async function testUI (url, relayAddr, relayId, localPeerIdFile, remotePeerIdFil
 }
 
 async function runTest () {
-  const ipfsd = await df.spawn({
+  const relay = await df.spawn({
     type: 'proc',
     test: true,
     ipfsOptions: {
@@ -56,11 +56,11 @@ async function runTest () {
       }
     }
   })
-  const server1 = await startServer(__dirname)
-  const server2 = await startServer(__dirname)
+  const app1 = await startServer(__dirname)
+  const app2 = await startServer(__dirname)
 
   try {
-    const id = await ipfsd.api.id()
+    const id = await relay.api.id()
     const address = id.addresses
       .map(ma => ma.toString())
       .find(addr => addr.includes('/ws/p2p/Qm'))
@@ -73,21 +73,21 @@ async function runTest () {
     const peerB = path.join(os.tmpdir(), `test-${Date.now()}-b.txt`)
 
     await Promise.all([
-      testUI(server1.url, id.addresses[0], id.id, peerA, peerB),
-      testUI(server2.url, id.addresses[0], id.id, peerB, peerA)
+      testUI(app1.url, id.addresses[0], id.id, peerA, peerB),
+      testUI(app2.url, id.addresses[0], id.id, peerB, peerA)
     ])
   } finally {
-    await ipfsd.stop()
-    await server1.stop()
-    await server2.stop()
+    await relay.stop()
+    await app1.stop()
+    await app2.stop()
   }
 }
 
 module.exports = runTest
 
 module.exports[pkg.name] = function (browser) {
-  let local = null
-  let remote = null
+  let local = {}
+  let remote = {}
 
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)
@@ -101,18 +101,12 @@ module.exports[pkg.name] = function (browser) {
   browser.expect.element('#peer-id').text.to.not.equal('')
 
   // exchange peer info
-  browser.getText('#addrs', (result) => {
-    local = {
-      addr: result.value.trim()
-    }
-    console.info(`got local circuit relay address ${local.addr}`) // eslint-disable-line no-console
-  })
-    .getText('#peer-id', (result) => {
+  browser.getText('#peer-id', (result) => {
       local.id = result.value.trim()
       console.info(`got local peer id ${local.id}`) // eslint-disable-line no-console
     })
     .perform(async (browser, done) => {
-      console.info(`writing local data ${local.addr}`) // eslint-disable-line no-console
+      console.info(`writing local data ${local.id}`) // eslint-disable-line no-console
       await fs.writeJson(process.env.IPFS_LOCAL_PEER_ID_FILE, local)
 
       console.info('reading remote circuit relay address') // eslint-disable-line no-console
@@ -122,11 +116,11 @@ module.exports[pkg.name] = function (browser) {
             encoding: 'utf8'
           })
 
-          if (!remote || !remote.addr || !remote.id) {
+          if (!remote || !remote.id) {
             throw new Error('Remote circuit relay address was empty')
           }
 
-          console.info(`got remote circuit relay address ${remote.addr}`) // eslint-disable-line no-console
+          console.info(`got remote circuit relay address ${remote.id}`) // eslint-disable-line no-console
           done()
 
           break
@@ -137,11 +131,13 @@ module.exports[pkg.name] = function (browser) {
         await delay(1000)
       }
 
-      console.info(`connecting to remote peer ${remote.addr}`) // eslint-disable-line no-console
+      const relayAddr = `${process.env.IPFS_RELAY_ADDRESS}/p2p-circuit/p2p/${remote.id}`
+
+      console.info(`connecting to remote peer ${relayAddr}`) // eslint-disable-line no-console
 
       browser
         .clearValue('#peer')
-        .setValue('#peer', remote.addr)
+        .setValue('#peer', relayAddr)
         .pause(1000)
         .click('#connect')
 

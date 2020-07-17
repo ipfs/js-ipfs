@@ -2,7 +2,7 @@
 
 const mafmt = require('mafmt')
 const multiaddr = require('multiaddr')
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'peers',
@@ -26,12 +26,13 @@ module.exports = {
     })
 
     result.forEach((item) => {
-      let ma = multiaddr(item.addr.toString())
+      let ma = multiaddr(`${item.addr}`)
+
       if (!mafmt.IPFS.matches(ma)) {
-        ma = ma.encapsulate('/ipfs/' + item.peer.toB58String())
+        ma = ma.encapsulate(`/ipfs/${item.peer}`)
       }
-      const addr = ma.toString()
-      print(addr)
+
+      print(`${ma}`)
     })
   }
 }

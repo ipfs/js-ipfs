@@ -19,7 +19,8 @@ const defaultOptions = {
   shardSplitThreshold: 1000,
   flush: true,
   mode: null,
-  mtime: null
+  mtime: null,
+  signal: undefined
 }
 
 module.exports = (context) => {
@@ -52,7 +53,7 @@ module.exports = (context) => {
       throw errCode(new Error("path cannot have the prefix 'ipfs'"), 'ERR_INVALID_PATH')
     }
 
-    const root = await withMfsRoot(context)
+    const root = await withMfsRoot(context, options)
     let parent
     const trail = []
     const emptyDir = await createNode(context, 'directory', options)
@@ -100,7 +101,7 @@ module.exports = (context) => {
     const newRootCid = await updateTree(context, trail, options)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid)
+    await updateMfsRoot(context, newRootCid, options)
   })
 }
 

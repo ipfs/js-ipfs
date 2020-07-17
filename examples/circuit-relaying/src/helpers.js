@@ -66,44 +66,7 @@ module.exports = (ipfs, peersSet) => {
 
   const updateAddrs = async (ipfs) => {
     const info = await ipfs.id()
-
-    // see which peers support the circuit relay protocol
     const relayAddrs = []
-    const connections = ipfs.libp2p.connections
-    const peers = await ipfs.swarm.peers()
-
-    for (let i = 0; i < peers.length; i++) {
-      const {
-        peer: peerId
-      } = peers[i]
-
-      const cons = connections.get(peerId)
-
-      for (let j = 0; j < cons.length; j++) {
-        const con = cons[j]
-        const remoteAddr = con.remoteAddr.toString()
-
-        for (let k = 0; k < 5; k++) {
-          // protocols is undefined until the connection is negotiated so try a few times
-          const protocols = ipfs.libp2p.peerStore.protoBook.get(con.remotePeer)
-
-          if (!protocols) {
-            await delay(500)
-            continue
-          }
-
-          const isRelay = protocols.find(proto => proto.toString().includes('/circuit/relay'))
-
-          // only add addresses for peers that are relays and that we aren't already
-          // connected to them via another relay
-          if (isRelay && !remoteAddr.includes('p2p-circuit') && !remoteAddr.includes(info.id)) {
-            relayAddrs.push(`${remoteAddr}/p2p-circuit/p2p/${info.id}`)
-          }
-
-          break
-        }
-      }
-    }
 
     $addrs.innerHTML = relayAddrs.map((addr) => `<li>${addr.toString()}</li>`).join('')
   }

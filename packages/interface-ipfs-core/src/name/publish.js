@@ -5,7 +5,6 @@ const { nanoid } = require('nanoid')
 const { Buffer } = require('buffer')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
 const last = require('it-last')
 const testTimeout = require('../utils/test-timeout')
 
@@ -26,7 +25,7 @@ module.exports = (common, options) => {
     before(async () => {
       ipfs = (await common.spawn()).api
       nodeId = ipfs.peerId.id
-      await all(ipfs.add(fixture.data, { pin: false }))
+      await ipfs.add(fixture.data, { pin: false })
     })
 
     after(() => common.clean())
@@ -50,7 +49,7 @@ module.exports = (common, options) => {
     })
 
     it('should publish correctly with the lifetime option and resolve', async () => {
-      const [{ path }] = await all(ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve')))
+      const { path } = await ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve'))
       await ipfs.name.publish(path, { allowOffline: true, resolve: false, lifetime: '2h' })
       expect(await last(ipfs.name.resolve(`/ipns/${nodeId}`))).to.eq(`/ipfs/${path}`)
     })

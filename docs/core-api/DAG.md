@@ -7,16 +7,21 @@
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
-- [`ipfs.dag.get(cid, [path], [options])`](#ipfsdaggetcid-path-options)
+- [`ipfs.dag.get(cid, [options])`](#ipfsdaggetcid-options)
   - [Parameters](#parameters-1)
   - [Options](#options-1)
   - [Returns](#returns-1)
   - [Example](#example-1)
-- [`ipfs.dag.tree(cid, [path,] [options])`](#ipfsdagtreecid-path-options)
+- [`ipfs.dag.tree(cid, [options])`](#ipfsdagtreecid-options)
   - [Parameters](#parameters-2)
   - [Options](#options-2)
   - [Returns](#returns-2)
   - [Example](#example-2)
+- [`ipfs.dag.resolve(ipfsPath, [options])`](#ipfsdagresolveipfspath-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
 
 _Explore the DAG API through interactive coding challenges in our ProtoSchool tutorials:_
 - _[P2P data links with content addressing](https://proto.school/#/basics/) (beginner)_
@@ -65,7 +70,7 @@ console.log(cid.toString())
 
 A great source of [examples][] can be found in the tests for this API.
 
-## `ipfs.dag.get(cid, [path], [options])`
+## `ipfs.dag.get(cid, [options])`
 
 > Retrieve an IPLD format node
 
@@ -73,8 +78,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| cid | [CID][] | A DAG node that follows one of the supported IPLD formats |
-| path | `String` | An optional path within the DAG to resolve |
+| cid | [CID][] | A CID that resolves to a node to get |
 
 ### Options
 
@@ -82,6 +86,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
+| path | `String` | An optional path within the DAG to resolve |
 | localResolve | `boolean` | `false` | If set to true, it will avoid resolving through different objects |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
@@ -114,34 +119,34 @@ const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 console.log(cid.toString())
 // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
 
-async function getAndLog(cidPath) {
-  const result = await ipfs.dag.get(cidPath)
+async function getAndLog(cid, path) {
+  const result = await ipfs.dag.get(cid, { path })
   console.log(result.value)
 }
 
-await getAndLog('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/a')
+await getAndLog(cid, '/a')
 // Logs:
 // 1
 
-await getAndLog('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/b')
+await getAndLog(cid, '/b')
 // Logs:
 // [1, 2, 3]
 
-await getAndLog('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/c')
+await getAndLog(cid, '/c')
 // Logs:
 // {
 //   ca: [5, 6, 7],
 //   cb: 'foo'
 // }
 
-await getAndLog('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5/c/ca/1')
+await getAndLog(cid, '/c/ca/1')
 // Logs:
 // 6
 ```
 
 A great source of [examples][] can be found in the tests for this API.
 
-## `ipfs.dag.tree(cid, [path,] [options])`
+## `ipfs.dag.tree(cid, [options])`
 
 > Enumerate all the entries in a graph
 
@@ -150,7 +155,6 @@ A great source of [examples][] can be found in the tests for this API.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | cid | [CID][] | A DAG node that follows one of the supported IPLD formats |
-| path | `String` | An optional path within the DAG to resolve |
 
 ### Options
 
@@ -158,6 +162,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
+| path | `String` | An optional path within the DAG to resolve |
 | recursive | `boolean` | `false` | If set to true, it will follow the links and continuously run tree on them, returning all the paths in the graph |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
@@ -199,6 +204,60 @@ console.log(result)
 // c/ca/1
 // c/ca/2
 // c/cb
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+## `ipfs.dag.resolve(ipfsPath, [options])`
+
+> Returns the CID and remaining path of the node at the end of the passed IPFS path
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| ipfsPath | `String` or [CID][] | An IPFS path, e.g. `/ipfs/bafy/dir/file.txt` or a [CID][] instance |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| path | `String` | `undefined` | If `ipfsPath` is a [CID][], you may pass a path here |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Promise<{ cid: CID, remainderPath: String }>` | The last CID encountered during the traversal and the path to the end of the IPFS path inside the node referenced by the CID |
+
+### Example
+
+```JavaScript
+// example obj
+const obj = {
+  a: 1,
+  b: [1, 2, 3],
+  c: {
+    ca: [5, 6, 7],
+    cb: 'foo'
+  }
+}
+
+const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+console.log(cid.toString())
+// bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq
+
+const result = await ipfs.dag.resolve(`${cid}/c/cb`)
+console.log(result)
+// Logs:
+// {
+//   cid: CID(bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq),
+//   remainderPath: 'c/cb'
+// }
 ```
 
 A great source of [examples][] can be found in the tests for this API.

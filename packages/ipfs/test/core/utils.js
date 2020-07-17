@@ -4,8 +4,7 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
-const fromB58String = require('multihashes').fromB58String
-const all = require('it-all')
+const { fromB58String } = require('multihashing-async').multihash
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -19,83 +18,6 @@ describe('utils', () => {
   const aboutHash = 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
   const aboutPath = `${rootPath}/mercury`
   const aboutMultihash = fromB58String(aboutHash)
-
-  describe('parseIpfsPath', () => {
-    it('parses path with no links', function () {
-      expect(utils.parseIpfsPath(rootHash))
-        .to.deep.equal({
-          hash: rootHash,
-          links: []
-        })
-    })
-
-    it('parses path with links', function () {
-      expect(utils.parseIpfsPath(`${rootHash}/docs/index`))
-        .to.deep.equal({
-          hash: rootHash,
-          links: ['docs', 'index']
-        })
-    })
-
-    it('parses path with /ipfs/ prefix', function () {
-      expect(utils.parseIpfsPath(`/ipfs/${rootHash}/about`))
-        .to.deep.equal({
-          hash: rootHash,
-          links: ['about']
-        })
-    })
-
-    it('parses path with leading and trailing slashes', function () {
-      expect(utils.parseIpfsPath(`/${rootHash}/`))
-        .to.deep.equal({
-          hash: rootHash,
-          links: []
-        })
-    })
-
-    it('normalize path with no ipfs path, nor ipns path nor cid should throw an exception', function () {
-      expect(() => utils.normalizePath(`/${rootHash}/`)).to.throw()
-    })
-
-    it('normalize path should return an ipfs path, when an ipfs path is provided', function () {
-      const ipfsPath = `/ipfs/${rootHash}`
-      expect(utils.normalizePath(ipfsPath))
-        .to.equal(ipfsPath)
-    })
-
-    it('normalize path should return an ipfs path, when a cid is provided', function () {
-      const ipfsPath = `/ipfs/${rootHash}`
-      expect(utils.normalizePath(rootHash))
-        .to.equal(ipfsPath)
-    })
-
-    it('normalize path should return an ipns path, when an ipns path is provided', function () {
-      const ipnsPath = `/ipns/${rootHash}`
-      expect(utils.normalizePath(ipnsPath))
-        .to.equal(ipnsPath)
-    })
-
-    it('parses non sha2-256 paths', function () {
-      // There are many, many hashing algorithms. Just one should be a sufficient
-      // indicator. Used go-ipfs@0.4.13 `add --hash=keccak-512` to generate
-      const keccak512 = 'zB7S6ZdcqsTqvNhBpx3SbFTocRpAUHj1w9WQXQGyWBVEsLStNfaaNtsdFUQbRk4tYPZvnpGbtDN5gEH4uVzUwsFyJh9Ei'
-      expect(utils.parseIpfsPath(keccak512))
-        .to.deep.equal({
-          hash: keccak512,
-          links: []
-        })
-    })
-
-    it('returns error for malformed path', function () {
-      const fn = () => utils.parseIpfsPath(`${rootHash}//about`)
-      expect(fn).to.throw('invalid ipfs ref path')
-    })
-
-    it('returns error if root is not a valid sha2-256 multihash', function () {
-      const fn = () => utils.parseIpfsPath('invalid/ipfs/path')
-      expect(fn).to.throw('invalid ipfs ref path')
-    })
-  })
 
   describe('resolvePath', function () {
     this.timeout(100 * 1000)
@@ -120,7 +42,7 @@ describe('utils', () => {
         },
         preload: { enabled: false }
       })
-      await all(node.add(fixtures))
+      await node.add(fixtures)
     })
 
     after(() => node.stop())
@@ -161,13 +83,13 @@ describe('utils', () => {
 
     it('should error on invalid hashes', () => {
       return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
-        .to.be.rejected()
+        .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
       return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
-        .to.be.rejected()
-        .and.eventually.have.property('message')
+        .to.eventually.be.rejected()
+        .and.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
     })
   })

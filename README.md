@@ -20,13 +20,13 @@
   <br>
 </p>
 
-> **Upgrading from <=0.40 to 0.41?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26).
+> **Upgrading from <=0.40 to 0.48?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://github.com/ipfs/js-ipfs/tree/master/docs/docs/MIGRATION-TO-ASYNC-AWAIT.md).
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
 
 ## Getting started
 
-* Look into the [examples folder](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Look into the [examples](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
@@ -46,6 +46,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Documentation
 
+* [Config](./docs/CONFIG.md)
 * [Core API](./docs/core-api)
 * [Examples](./examples)
 * [Development](./docs/DEVELOPMENT.md)

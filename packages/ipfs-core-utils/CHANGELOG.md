@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.2.4...ipfs-core-utils@0.3.0) (2020-07-16)
+
+
+### Bug Fixes
+
+* optional arguments go in the options object ([#3118](https://github.com/ipfs/js-ipfs/issues/3118)) ([8cb8c73](https://github.com/ipfs/js-ipfs/commit/8cb8c73037e44894d756b70f344b3282463206f9))
+* set error code correctly ([#3150](https://github.com/ipfs/js-ipfs/issues/3150)) ([335c13d](https://github.com/ipfs/js-ipfs/commit/335c13d529fc54e4610fc1aa03212126f43c63ec))
+
+
+### Features
+
+* store blocks by multihash instead of CID ([#3124](https://github.com/ipfs/js-ipfs/issues/3124)) ([03b17f5](https://github.com/ipfs/js-ipfs/commit/03b17f5e2d290e84aa0cb541079b79e468e7d1bd))
+
+
+
+
+
+## [0.2.4](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.2.3...ipfs-core-utils@0.2.4) (2020-06-24)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
 ## [0.2.3](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.2.2...ipfs-core-utils@0.2.3) (2020-05-18)
 
 

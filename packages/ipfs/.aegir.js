@@ -15,7 +15,7 @@ let sigServerB
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '446kB' },
+  bundlesize: { maxSize: '530kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -68,17 +68,15 @@ module.exports = {
           ipfsHttpModule: require('ipfs-http-client'),
           ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
           ipfsOptions: {
-            config: {
-              libp2p: {
-                dialer: {
-                  dialTimeout: 60e3 // increase timeout because travis is slow
-                }
+            libp2p: {
+              dialer: {
+                dialTimeout: 60e3 // increase timeout because travis is slow
               }
             }
           }
         }, {
           go: {
-            ipfsBin: require('go-ipfs-dep').path()
+            ipfsBin: require('go-ipfs').path()
           }
         }).start()
 

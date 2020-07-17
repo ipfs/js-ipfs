@@ -27,7 +27,7 @@ describe('.get (specific go-ipfs features)', function () {
 
   before(async () => {
     ipfs = (await f.spawn()).api
-    await all(ipfs.add(smallFile.data))
+    await ipfs.add(smallFile.data)
   })
 
   after(() => f.clean())
@@ -52,7 +52,7 @@ describe('.get (specific go-ipfs features)', function () {
     await expect(all(ipfs.get(smallFile.cid, {
       compress: true,
       compressionLevel: 10
-    }))).to.be.rejectedWith('compression level must be between 1 and 9')
+    }))).to.eventually.be.rejectedWith('compression level must be between 1 and 9')
   })
 
   // TODO Understand why this test started failing
@@ -65,7 +65,7 @@ describe('.get (specific go-ipfs features)', function () {
     const subdir = 'tmp/c++files'
     const expectedCid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
     const path = `${subdir}/${filename}`
-    const files = await all(ipfs.add([{
+    const files = await all(ipfs.addAll([{
       path,
       content: Buffer.from(path)
     }]))

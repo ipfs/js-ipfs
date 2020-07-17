@@ -1,6 +1,6 @@
 # Object API <!-- omit in toc -->
 
-- [`ipfs.object.new([template,] [options])`](#ipfsobjectnewtemplate-options)
+- [`ipfs.object.new([options])`](#ipfsobjectnewoptions)
   - [Parameters](#parameters)
   - [Options](#options)
   - [Returns](#returns)
@@ -41,6 +41,7 @@
   - [Options](#options-7)
   - [Returns](#returns-7)
   - [Example](#example-7)
+  - [Notes](#notes-1)
 - [`ipfs.object.patch.appendData(cid, data, [options])`](#ipfsobjectpatchappenddatacid-data-options)
   - [Parameters](#parameters-8)
   - [Options](#options-8)
@@ -52,15 +53,13 @@
   - [Returns](#returns-9)
   - [Example](#example-9)
 
-## `ipfs.object.new([template,] [options])`
+## `ipfs.object.new([options])`
 
 > Create a new MerkleDAG node, using a specific layout. Caveat: So far, only UnixFS object layouts are supported.
 
 ### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| template | `String` | If defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory |
+None.
 
 ### Options
 
@@ -68,6 +67,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
+| template | `String` | If defined, must be a string `unixfs-dir` and if that is passed, the created node will be an empty unixfs style directory |
 | recursive | `boolean` | `false` | Resolve until the result is not an IPNS name |
 | nocache | `boolean` | `cache` | Do not use cached entries |
 | timeout | `Number` | `undefined` | A timeout in ms |
@@ -82,7 +82,9 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const cid = await ipfs.object.new('unixfs-dir')
+const cid = await ipfs.object.new({
+  template: 'unixfs-dir'
+})
 console.log(cid.toString())
 // Logs:
 // QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
@@ -404,7 +406,7 @@ const cid = await ipfs.object.patch.rmLink(node, {
 
 A great source of [examples][] can be found in the tests for this API.
 
-### Notes
+### Notes
 
 `link` is the link to be removed on the node that is identified by the `multihash`, can be passed as:
 

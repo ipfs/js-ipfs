@@ -68,11 +68,11 @@ Circuit relay addresses are very flexible and can describe many different aspect
 
 If we want to be specific as to which transport we want to use to establish the relay, we can encode that in the address as well:
 
-- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/ipfs/QmPeer`
+- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/p2p/QmPeer`
 
 This tells us that we want to use `QmRelay` located at address 127.0.0.1 and port 65000.
 
-- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/ip4/127.0.0.1/tcp/8080/ws/ipfs/QmPeer`
+- `/ip4/127.0.0.1/tcp/65000/p2p/QmRelay/p2p-circuit/ip4/127.0.0.1/tcp/8080/ws/p2p/QmPeer`
 
 We can take it a step further and encode the same information for the destination peer. In this case, we have it located at 127.0.0.1 on port 8080 and using a Web sockets transport!
 
@@ -209,7 +209,7 @@ Initializing daemon...
 Swarm listening on /ip4/127.0.0.1/tcp/4001
 Swarm listening on /ip4/192.168.1.132/tcp/4001
 Swarm listening on /ip6/::1/tcp/4001
-Swarm listening on /p2p-circuit/ipfs/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF
+Swarm listening on /p2p-circuit/p2p/QmY73BLYav2gYc9PCEnjQqbfSGiqFv3aMsRXNyKFGtUoGF
 Swarm announcing /ip4/127.0.0.1/tcp/4001
 Swarm announcing /ip4/186.4.18.182/tcp/58986
 Swarm announcing /ip4/192.168.1.132/tcp/4001
@@ -219,7 +219,7 @@ Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
 Daemon is ready
 ```
 
-In the case of go ipfs, the crucial `/ipfs/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
+In the case of go ipfs, the crucial `/p2p/Qm...` part of the multiaddr might be missing. In that case, you can get it by running the `ipfs id` command.
 
 ```console
 $ ipfs id
@@ -279,11 +279,11 @@ In order for our browser nodes to be able to messages each other, we need to get
 
 Remember the caveat above `Currently a Relay will only work if it already has a connection to the STOP node`? This means that we need to connect our browser nodes to the relay node first.
 
-Having both browsers running side by side (as shown in the first screenshot), enter the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` address noted above into the `Connect to Peer` field and hit the `Connect` button:
+Having both browsers running side by side (as shown in the first screenshot), enter the `/ip4/127.0.0.1/tcp/4003/ws/p2p/...` address noted above into the `Connect to Peer` field and hit the `Connect` button:
 
 ![](./img/img3.png)
 
-After connecting to the IPFS node, we should see the relay peer show up under the `Peers Connected` box.
+After connecting to the IPFS node, we should see the relay peer show up under the `Swarm Peers` box.
 
 ![](./img/img4.png)
 
@@ -291,7 +291,15 @@ Let's repeat the same steps with the second tab. Now, both of our browser nodes 
 
 ### 4. Dial the two browser nodes using a `/p2p-circuit` address
 
-Now that our browsers are both connected to the relay peer, let's get them connected to each other. Head out to the `Addresses` box in one of the tabs, copy the `/p2p-circuit` address and then paste it into the `Connect to Peer` box in the other tab. Repeat these steps on the second tab.
+Now that our browsers are both connected to the relay peer, let's get them connected to each other.  Create the p2p circuit address as follows:
+
+```
+${RELAY_ADDR}/p2p-circuit/p2p/${PEER_ID}
+```
+
+Here `${RELAY_ADDR}` is the multiaddr of the circuit relay node that you pasted into the "Connect to Peer" box in step 3, and `${PEER_ID}` is the id of the node we wish to connect to which can be found in the "Peer id" box of the browser window.
+
+Use the id from the "Peer id" box in the second browser window in the relay address you paste into the first browser, then repeat this step using the relay address of the first window in the second.
 
 ![](./img/img5.png)
 
@@ -331,7 +339,7 @@ const ipfs = await IPFS.create({
 })
 ```
 
-- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/ipfs/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
+- We connected the browser nodes to an external node over its websocket transport using the `/ip4/127.0.0.1/tcp/4003/ws/p2p/...` multiaddr. That external node happens to be a `HOP` node, meaning that it can relay connections for our browsers (and other nodes) allowing them to connect
 
 - And finally we connected the two browser nodes using the `/p2p-circuit/p2p/...` multiaddr. Take a look at the code below in [src/app.js](src/app.js#L103...L108) - lines 103-108
 

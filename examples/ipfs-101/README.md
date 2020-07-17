@@ -70,12 +70,12 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const fileAdded = await node.add({
     path: 'hello.txt',
     content: 'Hello World 101'
   })
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+  console.log('Added file:', fileAdded.path, fileAdded.cid)
   // ...
 }
 
@@ -104,15 +104,15 @@ async function main () {
 
   console.log('Version:', version.version)
 
-  const filesAdded = await node.add({
+  const fileAdded = await node.add({
     path: 'hello.txt',
     content: 'Hello World 101'
   })
 
-  console.log('Added file:', filesAdded[0].path, filesAdded[0].hash)
+  console.log('Added file:', fileAdded.path, fileAdded.cid)
 
   const chunks = []
-  for await (const chunk of node.cat(filesAdded[0].hash)) {
+  for await (const chunk of node.cat(fileAdded.cid)) {
       chunks.push(chunk)
   }
 

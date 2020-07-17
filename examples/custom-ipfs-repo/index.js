@@ -80,19 +80,18 @@ async function main () {
   console.log('Version:', version)
 
   // Once we have the version, let's add a file to IPFS
-  for await (const file of node.add({
+  const file = await node.add({
     path: 'test-data.txt',
     content: Buffer.from('We are using a customized repo!')
-  })) {
-    // Log out the added files metadata and cat the file from IPFS
-    console.log('\nAdded file:', file.path, file.cid)
+  })
+  // Log out the added files metadata and cat the file from IPFS
+  console.log('\nAdded file:', file.path, file.cid)
 
-    const data = Buffer.concat(await all(node.cat(file.cid)))
+  const data = Buffer.concat(await all(node.cat(file.cid)))
 
-    // Print out the files contents to console
-    console.log('\nFetched file content:')
-    process.stdout.write(data)
-  }
+  // Print out the files contents to console
+  console.log('\nFetched file content:')
+  process.stdout.write(data)
 
   // After everything is done, shut the node down
   console.log('\n\nStopping the node')

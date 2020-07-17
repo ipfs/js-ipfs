@@ -1,15 +1,19 @@
 'use strict'
 
+const log = require('debug')('ipfs:components:start')
 const Bitswap = require('ipfs-bitswap')
 const multiaddr = require('multiaddr')
 const get = require('dlv')
 const defer = require('p-defer')
+const errCode = require('err-code')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
 const { AlreadyInitializedError, NotEnabledError } = require('../errors')
 const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
 const { withTimeoutOption } = require('../utils')
+
+const WEBSOCKET_STAR_PROTO_CODE = 479
 
 module.exports = ({
   apiManager,
@@ -26,6 +30,8 @@ module.exports = ({
   repo
 }) => withTimeoutOption(async function start () {
   const startPromise = defer()
+  startPromise.promise.catch((err) => log(err))
+
   const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
   try {
@@ -40,6 +46,12 @@ module.exports = ({
     if (config.Addresses && config.Addresses.Swarm) {
       config.Addresses.Swarm.forEach(addr => {
         let ma = multiaddr(addr)
+
+        // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
+        // websocket-star support was removed from ipfs and libp2p
+        if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
+          throw errCode(new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
+        }
 
         // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
         // webrtc-star) can have the intermediary's peer ID in the address, so append our
@@ -179,20 +191,24 @@ function createApi ({
     stat: Components.object.stat({ ipld, preload })
   }
 
-  const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
+  const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
 
   const dhtNotEnabled = async () => { // eslint-disable-line require-await
     throw new NotEnabledError('dht not enabled')
   }
 
+  const dhtNotEnabledIterator = async function * () { // eslint-disable-line require-await,require-yield
+    throw new NotEnabledError('dht not enabled')
+  }
+
   const dht = get(libp2p, '_config.dht.enabled', false) ? Components.dht({ libp2p, repo }) : {
     get: dhtNotEnabled,
     put: dhtNotEnabled,
-    findProvs: dhtNotEnabled,
+    findProvs: dhtNotEnabledIterator,
     findPeer: dhtNotEnabled,
-    provide: dhtNotEnabled,
-    query: dhtNotEnabled
+    provide: dhtNotEnabledIterator,
+    query: dhtNotEnabledIterator
   }
 
   const dns = Components.dns()
@@ -224,16 +240,20 @@ function createApi ({
     }
 
   const api = {
-    add,
+    add: Components.add({ addAll }),
+    addAll,
     bitswap: {
       stat: Components.bitswap.stat({ bitswap }),
       unwant: Components.bitswap.unwant({ bitswap }),
-      wantlist: Components.bitswap.wantlist({ bitswap })
+      wantlist: Components.bitswap.wantlist({ bitswap }),
+      wantlistForPeer: Components.bitswap.wantlistForPeer({ bitswap })
     },
     block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
+      clear: Components.bootstrap.clear({ repo }),
       list: Components.bootstrap.list({ repo }),
+      reset: Components.bootstrap.reset({ repo }),
       rm: Components.bootstrap.rm({ repo })
     },
     cat: Components.cat({ ipld, preload }),

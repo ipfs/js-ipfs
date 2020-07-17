@@ -46,7 +46,7 @@ describe('pin', function () {
 
   async function isPinnedWithType (path, type) {
     try {
-      for await (const _ of pin.ls(path, { type })) { // eslint-disable-line no-unused-vars
+      for await (const _ of pin.ls({ paths: path, type })) { // eslint-disable-line no-unused-vars
         return true
       }
       return false
@@ -86,7 +86,7 @@ describe('pin', function () {
     })
 
     pin = ipfs.pin
-    await all(ipfs.add(fixtures))
+    await ipfs.add(fixtures)
   })
 
   after(function () {
@@ -199,7 +199,7 @@ describe('pin', function () {
     })
 
     it('should list pins of a particular CID', async () => {
-      const out = await all(pin.ls(pins.mercuryDir))
+      const out = await all(pin.ls({ paths: pins.mercuryDir }))
       expect(out[0].cid.toString()).to.eql(pins.mercuryDir)
     })
 
@@ -274,7 +274,7 @@ describe('pin', function () {
     })
 
     it('should list direct pins for CID', async () => {
-      const out = await all(pin.ls(pins.mercuryDir, { type: 'direct' }))
+      const out = await all(pin.ls({ paths: pins.mercuryDir, type: 'direct' }))
 
       expect(out).to.have.deep.members([
         {
@@ -285,7 +285,7 @@ describe('pin', function () {
     })
 
     it('should list direct pins for path', async () => {
-      const out = await all(pin.ls(`/ipfs/${pins.root}/mercury/`, { type: 'direct' }))
+      const out = await all(pin.ls({ paths: `/ipfs/${pins.root}/mercury/`, type: 'direct' }))
 
       expect(out).to.have.deep.members([
         {
@@ -296,17 +296,17 @@ describe('pin', function () {
     })
 
     it('should list direct pins for path (no match)', () => {
-      return expect(all(pin.ls(`/ipfs/${pins.root}/mercury/wiki.md`, { type: 'direct' })))
+      return expect(all(pin.ls({ paths: `/ipfs/${pins.root}/mercury/wiki.md`, type: 'direct' })))
         .to.eventually.be.rejected()
     })
 
     it('should list direct pins for CID (no match)', () => {
-      return expect(all(pin.ls(pins.root, { type: 'direct' })))
+      return expect(all(pin.ls({ paths: pins.root, type: 'direct' })))
         .to.eventually.be.rejected()
     })
 
     it('should list recursive pins for CID', async () => {
-      const out = await all(pin.ls(pins.root, { type: 'recursive' }))
+      const out = await all(pin.ls({ paths: pins.root, type: 'recursive' }))
 
       expect(out).to.have.deep.members([
         {
@@ -317,12 +317,12 @@ describe('pin', function () {
     })
 
     it('should list recursive pins for CID (no match)', () => {
-      return expect(all(pin.ls(pins.mercuryDir, { type: 'recursive' })))
+      return expect(all(pin.ls({ paths: pins.mercuryDir, type: 'recursive' })))
         .to.eventually.be.rejected()
     })
 
     it('should list indirect pins for CID', async () => {
-      const out = await all(pin.ls(pins.solarWiki, { type: 'indirect' }))
+      const out = await all(pin.ls({ paths: pins.solarWiki, type: 'indirect' }))
 
       expect(out).to.have.deep.members([
         {
@@ -333,7 +333,7 @@ describe('pin', function () {
     })
 
     it('should list indirect pins for CID (no match)', () => {
-      return expect(all(pin.ls(pins.root, { type: 'indirect' })))
+      return expect(all(pin.ls({ paths: pins.root, type: 'indirect' })))
         .to.eventually.be.rejected()
     })
   })

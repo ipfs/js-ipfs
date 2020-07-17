@@ -27,7 +27,7 @@ describe('/files', () => {
 
   beforeEach(() => {
     ipfs = {
-      add: sinon.stub(),
+      addAll: sinon.stub(),
       cat: sinon.stub(),
       get: sinon.stub(),
       ls: sinon.stub(),
@@ -40,7 +40,7 @@ describe('/files', () => {
   async function assertAddArgs (url, fn) {
     const content = Buffer.from('TEST\n')
 
-    ipfs.add.callsFake(async function * (source, opts) {
+    ipfs.addAll.callsFake(async function * (source, opts) {
       expect(fn(opts)).to.be.true()
 
       const input = await first(source)
@@ -123,7 +123,7 @@ describe('/files', () => {
     it('should add data and return a base64 encoded CID', async () => {
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
         path: cid.toString(),
         cid,
         size: content.byteLength,
@@ -153,7 +153,7 @@ describe('/files', () => {
     it('should add data without pinning and return a base64 encoded CID', async () => {
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.add.callsFake(async function * (source, opts) {
+      ipfs.addAll.callsFake(async function * (source, opts) {
         expect(opts).to.have.property('pin', false)
 
         const input = await first(source)
@@ -363,6 +363,33 @@ describe('/files', () => {
           Depth: 1,
           Hash: cid.toString(),
           Mode: '0420',
+          Name: 'link',
+          Size: 10,
+          Type: 2
+        }]
+      })
+    })
+
+    it('should list directory contents without unixfs v1.5 fields', async () => {
+      ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
+        name: 'link',
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Objects[0]', {
+        Hash: `${cid}`,
+        Links: [{
+          Depth: 1,
+          Hash: cid.toString(),
           Name: 'link',
           Size: 10,
           Type: 2

@@ -7,13 +7,18 @@ const {
 } = require('ipld-dag-pb')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const mc = require('multicodec')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
+const errCode = require('err-code')
 
 const {
   MFS_ROOT_KEY
 } = require('../../../utils')
 
-const loadMfsRoot = async (context) => {
+const loadMfsRoot = async (context, options) => {
+  if (options && options.signal && options.signal.aborted) {
+    throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
+  }
+
   // Open the repo if it's been closed
   await context.repo.datastore.open()
 
@@ -35,6 +40,10 @@ const loadMfsRoot = async (context) => {
       cidVersion: 0,
       hashAlg: mh.names['sha2-256'] // why can't ipld look this up?
     })
+
+    if (options && options.signal && options.signal.aborted) {
+      throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
+    }
 
     await context.repo.datastore.put(MFS_ROOT_KEY, cid.buffer)
   }

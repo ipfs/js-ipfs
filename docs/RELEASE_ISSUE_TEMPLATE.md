@@ -47,7 +47,7 @@
   - [ ] Publish a release candidate to npm
     ```sh
     # All successful builds of master update the `build/last-successful` branch
-    # which contains an `npm-shrinkwrap.json`.
+    # which contains an `npm-shrinkwrap.json`.
     # This command checks that branch out, installs it's dependencies using `npm ci`,
     # creates a release branch (e.g. release/v0.34.x), updates the minor prerelease
     # version (e.g. 0.33.1 -> 0.34.0-rc.0) and publishes it to npm.
@@ -60,7 +60,7 @@
     npx aegir update-release-branch-lockfiles release/v0.34.x
 
     # Then update the rc published on npm. This command pulls the specified
-    # release branch, installs it's dependencies `npm ci`, increments the  
+    # release branch, installs it's dependencies `npm ci`, increments the
     # prerelease version (e.g. 0.34.0-rc.0 -> 0.34.0-rc.1) and publishes it
     # to npm.
     npx aegir update-rc release/v0.34.x

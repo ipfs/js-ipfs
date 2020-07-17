@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.48.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.47.0...ipfs@0.48.0) (2020-07-16)
+
+
+### Bug Fixes
+
+* do not list raw nodes in a dag as directories ([#3155](https://github.com/ipfs/js-ipfs/issues/3155)) ([585a142](https://github.com/ipfs/js-ipfs/commit/585a142d3c2317e80f37d6195ce24ed3146112e5))
+* error when no command specified ([#3145](https://github.com/ipfs/js-ipfs/issues/3145)) ([4309e10](https://github.com/ipfs/js-ipfs/commit/4309e1004bb77ee276b57228c35a921fb780a227))
+* optional arguments go in the options object ([#3118](https://github.com/ipfs/js-ipfs/issues/3118)) ([8cb8c73](https://github.com/ipfs/js-ipfs/commit/8cb8c73037e44894d756b70f344b3282463206f9))
+* peer ids are strings now ([#3162](https://github.com/ipfs/js-ipfs/issues/3162)) ([281bfe6](https://github.com/ipfs/js-ipfs/commit/281bfe60f079011d0ada783a82d1f030d08a89f2))
+* still load dag-pb, dag-cbor and raw when specifying custom formats ([#3132](https://github.com/ipfs/js-ipfs/issues/3132)) ([a96e3bc](https://github.com/ipfs/js-ipfs/commit/a96e3bc9e3763004beafc24b98efa85ffa665622)), closes [#3129](https://github.com/ipfs/js-ipfs/issues/3129)
+* unhandledpromiserejection in electron tests ([#3146](https://github.com/ipfs/js-ipfs/issues/3146)) ([4c0c67f](https://github.com/ipfs/js-ipfs/commit/4c0c67f023c75bbcb56b0520b31f1334480a5130))
+* use post for preloading ([#3149](https://github.com/ipfs/js-ipfs/issues/3149)) ([c9700f7](https://github.com/ipfs/js-ipfs/commit/c9700f78cefc523f6140361a90099c4991b427a7))
+
+
+### Features
+
+* add interface and http client versions to version output ([#3125](https://github.com/ipfs/js-ipfs/issues/3125)) ([65f8b23](https://github.com/ipfs/js-ipfs/commit/65f8b23f550f939e94aaf6939894a513519e6d68)), closes [#2878](https://github.com/ipfs/js-ipfs/issues/2878)
+* add size-only flag to cli repo stat command ([#3143](https://github.com/ipfs/js-ipfs/issues/3143)) ([b4d3bf8](https://github.com/ipfs/js-ipfs/commit/b4d3bf80e7cd5820e2561fc957a9f0f17235df05))
+* enable DHT by Routing.Type config key ([#3153](https://github.com/ipfs/js-ipfs/issues/3153)) ([dfe15d7](https://github.com/ipfs/js-ipfs/commit/dfe15d7422579afce8860f6321575454826d1844))
+* store blocks by multihash instead of CID ([#3124](https://github.com/ipfs/js-ipfs/issues/3124)) ([03b17f5](https://github.com/ipfs/js-ipfs/commit/03b17f5e2d290e84aa0cb541079b79e468e7d1bd))
+* turn on delegate nodes by default ([#3148](https://github.com/ipfs/js-ipfs/issues/3148)) ([3fd2ca8](https://github.com/ipfs/js-ipfs/commit/3fd2ca8c7bb3a907cc74d48516481fae01d47327))
+
+
+
+
+
+# [0.47.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.46.0...ipfs@0.47.0) (2020-06-24)
+
+
+### Bug Fixes
+
+* libp2p now requires encryption module ([#3085](https://github.com/ipfs/js-ipfs/issues/3085)) ([c567282](https://github.com/ipfs/js-ipfs/commit/c56728209f0eea63d00c68163c74cfdd350de69c))
+
+
+### Features
+
+* add config.getAll ([#3071](https://github.com/ipfs/js-ipfs/issues/3071)) ([16587f1](https://github.com/ipfs/js-ipfs/commit/16587f16e1b3ae525c099b1975748510638aceee))
+* libp2p noise as fallback for secio ([#3074](https://github.com/ipfs/js-ipfs/issues/3074)) ([660d3db](https://github.com/ipfs/js-ipfs/commit/660d3db9a47bff652057762b52a25529ab37117f))
+* persist peerstore ([#3072](https://github.com/ipfs/js-ipfs/issues/3072)) ([b404974](https://github.com/ipfs/js-ipfs/commit/b40497427b7d33f52803c8fa14cc73be7f872d65))
+* webui v2.9.0 ([#3054](https://github.com/ipfs/js-ipfs/issues/3054)) ([5d9d331](https://github.com/ipfs/js-ipfs/commit/5d9d331ed42f3ac9efc243878011db871b742a4e))
+
+
+
+
+
 # [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
 
 

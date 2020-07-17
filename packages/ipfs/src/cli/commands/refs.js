@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration')
+const parseDuration = require('parse-duration').default
 
 module.exports = {
   command: 'refs <key> [keys..]',
@@ -48,11 +48,11 @@ module.exports = {
 
     const k = [key].concat(keys)
 
-    for await (const ref of ipfs.refs(k, { recursive, format, edges, unique, maxDepth, timeout })) {
-      if (ref.err) {
-        print(ref.err, true, true)
+    for await (const { err, ref } of ipfs.refs(k, { recursive, format, edges, unique, maxDepth, timeout })) {
+      if (err) {
+        print(err, true, true)
       } else {
-        print(ref.ref)
+        print(ref)
       }
     }
   }

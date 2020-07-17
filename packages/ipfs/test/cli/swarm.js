@@ -67,7 +67,7 @@ describe('swarm', () => {
 
     it('peers online', async () => {
       ipfs.swarm.peers.withArgs(defaultOptions).resolves([{
-        peer: { toB58String: () => 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z' },
+        peer: 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z',
         addr: '/ip4/192.0.0.1/tcp/5001'
       }, {
         addr: '/ip4/192.0.0.2/tcp/5002/p2p/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5a'
@@ -89,7 +89,7 @@ describe('swarm', () => {
         ...defaultOptions,
         timeout: 1000
       }).resolves([{
-        peer: { toB58String: () => 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z' },
+        peer: 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z',
         addr: '/ip4/192.0.0.1/tcp/5001'
       }, {
         addr: '/ip4/192.0.0.2/tcp/5002/p2p/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5a'
@@ -110,13 +110,10 @@ describe('swarm', () => {
       const addr = `/ip4/192.0.0.2/tcp/5002/p2p/${peer}`
 
       ipfs.swarm.addrs.withArgs(defaultOptions).resolves([{
-        id: { toB58String: () => peer },
-        multiaddrs: {
-          size: 1,
-          toArray: () => [
-            ma(addr)
-          ]
-        }
+        id: peer,
+        addrs: [
+          ma(addr)
+        ]
       }])
 
       const out = await cli('swarm addrs', { ipfs })
@@ -131,13 +128,10 @@ describe('swarm', () => {
         ...defaultOptions,
         timeout: 1000
       }).resolves([{
-        id: { toB58String: () => peer },
-        multiaddrs: {
-          size: 1,
-          toArray: () => [
-            ma(addr)
-          ]
-        }
+        id: peer,
+        addrs: [
+          ma(addr)
+        ]
       }])
 
       const out = await cli('swarm addrs --timeout=1s', { ipfs })

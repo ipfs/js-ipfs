@@ -39,13 +39,8 @@ const toOutput = (fsEntry) => {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function * mfsLs (path = '/', options = {}) {
-    if (typeof path === 'object' && !(path instanceof String)) {
-      options = path
-      path = '/'
-    }
-
-    const mfsPath = await toMfsPath(context, path)
+  return withTimeoutOption(async function * mfsLs (path, options = {}) {
+    const mfsPath = await toMfsPath(context, path, options)
     const fsDir = await exporter(mfsPath.mfsPath, context.ipld)
 
     // single file/node

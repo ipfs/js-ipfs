@@ -113,7 +113,7 @@ function createApi ({
     stat: Components.block.stat({ blockService, preload })
   }
 
-  const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
+  const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
   const resolve = Components.resolve({ ipld })
   const refs = Components.refs({ ipld, resolve, preload })
   refs.local = Components.refs.local({ repo })
@@ -123,16 +123,20 @@ function createApi ({
   }
 
   const api = {
-    add,
+    add: Components.add({ addAll }),
+    addAll,
     bitswap: {
       stat: notStarted,
       unwant: notStarted,
-      wantlist: notStarted
+      wantlist: notStarted,
+      wantlistForPeer: notStarted
     },
     block,
     bootstrap: {
       add: Components.bootstrap.add({ repo }),
+      clear: Components.bootstrap.clear({ repo }),
       list: Components.bootstrap.list({ repo }),
+      reset: Components.bootstrap.reset({ repo }),
       rm: Components.bootstrap.rm({ repo })
     },
     cat: Components.cat({ ipld, preload }),

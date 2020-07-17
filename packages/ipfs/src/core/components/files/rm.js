@@ -7,24 +7,22 @@ const toSources = require('./utils/to-sources')
 const removeLink = require('./utils/remove-link')
 const toMfsPath = require('./utils/to-mfs-path')
 const toTrail = require('./utils/to-trail')
-const applyDefaultOptions = require('./utils/apply-default-options')
 const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
   recursive: false,
   cidVersion: 0,
   hashAlg: 'sha2-256',
-  flush: true
+  flush: true,
+  signal: undefined
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsRm () {
-    const args = Array.from(arguments)
-
+  return withTimeoutOption(async function mfsRm (...args) {
     const {
-      sources
+      sources,
+      options
     } = await toSources(context, args, defaultOptions)
-    const options = applyDefaultOptions(args, defaultOptions)
 
     if (!sources.length) {
       throw errCode(new Error('Please supply at least one path to remove'), 'ERR_INVALID_PARAMS')
@@ -43,7 +41,7 @@ module.exports = (context) => {
 }
 
 const removePath = async (context, path, options) => {
-  const mfsPath = await toMfsPath(context, path)
+  const mfsPath = await toMfsPath(context, path, options)
   const trail = await toTrail(context, mfsPath.mfsPath, options)
   const child = trail.pop()
   const parent = trail[trail.length - 1]
@@ -72,5 +70,5 @@ const removePath = async (context, path, options) => {
   const newRootCid = await updateTree(context, trail, options)
 
   // Update the MFS record with the new CID for the root of the tree
-  await updateMfsRoot(context, newRootCid)
+  await updateMfsRoot(context, newRootCid, options)
 }

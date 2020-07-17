@@ -5,17 +5,12 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (template, options = {}) => {
-    if (typeof template !== 'string') {
-      options = template || {}
-      template = null
-    }
-
+  return async (options = {}) => {
     const res = await api.post('object/new', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: template,
+        arg: options.template,
         ...options
       }),
       headers: options.headers

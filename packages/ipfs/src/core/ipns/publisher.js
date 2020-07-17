@@ -32,7 +32,7 @@ class IpnsPublisher {
   }
 
   // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
-  async publish (privKey, value) { // eslint-disable-line require-await
+  publish (privKey, value) {
     return this.publishWithEOL(privKey, value, defaultRecordLifetime)
   }
 

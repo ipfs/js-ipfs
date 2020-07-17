@@ -8,7 +8,8 @@ const errCode = require('err-code')
 const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
-  withLocal: false
+  withLocal: false,
+  signal: undefined
 }
 
 module.exports = (context) => {
@@ -21,7 +22,7 @@ module.exports = (context) => {
       type,
       cid,
       mfsPath
-    } = await toMfsPath(context, path)
+    } = await toMfsPath(context, path, options)
 
     const exportPath = type === 'ipfs' && cid ? cid : mfsPath
     let file

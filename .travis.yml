@@ -16,8 +16,9 @@ stages:
   - test-external
 
 node_js:
-  - '10'
-  - '12'
+  - 'lts/*'
+  # cannot support node 14 until hapi > 19.1.1 is released
+  # - 'node'
 
 os:
   - linux
@@ -61,7 +62,7 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client} -- -- --bundlesize
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
         - npm run lint -- $RUN_SINCE --concurrency 1
 
@@ -130,7 +131,11 @@ jobs:
     - stage: test
       name: examples
       script:
-        - npm run build
+        - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
+        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist.push('ipfs-css', 'tachyons')"
+        - npm run reset
+        - npm install
+        - npm run build -- --scope={ipfs,ipfs-http-client}
         - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc-npm

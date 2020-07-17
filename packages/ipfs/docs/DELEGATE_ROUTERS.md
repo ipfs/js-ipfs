@@ -13,8 +13,11 @@ If you need to support Delegated Content and/or Peer Routing, you can enable it 
 If you are not able to run your own delegate router nodes, we currently have two nodes that support delegated routing. **Important**: As many people may be leveraging these nodes, performance may be affected, which is why we recommend running your own nodes in production.
 
 Available delegate multiaddrs are:
+
 - `/dns4/node0.delegate.ipfs.io/tcp/443/https`
 - `/dns4/node1.delegate.ipfs.io/tcp/443/https`
+- `/dns4/node2.delegate.ipfs.io/tcp/443/https`
+- `/dns4/node3.delegate.ipfs.io/tcp/443/https`
 
 **Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
 

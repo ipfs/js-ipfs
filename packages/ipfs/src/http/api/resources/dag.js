@@ -1,8 +1,7 @@
 'use strict'
 
-const CID = require('cids')
 const multipart = require('../../utils/multipart-request-parser')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const Joi = require('../../utils/joi')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
@@ -125,7 +124,8 @@ exports.get = {
     let result
 
     try {
-      result = await ipfs.dag.get(cid, path, {
+      result = await ipfs.dag.get(cid, {
+        path,
         signal,
         timeout
       })
@@ -296,7 +296,8 @@ exports.resolve = {
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
         cidBase: Joi.cidBase(),
-        timeout: Joi.timeout()
+        timeout: Joi.timeout(),
+        path: Joi.string()
       })
         .rename('cid-base', 'cidBase', {
           override: true,
@@ -320,37 +321,27 @@ exports.resolve = {
           path
         },
         cidBase,
-        timeout
+        timeout,
+        path: queryPath
       }
     } = request
 
     // to be consistent with go we need to return the CID to the last node we've traversed
     // along with the path inside that node as the remainder path
     try {
-      let lastCid = cid
-      let lastRemainderPath = path
-
-      if (path) {
-        for await (const { value, remainderPath } of ipfs.dag.resolve(lastCid, path, {
-          signal,
-          timeout
-        })) {
-          if (!CID.isCID(value)) {
-            break
-          }
-
-          lastRemainderPath = remainderPath
-          lastCid = value
-        }
-      }
+      const result = await ipfs.dag.resolve(cid, {
+        path: path || queryPath,
+        signal,
+        timeout
+      })
 
       return h.response({
         Cid: {
-          '/': cidToString(lastCid, {
+          '/': cidToString(result.cid, {
             base: cidBase
           })
         },
-        RemPath: lastRemainderPath || ''
+        RemPath: result.remainderPath
       })
     } catch (err) {
       throw Boom.boomify(err)

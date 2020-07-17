@@ -5,17 +5,12 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (cid, path, options = {}) => {
-    if (path && typeof path === 'object') {
-      options = path
-      path = null
-    }
-
+  return async (ipfsPath, options = {}) => {
     const res = await api.post('dag/resolve', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: path ? [cid, path].join(path.startsWith('/') ? '' : '/') : `${cid}`,
+        arg: `${ipfsPath}${options.path ? `/${options.path}`.replace(/\/[/]+/g, '/') : ''}`,
         ...options
       }),
       headers: options.headers
@@ -23,6 +18,6 @@ module.exports = configure(api => {
 
     const data = await res.json()
 
-    return { cid: new CID(data.Cid['/']), remPath: data.RemPath }
+    return { cid: new CID(data.Cid['/']), remainderPath: data.RemPath }
   }
 })

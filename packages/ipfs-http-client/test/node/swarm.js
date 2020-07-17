@@ -70,7 +70,7 @@ describe('.swarm.peers', function () {
       .query(true)
       .replyWithError('something awful happened')
 
-    await expect(ipfs.swarm.peers()).to.be.rejectedWith('something awful happened')
+    await expect(ipfs.swarm.peers()).to.eventually.be.rejectedWith('something awful happened')
 
     expect(scope.isDone()).to.equal(true)
   })

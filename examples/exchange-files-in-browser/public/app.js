@@ -3,7 +3,6 @@
 
 const IPFS = require('ipfs')
 const all = require('it-all')
-const last = require('it-last')
 const { Buffer } = IPFS
 
 // Node
@@ -52,7 +51,8 @@ async function start () {
         Addresses: {
           Swarm: [
             // This is a public webrtc-star server
-            // '/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star'
+            '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+            '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
             '/ip4/127.0.0.1/tcp/13579/wss/p2p-webrtc-star'
           ]
         },
@@ -248,13 +248,13 @@ async function onDrop (event) {
   for (const file of files) {
     fileSize = file.size // Note: fileSize is used by updateProgress
 
-    const fileAdded = await last(node.add({
+    const fileAdded = await node.add({
       path: file.name,
       content: file
     }, {
       wrapWithDirectory: true,
       progress: updateProgress
-    }))
+    })
 
     // As we are wrapping the content we use that hash to keep
     // the original file name when adding it to the table

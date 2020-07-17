@@ -3,6 +3,7 @@
 const WS = require('libp2p-websockets')
 const WebRTCStar = require('libp2p-webrtc-star')
 const Multiplex = require('libp2p-mplex')
+const { NOISE } = require('libp2p-noise')
 const SECIO = require('libp2p-secio')
 const KadDHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
@@ -24,7 +25,8 @@ module.exports = () => {
         Multiplex
       ],
       connEncryption: [
-        SECIO
+        SECIO,
+        NOISE
       ],
       peerDiscovery: [],
       dht: KadDHT,
@@ -46,6 +48,7 @@ module.exports = () => {
       dht: {
         kBucketSize: 20,
         enabled: false,
+        clientMode: true,
         randomWalk: {
           enabled: false
         },

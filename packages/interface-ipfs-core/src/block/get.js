@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 const { Buffer } = require('buffer')
-const multihash = require('multihashes')
+const multihash = require('multihashing-async').multihash
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
@@ -89,10 +89,10 @@ module.exports = (common, options) => {
     })
 
     it('should return an error for an invalid CID', () => {
-      return expect(ipfs.block.get('invalid')).to.eventually.be.rejected
+      return expect(ipfs.block.get('Non-base58 character')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
         .and.have.property('message')
-        .that.include('Non-base58 character')
+        .that.includes('Non-base58 character')
     })
   })
 }

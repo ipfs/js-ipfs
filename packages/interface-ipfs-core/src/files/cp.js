@@ -426,13 +426,13 @@ module.exports = (common, options) => {
         nsecs: (mtime - (seconds * 1000)) * 1000
       }
 
-      const [{
+      const {
         cid
-      }] = await all(ipfs.add({
+      } = await ipfs.add({
         content: fixtures.smallFile.data,
         mode,
         mtime
-      }))
+      })
       await ipfs.files.cp(`/ipfs/${cid}`, testDestPath)
 
       const stats = await ipfs.files.stat(testDestPath)
