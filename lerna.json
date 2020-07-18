@@ -21,6 +21,7 @@
       "conventionalCommits": true
     },
     "version": {
+      "changelogPreset": "@bluelovers/conventional-changelog-bluelovers",
       "private": false
     }
   }

@@ -34,6 +34,7 @@
     "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"
   },
   "devDependencies": {
+    "@bluelovers/conventional-changelog-bluelovers": "^5.0.23",
     "lerna": "^3.22.0"
   },
   "repository": {
