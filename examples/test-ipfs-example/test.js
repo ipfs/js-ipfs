@@ -25,7 +25,7 @@ async function testExample (dir) {
   //await installDeps(dir)
   await build(dir)
 
-  if (dir.includes('examples/browser-')) {
+  if (dir.includes('examples/browser-') || dir.includes('examples\\browser-') ) {
     await runBrowserTest(dir)
   } else {
     await runNodeTest(dir)
