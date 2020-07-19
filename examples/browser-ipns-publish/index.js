@@ -42,6 +42,8 @@ async function main() {
   });
   const { id } = await ipfsBrowser.id();
   log(`Browser IPFS ready! Node id: ${id}`);
+  document.getElementById("api-url").disabled = false;
+  document.getElementById("node-connect").disabled = false;
 
   async function nodeConnect(url) {
     log(`Connecting to ${url}`);
@@ -51,6 +53,8 @@ async function main() {
     log(`<span class="green">Success!</span>`);
     log(`Version ${agentVersion}`);
     log(`Peer ID ${id}`);
+    document.getElementById("peer-addr").disabled = false;
+    document.getElementById("peer-connect").disabled = false;
   }
 
   async function wsConnect(addr) {
@@ -73,6 +77,8 @@ async function main() {
       );
     });
     log(`(${peers.length} peers total)`);
+    document.getElementById("topic").disabled = false;
+    document.getElementById("publish").disabled = false;
   }
 
   // Wait until a peer subscribes a topic
@@ -217,7 +223,8 @@ async function main() {
     await sleep(2500); // give it a moment to save it
 
     let remList = await ipfsAPI.pubsub.ls(); // API
-    if (!remList.includes(topic)) sLog(`<span class="red">[Fail] !Pubsub.ls ${topic}</span>`);
+    if (!remList.includes(topic))
+      sLog(`<span class="red">[Fail] !Pubsub.ls ${topic}</span>`);
     else sLog(`[Pass] Pubsub.ls`);
 
     let remListSubs = await ipfsAPI.name.pubsub.subs(); // API
@@ -233,8 +240,8 @@ async function main() {
     });
     log(`Published ${results.name} to ${results.value}`); //
 
-    log(`Wait 45 seconds, then resolve...`);
-    await sleep(45000);
+    log(`Wait 5 seconds, then resolve...`);
+    await sleep(5000);
 
     log(`Try resolve ${keys.id} on server through API`);
 

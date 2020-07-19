@@ -110,10 +110,12 @@
         id="api-url"
         class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
         placeholder="/dns4/yourdomain.com/tcp/5001"
+        disabled="disabled"
       />
       <button
         id="node-connect"
         class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
       >
         Connect
       </button>
@@ -126,10 +128,12 @@
         id="peer-addr"
         class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
         placeholder="/dns4/yourdomain.com/tcp/4003/wss/p2p/QmTheirServerPeerId"
+        disabled="disabled"
       />
       <button
         id="peer-connect"
         class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
       >
         Connect
       </button>
@@ -153,7 +157,7 @@
             ><br />
           </li>
           <li>
-            <input type="radio" id="female" name="keyName" value="custom-key" />
+            <input type="radio" id="female" name="keyName" value="custom-key" disabled="disabled" />
             <label for="female"
               >Custom Key (<a
                 href="https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/KEY.md#ipfskeyimportname-pem-password-options"
@@ -173,14 +177,17 @@
       <input
         id="topic"
         class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
+        disabled="disabled"
       />
       <button
         id="publish"
         class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
       >
         Publish to IPNS
       </button>
     </div>
+
     <div class="ph3 mb3">
       <div class="fw2 tracked ttu f6 teal-muted mb2">Browser Console</div>
       <div
