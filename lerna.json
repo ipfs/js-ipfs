@@ -1,7 +1,8 @@
 {
   "lerna": "3.22.0",
   "packages": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "version": "independent",
   "command": {
@@ -9,7 +10,9 @@
       "hoist": true,
       "nohoist": [
         "libp2p-delegated-content-routing",
-        "libp2p-delegated-peer-routing"
+        "libp2p-delegated-peer-routing",
+        "ipfs-css",
+        "tachyons"
       ]
     },
     "run": {

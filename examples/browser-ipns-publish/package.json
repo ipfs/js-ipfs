@@ -31,7 +31,6 @@
     "go-ipfs": "^0.6.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
-    "fs-extra": "^9.0.1",
     "test-ipfs-example": "file:../test-ipfs-example/"
   },
   "repository": {
