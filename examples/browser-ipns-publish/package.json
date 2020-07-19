@@ -1,10 +1,11 @@
 {
-  "name": "browser-ipns-publish-example",
+  "name": "browser-ipns-publish",
   "version": "1.0.0",
   "description": "An example demonstrating publishing to IPNS in the browser",
   "private": true,
   "main": "index.js",
   "scripts": {
+    "build": "parcel build index.html --public-url ./",
     "start": "parcel index.html",
     "test": "test-ipfs-example"
   },
@@ -26,11 +27,11 @@
   "devDependencies": {
     "delay": "^4.3.0",
     "execa": "^4.0.0",
-    "fs-extra": "^9.0.1",
     "ipfsd-ctl": "^5.0.0",
-    "os": "^0.1.1",
+    "go-ipfs": "^0.6.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
+    "fs-extra": "^9.0.1",
     "test-ipfs-example": "file:../test-ipfs-example/"
   },
   "repository": {
