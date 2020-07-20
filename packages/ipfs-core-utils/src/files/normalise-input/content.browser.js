@@ -1,8 +1,12 @@
 'use strict'
 
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
 const { Blob } = require('ipfs-utils/src/globalthis')
+
+const {
+  isBytes,
+  isBloby
+} = require('./utils')
 
 function toBlob (input) {
   // Bytes | String
@@ -31,14 +35,6 @@ function toBlob (input) {
   }
 
   throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
-}
-
-function isBytes (obj) {
-  return Buffer.isBuffer(obj) || ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
-}
-
-function isBloby (obj) {
-  return obj instanceof Blob
 }
 
 async function itToBlob (stream) {

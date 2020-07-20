@@ -1,9 +1,13 @@
 'use strict'
 
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
-const globalThis = require('ipfs-utils/src/globalthis')
-const normaliseContent = require('./normalise-content')
+const normaliseContent = require('./content')
+const {
+  isBytes,
+  isBloby,
+  isFileObject,
+  browserStreamToIt
+} = require('./utils')
 
 /*
  * Transform one of:
@@ -173,31 +177,4 @@ async function toFileObject (input) {
   }
 
   return obj
-}
-
-function isBytes (obj) {
-  return Buffer.isBuffer(obj) || ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
-}
-
-function isBloby (obj) {
-  return typeof globalThis.Blob !== 'undefined' && obj instanceof globalThis.Blob
-}
-
-// An object with a path or content property
-function isFileObject (obj) {
-  return typeof obj === 'object' && (obj.path || obj.content)
-}
-
-async function * browserStreamToIt (stream) {
-  const reader = stream.getReader()
-
-  while (true) {
-    const result = await reader.read()
-
-    if (result.done) {
-      return
-    }
-
-    yield result.value
-  }
 }

@@ -42,6 +42,6 @@
     "it-all": "^1.0.1"
   },
   "browser": {
-    "./src/files/normalise-content": "./src/files/normalise-content.browser.js"
+    "./src/files/normalise-input/content": "./src/files/normalise-input/content.browser.js"
   }
 }

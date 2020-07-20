@@ -6,7 +6,8 @@ const normalise = require('../../src/files/normalise-input')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')
 const all = require('it-all')
-const globalThis = require('ipfs-utils/src/globalthis')
+const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
+const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 
 const STRING = () => 'hello world'
 const BUFFER = () => Buffer.from(STRING())
@@ -16,11 +17,11 @@ let BLOB
 let WINDOW_READABLE_STREAM
 
 if (supportsFileReader) {
-  BLOB = () => new globalThis.Blob([
+  BLOB = () => new Blob([
     STRING()
   ])
 
-  WINDOW_READABLE_STREAM = () => new globalThis.ReadableStream({
+  WINDOW_READABLE_STREAM = () => new ReadableStream({
     start (controller) {
       controller.enqueue(BUFFER())
       controller.close()
@@ -30,8 +31,17 @@ if (supportsFileReader) {
 
 async function verifyNormalisation (input) {
   expect(input.length).to.equal(1)
-  expect(input[0].content[Symbol.asyncIterator] || input[0].content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
-  expect(await all(input[0].content)).to.deep.equal([BUFFER()])
+
+  const content = input[0].content
+
+  if (isBrowser || isWebWorker) {
+    expect(content).to.be.an.instanceOf(Blob)
+    await expect(content.arrayBuffer()).to.eventually.deep.equal([BUFFER()])
+  } else {
+    expect(content[Symbol.asyncIterator] || content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
+    expect(await all(content)).to.deep.equal([BUFFER()])
+  }
+
   expect(input[0].path).to.equal('')
 }
 
