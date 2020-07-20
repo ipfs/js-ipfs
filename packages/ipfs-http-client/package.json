@@ -45,6 +45,7 @@
     "buffer": "^5.6.0",
     "cids": "^0.8.3",
     "debug": "^4.1.0",
+    "err-code": "^2.0.0",
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.3.0",
     "ipfs-utils": "^2.2.2",
