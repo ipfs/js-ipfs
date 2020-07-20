@@ -25,10 +25,6 @@ describe('interface-ipfs-core tests', () => {
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
-        name: 'should add a File',
-        reason: 'TODO not implemented in go-ipfs yet'
-      },
-      {
         name: 'should add with mtime as { nsecs, secs }',
         reason: 'TODO not implemented in go-ipfs yet'
       },

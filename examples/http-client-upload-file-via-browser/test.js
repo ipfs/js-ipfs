@@ -77,7 +77,7 @@ module.exports[pkg.name] = function (browser) {
     .setValue('#input-file', require('path').resolve(__dirname + '/screenshot.png'))
     .pause(1000)
 
-  browser.expect.element('#gateway-link').text.to.contain('QmU2LX4qZKahRRHeLWt8hSXwYmdX2zgDp7aDGCAHVFbdkY')
+  browser.expect.element('#gateway-link').text.to.contain('QmWGmeq2kxsXqhrPhtTEhvck6PXucPf5153PSpZZRxvTwT')
 
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)

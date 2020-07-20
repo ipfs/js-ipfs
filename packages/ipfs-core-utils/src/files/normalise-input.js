@@ -210,7 +210,6 @@ const asFileFromBlobPart = (content, name, options = {}) => {
   } else if (content instanceof File) {
     // Preserver file name if new name is not provided
     return new ExtendedFile([content], name == null ? content.name : '', {
-      lastModified: content.lastModified,
       type: content.type,
       ...options
     })
@@ -558,7 +557,7 @@ class FileStream {
     this.type = options.type || ''
     this.lastModified = options.lastModified || Date.now()
     this.path = options.path || ''
-    this.mtime = options.mtime
+    this.mtime = options.mtime || (options.lastModified && new Date(options.lastModified))
     this.mode = options.mode
 
     /** @type {'file-stream'} */

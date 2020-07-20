@@ -63,11 +63,8 @@ module.exports = (common, options) => {
     it('should add a File', async function () {
       if (!supportsFileReader) return this.skip('skip in node')
 
-      const fileAdded = await ipfs.add(new self.File(['should add a File'], 'filename.txt', {
-        type: 'text/plain',
-        lastModified: 1595258358939
-      }))
-      expect(fileAdded.cid.toString()).to.be.eq('QmPvC2efHddiRasErRn6oriRzaBK1b3CtmxiEVjJjhbuLw')
+      const fileAdded = await ipfs.add(new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
+      expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
     it('should add a File as tuple', async function () {
