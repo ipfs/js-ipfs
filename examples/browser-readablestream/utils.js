@@ -45,7 +45,7 @@ const dragDrop = (ipfs) => {
 
     const progress = log(`IPFS: Adding...`)
 
-    for await (const added of ipfs.add(files, {
+    for await (const added of ipfs.addAll(files, {
       progress: (addedBytes) => {
         progress.textContent = `IPFS: Adding ${addedBytes} bytes\r\n`
       }

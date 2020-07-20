@@ -9,85 +9,96 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Parameters](#parameters)
     - [Options](#options)
     - [Returns](#returns)
+  - [`ipfs.addAll(source, [options])`](#ipfsaddallsource-options)
+    - [Parameters](#parameters-1)
+    - [Options](#options-1)
+    - [Returns](#returns-1)
+    - [Example](#example)
     - [Notes](#notes)
       - [Chunking options](#chunking-options)
       - [Hash algorithms](#hash-algorithms)
       - [Importing files from the file system](#importing-files-from-the-file-system)
       - [Importing a file from a URL](#importing-a-file-from-a-url)
   - [`ipfs.cat(ipfsPath, [options])`](#ipfscatipfspath-options)
-    - [Parameters](#parameters-1)
-    - [Options](#options-1)
-    - [Returns](#returns-1)
-    - [Example](#example)
-  - [`ipfs.get(ipfsPath, [options])`](#ipfsgetipfspath-options)
     - [Parameters](#parameters-2)
     - [Options](#options-2)
     - [Returns](#returns-2)
-  - [`ipfs.ls(ipfsPath)`](#ipfslsipfspath)
+    - [Example](#example-1)
+  - [`ipfs.get(ipfsPath, [options])`](#ipfsgetipfspath-options)
     - [Parameters](#parameters-3)
     - [Options](#options-3)
     - [Returns](#returns-3)
-    - [Example](#example-1)
-- [The Mutable Files API](#the-mutable-files-api)
-  - [`ipfs.files.chmod(path, mode, [options])`](#ipfsfileschmodpath-mode-options)
+    - [Example](#example-2)
+  - [`ipfs.ls(ipfsPath)`](#ipfslsipfspath)
     - [Parameters](#parameters-4)
     - [Options](#options-4)
     - [Returns](#returns-4)
-    - [Example](#example-2)
-  - [`ipfs.files.cp(...from, to, [options])`](#ipfsfilescpfrom-to-options)
+    - [Example](#example-3)
+- [The Mutable Files API](#the-mutable-files-api)
+  - [`ipfs.files.chmod(path, mode, [options])`](#ipfsfileschmodpath-mode-options)
     - [Parameters](#parameters-5)
     - [Options](#options-5)
     - [Returns](#returns-5)
-    - [Example](#example-3)
-    - [Notes](#notes-1)
-  - [`ipfs.files.mkdir(path, [options])`](#ipfsfilesmkdirpath-options)
+    - [Example](#example-4)
+  - [`ipfs.files.cp(...from, to, [options])`](#ipfsfilescpfrom-to-options)
     - [Parameters](#parameters-6)
     - [Options](#options-6)
     - [Returns](#returns-6)
-    - [Example](#example-4)
-  - [`ipfs.files.stat(path, [options])`](#ipfsfilesstatpath-options)
+    - [Example](#example-5)
+    - [Notes](#notes-1)
+  - [`ipfs.files.mkdir(path, [options])`](#ipfsfilesmkdirpath-options)
     - [Parameters](#parameters-7)
     - [Options](#options-7)
     - [Returns](#returns-7)
-    - [Example](#example-5)
-  - [`ipfs.files.touch(path, [options])`](#ipfsfilestouchpath-options)
+    - [Example](#example-6)
+  - [`ipfs.files.stat(path, [options])`](#ipfsfilesstatpath-options)
     - [Parameters](#parameters-8)
     - [Options](#options-8)
     - [Returns](#returns-8)
-    - [Example](#example-6)
-  - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
+    - [Example](#example-7)
+  - [`ipfs.files.touch(path, [options])`](#ipfsfilestouchpath-options)
     - [Parameters](#parameters-9)
     - [Options](#options-9)
-    - [Example](#example-7)
-  - [`ipfs.files.read(path, [options])`](#ipfsfilesreadpath-options)
+    - [Returns](#returns-9)
+    - [Example](#example-8)
+  - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
     - [Parameters](#parameters-10)
     - [Options](#options-10)
-    - [Returns](#returns-9)
-  - [`ipfs.files.write(path, content, [options])`](#ipfsfileswritepath-content-options)
+    - [Returns](#returns-10)
+    - [Example](#example-9)
+  - [`ipfs.files.read(path, [options])`](#ipfsfilesreadpath-options)
     - [Parameters](#parameters-11)
     - [Options](#options-11)
-    - [Returns](#returns-10)
-  - [`ipfs.files.mv(...from, to, [options])`](#ipfsfilesmvfrom-to-options)
+    - [Returns](#returns-11)
+    - [Example](#example-10)
+  - [`ipfs.files.write(path, content, [options])`](#ipfsfileswritepath-content-options)
     - [Parameters](#parameters-12)
     - [Options](#options-12)
-    - [Returns](#returns-11)
-    - [Example](#example-8)
-  - [`ipfs.files.flush(path, [options])`](#ipfsfilesflushpath-options)
+    - [Returns](#returns-12)
+    - [Example](#example-11)
+  - [`ipfs.files.mv(...from, to, [options])`](#ipfsfilesmvfrom-to-options)
     - [Parameters](#parameters-13)
     - [Options](#options-13)
-    - [Returns](#returns-12)
-  - [`ipfs.files.ls(path, [options])`](#ipfsfileslspath-options)
+    - [Returns](#returns-13)
+    - [Example](#example-12)
+    - [Notes](#notes-2)
+  - [`ipfs.files.flush(path, [options])`](#ipfsfilesflushpath-options)
     - [Parameters](#parameters-14)
     - [Options](#options-14)
-    - [Returns](#returns-13)
-    - [Example](#example-9)
+    - [Returns](#returns-14)
+    - [Example](#example-13)
+  - [`ipfs.files.ls(path, [options])`](#ipfsfileslspath-options)
+    - [Parameters](#parameters-15)
+    - [Options](#options-15)
+    - [Returns](#returns-15)
+    - [Example](#example-14)
 
 ## The Regular API
 The regular, top-level API for add, cat, get and ls Files on IPFS
 
 ### `ipfs.add(data, [options])`
 
-> Import files and data into IPFS.
+> Import a file or data into IPFS.
 
 #### Parameters
 
@@ -97,19 +108,12 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 `data` may be:
 
-* `Bytes` (alias for `Buffer`|`ArrayBuffer`|`TypedArray`) [single file]
-* `Bloby` (alias for: `Blob`|`File`) [single file]
-* `string` [single file]
-* `FileObject` (see below for definition) [single file]
-* `Iterable<number>` [single file]
-* `Iterable<Bytes>` [single file]
-* `Iterable<Bloby>` [multiple files]
-* `Iterable<string>` [multiple files]
-* `Iterable<FileObject>` [multiple files]
-* `AsyncIterable<Bytes>` [single file]
-* `AsyncIterable<Bloby>` [multiple files]
-* `AsyncIterable<String>` [multiple files]
-* `AsyncIterable<FileObject>` [multiple files]
+* `Blob`
+* `String`
+* `Uint8Array`
+* `FileObject` (see below for definition)
+* `Iterable<Uint8Array>`
+* `AsyncIterable<Uint8Array>`
 
 `FileObject` is a plain JS object of the following form:
 
@@ -135,7 +139,127 @@ One of `path` or `content` _must_ be passed.
 `FileContent` is one of the following types:
 
 ```js
-Bytes | Bloby | string | Iterable<number> | Iterable<Bytes> | AsyncIterable<Bytes>
+Uint8Array | Blob | String | Iterable<Uint8Array> | AsyncIterable<Uint8Array>
+```
+
+`UnixTime` is one of the following types:
+
+```js
+Date | { secs: number, nsecs?: number } | number[]
+```
+
+As an object, `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second.
+
+As an array of numbers, it must have two elements, as per the output of [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
+
+#### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| chunker | `String` | `'size-262144` | chunking algorithm used to build ipfs DAGs |
+| cidVersion | `Number` | `0` | the CID version to use when storing the data |
+| hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
+| onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
+| pin | `boolean` | `true` | pin this object when adding |
+| progress | function | `undefined` | a function that will be called with the byte length of chunks as a file is added to ipfs |
+| rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
+| trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |
+| wrapWithDirectory | `boolean` | `false` | Adds a wrapping node around the content |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+#### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `UnixFSEntry` | A object describing the added data |
+
+Each yielded object is of the form:
+
+```JavaScript
+{
+  path: '/tmp/myfile.txt',
+  cid: CID('QmHash'),
+  mode: Number,
+  mtime: { secs: Number, nsecs: Number },
+  size: 123
+}
+```
+
+#### Example
+
+```js
+const file = {
+  path: '/tmp/myfile.txt',
+  content: 'ABC'
+}
+
+const result of await ipfs.add(content)
+
+console.info(result)
+
+/*
+Prints:
+{
+  "path": "tmp",
+  "cid": CID("QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg"),
+  "mode": 493,
+  "mtime": { secs: Number, nsecs: Number },
+  "size": 67
+}
+*/
+```
+
+Now [ipfs.io/ipfs/Qm..pg/myfile.txt](https://ipfs.io/ipfs/QmWXdjNC362aPDtwHPUE9o2VMqPeNeCQuTBTv1NsKtwypg/myfile.txt) returns the "ABC" string.
+
+### `ipfs.addAll(source, [options])`
+
+> Import multiple files and data into IPFS.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| source | Object | Data to import (see below) |
+
+`source` may be:
+
+* `Iterable<Blob>`
+* `Iterable<String>`
+* `Iterable<Uint8Array>`
+* `Iterable<FileObject>`
+* `AsyncIterable<Blob>`
+* `AsyncIterable<String>`
+* `AsyncIterable<Uint8Array>`
+* `AsyncIterable<FileObject>`
+
+`FileObject` is a plain JS object of the following form:
+
+```js
+{
+  // The path you want to the file to be accessible at from the root CID _after_ it has been added
+  path?: string
+  // The contents of the file (see below for definition)
+  content?: FileContent
+  // File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
+  mode?: number | string
+  // The modification time of the entry (see below for definition)
+  mtime?: UnixTime
+}
+```
+
+If no `path` is specified, then the item will be added to the root level and will be given a name according to it's CID.
+
+If no `content` is passed, then the item is treated as an empty directory.
+
+One of `path` or `content` _must_ be passed.
+
+`FileContent` is one of the following types:
+
+```js
+Uint8Array | Blob | String | Iterable<Uint8Array> | AsyncIterable<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
@@ -172,7 +296,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Object>` | An async iterable that yields objects describing the added data |
+| `AsyncIterable<UnixFSEntry>` | An async iterable that yields objects describing the added data |
 
 Each yielded object is of the form:
 
@@ -186,7 +310,7 @@ Each yielded object is of the form:
 }
 ```
 
-#### Example
+#### Example
 
 ```js
 const files = [{
@@ -194,7 +318,7 @@ const files = [{
   content: 'ABC'
 }]
 
-for await (const result of ipfs.add(content)) {
+for await (const result of ipfs.addAll(content)) {
   console.log(result)
 }
 
@@ -259,7 +383,7 @@ const addOptions = {
   timeout: 10000
 };
 
-for await (const file of ipfs.add(globSource('./docs', globSourceOptions), addOptions)) {
+for await (const file of ipfs.addAll(globSource('./docs', globSourceOptions), addOptions)) {
   console.log(file)
 }
 
@@ -288,9 +412,8 @@ const { urlSource } = IPFS
 
 const ipfs = await IPFS.create()
 
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
 
 /*
 {
@@ -380,7 +503,7 @@ Each yielded object is of the form:
 
 Here, each `path` corresponds to the name of a file, and `content` is an async iterable with the file contents.
 
-#### Example
+#### Example
 
 ```JavaScript
 const BufferList = require('bl/BufferList')
@@ -713,7 +836,7 @@ An optional object which may have the following keys:
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
-#### Returns
+#### Returns
 
 | Type | Description |
 | -------- | -------- |
@@ -759,7 +882,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
 
-#### Example
+#### Example
 
 ```JavaScript
 const chunks = []
@@ -809,7 +932,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<void>` | If action is successfully completed. Otherwise an error will be thrown |
 
-#### Example
+#### Example
 
 ```JavaScript
 await ipfs.files.write('/hello-world', Buffer.from('Hello, world!'))
@@ -855,7 +978,7 @@ await ipfs.files.mv('/src-dir', '/dst-dir')
 await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
 ```
 
-#### Notes
+#### Notes
 
 If `from` has multiple values then `to` must be a directory.
 
@@ -894,7 +1017,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<CID>` | The CID of the path that has been flushed |
 
-#### Example
+#### Example
 
 ```JavaScript
 const cid = await ipfs.files.flush('/')

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.138.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.137.0...interface-ipfs-core@0.138.0) (2020-07-16)
+
+
+### Bug Fixes
+
+* optional arguments go in the options object ([#3118](https://github.com/ipfs/js-ipfs/issues/3118)) ([8cb8c73](https://github.com/ipfs/js-ipfs/commit/8cb8c73037e44894d756b70f344b3282463206f9))
+
+
+### Features
+
+* add interface and http client versions to version output ([#3125](https://github.com/ipfs/js-ipfs/issues/3125)) ([65f8b23](https://github.com/ipfs/js-ipfs/commit/65f8b23f550f939e94aaf6939894a513519e6d68)), closes [#2878](https://github.com/ipfs/js-ipfs/issues/2878)
+* store blocks by multihash instead of CID ([#3124](https://github.com/ipfs/js-ipfs/issues/3124)) ([03b17f5](https://github.com/ipfs/js-ipfs/commit/03b17f5e2d290e84aa0cb541079b79e468e7d1bd))
+
+
+
+
+
 # [0.137.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.136.0...interface-ipfs-core@0.137.0) (2020-06-24)
 
 

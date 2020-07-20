@@ -24,13 +24,13 @@ module.exports = (common, options) => {
       ipfs = (await common.spawn()).api
       // two files wrapped in directories, only root CID pinned recursively
       const dir = fixtures.directory.files.map((file) => ({ path: file.path, content: file.data }))
-      await all(ipfs.add(dir, { pin: false, cidVersion: 0 }))
+      await all(ipfs.addAll(dir, { pin: false, cidVersion: 0 }))
       await ipfs.pin.add(fixtures.directory.cid, { recursive: true })
       // a file (CID pinned recursively)
-      await all(ipfs.add(fixtures.files[0].data, { pin: false, cidVersion: 0 }))
+      await ipfs.add(fixtures.files[0].data, { pin: false, cidVersion: 0 })
       await ipfs.pin.add(fixtures.files[0].cid, { recursive: true })
       // a single CID (pinned directly)
-      await all(ipfs.add(fixtures.files[1].data, { pin: false, cidVersion: 0 }))
+      await ipfs.add(fixtures.files[1].data, { pin: false, cidVersion: 0 })
       await ipfs.pin.add(fixtures.files[1].cid, { recursive: false })
     })
 

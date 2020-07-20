@@ -191,7 +191,7 @@ function createApi ({
     stat: Components.object.stat({ ipld, preload })
   }
 
-  const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
+  const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
   const isOnline = Components.isOnline({ libp2p })
 
   const dhtNotEnabled = async () => { // eslint-disable-line require-await
@@ -240,7 +240,8 @@ function createApi ({
     }
 
   const api = {
-    add,
+    add: Components.add({ addAll }),
+    addAll,
     bitswap: {
       stat: Components.bitswap.stat({ bitswap }),
       unwant: Components.bitswap.unwant({ bitswap }),

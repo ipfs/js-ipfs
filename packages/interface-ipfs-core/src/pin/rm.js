@@ -21,9 +21,9 @@ module.exports = (common, options) => {
     let ipfs
     beforeEach(async () => {
       ipfs = (await common.spawn()).api
-      await all(ipfs.add(fixtures.files[0].data, { pin: false }))
+      await ipfs.add(fixtures.files[0].data, { pin: false })
       await ipfs.pin.add(fixtures.files[0].cid, { recursive: true })
-      await all(ipfs.add(fixtures.files[1].data, { pin: false }))
+      await ipfs.add(fixtures.files[1].data, { pin: false })
       await ipfs.pin.add(fixtures.files[1].cid, { recursive: false })
     })
 

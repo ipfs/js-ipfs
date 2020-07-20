@@ -86,7 +86,7 @@ describe('pin', function () {
     })
 
     pin = ipfs.pin
-    await all(ipfs.add(fixtures))
+    await ipfs.add(fixtures)
   })
 
   after(function () {

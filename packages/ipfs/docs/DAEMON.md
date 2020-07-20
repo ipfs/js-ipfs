@@ -3,7 +3,7 @@
 
 > How to run a long-lived IPFS process
 
-## Table of contents <!-- omit in toc -->
+## Table of contents <!-- omit in toc -->
 
 - [CLI](#cli)
 - [Programmatic](#programmatic)

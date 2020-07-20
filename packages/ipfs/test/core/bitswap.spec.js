@@ -7,7 +7,6 @@ const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
-const all = require('it-all')
 const concat = require('it-concat')
 const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
@@ -66,14 +65,14 @@ describe('bitswap', function () {
     it('2 peers', async () => {
       // TODO make this test more interesting (10Mb file)
       // TODO remove randomness from the test
-      const file = Buffer.from(`I love IPFS <3 ${nanoid()}`)
+      const content = Buffer.from(`I love IPFS <3 ${nanoid()}`)
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
       proc.swarm.connect(remote.peerId.addresses[0])
 
-      const files = await all(remote.add([{ path: 'awesome.txt', content: file }]))
-      const data = await concat(proc.cat(files[0].cid))
-      expect(data.slice()).to.eql(file)
+      const file = await remote.add({ path: 'awesome.txt', content })
+      const data = await concat(proc.cat(file.cid))
+      expect(data.slice()).to.eql(content)
       await df.clean()
     })
   })

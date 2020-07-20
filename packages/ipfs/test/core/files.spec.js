@@ -31,17 +31,16 @@ describe('files', function () {
 
   describe('add', () => {
     it('should not error when passed null options', async () => {
-      await all(ipfs.add(Buffer.from(nanoid()), null))
+      await ipfs.add(Buffer.from(nanoid()), null)
     })
 
     it('should add a file with a v1 CID', async () => {
-      const files = await all(ipfs.add(Buffer.from([0, 1, 2]), {
+      const file = await ipfs.add(Buffer.from([0, 1, 2]), {
         cidVersion: 1
-      }))
+      })
 
-      expect(files.length).to.equal(1)
-      expect(files[0].cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(files[0].size).to.equal(3)
+      expect(file.cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
+      expect(file.size).to.equal(3)
     })
   })
 })

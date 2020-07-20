@@ -19,14 +19,14 @@
     "copy-webpack-plugin": "^5.0.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-hot-loader": "^4.8.8",
+    "react-hot-loader": "^4.12.21",
     "test-ipfs-example": "^2.0.3",
-    "webpack": "^4.28.4",
+    "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "ipfs": "^0.47.0"
+    "ipfs": "^0.48.0"
   },
   "browserslist": [
     ">1%",
