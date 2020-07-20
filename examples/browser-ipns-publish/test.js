@@ -2,25 +2,15 @@
 
 const path = require("path");
 const execa = require("execa");
+const { createFactory } = require("ipfsd-ctl");
+const df = createFactory({
+  ipfsHttpModule: require("ipfs-http-client"),
+  ipfsBin: require("go-ipfs").path(),
+  args: ["--enable-pubsub-experiment"],
+  disposable: true,
+});
 const { startServer } = require("test-ipfs-example/utils");
 const pkg = require("./package.json");
-const { createFactory } = require("ipfsd-ctl");
-const df = createFactory(
-  {
-    ipfsHttpModule: require("ipfs-http-client"),
-  },
-  {
-    js: {
-      ipfsBin: require.resolve("ipfs/src/cli/bin.js"),
-      args: ["--enable-pubsub-experiment"],
-    },
-    go: {
-      ipfsBin: require("go-ipfs").path(),
-      // ipfsBin: require('go-ipfs-dep').path(),
-      args: ["--enable-pubsub-experiment"],
-    },
-  }
-);
 
 async function testUI(url, apiAddr, peerAddr, topic) {
   const proc = execa(
@@ -58,7 +48,6 @@ async function runTest() {
     ipfsOptions: {
       config: {
         Addresses: {
-          Swarm: ["/ip4/127.0.0.1/tcp/4003/ws", "/ip4/127.0.0.1/tcp/0"],
           API: "/ip4/127.0.0.1/tcp/0",
         },
         API: {
@@ -70,10 +59,12 @@ async function runTest() {
     },
   });
 
-  const js = await df.spawn({
-    type: "js",
-    test: true
+  const go2 = await df.spawn({
+    type: "go",
+    test: true,
   });
+
+  await go.api.swarm.connect(go2.api.peerId.addresses[0]);
 
   const topic = `/ipfs/QmWCnkCXYYPP7NgH6ZHQiQxw7LJAMjnAySdoz9i1oxD5XJ`;
 
@@ -85,8 +76,8 @@ async function runTest() {
       topic
     );
   } finally {
-    await js.stop();
     await go.stop();
+    await go2.stop();
     await app.stop();
   }
 }
