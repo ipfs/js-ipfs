@@ -42,7 +42,7 @@ module.exports = () => {
           enabled: true
         },
         // Optimization
-        // Requiring bootstrap inline in components/libp2p to speed up start-up time
+        // Requiring bootstrap inline in components/libp2p to reduce the cli execution time
         // [Bootstrap.tag] = 'bootstrap'
         bootstrap: {
           enabled: true
