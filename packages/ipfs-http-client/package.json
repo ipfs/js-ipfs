@@ -15,7 +15,7 @@
   ],
   "main": "src/index.js",
   "browser": {
-    "./src/lib/to-stream.js": "./src/lib/to-stream.browser.js",
+    "./src/lib/multipart-request.js": "./src/lib/multipart-request.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs": false
   },
