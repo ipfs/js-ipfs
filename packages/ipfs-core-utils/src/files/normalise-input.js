@@ -2,8 +2,7 @@
 'use strict'
 
 const errCode = require('err-code')
-const { File } = require('./file')
-const { Blob, readBlob } = require('./blob')
+const { File, Blob, readBlob } = require('./blob')
 
 /**
  * @template T

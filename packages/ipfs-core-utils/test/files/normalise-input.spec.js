@@ -3,8 +3,7 @@
 /* eslint-env mocha */
 const { expect } = require('../utils/chai')
 const normalise = require('../../src/files/normalise-input')
-const { Blob } = require('../../src/files/blob')
-const { File } = require('../../src/files/file')
+const { Blob, File } = require('../../src/files/blob')
 const TextEncoder = require('ipfs-utils/src/text-encoder')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')

@@ -3,6 +3,7 @@
 /* eslint-env browser */
 
 exports.Blob = Blob
+exports.File = File
 
 /**
  * Universal blob reading function

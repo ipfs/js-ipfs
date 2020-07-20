@@ -12,8 +12,7 @@
     "dist"
   ],
   "browser": {
-    "./src/files/blob.js": "./src/files/blob.browser.js",
-    "./src/files/file.js": "./src/files/file.browser.js"
+    "./src/files/blob.js": "./src/files/blob.browser.js"
   },
   "repository": {
     "type": "git",
@@ -35,7 +34,8 @@
     "buffer": "^5.6.0",
     "cids": "^0.8.0",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^2.2.2"
+    "ipfs-utils": "^2.2.2",
+    "web-file-polyfill": "^1.0.0"
   },
   "devDependencies": {
     "aegir": "^23.0.0",
