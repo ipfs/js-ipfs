@@ -3,6 +3,7 @@
 /* eslint-env mocha */
 const { expect } = require('../utils/chai')
 const normalise = require('../../src/files/normalise-input')
+const { blobToIt } = require('../../src/files/normalise-input/utils')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')
 const all = require('it-all')
@@ -31,18 +32,17 @@ if (supportsFileReader) {
 
 async function verifyNormalisation (input) {
   expect(input.length).to.equal(1)
+  expect(input[0].path).to.equal('')
 
-  const content = input[0].content
+  let content = input[0].content
 
   if (isBrowser || isWebWorker) {
     expect(content).to.be.an.instanceOf(Blob)
-    await expect(content.arrayBuffer()).to.eventually.deep.equal([BUFFER()])
-  } else {
-    expect(content[Symbol.asyncIterator] || content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
-    expect(await all(content)).to.deep.equal([BUFFER()])
+    content = blobToIt(input[0].content)
   }
 
-  expect(input[0].path).to.equal('')
+  expect(content[Symbol.asyncIterator] || content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
+  await expect(all(content)).to.eventually.deep.equal([BUFFER()])
 }
 
 async function testContent (input) {
