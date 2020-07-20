@@ -1,6 +1,5 @@
 'use strict'
 
-const Bootstrap = require('libp2p-bootstrap')
 const TCP = require('libp2p-tcp')
 const MulticastDNS = require('libp2p-mdns')
 const WS = require('libp2p-websockets')
@@ -42,7 +41,10 @@ module.exports = () => {
         [MulticastDNS.tag]: {
           enabled: true
         },
-        [Bootstrap.tag]: {
+        // Optimization
+        // Requiring bootstrap inline in components/libp2p to speed up start-up time
+        // [Bootstrap.tag] = 'bootstrap'
+        bootstrap: {
           enabled: true
         }
       },
