@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [45.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.3.0...ipfs-http-client@45.0.0) (2020-07-16)
+
+
+### Bug Fixes
+
+* optional arguments go in the options object ([#3118](https://github.com/ipfs/js-ipfs/issues/3118)) ([8cb8c73](https://github.com/ipfs/js-ipfs/commit/8cb8c73037e44894d756b70f344b3282463206f9))
+* small whitespace change ([0d4604d](https://github.com/ipfs/js-ipfs/commit/0d4604dde995edb69483c03622e38448d31eeb88))
+* still load dag-pb, dag-cbor and raw when specifying custom formats ([#3132](https://github.com/ipfs/js-ipfs/issues/3132)) ([a96e3bc](https://github.com/ipfs/js-ipfs/commit/a96e3bc9e3763004beafc24b98efa85ffa665622)), closes [#3129](https://github.com/ipfs/js-ipfs/issues/3129)
+
+
+### Features
+
+* add interface and http client versions to version output ([#3125](https://github.com/ipfs/js-ipfs/issues/3125)) ([65f8b23](https://github.com/ipfs/js-ipfs/commit/65f8b23f550f939e94aaf6939894a513519e6d68)), closes [#2878](https://github.com/ipfs/js-ipfs/issues/2878)
+* store blocks by multihash instead of CID ([#3124](https://github.com/ipfs/js-ipfs/issues/3124)) ([03b17f5](https://github.com/ipfs/js-ipfs/commit/03b17f5e2d290e84aa0cb541079b79e468e7d1bd))
+
+
+### BREAKING CHANGES
+
+* - not really
+
+
+
+
+
 # [44.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.2.0...ipfs-http-client@44.3.0) (2020-06-24)
 
 

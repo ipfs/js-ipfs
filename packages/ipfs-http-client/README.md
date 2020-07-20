@@ -147,9 +147,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { globSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(globSource('./docs', { recursive: true }))) {
-  console.log(file)
-}
+const file = await ipfs.add(globSource('./docs', { recursive: true }))
+console.log(file)
+
 /*
 {
   path: 'docs/assets/anchor.js',
@@ -182,9 +182,9 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { urlSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-for await (const file of ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))) {
-  console.log(file)
-}
+const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+console.log(file)
+
 /*
 {
   path: 'ipfs-logo.svg',
@@ -290,11 +290,11 @@ const list = await bitswap.wantlist()
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/browser-browserify) to get a boilerplate.
+See the example in the [examples folder](/examples/http-client-browser-browserify) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](examples/bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
@@ -309,9 +309,9 @@ To always request the latest version, use one of the following examples:
 
 For maximum security you may also decide to:
 
-* reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
-* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity. Learn more also at the [jsdelivr website](https://www.jsdelivr.com/using-sri-with-dynamic-files)
-* set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
+* reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
+* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity. Learn more also at the [jsdelivr website](https://www.jsdelivr.com/using-sri-with-dynamic-files)
+* set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
 
 Example:
 
@@ -335,7 +335,7 @@ const ipfs = window.IpfsHttpClient()
 
 ### CORS
 
-In a web browser IPFS HTTP client (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
+In a web browser IPFS HTTP client (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
 
 ```console
 $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin  '["http://example.com"]'

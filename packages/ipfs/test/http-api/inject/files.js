@@ -27,7 +27,7 @@ describe('/files', () => {
 
   beforeEach(() => {
     ipfs = {
-      add: sinon.stub(),
+      addAll: sinon.stub(),
       cat: sinon.stub(),
       get: sinon.stub(),
       ls: sinon.stub(),
@@ -40,7 +40,7 @@ describe('/files', () => {
   async function assertAddArgs (url, fn) {
     const content = Buffer.from('TEST\n')
 
-    ipfs.add.callsFake(async function * (source, opts) {
+    ipfs.addAll.callsFake(async function * (source, opts) {
       expect(fn(opts)).to.be.true()
 
       const input = await first(source)
@@ -123,7 +123,7 @@ describe('/files', () => {
     it('should add data and return a base64 encoded CID', async () => {
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
         path: cid.toString(),
         cid,
         size: content.byteLength,
@@ -153,7 +153,7 @@ describe('/files', () => {
     it('should add data without pinning and return a base64 encoded CID', async () => {
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.add.callsFake(async function * (source, opts) {
+      ipfs.addAll.callsFake(async function * (source, opts) {
         expect(opts).to.have.property('pin', false)
 
         const input = await first(source)

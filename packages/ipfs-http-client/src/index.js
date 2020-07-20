@@ -21,6 +21,7 @@ const urlSource = require('ipfs-utils/src/files/url-source')
 function ipfsClient (options = {}) {
   return {
     add: require('./add')(options),
+    addAll: require('./add-all')(options),
     bitswap: require('./bitswap')(options),
     block: require('./block')(options),
     bootstrap: require('./bootstrap')(options),

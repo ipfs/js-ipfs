@@ -6,7 +6,6 @@ const CID = require('cids')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -31,7 +30,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when providing a value on the DHT', async () => {
-      const res = await last(ipfs.add(Buffer.from('test')))
+      const res = await ipfs.add(Buffer.from('test'))
 
       await testTimeout(() => ipfs.dht.provide(res.cid, {
         timeout: 1
@@ -39,9 +38,9 @@ module.exports = (common, options) => {
     })
 
     it('should provide local CID', async () => {
-      const res = await all(ipfs.add(Buffer.from('test')))
+      const res = await ipfs.add(Buffer.from('test'))
 
-      await all(ipfs.dht.provide(res[0].cid))
+      await all(ipfs.dht.provide(res.cid))
     })
 
     it('should not provide if block not found locally', () => {
@@ -54,7 +53,7 @@ module.exports = (common, options) => {
     })
 
     it('should allow multiple CIDs to be passed', async () => {
-      const res = await all(ipfs.add([
+      const res = await all(ipfs.addAll([
         { content: Buffer.from('t0') },
         { content: Buffer.from('t1') }
       ]))
@@ -63,8 +62,8 @@ module.exports = (common, options) => {
     })
 
     it('should provide a CIDv1', async () => {
-      const res = await all(ipfs.add(Buffer.from('test'), { cidVersion: 1 }))
-      await all(ipfs.dht.provide(res[0].cid))
+      const res = await ipfs.add(Buffer.from('test'), { cidVersion: 1 })
+      await all(ipfs.dht.provide(res.cid))
     })
 
     it('should error on non CID arg', () => {

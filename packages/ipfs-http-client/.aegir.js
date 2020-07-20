@@ -10,7 +10,7 @@ const server = createServer({
 }, {
   type: 'go',
   ipfsHttpModule: require('./'),
-  ipfsBin: require('go-ipfs-dep').path()
+  ipfsBin: require('go-ipfs').path()
 })
 
 let echoServer = new EchoServer()

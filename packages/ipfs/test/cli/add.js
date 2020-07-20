@@ -46,14 +46,14 @@ describe('add', () => {
 
   beforeEach(() => {
     ipfs = {
-      add: sinon.stub()
+      addAll: sinon.stub()
     }
   })
 
   it('should add a file', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid: new CID(cid),
       path: 'readme'
     }])
@@ -66,7 +66,7 @@ describe('add', () => {
   it('adds a file path with progress', async () => {
     const cid = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid: new CID(cid),
       path: 'readme'
     }])
@@ -79,7 +79,7 @@ describe('add', () => {
     const cid1 = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
     const cid2 = 'QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o'
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       progress: sinon.match.func,
       wrapWithDirectory: true
@@ -99,7 +99,7 @@ describe('add', () => {
   it('add with cid-version=1', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       cidVersion: 1
     }).returns([{
@@ -114,7 +114,7 @@ describe('add', () => {
   it('add with cid-version=1 and raw-leaves=false', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       cidVersion: 1,
       rawLeaves: false
@@ -130,7 +130,7 @@ describe('add', () => {
   it('add with cid-version=1 and raw-leaves=true', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB').toV1()
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       cidVersion: 1,
       rawLeaves: true
@@ -146,7 +146,7 @@ describe('add', () => {
   it('add from pipe', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(sinon.match({
+    ipfs.addAll.withArgs(sinon.match({
       content: matchIterable()
     }), defaultOptions).returns([{
       cid,
@@ -167,7 +167,7 @@ describe('add', () => {
   it('add from pipe with mtime=100', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(sinon.match({
+    ipfs.addAll.withArgs(sinon.match({
       content: matchIterable(),
       mtime: { secs: 100 }
     }), defaultOptions).returns([{
@@ -189,7 +189,7 @@ describe('add', () => {
   it('add --quiet', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -201,7 +201,7 @@ describe('add', () => {
   it('add --quiet (short option)', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -213,7 +213,7 @@ describe('add', () => {
   it('add --quieter', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -225,7 +225,7 @@ describe('add', () => {
   it('add --quieter (short option)', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -237,7 +237,7 @@ describe('add', () => {
   it('add --silent', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -249,7 +249,7 @@ describe('add', () => {
   it('add --only-hash outputs correct hash', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       onlyHash: true
     }).returns([{
@@ -264,7 +264,7 @@ describe('add', () => {
   it('add does not pin with --pin=false', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       pin: false
     }).returns([{
@@ -279,7 +279,7 @@ describe('add', () => {
   it('add with mtime', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -287,7 +287,7 @@ describe('add', () => {
     const out = await cli('add --mtime 5 src/init-files/init-docs/readme', { ipfs })
     expect(out).to.equal(`added ${cid} readme\n`)
 
-    const source = ipfs.add.getCall(0).args[0]
+    const source = ipfs.addAll.getCall(0).args[0]
     const input = await first(source)
     expect(input).to.have.nested.property('mtime.secs', 5)
   })
@@ -295,7 +295,7 @@ describe('add', () => {
   it('add with mtime-nsecs', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -303,7 +303,7 @@ describe('add', () => {
     const out = await cli('add --mtime 5 --mtime-nsecs 100 src/init-files/init-docs/readme', { ipfs })
     expect(out).to.equal(`added ${cid} readme\n`)
 
-    const source = ipfs.add.getCall(0).args[0]
+    const source = ipfs.addAll.getCall(0).args[0]
     const input = await first(source)
     expect(input).to.have.nested.property('mtime.secs', 5)
     expect(input).to.have.nested.property('mtime.nsecs', 100)
@@ -312,7 +312,7 @@ describe('add', () => {
   it('add with mode', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -320,7 +320,7 @@ describe('add', () => {
     const out = await cli('add --mode 0655 src/init-files/init-docs/readme', { ipfs })
     expect(out).to.equal(`added ${cid} readme\n`)
 
-    const source = ipfs.add.getCall(0).args[0]
+    const source = ipfs.addAll.getCall(0).args[0]
     const input = await first(source)
     expect(input).to.have.property('mode', '0655')
   })
@@ -329,7 +329,7 @@ describe('add', () => {
     it(`add with hash=${name} and raw-leaves=false`, async () => {
       const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-      ipfs.add.withArgs(matchIterable(), {
+      ipfs.addAll.withArgs(matchIterable(), {
         ...defaultOptions,
         hashAlg: name,
         rawLeaves: false
@@ -346,7 +346,7 @@ describe('add', () => {
   it('should add and print CID encoded in specified base', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), defaultOptions).returns([{
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
       cid,
       path: 'readme'
     }])
@@ -358,7 +358,7 @@ describe('add', () => {
   it('should add with a timeout', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.add.withArgs(matchIterable(), {
+    ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
       timeout: 1000
     }).returns([{

@@ -2,7 +2,6 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const all = require('it-all')
 const concat = require('it-concat')
 const randomBytes = require('iso-random-stream/src/random')
 const factory = require('../utils/factory')
@@ -61,8 +60,8 @@ describe('circuit relay', () => {
 
     it('should transfer via relay', async () => {
       const data = randomBytes(128)
-      const res = await all(nodeA.add(data))
-      const buffer = await concat(nodeB.cat(res[0].cid))
+      const res = await nodeA.add(data)
+      const buffer = await concat(nodeB.cat(res.cid))
       expect(buffer.slice()).to.deep.equal(data)
     })
   })

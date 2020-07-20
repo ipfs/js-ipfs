@@ -5,7 +5,6 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const fs = require('fs')
 const { fromB58String } = require('multihashing-async').multihash
-const all = require('it-all')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
@@ -43,7 +42,7 @@ describe('utils', () => {
         },
         preload: { enabled: false }
       })
-      await all(node.add(fixtures))
+      await node.add(fixtures)
     })
 
     after(() => node.stop())

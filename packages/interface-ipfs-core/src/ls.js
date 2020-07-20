@@ -56,7 +56,7 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(ipfs.add(dirs))
+      const res = await all(ipfs.addAll(dirs))
 
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
@@ -117,7 +117,7 @@ module.exports = (common, options) => {
         { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
       ]
 
-      const res = await all(ipfs.add(input, { cidVersion: 0 }))
+      const res = await all(ipfs.addAll(input, { cidVersion: 0 }))
 
       const cidv0 = res[res.length - 1].cid
       expect(cidv0.version).to.equal(0)
@@ -140,7 +140,7 @@ module.exports = (common, options) => {
         { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
       ]
 
-      const res = await all(ipfs.add(input, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(ipfs.addAll(input, { cidVersion: 1, rawLeaves: false }))
 
       const cidv1 = res[res.length - 1].cid
       expect(cidv1.version).to.equal(1)
@@ -171,7 +171,7 @@ module.exports = (common, options) => {
         { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
       ]
 
-      const res = await all(ipfs.add(input))
+      const res = await all(ipfs.addAll(input))
       const output = await all(ipfs.ls(`/ipfs/${res[res.length - 1].cid}`))
       expect(output.length).to.equal(input.length)
 
@@ -195,7 +195,7 @@ module.exports = (common, options) => {
         { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')), mode, mtime }
       ]
 
-      const res = await all(ipfs.add(input))
+      const res = await all(ipfs.addAll(input))
       const output = await all(ipfs.ls(`/ipfs/${res[res.length - 1].cid}`))
 
       expect(output).to.have.lengthOf(input.length)
@@ -210,12 +210,10 @@ module.exports = (common, options) => {
       const subdir = randomName('F0')
       const subfile = randomName('F1')
 
-      const input = [
-        { path: `${dir}/${subdir}/${subfile}`, content: Buffer.from(randomName('D1')) }
-      ]
+      const input = { path: `${dir}/${subdir}/${subfile}`, content: Buffer.from(randomName('D1')) }
 
-      const res = await all(ipfs.add(input))
-      const path = `${res[res.length - 1].cid}/${subdir}`
+      const res = await ipfs.add(input)
+      const path = `${res.cid}/${subdir}`
       const output = await all(ipfs.ls(path))
 
       expect(output).to.have.lengthOf(1)

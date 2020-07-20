@@ -59,11 +59,7 @@ async function runTest () {
     }
   })
 
-  let cid
-
-  for await (const imported of relay.api.add(FILE_CONTENT)) {
-    cid = imported.cid
-  }
+  const { cid } = await relay.api.add(FILE_CONTENT)
 
   const server1 = await startServer(__dirname)
   const server2 = await startServer(__dirname)

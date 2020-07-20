@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",
@@ -32,7 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^5.6.0",
-    "cids": "^0.8.0",
+    "cids": "^0.8.3",
     "err-code": "^2.0.0",
     "ipfs-utils": "^2.2.2",
     "web-file-polyfill": "^1.0.0"

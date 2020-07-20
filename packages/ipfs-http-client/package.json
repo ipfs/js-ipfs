@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "44.3.0",
+  "version": "45.0.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -17,7 +17,7 @@
   "browser": {
     "./src/lib/to-body.js": "./src/lib/to-body.browser.js",
     "ipfs-utils/src/files/glob-source": false,
-    "go-ipfs-dep": false
+    "go-ipfs": false
   },
   "repository": {
     "type": "git",
@@ -43,16 +43,17 @@
     "any-signal": "^1.1.0",
     "bignumber.js": "^9.0.0",
     "buffer": "^5.6.0",
-    "cids": "^0.8.0",
+    "cids": "^0.8.3",
     "debug": "^4.1.0",
     "form-data": "^3.0.0",
-    "ipfs-core-utils": "^0.2.4",
+    "ipfs-core-utils": "^0.3.0",
     "ipfs-utils": "^2.2.2",
     "ipld-block": "^0.9.1",
     "ipld-dag-cbor": "^0.15.2",
     "ipld-dag-pb": "^0.18.5",
     "ipld-raw": "^5.0.0",
     "iso-url": "^0.4.7",
+    "it-last": "^1.0.1",
     "it-tar": "^1.2.2",
     "it-to-stream": "^0.1.1",
     "merge-options": "^2.0.0",
@@ -69,9 +70,9 @@
   "devDependencies": {
     "aegir": "^23.0.0",
     "cross-env": "^7.0.0",
-    "go-ipfs-dep": "^0.6.0",
-    "interface-ipfs-core": "^0.137.0",
-    "ipfsd-ctl": "^4.1.1",
+    "go-ipfs": "^0.6.0",
+    "interface-ipfs-core": "^0.138.0",
+    "ipfsd-ctl": "^5.0.0",
     "it-all": "^1.0.1",
     "it-concat": "^1.0.0",
     "it-pipe": "^1.1.0",

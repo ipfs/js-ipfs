@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JS IPFS API name example</title>
+    <style>
+      .hidden {
+        opacity: 0;
+      }
+
+      form {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>js-ipfs-http-client</h1>
+    <h2><code>name.publish()</code> and <code>name.resolve()</code></h2>
+    <p id="status" style="color: white; padding: .5em; background: blue">
+      Ready to connect
+    </p>
+
+    <form id="connect-to-http-api">
+      <h3>Enter the multiaddr of a IPFS HTTP API.</h3>
+      <input id="connect-input" name="text" type="text" value="/ip4/127.0.0.1/tcp/5001" required></textarea>
+      <button id="connect-submit" type="submit">Connect</button>
+    </form>
+
+    <form id="publish-text">
+      <h3>Add a new file to IPFS and publish it.</h3>
+      <textarea id="add-file-input" name="text" placeholder="hello, world" required></textarea>
+      <button id="add-file-submit" type="submit" disabled>Publish</button>
+    </form>
+
+    <form id="publish-path">
+      <h3>Publish an existing file or directory from IPFS.</h3>
+      <input id="publish-cid-input" name="path" type="text" placeholder="IPFS path" required/>
+      <button id="publish-cid-submit" type="submit" disabled>Publish</button>
+    </form>
+
+    <div class="results--publish hidden">
+      <p>
+        Published at <code id="publish-result"></code>
+      </p>
+      <p>
+        <a id="publish-gateway-link">Open with HTTP gateway</a>
+      </p>
+    </div>
+
+    <hr />
+
+    <form id="resolve-name">
+      <h3>Resolve an IPNS name</h3>
+      <input id="resolve-name-input" name="name" type="text" placeholder="IPNS name" required />
+      <button id="resolve-name-submit" type="submit" disabled>Resolve</button>
+    </form>
+    <div class="results--resolve hidden">
+      <p>
+        Resolves to <code id="resolve-result"></code>
+      </p>
+      <p>
+        <a id="resolve-gateway-link">Open with HTTP gateway</a>
+      </p>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
