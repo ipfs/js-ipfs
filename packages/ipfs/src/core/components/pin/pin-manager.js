@@ -91,7 +91,9 @@ class PinManager {
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
 
-    const pin = {}
+    const pin = {
+      depth: Infinity
+    }
 
     if (cid.version !== 0) {
       pin.version = cid.version
@@ -133,7 +135,7 @@ class PinManager {
       filters: [(entry) => {
         const pin = cbor.decode(entry.value)
 
-        return pin.depth === undefined
+        return pin.depth === Infinity
       }]
     })) {
       const pin = cbor.decode(entry.value)
