@@ -4,7 +4,6 @@
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const last = require('it-last')
-const drain = require('it-drain')
 const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 const pEvent = require('p-event')
@@ -201,7 +200,7 @@ describe.skip('gc', function () {
       // Pin first block
       // Note: pin add will take a read lock
       const pinLockRequested = pEvent(lockEmitter, 'readLock request')
-      const pin1 = last(ipfs.pin.add(cid1))
+      const pin1 = ipfs.pin.add(cid1)
 
       // Once pin lock has been requested, start GC
       await pinLockRequested
@@ -211,7 +210,7 @@ describe.skip('gc', function () {
 
       // TODO: Adding pin for removed block never returns, which means the lock
       // never gets released
-      // const pin2 = last(ipfs.pin.add(cid2))
+      // const pin2 = ipfs.pin.add(cid2)
 
       // Confirm second second block has been removed
       const localRefs = (await ipfs.refs.local()).map(r => r.ref)
@@ -232,8 +231,8 @@ describe.skip('gc', function () {
       const cid2 = (await ipfs.block.put(Buffer.from('block to pin rm 2'), null)).cid
 
       // Pin blocks
-      await drain(ipfs.pin.add(cid1))
-      await drain(ipfs.pin.add(cid2))
+      await ipfs.pin.add(cid1)
+      await ipfs.pin.add(cid2)
 
       // Unpin first block
       // Note: pin rm will take a read lock

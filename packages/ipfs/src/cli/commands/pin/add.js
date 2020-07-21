@@ -59,7 +59,7 @@ module.exports = {
       metadata = metadataJson
     }
 
-    for await (const res of ipfs.pin.add(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
+    for await (const res of ipfs.pin.addAll(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
       print(`pinned ${cidToString(res.cid, { base: cidBase })} ${type}ly`)
     }
   }

@@ -1,38 +1,18 @@
 'use strict'
 
-const CID = require('cids')
+const rmAll = require('./rm-all')
+const last = require('it-last')
 const configure = require('../lib/configure')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(api => {
-  return async function * (source, options = {}) {
-    options = options || {}
+module.exports = (options) => {
+  const all = rmAll(options)
 
-    for await (const { path, recursive } of normaliseInput(source)) {
-      const searchParams = new URLSearchParams(options.searchParams)
-      searchParams.append('arg', `${path}`)
-
-      if (recursive != null) searchParams.set('recursive', recursive)
-
-      const res = await api.post('pin/rm', {
-        timeout: options.timeout,
-        signal: options.signal,
-        headers: options.headers,
-        searchParams: toUrlSearchParams({
-          ...options,
-          arg: `${path}`,
-          recursive
-        })
-      })
-
-      for await (const pin of res.ndjson()) {
-        if (pin.Pins) { // non-streaming response
-          yield * pin.Pins.map(cid => new CID(cid))
-          continue
-        }
-        yield new CID(pin)
-      }
+  return configure(() => {
+    return async function rm (path, options = {}) { // eslint-disable-line require-await
+      return last(all({
+        path,
+        ...options
+      }, options))
     }
-  }
-})
+  })(options)
+}

@@ -20,8 +20,8 @@ describe('/pin', () => {
     ipfs = {
       pin: {
         ls: sinon.stub(),
-        add: sinon.stub(),
-        rm: sinon.stub(),
+        addAll: sinon.stub(),
+        rmAll: sinon.stub(),
         query: sinon.stub()
       }
     }
@@ -29,7 +29,6 @@ describe('/pin', () => {
 
   describe('/rm', () => {
     const defaultOptions = {
-      recursive: true,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -48,9 +47,9 @@ describe('/pin', () => {
     })
 
     it('unpins recursive pins', async () => {
-      ipfs.pin.rm.withArgs([cid], defaultOptions).returns([{
+      ipfs.pin.rmAll.withArgs([{ cid, recursive: true }], defaultOptions).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -62,12 +61,14 @@ describe('/pin', () => {
     })
 
     it('unpins direct pins', async () => {
-      ipfs.pin.rm.withArgs([cid], {
-        ...defaultOptions,
+      ipfs.pin.rmAll.withArgs([{
+        cid,
         recursive: false
-      }).returns([{
+      }], {
+        ...defaultOptions
+      }).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -79,9 +80,9 @@ describe('/pin', () => {
     })
 
     it('should remove pin and return base64 encoded CID', async () => {
-      ipfs.pin.rm.withArgs([cid], defaultOptions).returns([{
+      ipfs.pin.rmAll.withArgs([{ cid, recursive: true }], defaultOptions).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -105,12 +106,15 @@ describe('/pin', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.pin.rm.withArgs([cid], {
+      ipfs.pin.rmAll.withArgs([{
+        cid,
+        recursive: true
+      }], {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
+      }).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -124,7 +128,6 @@ describe('/pin', () => {
 
   describe('/add', () => {
     const defaultOptions = {
-      recursive: true,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -143,9 +146,13 @@ describe('/pin', () => {
     })
 
     it('recursively', async () => {
-      ipfs.pin.add.withArgs([cid], defaultOptions).returns([{
+      ipfs.pin.addAll.withArgs([{
+        cid,
+        recursive: true,
+        metadata: undefined
+      }], defaultOptions).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -157,12 +164,13 @@ describe('/pin', () => {
     })
 
     it('directly', async () => {
-      ipfs.pin.add.withArgs([cid], {
-        ...defaultOptions,
-        recursive: false
-      }).returns([{
+      ipfs.pin.addAll.withArgs([{
+        cid,
+        recursive: false,
+        metadata: undefined
+      }], defaultOptions).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -174,9 +182,13 @@ describe('/pin', () => {
     })
 
     it('should add pin and return base64 encoded CID', async () => {
-      ipfs.pin.add.withArgs([cid], defaultOptions).returns([{
+      ipfs.pin.addAll.withArgs([{
+        cid,
+        recursive: true,
+        metadata: undefined
+      }], defaultOptions).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',
@@ -200,12 +212,16 @@ describe('/pin', () => {
     })
 
     it('accepts a timeout', async () => {
-      ipfs.pin.add.withArgs([cid], {
+      ipfs.pin.addAll.withArgs([{
+        cid,
+        recursive: true,
+        metadata: undefined
+      }], {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
+      }).returns([
         cid
-      }])
+      ])
 
       const res = await http({
         method: 'POST',

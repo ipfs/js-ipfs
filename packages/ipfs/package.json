@@ -97,7 +97,7 @@
     "ipfs-core-utils": "^0.3.0",
     "ipfs-http-client": "^45.0.0",
     "ipfs-http-response": "^0.5.0",
-    "ipfs-repo": "github:ipfs/js-ipfs-repo#store-pins-in-datastore",
+    "ipfs-repo": "^5.0.0",
     "ipfs-unixfs": "^1.0.3",
     "ipfs-unixfs-exporter": "^2.0.2",
     "ipfs-unixfs-importer": "^2.0.2",

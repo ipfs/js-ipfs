@@ -27,7 +27,6 @@ const OfflineDatastore = require('../ipns/routing/offline-datastore')
 const initAssets = require('../runtime/init-assets-nodejs')
 const PinManager = require('./pin/pin-manager')
 const Components = require('./')
-const drain = require('it-drain')
 
 module.exports = ({
   apiManager,
@@ -110,11 +109,15 @@ module.exports = ({
     }
 
     const pinManager = new PinManager(repo, dag)
+    const pinAddAll = Components.pin.addAll({ pinManager, gcLock, dag })
+    const pinRmAll = Components.pin.rmAll({ pinManager, gcLock, dag })
 
     const pin = {
-      add: Components.pin.add({ pinManager, gcLock, dag }),
+      add: Components.pin.add({ addAll: pinAddAll }),
+      addAll: pinAddAll,
       ls: Components.pin.ls({ pinManager, dag }),
-      rm: Components.pin.rm({ pinManager, gcLock, dag })
+      rm: Components.pin.rm({ rmAll: pinRmAll }),
+      rmAll: pinRmAll
     }
 
     // FIXME: resolve this circular dependency
@@ -278,7 +281,7 @@ async function addEmptyDir ({ dag, pin }) {
     hashAlg: multicodec.SHA2_256,
     preload: false
   })
-  await drain(pin.add(cid))
+  await pin.add(cid)
 
   return cid
 }

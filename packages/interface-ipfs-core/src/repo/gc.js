@@ -202,7 +202,7 @@ module.exports = (common, options) => {
       expect(refsAfterAdd.map(r => new CID(r.ref).multihash)).deep.includes(dataCid.multihash)
 
       // Recursively pin the object
-      await drain(ipfs.pin.add(objCid, { recursive: true }))
+      await ipfs.pin.add(objCid, { recursive: true })
 
       // The data should now be indirectly pinned
       const pins = await all(ipfs.pin.ls())

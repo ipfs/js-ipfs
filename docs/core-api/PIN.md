@@ -1,22 +1,32 @@
 # Pin API <!-- omit in toc -->
 
-- [`ipfs.pin.add(cid, [options])`](#ipfspinaddcid-options)
+- [`ipfs.pin.add(ipfsPath, [options])`](#ipfspinaddipfspath-options)
   - [Parameters](#parameters)
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
-- [`ipfs.pin.ls([options])`](#ipfspinlsoptions)
+- [`ipfs.pin.addAll(source, [options])`](#ipfspinaddallsource-options)
   - [Parameters](#parameters-1)
   - [Options](#options-1)
   - [Returns](#returns-1)
   - [Example](#example-1)
-- [`ipfs.pin.rm(cid, [options])`](#ipfspinrmcid-options)
+- [`ipfs.pin.ls([options])`](#ipfspinlsoptions)
   - [Parameters](#parameters-2)
   - [Options](#options-2)
   - [Returns](#returns-2)
   - [Example](#example-2)
+- [`ipfs.pin.rm(ipfsPath, [options])`](#ipfspinrmipfspath-options)
+  - [Parameters](#parameters-3)
+  - [Options](#options-3)
+  - [Returns](#returns-3)
+  - [Example](#example-3)
+- [`ipfs.pin.rmAll(source, [options])`](#ipfspinrmallsource-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
 
-## `ipfs.pin.add(source, [options])`
+## `ipfs.pin.add(ipfsPath, [options])`
 
 > Adds an IPFS object to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able)
 
@@ -24,7 +34,7 @@
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| source | [CID][], String or `AsyncIterable<{ cid: CID, path: String, recursive: Boolean, comments: String }>` | One or more CIDs or IPFS Paths to pin in your repo |
+| source | [CID][] or String | A CID or IPFS Path to pin in your repo |
 
 ### Options
 
@@ -33,6 +43,42 @@ An optional object which may have the following keys:
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | recursive | `boolean` | `true` | Recursively pin all links contained by the object |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
+| [CID[] | The CIDs that was pinned |
+
+### Example
+
+```JavaScript
+const cid of ipfs.pin.add(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
+console.log(cid)
+// Logs:
+// CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+## `ipfs.pin.addAll(source, [options])`
+
+> Adds multiple IPFS objects to the pinset and also stores it to the IPFS repo. pinset is the set of hashes currently pinned (not gc'able)
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| source | `AsyncIterable<{ cid: CID, path: String, recursive: Boolean, comments: String }>` | One or more CIDs or IPFS Paths to pin in your repo |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
@@ -53,7 +99,7 @@ Each yielded object has the form:
 ### Example
 
 ```JavaScript
-for await (const cid of ipfs.pin.add(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
+for await (const cid of ipfs.pin.addAll(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
   console.log(cid)
 }
 // Logs:
@@ -112,7 +158,7 @@ for await (const { cid, type } of ipfs.pin.ls({
 
 A great source of [examples][] can be found in the tests for this API.
 
-## `ipfs.pin.rm(source, [options])`
+## `ipfs.pin.rm(ipfsPath, [options])`
 
 > Unpin this block from your repo
 
@@ -120,7 +166,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| source | [CID][], String or `AsyncIterable<{ cid: CID, path: String, recursive: Boolean }>` | Unpin this CID |
+| ipfsPath | [CID][] of String | Unpin this CID or IPFS Path |
 
 ### Options
 
@@ -136,12 +182,48 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
+| [CID][] | The CIDs that was unpinned |
+
+### Example
+
+```JavaScript
+const cid of ipfs.pin.rm(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
+console.log(cid)
+// prints the CID that was unpinned
+// CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+```
+
+A great source of [examples][] can be found in the tests for this API.
+
+## `ipfs.pin.rmAll(source, [options])`
+
+> Unpin one or more blocks from your repo
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| source | [CID][], String or `AsyncIterable<{ cid: CID, path: String, recursive: Boolean }>` | Unpin this CID |
+
+### Options
+
+An optional object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| timeout | `Number` | `undefined` | A timeout in ms |
+| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+
+### Returns
+
+| Type | Description |
+| -------- | -------- |
 | `AsyncIterable<CID>` | An async iterable that yields the CIDs that were unpinned |
 
 ### Example
 
 ```JavaScript
-for await (const cid of ipfs.pin.rm(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
+for await (const cid of ipfs.pin.rmAll(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
   console.log(cid)
 }
 // prints the CIDs that were unpinned

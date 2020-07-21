@@ -152,7 +152,7 @@ module.exports = (common, options) => {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
-      await drain(ipfs.pin.add(cid))
+      await ipfs.pin.add(cid)
 
       const result = await last(ipfs.block.rm(cid))
 

@@ -30,7 +30,7 @@ module.exports = {
   async handler ({ ctx, ipfsPath, timeout, recursive, cidBase }) {
     const { ipfs, print } = ctx
 
-    for await (const res of ipfs.pin.rm(ipfsPath.map(path => ({ path, recursive })), { timeout })) {
+    for await (const res of ipfs.pin.rmAll(ipfsPath.map(path => ({ path, recursive })), { timeout })) {
       print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
     }
   }

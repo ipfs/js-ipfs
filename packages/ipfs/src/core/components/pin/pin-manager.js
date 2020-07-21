@@ -10,6 +10,7 @@ const first = require('it-first')
 const all = require('it-all')
 const cbor = require('cbor')
 const multibase = require('multibase')
+const multicodec = require('multicodec')
 
 // arbitrary limit to the number of concurrent dag operations
 // const WALK_DAG_CONCURRENCY_LIMIT = 300
@@ -22,7 +23,11 @@ function invalidPinTypeErr (type) {
 }
 
 function toKey (cid) {
-  return '/' + multibase.encode('base32', cid.multihash).toString().substring(1)
+  return '/' + multibase.encode('base32upper', cid.multihash).toString().substring(1)
+}
+
+function keyToMultihash (key) {
+  return multibase.decode(`b${key.toString().slice(1)}`)
 }
 
 const PinTypes = {
@@ -60,11 +65,23 @@ class PinManager {
   async pinDirectly (cid, options = {}) {
     await this.dag.get(cid, options)
 
-    return this.repo.pins.put(toKey(cid), cbor.encode({
-      cid: cid.buffer,
-      type: PinTypes.direct,
-      metadata: options.metadata
-    }))
+    const pin = {
+      depth: 0
+    }
+
+    if (cid.version !== 0) {
+      pin.version = cid.version
+    }
+
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
+
+    if (options.metadata) {
+      pin.metadata = options.metadata
+    }
+
+    return this.repo.pins.put(toKey(cid), cbor.encode(pin))
   }
 
   async unpin (cid) { // eslint-disable-line require-await
@@ -74,11 +91,21 @@ class PinManager {
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
 
-    await this.repo.pins.put(toKey(cid), cbor.encode({
-      cid: cid.buffer,
-      type: PinTypes.recursive,
-      metadata: options.metadata
-    }))
+    const pin = {}
+
+    if (cid.version !== 0) {
+      pin.version = cid.version
+    }
+
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
+
+    if (options.metadata) {
+      pin.metadata = options.metadata
+    }
+
+    await this.repo.pins.put(toKey(cid), cbor.encode(pin))
   }
 
   async * directKeys () {
@@ -86,13 +113,16 @@ class PinManager {
       filters: [(entry) => {
         const pin = cbor.decode(entry.value)
 
-        return pin.type === PinTypes.direct
+        return pin.depth === 0
       }]
     })) {
       const pin = cbor.decode(entry.value)
+      const version = pin.version || 0
+      const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
+      const multihash = keyToMultihash(entry.key)
 
       yield {
-        cid: new CID(pin.cid),
+        cid: new CID(version, codec, multihash),
         metadata: pin.metadata
       }
     }
@@ -103,13 +133,16 @@ class PinManager {
       filters: [(entry) => {
         const pin = cbor.decode(entry.value)
 
-        return pin.type === PinTypes.recursive
+        return pin.depth === undefined
       }]
     })) {
       const pin = cbor.decode(entry.value)
+      const version = pin.version || 0
+      const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
+      const multihash = keyToMultihash(entry.key)
 
       yield {
-        cid: new CID(pin.cid),
+        cid: new CID(version, codec, multihash),
         metadata: pin.metadata
       }
     }
@@ -154,7 +187,7 @@ class PinManager {
 
           const pin = cbor.decode(entry.value)
 
-          return types.includes(pin.type)
+          return types.includes(pin.depth === 0 ? PinTypes.direct : PinTypes.recursive)
         }],
         limit: 1
       }))
@@ -165,7 +198,7 @@ class PinManager {
         return {
           cid,
           pinned: true,
-          reason: pin.type,
+          reason: pin.depth === 0 ? PinTypes.direct : PinTypes.recursive,
           metadata: pin.metadata
         }
       }

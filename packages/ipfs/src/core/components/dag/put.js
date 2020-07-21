@@ -2,7 +2,6 @@
 
 const multicodec = require('multicodec')
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
-const drain = require('it-drain')
 const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, pin, gcLock, preload }) => {
@@ -54,9 +53,9 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
       })
 
       if (options.pin) {
-        await drain(pin.add(cid, {
+        await pin.add(cid, {
           lock: false
-        }))
+        })
       }
 
       if (options.preload !== false) {

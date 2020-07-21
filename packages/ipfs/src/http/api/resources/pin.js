@@ -141,7 +141,7 @@ exports.add = {
 
     let result
     try {
-      result = await all(ipfs.pin.add(cids.map(cid => ({ cid, recursive, metadata })), {
+      result = await all(ipfs.pin.addAll(cids.map(cid => ({ cid, recursive, metadata })), {
         signal,
         timeout
       }))
@@ -206,7 +206,7 @@ exports.rm = {
 
     let result
     try {
-      result = await all(ipfs.pin.rm(cids.map(cid => ({ cid, recursive })), {
+      result = await all(ipfs.pin.rmAll(cids.map(cid => ({ cid, recursive })), {
         signal,
         timeout
       }))

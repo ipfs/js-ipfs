@@ -4,6 +4,7 @@ const { expect } = require('../utils/mocha')
 const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const drain = require('it-drain')
+const map = require('it-map')
 
 const pinTypes = {
   direct: 'direct',
@@ -36,13 +37,8 @@ const fixtures = Object.freeze({
 })
 
 const clearPins = async (ipfs) => {
-  for await (const { cid } of ipfs.pin.ls(null, { type: pinTypes.recursive })) {
-    await drain(ipfs.pin.rm(cid))
-  }
-
-  for await (const { cid } of ipfs.pin.ls(null, { type: pinTypes.direct })) {
-    await drain(ipfs.pin.rm(cid))
-  }
+  await drain(ipfs.pin.rmAll(map(ipfs.pin.ls({ type: pinTypes.recursive }), ({ cid }) => cid)))
+  await drain(ipfs.pin.rmAll(map(ipfs.pin.ls({ type: pinTypes.direct }), ({ cid }) => cid)))
 }
 
 const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
@@ -55,9 +51,13 @@ const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
   expect(result).to.eql(pinned)
 }
 
+const expectNotPinned = (ipfs, cid, type = pinTypes.all) => {
+  return expectPinned(ipfs, cid, type, false)
+}
+
 async function isPinnedWithType (ipfs, cid, type) {
   try {
-    for await (const _ of ipfs.pin.ls(cid, { type })) { // eslint-disable-line no-unused-vars
+    for await (const _ of ipfs.pin.ls({ paths: cid, type })) { // eslint-disable-line no-unused-vars
       return true
     }
     return false
@@ -70,6 +70,7 @@ module.exports = {
   fixtures,
   clearPins,
   expectPinned,
+  expectNotPinned,
   isPinnedWithType,
   pinTypes
 }

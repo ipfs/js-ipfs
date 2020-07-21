@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { fixtures, clearPins, expectPinned, pinTypes } = require('./utils')
+const { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
@@ -27,12 +27,16 @@ module.exports = (common, options) => {
     before(async () => {
       ipfs = (await common.spawn()).api
 
-      await Promise.all(fixtures.files.map(file => {
-        return ipfs.add(file.data, { pin: false })
-      }))
+      await drain(
+        ipfs.addAll(
+          fixtures.files.map(file => ({ content: file.data })), {
+            pin: false
+          }
+        )
+      )
 
-      await all(
-        ipfs.add(fixtures.directory.files.map(
+      await drain(
+        ipfs.addAll(fixtures.directory.files.map(
           file => ({
             path: file.path,
             content: file.data
@@ -49,90 +53,20 @@ module.exports = (common, options) => {
       return clearPins(ipfs)
     })
 
-    async function testAddInput (source) {
-      const pinset = await all(ipfs.pin.add(source))
-
-      expect(pinset).to.have.deep.members([
-        fixtures.files[0].cid,
-        fixtures.files[1].cid
-      ])
-    }
-
     it('should add a CID and return the added CID', async () => {
-      const pinset = await all(ipfs.pin.add(fixtures.files[0].cid))
-      expect(pinset).to.deep.include(fixtures.files[0].cid)
+      const cid = await ipfs.pin.add(fixtures.files[0].cid)
+      expect(cid).to.deep.equal(fixtures.files[0].cid)
     })
 
     it('should add a pin with options and return the added CID', async () => {
-      const pinset = await all(ipfs.pin.add({
-        cid: fixtures.files[0].cid,
+      const cid = await ipfs.pin.add(fixtures.files[0].cid, {
         recursive: false
-      }))
-      expect(pinset).to.deep.include(fixtures.files[0].cid)
-    })
-
-    it('should add an array of CIDs', () => {
-      return testAddInput([
-        fixtures.files[0].cid,
-        fixtures.files[1].cid
-      ])
-    })
-
-    it('should add a generator of CIDs', () => {
-      return testAddInput(function * () {
-        yield fixtures.files[0].cid
-        yield fixtures.files[1].cid
-      }())
-    })
-
-    it('should add an async generator of CIDs', () => {
-      return testAddInput(async function * () { // eslint-disable-line require-await
-        yield fixtures.files[0].cid
-        yield fixtures.files[1].cid
-      }())
-    })
-
-    it('should add an array of pins with options', () => {
-      return testAddInput([
-        {
-          cid: fixtures.files[0].cid,
-          recursive: false
-        },
-        {
-          cid: fixtures.files[1].cid,
-          recursive: true
-        }
-      ])
-    })
-
-    it('should add a generator of pins with options', () => {
-      return testAddInput(function * () {
-        yield {
-          cid: fixtures.files[0].cid,
-          recursive: false
-        }
-        yield {
-          cid: fixtures.files[1].cid,
-          recursive: true
-        }
-      }())
-    })
-
-    it('should add an async generator of pins with options', () => {
-      return testAddInput(async function * () { // eslint-disable-line require-await
-        yield {
-          cid: fixtures.files[0].cid,
-          recursive: false
-        }
-        yield {
-          cid: fixtures.files[1].cid,
-          recursive: true
-        }
-      }())
+      })
+      expect(cid).to.deep.equal(fixtures.files[0].cid)
     })
 
     it('should add recursively', async () => {
-      await drain(ipfs.pin.add(fixtures.directory.cid))
+      await ipfs.pin.add(fixtures.directory.cid)
       await expectPinned(ipfs, fixtures.directory.cid, pinTypes.recursive)
 
       const pinChecks = Object.values(fixtures.directory.files).map(file => expectPinned(ipfs, file.cid))
@@ -140,35 +74,30 @@ module.exports = (common, options) => {
     })
 
     it('should add directly', async () => {
-      await drain(ipfs.pin.add({
-        cid: fixtures.directory.cid,
+      await ipfs.pin.add(fixtures.directory.cid, {
         recursive: false
-      }))
-      await Promise.all([
-        expectPinned(ipfs, fixtures.directory.cid, pinTypes.direct),
-        expectPinned(ipfs, fixtures.directory.files[0].cid, false)
-      ])
+      })
+
+      await expectPinned(ipfs, fixtures.directory.cid, pinTypes.direct)
+      await expectNotPinned(ipfs, fixtures.directory.files[0].cid)
     })
 
     it('should recursively pin parent of direct pin', async () => {
-      await drain(ipfs.pin.add({
-        cid: fixtures.directory.files[0].cid,
+      await ipfs.pin.add(fixtures.directory.files[0].cid, {
         recursive: false
-      }))
-      await drain(ipfs.pin.add(fixtures.directory.cid))
-      await Promise.all([
-        // file is pinned both directly and indirectly o.O
-        expectPinned(ipfs, fixtures.directory.files[0].cid, pinTypes.direct),
-        expectPinned(ipfs, fixtures.directory.files[0].cid, pinTypes.indirect)
-      ])
+      })
+      await ipfs.pin.add(fixtures.directory.cid)
+
+      // file is pinned both directly and indirectly o.O
+      await expectPinned(ipfs, fixtures.directory.files[0].cid, pinTypes.direct)
+      await expectPinned(ipfs, fixtures.directory.files[0].cid, pinTypes.indirect)
     })
 
     it('should fail to directly pin a recursive pin', async () => {
-      await drain(ipfs.pin.add(fixtures.directory.cid))
-      return expect(drain(ipfs.pin.add({
-        cid: fixtures.directory.cid,
+      await ipfs.pin.add(fixtures.directory.cid)
+      return expect(ipfs.pin.add(fixtures.directory.cid, {
         recursive: false
-      })))
+      }))
         .to.eventually.be.rejected()
         .with(/already pinned recursively/)
     })
@@ -177,7 +106,7 @@ module.exports = (common, options) => {
       this.slow(3 * 1000)
       this.timeout(5 * 1000)
       const falseHash = `${`${fixtures.directory.cid}`.slice(0, -2)}ss`
-      return expect(drain(ipfs.pin.add(falseHash, { timeout: '2s' })))
+      return expect(ipfs.pin.add(falseHash, { timeout: '2s' }))
         .to.eventually.be.rejected()
         // TODO: http api TimeoutErrors do not have this property
         // .with.a.property('code').that.equals('ERR_TIMEOUT')
@@ -188,7 +117,7 @@ module.exports = (common, options) => {
       this.timeout(5 * 1000)
       await all(ipfs.block.rm(fixtures.directory.files[0].cid))
 
-      await expect(drain(ipfs.pin.add(fixtures.directory.cid, { timeout: '2s' })))
+      await expect(ipfs.pin.add(fixtures.directory.cid, { timeout: '2s' }))
         .to.eventually.be.rejected()
     })
 
@@ -198,7 +127,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-256'
       })
 
-      await drain(ipfs.pin.add(cid))
+      await ipfs.pin.add(cid)
 
       const pins = await all(ipfs.pin.ls())
 
@@ -214,7 +143,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-256'
       })
 
-      await drain(ipfs.pin.add(cid))
+      await ipfs.pin.add(cid)
 
       const pins = await all(ipfs.pin.ls())
 
@@ -236,9 +165,9 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-256'
       })
 
-      await drain(ipfs.pin.add(parent, {
+      await ipfs.pin.add(parent, {
         recursive: true
-      }))
+      })
 
       const pins = await all(ipfs.pin.ls())
 

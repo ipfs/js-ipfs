@@ -81,33 +81,21 @@ const resolvePath = async function (dag, ipfsPath, options) {
     return new CID(ipfsPath)
   }
 
-  for (const ipfsPath of ipfsPaths) {
-    if (isIpfs.cid(ipfsPath)) {
-      cids.push(new CID(ipfsPath))
-      continue
-    }
+  const {
+    cid,
+    path
+  } = toCidAndPath(ipfsPath)
 
-    const {
-      cid,
-      path
-    } = toCidAndPath(ipfsPath)
-
-    if (!path) {
-      cids.push(cid)
-      continue
-    }
-
-    const result = await dag.resolve(cid, {
-      ...options,
-      path
-    })
-
-    if (CID.isCID(result.cid)) {
-      cids.push(result.cid)
-    }
+  if (!path) {
+    return cid
   }
 
-  return cid
+  const result = await dag.resolve(cid, {
+    ...options,
+    path
+  })
+
+  return result.cid
 }
 
 const mapFile = (file, options) => {

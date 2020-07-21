@@ -24,8 +24,8 @@ describe('pin', () => {
   before(() => {
     ipfs = {
       pin: {
-        rm: sinon.stub(),
-        add: sinon.stub(),
+        rmAll: sinon.stub(),
+        addAll: sinon.stub(),
         ls: sinon.stub(),
         query: sinon.stub()
       }
@@ -42,7 +42,7 @@ describe('pin', () => {
     }
 
     it('recursively (default)', async () => {
-      ipfs.pin.rm.withArgs([{
+      ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
       }], defaultOptions).returns([{
@@ -54,7 +54,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.rm.withArgs([{
+      ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
@@ -67,7 +67,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.rm.withArgs([{
+      ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
@@ -80,7 +80,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.rm.withArgs([{
+      ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
       }], defaultOptions).returns([{
@@ -93,7 +93,7 @@ describe('pin', () => {
     })
 
     it('with timeout', async () => {
-      ipfs.pin.rm.withArgs([{
+      ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
       }], {
@@ -119,7 +119,7 @@ describe('pin', () => {
     }
 
     it('recursively (default)', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
       }], defaultOptions).returns([{
@@ -131,7 +131,7 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
@@ -144,7 +144,7 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
@@ -157,7 +157,7 @@ describe('pin', () => {
     })
 
     it('with metadata', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         metadata: {
@@ -172,7 +172,7 @@ describe('pin', () => {
     })
 
     it('with a metadata (short option)', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         metadata: {
@@ -187,7 +187,7 @@ describe('pin', () => {
     })
 
     it('with json metadata', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root,
         metadata: {
@@ -202,7 +202,7 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultOptions,
         path: pins.root,
         recursive: true,
@@ -217,7 +217,7 @@ describe('pin', () => {
     })
 
     it('recursively with timeout', async () => {
-      ipfs.pin.add.withArgs([{
+      ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
       }], {

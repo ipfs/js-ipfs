@@ -12,7 +12,7 @@
   "dependencies": {
     "datastore-fs": "^1.1.0",
     "ipfs": "^0.48.0",
-    "ipfs-repo": "github:ipfs/js-ipfs-repo#store-pins-in-datastore",
+    "ipfs-repo": "^5.0.0",
     "it-all": "^1.0.1"
   },
   "devDependencies": {

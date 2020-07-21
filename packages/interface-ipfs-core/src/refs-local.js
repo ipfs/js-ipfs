@@ -49,7 +49,7 @@ module.exports = (common, options) => {
       const imported = await all(importer(dirs, ipfs.block))
 
       // otherwise go-ipfs doesn't show them in the local refs
-      await drain(ipfs.pin.add(imported.map(i => i.cid)))
+      await ipfs.pin.add(imported.map(i => i.cid))
 
       const refs = await all(ipfs.refs.local())
       const cids = refs.map(r => r.ref)

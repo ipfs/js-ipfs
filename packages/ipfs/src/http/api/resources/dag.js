@@ -13,7 +13,6 @@ const {
 const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
-const drain = require('it-drain')
 
 const IpldFormats = {
   get [multicodec.RAW] () {
@@ -275,10 +274,6 @@ exports.put = {
       })
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to put node' })
-    }
-
-    if (request.query.pin) {
-      await drain(ipfs.pin.add(cid))
     }
 
     return h.response({
