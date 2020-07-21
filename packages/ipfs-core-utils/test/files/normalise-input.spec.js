@@ -285,8 +285,7 @@ describe('normalise-input', function () {
           {
             path: 'bla',
             instanceOf: File,
-            content: encodeText('DOM file'),
-            mtime
+            content: encodeText('DOM file')
           }
         ]
       )
@@ -302,8 +301,7 @@ describe('normalise-input', function () {
             path: 'file2',
             instanceOf: File,
             content: encodeText('DOM file'),
-            type: 'text/plain',
-            mtime
+            type: 'text/plain'
           }
         ]
       )
@@ -887,7 +885,6 @@ describe('normalise-input', function () {
           {
             path: 'foo',
             instanceOf: File,
-            mtime,
             content: encodeText('hello')
           }
         ]
@@ -904,7 +901,6 @@ describe('normalise-input', function () {
           },
           {
             path: 'w',
-            mtime,
             instanceOf: File,
             content: encodeText('world')
           }
@@ -1062,7 +1058,6 @@ describe('normalise-input', function () {
           {
             path: 'w',
             instanceOf: File,
-            mtime,
             content: encodeText('world')
           }
         ]
@@ -1159,7 +1154,6 @@ describe('normalise-input', function () {
           {
             path: 'file',
             instanceOf: File,
-            mtime,
             content: encodeText('file')
           }
         ]
@@ -1289,7 +1283,6 @@ describe('normalise-input', function () {
           {
             path: 'foo',
             instanceOf: File,
-            mtime,
             content: encodeText('hello')
           }
         ]
@@ -1309,7 +1302,6 @@ describe('normalise-input', function () {
           },
           {
             path: 'w',
-            mtime,
             instanceOf: File,
             content: encodeText('world')
           }
@@ -1508,7 +1500,6 @@ describe('normalise-input', function () {
           {
             path: 'w',
             instanceOf: File,
-            mtime,
             content: encodeText('world')
           }
         ]
@@ -1605,7 +1596,6 @@ describe('normalise-input', function () {
           {
             path: 'file',
             instanceOf: File,
-            mtime,
             content: encodeText('file')
           }
         ]
