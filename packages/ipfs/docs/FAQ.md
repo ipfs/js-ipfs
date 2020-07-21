@@ -90,12 +90,12 @@ const node = await IPFS.create({
     },
     config: {
       peerDiscovery: {
-        [WebRTCStar.tag]: {
+        webRTCStar: { // <- note the lower-case w - see https://github.com/libp2p/js-libp2p/issues/576
           enabled: true
         }
       },
       transport: {
-        WebRTCStar: {
+        WebRTCStar: { // <- note the upper-case w- see https://github.com/libp2p/js-libp2p/issues/576
           wrtc
         }
       }
