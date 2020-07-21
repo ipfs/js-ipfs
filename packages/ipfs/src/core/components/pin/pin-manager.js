@@ -23,7 +23,7 @@ function invalidPinTypeErr (type) {
 }
 
 function cidToKey (cid) {
-  return `/${multibase.encoding('base32upper').encode(cid.multihash)}`
+  return `/${multibase.encode('base32upper', cid.multihash).toString()}`
 }
 
 function keyToMultihash (key) {
