@@ -2,13 +2,18 @@
 
 /* eslint-env mocha */
 const { expect } = require('../utils/chai')
-const normalise = require('../../src/files/normalise-input')
 const { blobToIt } = require('../../src/files/normalise-input/utils')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')
 const all = require('it-all')
 const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
+
+let normalise = require('../../src/files/normalise-input')
+
+if (isBrowser || isWebWorker) {
+  normalise = require('../../src/files/normalise-input/index.browser')
+}
 
 const STRING = () => 'hello world'
 const BUFFER = () => Buffer.from(STRING())
