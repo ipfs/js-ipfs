@@ -22,12 +22,12 @@ function invalidPinTypeErr (type) {
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
-function toKey (cid) {
-  return '/' + multibase.encode('base32upper', cid.multihash).toString().substring(1)
+function cidToKey (cid) {
+  return `/${multibase.encoding('base32upper').encode(cid.multihash)}`
 }
 
 function keyToMultihash (key) {
-  return multibase.decode(`b${key.toString().slice(1)}`)
+  return multibase.decode(`${key.toString().slice(1)}`)
 }
 
 const PinTypes = {
@@ -81,11 +81,11 @@ class PinManager {
       pin.metadata = options.metadata
     }
 
-    return this.repo.pins.put(toKey(cid), cbor.encode(pin))
+    return this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
   }
 
   async unpin (cid) { // eslint-disable-line require-await
-    return this.repo.pins.delete(toKey(cid))
+    return this.repo.pins.delete(cidToKey(cid))
   }
 
   async pinRecursively (cid, options = {}) {
@@ -107,7 +107,7 @@ class PinManager {
       pin.metadata = options.metadata
     }
 
-    await this.repo.pins.put(toKey(cid), cbor.encode(pin))
+    await this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
   }
 
   async * directKeys () {
@@ -181,7 +181,7 @@ class PinManager {
 
     if (recursive || direct || all) {
       const result = await first(this.repo.pins.query({
-        prefix: toKey(cid),
+        prefix: cidToKey(cid),
         filters: [entry => {
           if (all) {
             return true
