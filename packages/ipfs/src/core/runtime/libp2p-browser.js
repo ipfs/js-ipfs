@@ -35,8 +35,6 @@ module.exports = () => {
     config: {
       peerDiscovery: {
         autoDial: true,
-        // Optimization
-        // Requiring bootstrap inline in components/libp2p to reduce the cli execution time
         // [Bootstrap.tag] = 'bootstrap'
         bootstrap: {
           enabled: true
