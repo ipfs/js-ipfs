@@ -3,7 +3,6 @@
 'use strict'
 
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const last = require('it-last')
 const { Buffer } = require('buffer')
 const factory = require('../utils/factory')
 const pEvent = require('p-event')
@@ -237,7 +236,7 @@ describe.skip('gc', function () {
       // Unpin first block
       // Note: pin rm will take a read lock
       const pinLockRequested = pEvent(lockEmitter, 'readLock request')
-      const pinRm1 = last(ipfs.pin.rm(cid1))
+      const pinRm1 = ipfs.pin.rm(cid1)
 
       // Once pin lock has been requested, start GC
       await pinLockRequested
@@ -247,7 +246,7 @@ describe.skip('gc', function () {
 
       // Once GC has started, start second pin rm
       await gcStarted
-      const pinRm2 = last(ipfs.pin.rm(cid2))
+      const pinRm2 = ipfs.pin.rm(cid2)
 
       const deleted = (await gc).map(i => i.cid.toString())
       await pinRm1

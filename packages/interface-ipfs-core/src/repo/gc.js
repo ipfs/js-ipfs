@@ -39,7 +39,7 @@ module.exports = (common, options) => {
       const pinset = await all(ipfs.pin.ls())
       expect(pinset.map(obj => obj.cid.toString())).includes(res.cid.toString())
 
-      await drain(ipfs.pin.rm(res.cid))
+      await ipfs.pin.rm(res.cid)
       await all(ipfs.repo.gc())
 
       const finalPinset = await all(ipfs.pin.ls())
@@ -71,7 +71,7 @@ module.exports = (common, options) => {
       expect(refsAfterGc.map(r => new CID(r.ref).multihash)).deep.includes(cid.multihash)
 
       // Unpin the data
-      await drain(ipfs.pin.rm(cid))
+      await ipfs.pin.rm(cid)
 
       // Run garbage collection
       await all(ipfs.repo.gc())
@@ -159,7 +159,7 @@ module.exports = (common, options) => {
       expect(refsAfterRmAndGc.map(r => new CID(r.ref).multihash)).deep.includes(dataCid.multihash)
 
       // Unpin the data
-      await drain(ipfs.pin.rm(dataCid))
+      await ipfs.pin.rm(dataCid)
 
       // Run garbage collection
       await drain(ipfs.repo.gc())
@@ -179,7 +179,7 @@ module.exports = (common, options) => {
       const dataCid = addRes.cid
 
       // Unpin the data
-      await drain(ipfs.pin.rm(dataCid))
+      await ipfs.pin.rm(dataCid)
 
       // Create a link to the data from an object
       const obj = await new DAGNode(Buffer.from('fruit'), [{
@@ -217,7 +217,7 @@ module.exports = (common, options) => {
       expect(refsAfterGc.map(r => new CID(r.ref).multihash)).deep.includes(dataCid.multihash)
 
       // Recursively unpin the object
-      await drain(ipfs.pin.rm(objCid.toString()))
+      await ipfs.pin.rm(objCid.toString())
 
       // Run garbage collection
       await drain(ipfs.repo.gc())
