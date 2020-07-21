@@ -89,6 +89,11 @@ const node = await IPFS.create({
       transport: [WebRTCStar]
     },
     config: {
+      peerDiscovery: {
+        [WebRTCStar.tag]: {
+          enabled: true
+        }
+      },
       transport: {
         WebRTCStar: {
           wrtc
