@@ -88,7 +88,7 @@
     "fnv1a": "^1.0.1",
     "get-folder-size": "^2.0.0",
     "hamt-sharding": "^1.0.0",
-    "hapi-pino": "^6.1.0",
+    "hapi-pino": "^8.0.1",
     "hashlru": "^2.3.0",
     "interface-datastore": "^1.0.2",
     "ipfs-bitswap": "^2.0.1",
