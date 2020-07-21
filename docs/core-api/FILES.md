@@ -946,7 +946,7 @@ await ipfs.files.write('/hello-world', Buffer.from('Hello, world!'))
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| from | `String` or `Array<String>` | One or more [MFS path][]s to move |
+| ...from | `String` | One or more [MFS path][]s to move |
 | to | `String` | The location to move files to |
 
 #### Options
