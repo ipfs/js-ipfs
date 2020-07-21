@@ -39,7 +39,8 @@ module.exports = () => {
         bootstrap: {
           enabled: true
         },
-        [WebRTCStar.tag]: {
+        // [WebRTCStar.discovery.tag]
+        webRTCStar: {
           enabled: true
         }
       },
