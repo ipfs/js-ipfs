@@ -17,7 +17,8 @@
   "browser": {
     "./src/lib/multipart-request.js": "./src/lib/multipart-request.browser.js",
     "ipfs-utils/src/files/glob-source": false,
-    "go-ipfs": false
+    "go-ipfs": false,
+    "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
   },
   "repository": {
     "type": "git",

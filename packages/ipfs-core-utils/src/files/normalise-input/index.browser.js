@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseContent = require('./normalise-content')
+const normaliseContent = require('./normalise-content.browser')
 const normaliseInput = require('./normalise-input')
 
 /*
@@ -40,10 +40,10 @@ const normaliseInput = require('./normalise-input')
  * Into:
  *
  * ```
- * AsyncIterable<{ path, mode, mtime, content: AsyncIterable<Buffer> }>
+ * AsyncIterable<{ path, mode, mtime, content: Blob }>
  * ```
  *
  * @param input Object
- * @return AsyncInterable<{ path, content: AsyncIterable<Buffer> }>
+ * @return AsyncInterable<{ path, content: Blob }>
  */
 module.exports = (input) => normaliseInput(input, normaliseContent)

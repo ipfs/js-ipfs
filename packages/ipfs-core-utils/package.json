@@ -40,8 +40,5 @@
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
     "it-all": "^1.0.1"
-  },
-  "browser": {
-    "./src/files/normalise-input/content": "./src/files/normalise-input/content.browser.js"
   }
 }
