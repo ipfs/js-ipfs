@@ -285,7 +285,7 @@ exports.add = {
         }
       },
       function (source) {
-        return ipfs.add(source, {
+        return ipfs.addAll(source, {
           cidVersion,
           rawLeaves,
           progress: progress ? progressHandler : () => {},
@@ -405,8 +405,11 @@ exports.ls = {
         Hash: cidToString(link.cid, { base: cidBase }),
         Size: link.size,
         Type: toTypeCode(link.type),
-        Depth: link.depth,
-        Mode: link.mode.toString(8).padStart(4, '0')
+        Depth: link.depth
+      }
+
+      if (link.mode != null) {
+        output.Mode = link.mode.toString(8).padStart(4, '0')
       }
 
       if (link.mtime) {

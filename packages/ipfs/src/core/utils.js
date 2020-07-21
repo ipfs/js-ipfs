@@ -9,6 +9,7 @@ const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
 const errCode = require('err-code')
+const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 
@@ -22,39 +23,6 @@ exports.MFS_FILE_TYPES = {
 exports.MFS_ROOT_KEY = new Key('/local/filesroot')
 exports.MFS_MAX_CHUNK_SIZE = 262144
 exports.MFS_MAX_LINKS = 174
-
-/**
- * Break an ipfs-path down into it's hash and an array of links.
- *
- * examples:
- *  b58Hash -> { hash: 'b58Hash', links: [] }
- *  b58Hash/mercury/venus -> { hash: 'b58Hash', links: ['mercury', 'venus']}
- *  /ipfs/b58Hash/links/by/name -> { hash: 'b58Hash', links: ['links', 'by', 'name'] }
- *
- * @param  {String} ipfsPath An ipfs-path
- * @return {Object}            { hash: base58 string, links: [string], ?err: Error }
- * @throws on an invalid @param ipfsPath
- */
-function parseIpfsPath (ipfsPath) {
-  if (!ipfsPath) {
-    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
-  }
-
-  ipfsPath = ipfsPath.replace(/^\/ipfs\//, '')
-  const matched = ipfsPath.match(/([^/]+(?:\/[^/]+)*)\/?$/)
-  if (!matched) {
-    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
-  }
-
-  const [hash, ...links] = matched[1].split('/')
-
-  // check that a CID can be constructed with the hash
-  if (isIpfs.cid(hash)) {
-    return { hash, links }
-  } else {
-    throw errCode(new Error('invalid ipfs ref path'), ERR_BAD_PATH)
-  }
-}
 
 /**
  * Returns a well-formed ipfs Path.
@@ -113,28 +81,30 @@ const resolvePath = async function (dag, ipfsPath, options) {
     return new CID(ipfsPath)
   }
 
-  const { hash, links } = parseIpfsPath(ipfsPath)
-
-  if (!links.length) {
-    return new CID(hash)
-  }
-
-  let cid = new CID(hash)
-
-  try {
-    for await (const { value } of dag.resolve(ipfsPath, options)) {
-      if (CID.isCID(value)) {
-        cid = value
-      }
+  for (const ipfsPath of ipfsPaths) {
+    if (isIpfs.cid(ipfsPath)) {
+      cids.push(new CID(ipfsPath))
+      continue
     }
-  } catch (err) {
-    // TODO: add error codes to IPLD
-    if (err.message.startsWith('Object has no property')) {
-      const linkName = err.message.replace('Object has no property \'', '').slice(0, -1)
-      err.message = `no link named "${linkName}" under ${cid}`
-      err.code = 'ERR_NO_LINK'
+
+    const {
+      cid,
+      path
+    } = toCidAndPath(ipfsPath)
+
+    if (!path) {
+      cids.push(cid)
+      continue
     }
-    throw err
+
+    const result = await dag.resolve(cid, {
+      ...options,
+      path
+    })
+
+    if (CID.isCID(result.cid)) {
+      cids.push(result.cid)
+    }
   }
 
   return cid
@@ -149,13 +119,14 @@ const mapFile = (file, options) => {
     name: file.name,
     depth: file.path.split('/').length,
     size: 0,
-    type: 'dir'
+    type: 'file'
   }
 
   if (file.unixfs) {
+    output.type = file.unixfs.type === 'directory' ? 'dir' : 'file'
+
     if (file.unixfs.type === 'file') {
       output.size = file.unixfs.fileSize()
-      output.type = 'file'
 
       if (options.includeContent) {
         output.content = file.content()
@@ -257,7 +228,6 @@ function withTimeoutOption (fn, optionsArgIndex) {
 
 exports.normalizePath = normalizePath
 exports.normalizeCidPath = normalizeCidPath
-exports.parseIpfsPath = parseIpfsPath
 exports.resolvePath = resolvePath
 exports.mapFile = mapFile
 exports.withTimeoutOption = withTimeoutOption

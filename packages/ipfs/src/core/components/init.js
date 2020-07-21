@@ -127,14 +127,14 @@ module.exports = ({
       stat: Components.block.stat({ blockService, preload })
     }
 
-    const add = Components.add({ block, preload, pin, gcLock, options: constructorOptions })
+    const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
 
     if (!isInitialized && !options.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
       const emptyDirCid = await addEmptyDir({ dag, pin })
 
       log('adding default assets')
-      await initAssets({ add, print })
+      await initAssets({ addAll, print })
 
       log('initializing IPNS keyspace')
       // Setup the offline routing for IPNS.
@@ -145,7 +145,8 @@ module.exports = ({
     }
 
     const api = createApi({
-      add,
+      add: Components.add({ addAll }),
+      addAll,
       apiManager,
       constructorOptions,
       block,

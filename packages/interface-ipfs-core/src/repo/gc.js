@@ -34,16 +34,16 @@ module.exports = (common, options) => {
     })
 
     it('should run garbage collection', async () => {
-      const res = await all(ipfs.add(Buffer.from('apples')))
+      const res = await ipfs.add(Buffer.from('apples'))
 
       const pinset = await all(ipfs.pin.ls())
-      expect(pinset.map(obj => obj.cid.toString())).includes(res[0].cid.toString())
+      expect(pinset.map(obj => obj.cid.toString())).includes(res.cid.toString())
 
-      await drain(ipfs.pin.rm(res[0].cid))
-      await drain(ipfs.repo.gc())
+      await drain(ipfs.pin.rm(res.cid))
+      await all(ipfs.repo.gc())
 
       const finalPinset = await all(ipfs.pin.ls())
-      expect(finalPinset.map(obj => obj.cid.toString())).not.includes(res[0].cid.toString())
+      expect(finalPinset.map(obj => obj.cid.toString())).not.includes(res.cid.toString())
     })
 
     it('should clean up unpinned data', async () => {
@@ -53,8 +53,8 @@ module.exports = (common, options) => {
       // Add some data. Note: this will implicitly pin the data, which causes
       // some blocks to be added for the data itself and for the pinning
       // information that refers to the blocks
-      const addRes = await all(ipfs.add(Buffer.from('apples')))
-      const cid = addRes[0].cid
+      const addRes = await ipfs.add(Buffer.from('apples'))
+      const cid = addRes.cid
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain hash
@@ -129,8 +129,8 @@ module.exports = (common, options) => {
       const block = await ipfs.block.get(mfsFileCid)
 
       // Add the data to IPFS (which implicitly pins the data)
-      const addRes = await all(ipfs.add(block.data))
-      const dataCid = addRes[0].cid
+      const addRes = await ipfs.add(block.data)
+      const dataCid = addRes.cid
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain the data hash
@@ -175,8 +175,8 @@ module.exports = (common, options) => {
       const refsBeforeAdd = await all(ipfs.refs.local())
 
       // Add some data
-      const addRes = await all(ipfs.add(Buffer.from('pears')))
-      const dataCid = addRes[0].cid
+      const addRes = await ipfs.add(Buffer.from('pears'))
+      const dataCid = addRes.cid
 
       // Unpin the data
       await drain(ipfs.pin.rm(dataCid))
@@ -185,7 +185,7 @@ module.exports = (common, options) => {
       const obj = await new DAGNode(Buffer.from('fruit'), [{
         Name: 'p',
         Hash: dataCid,
-        Tsize: addRes[0].size
+        Tsize: addRes.size
       }])
 
       // Put the object into IPFS

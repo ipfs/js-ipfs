@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.137.0",
+  "version": "0.138.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -36,7 +36,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
-    "cids": "^0.8.2",
+    "cids": "^0.8.3",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
     "ipfs-unixfs": "^1.0.3",
@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "aegir": "^23.0.0",
-    "ipfsd-ctl": "^4.1.1"
+    "ipfsd-ctl": "^5.0.0"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

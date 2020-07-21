@@ -22,21 +22,10 @@ module.exports = (common, options) => {
     let ipfs
     beforeEach(async () => {
       ipfs = (await common.spawn()).api
-
-      await Promise.all(fixtures.files.map(file => {
-        return all(ipfs.add(file.data, { pin: false }))
-      }))
-
-      await all(
-        ipfs.add(fixtures.directory.files.map(
-          file => ({
-            path: file.path,
-            content: file.data
-          })
-        ), {
-          pin: false
-        })
-      )
+      await ipfs.add(fixtures.files[0].data, { pin: false })
+      await drain(ipfs.pin.add(fixtures.files[0].cid, { recursive: true }))
+      await ipfs.add(fixtures.files[1].data, { pin: false })
+      await drain(ipfs.pin.add(fixtures.files[1].cid, { recursive: false }))
     })
 
     after(() => common.clean())

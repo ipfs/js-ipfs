@@ -28,7 +28,7 @@ module.exports = (common, options) => {
       ipfs = (await common.spawn()).api
 
       await Promise.all(fixtures.files.map(file => {
-        return all(ipfs.add(file.data, { pin: false }))
+        return ipfs.add(file.data, { pin: false })
       }))
 
       await all(

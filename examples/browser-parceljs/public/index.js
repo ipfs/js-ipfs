@@ -22,18 +22,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   log(`The IPFS node version is ${version.version}`)
 
-  for await (const entry of node.add({
+  const entry = await node.add({
     path: 'hello-parcel.txt',
     content: 'Hello from parcel.js bundled ipfs example'
-  })) {
-    log(`This page deployed ${entry.path} to IPFS and its CID is ${entry.cid}`)
+  })
+  log(`This page deployed ${entry.path} to IPFS and its CID is ${entry.cid}`)
 
-    const buffers = []
+  const buffers = []
 
-    for await (const buf of node.cat(entry.cid)) {
-      buffers.push(buf)
-    }
-
-    log(`The contents of the file was: ${Buffer.concat(buffers).toString()}`)
+  for await (const buf of node.cat(entry.cid)) {
+    buffers.push(buf)
   }
+
+  log(`The contents of the file was: ${Buffer.concat(buffers).toString()}`)
 })

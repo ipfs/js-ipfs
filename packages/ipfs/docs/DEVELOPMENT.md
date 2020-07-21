@@ -54,7 +54,7 @@
 # run the interop tests with the default go-IPFS
 > npm run test:interop
 
-# run the interop tests with a different go-IPFS
+# run the interop tests with a different go-IPFS
 > IPFS_EXEC_GO=/path/to/ipfs npm run test:interop
 ```
 

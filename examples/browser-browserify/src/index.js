@@ -10,13 +10,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function store () {
     const toStore = document.getElementById('source').value
 
-    for await (const file of node.add(toStore)) {
-      if (file && file.cid) {
-        console.log('successfully stored', file.cid)
+    const file = await node.add(toStore)
 
-        await display(file.cid)
-      }
-    }
+    console.log('successfully stored', file.cid)
+
+    await display(file.cid)
   }
 
   async function display (cid) {

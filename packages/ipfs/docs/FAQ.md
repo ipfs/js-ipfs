@@ -2,6 +2,8 @@
 
 - [FAQ](#faq)
   - [Why isn't there DHT support in js-IPFS?](#why-isnt-there-dht-support-in-js-ipfs)
+    - [Node.js](#nodejs)
+    - [Browser](#browser)
   - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
   - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
   - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
@@ -13,7 +15,26 @@
 
 There is DHT support for js-IPFS in the form of [libp2p/js-libp2p-kad-dht](https://github.com/libp2p/js-libp2p-kad-dht) but it is not finished yet, and may not be the right solution to the problem.
 
-Historically js-IPFS has targeted browser environments.  The constraints imposed by browsers do not typically make for good DHT participants - people do not tend to stay on a page for long enough to make or answer DHT queries, and even if they did, most nodes on the network talk TCP - the browser can neither open TCP ports on remote hosts nor accept TCP connections.
+### Node.js
+
+To enable DHT support, before starting your daemon run:
+
+```console
+$ jsipfs config Routing.Type dht
+```
+
+The possible values for `Routing.Type` are:
+
+ -  `'none'` the default, this means the DHT is turned off any you must manually dial other nodes
+ -  `'dht'` start the node in DHT client mode, if it is discovered to be publicly dialable it will automatically switch to server mode
+ -  `'dhtclient'` A DHT client is able to make DHT queries but will not respond to any
+ -  `'dhtserver'` A DHT server can make and respond to DHT queries.  Please only choose this option if your node is dialable from the open Internet.
+
+At the time of writing, only DHT client mode is supported and will be selected if `Routing.Type` is not `'none'`.
+
+### Browser
+
+In the browser there are many constraints that mean the environment does not typically make for good DHT participants - the number of connections required is high, people do not tend to stay on a page for long enough to make or answer DHT queries, and even if they did, most nodes on the network talk TCP - the browser can neither open TCP ports on remote hosts nor accept TCP connections.
 
 A better approach may be to set up [Delegate Routing](./DELEGATE_ROUTERS.md) to use remote go-IPFS to make queries on the browsers' behalf as these do not have the same constraints.
 

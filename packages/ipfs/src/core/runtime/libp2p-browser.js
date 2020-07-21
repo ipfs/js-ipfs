@@ -48,6 +48,7 @@ module.exports = () => {
       dht: {
         kBucketSize: 20,
         enabled: false,
+        clientMode: true,
         randomWalk: {
           enabled: false
         },

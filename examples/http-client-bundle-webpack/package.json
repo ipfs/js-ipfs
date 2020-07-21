@@ -1,0 +1,36 @@
+{
+  "name": "example-http-client-bundle-webpack",
+  "version": "1.0.0",
+  "description": "Bundle js-ipfs-http-client with Webpack",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "webpack",
+    "start": "node server.js",
+    "test": "test-ipfs-example"
+  },
+  "author": "Victor Bjelkholm <victor@ipfs.io>",
+  "license": "MIT",
+  "keywords": [],
+  "dependencies": {
+    "ipfs-http-client": "^45.0.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.4",
+    "execa": "^4.0.0",
+    "ipfs": "^0.48.0",
+    "ipfsd-ctl": "^5.0.0",
+    "react-hot-loader": "^4.12.21",
+    "test-ipfs-example": "^2.0.3",
+    "webpack": "^4.43.0",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
+}

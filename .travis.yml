@@ -135,7 +135,7 @@ jobs:
         - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist.push('ipfs-css', 'tachyons')"
         - npm run reset
         - npm install
-        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
+        - npm run build -- --scope={ipfs,ipfs-http-client}
         - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc-npm
