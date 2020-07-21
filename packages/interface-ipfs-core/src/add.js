@@ -5,12 +5,15 @@ const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
-const urlSource = require('ipfs-utils/src/files/url-source')
+const urlSources = require('ipfs-utils/src/files/url-source')
+const last = require('it-last')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
+
+const urlSource = (url) => last(urlSources(url))
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -242,7 +245,7 @@ module.exports = (common, options) => {
       const url = echoUrl(text)
 
       const [result, expectedResult] = await Promise.all([
-        ipfs.add(urlSource(url)),
+        ipfs.add(await urlSource(url)),
         ipfs.add(Buffer.from(text))
       ])
 
@@ -257,7 +260,7 @@ module.exports = (common, options) => {
       const url = echoUrl(text)
 
       const [result, expectedResult] = await Promise.all([
-        ipfs.add(urlSource(redirectUrl(url))),
+        ipfs.add(await urlSource(redirectUrl(url))),
         ipfs.add(Buffer.from(text))
       ])
 
@@ -271,7 +274,7 @@ module.exports = (common, options) => {
       const text = `TEST${Math.random()}`
       const url = echoUrl(text)
 
-      const res = await ipfs.add(urlSource(url), { onlyHash: true })
+      const res = await ipfs.add(await urlSource(url), { onlyHash: true })
 
       await expect(ipfs.object.get(res.cid, { timeout: 500 }))
         .to.eventually.be.rejected()
@@ -284,7 +287,7 @@ module.exports = (common, options) => {
       const addOpts = { wrapWithDirectory: true }
 
       const [result, expectedResult] = await Promise.all([
-        ipfs.add(urlSource(url), addOpts),
+        ipfs.add(await urlSource(url), addOpts),
         ipfs.add({ path: 'download', content: Buffer.from(filename) }, addOpts)
       ])
       expect(result.err).to.not.exist()
@@ -298,8 +301,8 @@ module.exports = (common, options) => {
       const addOpts = { wrapWithDirectory: true }
 
       const [result, expectedResult] = await Promise.all([
-        ipfs.add(urlSource(url), addOpts),
-        ipfs.add([{ path: 'download', content: Buffer.from(filename) }], addOpts)
+        ipfs.add(await urlSource(url), addOpts),
+        ipfs.add({ path: 'download', content: Buffer.from(filename) }, addOpts)
       ])
 
       expect(result.err).to.not.exist()
@@ -308,7 +311,7 @@ module.exports = (common, options) => {
     })
 
     it('should not add from an invalid url', () => {
-      return expect(ipfs.add(urlSource('123http://invalid'))).to.eventually.be.rejected()
+      return expect(last(ipfs.addAll(urlSources('123http://invalid')))).to.eventually.be.rejected()
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {

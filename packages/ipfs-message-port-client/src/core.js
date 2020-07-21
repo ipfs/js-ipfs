@@ -19,7 +19,8 @@ const {
  * @typedef {import('ipfs-message-port-protocol/src/data').Time} Time
  * @typedef {import('ipfs-message-port-protocol/src/data').UnixFSTime} UnixFSTime
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-server/src/core').AddInput} EncodedAddInput
+ * @typedef {import('ipfs-message-port-server/src/core').SingleFileInput} EncodedAddInput
+ * @typedef {import('ipfs-message-port-server/src/core').MultiFileInput} EncodedAddAllInput
  * @typedef {import('ipfs-message-port-server/src/core').FileInput} FileInput
  * @typedef {import('ipfs-message-port-server/src/core').FileContent} EncodedFileContent
  *
@@ -29,7 +30,7 @@ const {
  *
  * @typedef {ArrayBuffer|ArrayBufferView} Bytes
  *
- * @typedef {Blob|Bytes|string|Iterable<number>|Iterable<Bytes>|AsyncIterable<Bytes>|ReadableStream} FileContent
+ * @typedef {Blob|Bytes|string|Iterable<number>|Iterable<Bytes>|AsyncIterable<Bytes>} FileContent
  *
  * @typedef {Object} FileObject
  * @property {string} [path]
@@ -38,12 +39,9 @@ const {
  * @property {UnixFSTime} [mtime]
  *
  *
- * @typedef {Blob|Bytes|string|FileObject|Iterable<Number>|Iterable<Bytes>|AsyncIterable<Bytes>|ReadableStream} SingleFileInput
+ * @typedef {Blob|Bytes|string|FileObject|Iterable<number>|Iterable<Bytes>|AsyncIterable<Bytes>|ReadableStream} AddInput
  *
- * @typedef {Iterable<Blob>|Iterable<string>|Iterable<FileObject>|AsyncIterable<Blob>|AsyncIterable<string>|AsyncIterable<FileObject>} MultiFileInput
- *
- * @typedef {SingleFileInput | MultiFileInput} AddInput
- *
+ * @typedef {Iterable<Blob|string|FileObject>|AsyncIterable<Blob|string|FileObject>} AddAllInput
  */
 
 /**
@@ -71,7 +69,7 @@ class CoreClient extends Client {
    * `transfer: [input.buffer]` which would allow transferring it instead of
    * copying.
    *
-   * @param {AddInput} input
+   * @param {AddAllInput} input
    * @param {Object} [options]
    * @param {string} [options.chunker="size-262144"]
    * @param {number} [options.cidVersion=0]
@@ -96,7 +94,50 @@ class CoreClient extends Client {
    * @property {number} size
    * @property {Time} mtime
    */
-  async * add (input, options = {}) {
+  async * addAll (input, options = {}) {
+    const { timeout, signal } = options
+    const transfer = [...(options.transfer || [])]
+    const progress = options.progress
+      ? encodeCallback(options.progress, transfer)
+      : undefined
+
+    const result = await this.remote.addAll({
+      ...options,
+      input: encodeAddAllInput(input, transfer),
+      progress,
+      transfer,
+      timeout,
+      signal
+    })
+    yield * decodeIterable(result.data, decodeAddedData)
+  }
+
+  /**
+   * Add file to IPFS.
+   *
+   * If you pass binary data like `Uint8Array` it is recommended to provide
+   * `transfer: [input.buffer]` which would allow transferring it instead of
+   * copying.
+   *
+   * @param {AddInput} input
+   * @param {Object} [options]
+   * @param {string} [options.chunker="size-262144"]
+   * @param {number} [options.cidVersion=0]
+   * @param {boolean} [options.enableShardingExperiment]
+   * @param {string} [options.hashAlg="sha2-256"]
+   * @param {boolean} [options.onlyHash=false]
+   * @param {boolean} [options.pin=true]
+   * @param {function(number):void} [options.progress]
+   * @param {boolean} [options.rawLeaves=false]
+   * @param {number} [options.shardSplitThreshold=1000]
+   * @param {boolean} [options.trickle=false]
+   * @param {boolean} [options.wrapWithDirectory=false]
+   * @param {number} [options.timeout]
+   * @param {Transferable[]} [options.transfer]
+   * @param {AbortSignal} [options.signal]
+   * @returns {Promise<AddedData>}
+   */
+  async add (input, options = {}) {
     const { timeout, signal } = options
     const transfer = [...(options.transfer || [])]
     const progress = options.progress
@@ -111,7 +152,8 @@ class CoreClient extends Client {
       timeout,
       signal
     })
-    yield * decodeIterable(result.data, decodeAddedData)
+
+    return decodeAddedData(result.data)
   }
 
   /**
@@ -151,7 +193,7 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
  * @param {T} v
  * @returns {T}
  */
-const identity = v => v
+const identity = (v) => v
 
 /**
  * Encodes input passed to the `ipfs.add` via the best possible strategy for the
@@ -175,7 +217,6 @@ const encodeAddInput = (input, transfer) => {
   } else {
     // If input is (async) iterable or `ReadableStream` or "FileObject" it will
     // be encoded via own specific encoder.
-
     const iterable = asIterable(input)
     if (iterable) {
       return encodeIterable(iterable, encodeIterableContent, transfer)
@@ -183,7 +224,11 @@ const encodeAddInput = (input, transfer) => {
 
     const asyncIterable = asAsyncIterable(input)
     if (asyncIterable) {
-      return encodeIterable(asyncIterable, encodeAsyncIterableContent, transfer)
+      return encodeIterable(
+        asyncIterable,
+        encodeAsyncIterableContent,
+        transfer
+      )
     }
 
     const readableStream = asReadableStream(input)
@@ -202,6 +247,43 @@ const encodeAddInput = (input, transfer) => {
 
     throw TypeError('Unexpected input: ' + typeof input)
   }
+}
+
+/**
+ * Encodes input passed to the `ipfs.add` via the best possible strategy for the
+ * given input.
+ *
+ * @param {AddAllInput} input
+ * @param {Transferable[]} transfer
+ * @returns {EncodedAddAllInput}
+ */
+const encodeAddAllInput = (input, transfer) => {
+  // If input is (async) iterable or `ReadableStream` or "FileObject" it will
+  // be encoded via own specific encoder.
+  const iterable = asIterable(input)
+  if (iterable) {
+    return encodeIterable(iterable, encodeIterableContent, transfer)
+  }
+
+  const asyncIterable = asAsyncIterable(input)
+  if (asyncIterable) {
+    return encodeIterable(
+      asyncIterable,
+      encodeAsyncIterableContent,
+      transfer
+    )
+  }
+
+  const readableStream = asReadableStream(input)
+  if (readableStream) {
+    return encodeIterable(
+      iterateReadableStream(readableStream),
+      encodeAsyncIterableContent,
+      transfer
+    )
+  }
+
+  throw TypeError('Unexpected input: ' + typeof input)
 }
 
 /**
@@ -291,7 +373,11 @@ const encodeFileContent = (content, transfer) => {
 
     const asyncIterable = asAsyncIterable(content)
     if (asyncIterable) {
-      return encodeIterable(asyncIterable, encodeAsyncIterableContent, transfer)
+      return encodeIterable(
+        asyncIterable,
+        encodeAsyncIterableContent,
+        transfer
+      )
     }
 
     const readableStream = asReadableStream(content)
@@ -331,10 +417,10 @@ const iterateReadableStream = async function * (stream) {
  * Pattern matches given input as `Iterable<I>` and returns back either matched
  * iterable or `null`.
  * @template I
- * @param {Iterable<I>|AddInput} input
+ * @param {Iterable<I>|AddInput|AddAllInput} input
  * @returns {Iterable<I>|null}
  */
-const asIterable = input => {
+const asIterable = (input) => {
   /** @type {*} */
   const object = input
   if (object && typeof object[Symbol.iterator] === 'function') {
@@ -348,10 +434,10 @@ const asIterable = input => {
  * Pattern matches given `input` as `AsyncIterable<I>` and returns back either
  * matched `AsyncIterable` or `null`.
  * @template I
- * @param {AsyncIterable<I>|AddInput} input
+ * @param {AsyncIterable<I>|AddInput|AddAllInput} input
  * @returns {AsyncIterable<I>|null}
  */
-const asAsyncIterable = input => {
+const asAsyncIterable = (input) => {
   /** @type {*} */
   const object = input
   if (object && typeof object[Symbol.asyncIterator] === 'function') {
@@ -368,7 +454,7 @@ const asAsyncIterable = input => {
  * @param {any} input
  * @returns {ReadableStream<Uint8Array>|null}
  */
-const asReadableStream = input => {
+const asReadableStream = (input) => {
   if (input && typeof input.getReader === 'function') {
     return input
   } else {
@@ -382,7 +468,7 @@ const asReadableStream = input => {
  * @param {*} input
  * @returns {FileObject|null}
  */
-const asFileObject = input => {
+const asFileObject = (input) => {
   if (typeof input === 'object' && (input.path || input.content)) {
     return input
   } else {

@@ -6,6 +6,7 @@ const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
 
 /**
  * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-message-port-protocol/src/cid').CID} CID
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/dag').DAGNode} DAGNode
  * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedDAGNode} EncodedDAGNode
@@ -57,8 +58,8 @@ class DAGService {
    *
    * @typedef {Object} GetDAG
    * @property {EncodedCID} cid
-   * @property {string} path
-   * @property {boolean} localResolve
+   * @property {string} [path]
+   * @property {boolean} [localResolve]
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
@@ -69,8 +70,8 @@ class DAGService {
     const { cid, path, localResolve, timeout, signal } = query
     const { value, remainderPath } = await this.ipfs.dag.get(
       decodeCID(cid),
-      path,
       {
+        path,
         localResolve,
         timeout,
         signal
@@ -83,10 +84,34 @@ class DAGService {
   }
 
   /**
+   * @typedef {Object} ResolveQuery
+   * @property {EncodedCID|string} cid
+   * @property {string} [path]
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
+   *
+   * @typedef {Object} ResolveResult
+   * @property {EncodedCID} cid
+   * @property {string|void} remainderPath
+   *
+   * @param {ResolveQuery} query
+   * @returns {Promise<ResolveResult>}
+   */
+  async resolve (query) {
+    const { cid, remainderPath } =
+      await this.ipfs.dag.resolve(decodePathOrCID(query.cid), query)
+
+    return {
+      cid: encodeCID(cid),
+      remainderPath
+    }
+  }
+
+  /**
    * @typedef {Object} EnumerateDAG
    * @property {EncodedCID} cid
-   * @property {string} path
-   * @property {boolean} recursive
+   * @property {string} [path]
+   * @property {boolean} [recursive]
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
@@ -95,7 +120,8 @@ class DAGService {
    */
   async tree (query) {
     const { cid, path, recursive, timeout, signal } = query
-    const result = await this.ipfs.dag.tree(decodeCID(cid), path, {
+    const result = await this.ipfs.dag.tree(decodeCID(cid), {
+      path,
       recursive,
       timeout,
       signal
@@ -103,6 +129,18 @@ class DAGService {
     const entries = await collect(result)
 
     return entries
+  }
+}
+
+/**
+ * @param {EncodedCID|string} input
+ * @returns {CID|string}
+ */
+const decodePathOrCID = (input) => {
+  if (typeof input === 'string') {
+    return input
+  } else {
+    return decodeCID(input)
   }
 }
 

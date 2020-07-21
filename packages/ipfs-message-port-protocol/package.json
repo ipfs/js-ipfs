@@ -33,12 +33,12 @@
   },
   "dependencies": {
     "buffer": "^5.6.0",
-    "cids": "^0.8.0",
+    "cids": "^0.8.3",
     "ipld-block": "^0.9.2"
   },
   "devDependencies": {
-    "aegir": "^22.0.0",
-    "interface-ipfs-core": "^0.136.0"
+    "aegir": "^23.0.0",
+    "interface-ipfs-core": "^0.138.0"
   },
   "engines": {
     "node": ">=10.3.0",

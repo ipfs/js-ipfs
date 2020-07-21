@@ -8,6 +8,7 @@ import {
   CIDVersion
 } from 'ipfs-message-port-protocol/src/data'
 import { EncodedCID } from './block'
+import { ReadStream } from 'fs'
 
 type Mode = string | number
 export interface IPFS extends Core {
@@ -34,25 +35,29 @@ interface PutOptions extends AbortOptions {
 }
 
 interface GetOptions extends AbortOptions {
+  path?: string,
   localResolve?: boolean
 }
 
+interface ResolveOptions extends AbortOptions {
+  path?: string
+}
+
 interface TreeOptions extends AbortOptions {
+  path?: string,
   recursive?: boolean
 }
 
 export interface DAG {
   put(dagNode: DAGNode, options: PutOptions): Promise<CID>
-  get(
-    cid: CID,
-    path: string,
-    options: GetOptions
-  ): Promise<{ value: DAGNode; remainderPath: string }>
-  tree(cid: CID, path: string, options: TreeOptions): AsyncIterable<string>
+  get(cid: CID, options: GetOptions): Promise<{ value: DAGNode; remainderPath: string }>
+  resolve(pathOrCID: string | CID, options: ResolveOptions): Promise<{ cid: CID, remainderPath: string }>
+  tree(cid: CID, options: TreeOptions): AsyncIterable<string>
 }
 
 export interface Core {
-  add(inputs: AddInput, options: AddOptions): AsyncIterable<FileOutput>
+  addAll(inputs: AddAllInput, options: AddOptions): AsyncIterable<FileOutput>
+  add(input: AddInput, options: AddOptions): Promise<FileOutput>
   cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Buffer>
 }
 
@@ -71,10 +76,10 @@ interface AddOptions extends AbortOptions {
 }
 
 export type FileInput = {
-  path: string
-  content: string | AsyncIterable<ArrayBuffer | ArrayBufferView>
-  mode: string | number | void
-  mtime: { secs: number; nsecs?: number } | void
+  path?: string
+  content?: FileContent
+  mode?: string | number | void
+  mtime?: Time
 }
 
 export type FileOutput = {
@@ -148,27 +153,18 @@ type WriteContent =
   | Blob
   | AsyncIterable<ArrayBufferView>
 
-type AddInput = SingleFileInput | MultiFileInput
-
-type SingleFileInput =
+type AddInput =
+  | Blob
   | string
   | ArrayBufferView
   | ArrayBuffer
-  | Blob
-  | FileObject
-  | Iterable<number>
-  | Iterable<ArrayBufferView>
-  | Iterable<ArrayBuffer>
-  | AsyncIterable<ArrayBufferView>
-  | AsyncIterable<ArrayBuffer>
+  | FileInput
+  | ReadStream
 
-type MultiFileInput =
-  | Iterable<Blob>
-  | Iterable<string>
-  | Iterable<FileObject>
-  | AsyncIterable<Blob>
-  | AsyncIterable<string>
-  | AsyncIterable<FileObject>
+
+type AddAllInput =
+  | Iterable<AddInput>
+  | AsyncIterable<AddInput>
 
 export type FileObject = {
   path?: string
@@ -182,11 +178,8 @@ export type FileContent =
   | ArrayBufferView
   | ArrayBuffer
   | Blob
-  | Iterable<number>
-  | Iterable<ArrayBufferView>
-  | Iterable<ArrayBuffer>
-  | AsyncIterable<ArrayBufferView>
-  | AsyncIterable<ArrayBuffer>
+  | Iterable<ArrayBuffer | ArrayBufferView>
+  | AsyncIterable<ArrayBuffer | ArrayBufferView>
 
 interface WriteOptions extends AbortOptions {
   offset?: number
@@ -226,7 +219,7 @@ interface BlockService {
   ): Promise<{ cid: CID; size: number }>
 }
 
-interface GetBlockOptions extends AbortOptions {}
+interface GetBlockOptions extends AbortOptions { }
 interface PutBlockOptions extends AbortOptions {
   format?: string
   mhtype?: string
@@ -243,4 +236,4 @@ interface RmBlockOptions extends AbortOptions {
   quiet?: boolean
 }
 
-interface StatBlockOptions extends AbortOptions {}
+interface StatBlockOptions extends AbortOptions { }

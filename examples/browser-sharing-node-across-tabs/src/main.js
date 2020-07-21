@@ -18,7 +18,7 @@ const main = async () => {
 
 const uploader = async (ipfs) => {
   document.body.outerHTML += '<div>Adding "hello world!" to shared IPFS node</div>'
-  const entry = await add(ipfs, new Blob(['hello world!'], { type: "text/plain" }))
+  const entry = await ipfs.add(ipfs, new Blob(['hello world!'], { type: "text/plain" }))
   const path = `/ipfs/${entry.cid}/`
   document.body.outerHTML += `<div class="ipfs-add">File was added:
   <a target="_blank" href="${new URL(`#${path}`, location)}">${path}</a>
@@ -40,14 +40,6 @@ const viewer = async (ipfs, path) => {
   } catch(error) {
     document.body.outerHTML += `<div class="error">${error}</div>`
   }
-}
-
-const add = async (ipfs, blob) => {
-  let result = null
-  for await (const entry of ipfs.add(blob)) {
-    result = entry
-  }
-  return result
 }
 
 onload = main

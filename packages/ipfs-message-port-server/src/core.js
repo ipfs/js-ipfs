@@ -36,8 +36,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  */
 
 /**
- * @typedef {Object} AddQuery
- * @property {AddInput} input
+ * @typedef {Object} AddOptions
  * @property {string} [chunker]
  * @property {number} [cidVersion]
  * @property {boolean} [enableShardingExperiment]
@@ -52,9 +51,17 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {number} [timeout]
  * @property {AbortSignal} [signal]
  *
- * @typedef {SingleFileInput | MultiFileInput} AddInput
- * @typedef {ArrayBuffer|ArrayBufferView|Blob|string|FileInput|RemoteIterable<ArrayBufferView>|RemoteIterable<ArrayBuffer>} SingleFileInput
- * @typedef {RemoteIterable<Blob>|RemoteIterable<string>|RemoteIterable<FileInput>} MultiFileInput
+ * @typedef {Object} AddAllInput
+ * @property {MultiFileInput} input
+ *
+ * @typedef {Object} AddInput
+ * @property {SingleFileInput} input
+ *
+ * @typedef {AddInput & AddOptions} AddQuery
+ * @typedef {AddAllInput & AddOptions} AddAllQuery
+ *
+ * @typedef {ArrayBuffer|ArrayBufferView|Blob|string|FileInput|RemoteIterable<ArrayBufferView|ArrayBuffer>} SingleFileInput
+ * @typedef {RemoteIterable<ArrayBuffer|ArrayBufferView|Blob|string|FileInput>} MultiFileInput
  *
  * @typedef {Object} FileInput
  * @property {string} [path]
@@ -116,14 +123,60 @@ class CoreService {
   }
 
   /**
-   * @typedef {Object} AddResult
+   * @typedef {Object} AddAllResult
    * @property {RemoteIterable<AddedEntry>} data
    * @property {Transferable[]} transfer
 
-   * @param {AddQuery} query
-   * @returns {AddResult}
+   * @param {AddAllQuery} query
+   * @returns {AddAllResult}
    */
-  add (query) {
+  addAll (query) {
+    const { input } = query
+    const {
+      chunker,
+      cidVersion,
+      enableShardingExperiment,
+      hashAlg,
+      onlyHash,
+      pin,
+      progress,
+      rawLeaves,
+      shardSplitThreshold,
+      trickle,
+      wrapWithDirectory,
+      timeout,
+      signal
+    } = query
+
+    const options = {
+      chunker,
+      cidVersion,
+      enableShardingExperiment,
+      hashAlg,
+      onlyHash,
+      pin,
+      rawLeaves,
+      shardSplitThreshold,
+      trickle,
+      wrapWithDirectory,
+      timeout,
+      progress: progress != null ? decodeCallback(progress) : undefined,
+      signal
+    }
+
+    const content = decodeAddAllInput(input)
+    return encodeAddAllResult(this.ipfs.addAll(content, options))
+  }
+
+  /**
+   * @typedef {Object} AddResult
+   * @property {AddedEntry} data
+   * @property {Transferable[]} transfer
+
+   * @param {AddQuery} query
+   * @returns {Promise<AddResult>}
+   */
+  async add (query) {
     const { input } = query
     const {
       chunker,
@@ -158,7 +211,7 @@ class CoreService {
     }
 
     const content = decodeAddInput(input)
-    return encodeAddResult(this.ipfs.add(content, options))
+    return encodeAddResult(await this.ipfs.add(content, options))
   }
 
   /**
@@ -181,21 +234,29 @@ class CoreService {
     return encodeCatResult(content)
   }
 }
+// @returns {string|ArrayBufferView|ArrayBuffer|Blob|AsyncIterable<string>|AsyncIterable<ArrayBufferView>|AsyncIterable<ArrayBuffer>|AsyncIterable<Blob>|AsyncIterable<FileObject>}
 
 /**
- * @param {AddInput} input
- * @returns {string|ArrayBufferView|ArrayBuffer|Blob|AsyncIterable<string>|AsyncIterable<ArrayBufferView>|AsyncIterable<ArrayBuffer>|AsyncIterable<Blob>|AsyncIterable<FileObject>}
+ * @param {MultiFileInput} input
+ * @returns {AsyncIterable<string|ArrayBufferView|ArrayBuffer|Blob|FileObject>}
+ */
+const decodeAddAllInput = input =>
+  decodeIterable(input, decodeFileInput)
+
+/**
+ * @param {SingleFileInput} input
+ * @returns {string|ArrayBufferView|ArrayBuffer|Blob|FileObject}
  */
 const decodeAddInput = input =>
   matchInput(
     input,
     /**
-     * @param {*} data
-     * @returns {*}
-     */
+   * @param {*} data
+   * @returns {*}
+   */
     data => {
       if (data.type === 'RemoteIterable') {
-        return decodeIterable(data, decodeFileInput)
+        return { content: decodeIterable(data, decodeFileInput) }
       } else {
         return decodeFileInput(data)
       }
@@ -203,11 +264,6 @@ const decodeAddInput = input =>
   )
 
 /**
- * @property {string|void} [path]
- * @property {DecodedFileContent} content
- * @property {Mode|void} [mode]
- * @property {Time|void} [mtime]
-
  * @param {ArrayBufferView|ArrayBuffer|string|Blob|FileInput} input
  * @returns {string|ArrayBuffer|ArrayBufferView|Blob|FileObject}
  */
@@ -244,15 +300,27 @@ const matchInput = (input, decode) => {
 }
 
 /**
- *
  * @param {AsyncIterable<FileOutput>} out
+ * @returns {AddAllResult}
+ */
+const encodeAddAllResult = out => {
+  /** @type {Transferable[]} */
+  const transfer = []
+  return {
+    data: encodeIterable(out, encodeFileOutput, transfer),
+    transfer
+  }
+}
+
+/**
+ * @param {FileOutput} out
  * @returns {AddResult}
  */
 const encodeAddResult = out => {
   /** @type {Transferable[]} */
   const transfer = []
   return {
-    data: encodeIterable(out, encodeFileOutput, transfer),
+    data: encodeFileOutput(out, transfer),
     transfer
   }
 }
