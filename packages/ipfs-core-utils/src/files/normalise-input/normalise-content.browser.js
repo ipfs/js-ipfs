@@ -2,15 +2,17 @@
 
 const errCode = require('err-code')
 const { Blob } = require('ipfs-utils/src/globalthis')
+const itPeekable = require('it-peekable')
+const browserStreamToIt = require('browser-readablestream-to-it')
 
 const {
   isBytes,
   isBlob
 } = require('./utils')
 
-function toBlob (input) {
+async function toBlob (input) {
   // Bytes | String
-  if (isBytes(input) || typeof input === 'string') {
+  if (isBytes(input) || typeof input === 'string' || input instanceof String) {
     return new Blob([input])
   }
 
@@ -21,17 +23,30 @@ function toBlob (input) {
 
   // Browser stream
   if (typeof input.getReader === 'function') {
-    return browserStreamToBlob(input)
+    input = browserStreamToIt(input)
   }
 
-  // Iterator<?>
-  if (input[Symbol.iterator]) {
-    return itToBlob(input[Symbol.iterator]())
-  }
+  // (Async)Iterator<?>
+  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    const peekable = itPeekable(input)
+    const { value, done } = await peekable.peek()
 
-  // AsyncIterable<Bytes>
-  if (input[Symbol.asyncIterator]) {
-    return itToBlob(input[Symbol.asyncIterator]())
+    if (done) {
+      // make sure empty iterators result in empty files
+      return itToBlob(peekable)
+    }
+
+    peekable.push(value)
+
+    // (Async)Iterable<Number>
+    if (Number.isInteger(value)) {
+      return itToBlob(peekable)
+    }
+
+    // (Async)Iterable<Bytes>
+    if (isBytes(value) || typeof value === 'string' || value instanceof String) {
+      return itToBlob(peekable)
+    }
   }
 
   throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
@@ -42,23 +57,6 @@ async function itToBlob (stream) {
 
   for await (const chunk of stream) {
     parts.push(chunk)
-  }
-
-  return new Blob(parts)
-}
-
-async function browserStreamToBlob (stream) {
-  const parts = []
-  const reader = stream.getReader()
-
-  while (true) {
-    const result = await reader.read()
-
-    if (result.done) {
-      break
-    }
-
-    parts.push(result.value)
   }
 
   return new Blob(parts)

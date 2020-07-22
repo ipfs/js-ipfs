@@ -3,7 +3,6 @@
 /* eslint-env mocha */
 const { expect } = require('../utils/chai')
 const blobToIt = require('blob-to-it')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')
 const all = require('it-all')
 const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
@@ -16,23 +15,16 @@ if (isBrowser || isWebWorker) {
 }
 
 const STRING = () => 'hello world'
+const NEWSTRING = () => new String('hello world') // eslint-disable-line no-new-wrappers
 const BUFFER = () => Buffer.from(STRING())
 const ARRAY = () => Array.from(BUFFER())
 const TYPEDARRAY = () => Uint8Array.from(ARRAY())
 let BLOB
-let WINDOW_READABLE_STREAM
 
-if (supportsFileReader) {
+if (Blob) {
   BLOB = () => new Blob([
     STRING()
   ])
-
-  WINDOW_READABLE_STREAM = () => new ReadableStream({
-    start (controller) {
-      controller.enqueue(BUFFER())
-      controller.close()
-    }
-  })
 }
 
 async function verifyNormalisation (input) {
@@ -66,11 +58,26 @@ function asyncIterableOf (thing) {
   }())
 }
 
+function browserReadableStreamOf (thing) {
+  return new ReadableStream({
+    start (controller) {
+      controller.enqueue(thing)
+      controller.close()
+    }
+  })
+}
+
 describe('normalise-input', function () {
   function testInputType (content, name, isBytes) {
     it(name, async function () {
       await testContent(content())
     })
+
+    if (ReadableStream && isBytes) {
+      it(`ReadableStream<${name}>`, async function () {
+        await testContent(browserReadableStreamOf(content()))
+      })
+    }
 
     if (isBytes) {
       it(`Iterable<${name}>`, async function () {
@@ -125,6 +132,7 @@ describe('normalise-input', function () {
 
   describe('String', () => {
     testInputType(STRING, 'String', false)
+    testInputType(NEWSTRING, 'new String()', false)
   })
 
   describe('Buffer', () => {
@@ -132,19 +140,11 @@ describe('normalise-input', function () {
   })
 
   describe('Blob', () => {
-    if (!supportsFileReader) {
+    if (!Blob) {
       return
     }
 
     testInputType(BLOB, 'Blob', false)
-  })
-
-  describe('window.ReadableStream', () => {
-    if (!supportsFileReader) {
-      return
-    }
-
-    testInputType(WINDOW_READABLE_STREAM, 'window.ReadableStream', false)
   })
 
   describe('Iterable<Number>', () => {

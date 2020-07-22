@@ -14,7 +14,7 @@ const {
 
 async function * toAsyncIterable (input) {
   // Bytes | String
-  if (isBytes(input) || typeof input === 'string') {
+  if (isBytes(input) || typeof input === 'string' || input instanceof String) {
     yield toBuffer(input)
     return
   }
@@ -27,8 +27,7 @@ async function * toAsyncIterable (input) {
 
   // Browser stream
   if (typeof input.getReader === 'function') {
-    yield * browserStreamToIt(input)
-    return
+    input = browserStreamToIt(input)
   }
 
   // (Async)Iterator<?>
@@ -51,7 +50,7 @@ async function * toAsyncIterable (input) {
     }
 
     // (Async)Iterable<Bytes>
-    if (isBytes(value)) {
+    if (isBytes(value) || typeof value === 'string' || value instanceof String) {
       yield * map(peekable, chunk => toBuffer(chunk))
       return
     }

@@ -57,7 +57,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // (Async)Iterable<Blob>
     // (Async)Iterable<String>
     // (Async)Iterable<{ path, content }>
-    if (isFileObject(value) || isBlob(value) || typeof value === 'string') {
+    if (isFileObject(value) || isBlob(value) || typeof value === 'string' || value instanceof String) {
       yield * map(peekable, (value) => toFileObject(value, normaliseContent))
       return
     }
