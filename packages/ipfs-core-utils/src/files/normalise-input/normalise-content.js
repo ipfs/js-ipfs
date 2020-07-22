@@ -49,7 +49,7 @@ async function * toAsyncIterable (input) {
       return
     }
 
-    // (Async)Iterable<Bytes>
+    // (Async)Iterable<Bytes|String>
     if (isBytes(value) || typeof value === 'string' || value instanceof String) {
       yield * map(peekable, chunk => toBuffer(chunk))
       return

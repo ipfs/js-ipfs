@@ -43,7 +43,7 @@ async function toBlob (input) {
       return itToBlob(peekable)
     }
 
-    // (Async)Iterable<Bytes>
+    // (Async)Iterable<Bytes|String>
     if (isBytes(value) || typeof value === 'string' || value instanceof String) {
       return itToBlob(peekable)
     }

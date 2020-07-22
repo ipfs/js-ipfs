@@ -61,6 +61,15 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
       yield * map(peekable, (value) => toFileObject(value, normaliseContent))
       return
     }
+
+    // (Async)Iterable<(Async)Iterable<?>>
+    // (Async)Iterable<ReadableStream<?>>
+    // ReadableStream<(Async)Iterable<?>>
+    // ReadableStream<ReadableStream<?>>
+    if (value[Symbol.iterator] || value[Symbol.asyncIterator] || typeof value.getReader === 'function') {
+      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      return
+    }
   }
 
   // { path, content: ? }

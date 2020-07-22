@@ -73,13 +73,13 @@ describe('normalise-input', function () {
       await testContent(content())
     })
 
-    if (ReadableStream && isBytes) {
-      it(`ReadableStream<${name}>`, async function () {
-        await testContent(browserReadableStreamOf(content()))
-      })
-    }
-
     if (isBytes) {
+      if (ReadableStream) {
+        it(`ReadableStream<${name}>`, async function () {
+          await testContent(browserReadableStreamOf(content()))
+        })
+      }
+
       it(`Iterable<${name}>`, async function () {
         await testContent(iterableOf(content()))
       })
@@ -94,12 +94,24 @@ describe('normalise-input', function () {
     })
 
     if (isBytes) {
+      if (ReadableStream) {
+        it(`{ path: '', content: ReadableStream<${name}> }`, async function () {
+          await testContent({ path: '', content: browserReadableStreamOf(content()) })
+        })
+      }
+
       it(`{ path: '', content: Iterable<${name}> }`, async function () {
         await testContent({ path: '', content: iterableOf(content()) })
       })
 
       it(`{ path: '', content: AsyncIterable<${name}> }`, async function () {
         await testContent({ path: '', content: asyncIterableOf(content()) })
+      })
+    }
+
+    if (ReadableStream) {
+      it(`ReadableStream<${name}>`, async function () {
+        await testContent(browserReadableStreamOf(content()))
       })
     }
 
@@ -112,6 +124,12 @@ describe('normalise-input', function () {
     })
 
     if (isBytes) {
+      if (ReadableStream) {
+        it(`Iterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testContent(iterableOf({ path: '', content: browserReadableStreamOf(content()) }))
+        })
+      }
+
       it(`Iterable<{ path: '', content: Iterable<${name}> }>`, async function () {
         await testContent(iterableOf({ path: '', content: iterableOf(content()) }))
       })
@@ -119,6 +137,12 @@ describe('normalise-input', function () {
       it(`Iterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
         await testContent(iterableOf({ path: '', content: asyncIterableOf(content()) }))
       })
+
+      if (ReadableStream) {
+        it(`AsyncIterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testContent(asyncIterableOf({ path: '', content: browserReadableStreamOf(content()) }))
+        })
+      }
 
       it(`AsyncIterable<{ path: '', content: Iterable<${name}> }>`, async function () {
         await testContent(asyncIterableOf({ path: '', content: iterableOf(content()) }))
@@ -131,8 +155,8 @@ describe('normalise-input', function () {
   }
 
   describe('String', () => {
-    testInputType(STRING, 'String', false)
-    testInputType(NEWSTRING, 'new String()', false)
+    testInputType(STRING, 'String', true)
+    testInputType(NEWSTRING, 'new String()', true)
   })
 
   describe('Buffer', () => {
