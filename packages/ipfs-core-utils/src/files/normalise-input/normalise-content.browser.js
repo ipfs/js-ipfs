@@ -14,7 +14,7 @@ function toBlob (input) {
     return new Blob([input])
   }
 
-  // Bloby
+  // Blob | File
   if (isBloby(input)) {
     return input
   }

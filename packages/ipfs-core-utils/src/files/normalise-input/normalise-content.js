@@ -2,11 +2,11 @@
 
 const errCode = require('err-code')
 const { Buffer } = require('buffer')
+const browserStreamToIt = require('browser-readablestream-to-it')
+const blobToIt = require('blob-to-it')
 const {
   isBytes,
-  isBloby,
-  browserStreamToIt,
-  blobToIt
+  isBloby
 } = require('./utils')
 
 function toAsyncIterable (input) {

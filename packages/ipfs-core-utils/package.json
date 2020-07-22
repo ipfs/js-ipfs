@@ -28,6 +28,8 @@
   },
   "license": "MIT",
   "dependencies": {
+    "blob-to-it": "0.0.1",
+    "browser-readablestream-to-it": "0.0.1",
     "buffer": "^5.6.0",
     "cids": "^0.8.3",
     "err-code": "^2.0.0",

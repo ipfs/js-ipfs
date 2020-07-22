@@ -1,11 +1,11 @@
 'use strict'
 
 const errCode = require('err-code')
+const browserStreamToIt = require('browser-readablestream-to-it')
 const {
   isBytes,
   isBloby,
-  isFileObject,
-  browserStreamToIt
+  isFileObject
 } = require('./utils')
 
 module.exports = function normaliseInput (input, normaliseContent) {
