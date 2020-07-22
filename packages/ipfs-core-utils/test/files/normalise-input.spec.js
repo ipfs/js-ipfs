@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 const { expect } = require('../utils/chai')
-const { blobToIt } = require('../../src/files/normalise-input/utils')
+const blobToIt = require('blob-to-it')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
 const { Buffer } = require('buffer')
 const all = require('it-all')

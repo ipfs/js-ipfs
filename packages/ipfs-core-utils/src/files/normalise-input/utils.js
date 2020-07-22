@@ -1,10 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const { Blob } = require('ipfs-utils/src/globalthis')
 
 function isBytes (obj) {
-  return Buffer.isBuffer(obj) || ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
+  return ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
 }
 
 function isBloby (obj) {
