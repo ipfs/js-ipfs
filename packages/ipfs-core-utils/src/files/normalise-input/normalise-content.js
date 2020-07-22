@@ -4,65 +4,57 @@ const errCode = require('err-code')
 const { Buffer } = require('buffer')
 const browserStreamToIt = require('browser-readablestream-to-it')
 const blobToIt = require('blob-to-it')
+const itPeekable = require('it-peekable')
+const all = require('it-all')
+const map = require('it-map')
 const {
   isBytes,
   isBlob
 } = require('./utils')
 
-function toAsyncIterable (input) {
+async function * toAsyncIterable (input) {
   // Bytes | String
   if (isBytes(input) || typeof input === 'string') {
-    return (async function * () { // eslint-disable-line require-await
-      yield toBuffer(input)
-    })()
+    yield toBuffer(input)
+    return
   }
 
   // Blob
   if (isBlob(input)) {
-    return blobToIt(input)
+    yield * blobToIt(input)
+    return
   }
 
   // Browser stream
   if (typeof input.getReader === 'function') {
-    return browserStreamToIt(input)
+    yield * browserStreamToIt(input)
+    return
   }
 
-  // Iterator<?>
-  if (input[Symbol.iterator]) {
-    return (async function * () { // eslint-disable-line require-await
-      const iterator = input[Symbol.iterator]()
-      const first = iterator.next()
-      if (first.done) return iterator
+  // (Async)Iterator<?>
+  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    const peekable = itPeekable(input)
+    const { value, done } = await peekable.peek()
 
-      // Iterable<Number>
-      if (Number.isInteger(first.value)) {
-        yield toBuffer(Array.from((function * () {
-          yield first.value
-          yield * iterator
-        })()))
-        return
-      }
+    if (done) {
+      // make sure empty iterators result in empty files
+      yield * peekable
+      return
+    }
 
-      // Iterable<Bytes>
-      if (isBytes(first.value)) {
-        yield toBuffer(first.value)
-        for (const chunk of iterator) {
-          yield toBuffer(chunk)
-        }
-        return
-      }
+    peekable.push(value)
 
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
-  }
+    // (Async)Iterable<Number>
+    if (Number.isInteger(value)) {
+      yield toBuffer(await all(peekable))
+      return
+    }
 
-  // AsyncIterable<Bytes>
-  if (input[Symbol.asyncIterator]) {
-    return (async function * () {
-      for await (const chunk of input) {
-        yield toBuffer(chunk)
-      }
-    })()
+    // (Async)Iterable<Bytes>
+    if (isBytes(value)) {
+      yield * map(peekable, chunk => toBuffer(chunk))
+      return
+    }
   }
 
   throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')

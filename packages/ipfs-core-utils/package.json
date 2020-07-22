@@ -33,14 +33,16 @@
     "buffer": "^5.6.0",
     "cids": "^0.8.3",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^2.2.2"
+    "ipfs-utils": "^2.2.2",
+    "it-all": "^1.0.1",
+    "it-map": "^1.0.0",
+    "it-peekable": "0.0.1"
   },
   "devDependencies": {
     "aegir": "^23.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "delay": "^4.3.0",
-    "dirty-chai": "^2.0.1",
-    "it-all": "^1.0.1"
+    "dirty-chai": "^2.0.1"
   }
 }

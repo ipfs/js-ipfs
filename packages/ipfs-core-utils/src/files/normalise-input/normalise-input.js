@@ -2,13 +2,15 @@
 
 const errCode = require('err-code')
 const browserStreamToIt = require('browser-readablestream-to-it')
+const itPeekable = require('it-peekable')
+const map = require('it-map')
 const {
   isBytes,
   isBlob,
   isFileObject
 } = require('./utils')
 
-module.exports = function normaliseInput (input, normaliseContent) {
+module.exports = async function * normaliseInput (input, normaliseContent) {
   // must give us something
   if (input === null || input === undefined) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
@@ -16,98 +18,57 @@ module.exports = function normaliseInput (input, normaliseContent) {
 
   // String
   if (typeof input === 'string' || input instanceof String) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input, normaliseContent)
-    })()
+    yield toFileObject(input, normaliseContent)
+    return
   }
 
   // Buffer|ArrayBuffer|TypedArray
   // Blob|File
   if (isBytes(input) || isBlob(input)) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input, normaliseContent)
-    })()
+    yield toFileObject(input, normaliseContent)
+    return
+  }
+
+  // Browser ReadableStream
+  if (typeof input.getReader === 'function') {
+    input = browserStreamToIt(input)
   }
 
   // Iterable<?>
-  if (input[Symbol.iterator]) {
-    return (async function * () { // eslint-disable-line require-await
-      const iterator = input[Symbol.iterator]()
-      const first = iterator.next()
-      if (first.done) return iterator
+  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    const peekable = itPeekable(input)
+    const { value, done } = await peekable.peek()
 
-      // Iterable<Number>
-      // Iterable<Bytes>
-      if (Number.isInteger(first.value) || isBytes(first.value)) {
-        yield toFileObject((function * () {
-          yield first.value
-          yield * iterator
-        })(), normaliseContent)
-        return
-      }
+    if (done) {
+      // make sure empty iterators result in empty files
+      yield * peekable
+      return
+    }
 
-      // Iterable<Bloby>
-      // Iterable<String>
-      // Iterable<{ path, content }>
-      if (isFileObject(first.value) || isBlob(first.value) || typeof first.value === 'string') {
-        yield toFileObject(first.value, normaliseContent)
-        for (const obj of iterator) {
-          yield toFileObject(obj, normaliseContent)
-        }
-        return
-      }
+    peekable.push(value)
 
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
-  }
+    // (Async)Iterable<Number>
+    // (Async)Iterable<Bytes>
+    if (Number.isInteger(value) || isBytes(value)) {
+      yield toFileObject(peekable, normaliseContent)
+      return
+    }
 
-  // window.ReadableStream
-  if (typeof input.getReader === 'function') {
-    return (async function * () {
-      for await (const obj of browserStreamToIt(input)) {
-        yield toFileObject(obj, normaliseContent)
-      }
-    })()
-  }
-
-  // AsyncIterable<?>
-  if (input[Symbol.asyncIterator]) {
-    return (async function * () {
-      const iterator = input[Symbol.asyncIterator]()
-      const first = await iterator.next()
-      if (first.done) return iterator
-
-      // AsyncIterable<Bytes>
-      if (isBytes(first.value)) {
-        yield toFileObject((async function * () { // eslint-disable-line require-await
-          yield first.value
-          yield * iterator
-        })(), normaliseContent)
-        return
-      }
-
-      // AsyncIterable<Bloby>
-      // AsyncIterable<String>
-      // AsyncIterable<{ path, content }>
-      if (isFileObject(first.value) || isBlob(first.value) || typeof first.value === 'string') {
-        yield toFileObject(first.value, normaliseContent)
-        for await (const obj of iterator) {
-          yield toFileObject(obj, normaliseContent)
-        }
-        return
-      }
-
-      throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-    })()
+    // (Async)Iterable<Blob>
+    // (Async)Iterable<String>
+    // (Async)Iterable<{ path, content }>
+    if (isFileObject(value) || isBlob(value) || typeof value === 'string') {
+      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      return
+    }
   }
 
   // { path, content: ? }
-  // Note: Detected _after_ AsyncIterable<?> because Node.js streams have a
+  // Note: Detected _after_ (Async)Iterable<?> because Node.js streams have a
   // `path` property that passes this check.
   if (isFileObject(input)) {
-    return (async function * () { // eslint-disable-line require-await
-      yield toFileObject(input, normaliseContent)
-    })()
+    yield toFileObject(input, normaliseContent)
+    return
   }
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
