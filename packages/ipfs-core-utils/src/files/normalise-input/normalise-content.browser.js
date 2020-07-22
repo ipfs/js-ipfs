@@ -5,7 +5,7 @@ const { Blob } = require('ipfs-utils/src/globalthis')
 
 const {
   isBytes,
-  isBloby
+  isBlob
 } = require('./utils')
 
 function toBlob (input) {
@@ -15,7 +15,7 @@ function toBlob (input) {
   }
 
   // Blob | File
-  if (isBloby(input)) {
+  if (isBlob(input)) {
     return input
   }
 

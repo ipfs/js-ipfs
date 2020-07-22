@@ -6,7 +6,7 @@ function isBytes (obj) {
   return ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
 }
 
-function isBloby (obj) {
+function isBlob (obj) {
   return typeof Blob !== 'undefined' && obj instanceof Blob
 }
 
@@ -17,6 +17,6 @@ function isFileObject (obj) {
 
 module.exports = {
   isBytes,
-  isBloby,
+  isBlob,
   isFileObject
 }

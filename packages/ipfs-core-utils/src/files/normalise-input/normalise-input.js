@@ -4,7 +4,7 @@ const errCode = require('err-code')
 const browserStreamToIt = require('browser-readablestream-to-it')
 const {
   isBytes,
-  isBloby,
+  isBlob,
   isFileObject
 } = require('./utils')
 
@@ -23,7 +23,7 @@ module.exports = function normaliseInput (input, normaliseContent) {
 
   // Buffer|ArrayBuffer|TypedArray
   // Blob|File
-  if (isBytes(input) || isBloby(input)) {
+  if (isBytes(input) || isBlob(input)) {
     return (async function * () { // eslint-disable-line require-await
       yield toFileObject(input, normaliseContent)
     })()
@@ -49,7 +49,7 @@ module.exports = function normaliseInput (input, normaliseContent) {
       // Iterable<Bloby>
       // Iterable<String>
       // Iterable<{ path, content }>
-      if (isFileObject(first.value) || isBloby(first.value) || typeof first.value === 'string') {
+      if (isFileObject(first.value) || isBlob(first.value) || typeof first.value === 'string') {
         yield toFileObject(first.value, normaliseContent)
         for (const obj of iterator) {
           yield toFileObject(obj, normaliseContent)
@@ -89,7 +89,7 @@ module.exports = function normaliseInput (input, normaliseContent) {
       // AsyncIterable<Bloby>
       // AsyncIterable<String>
       // AsyncIterable<{ path, content }>
-      if (isFileObject(first.value) || isBloby(first.value) || typeof first.value === 'string') {
+      if (isFileObject(first.value) || isBlob(first.value) || typeof first.value === 'string') {
         yield toFileObject(first.value, normaliseContent)
         for await (const obj of iterator) {
           yield toFileObject(obj, normaliseContent)
