@@ -6,7 +6,7 @@ const browserStreamToIt = require('browser-readablestream-to-it')
 const blobToIt = require('blob-to-it')
 const {
   isBytes,
-  isBloby
+  isBlob
 } = require('./utils')
 
 function toAsyncIterable (input) {
@@ -17,8 +17,8 @@ function toAsyncIterable (input) {
     })()
   }
 
-  // Bloby
-  if (isBloby(input)) {
+  // Blob
+  if (isBlob(input)) {
     return blobToIt(input)
   }
 
