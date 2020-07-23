@@ -42,6 +42,7 @@ module.exports = ({
 
     const config = await repo.config.getAll()
     const addrs = []
+    const invalidValue = []
 
     if (config.Addresses && config.Addresses.Swarm) {
       config.Addresses.Swarm.forEach(addr => {
@@ -50,9 +51,8 @@ module.exports = ({
         // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
         // websocket-star support was removed from ipfs and libp2p
         if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
-          throw errCode(new Error('websocket-star swarm addresses \'' + addr + '\' are not supported. See https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED', {
-            address: addr
-          })
+          invalidValue.push(addr)
+          return
         }
 
         // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
@@ -65,6 +65,13 @@ module.exports = ({
 
         addrs.push(ma)
       })
+
+      if (invalidValue.length) {
+        throw errCode(new Error('websocket-star swarm addresses are not supported.\n\n' + invalidValue.join('\n') + '\n\nSee https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED', {
+          configKey: 'Addresses.Swarm',
+          invalidValue,
+        })
+      }
     }
 
     const libp2p = Components.libp2p({
