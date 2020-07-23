@@ -1,11 +1,11 @@
 'use strict'
 
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
-const toStream = require('./to-stream')
 const { nanoid } = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
+const toStream = require('it-to-stream')
 
 async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
@@ -22,12 +22,11 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
           fileSuffix = `-${index}`
         }
 
-        yield `--${boundary}\r\n`
-        yield `Content-Disposition: form-data; name="${type}${fileSuffix}"; filename="${encodeURIComponent(path)}"\r\n`
-        yield `Content-Type: ${content ? 'application/octet-stream' : 'application/x-directory'}\r\n`
+        let fieldName = type + fileSuffix
+        const qs = []
 
         if (mode !== null && mode !== undefined) {
-          yield `mode: ${modeToString(mode)}\r\n`
+          qs.push(`mode=${modeToString(mode)}`)
         }
 
         if (mtime != null) {
@@ -35,13 +34,20 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
             secs, nsecs
           } = mtimeToObject(mtime)
 
-          yield `mtime: ${secs}\r\n`
+          qs.push(`mtime=${secs}`)
 
           if (nsecs != null) {
-            yield `mtime-nsecs: ${nsecs}\r\n`
+            qs.push(`mtime-nsecs=${nsecs}`)
           }
         }
 
+        if (qs.length) {
+          fieldName = `${fieldName}?${qs.join('&')}`
+        }
+
+        yield `--${boundary}\r\n`
+        yield `Content-Disposition: form-data; name="${fieldName}"; filename="${encodeURIComponent(path)}"\r\n`
+        yield `Content-Type: ${content ? 'application/octet-stream' : 'application/x-directory'}\r\n`
         yield '\r\n'
 
         if (content) {

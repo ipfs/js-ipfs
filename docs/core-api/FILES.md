@@ -7,6 +7,9 @@ _Explore the Mutable File System through interactive coding challenges in our [P
 - [The Regular API](#the-regular-api)
   - [`ipfs.add(data, [options])`](#ipfsadddata-options)
     - [Parameters](#parameters)
+      - [FileStream](#filestream)
+      - [FileObject](#fileobject)
+      - [FileContent](#filecontent)
     - [Options](#options)
     - [Returns](#returns)
   - [`ipfs.addAll(source, [options])`](#ipfsaddallsource-options)
@@ -108,12 +111,19 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 `data` may be:
 
-* `Blob`
-* `String`
-* `Uint8Array`
+* `FileContent` (see below for definition)
 * `FileObject` (see below for definition)
-* `Iterable<Uint8Array>`
-* `AsyncIterable<Uint8Array>`
+* `FileStream<FileContent>` (see below for definition)
+
+##### FileStream
+
+`FileStream` is a stream of `FileContent` or `FileObject` entries of the type:
+
+```js
+Iterable<FileContent|FileObject> | AsyncIterable<FileContent|FileObject> | ReadableStream<FileContent|FileObject>
+```
+
+##### FileObject
 
 `FileObject` is a plain JS object of the following form:
 
@@ -136,10 +146,12 @@ If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
 
+##### FileContent
+
 `FileContent` is one of the following types:
 
 ```js
-Uint8Array | Blob | String | Iterable<Uint8Array> | AsyncIterable<Uint8Array>
+Uint8Array | Blob | String | Iterable<Uint8Array | Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
