@@ -35,13 +35,12 @@ module.exports = () => {
     config: {
       peerDiscovery: {
         autoDial: true,
+        // [Bootstrap.tag] = 'bootstrap'
         bootstrap: {
           enabled: true
         },
+        // [WebRTCStar.discovery.tag]
         webRTCStar: {
-          enabled: true
-        },
-        websocketStar: {
           enabled: true
         }
       },
