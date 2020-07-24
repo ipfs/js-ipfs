@@ -67,6 +67,30 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should cat with a Buffer multihash',
         reason: 'Passing CID as Buffer is not supported'
+      },
+      {
+        name: 'should add from a HTTP URL',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
+      },
+      {
+        name: 'should add from a HTTP URL with redirection',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
+      },
+      {
+        name: 'should add from a URL with only-hash=true',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
+      },
+      {
+        name: 'should add from a URL with wrap-with-directory=true',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
+      },
+      {
+        name: 'should add from a URL with wrap-with-directory=true and URL-escaped file name',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
+      },
+      {
+        name: 'should not add from an invalid url',
+        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
       }
     ]
   })
