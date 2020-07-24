@@ -34,7 +34,8 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "cids": "^0.8.3"
+    "cids": "^0.8.3",
+    "browser-readablestream-to-it": "~0.0.1"
   },
   "devDependencies": {
     "ipfs-message-port-protocol": "~0.0.1",

@@ -9,6 +9,9 @@ const {
   encodeIterable,
   encodeCallback
 } = require('ipfs-message-port-protocol/src/core')
+/** @type {<T> (stream:ReadableStream<T>) => AsyncIterable<T>} */
+// @ts-ignore - browser-stream-to-it has not types
+const iterateReadableStream = require('browser-readablestream-to-it')
 
 /**
  * @template T
@@ -389,26 +392,6 @@ const encodeFileContent = (content, transfer) => {
     }
 
     throw TypeError('Unexpected input: ' + typeof content)
-  }
-}
-
-/**
- * @template T
- * @param {ReadableStream<T>} stream
- * @returns {AsyncIterable<T>}
- */
-
-const iterateReadableStream = async function * (stream) {
-  const reader = stream.getReader()
-
-  while (true) {
-    const result = await reader.read()
-
-    if (result.done) {
-      return
-    }
-
-    yield result.value
   }
 }
 
