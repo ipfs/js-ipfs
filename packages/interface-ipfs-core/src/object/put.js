@@ -113,7 +113,7 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(node1b)
       const node = await ipfs.object.get(cid)
       expect(node1b.Data).to.deep.equal(node.Data)
-      expect(node1b.Links).to.containSubset(node.Links)
+      expect(node1b.Links).to.deep.equal(node.Links)
     })
   })
 }
