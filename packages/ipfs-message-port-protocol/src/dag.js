@@ -1,7 +1,6 @@
 'use strict'
 
-const CID = require('cids')
-const { encodeCID, decodeCID } = require('./cid')
+const { encodeCID, decodeCID, CID } = require('./cid')
 
 /**
  * @typedef {import('./data').JSONValue} JSONValue
