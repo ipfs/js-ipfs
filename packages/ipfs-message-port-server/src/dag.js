@@ -1,8 +1,8 @@
 'use strict'
 
-const { collect } = require('./util')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
+const collect = require('it-all')
 
 /**
  * @typedef {import('./ipfs').IPFS} IPFS

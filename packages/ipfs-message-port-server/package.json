@@ -34,10 +34,12 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "cids": "^0.8.3"
+    "cids": "^0.8.3",
+    "it-all": "^1.0.2"
   },
   "devDependencies": {
     "ipfs-message-port-protocol": "~0.0.1",
+    "@types/it-all": "^1.0.0",
     "ipfs": "^0.48.0",
     "aegir": "^23.0.0",
     "cross-env": "^7.0.0",
