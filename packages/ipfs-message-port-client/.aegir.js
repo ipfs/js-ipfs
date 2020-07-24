@@ -4,7 +4,7 @@ const EchoServer = require('aegir/utils/echo-server')
 const echoServer = new EchoServer()
 
 module.exports = {
-  bundlesize: { maxSize: '89kB' },
+  bundlesize: { maxSize: '80kB' },
   karma: {
     files: [
       {
