@@ -1,7 +1,7 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const { collect } = require('./util')
+const collect = require('it-all')
 const { encodeError } = require('ipfs-message-port-protocol/src/error')
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
