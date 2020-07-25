@@ -12,7 +12,6 @@ describe('dag', function () {
     it('IPFSService', () => {
       expect(IPFSService).to.be.a('function')
       const service = new IPFSService()
-      expect(service).to.be.an.instanceOf(IPFSService)
       expect(service).to.have.property('dag')
       expect(service)
         .to.have.nested.property('dag.put')
@@ -29,7 +28,6 @@ describe('dag', function () {
       const service = new IPFSService()
       const server = new Server(service)
 
-      expect(server).to.be.an.instanceOf(Server)
       expect(server)
         .to.have.property('connect')
         .be.a('function')
