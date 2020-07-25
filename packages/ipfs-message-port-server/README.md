@@ -32,9 +32,9 @@ $ npm install --save ipfs-message-port-server
 
 ## Usage
 
-This library can wrap JS IPFS node and expose it over the [message channel][].
+This library can wrap a JS IPFS node and expose it over the [message channel][].
 It assumes `ipfs-message-port-client` on the other end, however it is not
-strictly necessary anything compling with wire protocol will do.
+strictly necessary anything complying with the wire protocol will do.
 
 It provides following API subset:
 
@@ -44,9 +44,9 @@ It provides following API subset:
 - [`ipfs.cat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfscatipfspath-options)
 - [`ipfs.files.stat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsfilesstatpath-options)
 
-Server is designed to run in the [SharedWorker][] (although it is possible to
-run it in the other JS contexts). Example below illustrates running js-ipfs
-node in [SharedWorker][] and exposing it to all connected ports
+The server is designed to run in a [SharedWorker][] (although it is possible to
+run it in the other JS contexts). The example below illustrates running a js-ipfs
+node in a [SharedWorker][] and exposing it to all connected ports
 
 ```js
 const IPFS = require('ipfs')
@@ -74,13 +74,13 @@ main()
 
 ### Notes on Performance
 
-Since the data over [message channel][] is copied via
-[structured cloning algorithm][] it may lead to suboptimal
-results (espacially with large binary data). In order to avoid unecessary
-copying server will transfer all the [Transferable][] which will be emptied
+Since the data sent over the [message channel][] is copied via
+the [structured cloning algorithm][] it may lead to suboptimal
+results (especially with large binary data). In order to avoid unnecessary
+copying the server will transfer all passed [Transferable][]s which will be emptied
 on the server side. This should not be a problem in general as IPFS node itself
 does not retain references to returned values, but is something to keep in mind
-when doig something custom.
+when doing something custom.
 
 
 [message channel]:https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel

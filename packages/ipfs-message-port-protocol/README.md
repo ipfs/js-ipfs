@@ -36,9 +36,9 @@ $ npm install --save ipfs-message-port-protocol
 
 ## Wire protocol codecs
 
-Library provides encode / decode functions for types that are not supported by [structured cloning algorithm][] and therefore need to be encoded before posted over [message channel][] and decoded on the other end.
+This module provides encode / decode functions for types that are not supported by [structured cloning algorithm][] and therefore need to be encoded before being posted over the [message channel][] and decoded on the other end.
 
-All encoders take optional `transfer` array. If provided, encoder will add all `Transferable` fields of the given value so the they could be moved across threads without copying.
+All encoders take an optional `transfer` array. If provided, the encoder will add all `Transferable` fields of the given value so they can be moved across threads without copying.
 
 ### `CID`
 
@@ -51,7 +51,7 @@ const cid = new CID('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu
 
 const { port1, port2 } = new MessageChannel()
 
-// Will copy underyling memory
+// Will copy underlying memory
 port1.postMessage(encodeCID(cid))
 
 // Will transfer underlying memory (cid is corrupt on this thread)
@@ -78,7 +78,7 @@ const block = new Block(data, cid)
 
 const { port1, port2 } = new MessageChannel()
 
-// Will copy underyling memory
+// Will copy underlying memory
 port1.postMessage(encodeBlock(block))
 
 // Will transfer underlying memory (block & cid will be corrupt on this thread)
@@ -106,7 +106,7 @@ const dagNode = { hi: 'hello', link: cid }
 
 const { port1, port2 } = new MessageChannel()
 
-// Will copy underyling memory
+// Will copy underlying memory
 port1.postMessage(encodeNode(dagNode))
 
 // Will transfer underlying memory (`dagNode.link` will be corrupt on this thread)
@@ -123,7 +123,12 @@ port2.onmessage = ({data}) => {
 
 ### AsyncIterable
 
-Encoder allows producer to encode [async iterables][] such that it can be transferred across threads and decoded by a consumer on the other end and take care of all the IO coordination between two. Unlike other encoders `transfer` argument is mandatory (because value is encoded to a [MessagePort][] that can only be transferred). Additionally encoder / decoder take item encoder / decoder functions to encode each item of the async iterable.
+This encoder encodes [async iterables][] such that they can be transferred
+across threads and decoded by a consumer on the other end while taking care of
+all the IO coordination between two. It needs to be provided `encoder` /
+`decoder` function to encode / decode each yielded item of the async iterable.
+Unlike other encoders the `transfer` argument is mandatory (because async
+iterable is encoded to a [MessagePort][] that can only be transferred).
 
 
 ```js
@@ -143,7 +148,7 @@ const { port1, port2 } = new MessageChannel()
 }
 
 
-// Will transfer each chunk to the reciever thread (corrupting it on this thread)
+// Will transfer each chunk to the receiver thread (corrupting it on this thread)
 {
   const transfer = []
   port1.postMessage(

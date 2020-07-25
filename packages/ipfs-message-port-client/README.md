@@ -38,13 +38,14 @@ It provides following API subset:
 - [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md)
 - [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
 - [`ipfs.add`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options)
+- [`ipfs.addAll`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsaddallsource-options)
 - [`ipfs.cat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfscatipfspath-options)
 - [`ipfs.files.stat`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsfilesstatpath-options)
 
-Client can be instantiated from the [`MessagePort`][] instance. Primary goal of
-this library is to allow sharing a node across browsing contexts (tabs, iframes)
-and therefore most likely `ipfs-message-port-server` will be in the separate JS
-bundle and loaded in the [SharedWorker][].
+A client can be instantiated from the [`MessagePort`][] instance. The primary
+goal of this library is to allow sharing a node across browsing contexts (tabs,
+iframes) and therefore most likely `ipfs-message-port-server` will be in a 
+separate JS bundle and loaded in the [SharedWorker][].
 
 
 ```js
@@ -63,12 +64,12 @@ const main = async () => {
 }
 ```
 
-It is also possible to instantiate detached client, which can be attach it to
-the server later on. This is useful when server port is received via message
-from other JS context (e.g. iframe)
+It is also possible to instantiate a detached client, which can be attached to
+the server later on. This is useful when a server port is received via a message
+from another JS context (e.g. iframe)
 
 > Note: Client will queue all API calls and only execute them once it is
-> attached (unless they timeout or are aborted in the meantime).
+> attached (unless they time out or are aborted in the meantime).
 
 ```js
 const IPFSClient = require('ipfs-message-port-client')

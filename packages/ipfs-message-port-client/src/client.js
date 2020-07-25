@@ -74,7 +74,7 @@ class Query {
  * RPC Transport over `MessagePort` that can execute queries. It takes care of
  * executing queries by issuing a message with unique ID and fullfilling a
  * query when corresponding response message is received. It also makes sure
- * that aborted / timed out queries are calcelled out as needed.
+ * that aborted / timed out queries are cancelled as needed.
  *
  * It is expected that there will be at most one transport for a message port
  * instance.
@@ -120,7 +120,7 @@ class Transport {
     const id = `${this.id}@${this.nextID++}`
     this.queries[id] = query
 
-    // If query has a timeout is a timer.
+    // If query has a timeout set a timer.
     if (query.timeout > 0 && query.timeout < Infinity) {
       setTimeout(Transport.timeout, query.timeout, this, id)
     }
@@ -141,7 +141,7 @@ class Transport {
   }
 
   /**
-   * Connects this transport to the given message port. Throws `RangeError` if
+   * Connects this transport to the given message port. Throws `Error` if
    * transport is already connected. All the pending queries will be executed
    * as connection occurs.
    *
@@ -149,7 +149,7 @@ class Transport {
    */
   connect (port) {
     if (this.port) {
-      throw new RangeError('Transport is already open')
+      throw new Error('Transport is already open')
     } else {
       this.port = port
       this.port.addEventListener('message', this)
@@ -206,7 +206,7 @@ class Transport {
 
   /**
    * Aborts this query by failing with `AbortError` and sending an abort message
-   * to the server. If query is no longen pending this has no effect.
+   * to the server. If query is no longer pending this has no effect.
    * @param {string} id
    */
   abort (id) {
