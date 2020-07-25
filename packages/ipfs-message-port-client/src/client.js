@@ -48,6 +48,8 @@ class Query {
       this.namespace = namespace
       this.method = method
       this.timeout = input.timeout == null ? Infinity : input.timeout
+      /** @type {number|null} */
+      this.timerID = null
     })
   }
 
@@ -122,7 +124,7 @@ class Transport {
 
     // If query has a timeout set a timer.
     if (query.timeout > 0 && query.timeout < Infinity) {
-      setTimeout(Transport.timeout, query.timeout, this, id)
+      query.timerID = setTimeout(Transport.timeout, query.timeout, this, id)
     }
 
     if (query.signal) {
@@ -214,9 +216,14 @@ class Transport {
     const query = queries[id]
     if (query) {
       delete queries[id]
+
       query.fail(new AbortError())
       if (this.port) {
         this.port.postMessage({ type: 'abort', id })
+      }
+
+      if (query.timerID != null) {
+        clearTimeout(query.timerID)
       }
     }
   }
@@ -257,6 +264,10 @@ class Transport {
         query.succeed(result.value)
       } else {
         query.fail(decodeError(result.error))
+      }
+
+      if (query.timerID != null) {
+        clearTimeout(query.timerID)
       }
     }
   }
