@@ -67,7 +67,7 @@
     "nanoid": "^3.0.2",
     "node-fetch": "^2.6.0",
     "parse-duration": "^0.4.4",
-    "stream-to-it": "^0.2.0"
+    "stream-to-it": "^0.2.1"
   },
   "devDependencies": {
     "aegir": "^23.0.0",

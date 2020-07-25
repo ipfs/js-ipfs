@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "cids": "^0.8.3",
-    "it-all": "^1.0.2"
+    "it-all": "^1.0.1"
   },
   "devDependencies": {
     "ipfs-message-port-protocol": "~0.0.1",
