@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.48.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.48.0...ipfs@0.48.1) (2020-07-21)
+
+
+### Bug Fixes
+
+* update bitswap to fix [#3182](https://github.com/ipfs/js-ipfs/issues/3182) and crypto for go-ipfs interop ([9fdbde8](https://github.com/ipfs/js-ipfs/commit/9fdbde80e976063ab56410a4d8af1ba955e32307))
+
+
+
+
+
 # [0.48.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.47.0...ipfs@0.48.0) (2020-07-16)
 
 

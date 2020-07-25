@@ -29,11 +29,28 @@ const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal)
 }
 
-async function send (text, headers = {}) {
+async function send (text, options = {}) {
+  let fieldName = 'file-0'
+  const query = []
+
+  if (options.mode) {
+    query.push(`mode=${options.mode}`)
+  }
+
+  if (options.mtime) {
+    query.push(`mtime=${options.mtime}`)
+  }
+
+  if (options.mtimeNsecs) {
+    query.push(`mtime-nsecs=${options.mtimeNsecs}`)
+  }
+
+  if (query.length) {
+    fieldName = `${fieldName}?${query.join('&')}`
+  }
+
   const form = new FormData()
-  form.append('file-0', Buffer.from(text), {
-    header: headers
-  })
+  form.append(fieldName, Buffer.from(text))
 
   return {
     headers: form.getHeaders(),
