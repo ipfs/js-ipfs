@@ -59,8 +59,9 @@ module.exports = (common, options) => {
       const node1bCid = await ipfs.object.put(node1b)
 
       const links = await ipfs.object.links(node1bCid)
-      expect(links).to.be.an('array').that.has.property('length', 1)
-      expect(node1b.Links).to.be.deep.equal(links)
+
+      expect(links).to.have.lengthOf(1)
+      expect(node1b.Links).to.deep.equal(links)
     })
 
     it('should get links by base58 encoded multihash', async () => {
