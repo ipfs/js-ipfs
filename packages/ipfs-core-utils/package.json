@@ -39,7 +39,7 @@
     "it-peekable": "0.0.1"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
+    "aegir": "^25.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "delay": "^4.3.0",

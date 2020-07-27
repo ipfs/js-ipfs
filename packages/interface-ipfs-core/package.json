@@ -61,7 +61,7 @@
     "temp-write": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
+    "aegir": "^25.0.0",
     "ipfsd-ctl": "^5.0.0"
   },
   "contributors": [

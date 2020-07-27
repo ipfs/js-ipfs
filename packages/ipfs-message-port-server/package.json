@@ -41,7 +41,7 @@
     "ipfs-message-port-protocol": "~0.0.1",
     "@types/it-all": "^1.0.0",
     "ipfs": "^0.48.0",
-    "aegir": "^23.0.0",
+    "aegir": "^25.0.0",
     "cross-env": "^7.0.0",
     "interface-ipfs-core": "^0.138.0"
   },
