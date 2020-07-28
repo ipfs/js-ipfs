@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  command: 'key',
+  command: 'key <command>',
 
   description: 'Manage your keys',
 
