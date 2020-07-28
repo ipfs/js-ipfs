@@ -40,7 +40,7 @@
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
     "ipfs-unixfs": "^1.0.3",
-    "ipfs-unixfs-importer": "^2.0.2",
+    "ipfs-unixfs-importer": "^3.0.1",
     "ipfs-utils": "^2.2.2",
     "ipld-block": "^0.9.2",
     "ipld-dag-cbor": "^0.16.0",
