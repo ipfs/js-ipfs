@@ -3,6 +3,7 @@
 var path = require('path')
 var webpack = require('webpack')
 const WorkerPlugin = require('worker-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   devtool: 'source-map',
@@ -13,14 +14,18 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'static/bundle.js'
+    filename: 'static/bundle.js',
+    publicPath: '/'
   },
   plugins: [
     new WorkerPlugin({
       sharedWorker: true,
       globalObject: 'self'
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin([{
+      from: 'index.html'
+    }])
   ],
   module: {
     rules: [
