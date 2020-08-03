@@ -1,5 +1,5 @@
 {
-  "name": "expample-browser-sharing-node-across-tabs",
+  "name": "example-browser-sharing-node-across-tabs",
   "description": "Sharing IPFS node across browsing contexts",
   "version": "1.0.0",
   "private": true,
