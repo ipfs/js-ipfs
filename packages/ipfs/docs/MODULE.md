@@ -94,7 +94,8 @@ Note that *initializing* a repo is different from creating an instance of [`ipfs
 Instead of a boolean, you may provide an object with custom initialization options. All properties are optional:
 
 - `emptyRepo` (boolean) Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
-- `bits` (number) Number of bits to use in the generated key pair. (Default: `2048`)
+- `algorithm` (string) The type of key to use. Supports `rsa`, `ed25519`, `secp256k1`. (Default: `rsa`)
+- `bits` (number) Number of bits to use in the generated key pair (rsa only). (Default: `2048`)
 - `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
     ```js
     // Generating a Peer ID:

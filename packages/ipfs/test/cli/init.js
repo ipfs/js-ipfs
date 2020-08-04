@@ -4,6 +4,8 @@
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const path = require('path')
 const fs = require('fs')
+const PeerId = require('peer-id')
+const { supportedKeys } = require('libp2p-crypto/src/keys')
 const clean = require('../utils/clean')
 const { nanoid } = require('nanoid')
 const ipfsExec = require('../utils/ipfs-exec')
@@ -47,6 +49,12 @@ describe('init', function () {
     const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
     const out2 = await ipfs(command)
     expect(out2).to.equal(readme)
+  })
+
+  it('algorithm', async function () {
+    await ipfs('init --algorithm ed25519')
+    const peerId = await PeerId.createFromPrivKey(repoConfSync().Identity.PrivKey)
+    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
   })
 
   it('bits', async function () {
