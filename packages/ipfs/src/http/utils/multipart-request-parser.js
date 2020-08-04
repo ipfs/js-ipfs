@@ -3,6 +3,7 @@
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
 const { Buffer } = require('buffer')
+const qs = require('querystring')
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
@@ -69,20 +70,6 @@ async function * parseEntry (stream, options) {
 
     const entry = {}
 
-    if (part.headers.mtime) {
-      entry.mtime = {
-        secs: parseInt(part.headers.mtime, 10)
-      }
-
-      if (part.headers['mtime-nsecs']) {
-        entry.mtime.nsecs = parseInt(part.headers['mtime-nsecs'], 10)
-      }
-    }
-
-    if (part.headers.mode) {
-      entry.mode = parseInt(part.headers.mode, 8)
-    }
-
     if (isDirectory(type.mime)) {
       entry.type = 'directory'
     } else if (type.mime === applicationSymlink) {
@@ -92,6 +79,21 @@ async function * parseEntry (stream, options) {
     }
 
     const disposition = parseDisposition(part.headers['content-disposition'])
+    const query = qs.parse(disposition.name.split('?').pop())
+
+    if (query.mode) {
+      entry.mode = parseInt(query.mode, 8)
+    }
+
+    if (query.mtime) {
+      entry.mtime = {
+        secs: parseInt(query.mtime, 10)
+      }
+
+      if (query['mtime-nsecs']) {
+        entry.mtime.nsecs = parseInt(query['mtime-nsecs'], 10)
+      }
+    }
 
     entry.name = decodeURIComponent(disposition.filename)
     entry.body = part.body

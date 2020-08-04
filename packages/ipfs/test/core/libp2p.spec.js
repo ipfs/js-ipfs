@@ -144,9 +144,6 @@ describe('libp2p customization', function () {
           },
           webRTCStar: {
             enabled: false
-          },
-          websocketStar: {
-            enabled: true
           }
         },
         pubsub: {

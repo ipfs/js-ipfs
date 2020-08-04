@@ -1,0 +1,55 @@
+{
+  "name": "ipfs-message-port-server",
+  "version": "0.0.1",
+  "description": "IPFS server library for exposing IPFS node over message port",
+  "keywords": [
+    "ipfs",
+    "message-port",
+    "worker"
+  ],
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-server#readme",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "license": "(Apache-2.0 OR MIT)",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "main": "src/index.js",
+  "browser": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "scripts": {
+    "test": "aegir test",
+    "test:browser": "aegir test -t browser",
+    "test:webworker": "aegir test -t webworker",
+    "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
+    "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "coverage": "npx nyc -r html npm run test:node -- --bail",
+    "clean": "rm -rf ./dist",
+    "dep-check": "aegir dep-check"
+  },
+  "dependencies": {
+    "cids": "^0.8.3",
+    "it-all": "^1.0.1"
+  },
+  "devDependencies": {
+    "ipfs-message-port-protocol": "~0.0.1",
+    "@types/it-all": "^1.0.0",
+    "ipfs": "^0.48.0",
+    "aegir": "^23.0.0",
+    "cross-env": "^7.0.0",
+    "interface-ipfs-core": "^0.138.0"
+  },
+  "engines": {
+    "node": ">=10.3.0",
+    "npm": ">=3.0.0"
+  },
+  "contributors": [
+    "Irakli Gozalishvili <dev@gozala.io>"
+  ]
+}
