@@ -6,8 +6,11 @@ const { createFactory } = require("ipfsd-ctl");
 const df = createFactory({
   ipfsHttpModule: require("ipfs-http-client"),
   ipfsBin: require("go-ipfs").path(),
-  args: ["--enable-pubsub-experiment"],
-  disposable: true,
+  args: [
+    "--enable-pubsub-experiment",
+    '--enable-namesys-pubsub'
+  ],
+  test: true
 });
 const { startServer } = require("test-ipfs-example/utils");
 const pkg = require("./package.json");
@@ -43,12 +46,13 @@ async function testUI(url, apiAddr, peerAddr, topic) {
 async function runTest() {
   const app = await startServer(__dirname);
   const go = await df.spawn({
-    type: "go",
-    test: true,
     ipfsOptions: {
       config: {
         Addresses: {
           API: "/ip4/127.0.0.1/tcp/0",
+          Swarm: [
+            "/ip4/127.0.0.1/tcp/0/ws"
+          ]
         },
         API: {
           HTTPHeaders: {
@@ -59,26 +63,27 @@ async function runTest() {
     },
   });
 
-  const go2 = await df.spawn({
-    type: "go",
-    test: true,
-  });
-
+  const go2 = await df.spawn();
   await go.api.swarm.connect(go2.api.peerId.addresses[0]);
 
-  const topic = `/ipfs/QmWCnkCXYYPP7NgH6ZHQiQxw7LJAMjnAySdoz9i1oxD5XJ`;
+  const { cid } = await go.api.add(`Some data ${Date.now()}`)
+  const topic = `/ipfs/${cid}`;
+
+  const peerAddr = go.api.peerId.addresses
+    .map(addr => addr.toString())
+    .filter(addr => addr.includes("/ws/p2p/"))
+    .pop()
 
   try {
     await testUI(
       app.url,
       go.apiAddr,
-      go.api.peerId.addresses[0].toString(),
+      peerAddr,
       topic
     );
   } finally {
-    await go.stop();
-    await go2.stop();
     await app.stop();
+    await df.clean();
   }
 }
 
@@ -94,12 +99,6 @@ module.exports[pkg.name] = function (browser) {
     .clearValue(apiSelector)
     .setValue(apiSelector, process.env.IPFS_API_ADDRESS)
     .pause(1000)
-    .perform(() => {
-      console.log(
-        "process.env.IPFS_API_ADDRESS: ",
-        process.env.IPFS_API_ADDRESS
-      );
-    })
     .click("#node-connect");
 
   browser.expect
@@ -130,6 +129,11 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click("#publish");
 
+  browser.expect.element("#console").text.to.contain('Publish to IPNS');
+  browser.expect.element("#console").text.to.contain('Initial Resolve');
+  browser.expect.element("#console").text.to.contain('Published');
+  browser.expect.element("#console").text.to.contain('Wait 5 seconds, then resolve..');
+  browser.pause(5000)
   browser.expect.element("#console").text.to.contain(`IPNS Publish Success!`);
 
   browser.end();

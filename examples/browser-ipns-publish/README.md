@@ -30,8 +30,6 @@ With Node.js and git installed, clone the repo and install the project dependenc
 
 ```sh
 git clone https://github.com/ipfs/js-ipfs.git
-cd js-ipfs
-npm install # Installs ipfs-http-client dependencies
 cd examples/browser-ipns-publish
 npm install # Installs browser-pubsub app dependencies
 ```
@@ -56,7 +54,7 @@ The first node is the js-ipfs made in the browser and the demo does that for you
 
 The second is a go-ipfs node on a server. To get our IPNS record to the DHT, we'll need [a server running go-IPFS](https://blog.ipfs.io/22-run-ipfs-on-a-vps/) with the API enabled on port 5001.
 
-Right now the easiest way to do this is to install and start a `go-ipfs` node. 
+Right now the easiest way to do this is to install and start a `go-ipfs` node.
 
 ### Install and start the Go IPFS node
 
@@ -67,19 +65,21 @@ After installation:
 ```sh
 ipfs init
 # Configure CORS to allow ipfs-http-client to access this IPFS node
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://127.0.0.1:1234"]'
-# Start the IPFS node, enabling pubsub
-ipfs daemon --enable-pubsub-experiment
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"*\"]"
+# Configure go-ipfs to listen on a websocket address
+npx json -I -f ~/.ipfs/config -e "this.Addresses.Swarm.push('/ip4/127.0.0.1/tcp/4003/ws')"
+# Start the IPFS node, enabling pubsub and IPNS over pubsub
+ipfs daemon --enable-pubsub-experiment --enable-namesys-pubsub
 ```
 
 ## 3. Open the demo in a browser and connect to the go-node
 
-Now, open up the demo in a browser window. 
+Now, open up the demo in a browser window.
 
 In the "CONNECT TO GO-IPFS VIA API MULTIADDRESS" field enter `/ip4/YourServerIP/tcp/5001` (where `YourSeverIP` is your server's IP address or use `/dns4/yourdomain.com/tcp/5001`) and click connect. Once it connects, put your go-IPFS websocket address in the next field `/dns4/yourdomain.com/tcp/4003/wss/p2p/QmPeerIDHash` and hit the second "Connect" button.
 
-This connects the API to the go-Node and connects your js-IPFS node via websocket to the go-Node so pubsub will work. 
+This connects the API to the go-Node and connects your js-IPFS node via websocket to the go-IPFS node so pubsub will work.
 
 You can choose whether to publish this record under the PeerId of the node that is running in the browser ('self') or choose to add a custom key to the IPFS keychain and publish under that instead. Either should work.
 
-Finally, enter `/ipfs/QmSomeHash` as the content you want to publish to IPNS. You should see the messages sent from the browser to the server appear in the logs below, ending with "Success, reolved" if it all worked.
+Finally, enter `/ipfs/QmSomeHash` as the content you want to publish to IPNS. You should see the messages sent from the browser to the server appear in the logs below, ending with "Success, resolved" if it all worked.

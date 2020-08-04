@@ -14,8 +14,8 @@
   "dependencies": {
     "base64url": "^3.0.1",
     "human-crypto-keys": "^0.1.4",
-    "ipfs": "file:../../packages/ipfs/",
-    "ipfs-http-client": "file:../../packages/ipfs-http-client/",
+    "ipfs": "^0.48.0",
+    "ipfs-http-client": "^45.0.0",
     "ipfs-utils": "^2.3.1",
     "ipns": "^0.7.3",
     "it-last": "^1.0.2",
@@ -31,7 +31,7 @@
     "go-ipfs": "^0.6.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
-    "test-ipfs-example": "file:../test-ipfs-example/"
+    "test-ipfs-example": "^2.0.3"
   },
   "repository": {
     "type": "git",

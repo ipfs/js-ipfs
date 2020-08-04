@@ -134,21 +134,6 @@ async function main() {
             tLog(msg.data.toString("hex"));
           }
         }
-      },
-      {
-        onError: (err, fatal) => {
-          if (fatal) {
-            console.error(err);
-            tLog(`<span class="red">${err.message}</span>`);
-            tLog(`Resubscribing in 5s to ${topic}...`);
-            setTimeout(
-              catchAndLog(() => subs(node, topic, tLog), tLog),
-              5000
-            );
-          } else {
-            console.warn(err);
-          }
-        },
       }
     );
   }
