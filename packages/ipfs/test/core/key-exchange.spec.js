@@ -35,4 +35,30 @@ describe('key exchange', function () {
     expect(key).to.have.property('name', 'clone')
     expect(key).to.have.property('id')
   })
+
+  it('should create ed25519 keys', async () => {
+    const name = 'my-ed-key'
+    const pass = 'password for my ed key'
+    const key = await ipfs.key.gen(name, { type: 'ed25519' })
+    // export it
+    const exportedKey = await ipfs.key.export(name, pass)
+    // delete it
+    await ipfs.key.rm(name)
+    // import it back to the same name
+    const imported = await ipfs.key.import(name, exportedKey, pass)
+    expect(imported.id).to.equal(key.id)
+  })
+
+  it('should create secp256k1 keys', async () => {
+    const name = 'my-secp-key'
+    const pass = 'password for my secp key'
+    const key = await ipfs.key.gen(name, { type: 'secp256k1' })
+    // export it
+    const exportedKey = await ipfs.key.export(name, pass)
+    // delete it
+    await ipfs.key.rm(name)
+    // import it back to the same name
+    const imported = await ipfs.key.import(name, exportedKey, pass)
+    expect(imported.id).to.equal(key.id)
+  })
 })
