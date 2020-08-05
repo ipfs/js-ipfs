@@ -37,6 +37,18 @@ describe('init', function () {
   afterEach(() => repo.teardown())
 
   it('should init successfully', async () => {
+    await ipfs.init({ bits: 512 })
+
+    const res = await repo.exists()
+    expect(res).to.equal(true)
+
+    const config = await repo.config.getAll()
+
+    expect(config.Identity).to.exist()
+    expect(config.Keychain).to.exist()
+  })
+
+  it('should init successfully with a keychain pass', async () => {
     await ipfs.init({ bits: 512, pass: nanoid() })
 
     const res = await repo.exists()
@@ -69,7 +81,7 @@ describe('init', function () {
   it('should set # of bits in key', async function () {
     this.timeout(40 * 1000)
 
-    await ipfs.init({ bits: 1024, pass: nanoid() })
+    await ipfs.init({ bits: 1024 })
 
     const config = await repo.config.getAll()
     expect(config.Identity.PrivKey.length).is.above(256)
@@ -97,7 +109,7 @@ describe('init', function () {
   })
 
   it('should write init docs', async () => {
-    await ipfs.init({ bits: 512, pass: nanoid() })
+    await ipfs.init({ bits: 512 })
     const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
     const node = await ipfs.object.get(multihash, { enc: 'base58' })

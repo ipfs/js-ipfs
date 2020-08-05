@@ -14,11 +14,7 @@ describe('key exchange', function () {
   const passwordPem = nanoid()
 
   before(async () => {
-    ipfs = (await df.spawn({
-      ipfsOptions: {
-        pass: nanoid()
-      }
-    })).api
+    ipfs = (await df.spawn()).api
   })
 
   after(() => df.clean())
