@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noEmitHelpers": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "alwaysStrict": true,
+    "target": "ES5",
+    "outDir": "./dist/"
+  },
+  "exclude": ["dist"],
+  "include": ["src", "../../node_modules/ipld-block/src/index.js"],
+  "compileOnSave": false
+}

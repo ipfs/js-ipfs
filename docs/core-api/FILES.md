@@ -7,13 +7,17 @@ _Explore the Mutable File System through interactive coding challenges in our [P
 - [The Regular API](#the-regular-api)
   - [`ipfs.add(data, [options])`](#ipfsadddata-options)
     - [Parameters](#parameters)
+      - [FileObject](#fileobject)
+      - [FileContent](#filecontent)
     - [Options](#options)
     - [Returns](#returns)
+    - [Example](#example)
   - [`ipfs.addAll(source, [options])`](#ipfsaddallsource-options)
     - [Parameters](#parameters-1)
+      - [FileStream](#filestream)
     - [Options](#options-1)
     - [Returns](#returns-1)
-    - [Example](#example)
+    - [Example](#example-1)
     - [Notes](#notes)
       - [Chunking options](#chunking-options)
       - [Hash algorithms](#hash-algorithms)
@@ -23,75 +27,75 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Parameters](#parameters-2)
     - [Options](#options-2)
     - [Returns](#returns-2)
-    - [Example](#example-1)
+    - [Example](#example-2)
   - [`ipfs.get(ipfsPath, [options])`](#ipfsgetipfspath-options)
     - [Parameters](#parameters-3)
     - [Options](#options-3)
     - [Returns](#returns-3)
-    - [Example](#example-2)
+    - [Example](#example-3)
   - [`ipfs.ls(ipfsPath)`](#ipfslsipfspath)
     - [Parameters](#parameters-4)
     - [Options](#options-4)
     - [Returns](#returns-4)
-    - [Example](#example-3)
+    - [Example](#example-4)
 - [The Mutable Files API](#the-mutable-files-api)
   - [`ipfs.files.chmod(path, mode, [options])`](#ipfsfileschmodpath-mode-options)
     - [Parameters](#parameters-5)
     - [Options](#options-5)
     - [Returns](#returns-5)
-    - [Example](#example-4)
+    - [Example](#example-5)
   - [`ipfs.files.cp(...from, to, [options])`](#ipfsfilescpfrom-to-options)
     - [Parameters](#parameters-6)
     - [Options](#options-6)
     - [Returns](#returns-6)
-    - [Example](#example-5)
+    - [Example](#example-6)
     - [Notes](#notes-1)
   - [`ipfs.files.mkdir(path, [options])`](#ipfsfilesmkdirpath-options)
     - [Parameters](#parameters-7)
     - [Options](#options-7)
     - [Returns](#returns-7)
-    - [Example](#example-6)
+    - [Example](#example-7)
   - [`ipfs.files.stat(path, [options])`](#ipfsfilesstatpath-options)
     - [Parameters](#parameters-8)
     - [Options](#options-8)
     - [Returns](#returns-8)
-    - [Example](#example-7)
+    - [Example](#example-8)
   - [`ipfs.files.touch(path, [options])`](#ipfsfilestouchpath-options)
     - [Parameters](#parameters-9)
     - [Options](#options-9)
     - [Returns](#returns-9)
-    - [Example](#example-8)
+    - [Example](#example-9)
   - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
     - [Parameters](#parameters-10)
     - [Options](#options-10)
     - [Returns](#returns-10)
-    - [Example](#example-9)
+    - [Example](#example-10)
   - [`ipfs.files.read(path, [options])`](#ipfsfilesreadpath-options)
     - [Parameters](#parameters-11)
     - [Options](#options-11)
     - [Returns](#returns-11)
-    - [Example](#example-10)
+    - [Example](#example-11)
   - [`ipfs.files.write(path, content, [options])`](#ipfsfileswritepath-content-options)
     - [Parameters](#parameters-12)
     - [Options](#options-12)
     - [Returns](#returns-12)
-    - [Example](#example-11)
+    - [Example](#example-12)
   - [`ipfs.files.mv(...from, to, [options])`](#ipfsfilesmvfrom-to-options)
     - [Parameters](#parameters-13)
     - [Options](#options-13)
     - [Returns](#returns-13)
-    - [Example](#example-12)
+    - [Example](#example-13)
     - [Notes](#notes-2)
   - [`ipfs.files.flush(path, [options])`](#ipfsfilesflushpath-options)
     - [Parameters](#parameters-14)
     - [Options](#options-14)
     - [Returns](#returns-14)
-    - [Example](#example-13)
+    - [Example](#example-14)
   - [`ipfs.files.ls(path, [options])`](#ipfsfileslspath-options)
     - [Parameters](#parameters-15)
     - [Options](#options-15)
     - [Returns](#returns-15)
-    - [Example](#example-14)
+    - [Example](#example-15)
 
 ## The Regular API
 The regular, top-level API for add, cat, get and ls Files on IPFS
@@ -108,12 +112,10 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 `data` may be:
 
-* `Blob`
-* `String`
-* `Uint8Array`
+* `FileContent` (see below for definition)
 * `FileObject` (see below for definition)
-* `Iterable<Uint8Array>`
-* `AsyncIterable<Uint8Array>`
+
+##### FileObject
 
 `FileObject` is a plain JS object of the following form:
 
@@ -136,10 +138,12 @@ If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
 
+##### FileContent
+
 `FileContent` is one of the following types:
 
 ```js
-Uint8Array | Blob | String | Iterable<Uint8Array> | AsyncIterable<Uint8Array>
+Uint8Array | Blob | String | Iterable<Uint8Array | Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
@@ -188,7 +192,7 @@ Each yielded object is of the form:
 }
 ```
 
-#### Example
+#### Example
 
 ```js
 const file = {
@@ -222,55 +226,15 @@ Now [ipfs.io/ipfs/Qm..pg/myfile.txt](https://ipfs.io/ipfs/QmWXdjNC362aPDtwHPUE9o
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| source | Object | Data to import (see below) |
+| source | [FileStream<FileContent|FileObject>](#filestream) | Data to import (see below) |
 
-`source` may be:
+##### FileStream
 
-* `Iterable<Blob>`
-* `Iterable<String>`
-* `Iterable<Uint8Array>`
-* `Iterable<FileObject>`
-* `AsyncIterable<Blob>`
-* `AsyncIterable<String>`
-* `AsyncIterable<Uint8Array>`
-* `AsyncIterable<FileObject>`
-
-`FileObject` is a plain JS object of the following form:
+`FileStream` is a stream of [FileContent](#filecontent) or [FileObject](#fileobject) entries of the type:
 
 ```js
-{
-  // The path you want to the file to be accessible at from the root CID _after_ it has been added
-  path?: string
-  // The contents of the file (see below for definition)
-  content?: FileContent
-  // File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
-  mode?: number | string
-  // The modification time of the entry (see below for definition)
-  mtime?: UnixTime
-}
+Iterable<FileContent|FileObject> | AsyncIterable<FileContent|FileObject> | ReadableStream<FileContent|FileObject>
 ```
-
-If no `path` is specified, then the item will be added to the root level and will be given a name according to it's CID.
-
-If no `content` is passed, then the item is treated as an empty directory.
-
-One of `path` or `content` _must_ be passed.
-
-`FileContent` is one of the following types:
-
-```js
-Uint8Array | Blob | String | Iterable<Uint8Array> | AsyncIterable<Uint8Array>
-```
-
-`UnixTime` is one of the following types:
-
-```js
-Date | { secs: number, nsecs?: number } | number[]
-```
-
-As an object, `secs` is the number of seconds since (positive) or before (negative) the Unix Epoch began and `nsecs` is the number of nanoseconds since the last full second.
-
-As an array of numbers, it must have two elements, as per the output of [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
 
 #### Options
 

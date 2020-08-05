@@ -50,7 +50,7 @@ First clone this repo, install dependencies in the project root and build the pr
 $ git clone https://github.com/ipfs/js-ipfs.git
 $ cd js-ipfs
 $ npm install
-$ npm run build
+$ npm run bundle
 ```
 
 ## Running the example

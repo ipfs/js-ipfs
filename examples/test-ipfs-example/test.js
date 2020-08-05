@@ -22,14 +22,19 @@ testExample(dir)
   })
 
 async function testExample (dir) {
-  //await installDeps(dir)
   await build(dir)
 
-  if (dir.includes('examples/browser-')) {
-    await runBrowserTest(dir)
+  const test = require(path.join(dir, 'test.js'))
+
+  if (typeof test === 'function') {
+    console.info('Running tests in', dir)
+
+    await test()
   } else {
-    await runNodeTest(dir)
+    await runBrowserTest(dir)
   }
+
+  process.exit(0)
 }
 
 async function build (dir) {
@@ -91,14 +96,4 @@ async function runBrowserTest (dir) {
   } finally {
     server.stop()
   }
-}
-
-async function runNodeTest (dir) {
-  console.info('Running node tests in', dir)
-
-  const runTest = require(path.join(dir, 'test.js'))
-
-  await runTest()
-
-  process.exit(0)
 }
