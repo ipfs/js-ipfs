@@ -25,11 +25,6 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/api/v0/key/export',
-    ...resources.key.export
-  },
-  {
-    method: 'POST',
     path: '/api/v0/key/import',
     ...resources.key.import
   }

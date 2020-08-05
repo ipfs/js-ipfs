@@ -6,7 +6,6 @@ const tests = {
   list: require('./list'),
   rename: require('./rename'),
   rm: require('./rm'),
-  export: require('./export'),
   import: require('./import')
 }
 
