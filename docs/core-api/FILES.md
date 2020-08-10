@@ -200,7 +200,7 @@ const file = {
   content: 'ABC'
 }
 
-const result of await ipfs.add(content)
+const result = await ipfs.add(content)
 
 console.info(result)
 
