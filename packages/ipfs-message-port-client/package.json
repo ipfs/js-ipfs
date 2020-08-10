@@ -34,15 +34,15 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "cids": "^0.8.3",
+    "cids": "^1.0.0",
     "browser-readablestream-to-it": "0.0.1"
   },
   "devDependencies": {
     "ipfs-message-port-protocol": "~0.0.1",
     "ipfs-message-port-server": "~0.0.1",
-    "ipld-dag-pb": "^0.19.0",
-    "ipfs": "^0.48.0",
-    "aegir": "^23.0.0",
+    "ipld-dag-pb": "^0.20.0",
+    "ipfs": "^0.48.1",
+    "aegir": "^25.0.0",
     "cross-env": "^7.0.0",
     "interface-ipfs-core": "^0.138.0"
   },

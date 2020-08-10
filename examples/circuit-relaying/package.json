@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "delay": "^4.3.0",
-    "ipfs": "^0.48.0",
+    "ipfs": "^0.48.1",
     "ipfs-pubsub-room": "^2.0.1"
   },
   "devDependencies": {

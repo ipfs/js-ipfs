@@ -30,7 +30,7 @@ describe('general cli options', () => {
   })
 })
 
-describe('--migrate', () => {
+describe.only('--migrate', () => {
   let ipfs, repoPath
 
   async function setRepoVersion (version) {

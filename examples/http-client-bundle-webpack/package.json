@@ -23,7 +23,7 @@
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.4",
     "execa": "^4.0.0",
-    "ipfs": "^0.48.0",
+    "ipfs": "^0.48.1",
     "ipfsd-ctl": "^5.0.0",
     "react-hot-loader": "^4.12.21",
     "test-ipfs-example": "^2.0.3",
