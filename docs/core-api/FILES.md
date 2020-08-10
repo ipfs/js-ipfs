@@ -143,7 +143,7 @@ One of `path` or `content` _must_ be passed.
 `FileContent` is one of the following types:
 
 ```js
-Uint8Array | Blob | String | Iterable<Uint8Array | Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
+Uint8Array | Blob | String | Iterable<Uint8Array|Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
