@@ -80,7 +80,7 @@ exports.publish = {
         name: Joi.string().required(),
         resolve: Joi.boolean().default(true),
         lifetime: Joi.string().default('24h'),
-        ttl: Joi.string(),
+        ttl: Joi.string().allow(''),
         key: Joi.string().default('self'),
         allowOffline: Joi.boolean(),
         timeout: Joi.timeout()
