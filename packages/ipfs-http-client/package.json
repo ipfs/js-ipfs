@@ -59,7 +59,7 @@
     "it-to-buffer": "^1.0.0",
     "it-to-stream": "^0.1.1",
     "merge-options": "^2.0.0",
-    "multiaddr": "^7.4.3",
+    "multiaddr": "^8.0.0",
     "multiaddr-to-uri": "^5.1.0",
     "multibase": "^3.0.0",
     "multicodec": "^2.0.0",
