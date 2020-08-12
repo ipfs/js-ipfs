@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.139.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.138.0...interface-ipfs-core@0.139.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* support keychain without pass ([#3212](https://github.com/ipfs/js-ipfs/issues/3212)) ([7e0e85c](https://github.com/ipfs/js-ipfs/commit/7e0e85c2f003a09845b1dbe4200ca61366933b05))
+
+
+### Features
+
+* share IPFS node between browser tabs ([#3081](https://github.com/ipfs/js-ipfs/issues/3081)) ([1b8b1b8](https://github.com/ipfs/js-ipfs/commit/1b8b1b822a252498889c54972a1f57e1fedc39d0)), closes [#3022](https://github.com/ipfs/js-ipfs/issues/3022)
+
+
+### BREAKING CHANGES
+
+* remove support for key.export over the http api
+
+
+
+
+
 # [0.138.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.137.0...interface-ipfs-core@0.138.0) (2020-07-16)
 
 
