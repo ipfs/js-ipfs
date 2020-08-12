@@ -177,7 +177,7 @@ module.exports = ({
   return apiManager.api
 }
 
-async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, config, pass, print }) {
+async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, profiles, config, pass, print }) {
   emptyRepo = emptyRepo || false
   bits = bits == null ? 2048 : Number(bits)
 
@@ -191,7 +191,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
     throw new Error('repo already exists')
   }
 
-  const peerId = await createPeerId({ privateKey, bits, print })
+  const peerId = await createPeerId({ privateKey, algorithm, bits, print })
 
   log('identity generated')
 
@@ -260,7 +260,7 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
   return { peerId, keychain: libp2p.keychain }
 }
 
-function createPeerId ({ privateKey, bits, print }) {
+function createPeerId ({ privateKey, algorithm = 'rsa', bits, print }) {
   if (privateKey) {
     log('using user-supplied private-key')
     return typeof privateKey === 'object'
@@ -268,8 +268,8 @@ function createPeerId ({ privateKey, bits, print }) {
       : PeerId.createFromPrivKey(Buffer.from(privateKey, 'base64'))
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
-    print('generating %s-bit RSA keypair...', bits)
-    return PeerId.create({ bits })
+    print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
+    return PeerId.create({ keyType: algorithm, bits })
   }
 }
 

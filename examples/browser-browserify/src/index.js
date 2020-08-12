@@ -3,7 +3,12 @@
 const IPFS = require('ipfs')
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const node = await IPFS.create({ repo: String(Math.random() + Date.now()) })
+  const node = await IPFS.create({
+    repo: String(Math.random() + Date.now()),
+    init: { alogorithm: 'ed25519' }
+
+  })
+  const button = document.getElementById('store')
 
   console.log('IPFS node is ready')
 
@@ -25,5 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  document.getElementById('store').onclick = store
+  button.onclick = store
+  button.setAttribute('style', 'display: inline')
 })

@@ -2,6 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
+const keys = require('libp2p-crypto/src/keys')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
@@ -26,10 +27,10 @@ module.exports = (common, options) => {
     it('should respect timeout option when importing a key', async () => {
       const password = nanoid()
 
-      const pem = await ipfs.key.export('self', password)
-      expect(pem).to.exist()
+      const key = await keys.generateKeyPair('ed25519')
+      const exported = key.export(password)
 
-      await testTimeout(() => ipfs.key.import('derp', pem, password, {
+      await testTimeout(() => ipfs.key.import('derp', exported, password, {
         timeout: 1
       }))
     })
@@ -37,13 +38,13 @@ module.exports = (common, options) => {
     it('should import an exported key', async () => {
       const password = nanoid()
 
-      const pem = await ipfs.key.export('self', password)
-      expect(pem).to.exist()
+      const key = await keys.generateKeyPair('ed25519')
+      const exported = await key.export(password)
 
-      const key = await ipfs.key.import('clone', pem, password)
-      expect(key).to.exist()
-      expect(key).to.have.property('name', 'clone')
-      expect(key).to.have.property('id')
+      const importedKey = await ipfs.key.import('clone', exported, password)
+      expect(importedKey).to.exist()
+      expect(importedKey).to.have.property('name', 'clone')
+      expect(importedKey).to.have.property('id')
     })
   })
 }

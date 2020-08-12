@@ -7,7 +7,6 @@ const $msgs = document.querySelector('#msgs')
 const $addrs = document.querySelector('#addrs')
 const $peers = document.querySelector('#peers')
 const $pAddrs = document.querySelector('#peers-addrs')
-const delay = require('delay')
 
 const NAMESPACE = 'ipfs-quick-msg'
 

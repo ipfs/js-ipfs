@@ -17,6 +17,12 @@ module.exports = {
         describe: 'Node config, this should be a path to a file or JSON and will be merged with the default config. See https://github.com/ipfs/js-ipfs#optionsconfig',
         type: 'string'
       })
+      .option('algorithm', {
+        type: 'string',
+        alias: 'a',
+        default: 'rsa',
+        describe: 'Cryptographic algorithm to use for key generation. Supports [rsa, ed25519, secp256k1]'
+      })
       .option('bits', {
         type: 'number',
         alias: 'b',
@@ -72,6 +78,7 @@ module.exports = {
 
     try {
       await node.init({
+        algorithm: argv.algorithm,
         bits: argv.bits,
         privateKey: argv.privateKey,
         emptyRepo: argv.emptyRepo,
