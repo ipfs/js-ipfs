@@ -38,7 +38,7 @@
     "cids": "^0.8.3"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
+    "aegir": "^25.1.0",
     "cross-env": "^7.0.0",
     "interface-ipfs-core": "^0.139.0",
     "ipfs": "^0.49.0",
