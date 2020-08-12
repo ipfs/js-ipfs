@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
-    "ipfs": "^0.48.0",
+    "ipfs": "^0.49.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
