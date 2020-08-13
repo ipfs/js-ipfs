@@ -1,7 +1,6 @@
 'use strict'
 
 const ipns = require('ipns')
-const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')

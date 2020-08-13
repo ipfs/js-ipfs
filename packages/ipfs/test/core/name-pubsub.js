@@ -2,7 +2,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { nanoid } = require('nanoid')
 const { Buffer } = require('buffer')
 const { expect } = require('interface-ipfs-core/src/utils/mocha')
 const base64url = require('base64url')
