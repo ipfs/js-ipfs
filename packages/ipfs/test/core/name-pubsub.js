@@ -18,6 +18,12 @@ const factory = require('../utils/factory')
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
+const daemonsOptions = {
+  ipfsOptions: {
+    EXPERIMENTAL: { ipnsPubsub: true }
+  }
+}
+
 describe('name-pubsub', function () {
   const df = factory()
   // TODO make this work in the browser and between daemon and in-proc in nodes
@@ -33,8 +39,8 @@ describe('name-pubsub', function () {
     this.timeout(40 * 1000)
 
     nodes = await Promise.all([
-      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } }),
-      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } })
+      df.spawn({ ...daemonsOptions }),
+      df.spawn({ ...daemonsOptions })
     ])
 
     nodeA = nodes[0].api
