@@ -2,7 +2,6 @@
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
 const parseDuration = require('parse-duration').default
@@ -44,7 +43,7 @@ const normalizePath = (pathStr) => {
 
 // TODO: do we need both normalizePath and normalizeCidPath?
 const normalizeCidPath = (path) => {
-  if (Buffer.isBuffer(path)) {
+  if (path instanceof Uint8Array) {
     return new CID(path).toString()
   }
   if (CID.isCID(path)) {

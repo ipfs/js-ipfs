@@ -2,9 +2,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const path = require('path')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const concat = require('it-concat')
 
 const factory = require('../utils/factory')
@@ -56,7 +56,7 @@ describe.skip('kad-dht is routing content and peers correctly', () => {
     this.timeout(30 * 1000)
     const file = {
       path: 'testfile1.txt',
-      content: Buffer.from('hello kad 1')
+      content: uint8ArrayFromString('hello kad 1')
     }
 
     const fileAdded = await nodeB.add(file)
@@ -69,7 +69,7 @@ describe.skip('kad-dht is routing content and peers correctly', () => {
     this.timeout(30 * 1000)
     const file = {
       path: 'testfile2.txt',
-      content: Buffer.from('hello kad 2')
+      content: uint8ArrayFromString('hello kad 2')
     }
 
     const fileAdded = await nodeC.add(file)

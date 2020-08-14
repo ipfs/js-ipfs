@@ -18,16 +18,16 @@ module.exports = configure((api, options) => {
   return async (cid, options = {}) => {
     const resolved = await dagResolve(cid, options)
     const block = await getBlock(resolved.cid, options)
-    const dagResolver = resolvers[block.cid.codec]
+    const dagResolver = resolvers[resolved.cid.codec]
 
     if (!dagResolver) {
       throw Object.assign(
-        new Error(`Missing IPLD format "${block.cid.codec}"`),
-        { missingMulticodec: cid.codec }
+        new Error(`Missing IPLD format "${resolved.cid.codec}"`),
+        { missingMulticodec: resolved.cid.codec }
       )
     }
 
-    if (block.cid.codec === 'raw' && !resolved.remPath) {
+    if (resolved.cid.codec === 'raw' && !resolved.remPath) {
       resolved.remainderPath = '/'
     }
 

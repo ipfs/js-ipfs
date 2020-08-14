@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./mocha')
 const isShardAtPath = require('./is-shard-at-path')
 const last = require('it-last')
@@ -12,7 +11,7 @@ module.exports = async (ipfs, files = 1001) => {
     for (let i = 0; i < files; i++) {
       yield {
         path: `${dirPath}/file-${i}`,
-        content: Buffer.from([0, 1, 2, 3, 4, 5, i])
+        content: Uint8Array.from([0, 1, 2, 3, 4, 5, i])
       }
     }
   }()))

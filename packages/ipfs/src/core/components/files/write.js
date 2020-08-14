@@ -2,7 +2,6 @@
 
 const log = require('debug')('ipfs:mfs:write')
 const importer = require('ipfs-unixfs-importer')
-const { Buffer } = require('buffer')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
@@ -245,7 +244,7 @@ const limitAsyncStreamBytes = (stream, limit) => {
 }
 
 const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
-  const buf = Buffer.alloc(chunkSize, 0)
+  const buf = new Uint8Array(chunkSize, 0)
 
   const stream = {
     [Symbol.asyncIterator]: function * _asyncZeroes () {

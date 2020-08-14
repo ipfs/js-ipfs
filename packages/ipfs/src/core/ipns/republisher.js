@@ -4,7 +4,6 @@ const ipns = require('ipns')
 const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
-const { Buffer } = require('buffer')
 
 const debug = require('debug')
 const log = debug('ipfs:ipns:republisher')
@@ -148,7 +147,7 @@ class IpnsRepublisher {
     try {
       const dsVal = await this._datastore.get(ipns.getLocalKey(peerId.id))
 
-      if (!Buffer.isBuffer(dsVal)) {
+      if (!(dsVal instanceof Uint8Array)) {
         throw errcode(new Error("found ipns record that we couldn't process"), 'ERR_INVALID_IPNS_RECORD')
       }
 

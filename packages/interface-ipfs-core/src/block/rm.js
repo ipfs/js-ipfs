@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { nanoid } = require('nanoid')
 const all = require('it-all')
@@ -33,7 +33,7 @@ module.exports = (common, options) => {
     })
 
     it('should remove by CID object', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -54,7 +54,7 @@ module.exports = (common, options) => {
     })
 
     it('should remove by CID in string', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -66,11 +66,11 @@ module.exports = (common, options) => {
     })
 
     it('should remove by CID in buffer', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
-      const result = await all(ipfs.block.rm(cid.buffer))
+      const result = await all(ipfs.block.rm(cid.bytes))
 
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
       expect(result[0].cid.toString()).to.equal(cid.toString())
@@ -79,15 +79,15 @@ module.exports = (common, options) => {
 
     it('should remove multiple CIDs', async () => {
       const cids = [
-        await ipfs.dag.put(Buffer.from(nanoid()), {
+        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(Buffer.from(nanoid()), {
+        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(Buffer.from(nanoid()), {
+        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         })
@@ -104,7 +104,7 @@ module.exports = (common, options) => {
     })
 
     it('should error when removing non-existent blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -121,7 +121,7 @@ module.exports = (common, options) => {
     })
 
     it('should not error when force removing non-existent blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -138,7 +138,7 @@ module.exports = (common, options) => {
     })
 
     it('should return empty output when removing blocks quietly', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -148,7 +148,7 @@ module.exports = (common, options) => {
     })
 
     it('should error when removing pinned blocks', async () => {
-      const cid = await ipfs.dag.put(Buffer.from(nanoid()), {
+      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })

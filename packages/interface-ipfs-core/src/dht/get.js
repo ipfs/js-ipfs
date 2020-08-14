@@ -3,6 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -44,7 +45,7 @@ module.exports = (common, options) => {
       const publish = await nodeA.name.publish(data.cid)
       const record = await nodeA.dht.get(`/ipns/${publish.name}`)
 
-      expect(record.toString()).to.contain(data.cid.toString())
+      expect(uint8ArrayToString(record)).to.contain(data.cid.toString())
     })
   })
 }

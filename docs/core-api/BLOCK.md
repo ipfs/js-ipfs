@@ -92,11 +92,12 @@ An optional object which may have the following keys:
 
 ```JavaScript
 // Defaults
-const buf = Buffer.from('a serialized object')
+const buf = new TextEncoder().encode('a serialized object')
+const decoder = new TextDecoder()
 
 const block = await ipfs.block.put(buf)
 
-console.log(block.data.toString())
+console.log(decoder.decode(block.data))
 // Logs:
 // a serialized object
 console.log(block.cid.toString())
@@ -105,12 +106,12 @@ console.log(block.cid.toString())
 
 // With custom format and hashtype through CID
 const CID = require('cids')
-const buf = Buffer.from('another serialized object')
+const buf = new TextEncoder().encode('another serialized object')
 const cid = new CID(1, 'dag-pb', multihash)
 
 const block = await ipfs.block.put(blob, cid)
 
-console.log(block.data.toString())
+console.log(decoder.decode(block.data))
 // Logs:
 // a serialized object
 console.log(block.cid.toString())

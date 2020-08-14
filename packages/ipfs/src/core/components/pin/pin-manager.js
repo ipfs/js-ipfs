@@ -22,12 +22,14 @@ function invalidPinTypeErr (type) {
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
+const encoder = multibase.encoding('base32upper')
+
 function cidToKey (cid) {
-  return `/${multibase.encode('base32upper', cid.multihash).toString()}`
+  return `/${encoder.encode(cid.multihash)}`
 }
 
 function keyToMultihash (key) {
-  return multibase.decode(`${key.toString().slice(1)}`)
+  return encoder.decode(key.toString().slice(1))
 }
 
 const PinTypes = {

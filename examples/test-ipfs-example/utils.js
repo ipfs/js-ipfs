@@ -4,6 +4,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const execa = require('execa')
 const which = require('which')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function startServer (dir) {
   async function serveFrom (appDir) {
@@ -17,7 +18,7 @@ async function startServer (dir) {
       proc.all.on('data', (data) => {
         process.stdout.write(data)
 
-        const line = data.toString('utf8')
+        const line = uint8ArrayToString(data)
         output += line
 
         if (output.includes('Hit CTRL-C to stop the server')) {
@@ -127,7 +128,7 @@ async function waitForOutput (expectedOutput, command, args = [], opts = {}) {
 
   proc.all.on('data', (data) => {
     process.stdout.write(data)
-    output += data.toString('utf8')
+    output += uint8ArrayToString(data)
 
     if (output.includes(expectedOutput)) {
       foundExpectedOutput = true

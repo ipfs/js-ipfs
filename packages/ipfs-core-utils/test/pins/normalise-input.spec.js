@@ -1,14 +1,11 @@
 'use strict'
 
 /* eslint-env mocha */
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
+
+const { expect } = require('aegir/utils/chai')
 const normalise = require('../../src/pins/normalise-input')
 const all = require('it-all')
 const CID = require('cids')
-
-chai.use(dirtyChai)
-const expect = chai.expect
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
 const PLAIN_CID = () => new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')

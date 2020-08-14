@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const { expect } = require('../utils/chai')
+const { expect } = require('aegir/utils/chai')
 const formatMtime = require('../../src/files/format-mtime')
 
 describe('format-mtime', function () {

@@ -3,8 +3,8 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const { Buffer } = require('buffer')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const { expect } = require('aegir/utils/chai')
 const IPFS = require('../../src')
 const createTempRepo = require('../utils/create-repo-nodejs')
 
@@ -57,7 +57,7 @@ describe('pubsub disabled', () => {
 
   it('should not allow publish if disabled', async () => {
     const topic = nanoid()
-    const msg = Buffer.from(nanoid())
+    const msg = uint8ArrayFromString(nanoid())
 
     await expect(ipfs.pubsub.publish(topic, msg))
       .to.eventually.be.rejected()

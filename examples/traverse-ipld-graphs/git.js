@@ -6,6 +6,7 @@ const multihashing = require('multihashing-async')
 const Block = require('ipld-block')
 const CID = require('cids')
 const fs = require('fs').promises
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function main () {
   const ipfs = await createNode()
@@ -40,8 +41,8 @@ async function main () {
   async function logResult (fn, comment) {
     const result = await fn()
 
-    if (Buffer.isBuffer(result.value)) { // Blobs (files) are returned as buffer instance
-      result.value = result.value.toString()
+    if (result.value instanceof Uint8Array) { // Blobs (files) are returned as buffer instance
+      result.value = uint8ArrayToString(result.value)
     }
 
     console.log('-'.repeat(80))

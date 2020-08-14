@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const MemoryStore = require('interface-datastore').MemoryDatastore
 const PeerId = require('peer-id')
 const Libp2p = require('libp2p')

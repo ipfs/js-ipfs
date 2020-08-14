@@ -1,9 +1,10 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const { Value } = require('./response-types')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = configure(api => {
   return async function get (key, options = {}) {
@@ -11,7 +12,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: Buffer.isBuffer(key) ? key.toString() : key,
+        arg: key instanceof Uint8Array ? uint8ArrayToString(key) : key,
         ...options
       }),
       headers: options.headers
@@ -19,7 +20,7 @@ module.exports = configure(api => {
 
     for await (const message of res.ndjson()) {
       if (message.Type === Value) {
-        return Buffer.from(message.Extra, 'base64')
+        return uint8ArrayFromString(message.Extra, 'base64pad')
       }
     }
 

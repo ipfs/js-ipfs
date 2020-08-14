@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
-const concat = require('it-concat')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const drain = require('it-drain')
+const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
@@ -36,9 +36,9 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(filePath))
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
-      expect(buffer.slice()).to.deep.equal(smallFile)
+      expect(bytes).to.deep.equal(smallFile)
     })
 
     it('reads a file with an offset', async () => {
@@ -50,11 +50,11 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(path, {
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(path, {
         offset
-      }))
+      })))
 
-      expect(buffer.slice()).to.deep.equal(data.slice(offset))
+      expect(bytes).to.deep.equal(data.slice(offset))
     })
 
     it('reads a file with a length', async () => {
@@ -66,11 +66,11 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(path, {
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(path, {
         length
-      }))
+      })))
 
-      expect(buffer.slice()).to.deep.equal(data.slice(0, length))
+      expect(bytes).to.deep.equal(data.slice(0, length))
     })
 
     it('reads a file with a legacy count argument', async () => {
@@ -82,11 +82,11 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(path, {
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
         count: length
-      }))
+      })))
 
-      expect(buffer.slice()).to.deep.equal(data.slice(0, length))
+      expect(buffer).to.deep.equal(data.slice(0, length))
     })
 
     it('reads a file with an offset and a length', async () => {
@@ -99,12 +99,12 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(path, {
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
         offset,
         length
-      }))
+      })))
 
-      expect(buffer.slice()).to.deep.equal(data.slice(offset, offset + length))
+      expect(buffer).to.deep.equal(data.slice(offset, offset + length))
     })
 
     it('reads a file with an offset and a legacy count argument', async () => {
@@ -117,44 +117,44 @@ module.exports = (common, options) => {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(path, {
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
         offset,
         count: length
-      }))
+      })))
 
-      expect(buffer.slice()).to.deep.equal(data.slice(offset, offset + length))
+      expect(buffer).to.deep.equal(data.slice(offset, offset + length))
     })
 
     it('refuses to read a directory', async () => {
       const path = '/'
 
-      await expect(concat(ipfs.files.read(path))).to.eventually.be.rejectedWith(/not a file/)
+      await expect(drain(ipfs.files.read(path))).to.eventually.be.rejectedWith(/not a file/)
     })
 
     it('refuses to read a non-existent file', async () => {
       const path = `/file-${Math.random()}.txt`
 
-      await expect(concat(ipfs.files.read(path))).to.eventually.be.rejectedWith(/does not exist/)
+      await expect(drain(ipfs.files.read(path))).to.eventually.be.rejectedWith(/does not exist/)
     })
 
     it('reads file from inside a sharded directory', async () => {
       const shardedDirPath = await createShardedDirectory(ipfs)
       const filePath = `${shardedDirPath}/file-${Math.random()}.txt`
-      const content = Buffer.from([0, 1, 2, 3, 4])
+      const content = Uint8Array.from([0, 1, 2, 3, 4])
 
       await ipfs.files.write(filePath, content, {
         create: true
       })
 
-      const buffer = await concat(ipfs.files.read(filePath))
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
-      expect(buffer.slice()).to.deep.equal(content)
+      expect(bytes).to.deep.equal(content)
     })
 
     it('should read from outside of mfs', async () => {
       const { cid } = await ipfs.add(fixtures.smallFile.data)
-      const testFileData = await concat(ipfs.files.read(`/ipfs/${cid}`))
-      expect(testFileData.slice()).to.eql(fixtures.smallFile.data)
+      const testFileData = uint8ArrayConcat(await all(ipfs.files.read(`/ipfs/${cid}`)))
+      expect(testFileData).to.eql(fixtures.smallFile.data)
     })
 
     it('should respect timeout option when reading files', async () => {

@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -11,7 +11,6 @@ const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const UnixFS = require('ipfs-unixfs')
 const { AbortSignal } = require('abort-controller')
 const {
@@ -555,7 +554,7 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.property('result', emptyDirectoryNode.Data)
     })
 
     it('accepts a timeout', async () => {
@@ -570,7 +569,7 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.property('result', emptyDirectoryNode.Data)
     })
   })
 

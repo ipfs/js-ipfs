@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 'use strict'
-const { Buffer } = require('buffer')
+
 const ipfsHttp = require('ipfs-http-client')
 let ipfs
 
@@ -61,7 +61,7 @@ const addAndPublish = async (e) => {
   e.preventDefault()
 
   const input = e.target.elements.text
-  const buffer = Buffer.from(input.value)
+  const buffer = new TextEncoder().encode(input.value)
 
   showStatus('Adding to IPFS...', COLORS.active)
   try {

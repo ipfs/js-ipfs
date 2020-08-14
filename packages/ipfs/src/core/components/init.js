@@ -2,7 +2,8 @@
 
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require()
 
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
@@ -197,7 +198,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, prof
 
   config.Identity = {
     PeerID: peerId.toB58String(),
-    PrivKey: peerId.privKey.bytes.toString('base64')
+    PrivKey: uint8ArrayToString(peerId.privKey.bytes, 'base64pad')
   }
 
   privateKey = peerId.privKey
@@ -265,7 +266,7 @@ function createPeerId ({ privateKey, algorithm = 'rsa', bits, print }) {
     log('using user-supplied private-key')
     return typeof privateKey === 'object'
       ? privateKey
-      : PeerId.createFromPrivKey(Buffer.from(privateKey, 'base64'))
+      : PeerId.createFromPrivKey(uint8ArrayFromString(privateKey, 'base64'))
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
     print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)

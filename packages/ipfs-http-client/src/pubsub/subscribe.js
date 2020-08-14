@@ -1,7 +1,7 @@
 'use strict'
 
-const multibase = require('multibase')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const SubscriptionTracker = require('./subscription-tracker')
 const configure = require('../lib/configure')
@@ -22,7 +22,7 @@ module.exports = configure((api, options) => {
     const ffWorkaround = setTimeout(async () => {
       log(`Publishing empty message to "${topic}" to resolve subscription request`)
       try {
-        await publish(topic, Buffer.alloc(0), options)
+        await publish(topic, new Uint8Array(0), options)
       } catch (err) {
         log('Failed to publish empty message', err)
       }
@@ -60,9 +60,9 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
     for await (const msg of msgStream) {
       try {
         onMessage({
-          from: multibase.encode('base58btc', Buffer.from(msg.from, 'base64')).toString().slice(1),
-          data: Buffer.from(msg.data, 'base64'),
-          seqno: Buffer.from(msg.seqno, 'base64'),
+          from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base64pad'), 'base58btc'),
+          data: uint8ArrayFromString(msg.data, 'base64pad'),
+          seqno: uint8ArrayFromString(msg.seqno, 'base64pad'),
           topicIDs: msg.topicIDs
         })
       } catch (err) {

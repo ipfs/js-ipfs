@@ -8,6 +8,7 @@ const importer = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
 const CID = require('cids')
+const uint8ArrayEquals = require('uint8arrays/equals')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -58,7 +59,7 @@ module.exports = (common, options) => {
         cids.find(cid => {
           const multihash = new CID(cid).multihash
 
-          return imported[0].cid.multihash.equals(multihash)
+          return uint8ArrayEquals(imported[0].cid.multihash, multihash)
         })
       ).to.be.ok()
 
@@ -66,7 +67,7 @@ module.exports = (common, options) => {
         cids.find(cid => {
           const multihash = new CID(cid).multihash
 
-          return imported[1].cid.multihash.equals(multihash)
+          return uint8ArrayEquals(imported[1].cid.multihash, multihash)
         })
       ).to.be.ok()
     })

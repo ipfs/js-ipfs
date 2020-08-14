@@ -1,7 +1,6 @@
 /* eslint-env mocha, browser */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const { supportsFileReader } = require('ipfs-utils/src/supports')
@@ -11,6 +10,7 @@ const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -29,7 +29,7 @@ module.exports = (common, options) => {
     async function testMode (mode, expectedMode) {
       const content = String(Math.random() + Date.now())
       const file = await ipfs.add({
-        content: Buffer.from(content),
+        content,
         mode
       })
       expect(file).to.have.property('mode', expectedMode)
@@ -41,7 +41,7 @@ module.exports = (common, options) => {
     async function testMtime (mtime, expectedMtime) {
       const content = String(Math.random() + Date.now())
       const file = await ipfs.add({
-        content: Buffer.from(content),
+        content,
         mtime
       })
       expect(file).to.have.deep.property('mtime', expectedMtime)
@@ -55,7 +55,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when adding files', () => {
-      return testTimeout(() => ipfs.add(Buffer.from('Hello'), {
+      return testTimeout(() => ipfs.add('Hello', {
         timeout: 1
       }))
     })
@@ -149,7 +149,7 @@ module.exports = (common, options) => {
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
       const rs = new Readable()
-      rs.push(Buffer.from('some data'))
+      rs.push(uint8ArrayFromString('some data'))
       rs.push(null)
 
       const file = await ipfs.add(rs)
@@ -180,7 +180,7 @@ module.exports = (common, options) => {
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
-      const file = await ipfs.add(Buffer.from(content), { onlyHash: true })
+      const file = await ipfs.add(content, { onlyHash: true })
 
       await expect(ipfs.object.get(file.cid, { timeout: 4000 }))
         .to.eventually.be.rejected()
@@ -243,7 +243,7 @@ module.exports = (common, options) => {
 
       const [result, expectedResult] = await Promise.all([
         ipfs.add(urlSource(url)),
-        ipfs.add(Buffer.from(text))
+        ipfs.add(text)
       ])
 
       expect(result.err).to.not.exist()
@@ -258,7 +258,7 @@ module.exports = (common, options) => {
 
       const [result, expectedResult] = await Promise.all([
         ipfs.add(urlSource(redirectUrl(url))),
-        ipfs.add(Buffer.from(text))
+        ipfs.add(text)
       ])
 
       expect(result.err).to.not.exist()
@@ -285,7 +285,7 @@ module.exports = (common, options) => {
 
       const [result, expectedResult] = await Promise.all([
         ipfs.add(urlSource(url), addOpts),
-        ipfs.add({ path: 'download', content: Buffer.from(filename) }, addOpts)
+        ipfs.add({ path: 'download', content: filename }, addOpts)
       ])
       expect(result.err).to.not.exist()
       expect(expectedResult.err).to.not.exist()
@@ -299,7 +299,7 @@ module.exports = (common, options) => {
 
       const [result, expectedResult] = await Promise.all([
         ipfs.add(urlSource(url), addOpts),
-        ipfs.add([{ path: 'download', content: Buffer.from(filename) }], addOpts)
+        ipfs.add([{ path: 'download', content: filename }], addOpts)
       ])
 
       expect(result.err).to.not.exist()
@@ -312,7 +312,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {
-      const file = await ipfs.add(Buffer.from([0, 1, 2]), {
+      const file = await ipfs.add(Uint8Array.from([0, 1, 2]), {
         cidVersion: 1,
         rawLeaves: true
       })
@@ -324,7 +324,7 @@ module.exports = (common, options) => {
 
     it('should override raw leaves when file is smaller than one block and metadata is present', async () => {
       const file = await ipfs.add({
-        content: Buffer.from([0, 1, 2]),
+        content: Uint8Array.from([0, 1, 2]),
         mode: 0o123,
         mtime: {
           secs: 1000,

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
@@ -33,7 +33,7 @@ module.exports = (common, options) => {
     let cidCbor
 
     before(async function () {
-      nodePb = new DAGNode(Buffer.from('I am inside a Protobuf'))
+      nodePb = new DAGNode(uint8ArrayFromString('I am inside a Protobuf'))
       cidPb = await dagPB.util.cid(nodePb.serialize())
 
       nodeCbor = {

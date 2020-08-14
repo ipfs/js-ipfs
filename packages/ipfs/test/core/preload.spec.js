@@ -2,8 +2,8 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const { Buffer } = require('buffer')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const { expect } = require('aegir/utils/chai')
 const all = require('it-all')
 const MockPreloadNode = require('../utils/mock-preload-node-utils')
 const IPFS = require('../../src')
@@ -37,7 +37,7 @@ describe('preload', () => {
 
   it('should preload content added with add', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(nanoid()))
+    const res = await ipfs.add(uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(res.cid)
   })
 
@@ -45,11 +45,11 @@ describe('preload', () => {
     this.timeout(50 * 1000)
 
     const res = await all(ipfs.addAll([{
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }]))
 
     await MockPreloadNode.waitForCids(res.map(file => file.cid))
@@ -60,13 +60,13 @@ describe('preload', () => {
 
     const res = await all(ipfs.addAll([{
       path: 'dir0/dir1/file0',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/dir1/file1',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/file2',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }]))
 
     const rootDir = res.find(file => file.path === 'dir0')
@@ -80,13 +80,13 @@ describe('preload', () => {
 
     const res = await all(ipfs.addAll([{
       path: 'dir0/dir1/file0',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/dir1/file1',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/file2',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }], { wrapWithDirectory: true }))
 
     const wrappingDir = res.find(file => file.path === '')
@@ -97,14 +97,14 @@ describe('preload', () => {
 
   it('should preload content retrieved with cat', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(nanoid()), { preload: false })
+    const res = await ipfs.add(uint8ArrayFromString(nanoid()), { preload: false })
     await all(ipfs.cat(res.cid))
     await MockPreloadNode.waitForCids(res.cid)
   })
 
   it('should preload content retrieved with get', async function () {
     this.timeout(50 * 1000)
-    const res = await ipfs.add(Buffer.from(nanoid()), { preload: false })
+    const res = await ipfs.add(uint8ArrayFromString(nanoid()), { preload: false })
     await all(ipfs.get(res.cid))
     await MockPreloadNode.waitForCids(res.cid)
   })
@@ -114,13 +114,13 @@ describe('preload', () => {
 
     const res = await all(ipfs.addAll([{
       path: 'dir0/dir1/file0',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/dir1/file1',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }, {
       path: 'dir0/file2',
-      content: Buffer.from(nanoid())
+      content: uint8ArrayFromString(nanoid())
     }], { wrapWithDirectory: true }))
 
     const wrappingDir = res.find(file => file.path === '')
@@ -141,7 +141,7 @@ describe('preload', () => {
 
   it('should preload content added with object.put', async function () {
     this.timeout(50 * 1000)
-    const cid = await ipfs.object.put({ Data: Buffer.from(nanoid()), Links: [] })
+    const cid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
     await MockPreloadNode.waitForCids(cid)
   })
 
@@ -149,7 +149,7 @@ describe('preload', () => {
     this.timeout(50 * 1000)
 
     const createNode = async () => {
-      const cid = await ipfs.object.put({ Data: Buffer.from(nanoid()), Links: [] })
+      const cid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
       const node = await ipfs.object.get(cid)
       return { cid, node }
     }
@@ -168,11 +168,11 @@ describe('preload', () => {
   it('should preload content added with object.patch.rmLink', async function () {
     this.timeout(50 * 1000)
 
-    const linkCid = await ipfs.object.put({ Data: Buffer.from(nanoid()), Links: [] })
+    const linkCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
     const linkNode = await ipfs.object.get(linkCid)
 
     const parentCid = await ipfs.object.put({
-      Data: Buffer.from(nanoid()),
+      Data: uint8ArrayFromString(nanoid()),
       Links: [{
         name: 'link',
         cid: linkCid,
@@ -186,15 +186,15 @@ describe('preload', () => {
 
   it('should preload content added with object.patch.setData', async function () {
     this.timeout(50 * 1000)
-    const originalCid = await ipfs.object.put({ Data: Buffer.from(nanoid()), Links: [] })
-    const patchedCid = await ipfs.object.patch.setData(originalCid, Buffer.from(nanoid()))
+    const originalCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
+    const patchedCid = await ipfs.object.patch.setData(originalCid, uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(patchedCid)
   })
 
   it('should preload content added with object.patch.appendData', async function () {
     this.timeout(50 * 1000)
-    const originalCid = await ipfs.object.put({ Data: Buffer.from(nanoid()), Links: [] })
-    const patchedCid = await ipfs.object.patch.appendData(originalCid, Buffer.from(nanoid()))
+    const originalCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
+    const patchedCid = await ipfs.object.patch.appendData(originalCid, uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(patchedCid)
   })
 
@@ -207,20 +207,20 @@ describe('preload', () => {
 
   it('should preload content added with block.put', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(Buffer.from(nanoid()))
+    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(block.cid)
   })
 
   it('should preload content retrieved with block.get', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(Buffer.from(nanoid()), { preload: false })
+    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await ipfs.block.get(block.cid)
     await MockPreloadNode.waitForCids(block.cid)
   })
 
   it('should preload content retrieved with block.stat', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(Buffer.from(nanoid()), { preload: false })
+    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await ipfs.block.stat(block.cid)
     await MockPreloadNode.waitForCids(block.cid)
   })
@@ -242,7 +242,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with files.ls', async () => {
-    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: Buffer.from(nanoid()) })
+    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) })
     const dirCid = res.cid
     await MockPreloadNode.waitForCids(dirCid)
     await MockPreloadNode.clearPreloadCids()
@@ -251,7 +251,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with files.ls by CID', async () => {
-    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: Buffer.from(nanoid()) })
+    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) })
     const dirCid = res.cid
     await MockPreloadNode.waitForCids(dirCid)
     await MockPreloadNode.clearPreloadCids()
@@ -260,7 +260,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with files.read', async () => {
-    const { cid } = await ipfs.add(Buffer.from(nanoid()))
+    const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(cid)
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.read(`/ipfs/${cid}`)
@@ -268,7 +268,7 @@ describe('preload', () => {
   })
 
   it('should preload content retrieved with files.stat', async () => {
-    const { cid: fileCid } = await ipfs.add(Buffer.from(nanoid()))
+    const { cid: fileCid } = await ipfs.add(uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(fileCid)
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.stat(`/ipfs/${fileCid}`)
@@ -304,7 +304,7 @@ describe('preload disabled', function () {
   after(() => repo.teardown())
 
   it('should not preload if disabled', async () => {
-    const { cid } = await ipfs.add(Buffer.from(nanoid()))
+    const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()))
 
     return expect(MockPreloadNode.waitForCids(cid))
       .to.eventually.be.rejected()

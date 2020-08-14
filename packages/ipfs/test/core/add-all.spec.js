@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const utils = require('../../src/core/components/add-all/utils')
 
 describe('add-all/utils', () => {

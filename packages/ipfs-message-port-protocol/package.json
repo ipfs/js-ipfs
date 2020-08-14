@@ -32,12 +32,11 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "buffer": "^5.6.0",
     "cids": "^1.0.0",
     "ipld-block": "^0.10.0"
   },
   "devDependencies": {
-    "aegir": "^25.0.0",
+    "aegir": "^26.0.0",
     "interface-ipfs-core": "^0.139.0"
   },
   "engines": {

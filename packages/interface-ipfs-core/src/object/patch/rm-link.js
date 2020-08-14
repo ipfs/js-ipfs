@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')
 const testTimeout = require('../../utils/test-timeout')
@@ -35,12 +35,12 @@ module.exports = (common, options) => {
 
     it('should remove a link from an existing node', async () => {
       const obj1 = {
-        Data: Buffer.from('patch test object 1'),
+        Data: uint8ArrayFromString('patch test object 1'),
         Links: []
       }
 
       const obj2 = {
-        Data: Buffer.from('patch test object 2'),
+        Data: uint8ArrayFromString('patch test object 2'),
         Links: []
       }
 

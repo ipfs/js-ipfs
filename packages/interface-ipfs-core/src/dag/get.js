@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
@@ -35,13 +35,13 @@ module.exports = (common, options) => {
     let cidCbor
 
     before(async () => {
-      const someData = Buffer.from('some other data')
+      const someData = uint8ArrayFromString('some other data')
       pbNode = new DAGNode(someData)
       cborNode = {
         data: someData
       }
 
-      nodePb = new DAGNode(Buffer.from('I am inside a Protobuf'))
+      nodePb = new DAGNode(uint8ArrayFromString('I am inside a Protobuf'))
       cidPb = await dagPB.util.cid(nodePb.serialize())
       nodeCbor = {
         someData: 'I am inside a Cbor object',
@@ -99,7 +99,7 @@ module.exports = (common, options) => {
       const result = await ipfs.dag.get(cidPb, {
         path: 'Data'
       })
-      expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
+      expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
     it.skip('should get a dag-pb node value one level deep', (done) => {})
@@ -131,7 +131,7 @@ module.exports = (common, options) => {
       const result = await ipfs.dag.get(cidCbor, {
         path: 'pb/Data'
       })
-      expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
+      expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
     it('should get by CID string', async () => {
@@ -149,7 +149,7 @@ module.exports = (common, options) => {
       const cidCborStr = cidCbor.toBaseEncodedString()
 
       const result = await ipfs.dag.get(cidCborStr + '/pb/Data')
-      expect(result.value).to.eql(Buffer.from('I am inside a Protobuf'))
+      expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
     it('should get only a CID, due to resolving locally only', async function () {
@@ -166,7 +166,7 @@ module.exports = (common, options) => {
     })
 
     it('should get a node added as CIDv0 with a CIDv1', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const node = new DAGNode(input)
 
@@ -180,7 +180,7 @@ module.exports = (common, options) => {
     })
 
     it('should get a node added as CIDv1 with a CIDv0', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const res = await all(importer([{ content: input }], ipfs.block, {
         cidVersion: 1,
@@ -229,7 +229,7 @@ module.exports = (common, options) => {
     })
 
     it('should be able to get a DAG node with format raw', async () => {
-      const buf = Buffer.from([0, 1, 2, 3])
+      const buf = Uint8Array.from([0, 1, 2, 3])
 
       const cid = await ipfs.dag.put(buf, {
         format: 'raw',

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const isShardAtPath = require('../utils/is-shard-at-path')
@@ -19,7 +19,7 @@ module.exports = (common, options) => {
     async function testChmod (initialMode, modification, expectedFinalMode) {
       const path = `/test-${nanoid()}`
 
-      await ipfs.files.write(path, Buffer.from('Hello world!'), {
+      await ipfs.files.write(path, uint8ArrayFromString('Hello world!'), {
         create: true,
         mtime: new Date(),
         mode: initialMode
@@ -41,7 +41,7 @@ module.exports = (common, options) => {
     it('should update the mode for a file', async () => {
       const path = `/foo-${Math.random()}`
 
-      await ipfs.files.write(path, Buffer.from('Hello world'), {
+      await ipfs.files.write(path, uint8ArrayFromString('Hello world'), {
         create: true,
         mtime: new Date()
       })
@@ -73,7 +73,7 @@ module.exports = (common, options) => {
       const path = `/foo-${Math.random()}`
 
       await ipfs.files.mkdir(path)
-      await ipfs.files.write(`${path}/foo.txt`, Buffer.from('Hello world'), {
+      await ipfs.files.write(`${path}/foo.txt`, uint8ArrayFromString('Hello world'), {
         create: true,
         shardSplitThreshold: 0
       })
@@ -335,7 +335,7 @@ module.exports = (common, options) => {
     it('should respect timeout option when changing the mode of a file', async () => {
       const path = `/foo-${Math.random()}`
 
-      await ipfs.files.write(path, Buffer.from('Hello world'), {
+      await ipfs.files.write(path, uint8ArrayFromString('Hello world'), {
         create: true
       })
 

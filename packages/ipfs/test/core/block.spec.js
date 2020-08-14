@@ -2,10 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const { nanoid } = require('nanoid')
 const all = require('it-all')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const factory = require('../utils/factory')
 
 describe('block', () => {
@@ -28,7 +28,7 @@ describe('block', () => {
 
   describe('put', () => {
     it('should not error when passed null options', () => {
-      return ipfs.block.put(Buffer.from(nanoid()), null)
+      return ipfs.block.put(uint8ArrayFromString(nanoid()), null)
     })
   })
 
@@ -48,7 +48,7 @@ describe('block', () => {
     })
 
     it('should not error when passed null options', async () => {
-      const block = await ipfs.block.put(Buffer.from(nanoid()))
+      const block = await ipfs.block.put(uint8ArrayFromString(nanoid()))
       return ipfs.block.stat(block.cid, null)
     })
   })

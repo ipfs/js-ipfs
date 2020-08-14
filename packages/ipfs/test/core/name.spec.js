@@ -2,7 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const delay = require('delay')
 const { Key } = require('interface-datastore')

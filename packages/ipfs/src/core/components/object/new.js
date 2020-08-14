@@ -5,7 +5,6 @@ const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
 const { withTimeoutOption } = require('../../utils')
-const { Buffer } = require('buffer')
 
 module.exports = ({ ipld, preload }) => {
   return withTimeoutOption(async function _new (options = {}) {
@@ -18,7 +17,7 @@ module.exports = ({ ipld, preload }) => {
         throw new Error('unknown template')
       }
     } else {
-      data = Buffer.alloc(0)
+      data = new Uint8Array(0)
     }
 
     const node = new DAGNode(data)

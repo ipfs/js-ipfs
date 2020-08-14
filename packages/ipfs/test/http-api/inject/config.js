@@ -1,9 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
-const { Buffer } = require('buffer')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const { profiles } = require('../../../src/core/components/config')

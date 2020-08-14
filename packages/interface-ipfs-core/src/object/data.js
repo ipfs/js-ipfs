@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -35,7 +35,7 @@ module.exports = (common, options) => {
 
     it('should get data by multihash', async () => {
       const testObj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -47,7 +47,7 @@ module.exports = (common, options) => {
 
     it('should get data by base58 encoded multihash string', async () => {
       const testObj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 

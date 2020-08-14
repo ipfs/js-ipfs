@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const CID = require('cids')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 describe('block', () => {
   const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
@@ -96,7 +96,7 @@ describe('block', () => {
     it('should get a block', async () => {
       ipfs.block.get.withArgs(cid.toString(), defaultOptions).resolves({
         cid,
-        data: Buffer.from('hello world\n')
+        data: uint8ArrayFromString('hello world\n')
       })
 
       const out = await cli(`block get ${cid}`, { ipfs })
@@ -114,7 +114,7 @@ describe('block', () => {
         timeout: 1000
       }).resolves({
         cid,
-        data: Buffer.from('hello world\n')
+        data: uint8ArrayFromString('hello world\n')
       })
 
       const out = await cli(`block get ${cid} --timeout=1s`, { ipfs })

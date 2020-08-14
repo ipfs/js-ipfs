@@ -6,7 +6,7 @@ const errCode = require('err-code')
 const IPFS_PREFIX = '/ipfs/'
 
 const toCidAndPath = (string) => {
-  if (Buffer.isBuffer(string)) {
+  if (string instanceof Uint8Array) {
     try {
       string = new CID(string)
     } catch (err) {

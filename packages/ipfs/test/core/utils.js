@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
 const { fromB58String } = require('multihashing-async').multihash
 

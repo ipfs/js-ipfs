@@ -6,6 +6,7 @@ const multihashing = require('multihashing-async')
 const Block = require('ipld-block')
 const CID = require('cids')
 const fs = require('fs').promises
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function main () {
   const ipfs = await createNode()
@@ -32,10 +33,10 @@ async function main () {
   let res
 
   res = await ipfs.dag.get(block302516 + '/number')
-  console.log(res.value.toString('hex'))
+  console.log(uint8ArrayToString(res.value, 'base16'))
 
   res = await ipfs.dag.get(block302517 + '/parent/number')
-  console.log(res.value.toString('hex'))
+  console.log(uint8ArrayToString(res.value, 'base16'))
 }
 
 main()

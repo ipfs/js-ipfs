@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
@@ -138,7 +139,7 @@ module.exports = (common, options) => {
     })
 
     it('should pin raw', async () => {
-      const cid = await ipfs.dag.put(Buffer.alloc(0), {
+      const cid = await ipfs.dag.put(new Uint8Array(0), {
         format: 'raw',
         hashAlg: 'sha2-256'
       })
@@ -154,7 +155,7 @@ module.exports = (common, options) => {
     })
 
     it('should pin dag-cbor with dag-pb child', async () => {
-      const child = await ipfs.dag.put(new DAGNode(Buffer.from(`${Math.random()}`)), {
+      const child = await ipfs.dag.put(new DAGNode(uint8ArrayFromString(`${Math.random()}`)), {
         format: 'dag-pb',
         hashAlg: 'sha2-256'
       })

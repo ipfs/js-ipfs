@@ -2,9 +2,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const last = require('it-last')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const factory = require('../utils/factory')
 
 describe('files directory (sharding tests)', function () {
@@ -13,7 +13,7 @@ describe('files directory (sharding tests)', function () {
 
   const testFiles = Array.from(Array(1005), (_, i) => ({
     path: 'test-folder/' + i,
-    content: Buffer.from('some content ' + i)
+    content: uint8ArrayFromString('some content ' + i)
   }))
 
   describe('without sharding', () => {

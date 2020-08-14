@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 'use strict'
-const { Buffer } = require('buffer')
+
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const multihash = require('multihashing-async').multihash
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -16,7 +17,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.block.get', () => {
-    const data = Buffer.from('blorb')
+    const data = uint8ArrayFromString('blorb')
     let ipfs, hash
 
     before(async () => {
@@ -37,19 +38,19 @@ module.exports = (common, options) => {
       const cid = new CID(hash)
       const block = await ipfs.block.get(cid)
 
-      expect(block.data).to.eql(Buffer.from('blorb'))
+      expect(block.data).to.eql(uint8ArrayFromString('blorb'))
       expect(block.cid.multihash).to.eql(cid.multihash)
     })
 
     it('should get by CID in string', async () => {
       const block = await ipfs.block.get(multihash.toB58String(hash))
 
-      expect(block.data).to.eql(Buffer.from('blorb'))
+      expect(block.data).to.eql(uint8ArrayFromString('blorb'))
       expect(block.cid.multihash).to.eql(hash)
     })
 
     it('should get an empty block', async () => {
-      const res = await ipfs.block.put(Buffer.alloc(0), {
+      const res = await ipfs.block.put(new Uint8Array(0), {
         format: 'dag-pb',
         mhtype: 'sha2-256',
         version: 0
@@ -57,11 +58,11 @@ module.exports = (common, options) => {
 
       const block = await ipfs.block.get(res.cid)
 
-      expect(block.data).to.eql(Buffer.alloc(0))
+      expect(block.data).to.eql(new Uint8Array(0))
     })
 
     it('should get a block added as CIDv0 with a CIDv1', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const res = await ipfs.block.put(input, { version: 0 })
 
@@ -75,7 +76,7 @@ module.exports = (common, options) => {
     })
 
     it('should get a block added as CIDv1 with a CIDv0', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const res = await ipfs.block.put(input, { version: 1 })
 

@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const multibase = require('multibase')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const defaultOptions = {
   timeout: undefined
@@ -52,7 +52,7 @@ describe('refs local', () => {
     const out = await cli('refs local --multihash', { ipfs })
     const lines = out.split('\n')
 
-    expect(lines.includes(multibase.encoding('base32upper').encode(Buffer.from(ref)))).to.be.true()
+    expect(lines.includes(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))).to.be.true()
     expect(lines.includes(err)).to.be.true()
   })
 

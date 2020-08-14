@@ -1,9 +1,10 @@
 'use strict'
 
 /* eslint-env mocha */
-const { expect } = require('../utils/chai')
+
+const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
 const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
@@ -16,7 +17,7 @@ if (isBrowser || isWebWorker) {
 
 const STRING = () => 'hello world'
 const NEWSTRING = () => new String('hello world') // eslint-disable-line no-new-wrappers
-const BUFFER = () => Buffer.from(STRING())
+const BUFFER = () => uint8ArrayFromString(STRING())
 const ARRAY = () => Array.from(BUFFER())
 const TYPEDARRAY = () => Uint8Array.from(ARRAY())
 let BLOB

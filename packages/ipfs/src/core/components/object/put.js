@@ -6,7 +6,8 @@ const DAGLink = dagPB.DAGLink
 const mh = require('multihashing-async').multihash
 const multicodec = require('multicodec')
 const { withTimeoutOption } = require('../../utils')
-const { Buffer } = require('buffer')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 function parseBuffer (buf, encoding) {
   switch (encoding) {
@@ -24,7 +25,7 @@ function parseJSONBuffer (buf) {
   let links
 
   try {
-    const parsed = JSON.parse(buf.toString())
+    const parsed = JSON.parse(uint8ArrayToString(buf))
 
     links = (parsed.Links || []).map((link) => {
       return new DAGLink(
@@ -33,7 +34,7 @@ function parseJSONBuffer (buf) {
         mh.fromB58String(link.Hash || link.hash || link.multihash)
       )
     })
-    data = Buffer.from(parsed.Data)
+    data = uint8ArrayFromString(parsed.Data)
   } catch (err) {
     throw new Error('failed to parse JSON: ' + err)
   }
@@ -52,7 +53,7 @@ module.exports = ({ ipld, gcLock, preload }) => {
     const encoding = options.enc
     let node
 
-    if (Buffer.isBuffer(obj)) {
+    if (obj instanceof Uint8Array) {
       if (encoding) {
         node = await parseBuffer(obj, encoding)
       } else {

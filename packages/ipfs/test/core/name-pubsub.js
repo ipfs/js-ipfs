@@ -3,10 +3,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const { Buffer } = require('buffer')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const base64url = require('base64url')
-const { fromB58String } = require('multihashing-async').multihash
+const { expect } = require('aegir/utils/chai')
 const PeerId = require('peer-id')
 const { isNode } = require('ipfs-utils/src/env')
 const ipns = require('ipns')
@@ -14,6 +11,8 @@ const delay = require('delay')
 const last = require('it-last')
 const waitFor = require('../utils/wait-for')
 const factory = require('../utils/factory')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
@@ -66,8 +65,8 @@ describe('name-pubsub', function () {
       return subscribed === true
     }
 
-    const keys = ipns.getIdKeys(fromB58String(idA.id))
-    const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
+    const keys = ipns.getIdKeys(uint8ArrayFromString(idA.id, 'base58btc'))
+    const topic = `${namespace}${uint8ArrayToString(keys.routingKey.uint8Array(), 'base64url')}`
 
     await expect(last(nodeB.name.resolve(idA.id)))
       .to.eventually.be.rejected()
@@ -90,7 +89,7 @@ describe('name-pubsub', function () {
   it('should self resolve, publish and then resolve correctly', async function () {
     this.timeout(6000)
     const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
-    const { path } = await nodeA.add(Buffer.from('pubsub records'))
+    const { path } = await nodeA.add(uint8ArrayFromString('pubsub records'))
 
     const resolvesEmpty = await last(nodeB.name.resolve(idB.id))
     expect(resolvesEmpty).to.be.eq(emptyDirCid)
@@ -124,7 +123,7 @@ describe('name-pubsub', function () {
     function checkMessage (msg) {
       publishedMessage = msg
       publishedMessageData = ipns.unmarshal(msg.data)
-      publishedMessageDataValue = publishedMessageData.value.toString('utf8')
+      publishedMessageDataValue = uint8ArrayToString(publishedMessageData.value)
     }
 
     const alreadySubscribed = () => {
@@ -137,8 +136,8 @@ describe('name-pubsub', function () {
       size: 2048
     })
 
-    const keys = ipns.getIdKeys(fromB58String(testAccount.id))
-    const topic = `${namespace}${base64url.encode(keys.routingKey.toBuffer())}`
+    const keys = ipns.getIdKeys(uint8ArrayFromString(testAccount.id, 'base58btc'))
+    const topic = `${namespace}${uint8ArrayToString(keys.routingKey.uint8Array(), 'base64url')}`
 
     await nodeB.pubsub.subscribe(topic, checkMessage)
     await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })

@@ -1,6 +1,6 @@
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -18,7 +18,7 @@ module.exports = configure(api => {
       signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(Buffer.from(JSON.stringify(config)), controller, options.headers)
+        await multipartRequest(uint8ArrayFromString(JSON.stringify(config)), controller, options.headers)
       )
     })
 

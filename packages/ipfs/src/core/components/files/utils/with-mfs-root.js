@@ -45,7 +45,7 @@ const loadMfsRoot = async (context, options) => {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
     }
 
-    await context.repo.datastore.put(MFS_ROOT_KEY, cid.buffer)
+    await context.repo.datastore.put(MFS_ROOT_KEY, cid.bytes)
   }
 
   log(`Loaded MFS root /ipfs/${cid}`)

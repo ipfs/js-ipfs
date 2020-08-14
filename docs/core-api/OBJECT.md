@@ -122,7 +122,7 @@ An optional object which may have the following keys:
 
 ```JavaScript
 const obj = {
-  Data: Buffer.from('Some data'),
+  Data: new TextEncoder().encode('Some data'),
   Links: []
 }
 
@@ -451,7 +451,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const cid = await ipfs.object.patch.appendData(multihash, Buffer.from('more data'))
+const cid = await ipfs.object.patch.appendData(multihash, new TextEncoder().encode('more data'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -486,7 +486,7 @@ An optional object which may have the following keys:
 
 ```JavaScript
 const cid = '/ipfs/Qmfoo'
-const updatedCid = await ipfs.object.patch.setData(cid, Buffer.from('more data'))
+const updatedCid = await ipfs.object.patch.setData(cid, new TextEncoder().encode('more data'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.

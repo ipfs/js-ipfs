@@ -1,6 +1,6 @@
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const http = require('./http')
 
 const METHODS = [

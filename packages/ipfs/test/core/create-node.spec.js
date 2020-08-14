@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 const tmpDir = require('ipfs-utils/src/temp-dir')

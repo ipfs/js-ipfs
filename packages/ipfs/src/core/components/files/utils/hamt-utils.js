@@ -10,11 +10,10 @@ const UnixFS = require('ipfs-unixfs')
 const mc = require('multicodec')
 const mh = require('multihashing-async').multihash
 const last = require('it-last')
-const { Buffer } = require('buffer')
 
 const updateHamtDirectory = async (context, links, bucket, options) => {
   // update parent with new bit field
-  const data = Buffer.from(bucket._children.bitField().reverse())
+  const data = Uint8Array.from(bucket._children.bitField().reverse())
   const node = UnixFS.unmarshal(options.parent.Data)
   const dir = new UnixFS({
     type: 'hamt-sharded-directory',

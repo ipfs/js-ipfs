@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
@@ -12,7 +13,6 @@ const createTwoShards = require('../utils/create-two-shards')
 const randomBytes = require('iso-random-stream/src/random')
 const randomStream = require('iso-random-stream')
 const all = require('it-all')
-const concat = require('it-concat')
 const isShardAtPath = require('../utils/is-shard-at-path')
 const testTimeout = require('../utils/test-timeout')
 
@@ -65,7 +65,7 @@ module.exports = (common, options) => {
     async function testMode (mode, expectedMode) {
       const testPath = `/test-${nanoid()}`
 
-      await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
+      await ipfs.files.write(testPath, uint8ArrayFromString('Hello, world!'), {
         create: true,
         parents: true,
         mode
@@ -78,7 +78,7 @@ module.exports = (common, options) => {
     async function testMtime (mtime, expectedMtime) {
       const testPath = `/test-${nanoid()}`
 
-      await ipfs.files.write(testPath, Buffer.from('Hello, world!'), {
+      await ipfs.files.write(testPath, uint8ArrayFromString('Hello, world!'), {
         create: true,
         parents: true,
         mtime
@@ -107,20 +107,20 @@ module.exports = (common, options) => {
     })
 
     it('explodes if given a negtive offset', async () => {
-      await expect(ipfs.files.write('/foo-negative-offset', Buffer.from('foo'), {
+      await expect(ipfs.files.write('/foo-negative-offset', uint8ArrayFromString('foo'), {
         offset: -1
       })).to.eventually.be.rejected()
     })
 
     it('explodes if given a negative length', async () => {
-      await expect(ipfs.files.write('/foo-negative-length', Buffer.from('foo'), {
+      await expect(ipfs.files.write('/foo-negative-length', uint8ArrayFromString('foo'), {
         length: -1
       })).to.eventually.be.rejected()
     })
 
     it('creates a zero length file when passed a zero length', async () => {
       const path = '/foo-zero-length'
-      await ipfs.files.write(path, Buffer.from('foo'), {
+      await ipfs.files.write(path, uint8ArrayFromString('foo'), {
         length: 0,
         create: true
       })
@@ -140,7 +140,7 @@ module.exports = (common, options) => {
       })
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.property('size', smallFile.length)
-      expect(Buffer.concat(await all(ipfs.files.read(filePath)))).to.deep.equal(smallFile)
+      expect(uint8ArrayConcat(await all(ipfs.files.read(filePath)))).to.deep.equal(smallFile)
     })
 
     it('writes a small file using a string', async function () {
@@ -152,7 +152,7 @@ module.exports = (common, options) => {
       })
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.property('size', content.length)
-      expect(Buffer.concat(await all(ipfs.files.read(filePath)))).to.deep.equal(Buffer.from(content))
+      expect(uint8ArrayConcat(await all(ipfs.files.read(filePath)))).to.deep.equal(uint8ArrayFromString(content))
     })
 
     it('writes part of a small file using a string', async function () {
@@ -256,12 +256,12 @@ module.exports = (common, options) => {
     it('refuses to write to a path that has a file in it', async () => {
       const filePath = `/small-file-${Math.random()}.txt`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
       try {
-        await ipfs.files.write(`${filePath}/other-file-${Math.random()}.txt`, Buffer.from([0, 1, 2, 3]), {
+        await ipfs.files.write(`${filePath}/other-file-${Math.random()}.txt`, Uint8Array.from([0, 1, 2, 3]), {
           create: true
         })
 
@@ -279,15 +279,15 @@ module.exports = (common, options) => {
           length: 2
         })
 
-        const buffer = await concat(ipfs.files.read(path))
+        const bytes = uint8ArrayConcat(await all(ipfs.files.read(path)))
 
-        expect(buffer.length).to.equal(2)
+        expect(bytes.length).to.equal(2)
       })
     })
 
     runTest(({ type, path, content, contentSize }) => {
       it(`overwrites start of a file without truncating (${type})`, async () => {
-        const newContent = Buffer.from('Goodbye world')
+        const newContent = uint8ArrayFromString('Goodbye world')
 
         await ipfs.files.write(path, content, {
           create: true
@@ -300,7 +300,7 @@ module.exports = (common, options) => {
         const stats = await ipfs.files.stat(path)
         expect(stats.size).to.equal(contentSize)
 
-        const buffer = Buffer.concat(await all(ipfs.files.read(path, {
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
           offset: 0,
           length: newContent.length
         })))
@@ -320,19 +320,19 @@ module.exports = (common, options) => {
 
         await expect(ipfs.files.stat(path)).to.eventually.have.property('size', offset + contentSize)
 
-        const buffer = Buffer.concat(await all(ipfs.files.read(path, {
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
           offset: 0,
           length: offset
         })))
 
-        expect(buffer).to.deep.equal(Buffer.alloc(offset, 0))
+        expect(buffer).to.deep.equal(new Uint8Array(offset, 0))
       })
     })
 
     runTest(({ type, path, content, contentSize }) => {
       it(`expands a file when an offset is specified (${type})`, async () => {
         const offset = contentSize - 1
-        const newContent = Buffer.from('Oh hai!')
+        const newContent = uint8ArrayFromString('Oh hai!')
 
         await ipfs.files.write(path, content, {
           create: true
@@ -344,7 +344,7 @@ module.exports = (common, options) => {
 
         await expect(ipfs.files.stat(path)).to.eventually.have.property('size', contentSize + newContent.length - 1)
 
-        const buffer = Buffer.concat(await all(ipfs.files.read(path, {
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
           offset: offset
         })))
 
@@ -355,7 +355,7 @@ module.exports = (common, options) => {
     runTest(({ type, path, content, contentSize }) => {
       it(`expands a file when an offset is specified and the offset is longer than the file (${type})`, async () => {
         const offset = contentSize + 5
-        const newContent = Buffer.from('Oh hai!')
+        const newContent = uint8ArrayFromString('Oh hai!')
 
         await ipfs.files.write(path, content, {
           create: true
@@ -366,19 +366,19 @@ module.exports = (common, options) => {
 
         await expect(ipfs.files.stat(path)).to.eventually.have.property('size', newContent.length + offset)
 
-        const buffer = Buffer.concat(await all(ipfs.files.read(path)))
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(path)))
 
         if (content[Symbol.asyncIterator]) {
-          content = Buffer.concat(await all(content))
+          content = uint8ArrayConcat(await all(content))
         }
 
-        expect(buffer).to.deep.equal(Buffer.concat([content, Buffer.from([0, 0, 0, 0, 0]), newContent]))
+        expect(buffer).to.deep.equal(uint8ArrayConcat([content, Uint8Array.from([0, 0, 0, 0, 0]), newContent]))
       })
     })
 
     runTest(({ type, path, content }) => {
       it(`truncates a file after writing (${type})`, async () => {
-        const newContent = Buffer.from('Oh hai!')
+        const newContent = uint8ArrayFromString('Oh hai!')
 
         await ipfs.files.write(path, content, {
           create: true
@@ -389,7 +389,7 @@ module.exports = (common, options) => {
 
         await expect(ipfs.files.stat(path)).to.eventually.have.property('size', newContent.length)
 
-        const buffer = Buffer.concat(await all(ipfs.files.read(path)))
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(path)))
 
         expect(buffer).to.deep.equal(newContent)
       })
@@ -450,7 +450,7 @@ module.exports = (common, options) => {
         offset: 0
       })
 
-      const actualBytes = Buffer.concat(await all(ipfs.files.read(fileName)))
+      const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(fileName)))
 
       for (var i = 0; i < newDataStream.length; i++) {
         if (newDataStream[i] !== actualBytes[i]) {
@@ -476,7 +476,7 @@ module.exports = (common, options) => {
       })
 
       for (let i = 0; i < shardSplitThreshold; i++) {
-        await ipfs.files.write(`/${dirPath}/file-${Math.random()}`, Buffer.from([0, 1, 2, 3]), {
+        await ipfs.files.write(`/${dirPath}/file-${Math.random()}`, Uint8Array.from([0, 1, 2, 3]), {
           create: true,
           shardSplitThreshold
         })
@@ -484,7 +484,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
 
-      await ipfs.files.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true,
         shardSplitThreshold
       })
@@ -506,7 +506,7 @@ module.exports = (common, options) => {
       const newFile = `file-${Math.random()}`
       const newFilePath = `${shardedDirPath}/${newFile}`
 
-      await ipfs.files.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -531,9 +531,9 @@ module.exports = (common, options) => {
       const shardedDirPath = await createShardedDirectory(ipfs)
       const newFile = 'file-0.6944395883502592'
       const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Buffer.from([3, 2, 1, 0])
+      const newContent = Uint8Array.from([3, 2, 1, 0])
 
-      await ipfs.files.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -547,7 +547,7 @@ module.exports = (common, options) => {
       })
 
       // read the file back
-      const buffer = Buffer.concat(await all(ipfs.files.read(newFilePath)))
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
 
       expect(buffer).to.deep.equal(newContent)
 
@@ -561,9 +561,9 @@ module.exports = (common, options) => {
       const shardedDirPath = await createShardedDirectory(ipfs)
       const newFile = `file-${Math.random()}`
       const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Buffer.from([3, 2, 1, 0])
+      const newContent = Uint8Array.from([3, 2, 1, 0])
 
-      await ipfs.files.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -577,7 +577,7 @@ module.exports = (common, options) => {
       })
 
       // read the file back
-      const buffer = Buffer.concat(await all(ipfs.files.read(newFilePath)))
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
 
       expect(buffer).to.deep.equal(newContent)
 
@@ -591,9 +591,9 @@ module.exports = (common, options) => {
       const shardedDirPath = await createShardedDirectory(ipfs)
       const newFile = 'file-1a.txt'
       const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Buffer.from([3, 2, 1, 0])
+      const newContent = Uint8Array.from([3, 2, 1, 0])
 
-      await ipfs.files.write(newFilePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -607,7 +607,7 @@ module.exports = (common, options) => {
       })
 
       // read the file back
-      const buffer = Buffer.concat(await all(ipfs.files.read(newFilePath)))
+      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
 
       expect(buffer).to.deep.equal(newContent)
 
@@ -622,7 +622,7 @@ module.exports = (common, options) => {
       const directoryPath = `/${directory}`
       const fileName = `file-${Math.random()}.txt`
       const filePath = `${directoryPath}/${fileName}`
-      const expectedBytes = Buffer.from([0, 1, 2, 3])
+      const expectedBytes = Uint8Array.from([0, 1, 2, 3])
 
       await ipfs.files.mkdir(directoryPath, {
         cidVersion: 0
@@ -637,7 +637,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.version', 1)
 
-      const actualBytes = Buffer.concat(await all(ipfs.files.read(filePath)))
+      const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
       expect(actualBytes).to.deep.equal(expectedBytes)
     })
@@ -647,7 +647,7 @@ module.exports = (common, options) => {
       const directoryPath = `/${directory}`
       const fileName = `file-${Math.random()}.txt`
       const filePath = `${directoryPath}/${fileName}`
-      const expectedBytes = Buffer.from([0, 1, 2, 3])
+      const expectedBytes = Uint8Array.from([0, 1, 2, 3])
 
       await ipfs.files.mkdir(directoryPath, {
         cidVersion: 0
@@ -655,7 +655,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(directoryPath)).to.eventually.have.nested.property('cid.version', 0)
 
-      await ipfs.files.write(filePath, Buffer.from([5, 6]), {
+      await ipfs.files.write(filePath, Uint8Array.from([5, 6]), {
         create: true,
         cidVersion: 0
       })
@@ -668,7 +668,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.version', 1)
 
-      const actualBytes = Buffer.concat(await all(ipfs.files.read(filePath)))
+      const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
       expect(actualBytes).to.deep.equal(expectedBytes)
     })
@@ -685,23 +685,23 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(directoryPath)).to.eventually.have.nested.property('cid.version', 0)
 
-      await ipfs.files.write(filePath, Buffer.from([5, 6, 7, 8, 9, 10, 11]), {
+      await ipfs.files.write(filePath, Uint8Array.from([5, 6, 7, 8, 9, 10, 11]), {
         create: true,
         cidVersion: 0
       })
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.version', 0)
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3]), {
         cidVersion: 1,
         offset: 1
       })
 
       await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.version', 1)
 
-      const actualBytes = Buffer.concat(await all(ipfs.files.read(filePath)))
+      const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
-      expect(actualBytes).to.deep.equal(Buffer.from([5, 0, 1, 2, 3, 10, 11]))
+      expect(actualBytes).to.deep.equal(Uint8Array.from([5, 0, 1, 2, 3, 10, 11]))
     })
 
     it('writes a file with a different hash function to the parent', async () => {
@@ -709,7 +709,7 @@ module.exports = (common, options) => {
       const directoryPath = `/${directory}`
       const fileName = `file-${Math.random()}.txt`
       const filePath = `${directoryPath}/${fileName}`
-      const expectedBytes = Buffer.from([0, 1, 2, 3])
+      const expectedBytes = Uint8Array.from([0, 1, 2, 3])
 
       await ipfs.files.mkdir(directoryPath, {
         cidVersion: 0
@@ -728,7 +728,7 @@ module.exports = (common, options) => {
           return multihash.decode(hash).name === 'sha2-512'
         })
 
-      const actualBytes = Buffer.concat(await all(ipfs.files.read(filePath)))
+      const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 
       expect(actualBytes).to.deep.equal(expectedBytes)
     })

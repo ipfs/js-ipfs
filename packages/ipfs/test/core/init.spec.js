@@ -2,9 +2,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const { isNode } = require('ipfs-utils/src/env')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const PeerId = require('peer-id')
 const { supportedKeys } = require('libp2p-crypto/src/keys')
@@ -120,7 +120,7 @@ describe('init', function () {
     await ipfs.init({ bits: 512, emptyRepo: true })
 
     // Should not have default assets
-    const multihash = Buffer.from('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
+    const multihash = uint8ArrayFromString('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'hex')
     await expect(ipfs.object.get(multihash, {})).to.eventually.be.rejected()
   })
 
