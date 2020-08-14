@@ -6,7 +6,7 @@
 
 ## API Docs
 
-`ipfs` can run as part of your program (an in-process node) or as a standalone daemon process that can be communicated with via an HTTP RPC API using the [`ipfs-http-client`](../packages/ipfs-http-api) module.
+`ipfs` can run as part of your program (an in-process node) or as a standalone daemon process that can be communicated with via an HTTP RPC API using the [`ipfs-http-client`](../packages/ipfs-http-client) module.
 
 Whether accessed directly or over HTTP, both methods support the full [Core API](#core-api).  In addition other methods are available to construct instances of each module, etc.
 
