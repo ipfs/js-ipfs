@@ -1,3 +1,21 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.1...v0.6.0) (2020-08-14)
+
+
+### Bug Fixes
+
+* replace node buffers with uint8arrays ([#55](https://github.com/ipfs/js-ipfs-http-response/issues/55)) ([710a96d](https://github.com/ipfs/js-ipfs-http-response/commit/710a96d))
+* webpack build ([#56](https://github.com/ipfs/js-ipfs-http-response/issues/56)) ([0c61a36](https://github.com/ipfs/js-ipfs-http-response/commit/0c61a36))
+
+
+### BREAKING CHANGES
+
+* - All deps of this module use Uint8Arrays instead of node Buffers
+
+* chore: remove browser build steps
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.0...v0.5.1) (2020-06-30)
 
