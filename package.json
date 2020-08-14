@@ -11,6 +11,9 @@
     "test": "aegir test -t node",
     "test:node": "aegir test -t node"
   },
+  "browser": {
+    "file-type": "file-type/browser"
+  },
   "pre-push": [
     "lint",
     "test"
