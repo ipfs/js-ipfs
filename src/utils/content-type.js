@@ -1,8 +1,10 @@
 'use strict'
 
-const fileType = require('file-type')
+const { fromBuffer: fileType } = require('file-type')
 const mime = require('mime-types')
 const Reader = require('it-reader')
+
+const minimumBytes = 4100
 
 const detectContentType = async (path, source) => {
   let fileSignature
@@ -12,11 +14,11 @@ const detectContentType = async (path, source) => {
   if (!path.endsWith('.svg')) {
     try {
       const reader = Reader(source)
-      const { value, done } = await reader.next(fileType.minimumBytes)
+      const { value, done } = await reader.next(minimumBytes)
 
       if (done) return { source: reader }
 
-      fileSignature = fileType(value.slice())
+      fileSignature = await fileType(value.slice())
 
       source = (async function * () { // eslint-disable-line require-await
         yield value

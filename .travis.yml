@@ -7,8 +7,8 @@ stages:
   - cov
 
 node_js:
-  - '10'
-  - '12'
+  - 'lts/*'
+  - 'node'
 
 os:
   - linux
@@ -21,7 +21,6 @@ jobs:
   include:
     - stage: check
       script:
-        - npx aegir build --bundlesize
         - npx aegir dep-check
         - npm run lint
 

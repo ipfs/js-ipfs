@@ -8,7 +8,6 @@
     "lint": "aegir lint",
     "release": "aegir release --target node",
     "release-minor": "aegir release --type minor --target node",
-    "build": "aegir build",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node"
   },
@@ -32,26 +31,25 @@
   },
   "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
   "dependencies": {
-    "cids": "~0.8.1",
     "debug": "^4.1.1",
-    "file-type": "^8.0.0",
-    "filesize": "^3.6.1",
+    "file-type": "^14.7.1",
+    "filesize": "^6.1.0",
     "it-buffer": "^0.1.1",
     "it-concat": "^1.0.0",
     "it-reader": "^2.1.0",
     "it-to-stream": "^0.1.1",
     "mime-types": "^2.1.27",
-    "multihashes": "~0.4.19",
+    "multihashes": "^3.0.1",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^22.0.0",
-    "chai": "^4.2.0",
-    "dirty-chai": "^2.0.1",
-    "get-stream": "^3.0.0",
-    "ipfs": "^0.47.0",
-    "ipfsd-ctl": "^1.0.2",
-    "it-all": "^1.0.1"
+    "aegir": "^25.1.0",
+    "cids": "^1.0.0",
+    "get-stream": "^6.0.0",
+    "ipfs": "^0.49.0",
+    "ipfsd-ctl": "^6.0.0",
+    "it-all": "^1.0.1",
+    "uint8arrays": "^1.1.0"
   },
   "contributors": [
     "Vasco Santos <vasco.santos@moxy.studio>",

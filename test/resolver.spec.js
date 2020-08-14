@@ -1,26 +1,20 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('aegir/utils/chai')
 
 const loadFixture = require('aegir/fixtures')
-const Ctl = require('ipfsd-ctl')
+const { createFactory } = require('ipfsd-ctl')
 const CID = require('cids')
 const mh = require('multihashes')
 const all = require('it-all')
 
 const ipfsResolver = require('../src/resolver')
 
-const factory = Ctl.createFactory({
+const factory = createFactory({
   test: true,
   type: 'proc',
-  ipfsModule: {
-    ref: require('ipfs'),
-    path: require.resolve('ipfs')
-  }
+  ipfsModule: require('ipfs')
 })
 
 describe('resolve file (CIDv0)', function () {
@@ -38,12 +32,11 @@ describe('resolve file (CIDv0)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
-    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 0 }))
-    expect(filesAdded).to.have.length(1)
-
-    const retrievedFile = filesAdded[0]
+    const retrievedFile = await ipfs.add(file.data, { cidVersion: 0 })
     expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
   })
+
+  after(() => factory.clean())
 
   it('should resolve a multihash', async () => {
     const res = await ipfsResolver.multihash(ipfs, `/ipfs/${file.cid}`)
@@ -81,13 +74,12 @@ describe('resolve file (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
-    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 1 }))
-    expect(filesAdded).to.have.length(1)
-    // console.log('ipfs.files.add result', filesAdded)
-    const retrievedFile = filesAdded[0]
+    const retrievedFile = await ipfs.add(file.data, { cidVersion: 1 })
     expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
-    // expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').greaterThan(file.data.length)
+    expect(retrievedFile.size, 'ipfs.files.add result size should not be smaller than input buffer').equal(file.data.length)
   })
+
+  after(() => factory.clean())
 
   it('should resolve a multihash', async () => {
     const res = await ipfsResolver.multihash(ipfs, `/ipfs/${file.cid}`)
@@ -138,12 +130,14 @@ describe('resolve directory (CIDv0)', function () {
       content('holmes.txt')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 0 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-folder')
     expect(root.cid).to.deep.equal(new CID(directory.cid))
   })
+
+  after(() => factory.clean())
 
   it('should throw an error when trying to fetch a directory', async () => {
     try {
@@ -191,7 +185,7 @@ describe('resolve directory (CIDv1)', function () {
       content('holmes.txt')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 1 }))
     const root = res[res.length - 1]
     // console.log('ipfs.files.add result', res)
     expect(root.path).to.equal('test-folder')
@@ -199,6 +193,8 @@ describe('resolve directory (CIDv1)', function () {
     // expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
     expect(root.cid).to.deep.equal(new CID(directory.cid))
   })
+
+  after(() => factory.clean())
 
   it('should throw an error when trying to fetch a directory', async () => {
     try {
@@ -249,12 +245,14 @@ describe('resolve web page (CIDv0)', function () {
       content('index.html')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 0 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-site')
     expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
+
+  after(() => factory.clean())
 
   it('should throw an error when trying to fetch a directory containing a web page', async () => {
     try {
@@ -306,12 +304,14 @@ describe('resolve web page (CIDv1)', function () {
       content('index.html')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 1 }))
     // console.log(res)
     const root = res[res.length - 1]
     expect(root.path).to.equal('test-site')
     expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
+
+  after(() => factory.clean())
 
   it('should throw an error when trying to fetch a directory containing a web page', async () => {
     try {

@@ -1,32 +1,26 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('aegir/utils/chai')
 
 const loadFixture = require('aegir/fixtures')
-const Ctl = require('ipfsd-ctl')
+const { createFactory } = require('ipfsd-ctl')
 const getStream = require('get-stream')
 const CID = require('cids')
 const all = require('it-all')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { getResponse } = require('../src')
 const makeWebResponseEnv = require('./utils/web-response-env')
 
-const factory = Ctl.createFactory({
+const factory = createFactory({
   test: true,
   type: 'proc',
-  ipfsModule: {
-    ref: require('ipfs'),
-    path: require.resolve('ipfs')
-  }
+  ipfsModule: require('ipfs')
 })
 
 describe('resolve file (CIDv0)', function () {
   let ipfs = null
-  let ipfsd = null
 
   const file = {
     cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
@@ -37,17 +31,15 @@ describe('resolve file (CIDv0)', function () {
     this.timeout(20 * 1000)
     Object.assign(global, makeWebResponseEnv())
 
-    ipfsd = await factory.spawn()
+    const ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
-    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 0 }))
-
-    expect(filesAdded).to.have.length(1)
-
-    const retrievedFile = filesAdded[0]
+    const retrievedFile = await ipfs.add(file.data, { cidVersion: 0 })
     expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
     expect(retrievedFile.size, 'ipfs.add result size should not be smaller than input buffer').greaterThan(file.data.length)
   })
+
+  after(() => factory.clean())
 
   it('should resolve a CIDv0', async () => {
     const res = await getResponse(ipfs, `/ipfs/${file.cid}`)
@@ -56,7 +48,7 @@ describe('resolve file (CIDv0)', function () {
     expect(res.status).to.equal(200)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/testfile.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/testfile.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -78,14 +70,12 @@ describe('resolve file (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
-    const filesAdded = await all(ipfs.add(file.data, { cidVersion: 1 }))
-
-    expect(filesAdded).to.have.length(1)
-
-    const retrievedFile = filesAdded[0]
+    const retrievedFile = await ipfs.add(file.data, { cidVersion: 1 })
     expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
-    // expect(retrievedFile.size, 'ipfs.add result size should not be smaller than input buffer').greaterThan(file.data.length)
+    expect(retrievedFile.size, 'ipfs.add result size should equal input buffer').to.equal(file.data.length)
   })
+
+  after(() => factory.clean())
 
   it('should resolve a CIDv1', async () => {
     const res = await getResponse(ipfs, `/ipfs/${file.cid}`)
@@ -94,7 +84,7 @@ describe('resolve file (CIDv1)', function () {
     expect(res.status).to.equal(200)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/testfile.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/testfile.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -129,7 +119,7 @@ describe('resolve directory (CIDv0)', function () {
       content('holmes.txt')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 0 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-folder')
@@ -138,6 +128,8 @@ describe('resolve directory (CIDv0)', function () {
     expect(res[0].size, 'ipfs.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
     expect(res[1].size, 'ipfs.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
   })
+
+  after(() => factory.clean())
 
   it('should return the list of files of a directory', async () => {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
@@ -150,7 +142,7 @@ describe('resolve directory (CIDv0)', function () {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`, directory.cid)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/test-folder/pp.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/pp.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -159,7 +151,7 @@ describe('resolve directory (CIDv0)', function () {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`, directory.cid)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/test-folder/holmes.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/holmes.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -172,7 +164,7 @@ describe('resolve directory (CIDv1)', function () {
   const directory = {
     cid: 'bafybeifhimn7nu6dgmdvj6o63zegwro3yznnpfqib6kkjnagc54h46ox5q',
     files: {
-      'pp.txt': Buffer.from(loadFixture('test/fixtures/test-folder/pp.txt')),
+      'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
     }
   }
@@ -194,13 +186,15 @@ describe('resolve directory (CIDv1)', function () {
       content('holmes.txt')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 1 }))
     const root = res[res.length - 1]
     expect(root.path).to.equal('test-folder')
     // expect(res[0].size, 'ipfs.files.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
     // expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
     expect(root.cid).to.deep.equal(new CID(directory.cid))
   })
+
+  after(() => factory.clean())
 
   it('should return the list of files of a directory', async () => {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
@@ -213,7 +207,7 @@ describe('resolve directory (CIDv1)', function () {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`, directory.cid)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/test-folder/pp.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/pp.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -222,7 +216,7 @@ describe('resolve directory (CIDv1)', function () {
     const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`, directory.cid)
 
     const contents = await getStream(res.body)
-    const expectedContents = loadFixture('test/fixtures/test-folder/holmes.txt').toString()
+    const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/holmes.txt'))
 
     expect(contents).to.equal(expectedContents)
   })
@@ -259,12 +253,14 @@ describe('resolve web page (CIDv0)', function () {
       content('index.html')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 0 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-site')
     expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
+
+  after(() => factory.clean())
 
   it('should return the entry point of a web page when a trying to fetch a directory containing a web page', async () => {
     const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
@@ -305,12 +301,14 @@ describe('resolve web page (CIDv1)', function () {
       content('index.html')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 1 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 1 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-site')
     expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
+
+  after(() => factory.clean())
 
   it('should return the entry point of a web page when a trying to fetch a directory containing a web page', async () => {
     const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
@@ -356,12 +354,14 @@ describe('mime-types', () => {
       content('index.html')
     ]
 
-    const res = await all(ipfs.add(dirs, { cidVersion: 0 }))
+    const res = await all(ipfs.addAll(dirs, { cidVersion: 0 }))
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-mime-types')
     expect(root.cid).to.deep.equal(new CID(webpage.cid))
   })
+
+  after(() => factory.clean())
 
   it('should return the correct mime-type for pp.txt', async () => {
     const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/pp.txt`, webpage.cid)
