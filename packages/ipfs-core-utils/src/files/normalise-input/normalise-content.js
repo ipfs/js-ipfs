@@ -60,7 +60,15 @@ async function * toAsyncIterable (input) {
 }
 
 function toBuffer (chunk) {
-  return isBytes(chunk) ? chunk : uint8ArrayFromString(chunk)
+  if (isBytes(chunk)) {
+    return chunk
+  }
+
+  if (Array.isArray(chunk)) {
+    return Uint8Array.from(chunk)
+  }
+
+  return uint8ArrayFromString(chunk)
 }
 
 module.exports = toAsyncIterable

@@ -36,10 +36,11 @@ async function verifyNormalisation (input) {
 
   if (isBrowser || isWebWorker) {
     expect(content).to.be.an.instanceOf(Blob)
-    content = blobToIt(input[0].content)
+    content = blobToIt(content)
   }
 
   expect(content[Symbol.asyncIterator] || content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
+
   await expect(all(content)).to.eventually.deep.equal([BUFFER()])
 }
 
