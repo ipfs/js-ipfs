@@ -30,6 +30,18 @@ module.exports = {
     const node = await ipfs.object.get(key, { enc: 'base58', timeout })
     let data = node.Data || ''
 
+    if (dataEncoding === 'base64') {
+      dataEncoding = 'base64pad'
+    }
+
+    if (dataEncoding === 'text') {
+      dataEncoding = 'ascii'
+    }
+
+    if (dataEncoding === 'hex') {
+      dataEncoding = 'base16'
+    }
+
     if (data instanceof Uint8Array) {
       data = uint8ArrayToString(node.Data, dataEncoding || undefined)
     }

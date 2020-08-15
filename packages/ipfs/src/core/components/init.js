@@ -53,7 +53,7 @@ module.exports = ({
     options.repoAutoMigrate = options.repoAutoMigrate || constructorOptions.repoAutoMigrate
 
     const repo = typeof options.repo === 'string' || options.repo == null
-      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate })
+      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate, silent: constructorOptions.silent })
       : options.repo
 
     let isInitialized = true
@@ -266,7 +266,7 @@ function createPeerId ({ privateKey, algorithm = 'rsa', bits, print }) {
     log('using user-supplied private-key')
     return typeof privateKey === 'object'
       ? privateKey
-      : PeerId.createFromPrivKey(uint8ArrayFromString(privateKey, 'base64'))
+      : PeerId.createFromPrivKey(uint8ArrayFromString(privateKey, 'base64pad'))
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
     print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)

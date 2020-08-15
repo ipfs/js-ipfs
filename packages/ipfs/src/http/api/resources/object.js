@@ -7,6 +7,7 @@ const { DAGLink } = dagPB
 const Joi = require('../../utils/joi')
 const multibase = require('multibase')
 const Boom = require('@hapi/boom')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('ipfs:http-api:object')
@@ -130,8 +131,10 @@ exports.get = {
         cidBase: Joi.cidBase(),
         enc: Joi.string(),
         dataEncoding: Joi.string()
-          .valid('text', 'base64', 'hex', 'utf8')
-          .replace(/text/, 'utf8')
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
           .default('utf8'),
         timeout: Joi.timeout()
       })
@@ -180,7 +183,7 @@ exports.get = {
     }
 
     return h.response({
-      Data: node.Data.toString(dataEncoding),
+      Data: uint8ArrayToString(node.Data, dataEncoding),
       Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: node.size,
       Links: node.Links.map((l) => {
