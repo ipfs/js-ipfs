@@ -52,20 +52,20 @@ describe('utils', () => {
     it('handles base58 hash format', async () => {
       const hash = await utils.resolvePath(node.dag, rootHash)
 
-      expect(hash).to.have.property('buffer').that.deep.equals(rootMultihash)
+      expect(hash).to.have.property('bytes').that.deep.equals(rootMultihash)
     })
 
     it('handles multihash format', async () => {
       const hash = await utils.resolvePath(node.dag, aboutMultihash)
 
-      expect(hash).to.have.property('buffer').that.deep.equals(aboutMultihash)
+      expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
       const hash = await utils.resolvePath(node.dag, aboutPath)
 
-      expect(hash).to.have.property('buffer').that.deep.equals(aboutMultihash)
+      expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('should error on invalid hashes', () => {
