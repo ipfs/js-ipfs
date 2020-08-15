@@ -17,6 +17,7 @@ const {
   DAGNode,
   DAGLink
 } = require('ipld-dag-pb')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('/object', () => {
   const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
@@ -205,7 +206,7 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Links').that.is.empty()
-      expect(res).to.have.nested.property('result.Data', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.nested.property('result.Data', uint8ArrayToString(emptyDirectoryNode.Data, 'base64pad'))
     })
 
     // TODO: unskip after switch to v1 CIDs by default
@@ -244,7 +245,7 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Links').that.is.empty()
-      expect(res).to.have.nested.property('result.Data', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.nested.property('result.Data', uint8ArrayToString(emptyDirectoryNode.Data, 'base64pad'))
     })
   })
 

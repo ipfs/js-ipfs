@@ -103,7 +103,7 @@ exports.new = {
     const nodeJSON = node.toJSON()
 
     const answer = {
-      Data: nodeJSON.data,
+      Data: uint8ArrayToString(node.Data, 'base64pad'),
       Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
@@ -135,7 +135,7 @@ exports.get = {
           .replace(/text/, 'ascii')
           .replace(/base64/, 'base64pad')
           .replace(/hex/, 'base16')
-          .default('utf8'),
+          .default('base64pad'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
