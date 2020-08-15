@@ -3,7 +3,7 @@
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require()
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
