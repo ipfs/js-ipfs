@@ -2,7 +2,6 @@
 
 const Joi = require('../../utils/joi')
 const PassThrough = require('stream').PassThrough
-const bs58 = require('bs58')
 const all = require('it-all')
 const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
