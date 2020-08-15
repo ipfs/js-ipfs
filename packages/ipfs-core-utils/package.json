@@ -35,7 +35,8 @@
     "ipfs-utils": "ipfs/js-ipfs-utils#revert-54-xhr",
     "it-all": "^1.0.1",
     "it-map": "^1.0.0",
-    "it-peekable": "0.0.1"
+    "it-peekable": "0.0.1",
+    "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
     "aegir": "^26.0.0",
