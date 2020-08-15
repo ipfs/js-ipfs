@@ -40,10 +40,8 @@ describe('dag (browser)', function () {
     })
 
     it('should decode dagNode over message channel & transfer bytes', async () => {
-      const cid1 = new CID(
-        'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
-      )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid1 = 'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
+      const cid2 = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
 
       const hi = uint8ArrayFromString('hello world')
       const nodeIn = {
@@ -51,7 +49,9 @@ describe('dag (browser)', function () {
         nested: {
           structure: {
             with: {
-              links: [new CID(cid1)]
+              links: [
+                new CID(cid1)
+              ]
             }
           }
         },
@@ -66,16 +66,18 @@ describe('dag (browser)', function () {
       )
 
       expect(nodeOut).to.be.deep.equal({
-        hi,
+        hi: uint8ArrayFromString('hello world'),
         nested: {
           structure: {
             with: {
-              links: [cid1]
+              links: [
+                new CID(cid1)
+              ]
             }
           }
         },
         other: {
-          link: cid2
+          link: new CID(cid2)
         }
       })
 
