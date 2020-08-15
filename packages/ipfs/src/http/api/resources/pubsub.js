@@ -6,6 +6,8 @@ const bs58 = require('bs58')
 const all = require('it-all')
 const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 exports.subscribe = {
   options: {
@@ -46,9 +48,9 @@ exports.subscribe = {
 
     const handler = (msg) => {
       res.write(JSON.stringify({
-        from: bs58.decode(msg.from).toString('base64'),
-        data: msg.data.toString('base64'),
-        seqno: msg.seqno.toString('base64'),
+        from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
+        data: uint8ArrayToString(msg.data, 'base64pad'),
+        seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
         topicIDs: msg.topicIDs
       }) + '\n', 'utf8')
     }
