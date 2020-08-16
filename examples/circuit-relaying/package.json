@@ -16,7 +16,8 @@
   "dependencies": {
     "delay": "^4.3.0",
     "ipfs": "^0.49.0",
-    "ipfs-pubsub-room": "^2.0.1"
+    "ipfs-pubsub-room": "^2.0.1",
+    "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
     "execa": "^4.0.0",
