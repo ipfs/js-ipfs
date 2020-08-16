@@ -81,7 +81,7 @@ async function main () {
       if (from === peerId) return log(`Ignoring message ${seqno} from self`)
       log(`Message ${seqno} from ${from}:`)
       try {
-        log(JSON.stringify(msg.data.toString(), null, 2))
+        log(JSON.stringify(uint8ArrayToString(msg.data), null, 2))
       } catch (_) {
         log(uint8ArrayToString(msg.data, 'base16'))
       }

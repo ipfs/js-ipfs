@@ -1,6 +1,7 @@
 import 'babel-polyfill'
 import IPFS from 'ipfs'
 import uint8ArrayConcat from 'uint8arrays/concat'
+import uint8ArrayToString from 'uint8arrays/to-string'
 
 document.addEventListener('DOMContentLoaded', async () => {
   // IPFS node setup
@@ -35,5 +36,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     buffers.push(buf)
   }
 
-  log(`The contents of the file was: ${uint8ArrayConcat(buffers).toString()}`)
+  log(`The contents of the file was: ${uint8ArrayToString(uint8ArrayConcat(buffers))}`)
 })

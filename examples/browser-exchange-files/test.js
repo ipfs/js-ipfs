@@ -20,7 +20,6 @@ const {
 } = require('test-ipfs-example/utils')
 const pkg = require('./package.json')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 const FILE_CONTENT = 'A file with some content'
 
@@ -195,7 +194,7 @@ module.exports[pkg.name] = function (browser) {
             .then(res => res.text())
             .then(done, done)
         }, [ url ], ({ value: contents }) => {
-          browser.expect(uint8ArrayToString(contents, 'utf8')).to.equal(FILE_CONTENT)
+          browser.expect(contents).to.equal(FILE_CONTENT)
         })
       })
   }
