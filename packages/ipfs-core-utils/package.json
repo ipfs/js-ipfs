@@ -28,8 +28,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "blob-to-it": "0.0.1",
-    "browser-readablestream-to-it": "0.0.1",
+    "blob-to-it": "0.0.2",
+    "browser-readablestream-to-it": "0.0.2",
     "cids": "^1.0.0",
     "err-code": "^2.0.0",
     "ipfs-utils": "ipfs/js-ipfs-utils#revert-54-xhr",

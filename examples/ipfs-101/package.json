@@ -11,7 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "ipfs": "^0.49.0",
-    "it-all": "^1.0.1"
+    "it-all": "^1.0.1",
+    "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
     "test-ipfs-example": "^2.0.3"
