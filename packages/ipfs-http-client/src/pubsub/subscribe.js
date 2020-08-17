@@ -59,6 +59,10 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
   try {
     for await (const msg of msgStream) {
       try {
+        if (!msg.from) {
+          continue
+        }
+
         onMessage({
           from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base64pad'), 'base58btc'),
           data: uint8ArrayFromString(msg.data, 'base64pad'),
