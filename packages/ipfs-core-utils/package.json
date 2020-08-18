@@ -33,7 +33,7 @@
     "buffer": "^5.6.0",
     "cids": "^0.8.3",
     "err-code": "^2.0.0",
-    "ipfs-utils": "ipfs/js-ipfs-utils#xhr-2",
+    "ipfs-utils": "^3.0.0",
     "it-all": "^1.0.1",
     "it-map": "^1.0.0",
     "it-peekable": "0.0.1"
