@@ -9,6 +9,7 @@ const { Key } = require('interface-datastore')
 const last = require('it-last')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
+const ipns = require('ipns')
 const getIpnsRoutingConfig = require('../../src/core/ipns/routing/config')
 const IpnsPublisher = require('../../src/core/ipns/publisher')
 const IpnsRepublisher = require('../../src/core/ipns/republisher')
@@ -199,6 +200,20 @@ describe('name', function () {
   })
 
   describe('resolver', () => {
+    it('should resolve an inlined public key', async () => {
+      const peerId = await PeerId.create({ keyType: 'ed25519' })
+      const value = `/ipfs/${peerId.toB58String()}`
+      const record = await ipns.create(peerId.privKey, value, 1, 10e3)
+
+      const routing = {
+        get: sinon.stub().returns(ipns.marshal(record))
+      }
+      const resolver = new IpnsResolver(routing)
+
+      const resolved = await resolver.resolve(`/ipns/${peerId.toB58String()}`)
+      expect(resolved).to.equal(value)
+    })
+
     it('should fail to resolve if the received name is not a string', () => {
       const resolver = new IpnsResolver()
       return expect(resolver.resolve(false))
