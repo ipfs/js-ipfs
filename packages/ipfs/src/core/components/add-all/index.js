@@ -9,7 +9,10 @@ const { withTimeoutOption } = require('../../utils')
 /**
  * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array|Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  * 
- * @typedef {object} FileObject
+ * @typedef {object} FileObject 
+ *  - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID. 
+ *  - If no content is passed, then the item is treated as an empty directory.
+ *  - One of path or content must be passed.
  * @property {string} [path] - The path you want to the file to be accessible at from the root CID _after_ it has been added
  * @property {FileContent} [content] - The contents of the file
  * @property {number | string} [mode] - File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
@@ -18,7 +21,7 @@ const { withTimeoutOption } = require('../../utils')
  * @typedef {FileContent | FileObject} Source
  * @typedef {Iterable<Source> | AsyncIterable<Source> | ReadableStream<Source>} FileStream
  * 
- * @typedef {Date | UnixTimeObj | number[]} UnixTime
+ * @typedef {Date | UnixTimeObj | [number, number]} UnixTime - As an array of numbers, it must have two elements, as per the output of [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
  * 
  * @typedef {object} UnixTimeObj
  * @property {number} secs - the number of seconds since (positive) or before (negative) the Unix Epoch began
@@ -32,27 +35,32 @@ const { withTimeoutOption } = require('../../utils')
  * @property {number} size
  */
 
-/**
- * @typedef {object} Options
- * @property {string} [chunker] - chunking algorithm used to build ipfs DAGs (default: `'size-262144'`)
- * @property {Number} [cidVersion] - the CID version to use when storing the data (default: `0`)
- * @property {boolean} [enableShardingExperiment] - allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature (default: `false`)
- * @property {String} [hashAlg] - multihash hashing algorithm to use (default: `'sha2-256'`)
- * @property {boolean} [onlyHash] - If true, will not add blocks to the blockstore (default: `false`)
- * @property {boolean} [pin] - pin this object when adding (default: `true`)
- * @property {function} [progress] - a function that will be called with the byte length of chunks as a file is added to ipfs (default: `undefined`)
- * @property {boolean} [rawLeaves] - if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (default: `false`)
- * @property {Number} [shardSplitThreshold] - Directories with more than this number of files will be created as HAMT-sharded directories (default: `1000`)
- * @property {boolean} [trickle] - if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation (default: `false`)
- * @property {boolean} [wrapWithDirectory] - Adds a wrapping node around the content (default: `false`)
- * @property {Number} [timeout] - A timeout in ms (default: `undefined`)
- * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
- */
-
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
 
-  return withTimeoutOption(/** @returns {AsyncIterable<UnixFSEntry>} */ async function * addAll (/**@type {FileStream}*/ source, /**@type {Options}*/ options) {
+  /**
+   * Import multiple files and data into IPFS.
+   * 
+   * @param {FileStream} source 
+   * 
+   * @param {object} [options] 
+   * @param {string} [options.chunker] - chunking algorithm used to build ipfs DAGs (default: `'size-262144'`)
+   * @param {Number} [options.cidVersion] - the CID version to use when storing the data (default: `0`)
+   * @param {boolean} [options.enableShardingExperiment] - allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature (default: `false`)
+   * @param {String} [options.hashAlg] - multihash hashing algorithm to use (default: `'sha2-256'`)
+   * @param {boolean} [options.onlyHash] - If true, will not add blocks to the blockstore (default: `false`)
+   * @param {boolean} [options.pin] - pin this object when adding (default: `true`)
+   * @param {function} [options.progress] - a function that will be called with the byte length of chunks as a file is added to ipfs (default: `undefined`)
+   * @param {boolean} [options.rawLeaves] - if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (default: `false`)
+   * @param {Number} [options.shardSplitThreshold] - Directories with more than this number of files will be created as HAMT-sharded directories (default: `1000`)
+   * @param {boolean} [options.trickle] - if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation (default: `false`)
+   * @param {boolean} [options.wrapWithDirectory] - Adds a wrapping node around the content (default: `false`)
+   * @param {Number} [options.timeout] - A timeout in ms (default: `undefined`)
+   * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
+
+   * @returns {AsyncIterable<UnixFSEntry>}
+   */
+  async function * addAll (source, options) {
     options = options || {}
 
     const opts = {
@@ -101,7 +109,9 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     } finally {
       releaseLock()
     }
-  })
+  }
+
+  return withTimeoutOption(addAll)
 }
 
 function transformFile (opts) {
