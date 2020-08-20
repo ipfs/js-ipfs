@@ -142,8 +142,14 @@ const mapFile = (file, options) => {
   return output
 }
 
-function withTimeoutOption (fn, optionsArgIndex) {
-  return (...args) => {
+/**
+ * @template {any[]} ARGS
+ * @template R - The return type of `fn`
+ * @param {(...args: ARGS) => R} fn
+ * @param {number} [optionsArgIndex]
+ */
+function withTimeoutOption(fn, optionsArgIndex) {
+  return /**@returns {R}*/ (/**@type {ARGS}*/...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 
