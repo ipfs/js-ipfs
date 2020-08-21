@@ -143,14 +143,16 @@ module.exports = ({
     })
 
     apiManager.update(api, () => undefined)
+    
+    /** @type {typeof api} */
+    const startedApi = apiManager.api
+    startPromise.resolve(startedApi)
+    return startedApi
   } catch (err) {
     cancel()
     startPromise.reject(err)
     throw err
   }
-
-  startPromise.resolve(apiManager.api)
-  return apiManager.api
 })
 
 function createApi ({

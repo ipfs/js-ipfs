@@ -45,20 +45,20 @@ async function create (options) {
   const { api } = apiManager.update({
     init: Components.init({ apiManager, print, options }),
     dns: Components.dns(),
-    isOnline: Components.isOnline({})
+    isOnline: Components.isOnline({ libp2p: undefined })
   }, async () => { throw new NotInitializedError() }) // eslint-disable-line require-await
 
   if (!options.init) {
     return api
   }
 
-  await api.init()
+  const initializedApi = await api.init()
 
   if (!options.start) {
-    return api
+    return initializedApi
   }
 
-  return api.start()
+  return initializedApi.start()
 }
 
 module.exports = {
