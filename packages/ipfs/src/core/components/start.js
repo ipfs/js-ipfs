@@ -143,7 +143,7 @@ module.exports = ({
     })
 
     apiManager.update(api, () => undefined)
-    
+
     /** @type {typeof api} */
     const startedApi = apiManager.api
     startPromise.resolve(startedApi)

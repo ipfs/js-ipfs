@@ -1,4 +1,3 @@
-'use strict'
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
@@ -148,8 +147,8 @@ const mapFile = (file, options) => {
  * @param {(...args: ARGS) => R} fn
  * @param {number} [optionsArgIndex]
  */
-function withTimeoutOption(fn, optionsArgIndex) {
-  return /**@returns {R}*/ (/**@type {ARGS}*/...args) => {
+function withTimeoutOption (fn, optionsArgIndex) {
+  return /** @returns {R} */ (/** @type {ARGS} */...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 

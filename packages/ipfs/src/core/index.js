@@ -43,29 +43,29 @@ const getDefaultOptions = () => ({
  * @property {string} [pass] - A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
  * @property {any[]} [profiles] - Apply profile settings to config.
  * @property {boolean} [allowNew] - Set to `false` to disallow initialization if the repo does not already exist. (Default: `true`)
- * 
+ *
  * @typedef {object} RelayOptions
  * @property {boolean} [enabled] - Enable circuit relay dialer and listener. (Default: `true`)
  * @property {object} [hop]
  * @property {boolean=} [hop.enabled] - Make this node a relay (other nodes can connect *through* it). (Default: `false`)
  * @property {boolean=} [hop.active] - Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
- * 
+ *
  * @typedef {object} PreloadOptions
  * @property {boolean} [enabled] - Enable content preloading (Default: `true`)
- * @property {string[]} [addresses] - Multiaddr API addresses of nodes that should preload content. 
+ * @property {string[]} [addresses] - Multiaddr API addresses of nodes that should preload content.
  *                                  - **NOTE:** nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`.
- * 
+ *
  * @typedef {object} ExperimentalOptions
  * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
  * @property {boolean} [sharding] - Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
  */
 
 /**
- * Creates and returns a ready to use instance of an IPFS node.  
- * 
+ * Creates and returns a ready to use instance of an IPFS node.
+ *
  * @template {boolean | InitOptions} INIT
  * @template {boolean} START
- * 
+ *
  * @param {object} [options] - specify advanced configuration
  * @param {string | import('ipfs-repo')} [options.repo] - The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance. (Default: `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers)
  * @param {boolean} [options.repoAutoMigrate] - `js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available. (Default: `true`)
