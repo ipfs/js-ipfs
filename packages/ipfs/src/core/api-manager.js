@@ -12,6 +12,11 @@ module.exports = class ApiManager {
     })
   }
 
+  /**
+   * @template A
+   * @param {A} nextApi 
+   * @returns {{ cancel(): any; api: A; }}
+   */
   update (nextApi, onUndef) {
     const prevApi = { ...this._api }
     const prevUndef = this._onUndef
