@@ -1,3 +1,5 @@
+/* eslint-disable valid-jsdoc */
+'use strict'
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')

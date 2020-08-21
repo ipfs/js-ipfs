@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 'use strict'
 
 const last = require('it-last')

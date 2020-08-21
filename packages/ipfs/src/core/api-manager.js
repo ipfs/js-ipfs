@@ -1,8 +1,10 @@
+/* eslint-disable valid-jsdoc */
 'use strict'
 
 module.exports = class ApiManager {
   constructor () {
     this._api = {}
+    /** @type {(prop: PropertyKey) => any} */
     this._onUndef = () => undefined
     this.api = new Proxy(this._api, {
       get: (_, prop) => {
@@ -15,6 +17,7 @@ module.exports = class ApiManager {
   /**
    * @template A
    * @param {A} nextApi
+   * @param {this['_onUndef']} [onUndef]
    * @returns {{ cancel(): any; api: A; }}
    */
   update (nextApi, onUndef) {

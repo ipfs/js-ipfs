@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 'use strict'
 
 const log = require('debug')('ipfs')
