@@ -2,7 +2,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { nanoid } = require('nanoid')
 const { expect } = require('aegir/utils/chai')
 const PeerId = require('peer-id')
 const { isNode } = require('ipfs-utils/src/env')
@@ -16,6 +15,12 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
+
+const daemonsOptions = {
+  ipfsOptions: {
+    EXPERIMENTAL: { ipnsPubsub: true }
+  }
+}
 
 describe('name-pubsub', function () {
   const df = factory()
@@ -32,8 +37,8 @@ describe('name-pubsub', function () {
     this.timeout(40 * 1000)
 
     nodes = await Promise.all([
-      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } }),
-      df.spawn({ type: 'proc', ipfsOptions: { pass: nanoid(), EXPERIMENTAL: { ipnsPubsub: true } } })
+      df.spawn({ ...daemonsOptions }),
+      df.spawn({ ...daemonsOptions })
     ])
 
     nodeA = nodes[0].api
