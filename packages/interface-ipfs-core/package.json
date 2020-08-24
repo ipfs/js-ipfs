@@ -40,7 +40,7 @@
     "dirty-chai": "^2.0.1",
     "ipfs-unixfs": "^2.0.2",
     "ipfs-unixfs-importer": "^3.0.2",
-    "ipfs-utils": "ipfs/js-ipfs-utils#revert-54-xhr",
+    "ipfs-utils": "^3.0.0",
     "ipld-block": "^0.10.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
