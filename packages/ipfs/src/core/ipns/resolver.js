@@ -6,6 +6,7 @@ const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('ipfs:ipns:resolver')
 log.error = debug('ipfs:ipns:resolver:error')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
@@ -109,7 +110,7 @@ class IpnsResolver {
     // IPNS entry validation
     await ipns.validate(pubKey, ipnsEntry)
 
-    return ipnsEntry.value.toString()
+    return uint8ArrayToString(ipnsEntry.value)
   }
 }
 
