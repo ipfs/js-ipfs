@@ -35,9 +35,11 @@ const getDefaultOptions = () => ({
 })
 
 /**
+ * @typedef {'rsa' | 'ed25519' | 'secp256k1'} KeyType
+ *
  * @typedef {object} InitOptions
  * @property {boolean} [emptyRepo] - Whether to remove built-in assets, like the instructional tour and empty mutable file system, from the repo. (Default: `false`)
- * @property {'rsa' | 'ed25519' | 'secp256k1'} [algorithm] - The type of key to use. (Default: `rsa`)
+ * @property {KeyType} [algorithm] - The type of key to use. (Default: `rsa`)
  * @property {number} [bits] - Number of bits to use in the generated key pair (rsa only). (Default: `2048`)
  * @property {string | import('peer-id')} [privateKey] - A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
  * @property {string} [pass] - A passphrase to encrypt keys. You should generally use the [top-level `pass` option](#optionspass) instead of the `init.pass` option (this one will take its value from the top-level option if not set).
@@ -106,8 +108,11 @@ async function create (options) {
   const initializedApi = options.init && await api.init()
   const startedApi = options.start && await initializedApi.start()
 
-  /** @typedef {true extends NonNullable<START> ? typeof startedApi : typeof initializedApi} _API */
-  /** @type {NonNullable<INIT> extends false ? typeof api : _API} */
+  /**
+   * @template T, THEN, ELSE
+   * @typedef {NonNullable<T> extends false ? THEN : ELSE} IsFalse
+   */
+  /** @type {IsFalse<INIT, typeof api, IsFalse<START, typeof initializedApi, typeof startedApi>>} */
   // @ts-ignore
   const ipfs = startedApi || initializedApi || api
   return ipfs
