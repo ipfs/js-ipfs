@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.3.1...ipfs-core-utils@0.3.2) (2020-08-24)
+
+
+### Bug Fixes
+
+* validate ipns records with inline public keys ([#3224](https://github.com/ipfs/js-ipfs/issues/3224)) ([5cc0e08](https://github.com/ipfs/js-ipfs/commit/5cc0e086b036e7ba40b09768b67b7067adca43c1))
+
+
+
+
+
 ## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.3.0...ipfs-core-utils@0.3.1) (2020-08-12)
 
 
