@@ -97,7 +97,7 @@
     "ipfs-core-utils": "^0.3.2",
     "ipfs-http-client": "^46.0.1",
     "ipfs-http-response": "^0.5.0",
-    "ipfs-repo": "^4.0.0",
+    "ipfs-repo": "^6.0.3",
     "ipfs-unixfs": "^1.0.3",
     "ipfs-unixfs-exporter": "^2.0.2",
     "ipfs-unixfs-importer": "^2.0.2",
