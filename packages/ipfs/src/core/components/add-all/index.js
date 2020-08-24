@@ -3,7 +3,7 @@
 const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 
 /**

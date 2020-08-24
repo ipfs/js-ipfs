@@ -1,13 +1,17 @@
-/* eslint-disable valid-jsdoc */
 'use strict'
 
 const last = require('it-last')
+
+/**
+ * @typedef {import('./add-all').Source} Source
+ * @typedef {import('./add-all').UnixFSEntry} UnixFSEntry
+ */
 
 module.exports = ({ addAll }) => {
   /**
    * Import a file or data into IPFS.
    *
-   * @param {import('./add-all').Source} source - Data to import
+   * @param {Source} source - Data to import
    *
    * @param {object} [options]
    * @param {String} [options.chunker] - chunking algorithm used to build ipfs DAGs (default: `'size-262144'`)
@@ -22,7 +26,7 @@ module.exports = ({ addAll }) => {
    * @param {Number} [options.timeout] - A timeout in ms (default: `undefined`)
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
    *
-   * @returns {Promise<import('./add-all').UnixFSEntry>}
+   * @returns {Promise<UnixFSEntry>}
    */
   async function add (source, options) { // eslint-disable-line require-await
     return last(addAll(source, options))

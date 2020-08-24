@@ -1,4 +1,3 @@
-/* eslint-disable valid-jsdoc */
 'use strict'
 
 const isIpfs = require('is-ipfs')
@@ -145,12 +144,20 @@ const mapFile = (file, options) => {
 
 /**
  * @template {any[]} ARGS
- * @template R - The return type of `fn`
- * @param {(...args: ARGS) => R} fn
+ * @template R
+ * @typedef {(...args: ARGS) => R} Fn
+ */
+
+/**
+ * @template {any[]} ARGS
+ * @template {Promise<any> | AsyncGenerator} R - The return type of `fn`
+ * @param {Fn<ARGS, R>} fn
  * @param {number} [optionsArgIndex]
+ * @returns {Fn<ARGS, R>}
  */
 function withTimeoutOption (fn, optionsArgIndex) {
-  return /** @returns {R} */ (/** @type {ARGS} */...args) => {
+  // eslint-disable-next-line valid-jsdoc
+  return /** @returns {R} */(/** @type {ARGS} */...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 
@@ -188,6 +195,7 @@ function withTimeoutOption (fn, optionsArgIndex) {
     }
 
     if (fnRes[Symbol.asyncIterator]) {
+      // @ts-ignore
       return (async function * () {
         const it = fnRes[Symbol.asyncIterator]()
 
@@ -217,6 +225,7 @@ function withTimeoutOption (fn, optionsArgIndex) {
       })()
     }
 
+    // @ts-ignore
     return (async () => {
       try {
         const res = await Promise.race([fnRes, timeoutPromise])

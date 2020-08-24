@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('bignumber.js')
+const Big = require('bignumber.js').default
 const CID = require('cids')
 const { withTimeoutOption } = require('../../utils')
 

@@ -1,4 +1,3 @@
-/* eslint-disable valid-jsdoc */
 'use strict'
 
 const log = require('debug')('ipfs')
@@ -62,13 +61,17 @@ const getDefaultOptions = () => ({
  */
 
 /**
+ * @typedef { import('ipfs-repo') } IpfsRepo
+ */
+
+/**
  * Creates and returns a ready to use instance of an IPFS node.
  *
  * @template {boolean | InitOptions} INIT
  * @template {boolean} START
  *
  * @param {object} [options] - specify advanced configuration
- * @param {string | import('ipfs-repo')} [options.repo] - The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance. (Default: `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers)
+ * @param {string | IpfsRepo} [options.repo] - The file path at which to store the IPFS node’s data. Alternatively, you can set up a customized storage system by providing an [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo) instance. (Default: `'~/.jsipfs'` in Node.js, `'ipfs'` in browsers)
  * @param {boolean} [options.repoAutoMigrate] - `js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available. (Default: `true`)
  * @param {INIT} [options.init] - Perform repo initialization steps when creating the IPFS node. (Default: `true`)
  *                              - Note that *initializing* a repo is different from creating an instance of [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor sets many special properties when initializing a repo, so you should usually not try and call `repoInstance.init()` yourself.
