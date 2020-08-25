@@ -3,7 +3,8 @@
 
 const IPFS = require('ipfs')
 const all = require('it-all')
-const { Buffer } = IPFS
+const uint8ArrayConcat = require('uint8arrays/concat')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 // Node
 const $nodeId = document.querySelector('.node-id')
@@ -157,7 +158,7 @@ const workspaceUpdated = async () => {
 }
 
 const publishHash = (hash) => {
-  const data = Buffer.from(hash)
+  const data = uint8ArrayFromString(hash)
   return node.pubsub.publish(workspace, data)
 }
 
@@ -223,7 +224,7 @@ async function getFile () {
 
   for await (const file of node.get(hash)) {
     if (file.content) {
-      const content = Buffer.concat(await all(file.content))
+      const content = uint8ArrayConcat(await all(file.content))
 
       await appendFile(file.name, hash, file.size, content)
       onSuccess(`The ${file.name} file was added.`)

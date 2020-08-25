@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const CID = require('cids')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -30,7 +30,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when providing a value on the DHT', async () => {
-      const res = await ipfs.add(Buffer.from('test'))
+      const res = await ipfs.add(uint8ArrayFromString('test'))
 
       await testTimeout(() => ipfs.dht.provide(res.cid, {
         timeout: 1
@@ -38,7 +38,7 @@ module.exports = (common, options) => {
     })
 
     it('should provide local CID', async () => {
-      const res = await ipfs.add(Buffer.from('test'))
+      const res = await ipfs.add(uint8ArrayFromString('test'))
 
       await all(ipfs.dht.provide(res.cid))
     })
@@ -54,15 +54,15 @@ module.exports = (common, options) => {
 
     it('should allow multiple CIDs to be passed', async () => {
       const res = await all(ipfs.addAll([
-        { content: Buffer.from('t0') },
-        { content: Buffer.from('t1') }
+        { content: uint8ArrayFromString('t0') },
+        { content: uint8ArrayFromString('t1') }
       ]))
 
       await all(ipfs.dht.provide(res.map(f => f.cid)))
     })
 
     it('should provide a CIDv1', async () => {
-      const res = await ipfs.add(Buffer.from('test'), { cidVersion: 1 })
+      const res = await ipfs.add(uint8ArrayFromString('test'), { cidVersion: 1 })
       await all(ipfs.dht.provide(res.cid))
     })
 

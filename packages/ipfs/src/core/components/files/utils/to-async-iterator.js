@@ -1,11 +1,11 @@
 'use strict'
 
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
 const log = require('debug')('ipfs:mfs:utils:to-async-iterator')
 const {
   MFS_MAX_CHUNK_SIZE
 } = require('../../../utils')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const toAsyncIterator = (content) => {
   if (!content) {
@@ -15,7 +15,7 @@ const toAsyncIterator = (content) => {
   if (typeof content === 'string' || content instanceof String) {
     log('Content was a string')
 
-    content = Buffer.from(content)
+    content = uint8ArrayFromString(content)
   }
 
   if (content.length) {
@@ -67,7 +67,7 @@ const toAsyncIterator = (content) => {
 
             resolve({
               done: false,
-              value: Buffer.from(reader.result)
+              value: new Uint8Array(reader.result, reader.result.byteOffset, reader.result.byteLength)
             })
           }
 

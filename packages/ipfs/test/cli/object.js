@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const path = require('path')
 const fs = require('fs')
 const multibase = require('multibase')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const CID = require('cids')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const {
   DAGNode,
   DAGLink
@@ -98,7 +98,7 @@ describe('object', () => {
     })
 
     it('get with data', async () => {
-      const node = new DAGNode(Buffer.from('aGVsbG8gd29ybGQK', 'base64'))
+      const node = new DAGNode(uint8ArrayFromString('aGVsbG8gd29ybGQK', 'base64'))
 
       ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
 
@@ -109,7 +109,7 @@ describe('object', () => {
     })
 
     it('get while overriding data-encoding', async () => {
-      const node = new DAGNode(Buffer.from('hello world'))
+      const node = new DAGNode(uint8ArrayFromString('hello world'))
 
       ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
 
@@ -157,7 +157,7 @@ describe('object', () => {
     }
 
     it('should put an object', async () => {
-      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), defaultOptions).resolves(cid)
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Uint8Array), defaultOptions).resolves(cid)
 
       const out = await cli(`object put ${path.resolve(path.join(__dirname, '..'))}/fixtures/test-data/node.json`, { ipfs })
 
@@ -167,7 +167,7 @@ describe('object', () => {
     })
 
     it('put from pipe', async () => {
-      const buf = Buffer.from('hello world')
+      const buf = uint8ArrayFromString('hello world')
 
       ipfs.object.put.withArgs(buf, defaultOptions).resolves(cid)
 
@@ -197,7 +197,7 @@ describe('object', () => {
     })
 
     it('should put an object with a timeout', async () => {
-      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), {
+      ipfs.object.put.withArgs(sinon.match.instanceOf(Uint8Array), {
         ...defaultOptions,
         timeout: 1000
       }).resolves(cid)

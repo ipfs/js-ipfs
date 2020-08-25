@@ -1,10 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const { nanoid } = require('nanoid')
 const all = require('it-all')
-const concat = require('it-concat')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const mh = require('multihashing-async').multihash
@@ -73,8 +73,8 @@ module.exports = (common, options) => {
       const src1 = `/src2-${Math.random()}`
       const parent = `/output-${Math.random()}`
 
-      const cid = new CID(1, 'identity', mh.encode(Buffer.from('derp'), 'identity'))
-      await ipfs.block.put(new Block(Buffer.from('derp'), cid), { cid })
+      const cid = new CID(1, 'identity', mh.encode(uint8ArrayFromString('derp'), 'identity'))
+      await ipfs.block.put(new Block(uint8ArrayFromString('derp'), cid), { cid })
       await ipfs.files.cp(`/ipfs/${cid}`, parent)
 
       await ipfs.files.write(src1, [], {
@@ -129,9 +129,9 @@ module.exports = (common, options) => {
 
       await ipfs.files.cp(source, destination)
 
-      const buffer = await concat(ipfs.files.read(destination))
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(destination)))
 
-      expect(buffer.slice()).to.deep.equal(data)
+      expect(bytes).to.deep.equal(data)
     })
 
     it('copies a file to a pre-existing directory', async () => {
@@ -199,9 +199,9 @@ module.exports = (common, options) => {
       })
 
       for (const source of sources) {
-        const buffer = await concat(ipfs.files.read(`${destination}${source.path}`))
+        const bytes = uint8ArrayConcat(await all(ipfs.files.read(`${destination}${source.path}`)))
 
-        expect(buffer.slice()).to.deep.equal(source.data)
+        expect(bytes).to.deep.equal(source.data)
       }
     })
 
@@ -311,7 +311,7 @@ module.exports = (common, options) => {
       const filePath = `/${file}`
       const finalFilePath = `${shardedDirPath}/${file}`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -331,7 +331,7 @@ module.exports = (common, options) => {
       const filePath = `${shardedDirPath}/${file}`
       const finalFilePath = `${othershardedDirPath}/${file}`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -354,7 +354,7 @@ module.exports = (common, options) => {
       const filePath = `${shardedDirPath}/${file}`
       const finalFilePath = `${dirPath}/${file}`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 
@@ -380,7 +380,7 @@ module.exports = (common, options) => {
         nsecs: (mtime - (seconds * 1000)) * 1000
       }
 
-      await ipfs.files.write(testSrcPath, Buffer.from('TEST'), {
+      await ipfs.files.write(testSrcPath, uint8ArrayFromString('TEST'), {
         create: true,
         mode,
         mtime

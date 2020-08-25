@@ -1,13 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
 const sinon = require('sinon')
 const CID = require('cids')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('dag', () => {
   const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
@@ -32,20 +33,20 @@ describe('dag', () => {
 
     it('should get a node', async () => {
       const result = {
-        value: Buffer.from('hello world')
+        value: uint8ArrayFromString('hello world')
       }
 
       ipfs.dag.get.withArgs(cid, defaultOptions).returns(result)
 
       const out = await cli(`dag get ${cid}`, { ipfs })
 
-      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+      expect(out).to.be.eql('0x' + uint8ArrayToString(result.value, 'base16') + '\n')
     })
 
     it('should get a node with a deep path', async () => {
       const path = '/parentHash'
       const result = {
-        value: Buffer.from('hello world')
+        value: uint8ArrayFromString('hello world')
       }
 
       ipfs.dag.get.withArgs(cid, {
@@ -55,13 +56,13 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${cid}${path}`, { ipfs })
 
-      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+      expect(out).to.be.eql('0x' + uint8ArrayToString(result.value, 'base16') + '\n')
     })
 
     it('should get a node with a deep path and an ipfs prefix', async () => {
       const path = '/parentHash'
       const result = {
-        value: Buffer.from('hello world')
+        value: uint8ArrayFromString('hello world')
       }
 
       ipfs.dag.get.withArgs(cid, {
@@ -71,12 +72,12 @@ describe('dag', () => {
 
       const out = await cli(`dag get /ipfs/${cid}${path}`, { ipfs })
 
-      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+      expect(out).to.be.eql('0x' + uint8ArrayToString(result.value, 'base16') + '\n')
     })
 
     it('should get a node with local resolve', async () => {
       const result = {
-        value: Buffer.from('hello world')
+        value: uint8ArrayFromString('hello world')
       }
 
       ipfs.dag.get.withArgs(cid, {
@@ -88,12 +89,12 @@ describe('dag', () => {
 
       expect(out).to.include('resolving path within the node only\n')
       expect(out).to.include('remainder path: n/a\n')
-      expect(out).to.include('0x' + result.value.toString('hex') + '\n')
+      expect(out).to.include('0x' + uint8ArrayToString(result.value, 'base16') + '\n')
     })
 
     it('should get a node with a timeout', async () => {
       const result = {
-        value: Buffer.from('hello world')
+        value: uint8ArrayFromString('hello world')
       }
 
       ipfs.dag.get.withArgs(cid, {
@@ -103,7 +104,7 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${cid} --timeout=1s`, { ipfs })
 
-      expect(out).to.be.eql('0x' + result.value.toString('hex') + '\n')
+      expect(out).to.be.eql('0x' + uint8ArrayToString(result.value, 'base16') + '\n')
     })
   })
 
@@ -166,7 +167,7 @@ describe('dag', () => {
 
       const out = await cli('dag put', {
         getStdin: function * () {
-          yield Buffer.from('{}')
+          yield uint8ArrayFromString('{}')
         },
         ipfs
       })

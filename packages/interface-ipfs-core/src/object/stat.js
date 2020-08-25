@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -37,7 +37,7 @@ module.exports = (common, options) => {
 
     it('should get stats by multihash', async () => {
       const testObj = {
-        Data: Buffer.from('get test object'),
+        Data: uint8ArrayFromString('get test object'),
         Links: []
       }
 
@@ -55,8 +55,8 @@ module.exports = (common, options) => {
     })
 
     it('should get stats for object with links by multihash', async () => {
-      const node1a = new DAGNode(Buffer.from('Some data 1'))
-      const node2 = new DAGNode(Buffer.from('Some data 2'))
+      const node1a = new DAGNode(uint8ArrayFromString('Some data 1'))
+      const node2 = new DAGNode(uint8ArrayFromString('Some data 2'))
 
       const link = await asDAGLink(node2, 'some-link')
 
@@ -77,13 +77,13 @@ module.exports = (common, options) => {
 
     it('should get stats by base58 encoded multihash', async () => {
       const testObj = {
-        Data: Buffer.from('get test object'),
+        Data: uint8ArrayFromString('get test object'),
         Links: []
       }
 
       const cid = await ipfs.object.put(testObj)
 
-      const stats = await ipfs.object.stat(cid.buffer)
+      const stats = await ipfs.object.stat(cid.bytes)
       const expected = {
         Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
         NumLinks: 0,
@@ -97,7 +97,7 @@ module.exports = (common, options) => {
 
     it('should get stats by base58 encoded multihash string', async () => {
       const testObj = {
-        Data: Buffer.from('get test object'),
+        Data: uint8ArrayFromString('get test object'),
         Links: []
       }
 

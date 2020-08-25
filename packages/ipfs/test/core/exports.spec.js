@@ -10,8 +10,7 @@ const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash
 const multicodec = require('multicodec')
 const PeerId = require('peer-id')
-const { Buffer } = require('buffer')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 
 const Ipfs = require('../../')
 
@@ -19,7 +18,6 @@ describe('exports', () => {
   it('should export the expected types and utilities', () => {
     expect(Ipfs.crypto).to.equal(crypto)
     expect(Ipfs.isIPFS).to.equal(isIPFS)
-    expect(Ipfs.Buffer).to.equal(Buffer)
     expect(Ipfs.CID).to.equal(CID)
     expect(Ipfs.multiaddr).to.equal(multiaddr)
     expect(Ipfs.multibase).to.equal(multibase)

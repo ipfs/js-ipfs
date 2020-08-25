@@ -4,28 +4,27 @@ const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
 const { withTimeoutOption } = require('../utils')
-const { Buffer } = require('buffer')
 
 module.exports = ({ libp2p, repo }) => {
   return {
     /**
      * Given a key, query the DHT for its best value.
      *
-     * @param {Buffer} key
+     * @param {Uint8Array} key
      * @param {Object} [options] - get options
      * @param {number} [options.timeout] - optional timeout
-     * @returns {Promise<Buffer>}
+     * @returns {Promise<Uint8Array>}
      */
     get: withTimeoutOption(async (key, options) => { // eslint-disable-line require-await
       options = options || {}
 
-      if (!Buffer.isBuffer(key)) {
+      if (!(key instanceof Uint8Array)) {
         try {
           key = key.toString().split('/')
             .filter(part => part && part !== 'ipfs' && part !== 'ipns')
             .shift()
 
-          key = (new CID(key)).buffer
+          key = (new CID(key)).bytes
         } catch (err) {
           throw errCode(err, 'ERR_INVALID_CID')
         }
@@ -41,18 +40,18 @@ module.exports = ({ libp2p, repo }) => {
      * form, this will write that value to the DHT with
      * that key.
      *
-     * @param {Buffer} key
-     * @param {Buffer} value
+     * @param {Uint8Array} key
+     * @param {Uint8Array} value
      * @returns {Promise}
      */
     put: withTimeoutOption(async (key, value) => { // eslint-disable-line require-await
-      if (!Buffer.isBuffer(key)) {
+      if (!(key instanceof Uint8Array)) {
         try {
           key = key.toString().split('/')
             .filter(part => part && part !== 'ipfs' && part !== 'ipns')
             .shift()
 
-          key = (new CID(key)).buffer
+          key = (new CID(key)).bytes
         } catch (err) {
           throw errCode(err, 'ERR_INVALID_CID')
         }

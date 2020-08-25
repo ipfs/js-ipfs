@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const CID = require('cids')
 const first = require('it-first')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -156,7 +156,7 @@ describe('add', () => {
     const proc = cli('add', {
       ipfs,
       getStdin: function * () {
-        yield Buffer.from('hello\n')
+        yield uint8ArrayFromString('hello\n')
       }
     })
 
@@ -178,7 +178,7 @@ describe('add', () => {
     const proc = cli('add --mtime=100', {
       ipfs,
       getStdin: function * () {
-        yield Buffer.from('hello\n')
+        yield uint8ArrayFromString('hello\n')
       }
     })
 

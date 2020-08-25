@@ -4,6 +4,7 @@ const errCode = require('err-code')
 const { Blob } = require('ipfs-utils/src/globalthis')
 const itPeekable = require('it-peekable')
 const browserStreamToIt = require('browser-readablestream-to-it')
+const all = require('it-all')
 
 const {
   isBytes,
@@ -40,7 +41,7 @@ async function toBlob (input) {
 
     // (Async)Iterable<Number>
     if (Number.isInteger(value)) {
-      return itToBlob(peekable)
+      return new Blob([Uint8Array.from(await all(peekable))])
     }
 
     // (Async)Iterable<Bytes|String>

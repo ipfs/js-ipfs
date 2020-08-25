@@ -1,14 +1,23 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { parallelMap } = require('streaming-iterables')
-const CID = require('cids')
-const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
-const { withTimeoutOption } = require('../../utils')
+const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { resolvePath, withTimeoutOption } = require('../../utils')
 
-const PIN_LS_CONCURRENCY = 8
+function toPin (type, cid, metadata) {
+  const output = {
+    type,
+    cid
+  }
+
+  if (metadata) {
+    output.metadata = metadata
+  }
+
+  return output
+}
 
 module.exports = ({ pinManager, dag }) => {
   return withTimeoutOption(async function * ls (options = {}) {
@@ -19,67 +28,59 @@ module.exports = ({ pinManager, dag }) => {
       if (typeof options.type === 'string') {
         type = options.type.toLowerCase()
       }
-      const err = PinManager.checkPinType(type)
-      if (err) {
-        throw err
-      }
+
+      PinManager.checkPinType(type)
+    } else {
+      options.type = PinTypes.all
     }
 
     if (options.paths) {
-      options.paths = Array.isArray(options.paths) ? options.paths : [options.paths]
-
       // check the pinned state of specific hashes
-      const cids = await resolvePath(dag, options.paths)
+      let matched = false
 
-      yield * parallelMap(PIN_LS_CONCURRENCY, async cid => {
-        const { reason, pinned } = await pinManager.isPinnedWithType(cid, type)
+      for await (const { path } of normaliseInput(options.paths)) {
+        const cid = await resolvePath(dag, path)
+        const { reason, pinned, parent, metadata } = await pinManager.isPinnedWithType(cid, type)
 
         if (!pinned) {
-          throw new Error(`path '${options.paths[cids.indexOf(cid)]}' is not pinned`)
+          throw new Error(`path '${path}' is not pinned`)
         }
 
-        if (reason === PinTypes.direct || reason === PinTypes.recursive) {
-          return { cid, type: reason }
+        switch (reason) {
+          case PinTypes.direct:
+          case PinTypes.recursive:
+            matched = true
+            yield toPin(reason, cid, metadata)
+            break
+          default:
+            matched = true
+            yield toPin(`${PinTypes.indirect} through ${parent}`, cid, metadata)
         }
+      }
 
-        return { cid, type: `${PinTypes.indirect} through ${reason}` }
-      }, cids)
+      if (!matched) {
+        throw new Error('No match found')
+      }
 
       return
     }
 
-    // show all pinned items of type
-    let pins = []
-
-    if (type === PinTypes.direct || type === PinTypes.all) {
-      pins = pins.concat(
-        Array.from(pinManager.directPins).map(cid => ({
-          type: PinTypes.direct,
-          cid: new CID(cid)
-        }))
-      )
-    }
-
     if (type === PinTypes.recursive || type === PinTypes.all) {
-      pins = pins.concat(
-        Array.from(pinManager.recursivePins).map(cid => ({
-          type: PinTypes.recursive,
-          cid: new CID(cid)
-        }))
-      )
+      for await (const { cid, metadata } of pinManager.recursiveKeys()) {
+        yield toPin(PinTypes.recursive, cid, metadata)
+      }
     }
 
     if (type === PinTypes.indirect || type === PinTypes.all) {
-      const indirects = await pinManager.getIndirectKeys(options)
-
-      pins = pins
-        // if something is pinned both directly and indirectly,
-        // report the indirect entry
-        .filter(({ cid }) => !indirects.includes(cid.toString()) || !pinManager.directPins.has(cid.toString()))
-        .concat(indirects.map(cid => ({ type: PinTypes.indirect, cid: new CID(cid) })))
+      for await (const cid of pinManager.indirectKeys(options)) {
+        yield toPin(PinTypes.indirect, cid)
+      }
     }
 
-    // FIXME: https://github.com/ipfs/js-ipfs/issues/2244
-    yield * pins
+    if (type === PinTypes.direct || type === PinTypes.all) {
+      for await (const { cid, metadata } of pinManager.directKeys()) {
+        yield toPin(PinTypes.direct, cid, metadata)
+      }
+    }
   })
 }

@@ -2,8 +2,8 @@
 /* eslint dot-notation: 0, dot-notation: 0, quote-props: 0 */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const Daemon = require('../../src/cli/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
@@ -77,7 +77,7 @@ describe('HTTP Gateway', function () {
     // Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq
     await http.api._ipfs.add(bigFile)
     // QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o
-    await http.api._ipfs.add(Buffer.from('hello world' + '\n'), { cidVersion: 0 })
+    await http.api._ipfs.add(uint8ArrayFromString('hello world' + '\n'), { cidVersion: 0 })
     // QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ
     await http.api._ipfs.add([content('cat-folder/cat.jpg')])
     // QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F
@@ -138,7 +138,7 @@ describe('HTTP Gateway', function () {
     })
 
     expect(res).to.have.property('statusCode', 200)
-    expect(res.rawPayload).to.eql(Buffer.from('hello world' + '\n'))
+    expect(res.rawPayload).to.eql(uint8ArrayFromString('hello world' + '\n'))
     expect(res.payload).to.equal('hello world' + '\n')
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(12)
@@ -171,7 +171,7 @@ describe('HTTP Gateway', function () {
       url: '/ipfs/TO-DO'
     }, (res) => {
       expect(res).to.have.property('statusCode', 200)
-      expect(res.rawPayload).to.eql(Buffer.from('hello world' + '\n'))
+      expect(res.rawPayload).to.eql(uint8ArrayFromString('hello world' + '\n'))
       expect(res.payload).to.equal('hello world' + '\n')
       expect(res.headers.etag).to.equal(TO-DO)
       expect(res.headers['x-ipfs-path']).to.equal(TO-DO)

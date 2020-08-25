@@ -2,12 +2,12 @@
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const TimeoutController = require('timeout-abort-controller')
 const anySignal = require('any-signal')
 const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
+const errCode = require('err-code')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
@@ -37,13 +37,13 @@ const normalizePath = (pathStr) => {
   } else if (isIpfs.path(pathStr)) {
     return pathStr
   } else {
-    throw Object.assign(new Error(`invalid path: ${pathStr}`), { code: ERR_BAD_PATH })
+    throw errCode(new Error(`invalid path: ${pathStr}`), ERR_BAD_PATH)
   }
 }
 
 // TODO: do we need both normalizePath and normalizeCidPath?
 const normalizeCidPath = (path) => {
-  if (Buffer.isBuffer(path)) {
+  if (path instanceof Uint8Array) {
     return new CID(path).toString()
   }
   if (CID.isCID(path)) {
@@ -67,49 +67,34 @@ const normalizeCidPath = (path) => {
  *  - <base58 string>/link/to/venus
  *  - /ipfs/<base58 string>/link/to/pluto
  *  - multihash Buffer
- *  - Arrays of the above
  *
  * @param {Dag} dag The IPFS dag api
- * @param {Array<CID|string>} ipfsPaths A single or collection of ipfs-paths
+ * @param {CID|String} ipfsPath A CID or IPFS path
  * @param {Object} [options] Optional options passed directly to dag.resolve
- * @return {Promise<Array<CID>>}
+ * @return {CID}
  */
-const resolvePath = async function (dag, ipfsPaths, options) {
+const resolvePath = async function (dag, ipfsPath, options) {
   options = options || {}
 
-  if (!Array.isArray(ipfsPaths)) {
-    ipfsPaths = [ipfsPaths]
+  if (isIpfs.cid(ipfsPath)) {
+    return new CID(ipfsPath)
   }
 
-  const cids = []
+  const {
+    cid,
+    path
+  } = toCidAndPath(ipfsPath)
 
-  for (const ipfsPath of ipfsPaths) {
-    if (isIpfs.cid(ipfsPath)) {
-      cids.push(new CID(ipfsPath))
-      continue
-    }
-
-    const {
-      cid,
-      path
-    } = toCidAndPath(ipfsPath)
-
-    if (!path) {
-      cids.push(cid)
-      continue
-    }
-
-    const result = await dag.resolve(cid, {
-      ...options,
-      path
-    })
-
-    if (CID.isCID(result.cid)) {
-      cids.push(result.cid)
-    }
+  if (!path) {
+    return cid
   }
 
-  return cids
+  const result = await dag.resolve(cid, {
+    ...options,
+    path
+  })
+
+  return result.cid
 }
 
 const mapFile = (file, options) => {

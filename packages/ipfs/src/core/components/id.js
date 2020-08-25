@@ -3,6 +3,7 @@
 const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
 const { withTimeoutOption } = require('../utils')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = ({ peerId, libp2p }) => {
   return withTimeoutOption(async function id () { // eslint-disable-line require-await
@@ -16,7 +17,7 @@ module.exports = ({ peerId, libp2p }) => {
 
     return {
       id,
-      publicKey: peerId.pubKey.bytes.toString('base64'),
+      publicKey: uint8ArrayToString(peerId.pubKey.bytes, 'base64pad'),
       addresses: addresses
         .map(ma => {
           const str = ma.toString()

@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
@@ -11,7 +10,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${Buffer.isBuffer(path) ? new CID(path) : path}`,
+        arg: `${path instanceof Uint8Array ? new CID(path) : path}`,
         ...options
       }),
       headers: options.headers

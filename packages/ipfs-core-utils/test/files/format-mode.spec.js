@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const { expect } = require('../utils/chai')
+const { expect } = require('aegir/utils/chai')
 const formatMode = require('../../src/files/format-mode')
 
 describe('format-mode', function () {

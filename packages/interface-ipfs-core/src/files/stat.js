@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -187,7 +187,7 @@ module.exports = (common, options) => {
     })
 
     it('stats an identity CID', async () => {
-      const data = Buffer.from('derp')
+      const data = uint8ArrayFromString('derp')
       const path = `/test-${nanoid()}/identity.node`
       const cid = new CID(1, 'identity', mh.encode(data, 'identity'))
       await ipfs.block.put(new Block(data, cid))
@@ -205,7 +205,7 @@ module.exports = (common, options) => {
       const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
-      await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), { create: true })
+      await ipfs.files.write(`${testDir}/b`, uint8ArrayFromString('Hello, world!'), { create: true })
 
       const stat = await ipfs.files.stat(`${testDir}/b`)
 
@@ -218,7 +218,7 @@ module.exports = (common, options) => {
       const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
-      await ipfs.files.write(`${testDir}/b`, Buffer.from('Hello, world!'), {
+      await ipfs.files.write(`${testDir}/b`, uint8ArrayFromString('Hello, world!'), {
         create: true,
         mtime: {
           secs: 5,
@@ -240,7 +240,7 @@ module.exports = (common, options) => {
       const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
-      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), { create: true })
+      await ipfs.files.write(`${testDir}/a`, uint8ArrayFromString('Hello, world!'), { create: true })
 
       const stat = await ipfs.files.stat(testDir)
       stat.cid = stat.cid.toString()
@@ -291,7 +291,7 @@ module.exports = (common, options) => {
       const testDir = `/test-${nanoid()}`
 
       await ipfs.files.mkdir(testDir, { parents: true })
-      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), {
+      await ipfs.files.write(`${testDir}/a`, uint8ArrayFromString('Hello, world!'), {
         create: true,
         shardSplitThreshold: 0
       })
@@ -315,7 +315,7 @@ module.exports = (common, options) => {
           nsecs: 0
         }
       })
-      await ipfs.files.write(`${testDir}/a`, Buffer.from('Hello, world!'), {
+      await ipfs.files.write(`${testDir}/a`, uint8ArrayFromString('Hello, world!'), {
         create: true,
         shardSplitThreshold: 0
       })

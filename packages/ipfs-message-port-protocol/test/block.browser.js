@@ -5,8 +5,8 @@
 const CID = require('cids')
 const { encodeBlock, decodeBlock } = require('../src/block')
 const { ipc } = require('./util')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const Block = require('ipld-block')
 
 describe('block (browser)', function () {
@@ -16,7 +16,7 @@ describe('block (browser)', function () {
   describe('encodeBlock / decodeBlock', () => {
     it('should decode Block over message channel', async () => {
       const blockIn = new Block(
-        Buffer.from('hello'),
+        uint8ArrayFromString('hello'),
         new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
       )
 
@@ -27,7 +27,7 @@ describe('block (browser)', function () {
 
     it('should decode Block over message channel & transfer bytes', async () => {
       const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-      const data = Buffer.from('hello')
+      const data = uint8ArrayFromString('hello')
       const blockIn = new Block(data, cid)
 
       const transfer = []
@@ -39,7 +39,7 @@ describe('block (browser)', function () {
       expect(blockOut).to.be.instanceOf(Block)
       expect(blockOut).to.be.deep.equal(
         new Block(
-          Buffer.from('hello'),
+          uint8ArrayFromString('hello'),
           new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         )
       )

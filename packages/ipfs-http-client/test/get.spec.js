@@ -3,9 +3,8 @@
 
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const loadFixture = require('aegir/fixtures')
-const { Buffer } = require('buffer')
 const all = require('it-all')
 const concat = require('it-concat')
 
@@ -67,7 +66,7 @@ describe('.get (specific go-ipfs features)', function () {
     const path = `${subdir}/${filename}`
     const files = await all(ipfs.addAll([{
       path,
-      content: Buffer.from(path)
+      content: path
     }]))
 
     expect(files[2].cid.toString()).to.equal(expectedCid)

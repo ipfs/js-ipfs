@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
@@ -30,14 +30,14 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when putting an object', () => {
-      return testTimeout(() => ipfs.object.put({ Data: Buffer.from('derp') }, {
+      return testTimeout(() => ipfs.object.put({ Data: uint8ArrayFromString('derp') }, {
         timeout: 1
       }))
     })
 
     it('should put an object', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -51,7 +51,7 @@ module.exports = (common, options) => {
 
     it('should put a JSON encoded Buffer', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -60,7 +60,7 @@ module.exports = (common, options) => {
         Links: obj.Links
       }
 
-      const buf = Buffer.from(JSON.stringify(obj2))
+      const buf = uint8ArrayFromString(JSON.stringify(obj2))
 
       const cid = await ipfs.object.put(buf, { enc: 'json' })
 
@@ -70,7 +70,7 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf encoded Buffer', async () => {
-      const node = new DAGNode(Buffer.from(nanoid()))
+      const node = new DAGNode(uint8ArrayFromString(nanoid()))
       const serialized = node.serialize()
 
       const cid = await ipfs.object.put(serialized, { enc: 'protobuf' })
@@ -80,7 +80,7 @@ module.exports = (common, options) => {
     })
 
     it('should put a Buffer as data', async () => {
-      const data = Buffer.from(nanoid())
+      const data = uint8ArrayFromString(nanoid())
 
       const cid = await ipfs.object.put(data)
       const node = await ipfs.object.get(cid)
@@ -90,7 +90,7 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf DAGNode', async () => {
-      const dNode = new DAGNode(Buffer.from(nanoid()))
+      const dNode = new DAGNode(uint8ArrayFromString(nanoid()))
 
       const cid = await ipfs.object.put(dNode)
       const node = await ipfs.object.get(cid)
@@ -103,8 +103,8 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf DAGNode with a link', async () => {
-      const node1a = new DAGNode(Buffer.from(nanoid()))
-      const node2 = new DAGNode(Buffer.from(nanoid()))
+      const node1a = new DAGNode(uint8ArrayFromString(nanoid()))
+      const node2 = new DAGNode(uint8ArrayFromString(nanoid()))
 
       const link = await asDAGLink(node2, 'some-link')
 

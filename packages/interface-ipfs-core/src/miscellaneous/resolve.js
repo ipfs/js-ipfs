@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
 const loadFixture = require('aegir/fixtures')
 const { nanoid } = require('nanoid')
@@ -45,7 +45,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve an IPFS hash and return a base64url encoded CID in path', async () => {
-      const { cid } = await ipfs.add(Buffer.from('base64url encoded'))
+      const { cid } = await ipfs.add(uint8ArrayFromString('base64url encoded'))
       const path = await ipfs.resolve(`/ipfs/${cid}`, { cidBase: 'base64url' })
       const [,, cidStr] = path.split('/')
 
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
       // webworkers are not dialable because webrtc is not available
       const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfs.swarm.connect(node.peerId.addresses[0])
-      const { path } = await ipfs.add(Buffer.from('should resolve a record recursive === true'))
+      const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })

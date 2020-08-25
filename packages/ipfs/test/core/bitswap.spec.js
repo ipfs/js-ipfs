@@ -3,16 +3,16 @@
 
 const { nanoid } = require('nanoid')
 const pmap = require('p-map')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const concat = require('it-concat')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const factory = require('../utils/factory')
 
 const makeBlock = async () => {
-  const d = Buffer.from(`IPFS is awesome ${nanoid()}`)
+  const d = uint8ArrayFromString(`IPFS is awesome ${nanoid()}`)
   const h = await multihashing(d, 'sha2-256')
 
   return new Block(d, new CID(h))
@@ -65,7 +65,7 @@ describe('bitswap', function () {
     it('2 peers', async () => {
       // TODO make this test more interesting (10Mb file)
       // TODO remove randomness from the test
-      const content = Buffer.from(`I love IPFS <3 ${nanoid()}`)
+      const content = uint8ArrayFromString(`I love IPFS <3 ${nanoid()}`)
       const remote = (await df.spawn({ type: 'js' })).api
       const proc = (await df.spawn({ type: 'proc' })).api
       proc.swarm.connect(remote.peerId.addresses[0])

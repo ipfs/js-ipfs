@@ -2,7 +2,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const f = require('./utils/factory')()
 const ipfsClient = require('../src/index.js')
 const globalThis = require('ipfs-utils/src/globalthis')

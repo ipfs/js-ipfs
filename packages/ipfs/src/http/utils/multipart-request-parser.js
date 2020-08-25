@@ -2,7 +2,8 @@
 
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
-const { Buffer } = require('buffer')
+const uint8ArrayConcat = require('uint8arrays/concat')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const qs = require('querystring')
 
 const multipartFormdataType = 'multipart/form-data'
@@ -37,7 +38,7 @@ const collect = async (stream) => {
     buffers.push(buf)
   }
 
-  return Buffer.concat(buffers, size)
+  return uint8ArrayConcat(buffers, size)
 }
 
 const ignore = async (stream) => {
@@ -119,7 +120,7 @@ async function * parser (stream, options) {
       yield {
         type: 'symlink',
         name: entry.name,
-        target: (await collect(entry.body)).toString('utf8'),
+        target: uint8ArrayToString(await collect(entry.body)),
         mtime: entry.mtime,
         mode: entry.mode
       }

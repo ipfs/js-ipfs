@@ -137,7 +137,7 @@ If **only** the `topic` param is provided, unsubscribe will remove **all** handl
 
 ```JavaScript
 const topic = 'fruit-of-the-day'
-const msg = Buffer.from('banana')
+const msg = new TextEncoder().encode('banana')
 
 await ipfs.pubsub.publish(topic, msg)
 

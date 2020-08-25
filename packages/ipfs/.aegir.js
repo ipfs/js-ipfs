@@ -25,6 +25,15 @@ module.exports = {
     }],
     browserNoActivityTimeout: 100 * 1000
   },
+  webpack: {
+    node: {
+      // required by the nofilter module
+      stream: true,
+
+      // required by the core-util-is module
+      Buffer: true
+    }
+  },
   hooks: {
     node: {
       pre: async () => {

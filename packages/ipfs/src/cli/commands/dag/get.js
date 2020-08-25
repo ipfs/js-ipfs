@@ -1,8 +1,8 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
-const { Buffer } = require('buffer')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = {
   command: 'get <cid path>',
@@ -52,13 +52,13 @@ module.exports = {
     // * reads as 'agree in'
     if (node._json) {
       delete node._json.multihash
-      node._json.data = '0x' + node._json.data.toString('hex')
+      node._json.data = '0x' + uint8ArrayToString(node._json.data, 'base16')
       print(JSON.stringify(node._json, null, 4))
       return
     }
 
-    if (Buffer.isBuffer(node)) {
-      print('0x' + node.toString('hex'))
+    if (node instanceof Uint8Array) {
+      print('0x' + uint8ArrayToString(node, 'base16'))
       return
     }
 

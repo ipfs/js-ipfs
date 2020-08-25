@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const http = require('../../../utils/http')
 const sinon = require('sinon')
-const { Buffer } = require('buffer')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const { AbortSignal } = require('abort-controller')

@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const multipart = require('../../utils/multipart-request-parser')
 const all = require('it-all')
 const dagPB = require('ipld-dag-pb')
@@ -8,6 +7,7 @@ const { DAGLink } = dagPB
 const Joi = require('../../utils/joi')
 const multibase = require('multibase')
 const Boom = require('@hapi/boom')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
 const log = debug('ipfs:http-api:object')
@@ -103,7 +103,7 @@ exports.new = {
     const nodeJSON = node.toJSON()
 
     const answer = {
-      Data: nodeJSON.data,
+      Data: uint8ArrayToString(node.Data, 'base64pad'),
       Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
@@ -131,9 +131,11 @@ exports.get = {
         cidBase: Joi.cidBase(),
         enc: Joi.string(),
         dataEncoding: Joi.string()
-          .valid('text', 'base64', 'hex', 'utf8')
-          .replace(/text/, 'utf8')
-          .default('utf8'),
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
+          .default('base64pad'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -181,7 +183,7 @@ exports.get = {
     }
 
     return h.response({
-      Data: node.Data.toString(dataEncoding),
+      Data: uint8ArrayToString(node.Data, dataEncoding),
       Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: node.size,
       Links: node.Links.map((l) => {

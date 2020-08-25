@@ -7,7 +7,7 @@ const parseDuration = require('parse-duration').default
 module.exports = {
   command: 'rm <ipfsPath...>',
 
-  describe: 'Removes the pinned object from local storage.',
+  describe: 'Unpins the corresponding block making it available for garbage collection',
 
   builder: {
     recursive: {
@@ -27,10 +27,11 @@ module.exports = {
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, ipfsPath, recursive, cidBase, timeout }) {
-    const results = await ipfs.pin.rm(ipfsPath, { recursive, timeout })
-    results.forEach((res) => {
+  async handler ({ ctx, ipfsPath, timeout, recursive, cidBase }) {
+    const { ipfs, print } = ctx
+
+    for await (const res of ipfs.pin.rmAll(ipfsPath.map(path => ({ path, recursive })), { timeout })) {
       print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
-    })
+    }
   }
 }

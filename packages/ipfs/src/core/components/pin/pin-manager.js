@@ -1,30 +1,35 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { DAGNode, DAGLink } = require('ipld-dag-pb')
 const CID = require('cids')
-const { default: Queue } = require('p-queue')
-const { Key } = require('interface-datastore')
 const errCode = require('err-code')
-const multicodec = require('multicodec')
 const dagCborLinks = require('dag-cbor-links')
 const debug = require('debug')
-const { Buffer } = require('buffer')
-const { cidToString } = require('../../../utils/cid')
-
-const createPinSet = require('./pin-set')
-
-const { Errors } = require('interface-datastore')
-const ERR_NOT_FOUND = Errors.notFoundError().code
+// const parallelBatch = require('it-parallel-batch')
+const first = require('it-first')
+const all = require('it-all')
+const cbor = require('cbor')
+const multibase = require('multibase')
+const multicodec = require('multicodec')
 
 // arbitrary limit to the number of concurrent dag operations
-const WALK_DAG_CONCURRENCY_LIMIT = 300
-const IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT = 300
-const PIN_DS_KEY = new Key('/local/pins')
+// const WALK_DAG_CONCURRENCY_LIMIT = 300
+// const IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT = 300
+// const PIN_DS_KEY = new Key('/local/pins')
 
 function invalidPinTypeErr (type) {
   const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
+}
+
+const encoder = multibase.encoding('base32upper')
+
+function cidToKey (cid) {
+  return `/${encoder.encode(cid.multihash)}`
+}
+
+function keyToMultihash (key) {
+  return encoder.decode(key.toString().slice(1))
 }
 
 const PinTypes = {
@@ -39,245 +44,213 @@ class PinManager {
     this.repo = repo
     this.dag = dag
     this.log = debug('ipfs:pin')
-    this.pinset = createPinSet(dag)
     this.directPins = new Set()
     this.recursivePins = new Set()
   }
 
-  async _walkDag ({ cid, preload = false, onCid = () => {} }) {
-    if (!CID.isCID(cid)) {
-      cid = new CID(cid)
+  async * _walkDag (cid, { preload = false }) {
+    const { value: node } = await this.dag.get(cid, { preload })
+
+    if (cid.codec === 'dag-pb') {
+      for (const link of node.Links) {
+        yield link.Hash
+        yield * this._walkDag(link.Hash, { preload })
+      }
+    } else if (cid.codec === 'dag-cbor') {
+      for (const [_, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
+        yield childCid
+        yield * this._walkDag(childCid, { preload })
+      }
+    }
+  }
+
+  async pinDirectly (cid, options = {}) {
+    await this.dag.get(cid, options)
+
+    const pin = {
+      depth: 0
     }
 
-    const walk = (cid) => {
-      return async () => {
-        const { value: node } = await this.dag.get(cid, { preload })
+    if (cid.version !== 0) {
+      pin.version = cid.version
+    }
 
-        onCid(cid)
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
 
-        if (cid.codec === 'dag-pb') {
-          queue.addAll(
-            node.Links.map(link => walk(link.Hash))
-          )
-        } else if (cid.codec === 'dag-cbor') {
-          for (const [_, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
-            queue.add(walk(childCid))
+    if (options.metadata) {
+      pin.metadata = options.metadata
+    }
+
+    return this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
+  }
+
+  async unpin (cid) { // eslint-disable-line require-await
+    return this.repo.pins.delete(cidToKey(cid))
+  }
+
+  async pinRecursively (cid, options = {}) {
+    await this.fetchCompleteDag(cid, options)
+
+    const pin = {
+      depth: Infinity
+    }
+
+    if (cid.version !== 0) {
+      pin.version = cid.version
+    }
+
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
+
+    if (options.metadata) {
+      pin.metadata = options.metadata
+    }
+
+    await this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
+  }
+
+  async * directKeys () {
+    for await (const entry of this.repo.pins.query({
+      filters: [(entry) => {
+        const pin = cbor.decode(entry.value)
+
+        return pin.depth === 0
+      }]
+    })) {
+      const pin = cbor.decode(entry.value)
+      const version = pin.version || 0
+      const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
+      const multihash = keyToMultihash(entry.key)
+
+      yield {
+        cid: new CID(version, codec, multihash),
+        metadata: pin.metadata
+      }
+    }
+  }
+
+  async * recursiveKeys () {
+    for await (const entry of this.repo.pins.query({
+      filters: [(entry) => {
+        const pin = cbor.decode(entry.value)
+
+        return pin.depth === Infinity
+      }]
+    })) {
+      const pin = cbor.decode(entry.value)
+      const version = pin.version || 0
+      const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
+      const multihash = keyToMultihash(entry.key)
+
+      yield {
+        cid: new CID(version, codec, multihash),
+        metadata: pin.metadata
+      }
+    }
+  }
+
+  async * indirectKeys ({ preload }) {
+    for await (const { cid } of this.recursiveKeys()) {
+      for await (const childCid of this._walkDag(cid, { preload })) {
+        // recursive pins override indirect pins
+        const types = [
+          PinTypes.recursive
+        ]
+
+        const result = await this.isPinnedWithType(childCid, types)
+
+        if (result.pinned) {
+          continue
+        }
+
+        yield childCid
+      }
+    }
+  }
+
+  async isPinnedWithType (cid, types) {
+    if (!Array.isArray(types)) {
+      types = [types]
+    }
+
+    const all = types.includes(PinTypes.all)
+    const direct = types.includes(PinTypes.direct)
+    const recursive = types.includes(PinTypes.recursive)
+    const indirect = types.includes(PinTypes.indirect)
+
+    if (recursive || direct || all) {
+      const result = await first(this.repo.pins.query({
+        prefix: cidToKey(cid),
+        filters: [entry => {
+          if (all) {
+            return true
+          }
+
+          const pin = cbor.decode(entry.value)
+
+          return types.includes(pin.depth === 0 ? PinTypes.direct : PinTypes.recursive)
+        }],
+        limit: 1
+      }))
+
+      if (result) {
+        const pin = cbor.decode(result.value)
+
+        return {
+          cid,
+          pinned: true,
+          reason: pin.depth === 0 ? PinTypes.direct : PinTypes.recursive,
+          metadata: pin.metadata
+        }
+      }
+    }
+
+    const self = this
+
+    async function * findChild (key, source) {
+      for await (const { cid: parentCid } of source) {
+        for await (const childCid of self._walkDag(parentCid, { preload: false })) {
+          if (childCid.equals(key)) {
+            yield parentCid
+            return
           }
         }
       }
     }
 
-    const queue = new Queue({
-      concurrency: WALK_DAG_CONCURRENCY_LIMIT
-    })
-    queue.add(walk(cid))
+    if (all || indirect) {
+      // indirect (default)
+      // check each recursive key to see if multihash is under it
 
-    await queue.onIdle()
-  }
+      const parentCid = await first(findChild(cid, this.recursiveKeys()))
 
-  directKeys () {
-    return Array.from(this.directPins, key => new CID(key).buffer)
-  }
-
-  recursiveKeys () {
-    return Array.from(this.recursivePins, key => new CID(key).buffer)
-  }
-
-  async getIndirectKeys ({ preload }) {
-    const indirectKeys = new Set()
-
-    for (const multihash of this.recursiveKeys()) {
-      await this._walkDag({
-        cid: new CID(multihash),
-        preload: preload || false,
-        onCid: (cid) => {
-          cid = cid.toString()
-
-          // recursive pins pre-empt indirect pins
-          if (!this.recursivePins.has(cid)) {
-            indirectKeys.add(cid)
-          }
+      if (parentCid) {
+        return {
+          cid,
+          pinned: true,
+          reason: PinTypes.indirect,
+          parent: parentCid
         }
-      })
-    }
-
-    return Array.from(indirectKeys)
-  }
-
-  // Encode and write pin key sets to the datastore:
-  // a DAGLink for each of the recursive and direct pinsets
-  // a DAGNode holding those as DAGLinks, a kind of root pin
-  async flushPins () {
-    const [
-      dLink,
-      rLink
-    ] = await Promise.all([
-      // create a DAGLink to the node with direct pins
-      this.pinset.storeSet(this.directKeys())
-        .then((result) => {
-          return new DAGLink(PinTypes.direct, result.node.size, result.cid)
-        }),
-      // create a DAGLink to the node with recursive pins
-      this.pinset.storeSet(this.recursiveKeys())
-        .then((result) => {
-          return new DAGLink(PinTypes.recursive, result.node.size, result.cid)
-        }),
-      // the pin-set nodes link to a special 'empty' node, so make sure it exists
-      this.dag.put(new DAGNode(Buffer.alloc(0)), {
-        version: 0,
-        format: multicodec.DAG_PB,
-        hashAlg: multicodec.SHA2_256,
-        preload: false
-      })
-    ])
-
-    // create a root node with DAGLinks to the direct and recursive DAGs
-    const rootNode = new DAGNode(Buffer.alloc(0), [dLink, rLink])
-    const rootCid = await this.dag.put(rootNode, {
-      version: 0,
-      format: multicodec.DAG_PB,
-      hashAlg: multicodec.SHA2_256,
-      preload: false
-    })
-
-    // save root to datastore under a consistent key
-    await this.repo.datastore.put(PIN_DS_KEY, rootCid.buffer)
-
-    this.log(`Flushed pins with root: ${rootCid}`)
-  }
-
-  async load () {
-    const has = await this.repo.datastore.has(PIN_DS_KEY)
-
-    if (!has) {
-      return
-    }
-
-    const mh = await this.repo.datastore.get(PIN_DS_KEY)
-    const pinRoot = await this.dag.get(new CID(mh), { preload: false })
-
-    const [
-      rKeys, dKeys
-    ] = await Promise.all([
-      this.pinset.loadSet(pinRoot.value, PinTypes.recursive),
-      this.pinset.loadSet(pinRoot.value, PinTypes.direct)
-    ])
-
-    this.directPins = new Set(dKeys.map(k => cidToString(k)))
-    this.recursivePins = new Set(rKeys.map(k => cidToString(k)))
-
-    this.log('Loaded pins from the datastore')
-  }
-
-  async isPinnedWithType (multihash, type) {
-    const key = cidToString(multihash)
-    const { recursive, direct, all } = PinTypes
-
-    // recursive
-    if ((type === recursive || type === all) && this.recursivePins.has(key)) {
-      return {
-        key,
-        pinned: true,
-        reason: recursive
       }
     }
-
-    if (type === recursive) {
-      return {
-        key,
-        pinned: false
-      }
-    }
-
-    // direct
-    if ((type === direct || type === all) && this.directPins.has(key)) {
-      return {
-        key,
-        pinned: true,
-        reason: direct
-      }
-    }
-
-    if (type === direct) {
-      return {
-        key,
-        pinned: false
-      }
-    }
-
-    // indirect (default)
-    // check each recursive key to see if multihash is under it
-    // arbitrary limit, enables handling 1000s of pins.
-    const queue = new Queue({
-      concurrency: IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT
-    })
-    let cid
-
-    queue.addAll(
-      this.recursiveKeys()
-        .map(childKey => {
-          childKey = new CID(childKey)
-
-          return async () => {
-            const has = await this.pinset.hasDescendant(childKey, key)
-
-            if (has) {
-              cid = childKey
-              queue.clear()
-            }
-          }
-        })
-    )
-
-    await queue.onIdle()
 
     return {
-      key,
-      pinned: Boolean(cid),
-      reason: cid
+      cid,
+      pinned: false
     }
-  }
-
-  // Gets CIDs of blocks used internally by the pinner
-  async getInternalBlocks () {
-    let mh
-
-    try {
-      mh = await this.repo.datastore.get(PIN_DS_KEY)
-    } catch (err) {
-      if (err.code === ERR_NOT_FOUND) {
-        this.log('No pinned blocks')
-
-        return []
-      }
-
-      throw new Error(`Could not get pin sets root from datastore: ${err.message}`)
-    }
-
-    const cid = new CID(mh)
-    const obj = await this.dag.get(cid, '', { preload: false })
-
-    // The pinner stores an object that has two links to pin sets:
-    // 1. The directly pinned CIDs
-    // 2. The recursively pinned CIDs
-    // If large enough, these pin sets may have links to buckets to hold
-    // the pins
-    const cids = await this.pinset.getInternalCids(obj.value)
-
-    return cids.concat(cid)
   }
 
   async fetchCompleteDag (cid, options) {
-    await this._walkDag({
-      cid,
-      preload: options.preload
-    })
+    await all(this._walkDag(cid, { preload: options.preload }))
   }
 
-  // Returns an error if the pin type is invalid
+  // Throws an error if the pin type is invalid
   static checkPinType (type) {
     if (typeof type !== 'string' || !Object.keys(PinTypes).includes(type)) {
-      return invalidPinTypeErr(type)
+      throw invalidPinTypeErr(type)
     }
   }
 }

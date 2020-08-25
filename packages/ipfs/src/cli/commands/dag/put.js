@@ -1,5 +1,5 @@
 'use strict'
-const { Buffer } = require('buffer')
+
 const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
@@ -8,9 +8,10 @@ const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')
 const parseDuration = require('parse-duration').default
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const inputDecoders = {
-  json: (buf) => JSON.parse(buf.toString()),
+  json: (buf) => JSON.parse(uint8ArrayToString(buf)),
   cbor: (buf) => dagCBOR.util.deserialize(buf),
   protobuf: (buf) => dagPB.util.deserialize(buf),
   raw: (buf) => buf

@@ -1,23 +1,18 @@
 'use strict'
 
-const CID = require('cids')
+const addAll = require('./add-all')
+const last = require('it-last')
 const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
 
-module.exports = configure(api => {
-  return async (paths, options = {}) => {
-    paths = Array.isArray(paths) ? paths : [paths]
+module.exports = (options) => {
+  const all = addAll(options)
 
-    const res = await (await api.post('pin/add', {
-      timeout: options.timeout,
-      signal: options.signal,
-      searchParams: toUrlSearchParams({
-        arg: paths.map(path => `${path}`),
+  return configure(() => {
+    return async function add (path, options = {}) { // eslint-disable-line require-await
+      return last(all({
+        path,
         ...options
-      }),
-      headers: options.headers
-    })).json()
-
-    return (res.Pins || []).map(cid => ({ cid: new CID(cid) }))
-  }
-})
+      }, options))
+    }
+  })(options)
+}

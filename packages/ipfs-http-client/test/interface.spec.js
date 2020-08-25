@@ -550,7 +550,14 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.pin(commonFactory)
+  tests.pin(commonFactory, {
+    skip: [
+      {
+        name: 'should list pins with metadata',
+        reason: 'not implemented in go-ipfs'
+      }
+    ]
+  })
 
   tests.ping(commonFactory, {
     skip: [

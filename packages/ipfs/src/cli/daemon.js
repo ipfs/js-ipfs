@@ -29,7 +29,7 @@ class Daemon {
     log('starting')
 
     const repo = typeof this._options.repo === 'string' || this._options.repo == null
-      ? createRepo({ path: this._options.repo, autoMigrate: this._options.repoAutoMigrate })
+      ? createRepo({ path: this._options.repo, autoMigrate: this._options.repoAutoMigrate, silent: this._options.silent })
       : this._options.repo
 
     // start the daemon

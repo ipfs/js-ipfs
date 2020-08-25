@@ -2,18 +2,16 @@
 'use strict'
 
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
 const multihash = require('multihashes')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 
 const IpfsHttpClient = require('../')
 
 describe('exports', () => {
   it('should export the expected types and utilities', () => {
-    expect(IpfsHttpClient.Buffer).to.equal(Buffer)
     expect(IpfsHttpClient.CID).to.equal(CID)
     expect(IpfsHttpClient.multiaddr).to.equal(multiaddr)
     expect(IpfsHttpClient.multibase).to.equal(multibase)

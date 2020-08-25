@@ -367,6 +367,8 @@ const encodeFileContent = (content, transfer) => {
     return content
   } else if (content instanceof Blob) {
     return content
+  } else if (typeof content === 'string') {
+    return content
   } else {
     const iterable = asIterable(content)
     if (iterable) {

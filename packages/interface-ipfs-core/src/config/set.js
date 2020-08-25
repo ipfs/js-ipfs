@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
@@ -81,7 +81,7 @@ module.exports = (common, options) => {
     })
 
     it('should fail on non valid key', () => {
-      return expect(ipfs.config.set(Buffer.from('heeey'), '')).to.eventually.be.rejected()
+      return expect(ipfs.config.set(uint8ArrayFromString('heeey'), '')).to.eventually.be.rejected()
     })
 
     it('should fail on non valid value', () => {

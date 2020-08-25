@@ -2,9 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const FormData = require('form-data')
-const { Buffer } = require('buffer')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
 const testHttpMethod = require('../../utils/test-http-method')
