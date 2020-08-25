@@ -17,10 +17,7 @@ const mfsMkdir = {
         mtimeNsecs: Joi.number().integer().min(0),
         parents: Joi.boolean().default(false),
         hashAlg: Joi.string().default('sha2-256'),
-        cidVersion: Joi.number().integer().valid([
-          0,
-          1
-        ]).default(0),
+        cidVersion: Joi.number().integer().valid(0, 1).default(0),
         flush: Joi.boolean().default(true),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000),
         timeout: Joi.timeout()

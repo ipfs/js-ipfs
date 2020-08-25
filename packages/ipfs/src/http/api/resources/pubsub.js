@@ -83,6 +83,9 @@ exports.publish = {
       parse: false,
       output: 'stream'
     },
+    response: {
+      emptyStatusCode: 200
+    },
     pre: [{
       assign: 'data',
       method: async (request, h) => {

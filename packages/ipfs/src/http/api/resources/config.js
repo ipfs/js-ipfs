@@ -232,6 +232,9 @@ exports.replace = {
       parse: false,
       output: 'stream'
     },
+    response: {
+      emptyStatusCode: 200
+    },
     pre: [{
       assign: 'args',
       method: async (request, h) => {

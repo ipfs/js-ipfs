@@ -217,6 +217,9 @@ exports.provide = {
           override: true,
           ignoreUndefined: true
         })
+    },
+    response: {
+      emptyStatusCode: 200
     }
   },
   async handler (request, h) {
@@ -255,6 +258,9 @@ exports.put = {
         arg: Joi.array().length(2).items(Joi.binary()).required(),
         timeout: Joi.timeout()
       })
+    },
+    response: {
+      emptyStatusCode: 200
     }
   },
   async handler (request, h) {

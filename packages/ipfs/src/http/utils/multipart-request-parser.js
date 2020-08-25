@@ -5,6 +5,7 @@ const multipart = require('it-multipart')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const qs = require('querystring')
+const drain = require('it-drain')
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
@@ -39,12 +40,6 @@ const collect = async (stream) => {
   }
 
   return uint8ArrayConcat(buffers, size)
-}
-
-const ignore = async (stream) => {
-  for await (const _ of stream) { // eslint-disable-line no-unused-vars
-
-  }
 }
 
 async function * parseEntry (stream, options) {
@@ -113,7 +108,7 @@ async function * parser (stream, options) {
         mode: entry.mode
       }
 
-      await ignore(entry.body)
+      await drain(entry.body)
     }
 
     if (entry.type === 'symlink') {
