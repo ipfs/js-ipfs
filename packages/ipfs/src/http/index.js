@@ -76,7 +76,7 @@ class HttpApi {
       routes: {
         cors: true,
         response: {
-            emptyStatusCode: 200
+          emptyStatusCode: 200
         }
       },
       // Disable Compression
@@ -176,7 +176,7 @@ class HttpApi {
       routes: {
         cors: true,
         response: {
-            emptyStatusCode: 200
+          emptyStatusCode: 200
         }
       }
     })

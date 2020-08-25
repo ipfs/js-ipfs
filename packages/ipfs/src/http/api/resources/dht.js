@@ -217,7 +217,7 @@ exports.provide = {
           override: true,
           ignoreUndefined: true
         })
-    },
+    }
   },
   async handler (request, h) {
     const {
@@ -255,7 +255,7 @@ exports.put = {
         arg: Joi.array().length(2).items(Joi.binary()).required(),
         timeout: Joi.timeout()
       })
-    },
+    }
   },
   async handler (request, h) {
     const {
