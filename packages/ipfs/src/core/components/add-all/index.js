@@ -7,7 +7,7 @@ const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array|Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
+ * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  *
  * @typedef {object} FileObject
  *  - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID.
