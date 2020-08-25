@@ -218,9 +218,6 @@ exports.provide = {
           ignoreUndefined: true
         })
     },
-    response: {
-      emptyStatusCode: 200
-    }
   },
   async handler (request, h) {
     const {
@@ -259,9 +256,6 @@ exports.put = {
         timeout: Joi.timeout()
       })
     },
-    response: {
-      emptyStatusCode: 200
-    }
   },
   async handler (request, h) {
     const {

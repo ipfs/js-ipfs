@@ -37,17 +37,19 @@ const toCID = (value) => {
   return new CID(value.toString().replace('/ipfs/', ''))
 }
 
+const reqiureIfRequired = (value, helpers) => {
+  if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
+    return { value, errors: helpers.error('required') }
+  }
+}
+
 module.exports = Joi
   .extend(
     (joi) => {
       return {
         type: 'cid',
         base: joi.any(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -61,11 +63,7 @@ module.exports = Joi
       return {
         type: 'ipfsPath',
         base: joi.string(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -79,11 +77,7 @@ module.exports = Joi
       return {
         type: 'peerId',
         base: joi.string(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -97,11 +91,7 @@ module.exports = Joi
       return {
         type: 'multiaddr',
         base: joi.string(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -115,11 +105,7 @@ module.exports = Joi
       return {
         type: 'timeout',
         base: joi.number(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -133,11 +119,7 @@ module.exports = Joi
       return {
         type: 'cidAndPath',
         base: joi.any(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -151,11 +133,7 @@ module.exports = Joi
       return {
         type: 'cidBase',
         base: joi.string(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
@@ -173,11 +151,7 @@ module.exports = Joi
       return {
         type: 'json',
         base: joi.any(),
-        validate (value, helpers) {
-          if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
-            return { value, errors: helpers.error('required') }
-          }
-        },
+        validate: reqiureIfRequired,
         coerce (value, helpers) {
           if (!value) {
             return
