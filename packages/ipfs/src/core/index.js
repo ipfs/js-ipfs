@@ -106,7 +106,7 @@ async function create (options) {
   }, async () => { throw new NotInitializedError() }) // eslint-disable-line require-await
 
   const initializedApi = options.init && await api.init()
-  const startedApi = options.start && await initializedApi.start()
+  const startedApi = options.start && initializedApi && await initializedApi.start()
 
   /**
    * @template T, THEN, ELSE
