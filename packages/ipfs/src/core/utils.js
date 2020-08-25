@@ -150,7 +150,7 @@ const mapFile = (file, options) => {
 
 /**
  * @template {any[]} ARGS
- * @template {Promise<any> | AsyncGenerator} R - The return type of `fn`
+ * @template {Promise<any> | AsyncIterable} R - The return type of `fn`
  * @param {Fn<ARGS, R>} fn
  * @param {number} [optionsArgIndex]
  * @returns {Fn<ARGS, R>}

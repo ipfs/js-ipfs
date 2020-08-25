@@ -110,7 +110,8 @@ async function create (options) {
 
   /**
    * @template T, THEN, ELSE
-   * @typedef {NonNullable<T> extends false ? THEN : ELSE} IsFalse
+   * @typedef {NonNullable<T> extends false
+   *            ? THEN : ELSE } IsFalse
    */
   /** @type {IsFalse<INIT, typeof api, IsFalse<START, typeof initializedApi, typeof startedApi>>} */
   // @ts-ignore
