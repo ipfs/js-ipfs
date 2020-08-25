@@ -7,7 +7,7 @@ const shuffle = require('array-shuffle')
 const { AbortController } = require('abort-controller')
 const preload = require('./runtime/preload-nodejs')
 
-const log = Object.assign({},
+const log = Object.assign(
   debug('ipfs:preload'),
   { error: debug('ipfs:preload:error') }
 )

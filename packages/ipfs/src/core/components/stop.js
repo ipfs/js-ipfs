@@ -115,7 +115,7 @@ function createApi ({
 
   const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
   const resolve = Components.resolve({ ipld })
-  const refs = Object.assign({},
+  const refs = Object.assign(
     Components.refs({ ipld, resolve, preload }),
     { local: Components.refs.local({ repo }) }
   )

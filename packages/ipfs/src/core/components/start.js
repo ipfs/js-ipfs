@@ -230,7 +230,7 @@ function createApi ({
     resolve: Components.name.resolve({ dns, ipns, peerId, isOnline, options: constructorOptions })
   }
   const resolve = Components.resolve({ name, ipld })
-  const refs = Object.assign({},
+  const refs = Object.assign(
     Components.refs({ ipld, resolve, preload }),
     { local: Components.refs.local({ repo }) }
   )
