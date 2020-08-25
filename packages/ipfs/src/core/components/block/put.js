@@ -7,7 +7,29 @@ const isIPFS = require('is-ipfs')
 const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ blockService, pin, gcLock, preload }) => {
-  return withTimeoutOption(async function put (block, options) {
+  /**
+   * @typedef {import('cids')} CID
+   * @typedef {import('ipld-block')} Block
+   */
+
+  /**
+   * Stores input as an IPFS block.
+   *
+   * @param {Buffer | Block} block - The block or data to store
+   * @param {object} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
+   * @param {CID} [options.cid] - A CID to store the block under (default: `undefined`)
+   * @param {string} [options.format] - The codec to use to create the CID (default: `'dag-pb'`)
+   * @param {string} [options.mhtype] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
+   * @param {number} [options.mhlen]
+   * @param {number} [options.version] - The version to use to create the CID (default: `0`)
+   * @param {boolean} [options.pin] - If true, pin added blocks recursively (default: `false`)
+   * @param {boolean} [options.preload] - (default: `true`)
+   * @param {number} [options.timeout] - A timeout in ms (default: `undefined`)
+   * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
+   *
+   * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
+   */
+  async function put (block, options) {
     options = options || {}
 
     if (Array.isArray(block)) {
@@ -58,5 +80,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(put)
 }
