@@ -128,7 +128,7 @@
     "joi": "^17.2.1",
     "jsondiffpatch": "^0.4.1",
     "just-safe-set": "^2.1.0",
-    "libp2p": "libp2p/js-libp2p#0.29.x",
+    "libp2p": "^0.29.0-rc.0",
     "libp2p-bootstrap": "^0.12.0",
     "libp2p-crypto": "^0.18.0",
     "libp2p-delegated-content-routing": "^0.6.0",
