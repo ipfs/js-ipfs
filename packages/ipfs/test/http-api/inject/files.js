@@ -107,6 +107,17 @@ describe('/files', () => {
         '------------287032381131322--'
       ].join('\r\n'))
 
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
+        path: cid.toString(),
+        cid,
+        size: 1024 * 1024 * 2,
+        mode: 0o420,
+        mtime: {
+          secs: 100,
+          nsecs: 0
+        }
+      }])
+
       const res = await http({
         method: 'POST',
         url: '/api/v0/add',

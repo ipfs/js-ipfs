@@ -6,11 +6,7 @@
   "version": "independent",
   "command": {
     "bootstrap": {
-      "hoist": true,
-      "nohoist": [
-        "libp2p-delegated-content-routing",
-        "libp2p-delegated-peer-routing"
-      ]
+      "hoist": true
     },
     "run": {
       "stream": true

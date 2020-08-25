@@ -301,6 +301,7 @@ function applyProfiles (profiles, config) {
 
 function createApi ({
   add,
+  addAll,
   apiManager,
   constructorOptions,
   block,
@@ -328,6 +329,7 @@ function createApi ({
 
   const api = {
     add,
+    addAll,
     bitswap: {
       stat: notStarted,
       unwant: notStarted,

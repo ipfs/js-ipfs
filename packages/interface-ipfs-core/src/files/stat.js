@@ -25,7 +25,7 @@ module.exports = (common, options) => {
   const largeFile = randomBytes(490668)
 
   describe('.files.stat', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 

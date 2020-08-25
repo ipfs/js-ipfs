@@ -21,7 +21,7 @@ module.exports = (common, options) => {
   const smallFile = randomBytes(13)
 
   describe('.files.read', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
