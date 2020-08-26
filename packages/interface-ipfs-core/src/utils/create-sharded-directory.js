@@ -14,7 +14,10 @@ module.exports = async (ipfs, files = 1001) => {
         content: Uint8Array.from([0, 1, 2, 3, 4, 5, i])
       }
     }
-  }()))
+  }(), {
+    preload: false,
+    pin: false
+  }))
 
   await ipfs.files.cp(`/ipfs/${result.cid}`, dirPath)
 
