@@ -734,8 +734,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
@@ -757,8 +755,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
@@ -778,8 +774,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
