@@ -10,25 +10,18 @@ async function startServer (dir) {
   async function serveFrom (appDir) {
     return new Promise((resolve, reject) => {
       let output = ''
+      const port = ephemeralPort()
 
-      const proc = execa.command(`${path.resolve(__dirname, 'node_modules/.bin/http-server')} ${appDir} -a 127.0.0.1`, {
+      const proc = execa.command(`${path.resolve(__dirname, 'node_modules/.bin/http-server')} ${appDir} -a 127.0.0.1 -p ${port}`, {
         cwd: __dirname,
         all: true
       })
       proc.all.on('data', (data) => {
         process.stdout.write(data)
 
-        const line = uint8ArrayToString(data)
-        output += line
+        output += uint8ArrayToString(data)
 
         if (output.includes('Hit CTRL-C to stop the server')) {
-          // find the port
-          const port = output.match(/http:\/\/127.0.0.1:(\d+)/)[1]
-
-          if (!port) {
-            throw new Error(`Could not find port in ${output}`)
-          }
-
           resolve({
             stop: () => {
               console.info('Stopping server')

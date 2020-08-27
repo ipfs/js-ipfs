@@ -58,7 +58,7 @@ module.exports = (common, options) => {
   }
 
   describe('.files.write', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
@@ -734,8 +734,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
@@ -757,8 +755,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
@@ -778,8 +774,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,
@@ -801,8 +795,6 @@ module.exports = (common, options) => {
     })
 
     it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
-      this.timeout(60000)
-
       const {
         nextFile,
         dirWithSomeFiles,

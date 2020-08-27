@@ -7,6 +7,7 @@ const Multiaddr = require('multiaddr')
 const WebRTCStar = require('libp2p-webrtc-star')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
+const ipfsHttpClient = require('ipfs-http-client')
 const IPFS = require('../core')
 const HttpApi = require('../http')
 const createRepo = require('../core/runtime/repo-nodejs')
@@ -90,18 +91,20 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
     // Pick a random delegate host
     const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
     const delegateAddr = Multiaddr(delegateString).toOptions()
-    const delegatedApiOptions = {
+    const delegateApiOptions = {
       host: delegateAddr.host,
       // port is a string atm, so we need to convert for the check
       protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
       port: delegateAddr.port
     }
 
+    const delegateHttpClient = ipfsHttpClient(delegateApiOptions)
+
     libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
-    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegatedApiOptions))
+    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegateHttpClient))
 
     libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
-    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegatedApiOptions))
+    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegateHttpClient))
   }
 
   const Libp2p = require('libp2p')

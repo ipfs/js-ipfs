@@ -15,14 +15,14 @@
   "license": "MIT",
   "dependencies": {
     "delay": "^4.3.0",
-    "ipfs": "^0.49.0",
+    "ipfs": "^0.49.1",
     "ipfs-pubsub-room": "^2.0.1",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
     "execa": "^4.0.0",
     "ipfs-css": "^0.13.1",
-    "ipfs-http-client": "^46.0.0",
+    "ipfs-http-client": "^46.0.1",
     "parcel-bundler": "^1.12.4",
     "tachyons": "^4.11.1",
     "test-ipfs-example": "^2.0.3"
