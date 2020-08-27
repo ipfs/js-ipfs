@@ -61,6 +61,7 @@ The Peer identity has the following properties:
 - `addresses: Multiaddr[]` - A list of multiaddrs this node is listening on
 - `agentVersion: String` - The agent version
 - `protocolVersion: String` - The supported protocol version
+- `protocols: String[]` - The supported protocols
 
 ### Example
 
