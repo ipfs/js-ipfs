@@ -40,7 +40,7 @@
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:browser:http": "aegir test -t browser -f test/http-api/index.js",
-    "test:webworker": "aegir test -t webworker",
+    "test:webworker": "aegir test -t webworker -- --timeout 10000",
     "test:electron": "aegir test -t electron-main  -t electron-renderer",
     "test:electron-main": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
