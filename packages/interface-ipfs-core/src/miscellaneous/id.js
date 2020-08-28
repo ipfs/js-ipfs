@@ -44,5 +44,11 @@ module.exports = (common, options) => {
         expect(Multiaddr.isMultiaddr(ma)).to.be.true()
       }
     })
+
+    it('should have protocols property', async () => {
+      const res = await ipfs.id()
+
+      expect(res).to.have.a.property('protocols').that.is.an('array')
+    })
   })
 }
