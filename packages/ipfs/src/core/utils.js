@@ -149,6 +149,12 @@ const mapFile = (file, options) => {
  */
 
 /**
+ * @typedef {object} AbortOptions
+ * @property {number} [timeout] - A timeout in ms
+ * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call
+ */
+
+/**
  * @template {any[]} ARGS
  * @template {Promise<any> | AsyncIterable} R - The return type of `fn`
  * @param {Fn<ARGS, R>} fn

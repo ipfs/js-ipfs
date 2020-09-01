@@ -35,30 +35,35 @@ const { withTimeoutOption } = require('../../utils')
  * @property {number} size
  */
 
+/**
+ * @typedef {object} AddAllOptions
+ * @property {string} [chunker] - chunking algorithm used to build ipfs DAGs (default: `'size-262144'`)
+ * @property {Number} [cidVersion] - the CID version to use when storing the data (default: `0`)
+ * @property {boolean} [enableShardingExperiment] - allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature (default: `false`)
+ * @property {String} [hashAlg] - multihash hashing algorithm to use (default: `'sha2-256'`)
+ * @property {boolean} [onlyHash] - If true, will not add blocks to the blockstore (default: `false`)
+ * @property {boolean} [pin] - pin this object when adding (default: `true`)
+ * @property {function} [progress] - a function that will be called with the byte length of chunks as a file is added to ipfs (default: `undefined`)
+ * @property {boolean} [rawLeaves] - if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (default: `false`)
+ * @property {Number} [shardSplitThreshold] - Directories with more than this number of files will be created as HAMT-sharded directories (default: `1000`)
+ * @property {boolean} [trickle] - if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation (default: `false`)
+ * @property {boolean} [wrapWithDirectory] - Adds a wrapping node around the content (default: `false`)
+ */
+
+/**
+ * @template {Record<string, any>} ExtraOptions
+ * @callback AddAll - Import multiple files and data into IPFS.
+ * @param {FileStream} source
+ * @param {AddAllOptions & import('../../utils').AbortOptions & ExtraOptions} [options]
+ * @returns {AsyncIterable<UnixFSEntry>}
+ */
+
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
 
+  // eslint-disable-next-line valid-jsdoc
   /**
-   * Import multiple files and data into IPFS.
-   *
-   * @param {FileStream} source
-   *
-   * @param {object} [options]
-   * @param {string} [options.chunker] - chunking algorithm used to build ipfs DAGs (default: `'size-262144'`)
-   * @param {Number} [options.cidVersion] - the CID version to use when storing the data (default: `0`)
-   * @param {boolean} [options.enableShardingExperiment] - allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature (default: `false`)
-   * @param {String} [options.hashAlg] - multihash hashing algorithm to use (default: `'sha2-256'`)
-   * @param {boolean} [options.onlyHash] - If true, will not add blocks to the blockstore (default: `false`)
-   * @param {boolean} [options.pin] - pin this object when adding (default: `true`)
-   * @param {function} [options.progress] - a function that will be called with the byte length of chunks as a file is added to ipfs (default: `undefined`)
-   * @param {boolean} [options.rawLeaves] - if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (default: `false`)
-   * @param {Number} [options.shardSplitThreshold] - Directories with more than this number of files will be created as HAMT-sharded directories (default: `1000`)
-   * @param {boolean} [options.trickle] - if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation (default: `false`)
-   * @param {boolean} [options.wrapWithDirectory] - Adds a wrapping node around the content (default: `false`)
-   * @param {Number} [options.timeout] - A timeout in ms (default: `undefined`)
-   * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
-
-   * @returns {AsyncIterable<UnixFSEntry>}
+   * @type {AddAll<{}>}
    */
   async function * addAll (source, options) {
     options = options || {}
