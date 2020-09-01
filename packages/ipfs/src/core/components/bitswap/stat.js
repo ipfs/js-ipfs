@@ -17,15 +17,18 @@ const { withTimeoutOption } = require('../../utils')
  * @property {Big} dupDataReceived
  */
 
+/**
+ * Show diagnostic information on the bitswap agent.
+ * @template {Record<string, any>} ExtraOptions
+ * @callback Stat
+ * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
+ * @returns {Promise<BitswapStats>}
+ */
+
 module.exports = ({ bitswap }) => {
+  // eslint-disable-next-line valid-jsdoc
   /**
-   * Show diagnostic information on the bitswap agent.
-   *
-   * @param {object} [options]
-   * @param {Number} [options.timeout] - A timeout in ms (default: `undefined`)
-   * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
-   *
-   * @returns {Promise<BitswapStats>}
+   * @type {Stat<{}>}
    */
   async function stat (options) { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
     const snapshot = bitswap.stat().snapshot

@@ -6,28 +6,35 @@ const CID = require('cids')
 const isIPFS = require('is-ipfs')
 const { withTimeoutOption } = require('../../utils')
 
-module.exports = ({ blockService, pin, gcLock, preload }) => {
-  /**
-   * @typedef {import('cids')} CID
-   * @typedef {import('ipld-block')} Block
-   */
+/**
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipld-block')} Block
+ * @typedef {0 | 1} CidVersion
+ */
 
+/**
+ * @typedef {object} BlockPutOptions
+ * @property {CID} [cid] - A CID to store the block under (default: `undefined`)
+ * @property {string} [format] - The codec to use to create the CID (default: `'dag-pb'`)
+ * @property {string} [mhtype] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
+ * @property {number} [mhlen]
+ * @property {CidVersion} [version] - The version to use to create the CID (default: `0`)
+ * @property {boolean} [pin] - If true, pin added blocks recursively (default: `false`)
+ */
+
+/**
+ * Stores input as an IPFS block.
+ * @template {Record<string, any>} ExtraOptions
+ * @callback BlockPut
+ * @param {Buffer | Block} block - The block or data to store
+ * @param {BlockPutOptions & import('../../utils').AbortOptions & ExtraOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
+ * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
+ */
+
+module.exports = ({ blockService, pin, gcLock, preload }) => {
+  // eslint-disable-next-line valid-jsdoc
   /**
-   * Stores input as an IPFS block.
-   *
-   * @param {Buffer | Block} block - The block or data to store
-   * @param {object} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
-   * @param {CID} [options.cid] - A CID to store the block under (default: `undefined`)
-   * @param {string} [options.format] - The codec to use to create the CID (default: `'dag-pb'`)
-   * @param {string} [options.mhtype] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
-   * @param {number} [options.mhlen]
-   * @param {number} [options.version] - The version to use to create the CID (default: `0`)
-   * @param {boolean} [options.pin] - If true, pin added blocks recursively (default: `false`)
-   * @param {boolean} [options.preload] - (default: `true`)
-   * @param {number} [options.timeout] - A timeout in ms (default: `undefined`)
-   * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call (default: `undefined`)
-   *
-   * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
+   * @type {BlockPut<import('./get').PreloadOptions>}
    */
   async function put (block, options) {
     options = options || {}
@@ -42,6 +49,8 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
       } else {
         const mhtype = options.mhtype || 'sha2-256'
         const format = options.format || 'dag-pb'
+
+        /** @type {CidVersion} */
         let cidVersion
 
         if (options.version == null) {
