@@ -49,6 +49,19 @@ module.exports = (common, options) => {
       const res = await ipfs.id()
 
       expect(res).to.have.a.property('protocols').that.is.an('array')
+
+      expect(res.protocols).to.have.members([
+        "/floodsub/1.0.0",
+        "/ipfs/bitswap/1.0.0",
+        "/ipfs/bitswap/1.1.0",
+        "/ipfs/bitswap/1.2.0",
+        "/ipfs/id/1.0.0",
+        "/ipfs/id/push/1.0.0",
+        "/ipfs/ping/1.0.0",
+        "/libp2p/circuit/relay/0.1.0",
+        "/meshsub/1.0.0",
+        "/meshsub/1.1.0"
+      ])
     })
   })
 }

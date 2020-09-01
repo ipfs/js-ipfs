@@ -14,7 +14,7 @@ module.exports = ({ peerId, libp2p }) => {
     if (libp2p) {
       // only available while the node is running
       addresses = libp2p.transportManager.getAddrs()
-      protocols = libp2p.peerStore.protoBook.get(peerId) || []
+      protocols = Array.from(libp2p.upgrader.protocols.keys())
     }
 
     return {
