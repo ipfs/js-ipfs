@@ -35,7 +35,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs-http-response#readme",
   "dependencies": {
     "debug": "^4.1.1",
-    "file-type": "^14.7.1",
+    "file-type": "^15.0.0",
     "filesize": "^6.1.0",
     "it-buffer": "^0.1.1",
     "it-concat": "^1.0.0",
