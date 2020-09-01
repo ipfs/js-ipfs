@@ -4,7 +4,7 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const anySignal = require('any-signal')
-const AbortController = require('abort-controller')
+const { AbortController } = require('abort-controller')
 
 module.exports = configure(api => {
   return async (topic, data, options = {}) => {
