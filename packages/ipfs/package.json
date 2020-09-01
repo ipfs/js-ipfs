@@ -67,7 +67,7 @@
     "@hapi/content": "^5.0.2",
     "@hapi/hapi": "^20.0.0",
     "abort-controller": "^3.0.0",
-    "any-signal": "^1.1.0",
+    "any-signal": "^2.0.0",
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
     "bl": "^4.0.2",
