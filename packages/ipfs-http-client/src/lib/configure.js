@@ -9,8 +9,19 @@ const Client = require('./core')
  */
 
 /**
- * @param {function(Client, ClientOptions): void} fn
- * @returns {function(ClientOptions): void}
+ * @template T
+ * @typedef {(client: Client, clientOptions: ClientOptions) => T} Fn
+ */
+
+/**
+ * @template T
+ * @typedef {(clientOptions: ClientOptions) => T} Factory
+ */
+
+/**
+ * @template T
+ * @param {Fn<T>} fn
+ * @returns {Factory<T>}
  */
 const configure = (fn) => {
   return (options) => {
