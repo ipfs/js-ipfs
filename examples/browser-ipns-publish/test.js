@@ -132,8 +132,6 @@ module.exports[pkg.name] = function (browser) {
   browser.expect.element("#console").text.to.contain('Publish to IPNS');
   browser.expect.element("#console").text.to.contain('Initial Resolve');
   browser.expect.element("#console").text.to.contain('Published');
-  browser.expect.element("#console").text.to.contain('Wait 5 seconds, then resolve..');
-  browser.pause(5000)
   browser.expect.element("#console").text.to.contain(`IPNS Publish Success!`);
 
   browser.end();

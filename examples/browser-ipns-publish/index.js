@@ -4,12 +4,11 @@ const IpfsHttpClient = require("ipfs-http-client");
 const ipns = require("ipns");
 const IPFS = require("ipfs");
 const pRetry = require("p-retry");
-const base64url = require("base64url");
 const last = require("it-last");
 const cryptoKeys = require("human-crypto-keys"); // { getKeyPairFromSeed }
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { sleep, Logger, onEnterPress, catchAndLog } = require("./util");
-const { Date, Element } = require("ipfs-utils/src/globalthis");
 
 async function main() {
   const apiUrlInput = document.getElementById("api-url");
@@ -188,14 +187,10 @@ async function main() {
     log(`Initial Resolve ${keys.id}`); // subscribes the server to our IPNS topic
     last(ipfsAPI.name.resolve(keys.id, { stream: false })); // save the pubsub topic to the server to make them listen
 
-    await sleep(1000); // give it a moment to save it
-
     // set up the topic from ipns key
     let b58 = await IPFS.multihash.fromB58String(keys.id);
     const ipnsKeys = ipns.getIdKeys(b58);
-    const topic = `${namespace}${base64url.encode(
-      ipnsKeys.routingKey.toBuffer()
-    )}`;
+    const topic = `${namespace}${uint8ArrayToString(ipnsKeys.routingKey, 'base64url')}`;
 
     // subscribe and log on both nodes
     await subs(ipfsBrowser, topic, log); // browserLog
@@ -204,8 +199,6 @@ async function main() {
     // confirm they are subscribed
     await waitForPeerToSubscribe(ipfsAPI, topic); // confirm topic is on THEIR list  // API
     await waitForNotificationOfSubscription(ipfsBrowser, topic, serverNode.id); // confirm they are on OUR list
-
-    await sleep(2500); // give it a moment to save it
 
     let remList = await ipfsAPI.pubsub.ls(); // API
     if (!remList.includes(topic))
@@ -224,9 +217,6 @@ async function main() {
       key: keyName,
     });
     log(`Published ${results.name} to ${results.value}`); //
-
-    log(`Wait 5 seconds, then resolve...`);
-    await sleep(5000);
 
     log(`Try resolve ${keys.id} on server through API`);
 

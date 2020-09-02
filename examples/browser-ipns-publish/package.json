@@ -12,14 +12,14 @@
   "author": "Doug Anderson",
   "license": "MIT",
   "dependencies": {
-    "base64url": "^3.0.1",
     "human-crypto-keys": "^0.1.4",
-    "ipfs": "^0.48.0",
-    "ipfs-http-client": "^45.0.0",
-    "ipfs-utils": "^2.3.1",
-    "ipns": "^0.7.3",
+    "ipfs": "^0.49.1",
+    "ipfs-http-client": "^46.0.1",
+    "ipfs-utils": "^3.0.0",
+    "ipns": "^0.8.0",
     "it-last": "^1.0.2",
-    "p-retry": "^4.2.0"
+    "p-retry": "^4.2.0",
+    "uint8arrays": "1.1.0"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"
@@ -27,7 +27,7 @@
   "devDependencies": {
     "delay": "^4.3.0",
     "execa": "^4.0.0",
-    "ipfsd-ctl": "^5.0.0",
+    "ipfsd-ctl": "^7.0.0",
     "go-ipfs": "^0.6.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
