@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const toIterable = require('stream-to-it/source')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -18,8 +17,6 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    for await (const chunk of toIterable(res.body)) {
-      yield Buffer.from(chunk)
-    }
+    yield * toIterable(res.body)
   }
 })

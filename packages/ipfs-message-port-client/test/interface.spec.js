@@ -65,8 +65,8 @@ describe('interface-ipfs-core tests', () => {
         reason: 'ipfs.object.get is not implemented'
       },
       {
-        name: 'should cat with a Buffer multihash',
-        reason: 'Passing CID as Buffer is not supported'
+        name: 'should cat with a Uint8Array multihash',
+        reason: 'Passing CID as Uint8Array is not supported'
       },
       {
         name: 'should add from a HTTP URL',

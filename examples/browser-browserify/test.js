@@ -9,9 +9,8 @@ module.exports = {
       .waitForElementVisible('#source')
       .setValue('#source', 'hello')
       .waitForElementVisible('#store')
-      .pause(1000)
       .click('#store')
-      .waitForElementVisible('#output')
+      .waitForElementVisible('#output', 5e3, 100)
 
     browser.expect.element('#cid').text.to.contain('QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX')
     browser.expect.element('#content').text.to.contain('hello')

@@ -1,17 +1,17 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const delay = require('delay')
 const multihashing = require('multihashing-async')
 const { nanoid } = require('nanoid')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const CID = require('cids')
 const waitFor = require('../utils/wait-for')
 const mfsPreload = require('../../src/core/mfs-preload')
 
 const fakeCid = async () => {
-  const mh = await multihashing(Buffer.from(nanoid()), 'sha2-256')
+  const mh = await multihashing(uint8ArrayFromString(nanoid()), 'sha2-256')
   return new CID(mh)
 }
 

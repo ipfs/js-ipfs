@@ -2,7 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
@@ -49,7 +49,7 @@ module.exports = (common, options) => {
     })
 
     it('should publish correctly with the lifetime option and resolve', async () => {
-      const { path } = await ipfs.add(Buffer.from('should publish correctly with the lifetime option and resolve'))
+      const { path } = await ipfs.add(uint8ArrayFromString('should publish correctly with the lifetime option and resolve'))
       await ipfs.name.publish(path, { allowOffline: true, resolve: false, lifetime: '2h' })
       expect(await last(ipfs.name.resolve(`/ipns/${nodeId}`))).to.eq(`/ipfs/${path}`)
     })

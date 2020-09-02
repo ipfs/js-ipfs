@@ -4,6 +4,19 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+function toPin (type, cid, metadata) {
+  const pin = {
+    type,
+    cid: new CID(cid)
+  }
+
+  if (metadata) {
+    pin.metadata = metadata
+  }
+
+  return pin
+}
+
 module.exports = configure(api => {
   return async function * ls (options = {}) {
     if (options.paths) {
@@ -22,7 +35,14 @@ module.exports = configure(api => {
     })
 
     for await (const pin of res.ndjson()) {
-      yield { cid: new CID(pin.Cid), type: pin.Type }
+      if (pin.Keys) { // non-streaming response
+        for (const cid of Object.keys(pin.Keys)) {
+          yield toPin(pin.Keys[cid].Type, cid, pin.Keys[cid].Metadata)
+        }
+        return
+      }
+
+      yield toPin(pin.Type, pin.Cid, pin.Metadata)
     }
   }
 })

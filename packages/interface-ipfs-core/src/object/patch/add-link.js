@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
@@ -37,11 +37,11 @@ module.exports = (common, options) => {
 
     it('should add a link to an existing node', async () => {
       const obj = {
-        Data: Buffer.from('patch test object'),
+        Data: uint8ArrayFromString('patch test object'),
         Links: []
       }
       // link to add
-      const node2 = new DAGNode(Buffer.from('some other node'))
+      const node2 = new DAGNode(uint8ArrayFromString('some other node'))
       // note: we need to put the linked obj, otherwise IPFS won't
       // timeout. Reason: it needs the node to get its size
       await ipfs.object.put(node2)
@@ -61,7 +61,7 @@ module.exports = (common, options) => {
 
       /* TODO: revisit this assertions.
       // note: make sure we can link js plain objects
-      const content = Buffer.from(JSON.stringify({
+      const content = uint8ArrayFromString(JSON.stringify({
         title: 'serialized object'
       }, null, 0))
       const result = await ipfs.add(content)

@@ -3,8 +3,8 @@
 
 'use strict'
 
-const { Buffer } = require('buffer')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const { expect } = require('aegir/utils/chai')
 const ipldDagPb = require('ipld-dag-pb')
 const { DAGNode } = ipldDagPb
 const CID = require('cids')
@@ -22,7 +22,7 @@ describe('.dag', function () {
   after(() => f.clean())
 
   it('should be able to put and get a DAG node with format dag-pb', async () => {
-    const data = Buffer.from('some data')
+    const data = uint8ArrayFromString('some data')
     const node = new DAGNode(data)
 
     let cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' })
@@ -50,7 +50,7 @@ describe('.dag', function () {
   })
 
   it('should be able to put and get a DAG node with format raw', async () => {
-    const node = Buffer.from('some data')
+    const node = uint8ArrayFromString('some data')
     let cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
 
     expect(cid.codec).to.equal('raw')
@@ -63,7 +63,7 @@ describe('.dag', function () {
   })
 
   it('should error when missing DAG resolver for multicodec from requested CID', async () => {
-    const block = await ipfs.block.put(Buffer.from([0, 1, 2, 3]), {
+    const block = await ipfs.block.put(Uint8Array.from([0, 1, 2, 3]), {
       cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })
 
@@ -71,7 +71,7 @@ describe('.dag', function () {
   })
 
   it('should error when putting node with esoteric format', () => {
-    const node = Buffer.from('some data')
+    const node = uint8ArrayFromString('some data')
 
     return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/Format unsupported/)
   })
@@ -92,7 +92,7 @@ describe('.dag', function () {
       }
     })
 
-    const node = Buffer.from('some data')
+    const node = uint8ArrayFromString('some data')
 
     // error is from go-ipfs, this means the client serialized it ok
     await expect(ipfs2.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/no parser for format "git-raw"/)
@@ -118,7 +118,7 @@ describe('.dag', function () {
       hashAlg: 'sha2-256'
     })
 
-    const dagPbNode = new DAGNode(Buffer.alloc(0), [], 0)
+    const dagPbNode = new DAGNode(new Uint8Array(0), [], 0)
     const cid2 = await ipfs2.dag.put(dagPbNode, {
       format: 'dag-pb',
       hashAlg: 'sha2-256'

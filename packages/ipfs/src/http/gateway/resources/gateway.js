@@ -1,7 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const last = require('it-last')
@@ -192,7 +193,7 @@ module.exports = {
         // encode CID/FQDN in base32 (Suborigin allows only a-z)
         const ipnsOrigin = isIPFS.cid(root)
           ? cidToString(root, { base: 'base32' })
-          : multibase.encode('base32', Buffer.from(root)).toString()
+          : uint8ArrayToString(multibase.encode('base32', uint8ArrayFromString(root)))
         response.header('Suborigin', `ipns000${ipnsOrigin}`)
       }
     }

@@ -32,10 +32,10 @@ module.exports = configure((api) => {
     for await (let file of res.ndjson()) {
       file = toCamel(file)
 
-      if (progressFn && file.bytes) {
-        progressFn(file.bytes)
-      } else {
+      if (file.hash !== undefined) {
         yield toCoreInterface(file)
+      } else if (progressFn) {
+        progressFn(file.bytes || 0)
       }
     }
   }

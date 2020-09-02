@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const collect = require('it-all')
 const { encodeError } = require('ipfs-message-port-protocol/src/error')
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
@@ -70,11 +69,8 @@ class BlockService {
    */
   async put (query) {
     const input = query.block
-    /** @type {Buffer|Block} */
-    const block =
-      input instanceof Uint8Array
-        ? Buffer.from(input.buffer, input.byteOffset, input.byteLength)
-        : decodeBlock(input)
+    /** @type {Uint8Array|Block} */
+    const block = input instanceof Uint8Array ? input : decodeBlock(input)
     const result = await this.ipfs.block.put(block, {
       ...query,
       cid: query.cid ? decodeCID(query.cid) : query.cid

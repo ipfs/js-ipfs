@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const CID = require('cids')
 const createShardedDirectory = require('../utils/create-sharded-directory')
@@ -27,7 +27,7 @@ module.exports = (common, options) => {
   const largeFile = randomBytes(490668)
 
   describe('.files.ls', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
@@ -41,7 +41,7 @@ module.exports = (common, options) => {
 
     it('lists the root directory', async () => {
       const fileName = `small-file-${Math.random()}.txt`
-      const content = Buffer.from('Hello world')
+      const content = uint8ArrayFromString('Hello world')
 
       await ipfs.files.write(`/${fileName}`, content, {
         create: true
@@ -68,7 +68,7 @@ module.exports = (common, options) => {
     it('lists files in a directory', async () => {
       const dirName = `dir-${Math.random()}`
       const fileName = `small-file-${Math.random()}.txt`
-      const content = Buffer.from('Hello world')
+      const content = uint8ArrayFromString('Hello world')
 
       await ipfs.files.write(`/${dirName}/${fileName}`, content, {
         create: true,
@@ -87,7 +87,7 @@ module.exports = (common, options) => {
 
     it('lists a file', async () => {
       const fileName = `small-file-${Math.random()}.txt`
-      const content = Buffer.from('Hello world')
+      const content = uint8ArrayFromString('Hello world')
 
       await ipfs.files.write(`/${fileName}`, content, {
         create: true
@@ -194,7 +194,7 @@ module.exports = (common, options) => {
       const fileName = `small-file-${Math.random()}.txt`
 
       await ipfs.files.mkdir(`${dirPath}`)
-      await ipfs.files.write(`${dirPath}/${fileName}`, Buffer.from([0, 1, 2, 3]), {
+      await ipfs.files.write(`${dirPath}/${fileName}`, Uint8Array.from([0, 1, 2, 3]), {
         create: true
       })
 

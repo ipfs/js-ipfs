@@ -1,46 +1,27 @@
 "use strict";
 
-const fs = require("fs-extra");
-const path = require("path");
-const execa = require("execa");
-const which = require("which");
+const fs = require('fs-extra')
+const path = require('path')
+const execa = require('execa')
+const which = require('which')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function startServer(dir) {
   async function serveFrom(appDir) {
     return new Promise((resolve, reject) => {
-      let output = "";
+      let output = ''
+      const port = ephemeralPort()
 
-      const proc = execa.command(
-        `${path.resolve(
-          __dirname,
-          "node_modules/.bin/http-server"
-        )} ${appDir} -a 127.0.0.1`,
-        {
-          cwd: __dirname,
-          all: true,
-        }
-      );
-      proc.all.on("data", (data) => {
-        process.stdout.write(data);
+      const proc = execa.command(`${path.resolve(__dirname, 'node_modules/.bin/http-server')} ${appDir} -a 127.0.0.1 -p ${port}`, {
+        cwd: __dirname,
+        all: true
+      })
+      proc.all.on('data', (data) => {
+        process.stdout.write(data)
 
-        const line = data.toString("utf8");
-        output += line;
-        
-        let port;
-        if (output.includes("Hit CTRL-C to stop the server")) {
-          // windows hack, windows inserts a bunch of unicode around the port 
-          if (output.includes(`\u001b[32m`)) {
-            port = output.split(`\u001b[32m`)[1].split(`\u001b[39m`)[0];
-          } else {
-            // find the port
-            const regex = /http:\/\/127.0.0.1:(\d+)/; //|(?<=\\u001b\[32m)(.\d+?)(?=\\u001b\[39m)/; // positive lookbehind regex didn't work
-            port = output.match(regex)[output.match(regex).length - 1];
-          }
+        output += uint8ArrayToString(data)
 
-          if (!port) {
-            throw new Error(`Could not find port in ${output}`);
-          }
-
+        if (output.includes('Hit CTRL-C to stop the server')) {
           resolve({
             stop: () => {
               console.info("Stopping server");
@@ -147,9 +128,9 @@ async function waitForOutput(expectedOutput, command, args = [], opts = {}) {
     };
   });
 
-  proc.all.on("data", (data) => {
-    process.stdout.write(data);
-    output += data.toString("utf8");
+  proc.all.on('data', (data) => {
+    process.stdout.write(data)
+    output += uint8ArrayToString(data)
 
     if (output.includes(expectedOutput)) {
       foundExpectedOutput = true;

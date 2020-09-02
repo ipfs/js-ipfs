@@ -7,7 +7,7 @@ const parseDuration = require('parse-duration').default
 module.exports = {
   command: 'add <ipfsPath...>',
 
-  describe: 'Pins object to local storage.',
+  describe: 'Pins object to local storage, preventing it from being garbage collected',
 
   builder: {
     recursive: {
@@ -24,14 +24,43 @@ module.exports = {
     timeout: {
       type: 'string',
       coerce: parseDuration
+    },
+    metadata: {
+      describe: 'Metadata to add to the pin',
+      type: 'string',
+      alias: 'm',
+      coerce: (val) => {
+        if (!val) {
+          return
+        }
+
+        const output = {}
+
+        val.split(',').forEach(line => {
+          const parts = line.split('=')
+          output[parts[0]] = parts[1]
+        })
+
+        return output
+      }
+    },
+    'metadata-json': {
+      describe: 'Metadata to add to the pin in JSON format',
+      type: 'string',
+      coerce: JSON.parse
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, ipfsPath, recursive, cidBase, timeout }) {
+  async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, metadata, metadataJson }) {
+    const { ipfs, print } = ctx
     const type = recursive ? 'recursive' : 'direct'
-    const results = await ipfs.pin.add(ipfsPath, { recursive, timeout })
-    results.forEach((res) => {
+
+    if (metadataJson) {
+      metadata = metadataJson
+    }
+
+    for await (const res of ipfs.pin.addAll(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
       print(`pinned ${cidToString(res.cid, { base: cidBase })} ${type}ly`)
-    })
+    }
   }
 }

@@ -1,6 +1,6 @@
 'use strict'
 /* eslint-env browser */
-const { Buffer } = require('buffer')
+
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
@@ -56,6 +56,6 @@ function ipfsClient (options = {}) {
   }
 }
 
-Object.assign(ipfsClient, { Buffer, CID, multiaddr, multibase, multicodec, multihash, globSource, urlSource })
+Object.assign(ipfsClient, { CID, multiaddr, multibase, multicodec, multihash, globSource, urlSource })
 
 module.exports = ipfsClient

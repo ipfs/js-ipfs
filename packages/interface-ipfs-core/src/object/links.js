@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
@@ -38,7 +38,7 @@ module.exports = (common, options) => {
 
     it('should get empty links by multihash', async () => {
       const testObj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -50,8 +50,8 @@ module.exports = (common, options) => {
     })
 
     it('should get links by multihash', async () => {
-      const node1a = new DAGNode(Buffer.from('Some data 1'))
-      const node2 = new DAGNode(Buffer.from('Some data 2'))
+      const node1a = new DAGNode(uint8ArrayFromString('Some data 1'))
+      const node2 = new DAGNode(uint8ArrayFromString('Some data 2'))
 
       const link = await asDAGLink(node2, 'some-link')
 
@@ -66,20 +66,20 @@ module.exports = (common, options) => {
 
     it('should get links by base58 encoded multihash', async () => {
       const testObj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
       const cid = await ipfs.object.put(testObj)
       const node = await ipfs.object.get(cid)
 
-      const links = await ipfs.object.links(cid.buffer, { enc: 'base58' })
+      const links = await ipfs.object.links(cid.bytes, { enc: 'base58' })
       expect(node.Links).to.deep.equal(links)
     })
 
     it('should get links by base58 encoded multihash string', async () => {
       const testObj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -93,10 +93,10 @@ module.exports = (common, options) => {
     it('should get links from CBOR object', async () => {
       const hashes = []
 
-      const res1 = await ipfs.add(Buffer.from('test data'))
+      const res1 = await ipfs.add(uint8ArrayFromString('test data'))
       hashes.push(res1.cid)
 
-      const res2 = await ipfs.add(Buffer.from('more test data'))
+      const res2 = await ipfs.add(uint8ArrayFromString('more test data'))
       hashes.push(res2.cid)
 
       const obj = {

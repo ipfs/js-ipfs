@@ -21,5 +21,9 @@ exports.fixtures = Object.freeze({
   bigFile: Object.freeze({
     cid: 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq',
     data: loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
+  }),
+  emptyFile: Object.freeze({
+    cid: 'QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH',
+    data: new Uint8Array(0)
   })
 })

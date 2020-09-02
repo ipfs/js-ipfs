@@ -3,7 +3,7 @@
 'use strict'
 
 const os = require('os')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 

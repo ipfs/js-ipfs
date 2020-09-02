@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -11,13 +11,13 @@ const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const UnixFS = require('ipfs-unixfs')
 const { AbortSignal } = require('abort-controller')
 const {
   DAGNode,
   DAGLink
 } = require('ipld-dag-pb')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('/object', () => {
   const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
@@ -206,7 +206,7 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Links').that.is.empty()
-      expect(res).to.have.nested.property('result.Data', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.nested.property('result.Data', uint8ArrayToString(emptyDirectoryNode.Data, 'base64pad'))
     })
 
     // TODO: unskip after switch to v1 CIDs by default
@@ -245,7 +245,7 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Links').that.is.empty()
-      expect(res).to.have.nested.property('result.Data', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.nested.property('result.Data', uint8ArrayToString(emptyDirectoryNode.Data, 'base64pad'))
     })
   })
 
@@ -555,7 +555,7 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.property('result', emptyDirectoryNode.Data)
     })
 
     it('accepts a timeout', async () => {
@@ -570,7 +570,7 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data.toString())
+      expect(res).to.have.property('result', emptyDirectoryNode.Data)
     })
   })
 

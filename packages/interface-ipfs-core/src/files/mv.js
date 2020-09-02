@@ -1,13 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
-const concat = require('it-concat')
 const randomBytes = require('iso-random-stream/src/random')
 const isShardAtPath = require('../utils/is-shard-at-path')
 const testTimeout = require('../utils/test-timeout')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -19,7 +20,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.files.mv', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
@@ -27,7 +28,7 @@ module.exports = (common, options) => {
 
     before(async () => {
       await ipfs.files.mkdir('/test/lv1/lv2', { parents: true })
-      await ipfs.files.write('/test/a', Buffer.from('Hello, world!'), { create: true })
+      await ipfs.files.write('/test/a', uint8ArrayFromString('Hello, world!'), { create: true })
     })
     after(() => common.clean())
 
@@ -49,8 +50,8 @@ module.exports = (common, options) => {
       })
       await ipfs.files.mv(source, destination)
 
-      const buffer = await concat(ipfs.files.read(destination))
-      expect(buffer.slice()).to.deep.equal(data)
+      const bytes = uint8ArrayConcat(await all(ipfs.files.read(destination)))
+      expect(bytes).to.deep.equal(data)
 
       await expect(ipfs.files.stat(source)).to.eventually.be.rejectedWith(/does not exist/)
     })
@@ -170,7 +171,7 @@ module.exports = (common, options) => {
       const finalFilePath = `${shardedDirPath}/${file}`
 
       await ipfs.files.mkdir(dirPath)
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
         create: true
       })
 
@@ -196,7 +197,7 @@ module.exports = (common, options) => {
       const finalFilePath = `${dirPath}/${file}`
 
       await ipfs.files.mkdir(dirPath)
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
         create: true
       })
 
@@ -222,7 +223,7 @@ module.exports = (common, options) => {
       const filePath = `${shardedDirPath}/${file}`
       const finalFilePath = `${otherShardedDirPath}/${file}`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
         create: true
       })
 
@@ -249,7 +250,7 @@ module.exports = (common, options) => {
       const filePath = `${shardedDirPath}/${file}`
       const finalFilePath = `${otherShardedDirPath}/${file}`
 
-      await ipfs.files.write(filePath, Buffer.from([0, 1, 2, 3, 4]), {
+      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
         create: true
       })
 

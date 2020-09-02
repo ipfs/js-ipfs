@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 const { Server } = require('../src/server')
 const { IPFSService } = require('../src/index')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 
 describe('dag', function () {
   this.timeout(10 * 1000)

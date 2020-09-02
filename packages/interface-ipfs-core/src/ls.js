@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
@@ -113,8 +112,8 @@ module.exports = (common, options) => {
       const dir = randomName('DIR')
 
       const input = [
-        { path: `${dir}/${randomName('F0')}`, content: Buffer.from(randomName('D0')) },
-        { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
+        { path: `${dir}/${randomName('F0')}`, content: randomName('D0') },
+        { path: `${dir}/${randomName('F1')}`, content: randomName('D1') }
       ]
 
       const res = await all(ipfs.addAll(input, { cidVersion: 0 }))
@@ -136,8 +135,8 @@ module.exports = (common, options) => {
       const dir = randomName('DIR')
 
       const input = [
-        { path: `${dir}/${randomName('F0')}`, content: Buffer.from(randomName('D0')) },
-        { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
+        { path: `${dir}/${randomName('F0')}`, content: randomName('D0') },
+        { path: `${dir}/${randomName('F1')}`, content: randomName('D1') }
       ]
 
       const res = await all(ipfs.addAll(input, { cidVersion: 1, rawLeaves: false }))
@@ -167,8 +166,8 @@ module.exports = (common, options) => {
       const dir = randomName('DIR')
 
       const input = [
-        { path: `${dir}/${randomName('F0')}`, content: Buffer.from(randomName('D0')) },
-        { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')) }
+        { path: `${dir}/${randomName('F0')}`, content: randomName('D0') },
+        { path: `${dir}/${randomName('F1')}`, content: randomName('D1') }
       ]
 
       const res = await all(ipfs.addAll(input))
@@ -191,8 +190,8 @@ module.exports = (common, options) => {
       }
 
       const input = [
-        { path: `${dir}/${randomName('F0')}`, content: Buffer.from(randomName('D0')), mode, mtime },
-        { path: `${dir}/${randomName('F1')}`, content: Buffer.from(randomName('D1')), mode, mtime }
+        { path: `${dir}/${randomName('F0')}`, content: randomName('D0'), mode, mtime },
+        { path: `${dir}/${randomName('F1')}`, content: randomName('D1'), mode, mtime }
       ]
 
       const res = await all(ipfs.addAll(input))
@@ -210,7 +209,7 @@ module.exports = (common, options) => {
       const subdir = randomName('F0')
       const subfile = randomName('F1')
 
-      const input = { path: `${dir}/${subdir}/${subfile}`, content: Buffer.from(randomName('D1')) }
+      const input = { path: `${dir}/${subdir}/${subfile}`, content: randomName('D1') }
 
       const res = await ipfs.add(input)
       const path = `${res.cid}/${subdir}`

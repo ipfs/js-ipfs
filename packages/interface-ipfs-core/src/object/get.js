@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
@@ -11,6 +10,7 @@ const randomBytes = require('iso-random-stream/src/random')
 const { asDAGLink } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,7 +40,7 @@ module.exports = (common, options) => {
 
     it('should get object by multihash', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -51,7 +51,7 @@ module.exports = (common, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node2.Data === 'string') {
-        node2 = new DAGNode(Buffer.from(node2.Data), node2.Links, node2.size)
+        node2 = new DAGNode(uint8ArrayFromString(node2.Data), node2.Links, node2.size)
       }
 
       expect(node1.Data).to.eql(node2.Data)
@@ -60,7 +60,7 @@ module.exports = (common, options) => {
 
     it('should get object by multihash string', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -71,7 +71,7 @@ module.exports = (common, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node2.Data === 'string') {
-        node2 = new DAGNode(Buffer.from(node2.Data), node2.Links, node2.size)
+        node2 = new DAGNode(uint8ArrayFromString(node2.Data), node2.Links, node2.size)
       }
 
       expect(node1.Data).to.deep.equal(node2.Data)
@@ -79,8 +79,8 @@ module.exports = (common, options) => {
     })
 
     it('should get object with links by multihash string', async () => {
-      const node1a = new DAGNode(Buffer.from('Some data 1'))
-      const node2 = new DAGNode(Buffer.from('Some data 2'))
+      const node1a = new DAGNode(uint8ArrayFromString('Some data 1'))
+      const node2 = new DAGNode(uint8ArrayFromString('Some data 2'))
 
       const link = await asDAGLink(node2, 'some-link')
       const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
@@ -91,7 +91,7 @@ module.exports = (common, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node1c.Data === 'string') {
-        node1c = new DAGNode(Buffer.from(node1c.Data), node1c.Links, node1c.size)
+        node1c = new DAGNode(uint8ArrayFromString(node1c.Data), node1c.Links, node1c.size)
       }
 
       expect(node1a.Data).to.eql(node1c.Data)
@@ -99,7 +99,7 @@ module.exports = (common, options) => {
 
     it('should get object by base58 encoded multihash', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -110,7 +110,7 @@ module.exports = (common, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node1b.Data === 'string') {
-        node1b = new DAGNode(Buffer.from(node1b.Data), node1b.Links, node1b.size)
+        node1b = new DAGNode(uint8ArrayFromString(node1b.Data), node1b.Links, node1b.size)
       }
 
       expect(node1a.Data).to.eql(node1b.Data)
@@ -119,7 +119,7 @@ module.exports = (common, options) => {
 
     it('should get object by base58 encoded multihash string', async () => {
       const obj = {
-        Data: Buffer.from(nanoid()),
+        Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
@@ -130,7 +130,7 @@ module.exports = (common, options) => {
       // because js-ipfs-api can't infer if the
       // returned Data is Buffer or String
       if (typeof node1b.Data === 'string') {
-        node1b = new DAGNode(Buffer.from(node1b.Data), node1b.Links, node1b.size)
+        node1b = new DAGNode(uint8ArrayFromString(node1b.Data), node1b.Links, node1b.size)
       }
 
       expect(node1a.Data).to.eql(node1b.Data)

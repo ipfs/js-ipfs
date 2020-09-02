@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')
@@ -18,7 +18,6 @@ describe('/key', function () {
         rm: sinon.stub(),
         rename: sinon.stub(),
         gen: sinon.stub(),
-        export: sinon.stub(),
         import: sinon.stub()
       }
     }
@@ -225,50 +224,6 @@ describe('/key', function () {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-    })
-  })
-
-  describe('/export', () => {
-    const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
-    }
-
-    it('only accepts POST', () => {
-      return testHttpMethod('/api/v0/key/export')
-    })
-
-    it('should export a key', async () => {
-      const name = 'name'
-      const password = 'password'
-
-      ipfs.key.export.withArgs(name, password, defaultOptions).returns('pem')
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/key/export?arg=${name}&password=${password}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', 'pem')
-    })
-
-    it('accepts a timeout', async () => {
-      const name = 'name'
-      const password = 'password'
-
-      ipfs.key.export.withArgs(name, password, {
-        ...defaultOptions,
-        timeout: 1000
-      }).returns('pem')
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/key/export?arg=${name}&password=${password}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', 'pem')
     })
   })
 

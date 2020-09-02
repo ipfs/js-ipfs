@@ -21,16 +21,16 @@ const { resolvePath } = require('./utils')
  * @param {IPFS} self
  * @returns {Object}
  */
-module.exports = ({ ipns, dag, peerId, isOnline, keychain, options: constructorOptions }) => {
+module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
   const lookupKey = async keyName => {
     if (keyName === 'self') {
       return peerId.privKey
     }
 
     try {
-      const pass = constructorOptions.pass
-      const pem = await keychain.exportKey(keyName, pass)
-      const privateKey = await crypto.keys.import(pem, pass)
+      // We're exporting and immediately importing the key, so we can just use a throw away password
+      const pem = await keychain.exportKey(keyName, 'temp')
+      const privateKey = await crypto.keys.import(pem, 'temp')
       return privateKey
     } catch (err) {
       log.error(err)

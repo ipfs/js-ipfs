@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
@@ -16,7 +16,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.block.stat', () => {
-    const data = Buffer.from('blorb')
+    const data = uint8ArrayFromString('blorb')
     let ipfs, hash
 
     before(async () => {

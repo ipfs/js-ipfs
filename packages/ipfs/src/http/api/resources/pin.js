@@ -7,6 +7,23 @@ const pipe = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const { cidToString } = require('../../../utils/cid')
 const streamResponse = require('../../utils/stream-response')
+const all = require('it-all')
+
+function toPin (type, cid, metadata) {
+  const output = {
+    Type: type
+  }
+
+  if (cid) {
+    output.Cid = cid
+  }
+
+  if (metadata) {
+    output.Metadata = metadata
+  }
+
+  return output
+}
 
 exports.ls = {
   options: {
@@ -62,8 +79,8 @@ exports.ls = {
     if (!stream) {
       const res = await pipe(
         source,
-        reduce((res, { type, cid }) => {
-          res.Keys[cidToString(cid, { base: cidBase })] = { Type: type }
+        reduce((res, { type, cid, metadata }) => {
+          res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, metadata)
           return res
         }, { Keys: {} })
       )
@@ -73,7 +90,7 @@ exports.ls = {
 
     return streamResponse(request, h, () => pipe(
       source,
-      map(({ type, cid }) => ({ Type: type, Cid: cidToString(cid, { base: cidBase }) })),
+      map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata)),
       ndjson.stringify
     ))
   }
@@ -90,7 +107,8 @@ exports.add = {
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         recursive: Joi.boolean().default(true),
         cidBase: Joi.cidBase(),
-        timeout: Joi.timeout()
+        timeout: Joi.timeout(),
+        metadata: Joi.json()
       })
         .rename('cid-base', 'cidBase', {
           override: true,
@@ -116,26 +134,31 @@ exports.add = {
         cids,
         recursive,
         cidBase,
-        timeout
+        timeout,
+        metadata
       }
     } = request
 
     let result
     try {
-      result = await ipfs.pin.add(cids, {
-        recursive,
+      result = await all(ipfs.pin.addAll(cids.map(cid => ({ cid, recursive, metadata })), {
         signal,
         timeout
-      })
+      }))
     } catch (err) {
+      if (err.code === 'ERR_BAD_PATH') {
+        throw Boom.boomify(err, { statusCode: 400 })
+      }
+
       if (err.message.includes('already pinned recursively')) {
         throw Boom.boomify(err, { statusCode: 400 })
       }
+
       throw Boom.boomify(err, { message: 'Failed to add pin' })
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
+      Pins: result.map(cid => cidToString(cid, { base: cidBase }))
     })
   }
 }
@@ -183,17 +206,20 @@ exports.rm = {
 
     let result
     try {
-      result = await ipfs.pin.rm(cids, {
-        recursive,
+      result = await all(ipfs.pin.rmAll(cids.map(cid => ({ cid, recursive })), {
         signal,
         timeout
-      })
+      }))
     } catch (err) {
+      if (err.code === 'ERR_BAD_PATH') {
+        throw Boom.boomify(err, { statusCode: 400 })
+      }
+
       throw Boom.boomify(err, { message: 'Failed to remove pin' })
     }
 
     return h.response({
-      Pins: result.map(obj => cidToString(obj.cid, { base: cidBase }))
+      Pins: result.map(cid => cidToString(cid, { base: cidBase }))
     })
   }
 }

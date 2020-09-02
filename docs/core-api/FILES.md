@@ -143,7 +143,7 @@ One of `path` or `content` _must_ be passed.
 `FileContent` is one of the following types:
 
 ```js
-Uint8Array | Blob | String | Iterable<Uint8Array | Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
+Uint8Array | Blob | String | Iterable<Uint8Array|Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
@@ -200,7 +200,7 @@ const file = {
   content: 'ABC'
 }
 
-const result of await ipfs.add(content)
+const result = await ipfs.add(content)
 
 console.info(result)
 
@@ -420,11 +420,9 @@ An optional object which may have the following keys:
 #### Example
 
 ```JavaScript
-const chunks = []
 for await (const chunk of ipfs.cat(ipfsPath)) {
-  chunks.push(chunk)
+  console.info(chunk)
 }
-console.log(Buffer.concat(chunks).toString())
 ```
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/cat.js) can be found in the tests for this API.
@@ -459,7 +457,7 @@ Each yielded object is of the form:
 ```js
 {
   path: string,
-  content: <AsyncIterable<BufferList>>,
+  content: <AsyncIterable<Uint8Array>>,
   mode: number,
   mtime: { secs: number, nsecs: number }
 }
@@ -470,7 +468,6 @@ Here, each `path` corresponds to the name of a file, and `content` is an async i
 #### Example
 
 ```JavaScript
-const BufferList = require('bl/BufferList')
 const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
 for await (const file of ipfs.get(cid)) {
@@ -478,12 +475,13 @@ for await (const file of ipfs.get(cid)) {
 
   if (!file.content) continue;
 
-  const content = new BufferList()
-  for await (const chunk of file.content) {
-    content.append(chunk)
+  const content = []
+
+for await (const chunk of file.content) {
+    content.push(chunk)
   }
 
-  console.log(content.toString())
+  console.log(content)
 }
 ```
 
@@ -855,7 +853,7 @@ for await (const chunk of ipfs.files.read('/hello-world')) {
   chunks.push(chunk)
 }
 
-console.log(Buffer.concat(chunks).toString())
+console.log(uint8ArrayConcat(chunks).toString())
 // Hello, World!
 ```
 
@@ -899,7 +897,7 @@ An optional object which may have the following keys:
 #### Example
 
 ```JavaScript
-await ipfs.files.write('/hello-world', Buffer.from('Hello, world!'))
+await ipfs.files.write('/hello-world', new TextEncoder().encode('Hello, world!'))
 ```
 
 ### `ipfs.files.mv(...from, to, [options])`

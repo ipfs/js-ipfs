@@ -1,9 +1,10 @@
 'use strict'
 
 const ipns = require('ipns')
-const { Buffer } = require('buffer')
-const { fromB58String, toB58String } = require('multihashing-async').multihash
+const { toB58String } = require('multihashing-async').multihash
 const PubsubDatastore = require('datastore-pubsub')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const withIs = require('class-is')
 
@@ -55,7 +56,7 @@ class IpnsPubsubDatastore {
     // Add topic subscribed
     const ns = key.slice(0, ipns.namespaceLength)
 
-    if (ns.toString() === ipns.namespace) {
+    if (uint8ArrayToString(ns) === ipns.namespace) {
       const stringifiedTopic = toB58String(key)
       const id = toB58String(key.slice(ipns.namespaceLength))
 
@@ -74,8 +75,8 @@ class IpnsPubsubDatastore {
 
   // Modify subscription key to have a proper encoding
   _handleSubscriptionKey (key) {
-    if (Buffer.isBuffer(key)) {
-      key = toB58String(key)
+    if (key instanceof Uint8Array) {
+      key = uint8ArrayToString(key, 'base58btc')
     }
 
     const subscriber = this._subscriptions[key]
@@ -86,13 +87,13 @@ class IpnsPubsubDatastore {
 
     let keys
     try {
-      keys = ipns.getIdKeys(fromB58String(subscriber))
+      keys = ipns.getIdKeys(uint8ArrayFromString(subscriber, 'base58btc'))
     } catch (err) {
       log.error(err)
       throw err
     }
 
-    return keys.routingKey.toBuffer()
+    return keys.routingKey.uint8Array()
   }
 
   /**
@@ -132,7 +133,7 @@ class IpnsPubsubDatastore {
     }
 
     // Unsubscribe topic
-    const bufTopic = Buffer.from(stringifiedTopic)
+    const bufTopic = uint8ArrayFromString(stringifiedTopic)
 
     this._pubsubDs.unsubscribe(bufTopic)
 

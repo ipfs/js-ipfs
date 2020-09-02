@@ -4,13 +4,14 @@ const createNode = require('./create-node')
 const {
   DAGNode
 } = require('ipld-dag-pb')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function main () {
   const ipfs = await createNode()
 
   console.log('\nStart of the example:')
 
-  const someData = Buffer.from('capoeira')
+  const someData = uint8ArrayFromString('capoeira')
   const pbNode = new DAGNode(someData)
 
   const pbNodeCid = await ipfs.dag.put(pbNode, {

@@ -1,7 +1,7 @@
 'use strict'
 
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const browserStreamToIt = require('browser-readablestream-to-it')
 const blobToIt = require('blob-to-it')
 const itPeekable = require('it-peekable')
@@ -60,7 +60,15 @@ async function * toAsyncIterable (input) {
 }
 
 function toBuffer (chunk) {
-  return isBytes(chunk) ? chunk : Buffer.from(chunk)
+  if (isBytes(chunk)) {
+    return chunk
+  }
+
+  if (Array.isArray(chunk)) {
+    return Uint8Array.from(chunk)
+  }
+
+  return uint8ArrayFromString(chunk)
 }
 
 module.exports = toAsyncIterable

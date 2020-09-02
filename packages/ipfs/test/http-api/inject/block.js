@@ -2,9 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const FormData = require('form-data')
-const { Buffer } = require('buffer')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
 const testHttpMethod = require('../../utils/test-http-method')
@@ -303,17 +302,11 @@ describe('/block', () => {
     })
 
     it('should not stat a block for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
       const res = await http({
         method: 'POST',
-        url: '/api/v0/block/stat?cid-base=invalid',
-        headers,
-        payload
+        url: '/api/v0/block/stat?cid-base=invalid'
       }, { ipfs })
+
       expect(res).to.have.property('statusCode', 400)
       expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })

@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const CID = require('cids')
 const parseDuration = require('parse-duration').default
 const multiaddr = require('multiaddr')
@@ -37,91 +37,104 @@ const toCID = (value) => {
   return new CID(value.toString().replace('/ipfs/', ''))
 }
 
+const reqiureIfRequired = (value, helpers) => {
+  if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
+    return { value, errors: helpers.error('required') }
+  }
+}
+
 module.exports = Joi
   .extend(
     (joi) => {
       return {
-        name: 'cid',
+        type: 'cid',
         base: joi.any(),
-        pre (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return toCID(value)
+          return { value: toCID(value) }
         }
       }
     },
     (joi) => {
       return {
-        name: 'ipfsPath',
+        type: 'ipfsPath',
         base: joi.string(),
-        coerce (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return toIpfsPath(value)
+          return { value: toIpfsPath(value) }
         }
       }
     },
     (joi) => {
       return {
-        name: 'peerId',
+        type: 'peerId',
         base: joi.string(),
-        pre (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return new CID(value).toString()
+          return { value: new CID(value).toString() }
         }
       }
     },
     (joi) => {
       return {
-        name: 'multiaddr',
+        type: 'multiaddr',
         base: joi.string(),
-        pre (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return multiaddr(value).toString()
+          return { value: multiaddr(value).toString() }
         }
       }
     },
     (joi) => {
       return {
-        name: 'timeout',
-        base: joi.string(),
-        pre (value, state, options) {
+        type: 'timeout',
+        base: joi.number(),
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return parseDuration(value)
+          return { value: parseDuration(value) }
         }
       }
     },
     (joi) => {
       return {
-        name: 'cidAndPath',
+        type: 'cidAndPath',
         base: joi.any(),
-        pre (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
 
-          return toCidAndPath(value)
+          return { value: toCidAndPath(value) }
         }
       }
     },
     (joi) => {
       return {
-        name: 'cidBase',
+        type: 'cidBase',
         base: joi.string(),
-        pre (value, state, options) {
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
           if (!value) {
             return
           }
@@ -130,7 +143,21 @@ module.exports = Joi
             throw new Error('Invalid base name')
           }
 
-          return value
+          return { value }
+        }
+      }
+    },
+    (joi) => {
+      return {
+        type: 'json',
+        base: joi.any(),
+        validate: reqiureIfRequired,
+        coerce (value, helpers) {
+          if (!value) {
+            return
+          }
+
+          return { value: JSON.parse(value) }
         }
       }
     })

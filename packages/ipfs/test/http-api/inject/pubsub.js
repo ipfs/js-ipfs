@@ -2,14 +2,13 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const FormData = require('form-data')
 const sinon = require('sinon')
 const { AbortSignal } = require('abort-controller')
 const randomBytes = require('iso-random-stream/src/random')
-const { Buffer } = require('buffer')
 const streamToPromise = require('stream-to-promise')
 
 const sendData = async (data) => {

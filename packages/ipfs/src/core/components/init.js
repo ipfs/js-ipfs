@@ -2,7 +2,8 @@
 
 const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
@@ -52,7 +53,7 @@ module.exports = ({
     options.repoAutoMigrate = options.repoAutoMigrate || constructorOptions.repoAutoMigrate
 
     const repo = typeof options.repo === 'string' || options.repo == null
-      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate })
+      ? createRepo({ path: options.repo, autoMigrate: options.repoAutoMigrate, silent: constructorOptions.silent })
       : options.repo
 
     let isInitialized = true
@@ -109,12 +110,15 @@ module.exports = ({
     }
 
     const pinManager = new PinManager(repo, dag)
-    await pinManager.load()
+    const pinAddAll = Components.pin.addAll({ pinManager, gcLock, dag })
+    const pinRmAll = Components.pin.rmAll({ pinManager, gcLock, dag })
 
     const pin = {
-      add: Components.pin.add({ pinManager, gcLock, dag }),
+      add: Components.pin.add({ addAll: pinAddAll }),
+      addAll: pinAddAll,
       ls: Components.pin.ls({ pinManager, dag }),
-      rm: Components.pin.rm({ pinManager, gcLock, dag })
+      rm: Components.pin.rm({ rmAll: pinRmAll }),
+      rmAll: pinRmAll
     }
 
     // FIXME: resolve this circular dependency
@@ -131,7 +135,7 @@ module.exports = ({
 
     if (!isInitialized && !options.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
-      const emptyDirCid = await addEmptyDir({ dag })
+      const emptyDirCid = await addEmptyDir({ dag, pin })
 
       log('adding default assets')
       await initAssets({ addAll, print })
@@ -174,7 +178,7 @@ module.exports = ({
   return apiManager.api
 }
 
-async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, config, pass, print }) {
+async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, profiles, config, pass, print }) {
   emptyRepo = emptyRepo || false
   bits = bits == null ? 2048 : Number(bits)
 
@@ -188,13 +192,13 @@ async function initNewRepo (repo, { privateKey, emptyRepo, bits, profiles, confi
     throw new Error('repo already exists')
   }
 
-  const peerId = await createPeerId({ privateKey, bits, print })
+  const peerId = await createPeerId({ privateKey, algorithm, bits, print })
 
   log('identity generated')
 
   config.Identity = {
     PeerID: peerId.toB58String(),
-    PrivKey: peerId.privKey.bytes.toString('base64')
+    PrivKey: uint8ArrayToString(peerId.privKey.bytes, 'base64pad')
   }
 
   privateKey = peerId.privKey
@@ -257,27 +261,30 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
   return { peerId, keychain: libp2p.keychain }
 }
 
-function createPeerId ({ privateKey, bits, print }) {
+function createPeerId ({ privateKey, algorithm = 'rsa', bits, print }) {
   if (privateKey) {
     log('using user-supplied private-key')
     return typeof privateKey === 'object'
       ? privateKey
-      : PeerId.createFromPrivKey(Buffer.from(privateKey, 'base64'))
+      : PeerId.createFromPrivKey(uint8ArrayFromString(privateKey, 'base64pad'))
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
-    print('generating %s-bit RSA keypair...', bits)
-    return PeerId.create({ bits })
+    print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
+    return PeerId.create({ keyType: algorithm, bits })
   }
 }
 
-function addEmptyDir ({ dag }) {
+async function addEmptyDir ({ dag, pin }) {
   const node = new DAGNode(new UnixFs('directory').marshal())
-  return dag.put(node, {
+  const cid = await dag.put(node, {
     version: 0,
     format: multicodec.DAG_PB,
     hashAlg: multicodec.SHA2_256,
     preload: false
   })
+  await pin.add(cid)
+
+  return cid
 }
 
 // Apply profiles (e.g. ['server', 'lowpower']) to config
@@ -294,6 +301,7 @@ function applyProfiles (profiles, config) {
 
 function createApi ({
   add,
+  addAll,
   apiManager,
   constructorOptions,
   block,
@@ -321,6 +329,7 @@ function createApi ({
 
   const api = {
     add,
+    addAll,
     bitswap: {
       stat: notStarted,
       unwant: notStarted,

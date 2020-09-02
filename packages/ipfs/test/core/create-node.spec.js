@@ -2,14 +2,17 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
 const tmpDir = require('ipfs-utils/src/temp-dir')
+const PeerId = require('peer-id')
+const { supportedKeys } = require('libp2p-crypto/src/keys')
 const IPFS = require('../../src/core')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('../utils/create-repo-nodejs.js')
+const { console } = require('ipfs-utils/src/globalthis')
 
 describe('create node', function () {
   let tempRepo
@@ -56,6 +59,21 @@ describe('create node', function () {
     const config = await node.config.getAll()
     expect(config.Identity).to.exist()
     await node.stop()
+  })
+
+  it('should create and initialize with algorithm', async () => {
+    const ipfs = await IPFS.create({
+      init: { algorithm: 'ed25519' },
+      start: false,
+      repo: tempRepo,
+      config: { Addresses: { Swarm: [] } }
+    })
+
+    const id = await ipfs.id()
+    const config = await ipfs.config.getAll()
+    const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
+    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
+    expect(id.id).to.equal(peerId.toB58String())
   })
 
   it('should create and initialize but not start', async () => {

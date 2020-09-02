@@ -14,10 +14,7 @@ const mfsCp = {
         parents: Joi.boolean().default(false),
         flush: Joi.boolean().default(true),
         hashAlg: Joi.string().default('sha2-256'),
-        cidVersion: Joi.number().integer().valid([
-          0,
-          1
-        ]).default(0),
+        cidVersion: Joi.number().integer().valid(0, 1).default(0),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000),
         timeout: Joi.timeout()
       })

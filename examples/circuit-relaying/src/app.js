@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let room = createRoom(roomName)
 
+  $peerId.setAttribute('style', '')
   $peerId.innerHTML = `<li>${info.id}</li>`
 
   $send.addEventListener('click', () => {

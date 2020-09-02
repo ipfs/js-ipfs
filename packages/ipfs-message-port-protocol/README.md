@@ -18,11 +18,12 @@
 
 - [Install](#install)
 - [Usage](#usage)
-  - [Wire protocol codecs](#wire-protocol-codecs)
+- [Wire protocol codecs](#wire-protocol-codecs)
+  - [`CID`](#cid)
   - [Block](#block)
   - [DAGNode](#dagnode)
   - [AsyncIterable](#asynciterable)
-  - [Callback][#callback]
+  - [Callback](#callback)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -72,7 +73,7 @@ Codecs for [IPLD Block][] implementation in JavaScript.
 ```js
 const { Block, encodeBlock, decodeBlock } = require('ipfs-message-port-protocol/src/block')
 
-const data = Buffer.from('hello')
+const data = new TextEncoder().encode('hello')
 const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 const block = new Block(data, cid)
 

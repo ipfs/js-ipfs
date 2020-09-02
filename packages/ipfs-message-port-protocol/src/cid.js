@@ -1,7 +1,6 @@
 'use strict'
 
 const CID = require('cids')
-const { Buffer } = require('buffer')
 
 /**
  * @typedef {Object} EncodedCID
@@ -35,7 +34,7 @@ exports.encodeCID = encodeCID
 const decodeCID = encodedCID => {
   /** @type {CID} */
   const cid = (encodedCID)
-  Object.setPrototypeOf(cid.multihash, Buffer.prototype)
+  Object.setPrototypeOf(cid.multihash, Uint8Array.prototype)
   Object.setPrototypeOf(cid, CID.prototype)
   // TODO: Figure out a way to avoid `Symbol.for` here as it can get out of
   // sync with cids implementation.

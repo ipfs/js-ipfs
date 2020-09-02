@@ -1,21 +1,23 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const path = require('path')
 const fs = require('fs')
+const PeerId = require('peer-id')
+const { supportedKeys } = require('libp2p-crypto/src/keys')
 const clean = require('../utils/clean')
 const { nanoid } = require('nanoid')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 const tempWrite = require('temp-write')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('init', function () {
   let repoPath
   let ipfs
 
-  const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-    .toString('utf-8')
+  const readme = uint8ArrayToString(fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme')))
 
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
@@ -47,6 +49,12 @@ describe('init', function () {
     const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
     const out2 = await ipfs(command)
     expect(out2).to.equal(readme)
+  })
+
+  it('algorithm', async function () {
+    await ipfs('init --algorithm ed25519')
+    const peerId = await PeerId.createFromPrivKey(repoConfSync().Identity.PrivKey)
+    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
   })
 
   it('bits', async function () {

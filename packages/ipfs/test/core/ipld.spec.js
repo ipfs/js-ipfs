@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const factory = require('../utils/factory')
 const ipldDagPb = require('ipld-dag-pb')
 
@@ -31,7 +31,7 @@ describe('ipld', function () {
       hashAlg: 'sha2-256'
     })
 
-    const dagPbNode = new ipldDagPb.DAGNode(Buffer.alloc(0), [], 0)
+    const dagPbNode = new ipldDagPb.DAGNode(new Uint8Array(0), [], 0)
     const cid2 = await ipfs.dag.put(dagPbNode, {
       format: 'dag-pb',
       hashAlg: 'sha2-256'

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.49.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.49.0...ipfs@0.49.1) (2020-08-24)
+
+
+### Bug Fixes
+
+* validate ipns records with inline public keys ([#3224](https://github.com/ipfs/js-ipfs/issues/3224)) ([5cc0e08](https://github.com/ipfs/js-ipfs/commit/5cc0e086b036e7ba40b09768b67b7067adca43c1))
+
+
+
+
+
+# [0.49.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.48.1...ipfs@0.49.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* make execa a dep, it's used in ipfs config edit ([#3193](https://github.com/ipfs/js-ipfs/issues/3193)) ([19b8113](https://github.com/ipfs/js-ipfs/commit/19b81130a7311744cdd6b5bc2170d3939aeae1b6))
+* require command for key and pin subcommands ([#3196](https://github.com/ipfs/js-ipfs/issues/3196)) ([5449044](https://github.com/ipfs/js-ipfs/commit/5449044919b8440c1129d9cbf1ec650f4f5a993d))
+* send blobs when running ipfs-http-client in the browser ([#3184](https://github.com/ipfs/js-ipfs/issues/3184)) ([6b24463](https://github.com/ipfs/js-ipfs/commit/6b24463431497bd13b579a730ad7063345729ad9)), closes [#3138](https://github.com/ipfs/js-ipfs/issues/3138)
+* support keychain without pass ([#3212](https://github.com/ipfs/js-ipfs/issues/3212)) ([7e0e85c](https://github.com/ipfs/js-ipfs/commit/7e0e85c2f003a09845b1dbe4200ca61366933b05))
+* **docs:** update webrtc config example to use correct case ([6a498e9](https://github.com/ipfs/js-ipfs/commit/6a498e92c00a784867053cddf9dcf4c1f510cf55))
+* **docs:** update webrtc instructions for node in faq ([#3183](https://github.com/ipfs/js-ipfs/issues/3183)) ([8f5a19f](https://github.com/ipfs/js-ipfs/commit/8f5a19ff08023e22fb3c4ab9dcac1e7baa097d09))
+
+
+### Features
+
+* prioritize noise over secio ([#3216](https://github.com/ipfs/js-ipfs/issues/3216)) ([f3a67c4](https://github.com/ipfs/js-ipfs/commit/f3a67c43c3d3423df29b5e10f82fa483d31289b2))
+* share IPFS node between browser tabs ([#3081](https://github.com/ipfs/js-ipfs/issues/3081)) ([1b8b1b8](https://github.com/ipfs/js-ipfs/commit/1b8b1b822a252498889c54972a1f57e1fedc39d0)), closes [#3022](https://github.com/ipfs/js-ipfs/issues/3022)
+
+
+### BREAKING CHANGES
+
+* remove support for key.export over the http api
+
+
+
+
+
 ## [0.48.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.48.0...ipfs@0.48.1) (2020-07-21)
 
 

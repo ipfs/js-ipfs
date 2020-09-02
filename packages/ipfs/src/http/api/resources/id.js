@@ -38,7 +38,8 @@ module.exports = {
       PublicKey: id.publicKey,
       Addresses: id.addresses,
       AgentVersion: id.agentVersion,
-      ProtocolVersion: id.protocolVersion
+      ProtocolVersion: id.protocolVersion,
+      Protocols: id.protocols
     })
   }
 }

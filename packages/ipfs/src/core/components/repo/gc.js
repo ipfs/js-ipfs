@@ -12,7 +12,7 @@ const multibase = require('multibase')
 const BLOCK_RM_CONCURRENCY = 256
 
 // Perform mark and sweep garbage collection
-module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
+module.exports = ({ gcLock, pin, refs, repo }) => {
   return withTimeoutOption(async function * gc (options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
@@ -21,7 +21,7 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
 
     try {
       // Mark all blocks that are being used
-      const markedSet = await createMarkedSet({ pin, pinManager, refs, repo })
+      const markedSet = await createMarkedSet({ pin, refs, repo })
       // Get all blocks keys from the blockstore
       const blockKeys = repo.blocks.query({ keysOnly: true })
 
@@ -35,14 +35,9 @@ module.exports = ({ gcLock, pin, pinManager, refs, repo }) => {
   })
 }
 
-// Get Set of multihashes of blocks to keep
-async function createMarkedSet ({ pin, pinManager, refs, repo }) {
+// Get Set of CIDs of blocks to keep
+async function createMarkedSet ({ pin, refs, repo }) {
   const pinsSource = map(({ cid }) => cid, pin.ls())
-
-  const pinInternalsSource = (async function * () {
-    const cids = await pinManager.getInternalBlocks()
-    yield * cids
-  })()
 
   const mfsSource = (async function * () {
     let mh
@@ -65,7 +60,7 @@ async function createMarkedSet ({ pin, pinManager, refs, repo }) {
   })()
 
   const output = new Set()
-  for await (const cid of parallelMerge(pinsSource, pinInternalsSource, mfsSource)) {
+  for await (const cid of parallelMerge(pinsSource, mfsSource)) {
     output.add(multibase.encode('base32', cid.multihash).toString())
   }
   return output

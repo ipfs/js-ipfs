@@ -1,6 +1,7 @@
 'use strict'
 
 const PATH = require('path')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /**
  * Uses an object in an S3 bucket as a lock to signal that an IPFS repo is in use.
@@ -39,7 +40,7 @@ class S3Lock {
       }
 
       // There's no lock yet, create one
-      this.s3.put(lockPath, Buffer.from(''), (err, data) => {
+      this.s3.put(lockPath, uint8ArrayFromString(''), (err, data) => {
         if (err) {
           return callback(err, null)
         }

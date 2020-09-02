@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 'use strict'
 
+const uint8ArrayToString = require('uint8arrays/to-string')
+
 const Room = require('ipfs-pubsub-room')
 const $message = document.querySelector('#message')
 const $msgs = document.querySelector('#msgs')
 const $addrs = document.querySelector('#addrs')
 const $peers = document.querySelector('#peers')
 const $pAddrs = document.querySelector('#peers-addrs')
-const delay = require('delay')
 
 const NAMESPACE = 'ipfs-quick-msg'
 
@@ -33,9 +34,9 @@ module.exports = (ipfs, peersSet) => {
 
     // send and receive messages
     room.on('message', (message) => {
-      console.log('got message from ' + message.from + ': ' + message.data.toString())
+      console.log('got message from ' + message.from + ': ' + uint8ArrayToString(message.data))
       const node = document.createElement('li')
-      node.innerText = `${message.from.substr(-4)}: ${message.data.toString()}`
+      node.innerText = `${message.from.substr(-4)}: ${uint8ArrayToString(message.data)}`
       $msgs.appendChild(node)
     })
 

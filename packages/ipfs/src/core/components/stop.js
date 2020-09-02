@@ -97,10 +97,15 @@ function createApi ({
     stat: Components.object.stat({ ipld, preload })
   }
 
+  const pinAddAll = Components.pin.addAll({ pinManager, gcLock, dag })
+  const pinRmAll = Components.pin.rmAll({ pinManager, gcLock, dag })
+
   const pin = {
-    add: Components.pin.add({ pinManager, gcLock, dag }),
+    add: Components.pin.add({ addAll: pinAddAll }),
+    addAll: pinAddAll,
     ls: Components.pin.ls({ pinManager, dag }),
-    rm: Components.pin.rm({ pinManager, gcLock, dag })
+    rm: Components.pin.rm({ rmAll: pinRmAll }),
+    rmAll: pinRmAll
   }
 
   // FIXME: resolve this circular dependency

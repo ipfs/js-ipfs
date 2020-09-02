@@ -1,7 +1,6 @@
 /* eslint-env mocha, browser */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { fixtures } = require('./utils')
 const { Readable } = require('readable-stream')
 const all = require('it-all')
@@ -15,6 +14,7 @@ const globSource = require('ipfs-utils/src/files/glob-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -33,7 +33,7 @@ module.exports = (common, options) => {
     async function testMode (mode, expectedMode) {
       const content = String(Math.random() + Date.now())
       const files = await all(ipfs.addAll([{
-        content: Buffer.from(content),
+        content: uint8ArrayFromString(content),
         mode
       }]))
       expect(files).to.have.length(1)
@@ -46,7 +46,7 @@ module.exports = (common, options) => {
     async function testMtime (mtime, expectedMtime) {
       const content = String(Math.random() + Date.now())
       const files = await all(ipfs.addAll({
-        content: Buffer.from(content),
+        content: uint8ArrayFromString(content),
         mtime
       }))
       expect(files).to.have.length(1)
@@ -61,7 +61,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when adding files', () => {
-      return testTimeout(() => drain(ipfs.addAll(Buffer.from('Hello'), {
+      return testTimeout(() => drain(ipfs.addAll(uint8ArrayFromString('Hello'), {
         timeout: 1
       })))
     })
@@ -78,7 +78,7 @@ module.exports = (common, options) => {
       expect(filesAdded[0].cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
-    it('should add a Buffer as array of tuples', async () => {
+    it('should add a Uint8Array as array of tuples', async () => {
       const tuple = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
       const filesAdded = await all(ipfs.addAll([tuple]))
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
       const rs = new Readable()
-      rs.push(Buffer.from('some data'))
+      rs.push(uint8ArrayFromString('some data'))
       rs.push(null)
 
       const tuple = { path: 'data.txt', content: rs }
@@ -217,10 +217,10 @@ module.exports = (common, options) => {
 
       const files = await all(ipfs.addAll([{
         path: '/foo/bar.txt',
-        content: Buffer.from(content)
+        content: uint8ArrayFromString(content)
       }, {
         path: '/foo/baz.txt',
-        content: Buffer.from(content)
+        content: uint8ArrayFromString(content)
       }], { onlyHash: true }))
       expect(files).to.have.length(3)
 
@@ -348,7 +348,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {
-      const files = await all(ipfs.addAll(Buffer.from([0, 1, 2]), {
+      const files = await all(ipfs.addAll(Uint8Array.from([0, 1, 2]), {
         cidVersion: 1,
         rawLeaves: true
       }))
@@ -361,7 +361,7 @@ module.exports = (common, options) => {
 
     it('should override raw leaves when file is smaller than one block and metadata is present', async () => {
       const files = await all(ipfs.addAll({
-        content: Buffer.from([0, 1, 2]),
+        content: Uint8Array.from([0, 1, 2]),
         mode: 0o123,
         mtime: {
           secs: 1000,

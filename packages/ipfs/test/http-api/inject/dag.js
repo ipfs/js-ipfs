@@ -2,11 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const DAGNode = require('ipld-dag-pb').DAGNode
 const Readable = require('stream').Readable
 const FormData = require('form-data')
-const { Buffer } = require('buffer')
 const streamToPromise = require('stream-to-promise')
 const CID = require('cids')
 const testHttpMethod = require('../../utils/test-http-method')
@@ -72,7 +71,7 @@ describe('/dag', () => {
     })
 
     it('returns value', async () => {
-      const node = new DAGNode(Buffer.from([]), [])
+      const node = new DAGNode(Uint8Array.from([]), [])
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
@@ -86,7 +85,7 @@ describe('/dag', () => {
     })
 
     it('uses text encoding for data by default', async () => {
-      const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
+      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
@@ -101,7 +100,7 @@ describe('/dag', () => {
     })
 
     it('overrides data encoding', async () => {
-      const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
+      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
@@ -130,7 +129,7 @@ describe('/dag', () => {
     })
 
     it('returns value with a path as part of the cid for dag-pb nodes', async () => {
-      const node = new DAGNode(Buffer.from([0, 1, 2, 3]), [])
+      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
       ipfs.dag.get.withArgs(cid, {
         ...defaultOptions,
         path: '/Data'
@@ -149,7 +148,7 @@ describe('/dag', () => {
       const node = {
         foo: 'bar',
         baz: {
-          qux: Buffer.from([0, 1, 2, 3])
+          qux: Uint8Array.from([0, 1, 2, 3])
         }
       }
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
@@ -166,7 +165,7 @@ describe('/dag', () => {
     it('supports specifying buffer encoding', async () => {
       const node = {
         foo: 'bar',
-        baz: Buffer.from([0, 1, 2, 3])
+        baz: Uint8Array.from([0, 1, 2, 3])
       }
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 

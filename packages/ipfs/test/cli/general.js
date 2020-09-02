@@ -5,7 +5,7 @@ const os = require('os')
 const fs = require('fs').promises
 const path = require('path')
 const { nanoid } = require('nanoid')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const { repoVersion } = require('ipfs-repo')
 const { promisify } = require('util')
 const ncp = promisify(require('ncp').ncp)
@@ -14,6 +14,7 @@ const clean = require('../utils/clean')
 const { isWindows } = require('../utils/platforms')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('general cli options', () => {
   let ipfs
@@ -83,7 +84,7 @@ describe('--migrate', () => {
     let killed = false
 
     daemon.stdout.on('data', data => {
-      stdout += data.toString('utf8')
+      stdout += uint8ArrayToString(data)
 
       if (stdout.includes('Daemon is ready') && !killed) {
         killed = true

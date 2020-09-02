@@ -47,6 +47,10 @@ module.exports = {
       let line = cidToString(res.cid, { base: cidBase })
       if (!quiet) {
         line += ` ${res.type}`
+
+        if (res.comments) {
+          line += ` ${res.comments}`
+        }
       }
       print(line)
     }

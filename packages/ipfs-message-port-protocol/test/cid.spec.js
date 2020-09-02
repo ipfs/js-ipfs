@@ -4,7 +4,7 @@
 
 const CID = require('cids')
 const { encodeCID, decodeCID } = require('../src/cid')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 
 describe('cid', function () {
   this.timeout(10 * 1000)

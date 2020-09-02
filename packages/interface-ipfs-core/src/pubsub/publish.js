@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -45,7 +45,7 @@ module.exports = (common, options) => {
 
     it('should publish message from buffer', () => {
       const topic = getTopic()
-      return ipfs.pubsub.publish(topic, Buffer.from(nanoid()))
+      return ipfs.pubsub.publish(topic, uint8ArrayFromString(nanoid()))
     })
 
     it('should publish 10 times within time limit', async () => {
@@ -53,7 +53,7 @@ module.exports = (common, options) => {
       const topic = getTopic()
 
       for (let i = 0; i < count; i++) {
-        await ipfs.pubsub.publish(topic, Buffer.from(nanoid()))
+        await ipfs.pubsub.publish(topic, uint8ArrayFromString(nanoid()))
       }
     })
   })

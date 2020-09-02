@@ -181,50 +181,6 @@ exports.gen = {
   }
 }
 
-exports.export = {
-  options: {
-    validate: {
-      options: {
-        allowUnknown: true,
-        stripUnknown: true
-      },
-      query: Joi.object().keys({
-        name: Joi.string().required(),
-        password: Joi.string().required(),
-        timeout: Joi.timeout()
-      })
-        .rename('arg', 'name', {
-          override: true,
-          ignoreUndefined: true
-        })
-    }
-  },
-  handler: async (request, h) => {
-    const {
-      app: {
-        signal
-      },
-      server: {
-        app: {
-          ipfs
-        }
-      },
-      query: {
-        name,
-        password,
-        timeout
-      }
-    } = request
-
-    const pem = await ipfs.key.export(name, password, {
-      signal,
-      timeout
-    })
-
-    return h.response(pem).type('application/x-pem-file')
-  }
-}
-
 exports.import = {
   options: {
     validate: {

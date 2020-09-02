@@ -3,7 +3,7 @@
 const multibase = require('multibase')
 const { cidToString } = require('../../../utils/cid')
 const parseDuration = require('parse-duration').default
-const { Buffer } = require('buffer')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = {
   command: 'get <key>',
@@ -30,8 +30,20 @@ module.exports = {
     const node = await ipfs.object.get(key, { enc: 'base58', timeout })
     let data = node.Data || ''
 
-    if (Buffer.isBuffer(data)) {
-      data = node.Data.toString(dataEncoding || undefined)
+    if (dataEncoding === 'base64') {
+      dataEncoding = 'base64pad'
+    }
+
+    if (dataEncoding === 'text') {
+      dataEncoding = 'ascii'
+    }
+
+    if (dataEncoding === 'hex') {
+      dataEncoding = 'base16'
+    }
+
+    if (data instanceof Uint8Array) {
+      data = uint8ArrayToString(node.Data, dataEncoding || undefined)
     }
 
     const answer = {

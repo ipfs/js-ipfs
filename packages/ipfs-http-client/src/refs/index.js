@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
@@ -16,7 +15,7 @@ module.exports = configure((api, options) => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: args.map(arg => `${Buffer.isBuffer(arg) ? new CID(arg) : arg}`),
+        arg: args.map(arg => `${arg instanceof Uint8Array ? new CID(arg) : arg}`),
         ...options
       }),
       headers: options.headers,

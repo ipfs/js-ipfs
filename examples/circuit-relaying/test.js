@@ -91,10 +91,10 @@ module.exports[pkg.name] = function (browser) {
 
   browser
     .url(process.env.IPFS_EXAMPLE_TEST_URL)
-    .waitForElementVisible('#peer')
+    .waitForElementVisible('#peer-id') // Wait for ipfs to start
     .clearValue('#peer')
     .setValue('#peer', process.env.IPFS_RELAY_ADDRESS)
-    .pause(1000)
+    .pause(100)
     .click('#connect')
 
   browser.expect.element('#peers-addrs').text.to.contain(process.env.IPFS_RELAY_ID)

@@ -6,6 +6,7 @@ const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('ipfs:ipns:publisher')
 log.error = debug('ipfs:ipns:publisher:error')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const ipns = require('ipns')
 
@@ -79,12 +80,12 @@ class IpnsPublisher {
 
     // Add record to routing (buffer key)
     try {
-      const res = await this._routing.put(key.toBuffer(), entryData)
-      log(`ipns record for ${key.toString('base64')} was stored in the routing`)
+      const res = await this._routing.put(key.uint8Array(), entryData)
+      log(`ipns record for ${uint8ArrayToString(key.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
     } catch (err) {
-      const errMsg = `ipns record for ${key.toString('base64')} could not be stored in the routing`
+      const errMsg = `ipns record for ${uint8ArrayToString(key.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
 
@@ -109,12 +110,12 @@ class IpnsPublisher {
 
     // Add public key to routing (buffer key)
     try {
-      const res = await this._routing.put(key.toBuffer(), publicKey.bytes)
-      log(`public key for ${key.toString('base64')} was stored in the routing`)
+      const res = await this._routing.put(key.uint8Array(), publicKey.bytes)
+      log(`public key for ${uint8ArrayToString(key.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
     } catch (err) {
-      const errMsg = `public key for ${key.toString('base64')} could not be stored in the routing`
+      const errMsg = `public key for ${uint8ArrayToString(key.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
 
@@ -156,7 +157,7 @@ class IpnsPublisher {
       // Try to get from routing
       try {
         const keys = ipns.getIdKeys(peerId.toBytes())
-        const res = await this._routing.get(keys.routingKey.toBuffer())
+        const res = await this._routing.get(keys.routingKey.uint8Array())
 
         // unmarshal data
         return this._unmarshalData(res)
@@ -194,7 +195,7 @@ class IpnsPublisher {
       record = await this._getPublished(peerId, getPublishedOptions)
     } catch (err) {
       if (err.code !== ERR_NOT_FOUND) {
-        const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id}`
+        const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id} ${err.stack}`
         log.error(errMsg)
 
         throw errcode(new Error(errMsg), 'ERR_DETERMINING_PUBLISHED_RECORD')

@@ -26,8 +26,8 @@ module.exports = () => {
         Multiplex
       ],
       connEncryption: [
-        SECIO,
-        NOISE
+        NOISE,
+        SECIO
       ],
       peerDiscovery: [
         MulticastDNS

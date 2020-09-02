@@ -2,6 +2,7 @@
 
 const IpfsHttpClient = require('ipfs-http-client')
 const { sleep, Logger, onEnterPress, catchAndLog } = require('./util')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function main () {
   const apiUrlInput = document.getElementById('api-url')
@@ -76,13 +77,13 @@ async function main () {
 
     await ipfs.pubsub.subscribe(nextTopic, msg => {
       const from = msg.from
-      const seqno = msg.seqno.toString('hex')
+      const seqno = uint8ArrayToString(msg.seqno, 'base16')
       if (from === peerId) return log(`Ignoring message ${seqno} from self`)
       log(`Message ${seqno} from ${from}:`)
       try {
-        log(JSON.stringify(msg.data.toString(), null, 2))
+        log(JSON.stringify(uint8ArrayToString(msg.data), null, 2))
       } catch (_) {
-        log(msg.data.toString('hex'))
+        log(uint8ArrayToString(msg.data, 'base16'))
       }
     })
 
