@@ -113,6 +113,29 @@ module.exports = (common, options) => {
       expect(accumProgress).to.equal(fixtures.bigFile.data.length)
     })
 
+    it('should add an empty file with progress enabled', async () => {
+      let progCalled = false
+      let accumProgress = 0
+      function handler (p) {
+        progCalled = true
+        accumProgress = p
+      }
+
+      const file = await ipfs.add(fixtures.emptyFile.data, { progress: handler })
+
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
+      expect(file.path).to.equal(fixtures.emptyFile.cid)
+      expect(progCalled).to.be.true()
+      expect(accumProgress).to.equal(fixtures.emptyFile.data.length)
+    })
+
+    it('should add an empty file without progress enabled', async () => {
+      const file = await ipfs.add(fixtures.emptyFile.data)
+
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
+      expect(file.path).to.equal(fixtures.emptyFile.cid)
+    })
+
     it('should add a Buffer as tuple', async () => {
       const tuple = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
