@@ -2,8 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const factory = require('../utils/factory')
 const pEvent = require('p-event')
 
@@ -41,16 +41,16 @@ describe.skip('gc', function () {
   const df = factory()
   const fixtures = [{
     path: 'test/my/path1',
-    content: Buffer.from('path1')
+    content: uint8ArrayFromString('path1')
   }, {
     path: 'test/my/path2',
-    content: Buffer.from('path2')
+    content: uint8ArrayFromString('path2')
   }, {
     path: 'test/my/path3',
-    content: Buffer.from('path3')
+    content: uint8ArrayFromString('path3')
   }, {
     path: 'test/my/path4',
-    content: Buffer.from('path4')
+    content: uint8ArrayFromString('path4')
   }]
 
   let ipfsd
@@ -81,8 +81,8 @@ describe.skip('gc', function () {
     resToCid: (res) => res.toString()
   }, {
     name: 'block put',
-    add1: () => ipfs.block.put(Buffer.from('block put 1'), null),
-    add2: () => ipfs.block.put(Buffer.from('block put 2'), null),
+    add1: () => ipfs.block.put(uint8ArrayFromString('block put 1'), null),
+    add2: () => ipfs.block.put(uint8ArrayFromString('block put 2'), null),
     resToCid: (res) => res.cid.toString()
   }]
 
@@ -150,8 +150,8 @@ describe.skip('gc', function () {
 
     it('garbage collection should wait for pending block rm to finish', async () => {
       // Add two blocks so that we can remove them
-      const cid1 = (await ipfs.block.put(Buffer.from('block to rm 1'), null)).cid
-      const cid2 = (await ipfs.block.put(Buffer.from('block to rm 2'), null)).cid
+      const cid1 = (await ipfs.block.put(uint8ArrayFromString('block to rm 1'), null)).cid
+      const cid2 = (await ipfs.block.put(uint8ArrayFromString('block to rm 2'), null)).cid
 
       // Remove first block from IPFS
       // Note: block rm will take a write lock
@@ -193,8 +193,8 @@ describe.skip('gc', function () {
 
     it('garbage collection should wait for pending pin add to finish', async () => {
       // Add two blocks so that we can pin them
-      const cid1 = (await ipfs.block.put(Buffer.from('block to pin add 1'), null)).cid
-      const cid2 = (await ipfs.block.put(Buffer.from('block to pin add 2'), null)).cid
+      const cid1 = (await ipfs.block.put(uint8ArrayFromString('block to pin add 1'), null)).cid
+      const cid2 = (await ipfs.block.put(uint8ArrayFromString('block to pin add 2'), null)).cid
 
       // Pin first block
       // Note: pin add will take a read lock
@@ -226,8 +226,8 @@ describe.skip('gc', function () {
 
     it('garbage collection should wait for pending pin rm to finish', async () => {
       // Add two blocks so that we can pin them
-      const cid1 = (await ipfs.block.put(Buffer.from('block to pin rm 1'), null)).cid
-      const cid2 = (await ipfs.block.put(Buffer.from('block to pin rm 2'), null)).cid
+      const cid1 = (await ipfs.block.put(uint8ArrayFromString('block to pin rm 1'), null)).cid
+      const cid2 = (await ipfs.block.put(uint8ArrayFromString('block to pin rm 2'), null)).cid
 
       // Pin blocks
       await ipfs.pin.add(cid1)

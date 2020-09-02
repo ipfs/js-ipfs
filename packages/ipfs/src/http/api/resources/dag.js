@@ -6,13 +6,13 @@ const Joi = require('../../utils/joi')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
 const debug = require('debug')
-const { Buffer } = require('buffer')
 const {
   cidToString
 } = require('../../../utils/cid')
 const all = require('it-all')
 const log = debug('ipfs:http-api:dag')
 log.error = debug('ipfs:http-api:dag:error')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const IpldFormats = {
   get [multicodec.RAW] () {
@@ -61,13 +61,13 @@ const encodeBufferKeys = (obj, encoding) => {
     return obj
   }
 
-  if (Buffer.isBuffer(obj)) {
-    return obj.toString(encoding)
+  if (obj instanceof Uint8Array) {
+    return uint8ArrayToString(obj, encoding)
   }
 
   Object.keys(obj).forEach(key => {
-    if (Buffer.isBuffer(obj)) {
-      obj[key] = obj[key].toString(encoding)
+    if (obj instanceof Uint8Array) {
+      obj[key] = uint8ArrayToString(obj[key], encoding)
 
       return
     }
@@ -90,8 +90,10 @@ exports.get = {
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
         dataEncoding: Joi.string()
-          .valid('text', 'base64', 'hex', 'utf8')
-          .replace(/text/, 'utf8')
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
           .default('utf8'),
         timeout: Joi.timeout()
       })
@@ -135,7 +137,7 @@ exports.get = {
 
     let value = result.value
 
-    if (!Buffer.isBuffer(result.value) && result.value.toJSON) {
+    if (!(result.value instanceof Uint8Array) && result.value.toJSON) {
       value = result.value.toJSON()
     }
 

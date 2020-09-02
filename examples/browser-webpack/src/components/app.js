@@ -2,6 +2,8 @@
 
 const React = require('react')
 const IPFS = require('ipfs')
+const uint8ArrayConcat = require('uint8arrays/concat')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const stringToUse = 'hello world from webpacked IPFS'
 
@@ -39,8 +41,8 @@ class App extends React.Component {
       bufs.push(buf)
     }
 
-    const data = Buffer.concat(bufs)
-    this.setState({ addedFileContents: data.toString('utf8') })
+    const data = uint8ArrayConcat(bufs)
+    this.setState({ addedFileContents: uint8ArrayToString(data) })
   }
 
   render () {

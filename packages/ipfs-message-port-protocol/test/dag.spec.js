@@ -4,8 +4,8 @@
 
 const CID = require('cids')
 const { encodeNode } = require('../src/dag')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 describe('dag', function () {
   this.timeout(10 * 1000)
@@ -41,7 +41,7 @@ describe('dag', function () {
       )
       const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
-      const hi = Buffer.from('hello world')
+      const hi = uint8ArrayFromString('hello world')
       const dagNode = {
         hi,
         nested: {
@@ -78,7 +78,7 @@ describe('dag', function () {
       )
       const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
-      const hi = Buffer.from('hello world')
+      const hi = uint8ArrayFromString('hello world')
       const dagNode = {
         hi,
         nested: {

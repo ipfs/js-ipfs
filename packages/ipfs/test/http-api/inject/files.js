@@ -3,7 +3,7 @@
 'use strict'
 
 const randomBytes = require('iso-random-stream/src/random')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
 const multibase = require('multibase')
@@ -14,7 +14,6 @@ const CID = require('cids')
 const first = require('it-first')
 const toBuffer = require('it-to-buffer')
 const { AbortSignal } = require('abort-controller')
-const { Buffer } = require('buffer')
 
 function matchIterable () {
   return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
@@ -107,6 +106,17 @@ describe('/files', () => {
         randomBytes(1024 * 1024 * 2).toString('hex'),
         '------------287032381131322--'
       ].join('\r\n'))
+
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
+        path: cid.toString(),
+        cid,
+        size: 1024 * 1024 * 2,
+        mode: 0o420,
+        mtime: {
+          secs: 100,
+          nsecs: 0
+        }
+      }])
 
       const res = await http({
         method: 'POST',

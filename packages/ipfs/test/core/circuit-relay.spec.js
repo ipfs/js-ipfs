@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const concat = require('it-concat')
 const randomBytes = require('iso-random-stream/src/random')
 const factory = require('../utils/factory')

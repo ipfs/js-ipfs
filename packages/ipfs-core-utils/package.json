@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",
@@ -28,21 +28,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "blob-to-it": "0.0.1",
-    "browser-readablestream-to-it": "0.0.1",
-    "buffer": "^5.6.0",
-    "cids": "^0.8.3",
+    "blob-to-it": "0.0.2",
+    "browser-readablestream-to-it": "0.0.2",
+    "cids": "^1.0.0",
     "err-code": "^2.0.0",
-    "ipfs-utils": "^2.2.2",
+    "ipfs-utils": "^3.0.0",
     "it-all": "^1.0.1",
-    "it-map": "^1.0.0",
-    "it-peekable": "0.0.1"
+    "it-map": "^1.0.2",
+    "it-peekable": "0.0.1",
+    "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "delay": "^4.3.0",
-    "dirty-chai": "^2.0.1"
+    "aegir": "^26.0.0",
+    "delay": "^4.3.0"
   }
 }

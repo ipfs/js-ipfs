@@ -2,7 +2,6 @@
 
 const Block = require('ipld-block')
 const CID = require('cids')
-const { Buffer } = require('buffer')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -24,7 +23,7 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    return new Block(Buffer.from(await res.arrayBuffer()), cid)
+    return new Block(new Uint8Array(await res.arrayBuffer()), cid)
   }
   return get
 })

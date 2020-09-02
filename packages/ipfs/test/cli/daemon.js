@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const clean = require('../utils/clean')
 const ipfsCmd = require('../utils/ipfs-exec')
 const { isWindows } = require('../utils/platforms')

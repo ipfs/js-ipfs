@@ -171,9 +171,10 @@ e.g.
 
 ```js
 const readable = ipfs.catReadableStream('QmHash')
+const decoder = new TextDecoder()
 
 readable.on('data', chunk => {
-  console.log(chunk.toString())
+  console.log(decoder.decode(chunk))
 })
 
 readable.on('end', () => {
@@ -185,9 +186,10 @@ Becomes:
 
 ```js
 const source = ipfs.cat('QmHash')
+const decoder = new TextDecoder()
 
 for await (const chunk of source) {
-  console.log(chunk.toString())
+  console.log(decoder.decode(chunk))
 }
 
 console.log('done')
@@ -201,9 +203,10 @@ e.g.
 
 ```js
 const readable = ipfs.catReadableStream('QmHash')
+const decoder = new TextDecoder()
 
 readable.on('data', chunk => {
-  console.log(chunk.toString())
+  console.log(decoder.decode(chunk))
 })
 
 readable.on('end', () => {
@@ -216,9 +219,10 @@ Becomes:
 ```js
 const toStream = require('it-to-stream')
 const readable = toStream.readable(ipfs.cat('QmHash'))
+const decoder = new TextDecoder()
 
 readable.on('data', chunk => {
-  console.log(chunk.toString())
+  console.log(decoder.decode(chunk))
 })
 
 readable.on('end', () => {
@@ -238,11 +242,12 @@ e.g.
 
 ```js
 const { pipeline, Writable } = require('stream')
+const decoder = new TextDecoder()
 
-let data = Buffer.alloc(0)
+let data = new Uint8Array(0)
 const concat = new Writable({
   write (chunk, enc, cb) {
-    data = Buffer.concat([data, chunk])
+    data = uint8ArrayConcat([data, chunk])
     cb()
   }
 })
@@ -251,7 +256,7 @@ pipeline(
   ipfs.catReadableStream('QmHash'),
   concat,
   err => {
-    console.log(data.toString())
+    console.log(decoder.decode(chunk))
   }
 )
 ```
@@ -260,11 +265,12 @@ Becomes:
 
 ```js
 const pipe = require('it-pipe')
+const decoder = new TextDecoder()
 
-let data = Buffer.alloc(0)
+let data = new Uint8Array(0)
 const concat = async source => {
   for await (const chunk of source) {
-    data = Buffer.concat([data, chunk])
+    data = uint8ArrayConcat([data, chunk])
   }
 }
 
@@ -273,15 +279,16 @@ const data = await pipe(
   concat
 )
 
-console.log(data.toString())
+console.log(decoder.decode(data))
 ```
 
 ...which, by the way, could more succinctly be written as:
 
 ```js
 const toBuffer = require('it-to-buffer')
+const decoder = new TextDecoder()
 const data = await toBuffer(ipfs.cat('QmHash'))
-console.log(data.toString())
+console.log(decoder.decode(data))
 ```
 
 **Impact 🍏**
@@ -292,11 +299,12 @@ e.g.
 
 ```js
 const { pipeline, Writable } = require('stream')
+const decoder = new TextDecoder()
 
-let data = Buffer.alloc(0)
+let data = new Uint8Array(0)
 const concat = new Writable({
   write (chunk, enc, cb) {
-    data = Buffer.concat([data, chunk])
+    data = uint8ArrayConcat([data, chunk])
     cb()
   }
 })
@@ -305,7 +313,7 @@ pipeline(
   ipfs.catReadableStream('QmHash'),
   concat,
   err => {
-    console.log(data.toString())
+    console.log(decoder.decode(data))
   }
 )
 ```
@@ -315,11 +323,12 @@ Becomes:
 ```js
 const toStream = require('it-to-stream')
 const { pipeline, Writable } = require('stream')
+const decoder = new TextDecoder()
 
-let data = Buffer.alloc(0)
+let data = new Uint8Array(0)
 const concat = new Writable({
   write (chunk, enc, cb) {
-    data = Buffer.concat([data, chunk])
+    data = uint8ArrayConcat([data, chunk])
     cb()
   }
 })
@@ -328,7 +337,7 @@ pipeline(
   toStream.readable(ipfs.cat('QmHash')),
   concat,
   err => {
-    console.log(data.toString())
+    console.log(decoder.decode(data))
   }
 )
 ```
@@ -472,10 +481,12 @@ Use a [for/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 e.g.
 
 ```js
+const decoder = new TextDecoder()
+
 pull(
   ipfs.catPullStream('QmHash'),
   pull.through(chunk => {
-    console.log(chunk.toString())
+    console.log(decoder.decode(data))
   }),
   pull.onEnd(err => {
     console.log('done')
@@ -486,8 +497,10 @@ pull(
 Becomes:
 
 ```js
+const decoder = new TextDecoder()
+
 for await (const chunk of ipfs.cat('QmHash')) {
-  console.log(chunk.toString())
+  console.log(decoder.decode(data))
 }
 
 console.log('done')
@@ -500,10 +513,12 @@ Convert the async iterable to a pull stream.
 e.g.
 
 ```js
+const decoder = new TextDecoder()
+
 pull(
   ipfs.catPullStream('QmHash'),
   pull.through(chunk => {
-    console.log(chunk.toString())
+    console.log(decoder.decode(data))
   }),
   pull.onEnd(err => {
     console.log('done')
@@ -515,11 +530,12 @@ Becomes:
 
 ```js
 const toPull = require('async-iterator-to-pull-stream')
+const decoder = new TextDecoder()
 
 pull(
   toPull.source(ipfs.cat('QmHash')),
   pull.through(chunk => {
-    console.log(chunk.toString())
+    console.log(decoder.decode(data))
   }),
   pull.onEnd(err => {
     console.log('done')
@@ -538,10 +554,12 @@ Use `it-pipe` and `it-concat` concat data from an async iterable.
 e.g.
 
 ```js
+const decoder = new TextDecoder()
+
 pull(
   ipfs.catPullStream('QmHash'),
   pull.collect((err, chunks) => {
-    console.log(Buffer.concat(chunks).toString())
+    console.log(decoder.decode(uint8ArrayConcat(chunks)))
   })
 )
 ```
@@ -551,13 +569,14 @@ Becomes:
 ```js
 const pipe = require('it-pipe')
 const concat = require('it-concat')
+const decoder = new TextDecoder()
 
 const data = await pipe(
   ipfs.cat('QmHash'),
   concat
 )
 
-console.log(data.toString())
+console.log(decoder.decode(data))
 ```
 
 #### Transform Pull Streams
@@ -640,8 +659,8 @@ e.g.
 
 ```js
 const results = await ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ])
 
 // Note that ALL files have already been added to IPFS
@@ -654,8 +673,8 @@ Becomes:
 
 ```js
 const addSource = ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ])
 
 for await (const file of addSource) {
@@ -669,8 +688,8 @@ Alternatively you can buffer up the results using the `it-all` utility:
 const all = require('it-all')
 
 const results = await all(ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ]))
 
 results.forEach(file => {
@@ -682,8 +701,8 @@ Often you just want the last item (the root directory entry) when adding multipl
 
 ```js
 const results = await ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ])
 
 const lastResult = results[results.length - 1]
@@ -695,8 +714,8 @@ Becomes:
 
 ```js
 const addSource = ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ])
 
 let lastResult
@@ -711,8 +730,8 @@ Alternatively you can use the `it-last` utility:
 
 ```js
 const lastResult = await last(ipfs.addAll([
-  { path: 'root/1.txt', content: Buffer.from('one') },
-  { path: 'root/2.txt', content: Buffer.from('two') }
+  { path: 'root/1.txt', content: 'one' },
+  { path: 'root/2.txt', content: 'two' }
 ]))
 
 console.log(lastResult)

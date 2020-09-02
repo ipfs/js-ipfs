@@ -1,10 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const { fixtures } = require('./utils')
 const CID = require('cids')
-const concat = require('it-concat')
 const all = require('it-all')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
@@ -41,26 +42,26 @@ module.exports = (common, options) => {
     })
 
     it('should cat with a base58 string encoded multihash', async () => {
-      const data = await concat(ipfs.cat(fixtures.smallFile.cid))
-      expect(data.toString()).to.contain('Plz add me!')
+      const data = uint8ArrayConcat(await all(ipfs.cat(fixtures.smallFile.cid)))
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
-    it('should cat with a Buffer multihash', async () => {
+    it('should cat with a Uint8Array multihash', async () => {
       const cid = new CID(fixtures.smallFile.cid).multihash
 
-      const data = await concat(ipfs.cat(cid))
-      expect(data.toString()).to.contain('Plz add me!')
+      const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat with a CID object', async () => {
       const cid = new CID(fixtures.smallFile.cid)
 
-      const data = await concat(ipfs.cat(cid))
-      expect(data.toString()).to.contain('Plz add me!')
+      const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat a file added as CIDv0 with a CIDv1', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const res = await all(importer([{ content: input }], ipfs.block))
 
@@ -69,12 +70,12 @@ module.exports = (common, options) => {
 
       const cidv1 = cidv0.toV1()
 
-      const output = await concat(ipfs.cat(cidv1))
-      expect(output.slice()).to.eql(input)
+      const output = uint8ArrayConcat(await all(ipfs.cat(cidv1)))
+      expect(output).to.eql(input)
     })
 
     it('should cat a file added as CIDv1 with a CIDv0', async () => {
-      const input = Buffer.from(`TEST${Math.random()}`)
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
       const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
@@ -83,12 +84,12 @@ module.exports = (common, options) => {
 
       const cidv0 = cidv1.toV0()
 
-      const output = await concat(ipfs.cat(cidv0))
+      const output = uint8ArrayConcat(await all(ipfs.cat(cidv0)))
       expect(output.slice()).to.eql(input)
     })
 
     it('should cat a BIG file', async () => {
-      const data = await concat(ipfs.cat(fixtures.bigFile.cid))
+      const data = uint8ArrayConcat(await all(ipfs.cat(fixtures.bigFile.cid)))
       expect(data.length).to.equal(fixtures.bigFile.data.length)
       expect(data.slice()).to.eql(fixtures.bigFile.data)
     })
@@ -96,8 +97,8 @@ module.exports = (common, options) => {
     it('should cat with IPFS path', async () => {
       const ipfsPath = '/ipfs/' + fixtures.smallFile.cid
 
-      const data = await concat(ipfs.cat(ipfsPath))
-      expect(data.toString()).to.contain('Plz add me!')
+      const data = uint8ArrayConcat(await all(ipfs.cat(ipfsPath)))
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat with IPFS path, nested value', async () => {
@@ -108,9 +109,9 @@ module.exports = (common, options) => {
       const file = await filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
 
-      const data = await concat(ipfs.cat(`/ipfs/${file.cid}/testfile.txt`))
+      const data = uint8ArrayConcat(await all(ipfs.cat(`/ipfs/${file.cid}/testfile.txt`)))
 
-      expect(data.toString()).to.contain('Plz add me!')
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat with IPFS path, deeply nested value', async () => {
@@ -121,18 +122,18 @@ module.exports = (common, options) => {
       const file = filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
 
-      const data = await concat(ipfs.cat(`/ipfs/${file.cid}/b/testfile.txt`))
-      expect(data.toString()).to.contain('Plz add me!')
+      const data = uint8ArrayConcat(await all(ipfs.cat(`/ipfs/${file.cid}/b/testfile.txt`)))
+      expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should error on invalid key', () => {
       const invalidCid = 'somethingNotMultihash'
 
-      return expect(concat(ipfs.cat(invalidCid))).to.eventually.be.rejected()
+      return expect(drain(ipfs.cat(invalidCid))).to.eventually.be.rejected()
     })
 
     it('should error on unknown path', () => {
-      return expect(concat(ipfs.cat(fixtures.smallFile.cid + '/does-not-exist'))).to.eventually.be.rejected()
+      return expect(drain(ipfs.cat(fixtures.smallFile.cid + '/does-not-exist'))).to.eventually.be.rejected()
         .and.be.an.instanceOf(Error)
         .and.to.have.property('message')
         .to.be.oneOf([
@@ -152,7 +153,7 @@ module.exports = (common, options) => {
 
       const dir = files[0]
 
-      const err = await expect(concat(ipfs.cat(dir.cid))).to.eventually.be.rejected()
+      const err = await expect(drain(ipfs.cat(dir.cid))).to.eventually.be.rejected()
       expect(err.message).to.contain('this dag node is a directory')
     })
 
@@ -160,8 +161,8 @@ module.exports = (common, options) => {
       const offset = 1
       const length = 3
 
-      const data = await concat(ipfs.cat(fixtures.smallFile.cid, { offset, length }))
-      expect(data.toString()).to.equal('lz ')
+      const data = uint8ArrayConcat(await all(ipfs.cat(fixtures.smallFile.cid, { offset, length })))
+      expect(uint8ArrayToString(data)).to.equal('lz ')
     })
   })
 }

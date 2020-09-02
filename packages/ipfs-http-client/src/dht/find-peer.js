@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
@@ -13,7 +12,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${Buffer.isBuffer(peerId) ? new CID(peerId) : peerId}`,
+        arg: `${peerId instanceof Uint8Array ? new CID(peerId) : peerId}`,
         ...options
       }),
       headers: options.headers

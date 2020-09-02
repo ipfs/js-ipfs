@@ -38,7 +38,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.pubsub.cancel(nodeId)
       expect(res).to.exist()
       expect(res).to.have.property('canceled')
-      expect(res.canceled).to.eql(false)
+      expect(res.canceled).to.be.false()
     })
 
     it('should cancel a subscription correctly returning true', async function () {
@@ -57,9 +57,9 @@ module.exports = (common, options) => {
       const cancel = await ipfs.name.pubsub.cancel(ipnsPath)
       const subs2 = await ipfs.name.pubsub.subs()
 
-      expect(subs1).to.be.an('array').that.does.include(ipnsPath)
+      expect(subs1).to.be.an('array').that.includes(ipnsPath)
       expect(cancel).to.have.property('canceled')
-      expect(cancel.canceled).to.eql(true)
+      expect(cancel.canceled).to.be.true()
       expect(subs2).to.be.an('array').that.does.not.include(ipnsPath)
     })
   })

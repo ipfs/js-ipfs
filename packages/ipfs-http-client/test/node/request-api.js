@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const ipfsClient = require('../../src/index.js')
 
 describe('\'deal with HTTP weirdness\' tests', () => {
@@ -40,7 +40,7 @@ describe('trailer headers', () => {
     server.listen(6001, () => {
       const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/6001')
       /* eslint-disable */
-      ipfs.add(Buffer.from('Hello there!'), (err, res) => {
+      ipfs.add(uint8ArrayFromString('Hello there!'), (err, res) => {
         // TODO: error's are not being correctly
         // propagated with Trailer headers yet
         // expect(err).to.exist()

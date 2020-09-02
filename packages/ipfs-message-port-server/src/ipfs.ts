@@ -161,7 +161,6 @@ type AddInput =
   | FileInput
   | ReadStream
 
-
 type AddAllInput =
   | Iterable<AddInput>
   | AsyncIterable<AddInput>
@@ -219,7 +218,7 @@ interface BlockService {
   ): Promise<{ cid: CID; size: number }>
 }
 
-interface GetBlockOptions extends AbortOptions { }
+interface GetBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface
 interface PutBlockOptions extends AbortOptions {
   format?: string
   mhtype?: string
@@ -236,4 +235,4 @@ interface RmBlockOptions extends AbortOptions {
   quiet?: boolean
 }
 
-interface StatBlockOptions extends AbortOptions { }
+interface StatBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface

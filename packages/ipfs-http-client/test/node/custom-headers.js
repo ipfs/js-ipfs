@@ -2,8 +2,9 @@
 'use strict'
 
 const { isNode } = require('ipfs-utils/src/env')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const ipfsClient = require('../../src')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 function startServer (fn) {
   let headersResolve
@@ -59,7 +60,7 @@ describe('custom headers', function () {
     })
 
     it('multipart API calls', async () => {
-      const headers = await startServer(() => ipfs.files.write('/foo/bar', Buffer.from('derp'), {
+      const headers = await startServer(() => ipfs.files.write('/foo/bar', uint8ArrayFromString('derp'), {
         create: true
       }))
 
@@ -88,7 +89,7 @@ describe('custom headers', function () {
     })
 
     it('multipart API calls', async () => {
-      const headers = await startServer(() => ipfs.files.write('/foo/bar', Buffer.from('derp'), {
+      const headers = await startServer(() => ipfs.files.write('/foo/bar', uint8ArrayFromString('derp'), {
         create: true,
         headers: {
           authorization: 'Bearer OLOY'

@@ -2,7 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const ipfsClient = require('../src')
 
 describe('.getEndpointConfig', () => {

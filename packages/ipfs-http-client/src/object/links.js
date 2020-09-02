@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const { DAGLink } = require('ipld-dag-pb')
 const configure = require('../lib/configure')
@@ -12,7 +11,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`,
+        arg: `${cid instanceof Uint8Array ? new CID(cid) : cid}`,
         ...options
       }),
       headers: options.headers

@@ -194,7 +194,7 @@ module.exports[pkg.name] = function (browser) {
             .then(res => res.text())
             .then(done, done)
         }, [ url ], ({ value: contents }) => {
-          browser.expect(contents.toString('utf8')).to.equal(FILE_CONTENT)
+          browser.expect(contents).to.equal(FILE_CONTENT)
         })
       })
   }

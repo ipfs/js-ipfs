@@ -1,7 +1,7 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = {
   command: 'pub <topic> <data>',
@@ -16,7 +16,7 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs }, topic, data, timeout }) {
-    data = Buffer.from(String(data))
+    data = uint8ArrayFromString(String(data))
     await ipfs.pubsub.publish(topic, data, {
       timeout
     })

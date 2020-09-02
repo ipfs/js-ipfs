@@ -4,6 +4,8 @@ const IPFS = require('ipfs')
 const Repo = require('ipfs-repo')
 const fsLock = require('ipfs-repo/src/lock')
 const all = require('it-all')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
 
 // Create our custom options
 const customRepositoryOptions = {
@@ -82,12 +84,12 @@ async function main () {
   // Once we have the version, let's add a file to IPFS
   const file = await node.add({
     path: 'test-data.txt',
-    content: Buffer.from('We are using a customized repo!')
+    content: uint8ArrayFromString('We are using a customized repo!')
   })
   // Log out the added files metadata and cat the file from IPFS
   console.log('\nAdded file:', file.path, file.cid)
 
-  const data = Buffer.concat(await all(node.cat(file.cid)))
+  const data = uint8ArrayConcat(await all(node.cat(file.cid)))
 
   // Print out the files contents to console
   console.log('\nFetched file content:')

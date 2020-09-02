@@ -2,8 +2,8 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
-const { Buffer } = require('buffer')
+const { expect } = require('aegir/utils/chai')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const f = require('./utils/factory')()
 
 describe('.log', function () {
@@ -20,7 +20,7 @@ describe('.log', function () {
   it('.log.tail', async () => {
     const i = setInterval(async () => {
       try {
-        await ipfs.add(Buffer.from('just adding some data to generate logs'))
+        await ipfs.add(uint8ArrayFromString('just adding some data to generate logs'))
       } catch (_) {
         // this can error if the test has finished and we're shutting down the node
       }

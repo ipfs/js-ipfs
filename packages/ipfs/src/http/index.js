@@ -74,7 +74,10 @@ class HttpApi {
       // CORS is enabled by default
       // TODO: shouldn't, fix this
       routes: {
-        cors: true
+        cors: true,
+        response: {
+          emptyStatusCode: 200
+        }
       },
       // Disable Compression
       // Why? Streaming compression in Hapi is not stable enough,
@@ -171,7 +174,10 @@ class HttpApi {
       host,
       port,
       routes: {
-        cors: true
+        cors: true,
+        response: {
+          emptyStatusCode: 200
+        }
       }
     })
     server.app.ipfs = ipfs

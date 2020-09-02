@@ -1,10 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 describe('pubsub', () => {
   let ipfs
@@ -95,7 +95,7 @@ describe('pubsub', () => {
 
       await cli(`pubsub pub ${subName} ${data}`, { ipfs })
 
-      expect(ipfs.pubsub.publish.calledWith(subName, Buffer.from(data), defaultOptions)).to.be.true()
+      expect(ipfs.pubsub.publish.calledWith(subName, uint8ArrayFromString(data), defaultOptions)).to.be.true()
     })
 
     it('should publish message with timeout', async () => {
@@ -104,7 +104,7 @@ describe('pubsub', () => {
 
       await cli(`pubsub pub ${subName} ${data} --timeout=1s`, { ipfs })
 
-      expect(ipfs.pubsub.publish.calledWith(subName, Buffer.from(data), {
+      expect(ipfs.pubsub.publish.calledWith(subName, uint8ArrayFromString(data), {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()

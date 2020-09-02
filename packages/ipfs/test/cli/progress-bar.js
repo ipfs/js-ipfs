@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const createProgressBar = require('../../src/cli/utils').createProgressBar
 
 describe('progress bar', () => {

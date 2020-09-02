@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"
@@ -32,13 +32,13 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "buffer": "^5.6.0",
-    "cids": "^0.8.3",
-    "ipld-block": "^0.9.2"
+    "cids": "^1.0.0",
+    "ipld-block": "^0.10.0"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
-    "interface-ipfs-core": "^0.139.0"
+    "aegir": "^26.0.0",
+    "interface-ipfs-core": "^0.139.1",
+    "uint8arrays": "^1.1.0"
   },
   "engines": {
     "node": ">=10.3.0",

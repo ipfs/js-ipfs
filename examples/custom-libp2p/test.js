@@ -7,6 +7,7 @@ const TCP = require('libp2p-tcp')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const PeerId = require('peer-id')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function test () {
   let output = ''
@@ -18,7 +19,7 @@ async function test () {
   proc.all.on('data', async (data) => {
     process.stdout.write(data)
 
-    output += data.toString('utf8')
+    output += uint8ArrayToString(data)
 
     if (output.includes('The node now has')) {
       // the node has started up, try to dial it

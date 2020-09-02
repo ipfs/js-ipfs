@@ -116,7 +116,7 @@ async function main () {
       chunks.push(chunk)
   }
 
-  console.log('Added file contents:', Buffer.concat(chunks).toString())
+  console.log('Added file contents:', uint8ArrayConcat(chunks).toString())
 }
 
 main()

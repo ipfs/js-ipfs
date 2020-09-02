@@ -17,7 +17,7 @@ stages:
 
 node_js:
   - 'lts/*'
-  # cannot support node 14 until hapi > 19.1.1 is released
+  # blocked by https://github.com/hapijs/hapi/issues/4149
   # - 'node'
 
 os:
@@ -132,7 +132,7 @@ jobs:
       name: examples
       script:
         - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
-        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist.push('ipfs-css', 'tachyons')"
+        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
         - npm run reset
         - npm install
         - npm run build -- --scope={ipfs,ipfs-http-client}

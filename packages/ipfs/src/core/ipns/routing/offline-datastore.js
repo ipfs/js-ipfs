@@ -2,7 +2,6 @@
 
 const { Key } = require('interface-datastore')
 const { Record } = require('libp2p-record')
-const { Buffer } = require('buffer')
 const { encodeBase32 } = require('./utils')
 
 const errcode = require('err-code')
@@ -19,18 +18,18 @@ class OfflineDatastore {
 
   /**
    * Put a value to the local datastore indexed by the received key properly encoded.
-   * @param {Buffer} key identifier of the value.
-   * @param {Buffer} value value to be stored.
+   * @param {Uint8Array} key identifier of the value.
+   * @param {Uint8Array} value value to be stored.
    * @param {function(Error)} callback
    * @returns {void}
    */
   async put (key, value) { // eslint-disable-line require-await
-    if (!Buffer.isBuffer(key)) {
-      throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
+    if (!(key instanceof Uint8Array)) {
+      throw errcode(new Error('Offline datastore key must be a Uint8Array'), 'ERR_INVALID_KEY')
     }
 
-    if (!Buffer.isBuffer(value)) {
-      throw errcode(new Error('Offline datastore value must be a buffer'), 'ERR_INVALID_VALUE')
+    if (!(value instanceof Uint8Array)) {
+      throw errcode(new Error('Offline datastore value must be a Uint8Array'), 'ERR_INVALID_VALUE')
     }
 
     let routingKey
@@ -50,13 +49,13 @@ class OfflineDatastore {
 
   /**
    * Get a value from the local datastore indexed by the received key properly encoded.
-   * @param {Buffer} key identifier of the value to be obtained.
-   * @param {function(Error, Buffer)} callback
+   * @param {Uint8Array} key identifier of the value to be obtained.
+   * @param {function(Error, Uint8Array)} callback
    * @returns {void}
    */
   async get (key) {
-    if (!Buffer.isBuffer(key)) {
-      throw errcode(new Error('Offline datastore key must be a buffer'), 'ERR_INVALID_KEY')
+    if (!(key instanceof Uint8Array)) {
+      throw errcode(new Error('Offline datastore key must be a Uint8Array'), 'ERR_INVALID_KEY')
     }
 
     let routingKey
@@ -76,7 +75,7 @@ class OfflineDatastore {
       record = Record.deserialize(res)
     } catch (err) {
       log.error(err)
-      throw (err)
+      throw err
     }
 
     return record.value

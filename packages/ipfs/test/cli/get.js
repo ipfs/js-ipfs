@@ -2,12 +2,13 @@
 'use strict'
 
 const fs = require('fs')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const path = require('path')
 const clean = require('../utils/clean')
 const CID = require('cids')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const defaultOptions = {
   timeout: undefined
@@ -15,7 +16,7 @@ const defaultOptions = {
 
 describe('get', () => {
   const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
-  const buf = Buffer.from('hello world')
+  const buf = uint8ArrayFromString('hello world')
   let ipfs
 
   beforeEach(() => {

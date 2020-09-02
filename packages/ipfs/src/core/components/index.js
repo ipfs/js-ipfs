@@ -72,8 +72,10 @@ exports.object = {
 }
 exports.pin = {
   add: require('./pin/add'),
+  addAll: require('./pin/add-all'),
   ls: require('./pin/ls'),
-  rm: require('./pin/rm')
+  rm: require('./pin/rm'),
+  rmAll: require('./pin/rm-all')
 }
 exports.ping = require('./ping')
 exports.pubsub = require('./pubsub')

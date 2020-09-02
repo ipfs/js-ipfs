@@ -1,6 +1,5 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const CID = require('cids')
 const multipartRequest = require('../../lib/multipart-request')
 const configure = require('../../lib/configure')
@@ -19,7 +18,7 @@ module.exports = configure(api => {
       signal,
       searchParams: toUrlSearchParams({
         arg: [
-          `${Buffer.isBuffer(cid) ? new CID(cid) : cid}`
+          `${cid instanceof Uint8Array ? new CID(cid) : cid}`
         ],
         ...options
       }),

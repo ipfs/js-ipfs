@@ -24,18 +24,11 @@ const mfsWrite = {
         create: Joi.boolean().default(false),
         truncate: Joi.boolean().default(false),
         rawLeaves: Joi.boolean().default(false),
-        cidVersion: Joi.number().integer().valid([
-          0,
-          1
-        ]).default(0),
+        cidVersion: Joi.number().integer().valid(0, 1).default(0),
         hashAlg: Joi.string().default('sha2-256'),
         parents: Joi.boolean().default(false),
         progress: Joi.func(),
-        strategy: Joi.string().valid([
-          'flat',
-          'balanced',
-          'trickle'
-        ]).default('trickle'),
+        strategy: Joi.string().valid('flat', 'balanced', 'trickle').default('trickle'),
         flush: Joi.boolean().default(true),
         reduceSingleLeafToSelf: Joi.boolean().default(false),
         shardSplitThreshold: Joi.number().integer().min(0).default(1000),

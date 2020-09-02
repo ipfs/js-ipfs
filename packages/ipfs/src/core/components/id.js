@@ -3,20 +3,23 @@
 const pkgversion = require('../../../package.json').version
 const multiaddr = require('multiaddr')
 const { withTimeoutOption } = require('../utils')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = ({ peerId, libp2p }) => {
   return withTimeoutOption(async function id () { // eslint-disable-line require-await
     const id = peerId.toB58String()
     let addresses = []
+    let protocols = []
 
     if (libp2p) {
       // only available while the node is running
       addresses = libp2p.transportManager.getAddrs()
+      protocols = Array.from(libp2p.upgrader.protocols.keys())
     }
 
     return {
       id,
-      publicKey: peerId.pubKey.bytes.toString('base64'),
+      publicKey: uint8ArrayToString(peerId.pubKey.bytes, 'base64pad'),
       addresses: addresses
         .map(ma => {
           const str = ma.toString()
@@ -32,7 +35,8 @@ module.exports = ({ peerId, libp2p }) => {
         .sort()
         .map(ma => multiaddr(ma)),
       agentVersion: `js-ipfs/${pkgversion}`,
-      protocolVersion: '9000'
+      protocolVersion: '9000',
+      protocols: protocols.sort()
     }
   })
 }

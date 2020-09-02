@@ -1,8 +1,8 @@
 'use strict'
 
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const parseDuration = require('parse-duration').default
 const multibase = require('multibase')
-const { Buffer } = require('buffer')
 
 module.exports = {
   command: 'refs-local',
@@ -31,7 +31,7 @@ module.exports = {
         print(err, true, true)
       } else {
         if (multihash) {
-          print(multibase.encoding('base32upper').encode(Buffer.from(ref)))
+          print(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))
         } else {
           print(ref)
         }

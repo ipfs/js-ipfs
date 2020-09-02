@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const resources = require('../resources')
 
 module.exports = [
@@ -10,9 +10,9 @@ module.exports = [
     options: {
       handler: resources.gateway.handler,
       validate: {
-        params: {
+        params: Joi.object({
           path: Joi.string().required()
-        }
+        })
       },
       response: {
         ranges: false // disable built-in support, handler does it manually
@@ -28,9 +28,9 @@ module.exports = [
     options: {
       handler: resources.gateway.handler,
       validate: {
-        params: {
+        params: Joi.object({
           path: Joi.string().required()
-        }
+        })
       },
       response: {
         ranges: false // disable built-in support, handler does it manually

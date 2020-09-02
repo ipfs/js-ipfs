@@ -2,10 +2,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const { isNode } = require('ipfs-utils/src/env')
 const factory = require('../utils/factory')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 describe('dht', () => {
   describe('enabled by config', () => {
@@ -31,7 +31,7 @@ describe('dht', () => {
 
     describe('put', () => {
       it('should put a value when enabled', async () => {
-        await expect(ipfs.dht.put(Buffer.from('a'), Buffer.from('b')))
+        await expect(ipfs.dht.put(uint8ArrayFromString('a'), uint8ArrayFromString('b')))
           .to.eventually.be.undefined()
       })
     })
@@ -71,7 +71,7 @@ describe('dht', () => {
 
     describe('put', () => {
       it('should error when DHT not available', async () => {
-        await expect(ipfs.dht.put(Buffer.from('a'), Buffer.from('b')))
+        await expect(ipfs.dht.put(uint8ArrayFromString('a'), uint8ArrayFromString('b')))
           .to.eventually.be.rejected()
           .and.to.have.property('code', 'ERR_NOT_ENABLED')
       })
@@ -94,7 +94,7 @@ describe('dht', () => {
 
     describe('put', () => {
       it('should error when DHT not available', async () => {
-        await expect(ipfs.dht.put(Buffer.from('a'), Buffer.from('b')))
+        await expect(ipfs.dht.put(uint8ArrayFromString('a'), uint8ArrayFromString('b')))
           .to.eventually.be.rejected()
           .and.to.have.property('code', 'ERR_NOT_ENABLED')
       })

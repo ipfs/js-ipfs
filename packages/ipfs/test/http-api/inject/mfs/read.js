@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const http = require('../../../utils/http')
-const { Buffer } = require('buffer')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const sinon = require('sinon')
 const testHttpMethod = require('../../../utils/test-http-method')
 const { AbortSignal } = require('abort-controller')
@@ -22,7 +22,7 @@ describe('/files/read', () => {
   beforeEach(() => {
     ipfs = {
       files: {
-        read: sinon.stub().returns([Buffer.from('hello world')])
+        read: sinon.stub().returns([uint8ArrayFromString('hello world')])
       }
     }
   })

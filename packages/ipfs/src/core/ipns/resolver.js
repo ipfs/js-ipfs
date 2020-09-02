@@ -1,12 +1,12 @@
 'use strict'
 
 const ipns = require('ipns')
-const crypto = require('libp2p-crypto')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')
 const log = debug('ipfs:ipns:resolver')
 log.error = debug('ipfs:ipns:resolver:error')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
@@ -78,15 +78,15 @@ class IpnsResolver {
     let record
 
     try {
-      record = await this._routing.get(routingKey.toBuffer())
+      record = await this._routing.get(routingKey.uint8Array())
     } catch (err) {
-      log.error(err)
+      log.error('could not get record from routing', err)
 
       if (err.code === ERR_NOT_FOUND) {
         throw errcode(new Error(`record requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
       }
 
-      throw errcode(new Error(`unexpected error getting the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
+      throw errcode(new Error(`unexpected error getting the ipns record ${peerId.toString()}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
     }
 
     // IPNS entry
@@ -94,39 +94,12 @@ class IpnsResolver {
     try {
       ipnsEntry = ipns.unmarshal(record)
     } catch (err) {
-      log.error(err)
+      log.error('could not unmarshal record', err)
 
       throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_RECORD_RECEIVED')
     }
 
-    // if the record has a public key validate it
-    if (ipnsEntry.pubKey) {
-      return this._validateRecord(peerId, ipnsEntry)
-    }
-
-    // Otherwise, try to get the public key from routing
-    let pubKey
-    try {
-      pubKey = await this._routing.get(routingKey.toBuffer())
-    } catch (err) {
-      log.error(err)
-
-      if (err.code === ERR_NOT_FOUND) {
-        throw errcode(new Error(`public key requested for ${name} was not found in the network`), 'ERR_NO_RECORD_FOUND')
-      }
-
-      throw errcode(new Error(`unexpected error getting the public key for the ipns record ${peerId.id}`), 'ERR_UNEXPECTED_ERROR_GETTING_PUB_KEY')
-    }
-
-    try {
-      // Insert it into the peer id, in order to be validated by IPNS validator
-      peerId.pubKey = crypto.keys.unmarshalPublicKey(pubKey)
-    } catch (err) {
-      log.error(err)
-
-      throw errcode(new Error('found public key record that we couldn\'t convert to a value'), 'ERR_INVALID_PUB_KEY_RECEIVED')
-    }
-
+    // We should have the public key by now (inline, or in the entry)
     return this._validateRecord(peerId, ipnsEntry)
   }
 
@@ -137,7 +110,7 @@ class IpnsResolver {
     // IPNS entry validation
     await ipns.validate(pubKey, ipnsEntry)
 
-    return ipnsEntry.value.toString()
+    return uint8ArrayToString(ipnsEntry.value)
   }
 }
 

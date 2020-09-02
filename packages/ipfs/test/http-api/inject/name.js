@@ -3,7 +3,7 @@
 'use strict'
 
 const CID = require('cids')
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../../utils/test-http-method')
 const http = require('../../utils/http')
 const sinon = require('sinon')

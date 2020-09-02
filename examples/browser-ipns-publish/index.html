@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Publish to IPNS from the browser</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" />
+  </head>
+  <body class="sans-serif">
+    <header class="pv3 ph2 ph3-l bg-navy cf mb4">
+      <a href="https://ipfs.io/" title="ipfs.io">
+        <img
+          src="https://ipfs.io/images/ipfs-logo.svg"
+          class="v-mid"
+          style="height: 50px;"
+        />
+      </a>
+      <h1 class="aqua fw2 montserrat dib ma0 pv2 ph1 v-mid fr f3 lh-copy">
+        IPNS Publish from JS to Go Peer
+      </h1>
+    </header>
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">
+        IPNS PUBLISH SET-UP STEPS
+      </div>
+      <main class="page" data-v-4f5abb4a="">
+        <div class="theme-default-content content__default" data-v-4f5abb4a="">
+          <div
+            class="custom-block callout"
+            style="font-size: 0.75em; width: 75%; margin: 1em;"
+          >
+            <p>
+              Code repo for this demo
+              <a
+                href="https://github.com/js-ipfs/examples/browser-ipns-publish/"
+                >on Github</a
+              >
+            </p>
+            <p>
+              The idea is to publish from js-ipfs so you control your own
+              private keys, but publish to go-ipfs to benefit from the DHT.
+              Since the DHT in js-ipfs is still in the experimental phase, we need to use PubSub
+              and have a go-ipfs node subscribed to that PubSub to get our IPNS
+              record onto the DHT. In order to use PubSub between these two
+              nodes, you'll need a websocket to connect them.
+            </p>
+            <div>
+              To make this demo work, you're going to need:
+              <ul>
+                <li style="list-style-type: none;">
+                  <b>1. Access to a go-ipfs node and it's API</b>, a-la
+                  <pre>/dns4/domain.com/tcp/5001</pre>
+                </li>
+                <li>
+                  This is how the demo talks to the server, to ensure things
+                  like:
+                </li>
+                <ul>
+                  <li>
+                    A) pubsub is enabled, { EXPERIMENTAL: { ipnsPubsub: true } }
+                    and --enable-pubsub-experiment
+                  </li>
+                  <li>
+                    B) go-ipfs is connected to the js-ipfs node in the browser,
+                    via node.swarm.peers(),
+                  </li>
+                  <li>
+                    C) the pubsub messages are getting through to the go node,
+                    via node.pubsub.subscribe().
+                  </li>
+                </ul>
+              </ul>
+              <ul>
+                <li style="list-style-type: none;">
+                  <b>2. Access to a go-ipfs Websocket port</b>, a-la
+                  <pre>/dns4/domain.com/tcp/4003/wss/p2p/QmTheDomainPeerId</pre>
+                </li>
+                <li>
+                  Since we need PubSub for IPNS to reach the go-IPFS node (and
+                  further replicate through the go-DHT network) we need to
+                  connect our pubsub enabled JS-IPFS node in the browser to our
+                  go-IPFS node on the server. The way we connect is via
+                  Websocket. See
+                  <a
+                    href="https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client/examples/browser-pubsub"
+                    >this example</a
+                  >
+                  for reference.
+                </li>
+              </ul>
+              <p>
+                Once we can talk to go-IPFS and we're connected via Websocket,
+                then we can publish in our browser node, have the pubsub push it
+                to the go-IPFS server, and then check with the server that it's
+                confirmed as published. Once it's on the go-IPFS node it should
+                replicate throughout the rest of the DHT amongst the go-Nodes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">
+        1. Connect to Go-IPFS via API MultiAddress
+      </div>
+      <input
+        id="api-url"
+        class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
+        placeholder="/dns4/yourdomain.com/tcp/5001"
+        disabled="disabled"
+      />
+      <button
+        id="node-connect"
+        class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
+      >
+        Connect
+      </button>
+    </div>
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">
+        2. Connect to Go-IPFS via Websocket MultiAddress (for PubSub to work)
+      </div>
+      <input
+        id="peer-addr"
+        class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
+        placeholder="/dns4/yourdomain.com/tcp/4003/wss/p2p/QmTheirServerPeerId"
+        disabled="disabled"
+      />
+      <button
+        id="peer-connect"
+        class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
+      >
+        Connect
+      </button>
+    </div>
+
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">
+        3. Choose a key:
+      </div>
+      <form>
+        <ul style="list-style-type: none;">
+          <li>
+            <input type="radio" id="male" name="keyName" value="self" checked />
+            <label for="male"
+              >Self (the
+              <a
+                href="https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/KEY.md#ipfskeylistoptions"
+                target="_blank"
+                >PeerId of the runing node</a
+              >)</label
+            ><br />
+          </li>
+          <li>
+            <input type="radio" id="female" name="keyName" value="custom-key" disabled="disabled" />
+            <label for="female"
+              >Custom Key (<a
+                href="https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/KEY.md#ipfskeyimportname-pem-password-options"
+                target="_blank"
+                >imported</a
+              >
+              onto the keychain) [waiting for <a href="https://github.com/ipfs/go-ipfs/issues/6360">#6360</a> to work]</label
+            ><br />
+          </li>
+        </ul>
+      </form>
+    </div>
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">
+        4. IPFS hash to publish
+      </div>
+      <input
+        id="topic"
+        class="dib w-50 ph1 pv2 monospace input-reset ba b--black-20 border-box"
+        disabled="disabled"
+      />
+      <button
+        id="publish"
+        class="dib ph3 pv2 input-reset ba b--black-20 border-box"
+        disabled="disabled"
+      >
+        Publish to IPNS
+      </button>
+    </div>
+
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">Browser Console</div>
+      <div
+        id="console"
+        class="f7 db w-100 ph1 pv2 monospace input-reset ba b--black-20 border-box overflow-scroll"
+        style="height: 300px;"
+      ></div>
+    </div>
+    <div class="ph3 mb3">
+      <div class="fw2 tracked ttu f6 teal-muted mb2">Server Console</div>
+      <div
+        id="server-console"
+        class="f7 db w-100 ph1 pv2 monospace input-reset ba b--black-20 border-box overflow-scroll"
+        style="height: 300px;"
+      ></div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -34,16 +34,16 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "cids": "^0.8.3",
+    "cids": "^1.0.0",
     "it-all": "^1.0.1"
   },
   "devDependencies": {
     "@types/it-all": "^1.0.0",
-    "aegir": "^23.0.0",
+    "aegir": "^26.0.0",
     "cross-env": "^7.0.0",
-    "interface-ipfs-core": "^0.139.0",
-    "ipfs": "^0.49.0",
-    "ipfs-message-port-protocol": "^0.1.0"
+    "interface-ipfs-core": "^0.139.1",
+    "ipfs": "^0.49.1",
+    "ipfs-message-port-protocol": "^0.1.1"
   },
   "engines": {
     "node": ">=10.3.0",

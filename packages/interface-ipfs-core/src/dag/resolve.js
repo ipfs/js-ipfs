@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -105,7 +105,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a raw node', async () => {
-      const node = Buffer.from(['hello world'])
+      const node = Uint8Array.from(['hello world'])
       const cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(cid, { path: '/' })
@@ -114,12 +114,12 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a path inside a dag-pb node linked to from another dag-pb node', async () => {
-      const someData = Buffer.from('some other data')
+      const someData = uint8ArrayFromString('some other data')
       const childNode = new DAGNode(someData)
       const childCid = await ipfs.dag.put(childNode, { format: 'dag-pb', hashAlg: 'sha2-256' })
 
       const linkToChildNode = await childNode.toDAGLink({ name: 'foo', cidVersion: 0 })
-      const parentNode = new DAGNode(Buffer.from('derp'), [linkToChildNode])
+      const parentNode = new DAGNode(uint8ArrayFromString('derp'), [linkToChildNode])
       const parentCid = await ipfs.dag.put(parentNode, { format: 'dag-pb', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(parentCid, { path: '/foo' })

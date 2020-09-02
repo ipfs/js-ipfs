@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const path = require('path')
 const fs = require('fs')
 const PeerId = require('peer-id')
@@ -11,13 +11,13 @@ const { nanoid } = require('nanoid')
 const ipfsExec = require('../utils/ipfs-exec')
 const os = require('os')
 const tempWrite = require('temp-write')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('init', function () {
   let repoPath
   let ipfs
 
-  const readme = fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme'))
-    .toString('utf-8')
+  const readme = uint8ArrayToString(fs.readFileSync(path.join(process.cwd(), '/src/init-files/init-docs/readme')))
 
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 

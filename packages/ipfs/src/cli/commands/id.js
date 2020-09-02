@@ -11,7 +11,7 @@ module.exports = {
     format: {
       alias: 'f',
       type: 'string',
-      describe: 'Print Node ID info in the given format. Allowed tokens: <id> <aver> <pver> <pubkey> <addrs>'
+      describe: 'Print Node ID info in the given format. Allowed tokens: <id> <aver> <pver> <pubkey> <addrs> <protocols>'
     },
     timeout: {
       type: 'string',
@@ -31,6 +31,7 @@ module.exports = {
         .replace('<pver>', id.protocolVersion)
         .replace('<pubkey>', id.publicKey)
         .replace('<addrs>', (id.addresses || []).map(addr => addr.toString()).join('\n'))
+        .replace('<protocols>', (id.protocols || []).map(protocol => protocol.toString()).join('\n'))
       )
 
       return

@@ -44,8 +44,7 @@ module.exports = (common, options) => {
 
     // 1st, because ipfs.add pins automatically
     it('should list all recursive pins', async () => {
-      const pinset = (await all(ipfs.pin.ls({ type: 'recursive' })))
-        .map(p => ({ ...p, cid: p.cid.toString() }))
+      const pinset = await all(ipfs.pin.ls({ type: 'recursive' }))
 
       expect(pinset).to.deep.include({
         type: 'recursive',
@@ -58,8 +57,7 @@ module.exports = (common, options) => {
     })
 
     it('should list all indirect pins', async () => {
-      const pinset = (await all(ipfs.pin.ls({ type: 'indirect' })))
-        .map(p => ({ ...p, cid: p.cid.toString() }))
+      const pinset = await all(ipfs.pin.ls({ type: 'indirect' }))
 
       expect(pinset).to.not.deep.include({
         type: 'recursive',
@@ -84,8 +82,7 @@ module.exports = (common, options) => {
     })
 
     it('should list all types of pins', async () => {
-      const pinset = (await all(ipfs.pin.ls()))
-        .map(p => ({ ...p, cid: p.cid.toString() }))
+      const pinset = await all(ipfs.pin.ls())
 
       expect(pinset).to.not.be.empty()
       // check the three "roots"
@@ -114,8 +111,10 @@ module.exports = (common, options) => {
     it('should list all direct pins', async () => {
       const pinset = await all(ipfs.pin.ls({ type: 'direct' }))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset[0].type).to.equal('direct')
-      expect(pinset[0].cid.toString()).to.equal(fixtures.files[1].cid)
+      expect(pinset).to.deep.include({
+        type: 'direct',
+        cid: fixtures.files[1].cid
+      })
     })
 
     it('should list pins for a specific hash', async () => {
@@ -123,8 +122,10 @@ module.exports = (common, options) => {
         paths: fixtures.files[0].cid
       }))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset[0].type).to.equal('recursive')
-      expect(pinset[0].cid.toString()).to.equal(fixtures.files[0].cid)
+      expect(pinset).to.have.deep.members([{
+        type: 'recursive',
+        cid: fixtures.files[0].cid
+      }])
     })
 
     it('should throw an error on missing direct pins for existing path', () => {
@@ -154,8 +155,10 @@ module.exports = (common, options) => {
         type: 'indirect'
       }))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset[0].type).to.equal(`indirect through ${fixtures.directory.cid}`)
-      expect(pinset[0].cid.toString()).to.equal(fixtures.directory.files[1].cid)
+      expect(pinset).to.deep.include({
+        type: `indirect through ${fixtures.directory.cid}`,
+        cid: fixtures.directory.files[1].cid
+      })
     })
 
     it('should list recursive pins for a specific hash', async () => {
@@ -164,8 +167,10 @@ module.exports = (common, options) => {
         type: 'recursive'
       }))
       expect(pinset).to.have.lengthOf(1)
-      expect(pinset[0].type).to.equal('recursive')
-      expect(pinset[0].cid.toString()).to.equal(fixtures.files[0].cid)
+      expect(pinset).to.deep.include({
+        type: 'recursive',
+        cid: fixtures.files[0].cid
+      })
     })
 
     it('should list pins for multiple CIDs', async () => {
@@ -173,8 +178,55 @@ module.exports = (common, options) => {
         paths: [fixtures.files[0].cid, fixtures.files[1].cid]
       }))
       const cids = pinset.map(p => p.cid.toString())
-      expect(cids).to.include(fixtures.files[0].cid)
-      expect(cids).to.include(fixtures.files[1].cid)
+      expect(cids).to.include(fixtures.files[0].cid.toString())
+      expect(cids).to.include(fixtures.files[1].cid.toString())
+    })
+
+    it('should throw error for invalid non-string pin type option', () => {
+      return expect(all(ipfs.pin.ls({ type: 6 })))
+        .to.eventually.be.rejected()
+        // TODO: go-ipfs does not return error codes
+        // .with.property('code').that.equals('ERR_INVALID_PIN_TYPE')
+    })
+
+    it('should throw error for invalid string pin type option', () => {
+      return expect(all(ipfs.pin.ls({ type: '__proto__' })))
+        .to.eventually.be.rejected()
+        // TODO: go-ipfs does not return error codes
+        // .with.property('code').that.equals('ERR_INVALID_PIN_TYPE')
+    })
+
+    it('should list pins with metadata', async () => {
+      const { cid } = await ipfs.add(`data-${Math.random()}`, {
+        pin: false
+      })
+
+      const metadata = {
+        key: 'value',
+        one: 2,
+        array: [{
+          thing: 'subthing'
+        }],
+        obj: {
+          foo: 'bar',
+          baz: ['qux']
+        }
+      }
+
+      await ipfs.pin.add(cid, {
+        recursive: false,
+        metadata
+      })
+
+      const pinset = await all(ipfs.pin.ls({
+        paths: cid
+      }))
+
+      expect(pinset).to.have.deep.members([{
+        type: 'direct',
+        cid: cid,
+        metadata
+      }])
     })
   })
 }

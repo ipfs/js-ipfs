@@ -2,7 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 5] */
 'use strict'
 
-const { expect } = require('interface-ipfs-core/src/utils/mocha')
+const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const { profiles } = require('../../src/core/components/config')

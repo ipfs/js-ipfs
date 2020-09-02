@@ -2,19 +2,19 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
-const { Buffer } = require('buffer')
 const { withTimeoutOption } = require('../../utils')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
     if (enc === 'base58' || !enc) {
       return multihash
     }
-    return Buffer.from(multihash, enc)
-  } else if (Buffer.isBuffer(multihash)) {
+    return uint8ArrayFromString(multihash, enc)
+  } else if (multihash instanceof Uint8Array) {
     return multihash
   } else if (CID.isCID(multihash)) {
-    return multihash.buffer
+    return multihash.bytes
   }
   throw new Error('unsupported multihash')
 }
