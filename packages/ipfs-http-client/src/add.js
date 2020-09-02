@@ -4,6 +4,14 @@ const addAll = require('./add-all')
 const last = require('it-last')
 const configure = require('./lib/configure')
 
+/**
+ * @typedef {import("./lib/core").ClientOptions} ClientOptions
+ */
+
+// eslint-disable-next-line valid-jsdoc
+/**
+ * @param {ClientOptions} options
+ */
 module.exports = (options) => {
   const all = addAll(options)
 
