@@ -1,0 +1,44 @@
+{
+  "name": "browser-ipns-publish",
+  "version": "1.0.0",
+  "description": "An example demonstrating publishing to IPNS in the browser",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel build index.html --public-url ./",
+    "start": "parcel index.html",
+    "test": "test-ipfs-example"
+  },
+  "author": "Doug Anderson",
+  "license": "MIT",
+  "dependencies": {
+    "human-crypto-keys": "^0.1.4",
+    "ipfs": "^0.49.1",
+    "ipfs-http-client": "^46.0.1",
+    "ipfs-utils": "^3.0.0",
+    "ipns": "^0.8.0",
+    "it-last": "^1.0.2",
+    "p-retry": "^4.2.0",
+    "uint8arrays": "^1.1.0"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ],
+  "devDependencies": {
+    "delay": "^4.3.0",
+    "execa": "^4.0.0",
+    "ipfsd-ctl": "^7.0.0",
+    "go-ipfs": "^0.6.0",
+    "parcel-bundler": "^1.12.4",
+    "path": "^0.12.7",
+    "test-ipfs-example": "^2.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ipfs/js-ipfs/examples"
+  },
+  "keywords": [
+    "IPNS",
+    "Publish"
+  ]
+}

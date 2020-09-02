@@ -53,7 +53,7 @@
     "ipld-dag-pb": "^0.20.0",
     "ipld-raw": "^6.0.0",
     "iso-url": "^0.4.7",
-    "it-last": "^1.0.1",
+    "it-last": "^1.0.2",
     "it-map": "^1.0.2",
     "it-tar": "^1.2.2",
     "it-to-buffer": "^1.0.0",

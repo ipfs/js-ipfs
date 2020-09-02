@@ -2,6 +2,7 @@
 
 const { ephemeralPort } = require('./utils')
 const path = require('path')
+const chrome = require('chromedriver') // added to work on windows
 
 const WEBRIVER_PORT = ephemeralPort()
 
@@ -11,7 +12,7 @@ module.exports = {
 
   webdriver: {
     start_process: true,
-    server_path: require.resolve(path.resolve(__dirname, 'node_modules/.bin/chromedriver')),
+    server_path: chrome.path, //require.resolve(path.resolve(__dirname, 'node_modules/.bin/chromedriver')), // this wasn't working on windows
     port: WEBRIVER_PORT,
     cli_args: [
       `--port=${WEBRIVER_PORT}`
