@@ -9,10 +9,12 @@ module.exports = ({ peerId, libp2p }) => {
   return withTimeoutOption(async function id () { // eslint-disable-line require-await
     const id = peerId.toB58String()
     let addresses = []
+    let protocols = []
 
     if (libp2p) {
       // only available while the node is running
       addresses = libp2p.transportManager.getAddrs()
+      protocols = Array.from(libp2p.upgrader.protocols.keys())
     }
 
     return {
@@ -33,7 +35,8 @@ module.exports = ({ peerId, libp2p }) => {
         .sort()
         .map(ma => multiaddr(ma)),
       agentVersion: `js-ipfs/${pkgversion}`,
-      protocolVersion: '9000'
+      protocolVersion: '9000',
+      protocols: protocols.sort()
     }
   })
 }

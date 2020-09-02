@@ -475,6 +475,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should include the interface-ipfs-core version',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should have protocols property',
+        reason: 'TODO not implemented in go-ipfs yet'
       }
     ]
   })
