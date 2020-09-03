@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "dot-prop": "^5.0.0",
-    "ipfs": "^0.49.1",
+    "ipfs": "^0.50.0",
     "ipfs-css": "^0.13.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

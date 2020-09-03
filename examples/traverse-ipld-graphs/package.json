@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "ipfs": "^0.49.1",
+    "ipfs": "^0.50.0",
     "ipld-block": "^0.10.0",
     "ipld-dag-pb": "^0.20.0",
     "multihashing-async": "^2.0.1"
