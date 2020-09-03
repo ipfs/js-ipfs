@@ -96,7 +96,6 @@ jobs:
 
     - stage: test
       name: electron-main
-      os: osx
       script:
         - npm run test:electron-main -- $RUN_SINCE -- -- --bail
 
