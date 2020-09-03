@@ -156,7 +156,7 @@ jobs:
       name: release docker rc
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build . --tag js-ipfs:next --file ./Dockerfile.next
+        - docker build . --no-cache --tag js-ipfs:next --file ./Dockerfile.next
         - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next
         - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`
         - docker push ipfs/js-ipfs:next
