@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:10
+FROM mhart/alpine-node:12
 
 ENV IPFS_VERSION=next
 ENV IPFS_MONITORING=1
