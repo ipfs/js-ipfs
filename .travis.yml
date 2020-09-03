@@ -118,7 +118,6 @@ jobs:
 
     - stage: test
       name: interop - electron-main
-      os: osx
       script:
         - npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
 
