@@ -5,11 +5,7 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
-  /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/unwant').Unwant<import('..').HttpOptions>}
-   */
-  async function unwant (cid, options = {}) {
+  return async (cid, options = {}) => {
     const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
@@ -22,5 +18,4 @@ module.exports = configure(api => {
 
     return res.json()
   }
-  return unwant
 })

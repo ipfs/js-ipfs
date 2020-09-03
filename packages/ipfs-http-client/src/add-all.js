@@ -6,14 +6,10 @@ const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 const anySignal = require('any-signal')
-const { AbortController } = require('abort-controller')
+const AbortController = require('abort-controller')
 
 module.exports = configure((api) => {
-  // eslint-disable-next-line valid-jsdoc
-  /**
-   * @type {import('../../ipfs/src/core/components/add-all').AddAll<import('.').HttpOptions>}
-   */
-  async function * addAll (input, options = {}) {
+  return async function * addAll (input, options = {}) {
     const progressFn = options.progress
 
     // allow aborting requests on body errors
@@ -43,16 +39,8 @@ module.exports = configure((api) => {
       }
     }
   }
-  return addAll
 })
 
-/**
- * @typedef {import('../../ipfs/src/core/components/add-all').UnixFSEntry} UnixFSEntry
- */
-
-/**
- * @returns {UnixFSEntry}
- */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   const output = {
     path: name,
@@ -71,6 +59,5 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
     }
   }
 
-  // @ts-ignore
   return output
 }

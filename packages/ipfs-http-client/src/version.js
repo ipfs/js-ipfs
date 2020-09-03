@@ -5,11 +5,7 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
-  /**
-   * @type {import('../../ipfs/src/core/components/version').Version<import('.').HttpOptions>}
-   */
-  async function version (options = {}) {
+  return async (options = {}) => {
     const res = await api.post('version', {
       timeout: options.timeout,
       signal: options.signal,
@@ -20,5 +16,4 @@ module.exports = configure(api => {
 
     return toCamel(data)
   }
-  return version
 })
