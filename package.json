@@ -2,6 +2,9 @@
   "name": "js-ipfs",
   "version": "1.0.0",
   "description": "JavaScript implementation of the IPFS specification",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "postinstall": "lerna bootstrap",
     "reset": "lerna run clean && rm -rf packages/*/node_modules node_modules",
