@@ -143,7 +143,7 @@ One of `path` or `content` _must_ be passed.
 `FileContent` is one of the following types:
 
 ```js
-Uint8Array | Blob | String | Iterable<Uint8Array|Number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
+Uint8Array | Blob | String | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>
 ```
 
 `UnixTime` is one of the following types:
@@ -162,7 +162,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| chunker | `String` | `'size-262144` | chunking algorithm used to build ipfs DAGs |
+| chunker | `String` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
 | cidVersion | `Number` | `0` | the CID version to use when storing the data |
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
@@ -178,7 +178,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `UnixFSEntry` | A object describing the added data |
+| `Promise<UnixFSEntry>` | A object describing the added data |
 
 Each yielded object is of the form:
 
@@ -226,7 +226,7 @@ Now [ipfs.io/ipfs/Qm..pg/myfile.txt](https://ipfs.io/ipfs/QmWXdjNC362aPDtwHPUE9o
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| source | [FileStream<FileContent|FileObject>](#filestream) | Data to import (see below) |
+| source | [FileStream<FileContent\|FileObject>](#filestream) | Data to import (see below) |
 
 ##### FileStream
 
@@ -242,7 +242,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| chunker | `String` | `'size-262144` | chunking algorithm used to build ipfs DAGs |
+| chunker | `String` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
 | cidVersion | `Number` | `0` | the CID version to use when storing the data |
 | enableShardingExperiment | `boolean` | `false` |  allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature |
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |

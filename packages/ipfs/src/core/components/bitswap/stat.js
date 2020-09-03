@@ -1,11 +1,36 @@
 'use strict'
 
-const Big = require('bignumber.js')
+const Big = require('bignumber.js').default
 const CID = require('cids')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
+ * @property {number} provideBufLen - an integer
+ * @property {import('cids')[]} wantlist
+ * @property {string[]} peers - array of peer IDs as Strings
+ * @property {Big} blocksReceived
+ * @property {Big} dataReceived
+ * @property {Big} blocksSent
+ * @property {Big} dataSent
+ * @property {Big} dupBlksReceived
+ * @property {Big} dupDataReceived
+ */
+
+/**
+ * Show diagnostic information on the bitswap agent.
+ * @template {Record<string, any>} ExtraOptions
+ * @callback Stat
+ * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
+ * @returns {Promise<BitswapStats>}
+ */
+
 module.exports = ({ bitswap }) => {
-  return withTimeoutOption(async function stat () { // eslint-disable-line require-await
+  // eslint-disable-next-line valid-jsdoc
+  /**
+   * @type {Stat<{}>}
+   */
+  async function stat (options) { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
     const snapshot = bitswap.stat().snapshot
 
     return {
@@ -19,5 +44,7 @@ module.exports = ({ bitswap }) => {
       blocksSent: new Big(snapshot.blocksSent),
       dataSent: new Big(snapshot.dataSent)
     }
-  })
+  }
+
+  return withTimeoutOption(stat)
 }

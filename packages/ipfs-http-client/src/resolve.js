@@ -4,7 +4,11 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (path, options = {}) => {
+  // eslint-disable-next-line valid-jsdoc
+  /**
+   * @type {import('../../ipfs/src/core/components/resolve').Resolve<import('.').HttpOptions>}
+   */
+  async function resolve (path, options = {}) {
     const res = await api.post('resolve', {
       timeout: options.timeout,
       signal: options.signal,
@@ -17,4 +21,5 @@ module.exports = configure(api => {
     const { Path } = await res.json()
     return Path
   }
+  return resolve
 })

@@ -7,9 +7,13 @@ const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const anySignal = require('any-signal')
-const AbortController = require('abort-controller')
+const { AbortController } = require('abort-controller')
 
 module.exports = configure(api => {
+  // eslint-disable-next-line valid-jsdoc
+  /**
+   * @type {import('../../../ipfs/src/core/components/block/put').BlockPut<import('..').HttpOptions>}
+   */
   async function put (data, options = {}) {
     if (Block.isBlock(data)) {
       const { name, length } = multihash.decode(data.cid.multihash)

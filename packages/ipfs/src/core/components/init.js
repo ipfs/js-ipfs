@@ -170,12 +170,14 @@ module.exports = ({
     })
 
     apiManager.update(api, () => { throw new NotStartedError() })
+
+    /** @type {typeof api} */
+    const initializedApi = apiManager.api
+    return initializedApi
   } catch (err) {
     cancel()
     throw err
   }
-
-  return apiManager.api
 }
 
 async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, profiles, config, pass, print }) {

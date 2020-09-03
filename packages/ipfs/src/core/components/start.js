@@ -148,16 +148,24 @@ module.exports = ({
     })
 
     apiManager.update(api, () => undefined)
+
+    /** @type {typeof api} */
+    const startedApi = apiManager.api
+    startPromise.resolve(startedApi)
+    return startedApi
   } catch (err) {
     cancel()
     startPromise.reject(err)
     throw err
   }
-
-  startPromise.resolve(apiManager.api)
-  return apiManager.api
 })
 
+// eslint-disable-next-line valid-jsdoc
+/**
+ * @template LIBP2P
+ * @template BlockAPI, DagAPI, FilesAPI, PinAPI
+ * @param {{ [x: string]: any; libp2p: LIBP2P; block: BlockAPI; dag: DagAPI; files: FilesAPI; pin: PinAPI; }} options
+ */
 function createApi ({
   apiManager,
   bitswap,
@@ -227,8 +235,10 @@ function createApi ({
     resolve: Components.name.resolve({ dns, ipns, peerId, isOnline, options: constructorOptions })
   }
   const resolve = Components.resolve({ name, ipld })
-  const refs = Components.refs({ ipld, resolve, preload })
-  refs.local = Components.refs.local({ repo })
+  const refs = Object.assign(
+    Components.refs({ ipld, resolve, preload }),
+    { local: Components.refs.local({ repo }) }
+  )
 
   const pubsubNotEnabled = async () => { // eslint-disable-line require-await
     throw new NotEnabledError('pubsub not enabled')

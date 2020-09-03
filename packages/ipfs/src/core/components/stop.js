@@ -18,7 +18,7 @@ module.exports = ({
   libp2p,
   mfsPreload,
   peerId,
-  pinManager,
+  pinManager = {},
   preload,
   print,
   repo
@@ -120,8 +120,10 @@ function createApi ({
 
   const addAll = Components.addAll({ block, preload, pin, gcLock, options: constructorOptions })
   const resolve = Components.resolve({ ipld })
-  const refs = Components.refs({ ipld, resolve, preload })
-  refs.local = Components.refs.local({ repo })
+  const refs = Object.assign(
+    Components.refs({ ipld, resolve, preload }),
+    { local: Components.refs.local({ repo }) }
+  )
 
   const notStarted = async () => { // eslint-disable-line require-await
     throw new NotStartedError()

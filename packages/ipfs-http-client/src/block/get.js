@@ -6,7 +6,11 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (cid, options = {}) => {
+  // eslint-disable-next-line valid-jsdoc
+  /**
+   * @type {import('../../../ipfs/src/core/components/block/get').BlockGet<import('..').HttpOptions>}
+   */
+  async function get (cid, options = {}) {
     cid = new CID(cid)
 
     const res = await api.post('block/get', {
@@ -21,4 +25,5 @@ module.exports = configure(api => {
 
     return new Block(new Uint8Array(await res.arrayBuffer()), cid)
   }
+  return get
 })

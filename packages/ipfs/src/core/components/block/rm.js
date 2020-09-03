@@ -3,7 +3,7 @@
 const CID = require('cids')
 const errCode = require('err-code')
 const { parallelMap, filter } = require('streaming-iterables')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const { PinTypes } = require('../pin/pin-manager')
 const { cleanCid } = require('./utils')
 const { withTimeoutOption } = require('../../utils')

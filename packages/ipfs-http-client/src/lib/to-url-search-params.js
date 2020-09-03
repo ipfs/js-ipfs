@@ -3,6 +3,10 @@
 const modeToString = require('./mode-to-string')
 const mtimeToObject = require('./mtime-to-object')
 
+/**
+ * @param {object} params
+ * @returns {URLSearchParams}
+ */
 module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) => {
   if (searchParams) {
     options = {
