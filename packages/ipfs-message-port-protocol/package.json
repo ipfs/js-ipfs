@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "aegir": "^26.0.0",
-    "interface-ipfs-core": "^0.139.1",
+    "interface-ipfs-core": "^0.140.0",
     "uint8arrays": "^1.1.0"
   },
   "engines": {

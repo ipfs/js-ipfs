@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",

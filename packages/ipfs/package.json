@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.49.1",
+  "version": "0.50.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -92,8 +92,8 @@
     "interface-datastore": "^2.0.0",
     "ipfs-bitswap": "^3.0.0",
     "ipfs-block-service": "^0.18.0",
-    "ipfs-core-utils": "^0.3.1",
-    "ipfs-http-client": "^46.0.1",
+    "ipfs-core-utils": "^0.4.0",
+    "ipfs-http-client": "^46.1.0",
     "ipfs-http-response": "^0.6.0",
     "ipfs-repo": "^6.0.3",
     "ipfs-unixfs": "^2.0.2",
@@ -178,7 +178,7 @@
     "delay": "^4.3.0",
     "form-data": "^3.0.0",
     "go-ipfs": "^0.6.0",
-    "interface-ipfs-core": "^0.139.1",
+    "interface-ipfs-core": "^0.140.0",
     "ipfs-interop": "github:ipfs/interop#refactor/streaming-pin-api",
     "ipfsd-ctl": "^7.0.0",
     "iso-random-stream": "^1.1.1",

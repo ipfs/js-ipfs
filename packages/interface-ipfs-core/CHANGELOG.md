@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.140.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.139.1...interface-ipfs-core@0.140.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* handle progress for empty files ([#3260](https://github.com/ipfs/js-ipfs/issues/3260)) ([9c36cb8](https://github.com/ipfs/js-ipfs/commit/9c36cb8f0c122e78c3cda3d0769d66c4d380787a)), closes [#3255](https://github.com/ipfs/js-ipfs/issues/3255)
+
+
+### Features
+
+* add protocol list to ipfs id ([#3250](https://github.com/ipfs/js-ipfs/issues/3250)) ([1b6cf60](https://github.com/ipfs/js-ipfs/commit/1b6cf600a6b1348199457ca1fe6f314b6eff8c46))
+* ipns publish example ([#3207](https://github.com/ipfs/js-ipfs/issues/3207)) ([91faec6](https://github.com/ipfs/js-ipfs/commit/91faec6e3d89b0d9883b8d7815c276d44048e739))
+* store pins in datastore instead of a DAG ([#2771](https://github.com/ipfs/js-ipfs/issues/2771)) ([64b7fe4](https://github.com/ipfs/js-ipfs/commit/64b7fe41738cbe96d5a9075f0c01156c6f889c40))
+* update hapi to v20 ([#3245](https://github.com/ipfs/js-ipfs/issues/3245)) ([1aeef89](https://github.com/ipfs/js-ipfs/commit/1aeef89c73f42a2f6cceb7f0598400141ce40e23))
+
+
+
+
+
 ## [0.139.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.139.0...interface-ipfs-core@0.139.1) (2020-08-24)
 
 

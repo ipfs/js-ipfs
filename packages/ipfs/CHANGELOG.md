@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.50.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.49.1...ipfs@0.50.0) (2020-09-03)
+
+
+### Features
+
+* add protocol list to ipfs id ([#3250](https://github.com/ipfs/js-ipfs/issues/3250)) ([1b6cf60](https://github.com/ipfs/js-ipfs/commit/1b6cf600a6b1348199457ca1fe6f314b6eff8c46))
+* add typeScript support ([#3236](https://github.com/ipfs/js-ipfs/issues/3236)) ([be26dd7](https://github.com/ipfs/js-ipfs/commit/be26dd723ed8c76efee149a993a8ade7f75f960e)), closes [#2945](https://github.com/ipfs/js-ipfs/issues/2945) [#1166](https://github.com/ipfs/js-ipfs/issues/1166)
+* add typescript support ([#3267](https://github.com/ipfs/js-ipfs/issues/3267)) ([6816bc6](https://github.com/ipfs/js-ipfs/commit/6816bc64ccb9bf852c2b9a26d9ddd19b9439dae6)), closes [#2945](https://github.com/ipfs/js-ipfs/issues/2945) [#1166](https://github.com/ipfs/js-ipfs/issues/1166)
+* ipns publish example ([#3207](https://github.com/ipfs/js-ipfs/issues/3207)) ([91faec6](https://github.com/ipfs/js-ipfs/commit/91faec6e3d89b0d9883b8d7815c276d44048e739))
+* store pins in datastore instead of a DAG ([#2771](https://github.com/ipfs/js-ipfs/issues/2771)) ([64b7fe4](https://github.com/ipfs/js-ipfs/commit/64b7fe41738cbe96d5a9075f0c01156c6f889c40))
+* update hapi to v20 ([#3245](https://github.com/ipfs/js-ipfs/issues/3245)) ([1aeef89](https://github.com/ipfs/js-ipfs/commit/1aeef89c73f42a2f6cceb7f0598400141ce40e23))
+* update to libp2p@0.29.0 ([63d4d35](https://github.com/ipfs/js-ipfs/commit/63d4d353c606e4fd487811d8a0014bb2173f11be))
+
+
+
+
+
 ## [0.49.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.49.0...ipfs@0.49.1) (2020-08-24)
 
 
