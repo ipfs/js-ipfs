@@ -127,28 +127,8 @@ const mapFile = (file, options) => {
   return output
 }
 
-/**
- * @template {any[]} ARGS
- * @template R
- * @typedef {(...args: ARGS) => R} Fn
- */
-
-/**
- * @typedef {object} AbortOptions
- * @property {number} [timeout] - A timeout in ms
- * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call
- */
-
-/**
- * @template {any[]} ARGS
- * @template {Promise<any> | AsyncIterable} R - The return type of `fn`
- * @param {Fn<ARGS, R>} fn
- * @param {number} [optionsArgIndex]
- * @returns {Fn<ARGS, R>}
- */
 function withTimeoutOption (fn, optionsArgIndex) {
-  // eslint-disable-next-line valid-jsdoc
-  return /** @returns {R} */(/** @type {ARGS} */...args) => {
+  return (...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 
@@ -186,7 +166,6 @@ function withTimeoutOption (fn, optionsArgIndex) {
     }
 
     if (fnRes[Symbol.asyncIterator]) {
-      // @ts-ignore
       return (async function * () {
         const it = fnRes[Symbol.asyncIterator]()
 
@@ -216,7 +195,6 @@ function withTimeoutOption (fn, optionsArgIndex) {
       })()
     }
 
-    // @ts-ignore
     return (async () => {
       try {
         const res = await Promise.race([fnRes, timeoutPromise])

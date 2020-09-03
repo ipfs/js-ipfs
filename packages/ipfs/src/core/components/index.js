@@ -79,7 +79,8 @@ exports.pin = {
 }
 exports.ping = require('./ping')
 exports.pubsub = require('./pubsub')
-exports.refs = Object.assign(require('./refs'), { local: require('./refs/local') })
+exports.refs = require('./refs')
+exports.refs.local = require('./refs/local')
 exports.repo = {
   gc: require('./repo/gc'),
   stat: require('./repo/stat'),

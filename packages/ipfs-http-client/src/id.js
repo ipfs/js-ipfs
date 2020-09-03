@@ -6,11 +6,7 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
-  /**
-   * @type {import('../../ipfs/src/core/components/id').Id<import('.').HttpOptions>}
-   */
-  async function id (options = {}) {
+  return async (options = {}) => {
     const res = await api.post('id', {
       timeout: options.timeout,
       signal: options.signal,
@@ -27,5 +23,4 @@ module.exports = configure(api => {
 
     return output
   }
-  return id
 })
