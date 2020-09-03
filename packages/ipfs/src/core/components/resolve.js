@@ -6,21 +6,30 @@ const { cidToString } = require('../../utils/cid')
 const { withTimeoutOption } = require('../utils')
 
 /**
- * @typedef {Object} ResolveOptions
- * @prop {string} cidBase - Multibase codec name the CID in the resolved path will be encoded with
- * @prop {boolean} [recursive=true] - Resolve until the result is an IPFS name
- *
+ * @typedef {object} ResolveOptions
+ * @property {string} [cidBase='base58btc'] - Multibase codec name the CID in the resolved path will be encoded with
+ * @property {boolean} [recursive=true] - Resolve until the result is an IPFS name
  */
 
-/** @typedef {(path: string, options?: ResolveOptions) => Promise<string>} Resolve */
+/**
+ * Resolve the value of names to IPFS
+ *
+ * There are a number of mutable name protocols that can link among themselves and into IPNS. For example IPNS references can (currently) point at an IPFS object, and DNS links can point at other DNS links, IPNS entries, or IPFS objects. This command accepts any of these identifiers and resolves them to the referenced item.
+ *
+ * @template {Record<string, any>} ExtraOptions
+ * @callback Resolve
+ * @param {string} path - The name to resolve
+ * @param {ResolveOptions & import('../utils').AbortOptions & ExtraOptions} [options]
+ * @returns {Promise<string>} - A string representing the resolved name
+ */
 
 /**
  * IPFS Resolve factory
  *
- * @param {Object} config
+ * @param {object} config
  * @param {IPLD} config.ipld - An instance of IPLD
  * @param {NameApi} [config.name] - An IPFS core interface name API
- * @returns {Resolve}
+ * @returns {Resolve<{}>}
  */
 module.exports = ({ ipld, name }) => {
   return withTimeoutOption(async function resolve (path, opts) {

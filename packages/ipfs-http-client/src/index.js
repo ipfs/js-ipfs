@@ -14,9 +14,17 @@ const urlSource = require('ipfs-utils/src/files/url-source')
  */
 
 /**
- *
- * @param {ClientOptions } options
- * @return {Object}
+ * @typedef {object} HttpOptions
+ * @property {Headers | Record<string, string>} [headers] - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
+ * @property {URLSearchParams | Record<string, string>} [searchParams] - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+ * @property {object} [ipld]
+ * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+ * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
+ */
+
+// eslint-disable-next-line valid-jsdoc
+/**
+ * @param {ClientOptions} options
  */
 function ipfsClient (options = {}) {
   return {

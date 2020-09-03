@@ -68,7 +68,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| options | `boolean` | `false` | Return storage numbers in `MiB` |
+| human | `boolean` | `false` | Return storage numbers in `MiB` |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
