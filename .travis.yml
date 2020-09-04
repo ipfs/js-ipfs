@@ -144,11 +144,12 @@ jobs:
       script:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
-        - git fetch --unshallow
+        - git clean -f -d
+        - git reset --hard HEAD
+        - git checkout master
+        - git pull
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - git log -n 1
-        - git checkout master
         - git log -n 1
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
