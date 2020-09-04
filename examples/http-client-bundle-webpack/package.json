@@ -2,6 +2,7 @@
   "name": "example-http-client-bundle-webpack",
   "version": "1.0.0",
   "description": "Bundle js-ipfs-http-client with Webpack",
+  "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "webpack",

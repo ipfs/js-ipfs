@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "parcel build index.html --public-url '.'",

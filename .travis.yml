@@ -138,29 +138,17 @@ jobs:
         - npm run build -- --scope={ipfs,ipfs-http-client}
         - npm run test -- --scope=example* --concurrency=1
 
-    - stage: release-rc-npm
+    - stage: release-rc
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
-      name: release npm rc
+      name: release rc
       script:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
-        - npm run build -- --scope=ipfs*
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        - npm run release:rc -- --yes
-
-    - stage: release-rc-docker
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: release docker rc
-      script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build . --no-cache --tag js-ipfs:next --file ./Dockerfile.next
-        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next
-        - docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`
-        - docker push ipfs/js-ipfs:next
-        - docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`
+        - npm run release:rc -- --yes
 
     - stage: test-external
       # only run on changes to master

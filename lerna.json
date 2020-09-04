@@ -1,12 +1,17 @@
 {
   "lerna": "3.22.0",
   "packages": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "version": "independent",
   "command": {
     "bootstrap": {
-      "hoist": true
+      "hoist": true,
+      "nohoist": [
+        "ipfs-css",
+        "tachyons"
+      ]
     },
     "run": {
       "stream": true

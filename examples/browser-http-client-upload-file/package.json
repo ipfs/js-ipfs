@@ -2,6 +2,7 @@
   "name": "example-http-client-upload-file-via-browser",
   "version": "1.0.0",
   "description": "Upload file to IPFS via browser using js-ipfs-http-client with Webpack",
+  "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "parcel build index.html --public-url '.'",
