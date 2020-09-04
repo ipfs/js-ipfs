@@ -40,7 +40,7 @@
     "docker:release:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "release:post:remove-hoisted-modules": "json -I -f ./lerna.json -e \"delete this.command.bootstrap.nohoist\"",
     "release:post:remove-examples": "json -I -f ./lerna.json -e \"this.packages = this.packages.filter(p => !p.includes('examples'))\"",
-    "release:pre:revert-files": "git add lerna.json && git commit -m 'chore: post-release housekeeping'",
+    "release:post:revert-files": "git add lerna.json && git commit -m 'chore: post-release housekeeping'",
     "release:rc": "run-s release:pre:* release:canary docker:rc release:post:*",
     "release:canary": "lerna publish --canary --preid rc --dist-tag next",
     "docker:rc": "run-s run docker:rc:*",
