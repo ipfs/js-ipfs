@@ -144,6 +144,7 @@ jobs:
       script:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
+        - git fetch --unshallow
         - git clean -f -d
         - git reset --hard HEAD
         - git checkout master
