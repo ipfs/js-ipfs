@@ -4,7 +4,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const Daemon = require('../../src/cli/daemon')
+const Daemon = require('../../src/daemon')
 const loadFixture = require('aegir/fixtures')
 const os = require('os')
 const path = require('path')

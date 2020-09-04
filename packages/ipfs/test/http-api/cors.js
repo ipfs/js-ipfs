@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const http = require('../utils/http')
+const http = require('./utils/http')
 const sinon = require('sinon')
 
 describe('cors', () => {
