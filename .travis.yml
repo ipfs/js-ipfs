@@ -148,7 +148,9 @@ jobs:
         - git clean -f -d
         - git reset --hard HEAD
         - git checkout master
+        - git config pull.ff only
         - git pull
+        - git show-ref --tags
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - git log -n 1
