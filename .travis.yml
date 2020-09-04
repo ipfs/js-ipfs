@@ -61,7 +61,7 @@ jobs:
   include:
     - stage: check
       script:
-        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client,ipfs-message-port-*}
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
         - npm run lint -- $RUN_SINCE --concurrency 1
 
@@ -134,7 +134,7 @@ jobs:
         - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
         - npm run reset
         - npm install
-        - npm run build -- --scope={ipfs,ipfs-http-client}
+        - npm run build -- --scope={ipfs,ipfs-http-client,ipfs-message-port-*}
         - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
