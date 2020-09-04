@@ -9,10 +9,10 @@ branches:
   - /^release\/.*$/
 
 stages:
-  #- check
-  #- test
+  - check
+  - test
   - release-rc
-  #- test-external
+  - test-external
 
 node_js:
   - 'lts/*'
@@ -59,83 +59,83 @@ jobs:
     - name: external - ipfs-log
     - name: external - sidetree
   include:
-    # - stage: check
-    #   script:
-    #     - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
-    #     - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
-    #     - npm run lint -- $RUN_SINCE --concurrency 1
+    - stage: check
+      script:
+        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client}
+        - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
+        - npm run lint -- $RUN_SINCE --concurrency 1
 
-    # - stage: test
-    #   name: chrome
-    #   addons:
-    #     chrome: stable
-    #   script:
-    #     - npm run test:browser -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: chrome
+      addons:
+        chrome: stable
+      script:
+        - npm run test:browser -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: chrome webworker
-    #   addons:
-    #     chrome: stable
-    #   script:
-    #     - npm run test:webworker -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: chrome webworker
+      addons:
+        chrome: stable
+      script:
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: firefox
-    #   addons:
-    #     firefox: latest
-    #   script:
-    #     - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
+    - stage: test
+      name: firefox
+      addons:
+        firefox: latest
+      script:
+        - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
-    # - stage: test
-    #   name: firefox webworker
-    #   addons:
-    #     firefox: latest
-    #   script:
-    #     - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
+    - stage: test
+      name: firefox webworker
+      addons:
+        firefox: latest
+      script:
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
-    # - stage: test
-    #   name: electron-main
-    #   os: osx
-    #   script:
-    #     - npm run test:electron-main -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: electron-main
+      os: osx
+      script:
+        - npm run test:electron-main -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: electron-renderer
-    #   os: osx
-    #   script:
-    #     - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: electron-renderer
+      os: osx
+      script:
+        - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: interop - node
-    #   script:
-    #     - npm run test:interop:node -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: interop - node
+      script:
+        - npm run test:interop:node -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: interop - browser
-    #   script:
-    #     - npm run test:interop:browser -- $RUN_SINCE -- -- --bail
+    - stage: test
+      name: interop - browser
+      script:
+        - npm run test:interop:browser -- $RUN_SINCE -- -- --bail
 
-    # - stage: test
-    #   name: interop - electron-main
-    #   os: osx
-    #   script:
-    #     - npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
+    - stage: test
+      name: interop - electron-main
+      os: osx
+      script:
+        - npm run test:interop:electron-main -- $RUN_SINCE -- -- --bail --timeout 10000
 
-    # - stage: test
-    #   name: interop - electron-renderer
-    #   os: osx
-    #   script:
-    #     - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
+    - stage: test
+      name: interop - electron-renderer
+      os: osx
+      script:
+        - npm run test:interop:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 10000
 
-    # - stage: test
-    #   name: examples
-    #   script:
-    #     - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
-    #     - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
-    #     - npm run reset
-    #     - npm install
-    #     - npm run build -- --scope={ipfs,ipfs-http-client}
-    #     - npm run test -- --scope=example* --concurrency=1
+    - stage: test
+      name: examples
+      script:
+        - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
+        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
+        - npm run reset
+        - npm install
+        - npm run build -- --scope={ipfs,ipfs-http-client}
+        - npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
       # only run on changes to master
