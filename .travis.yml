@@ -147,6 +147,8 @@ jobs:
         - git fetch --unshallow
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - git log -n 1
+        - git checkout master
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
 
