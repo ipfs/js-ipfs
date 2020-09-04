@@ -11,8 +11,7 @@ branches:
 stages:
   - check
   - test
-  - release-rc-npm
-  - release-rc-docker
+  - release-rc
   - test-external
 
 node_js:
