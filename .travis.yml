@@ -10,7 +10,7 @@ branches:
 
 stages:
   - check
-  - test
+  #- test
   - release-rc
   - test-external
 
@@ -148,7 +148,7 @@ jobs:
         - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         # only run if the last commit was not part of a release
-        - if [[ ! `git log -n 1 -q` =~ publish|housekeeping ]]; then npm run release:rc -- --yes ; fi
+        - if [[ ! `git log -n 1 -q` =~ publish|housekeeping ]]; then npm run release:rc ; fi
 
     - stage: test-external
       # only run on changes to master
