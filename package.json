@@ -23,7 +23,7 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "release": "run-s release:pre:* release:publish docker:release release:post:* && git push",
+    "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false",
     "release:pre:ignore-changes-to-lerna-config": "git update-index --assume-unchanged ./lerna.json",
