@@ -25,7 +25,7 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-async function serverCreator (serverAddrs, createServer, ipfs) {
+async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
@@ -33,7 +33,7 @@ async function serverCreator (serverAddrs, createServer, ipfs) {
   const servers = []
   for (const address of serverAddrs) {
     const addrParts = address.split('/')
-    const server = await createServer(addrParts[2], addrParts[4], ipfs)
+    const server = await createServer(addrParts[2], addrParts[4], ipfs, cors)
     await server.start()
     server.info.ma = hapiInfoToMultiaddr(server.info)
     servers.push(server)
@@ -56,9 +56,14 @@ class HttpApi {
 
     const config = await ipfs.config.getAll()
     config.Addresses = config.Addresses || {}
+    config.API = config.API || {}
+    config.API.HTTPHeaders = config.API.HTTPHeaders || {}
 
     const apiAddrs = config.Addresses.API
-    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs)
+    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs, {
+      origin: config.API.HTTPHeaders['Access-Control-Allow-Origin'] || [],
+      credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
+    })
 
     const gatewayAddrs = config.Addresses.Gateway
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
@@ -67,14 +72,16 @@ class HttpApi {
     return this
   }
 
-  async _createApiServer (host, port, ipfs) {
+  async _createApiServer (host, port, ipfs, cors) {
+    if (!cors || !cors.origin || !cors.origin.length) {
+      cors = false
+    }
+
     const server = Hapi.server({
       host,
       port,
-      // CORS is enabled by default
-      // TODO: shouldn't, fix this
       routes: {
-        cors: true,
+        cors,
         response: {
           emptyStatusCode: 200
         }

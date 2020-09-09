@@ -6,4 +6,5 @@ if (isNode) {
   require('./routes')
 }
 
+require('./cors')
 require('./interface')
