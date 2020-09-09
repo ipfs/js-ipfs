@@ -286,7 +286,7 @@ The RPC API endpoints running on your local node are protected by the [Cross-Ori
 
 When a request is made that sends an `Origin` header, that Origin must be present in the allowed origins configured for the node, otherwise the browser will disallow that request to proceed, unless `mode: 'no-cors'` is set on the request, in which case the response will be opaque.
 
-To allow requests from web browsers, configure the `API.HTTPHeaders.Access-Control-Allow-Origin` setting.  This is an array of URL strings and/or the wildcard `'*'` character.
+To allow requests from web browsers, configure the `API.HTTPHeaders.Access-Control-Allow-Origin` setting.  This is an array of URL strings with safelisted Origins.
 
 ##### Example
 
