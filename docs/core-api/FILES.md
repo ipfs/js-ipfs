@@ -282,7 +282,7 @@ const files = [{
   content: 'ABC'
 }]
 
-for await (const result of ipfs.addAll(content)) {
+for await (const result of ipfs.addAll(files)) {
   console.log(result)
 }
 
