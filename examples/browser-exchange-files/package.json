@@ -14,11 +14,11 @@
     "browserify": "^16.2.3",
     "execa": "^4.0.0",
     "http-server": "^0.12.3",
-    "ipfs-http-client": "^46.1.0",
+    "ipfs-http-client": "^47.0.0",
     "uint8arrays": "^1.1.0"
   },
   "dependencies": {
-    "ipfs": "^0.50.0",
+    "ipfs": "^0.50.1",
     "it-all": "^1.0.1",
     "test-ipfs-example": "^2.0.3"
   },
