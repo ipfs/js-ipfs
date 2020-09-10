@@ -114,6 +114,17 @@ class HttpApi {
       }
     })
 
+    // https://tools.ietf.org/html/rfc7231#section-6.5.5
+    server.ext('onPreResponse', (request, h) => {
+      const { response } = request
+
+      if (response.isBoom && response.output && response.output.statusCode === 405) {
+        response.output.headers.Allow = 'OPTIONS, POST'
+      }
+
+      return h.continue
+    })
+
     // https://github.com/ipfs/go-ipfs-cmds/pull/193/files
     server.ext({
       type: 'onRequest',

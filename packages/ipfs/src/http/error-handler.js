@@ -39,10 +39,18 @@ module.exports = server => {
       server.logger.error(res)
     }
 
-    return h.response({
+    const response = h.response({
       Message: message,
       Code: code,
       Type: 'error'
     }).code(statusCode)
+
+    const headers = res.output.headers || {}
+
+    Object.keys(headers).forEach(header => {
+      response.header(header, headers[header])
+    })
+
+    return response
   })
 }
