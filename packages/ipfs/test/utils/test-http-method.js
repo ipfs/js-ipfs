@@ -8,7 +8,6 @@ const METHODS = [
   'PUT',
   'PATCH',
   'DELETE',
-  'OPTIONS',
   'HEAD'
 ]
 

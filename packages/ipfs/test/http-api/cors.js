@@ -22,19 +22,6 @@ describe('cors', () => {
   })
 
   describe('should allow configuring CORS', () => {
-    it('does not return allowed origins when cors is not configured and origin is supplied in request', async () => {
-      const origin = 'http://localhost:8080'
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/id',
-        headers: {
-          origin
-        }
-      }, { ipfs })
-
-      expect(res).to.not.have.nested.property('headers.access-control-allow-origin')
-    })
-
     it('returns allowed origins when origin is supplied in request', async () => {
       const origin = 'http://localhost:8080'
       const res = await http({
@@ -118,6 +105,49 @@ describe('cors', () => {
       }, { ipfs, cors: { origin: ['*'] } })
 
       expect(res).to.have.nested.property('headers.access-control-allow-origin', origin + '/')
+    })
+
+    it('makes preflight request for post', async () => {
+      const origin = 'http://localhost:8080'
+      const res = await http({
+        method: 'OPTIONS',
+        url: '/api/v0/id',
+        headers: {
+          origin,
+          'Access-Control-Request-Method': 'POST',
+          // browsers specifying custom headers triggers CORS pre-flight requests
+          // so simulate that here
+          'Access-Control-Request-Headers': 'X-Stream-Output'
+        }
+      }, {
+        ipfs,
+        cors: { origin: [origin] }
+      })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('headers.access-control-allow-origin', origin)
+      expect(res).to.have.nested.property('headers.access-control-allow-methods').that.includes('POST')
+      expect(res).to.have.nested.property('headers.access-control-allow-headers').that.includes('X-Stream-Output')
+    })
+
+    it('responds with 404 for preflight request for get', async () => {
+      const origin = 'http://localhost:8080'
+      const res = await http({
+        method: 'OPTIONS',
+        url: '/api/v0/id',
+        headers: {
+          origin,
+          'Access-Control-Request-Method': 'GET',
+          // browsers specifying custom headers triggers CORS pre-flight requests
+          // so simulate that here
+          'Access-Control-Request-Headers': 'X-Stream-Output'
+        }
+      }, {
+        ipfs,
+        cors: { origin: [origin] }
+      })
+
+      expect(res).to.have.property('statusCode', 404)
     })
   })
 })

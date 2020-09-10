@@ -73,15 +73,15 @@ class HttpApi {
   }
 
   async _createApiServer (host, port, ipfs, cors) {
-    if (!cors || !cors.origin || !cors.origin.length) {
-      cors = false
-    }
-
     const server = Hapi.server({
       host,
       port,
       routes: {
-        cors,
+        cors: {
+          ...cors,
+          additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
+          additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
+        },
         response: {
           emptyStatusCode: 200
         }
@@ -99,6 +99,18 @@ class HttpApi {
         prettyPrint: process.env.NODE_ENV !== 'production',
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
         level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
+      }
+    })
+
+    // block all non-post or non-options requests
+    server.ext({
+      type: 'onRequest',
+      method: function (request, h) {
+        if (request.method === 'post' || request.method === 'options') {
+          return h.continue
+        }
+
+        throw Boom.methodNotAllowed()
       }
     })
 
@@ -150,24 +162,6 @@ class HttpApi {
         return h.continue
       }
     })
-
-    const setHeader = (key, value) => {
-      server.ext('onPreResponse', (request, h) => {
-        const { response } = request
-        if (response.isBoom) {
-          response.output.headers[key] = value
-        } else {
-          response.header(key, value)
-        }
-        return h.continue
-      })
-    }
-
-    // Set default headers
-    setHeader('Access-Control-Allow-Headers',
-      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-    setHeader('Access-Control-Expose-Headers',
-      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
 
     server.route(require('./api/routes'))
 
