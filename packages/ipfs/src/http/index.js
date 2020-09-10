@@ -73,15 +73,21 @@ class HttpApi {
   }
 
   async _createApiServer (host, port, ipfs, cors) {
+    cors = {
+      ...cors,
+      additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
+      additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
+    }
+
+    if (!cors.origin.length) {
+      cors = false
+    }
+
     const server = Hapi.server({
       host,
       port,
       routes: {
-        cors: {
-          ...cors,
-          additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
-          additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
-        },
+        cors,
         response: {
           emptyStatusCode: 200
         }
