@@ -79,7 +79,7 @@ class HttpApi {
       additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
     }
 
-    if (!cors.origin.length) {
+    if (!cors.origin || !cors.origin.length) {
       cors = false
     }
 
