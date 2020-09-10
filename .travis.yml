@@ -16,8 +16,7 @@ stages:
 
 node_js:
   - 'lts/*'
-  # blocked by https://github.com/hapijs/hapi/issues/4149
-  # - 'node'
+  - 'node'
 
 os:
   - linux
