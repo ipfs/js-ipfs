@@ -168,7 +168,7 @@
     "update-notifier": "^4.0.0",
     "uri-to-multiaddr": "^4.0.0",
     "varint": "^5.0.0",
-    "yargs": "^15.1.0",
+    "yargs": "^16.0.3",
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
