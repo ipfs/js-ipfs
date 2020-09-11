@@ -116,6 +116,11 @@ class HttpApi {
           return h.continue
         }
 
+        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui'))) {
+          // allow requests to the webui
+          return h.continue
+        }
+
         throw Boom.methodNotAllowed()
       }
     })
