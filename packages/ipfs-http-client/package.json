@@ -58,7 +58,7 @@
     "it-tar": "^1.2.2",
     "it-to-buffer": "^1.0.0",
     "it-to-stream": "^0.1.1",
-    "merge-options": "^2.0.0",
+    "merge-options": "^3.0.2",
     "multiaddr": "^8.0.0",
     "multiaddr-to-uri": "^6.0.0",
     "multibase": "^3.0.0",
