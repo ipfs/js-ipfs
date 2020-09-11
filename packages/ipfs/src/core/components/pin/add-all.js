@@ -4,12 +4,35 @@
 const { resolvePath, withTimeoutOption } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
+
+/** @type {(source:PinsSource) => AsyncIterable<PinTarget>} */
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
+/**
+ *
+ * @param {Object} config
+ * @param {import('../init').RWLock} config.gcLock
+ * @param {import('../index').DAG} config.dag
+ * @param {import('./pin-manager')} config.pinManager
+ */
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return withTimeoutOption(async function * addAll (source, options) {
-    options = options || {}
-
+  /**
+   * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
+   * repo. pinset is the set of hashes currently pinned (not gc'able)
+   * @param {PinsSource} source - One or more CIDs or IPFS Paths to pin in your repo
+   * @param {AddOptions} [options]
+   * @returns {AsyncIterable<CID>} - CIDs that were pinned.
+   * @example
+   * ```js
+   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * for await (const cid of ipfs.pin.addAll([cid])) {
+   *   console.log(cid)
+   * }
+   * // Logs:
+   * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * ```
+   */
+  async function * addAll (source, options = {}) {
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
         const cid = await resolvePath(dag, path)
@@ -48,5 +71,46 @@ module.exports = ({ pinManager, gcLock, dag }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(addAll)
 }
+
+/**
+ * @typedef {AwaitIterable<PinSource>|PinSource} PinsSource
+ * @typedef {CID|string|AddByPath|AddByCID|AddByPathOrCID} PinSource
+ *
+ * @typedef {Object} AddByPath
+ * @property {string} path
+ * @property {boolean} [recursive]
+ * @property {object} [metadata=null]
+ *
+ * @typedef {Object} AddByCID
+ * @property {CID} cid
+ * @property {boolean} [recursive]
+ * @property {object} [metadata=null]
+ *
+ * @typedef {Object} AddByPathOrCID
+ * @property {string|CID} path
+ * @property {boolean} [recursive]
+ * @property {object} [metadata=null]
+ *
+ * @typedef {Object} PinTarget
+ * @property {CID|string} path
+ * @property {boolean} recursive
+ * @property {Object} metadata
+ *
+ * @typedef {AddSettings & AbortOptions} AddOptions
+ *
+ * @typedef {Object} AddSettings
+ * @property {boolean} [lock]
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @template T
+ * @typedef {Iterable<T>|AsyncIterable<T>} AwaitIterable
+ */

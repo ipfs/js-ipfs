@@ -3,7 +3,7 @@
 const Joi = require('../../../utils/joi')
 const all = require('it-all')
 const map = require('it-map')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const streamResponse = require('../../../utils/stream-response')
 
 const mapEntry = (entry, options) => {

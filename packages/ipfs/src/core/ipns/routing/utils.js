@@ -8,5 +8,5 @@ module.exports = {
   validator: {
     func: (key, record, cb) => ipns.validator.validate(record, key, cb)
   },
-  selector: (k, records) => ipns.validator.select(records[0], records[1])
+  selector: (_k, records) => ipns.validator.select(records[0], records[1])
 }

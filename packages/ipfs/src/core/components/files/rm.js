@@ -42,8 +42,9 @@ module.exports = (context) => {
 
 const removePath = async (context, path, options) => {
   const mfsPath = await toMfsPath(context, path, options)
-  const trail = await toTrail(context, mfsPath.mfsPath, options)
-  const child = trail.pop()
+  const trail = await toTrail(context, mfsPath.mfsPath)
+  const child = trail[trail.length - 1]
+  trail.pop()
   const parent = trail[trail.length - 1]
 
   if (!parent) {

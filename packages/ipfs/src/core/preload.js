@@ -12,6 +12,26 @@ const log = Object.assign(
   { error: debug('ipfs:preload:error') }
 )
 
+/**
+ * @typedef {Object} PreloadConfig
+ * @property {boolean} [enabled]
+ * @property {string[]} [addresses]
+ *
+ * @callback Preload
+ * @param {string|CID} path
+ * @returns {void|Promise<void>}
+ *
+ * @typedef {Object} PreloadExt
+ * @property {function():void} start
+ * @property {function():void} stop
+ *
+ * @typedef {Preload & PreloadExt} PreloadService
+ */
+
+/**
+ * @param {PreloadConfig} [options]
+ * @returns {PreloadService}
+ */
 module.exports = options => {
   options = options || {}
   options.enabled = Boolean(options.enabled)

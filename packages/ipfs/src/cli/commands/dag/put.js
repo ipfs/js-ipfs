@@ -4,6 +4,8 @@ const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const dagCBOR = require('ipld-dag-cbor')
 const dagPB = require('ipld-dag-pb')
+/** @type {typeof import('it-concat').default} */
+// @ts-ignore - incorrect typedefs
 const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('../../../utils/cid')

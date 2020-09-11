@@ -1,4 +1,7 @@
 'use strict'
+
+/** @type {typeof import('hashlru').default} */
+// @ts-ignore - hashlru has incorrect typedefs
 const hashlru = require('hashlru')
 
 /**

@@ -26,11 +26,10 @@ const { withTimeoutOption } = require('../../utils')
  */
 
 module.exports = ({ bitswap }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {Stat<{}>}
    */
-  async function stat (options) { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
+  async function stat (_options) { // eslint-disable-line require-await
     const snapshot = bitswap.stat().snapshot
 
     return {

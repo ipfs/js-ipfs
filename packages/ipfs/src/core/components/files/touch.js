@@ -75,7 +75,7 @@ module.exports = (context) => {
       })
     }
 
-    const trail = await toTrail(context, mfsDirectory, options)
+    const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
     const parentNode = await context.ipld.get(parent.cid)
 

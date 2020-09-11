@@ -4,8 +4,9 @@ const ipns = require('ipns')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns:resolver')
-log.error = debug('ipfs:ipns:resolver:error')
+const log = Object.assign(debug('ipfs:ipns:resolver'), {
+  error: debug('ipfs:ipns:resolver:error')
+})
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')

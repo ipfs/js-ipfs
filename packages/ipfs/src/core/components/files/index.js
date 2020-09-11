@@ -104,7 +104,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Change file mode
      *
-     * @param {String} path - The path of the source to modify.
+     * @param {string} path - The path of the source to modify.
      * @param {Object} mode - The mode to set the path
      * @param {Object} [opts] - Options for modification.
      * @param {boolean} [opts.recursive=false] - Whether to change modes recursively. (default: false)
@@ -117,12 +117,12 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Copy files
      *
-     * @param {String | Array<String>} from - The path(s) of the source to copy.
-     * @param {String} to - The path of the destination to copy to.
+     * @param {string | Array<string>} from - The path(s) of the source to copy.
+     * @param {string} to - The path of the destination to copy to.
      * @param {Object} [opts] - Options for copy.
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
-     * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb)
-     * @param {String} [opts.hashAlg=sha2-256] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
+     * @param {string} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb)
+     * @param {string} [opts.hashAlg=sha2-256] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
      * @returns {Promise<string>}
      */
@@ -131,32 +131,20 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Make a directory
      *
-     * @param {String} path - The path to the directory to make.
+     * @param {string} path - The path to the directory to make.
      * @param {Object} [opts] - Options for mkdir.
      * @param {boolean} [opts.parents=false] - Value to decide whether or not to make the parent directories if they don't exist. (default: false)
-     * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
-     * @param {String} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
+     * @param {string} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
+     * @param {string} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Whether or not to immediately flush MFS changes to disk (default: true).
      * @returns {Promise<void>}
      */
     mkdir: methods.mkdir,
 
     /**
-     * @typedef {Object} StatOutput
-     * @prop {String} hash - Output hash.
-     * @prop {number} size - File size in bytes.
-     * @prop {number} cumulativeSize - Integer with the size of the DAGNodes making up the file in Bytes.
-     * @prop {string} type - Output type either 'directory' or 'file'.
-     * @prop {number} blocks - If type is directory, this is the number of files in the directory. If it is file it is the number of blocks that make up the file.
-     * @prop {boolean} withLocality - Indicate if locality information is present.
-     * @prop {boolean} local - Indicate if the queried dag is fully present locally.
-     * @prop {number} sizeLocal - Integer indicating the cumulative size of the data present locally.
-     */
-
-    /**
      * Get file or directory status.
      *
-     * @param {String} path - Path to the file or directory to stat.
+     * @param {string} path - Path to the file or directory to stat.
      * @param {Object} [opts] - Options for stat.
      * @param {boolean} [opts.hash=false] - Return only the hash. (default: false)
      * @param {boolean} [opts.size=false] - Return only the size. (default: false)
@@ -168,18 +156,12 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Remove a file or directory.
      *
-     * @param {String | Array<String>} paths - One or more paths to remove.
+     * @param {string | Array<string>} paths - One or more paths to remove.
      * @param {Object} [opts] - Options for remove.
      * @param {boolean} [opts.recursive=false] - Whether or not to remove directories recursively. (default: false)
      * @returns {Promise<void>}
      */
     rm: methods.rm,
-
-    /**
-     * @typedef {Object} ReadOptions
-     * @prop {number} [opts.offset=0] - Integer with the byte offset to begin reading from (default: 0).
-     * @prop {number} [opts.length] - Integer with the maximum number of bytes to read (default: Read to the end of stream).
-     */
 
     /**
      * Read a file into a Buffer.
@@ -193,7 +175,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Update modification time
      *
-     * @param {String} path - The path of the source to modify.
+     * @param {string} path - The path of the source to modify.
      * @param {number} mtime - Time to use as the new modification time in seconds since (+ve) or before (-ve) the Unix Epoch
      * @param {Object} [opts] - Options for touch.
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
@@ -227,8 +209,8 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
      * @param {string} to - Path of the destination to move to.
      * @param {Object} opts - Options for mv.
      * @param {boolean} [opts.parents=false] - Value to decide whether or not to make the parent directories if they don't exist. (default: false)
-     * @param {String} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
-     * @param {String} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
+     * @param {string} [opts.format=dag-pb] - Format of nodes to write any newly created directories as. (default: dag-pb).
+     * @param {string} [opts.hashAlg] - Algorithm to use when creating CIDs for newly created directories. (default: sha2-256) {@link https://github.com/multiformats/js-multihash/blob/master/src/constants.js#L5-L343 The list of all possible values}
      * @param {boolean} [opts.flush=true] - Value to decide whether or not to immediately flush MFS changes to disk. (default: true)
      * @returns {Promise<void>}
      * @description
@@ -253,20 +235,6 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     flush: methods.flush,
 
     /**
-     * @typedef {Object} ListOutputFile
-     * @prop {string} name - Which is the file's name.
-     * @prop {string} type - Which is the object's type (directory or file).
-     * @prop {number} size - The size of the file in bytes.
-     * @prop {string} hash - The hash of the file.
-     */
-
-    /**
-     * @typedef {Object} ListOptions
-     * @prop {boolean} [long=false] - Value to decide whether or not to populate type, size and hash. (default: false)
-     * @prop {boolean} [sort=false] - If true entries will be sorted by filename. (default: false)
-     */
-
-    /**
      * List directories in the local mutable namespace.
      *
      * @param {string} [path="/"] - String to show listing for. (default: /)
@@ -280,3 +248,29 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     })
   }
 }
+
+/**
+ * @typedef {Object} StatOutput
+ * @property {string} hash - Output hash.
+ * @property {number} size - File size in bytes.
+ * @property {number} cumulativeSize - Integer with the size of the DAGNodes making up the file in Bytes.
+ * @property {string} type - Output type either 'directory' or 'file'.
+ * @property {number} blocks - If type is directory, this is the number of files in the directory. If it is file it is the number of blocks that make up the file.
+ * @property {boolean} withLocality - Indicate if locality information is present.
+ * @property {boolean} local - Indicate if the queried dag is fully present locally.
+ * @property {number} sizeLocal - Integer indicating the cumulative size of the data present locally.
+ *
+ * @typedef {Object} ListOutputFile
+ * @property {string} name - Which is the file's name.
+ * @property {string} type - Which is the object's type (directory or file).
+ * @property {number} size - The size of the file in bytes.
+ * @property {string} hash - The hash of the file.
+ *
+ * @typedef {Object} ListOptions
+ * @property {boolean} [long=false] - Value to decide whether or not to populate type, size and hash. (default: false)
+ * @property {boolean} [sort=false] - If true entries will be sorted by filename. (default: false)
+ *
+ * @typedef {Object} ReadOptions
+ * @property {number} [opts.offset=0] - Integer with the byte offset to begin reading from (default: 0).
+ * @property {number} [opts.length] - Integer with the maximum number of bytes to read (default: Read to the end of stream).
+ */

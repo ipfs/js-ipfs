@@ -3,8 +3,9 @@
 const { createFromPrivKey } = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns')
-log.error = debug('ipfs:ipns:error')
+const log = Object.assign(debug('ipfs:ipns'), {
+  error: debug('ipfs:ipns:error')
+})
 
 const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')
@@ -34,6 +35,7 @@ class IPNS {
 
       // // Add to cache
       const id = peerId.toB58String()
+      // @ts-ignore - parseFloat expects string
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 

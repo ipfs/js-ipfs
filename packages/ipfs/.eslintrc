@@ -1,0 +1,6 @@
+{
+  "extends": "ipfs",
+  "rules": {
+    "jsdoc/no-undefined-types": 0
+  }
+}

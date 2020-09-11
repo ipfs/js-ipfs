@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('bignumber.js')
+const Big = require('bignumber.js').default
 const parseDuration = require('parse-duration').default
 const errCode = require('err-code')
 const { withTimeoutOption } = require('../../utils')

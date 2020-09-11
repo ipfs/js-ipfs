@@ -64,6 +64,7 @@ jobs:
         - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client,ipfs-message-port-*}
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
         - npm run lint -- $RUN_SINCE --concurrency 1
+        - npm run check -- $RUN_SINCE --concurrency 1
 
     - stage: test
       name: chrome

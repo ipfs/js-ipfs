@@ -38,7 +38,7 @@ const print = (msg, includeNewline = true, isError = false) => {
 }
 
 print.clearLine = () => {
-  return process.stdout.clearLine()
+  return process.stdout.clearLine(0)
 }
 
 print.cursorTo = (pos) => {
@@ -92,6 +92,7 @@ async function getIpfs (argv) {
       start: false,
       pass: argv.pass
     })
+
     return {
       isDaemon: false,
       ipfs,

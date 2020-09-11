@@ -35,7 +35,9 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
@@ -193,7 +195,16 @@
     "stream-to-promise": "^3.0.0",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
-    "wrtc": "^0.4.4"
+    "wrtc": "^0.4.4",
+    "typescript": "4.0.2",
+    "eslint-config-ipfs": "git://github.com/gozala/eslint-config-ipfs#default"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",

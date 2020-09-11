@@ -23,7 +23,7 @@ module.exports = {
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, timeout, cidBase, multihash }) {
+  async handler ({ ctx: { ipfs, print }, timeout, multihash }) {
     for await (const { ref, err } of ipfs.refs.local({
       timeout
     })) {

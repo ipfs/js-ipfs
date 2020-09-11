@@ -51,9 +51,11 @@ const updateTree = async (context, trail, options) => {
     }
   }
 
-  log(`Final CID ${child.cid}`)
+  // @ts-ignore - child is possibly undefined
+  const { cid } = child
+  log(`Final CID ${cid}`)
 
-  return child.cid
+  return cid
 }
 
 module.exports = updateTree

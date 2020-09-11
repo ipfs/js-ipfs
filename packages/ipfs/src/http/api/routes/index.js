@@ -55,4 +55,5 @@ BLOCKED_METHODS.forEach(method => {
   })
 })
 
+// @ts-ignore - two routes array seem to inferred as diff types
 module.exports = routes.concat(extraRoutes)

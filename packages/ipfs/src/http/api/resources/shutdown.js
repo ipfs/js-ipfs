@@ -7,7 +7,8 @@
  * on the next 'tick' emits SIGTERM.
  */
 module.exports = {
-  handler: (request, h) => {
+  handler: (_request, h) => {
+    // @ts-ignore - TS expects second argument
     setImmediate(() => process.emit('SIGTERM'))
     return h.response()
   }

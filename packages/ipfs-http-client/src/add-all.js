@@ -9,7 +9,6 @@ const anySignal = require('any-signal')
 const AbortController = require('abort-controller').default
 
 module.exports = configure((api) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {import('../../ipfs/src/core/components/add-all').AddAll<import('.').HttpOptions>}
    */

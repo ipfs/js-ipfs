@@ -1,13 +1,26 @@
 'use strict'
 
 const multicodec = require('multicodec')
+
+/**
+ * @param {string} name
+ * @returns {number}
+ */
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @param {PutConfig} config
+ */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
-  return withTimeoutOption(async function put (dagNode, options) {
-    options = options || {}
-
+  /**
+   * Store an IPLD format node
+   * @param {Object} dagNode
+   * @param {PutOptions} [options]
+   * @returns {Promise<CID>}
+   */
+  // eslint-disable-next-line complexity
+  async function put (dagNode, options = {}) {
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
     } else if (((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
@@ -68,5 +81,30 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
         release()
       }
     }
-  })
+  }
+
+  return withTimeoutOption(put)
 }
+
+/**
+ *
+ * @typedef {Object} PutConfig
+ * @property {import('ipld')} ipld
+ * @property {import("../index").Pin} pin
+ * @property {import("../init").RWLock} gcLock
+ * @property {import("../init").Preload} preload
+
+ *
+ * @typedef {Object} PutOptions
+ * @property {CID} [cid]
+ * @property {string|number} [format]
+ * @property {string|number} [hashAlg]
+ *
+ * @property {boolean} [pin=false]
+ * @property {number} [timetout]
+ * @property {number} [version]
+ * @property {boolean} [preload=false]
+ * @property {AbortSignal} [signal]
+ *
+ * @typedef {import('cids')} CID
+ */

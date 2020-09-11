@@ -4,8 +4,9 @@ const PeerId = require('peer-id')
 const { Key, Errors } = require('interface-datastore')
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns:publisher')
-log.error = debug('ipfs:ipns:publisher:error')
+const log = Object.assign(debug('ipfs:ipns:publisher'), {
+  error: debug('ipfs:ipns:publisher:error')
+})
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 const ipns = require('ipns')
@@ -45,11 +46,12 @@ class IpnsPublisher {
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
     }
 
+    // @ts-ignore - accessing private property isn't allowed
     const publicKey = peerId._pubKey
     const embedPublicKeyRecord = await ipns.embedPublicKey(publicKey, record)
     const keys = ipns.getIdKeys(peerId.toBytes())
 
-    await this._publishEntry(keys.routingKey, embedPublicKeyRecord || record, peerId)
+    await this._publishEntry(keys.routingKey, embedPublicKeyRecord || record)
 
     // Publish the public key to support old go-ipfs nodes that are looking for it in the routing
     // We will be able to deprecate this part in the future, since the public keys will be only

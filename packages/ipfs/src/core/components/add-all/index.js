@@ -7,7 +7,7 @@ const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
+ * @typedef {Uint8Array | Blob | string | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  *
  * @typedef {object} FileObject
  *  - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID.
@@ -54,15 +54,15 @@ const { withTimeoutOption } = require('../../utils')
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
 
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {AddAll<{}>}
    */
   async function * addAll (source, options) {
     options = options || {}
 
+    const sharding = { shardSplitThreshold: isShardingEnabled ? 1000 : Infinity }
     const opts = {
-      shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
+      ...sharding,
       ...options,
       strategy: 'balanced',
       ...parseChunkerString(options.chunker)

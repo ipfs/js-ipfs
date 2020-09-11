@@ -3,8 +3,9 @@
 const HTTP = require('ipfs-utils/src/http')
 const debug = require('debug')
 
-const log = debug('ipfs:preload')
-log.error = debug('ipfs:preload:error')
+const log = Object.assign(debug('ipfs:preload'), {
+  error: debug('ipfs:preload:error')
+})
 
 module.exports = async function preload (url, options) {
   log(url)

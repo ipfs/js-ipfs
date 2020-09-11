@@ -5,13 +5,10 @@ const mh = require('multihashing-async').multihash
 const Joi = require('../../utils/joi')
 const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
-const debug = require('debug')
 const {
   cidToString
 } = require('../../../utils/cid')
 const all = require('it-all')
-const log = debug('ipfs:http-api:dag')
-log.error = debug('ipfs:http-api:dag:error')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 const IpldFormats = {
@@ -159,7 +156,7 @@ exports.put = {
     },
     pre: [{
       assign: 'args',
-      method: async (request, h) => {
+      method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("File argument 'object data' is required")
         }

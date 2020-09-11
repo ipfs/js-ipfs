@@ -97,6 +97,7 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
   }
 
   let [
+    // @ts-ignore - unusef variable
     _, // eslint-disable-line no-unused-vars
     references,
     operator,
@@ -149,9 +150,13 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
 }
 
 function calculateMode (mode, metadata) {
-  if (typeof mode === 'string' || mode instanceof String) {
+  if (mode instanceof String) {
+    mode = mode.toString()
+  }
+
+  if (typeof mode === 'string') {
     if (mode.match(/^\d+$/g)) {
-      mode = parseInt(mode, 8)
+      mode = parseInt(mode.toString(), 8)
     } else {
       mode = mode.split(',').reduce((curr, acc) => {
         return parseSymbolicMode(acc, curr, metadata.isDirectory())
@@ -235,7 +240,7 @@ module.exports = (context) => {
       onlyHash: !options.flush
     })
 
-    const trail = await toTrail(context, mfsDirectory, options)
+    const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
     const parentNode = await context.ipld.get(parent.cid)
 

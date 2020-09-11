@@ -1,11 +1,33 @@
 'use strict'
 
 const PeerId = require('peer-id')
+/** @type {{success:true, time:0, text: ''}} */
 const basePacket = { success: true, time: 0, text: '' }
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('libp2p')} config.libp2p
+ */
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function * ping (peerId, options) {
+  /**
+   * Send echo request packets to IPFS hosts.
+   *
+   * @param {PeerId} peerId - The remote peer to send packets to
+   * @param {PingOptions} [options]
+   * @returns {AsyncIterable<Packet>}
+   * @example
+   * ```js
+   * for await (const res of ipfs.ping('Qmhash')) {
+   *   if (res.time) {
+   *     console.log(`Pong received: time=${res.time} ms`)
+   *   } else {
+   *     console.log(res.text)
+   *   }
+   * }
+   * ```
+   */
+  async function * ping (peerId, options) {
     options = options || {}
     options.count = options.count || 10
 
@@ -40,5 +62,36 @@ module.exports = ({ libp2p }) => {
       const average = totalTime / packetCount
       yield { ...basePacket, text: `Average latency: ${average}ms` }
     }
-  })
+  }
+
+  return withTimeoutOption(ping)
 }
+
+/**
+ * @typedef {Pong|PingFailure|StatusUpdate} Packet
+ * Note that not all ping response objects are "pongs".
+ * A "pong" message can be identified by a truthy success property and an empty
+ * text property. Other ping responses are failures or status updates.
+ *
+ * @typedef {Object} Pong
+ * @property {true} success
+ * @property {number} time
+ * @property {''} text
+ *
+ * @typedef {Object} PingFailure
+ * @property {false} success
+ * @property {number} time
+ * @property {string} text
+ *
+ * @typedef {Object} StatusUpdate
+ * @property {true} success
+ * @property {0} time
+ * @property {string} text
+ *
+ * @typedef {PingSettings & AbortOptions} PingOptions
+ *
+ * @typedef {Object} PingSettings
+ * @property {number} [count=10] - The number of ping messages to send
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ */

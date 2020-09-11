@@ -6,7 +6,7 @@ const debug = require('debug')
 const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
-const AbortController = require('abort-controller')
+const AbortController = require('abort-controller').default
 
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
@@ -45,8 +45,9 @@ class HttpApi {
   constructor (ipfs, options) {
     this._ipfs = ipfs
     this._options = options || {}
-    this._log = debug(LOG)
-    this._log.error = debug(LOG_ERROR)
+    this._log = Object.assign(debug(LOG), {
+      error: debug(LOG_ERROR)
+    })
   }
 
   async start () {

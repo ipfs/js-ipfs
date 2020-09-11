@@ -47,15 +47,17 @@ module.exports = (context) => {
     let source, destination, parent
     log('Reading source, destination and parent')
     await createLock().readLock(async () => {
-      source = await toAsyncIterator(content, options)
+      source = await toAsyncIterator(content)
       destination = await toMfsPath(context, path, options)
       parent = await toMfsPath(context, destination.mfsDirectory, options)
     })()
     log('Read source, destination and parent')
+    // @ts-ignore- parent maybe undefined
     if (!options.parents && !parent.exists) {
       throw errCode(new Error('directory does not exist'), 'ERR_NO_EXIST')
     }
 
+    // @ts-ignore- parent maybe undefined
     if (!options.create && !destination.exists) {
       throw errCode(new Error('file does not exist'), 'ERR_NO_EXIST')
     }
@@ -89,7 +91,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
 
     // get an updated mfs path in case the root changed while we were writing
     const updatedPath = await toMfsPath(context, path, options)
-    const trail = await toTrail(context, updatedPath.mfsDirectory, options)
+    const trail = await toTrail(context, updatedPath.mfsDirectory)
     const parent = trail[trail.length - 1]
 
     if (!parent.type.includes('directory')) {
@@ -244,7 +246,7 @@ const limitAsyncStreamBytes = (stream, limit) => {
 }
 
 const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
-  const buf = new Uint8Array(chunkSize, 0)
+  const buf = new Uint8Array(chunkSize)
 
   const stream = {
     [Symbol.asyncIterator]: function * _asyncZeroes () {

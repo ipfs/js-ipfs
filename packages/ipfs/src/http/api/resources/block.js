@@ -6,14 +6,11 @@ const multipart = require('../../utils/multipart-request-parser')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { cidToString } = require('../../../utils/cid')
-const debug = require('debug')
 const all = require('it-all')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
-const log = debug('ipfs:http-api:block')
-log.error = debug('ipfs:http-api:block:error')
 
 exports.get = {
   options: {
@@ -79,7 +76,7 @@ exports.put = {
     },
     pre: [{
       assign: 'args',
-      method: async (request, h) => {
+      method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("File argument 'data' is required")
         }

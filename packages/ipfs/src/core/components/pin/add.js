@@ -2,11 +2,25 @@
 
 const last = require('it-last')
 
-module.exports = ({ addAll }) => {
-  return async function add (path, options) { // eslint-disable-line require-await
-    return last(addAll({
-      path,
-      ...options
-    }, options))
-  }
-}
+/**
+ * @param {Object} config
+ * @param {ReturnType<import('./add-all')>} config.addAll
+ */
+module.exports = ({ addAll }) =>
+  /**
+   * @param {CID|string} path
+   * @param {AddOptions} [options]
+   * @returns {Promise<CID>}
+   */
+  async (path, options = {}) =>
+    await last(addAll({ path, ...options }, options))
+
+/**
+ * @typedef {AddSettings & AbortOptions} AddOptions
+ * @typedef {Object} AddSettings
+ * @property {boolean} [lock]
+ * @property {boolean} [recursive] - Recursively pin all links contained by the object
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('cids')} CID
+ */

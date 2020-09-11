@@ -3,8 +3,9 @@
 const debug = require('debug')
 const get = require('dlv')
 const set = require('just-safe-set')
-const log = debug('ipfs:http-api:config')
-log.error = debug('ipfs:http-api:config:error')
+const log = Object.assign(debug('ipfs:http-api:config'), {
+  error: debug('ipfs:http-api:config:error')
+})
 const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 const Joi = require('../../utils/joi')
@@ -19,7 +20,7 @@ exports.getOrSet = {
     },
     pre: [{
       assign: 'args',
-      method: (request, h) => {
+      method: (request, _h) => {
         const parseValue = (args) => {
           if (request.query.bool) {
             args.value = args.value === 'true'
@@ -234,7 +235,7 @@ exports.replace = {
     },
     pre: [{
       assign: 'args',
-      method: async (request, h) => {
+      method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("Argument 'file' is required")
         }

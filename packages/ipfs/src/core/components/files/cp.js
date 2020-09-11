@@ -83,7 +83,7 @@ module.exports = (context) => {
     }
 
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
-    const trail = await toTrail(context, destinationPath, options)
+    const trail = await toTrail(context, destinationPath)
 
     if (sources.length === 1) {
       const source = sources.pop()

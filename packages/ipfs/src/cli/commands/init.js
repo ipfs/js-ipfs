@@ -56,7 +56,7 @@ module.exports = {
     if (argv.defaultConfig) {
       try {
         const raw = fs.readFileSync(argv.defaultConfig)
-        config = JSON.parse(raw)
+        config = JSON.parse(raw.toString())
       } catch (error) {
         debug(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')

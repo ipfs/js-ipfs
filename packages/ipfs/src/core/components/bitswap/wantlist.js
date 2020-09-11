@@ -15,7 +15,6 @@ const { withTimeoutOption } = require('../../utils')
  */
 
 module.exports = ({ bitswap }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {WantlistFn<{}>}
    */

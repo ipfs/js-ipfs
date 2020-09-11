@@ -10,10 +10,11 @@ const Boom = require('@hapi/boom')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const { cidToString } = require('../../../utils/cid')
 const debug = require('debug')
-const log = debug('ipfs:http-api:object')
-log.error = debug('ipfs:http-api:object:error')
+const log = Object.assign(debug('ipfs:http-api:object'), {
+  error: debug('ipfs:http-api:object:error')
+})
 
-const readFilePart = async (request, h) => {
+const readFilePart = async (request, _h) => {
   if (!request.payload) {
     throw Boom.badRequest("File argument 'data' is required")
   }
@@ -505,7 +506,7 @@ exports.patchAppendData = {
       },
       query: {
         cid,
-        cidBase,
+        cidBase: base,
         enc,
         timeout
       }
@@ -530,13 +531,13 @@ exports.patchAppendData = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(newCid, { cidBase, upgrade: false }),
+      Hash: cidToString(newCid, { base, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { cidBase, upgrade: false })
+          Hash: cidToString(l.cid, { base, upgrade: false })
         }
       })
     }
@@ -593,7 +594,7 @@ exports.patchSetData = {
       },
       query: {
         cid,
-        cidBase,
+        cidBase: base,
         enc,
         timeout
       }
@@ -616,12 +617,12 @@ exports.patchSetData = {
     const nodeJSON = node.toJSON()
 
     return h.response({
-      Hash: cidToString(newCid, { cidBase, upgrade: false }),
+      Hash: cidToString(newCid, { base, upgrade: false }),
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { cidBase, upgrade: false })
+          Hash: cidToString(l.cid, { base, upgrade: false })
         }
       })
     })
@@ -671,7 +672,7 @@ exports.patchAddLink = {
           name,
           ref
         ],
-        cidBase,
+        cidBase: base,
         enc,
         timeout
       }
@@ -701,13 +702,13 @@ exports.patchAddLink = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(cid, { cidBase, upgrade: false }),
+      Hash: cidToString(cid, { base, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { cidBase, upgrade: false })
+          Hash: cidToString(l.cid, { base, upgrade: false })
         }
       })
     }
@@ -757,7 +758,7 @@ exports.patchRmLink = {
           root,
           link
         ],
-        cidBase,
+        cidBase: base,
         enc,
         timeout
       }
@@ -783,13 +784,13 @@ exports.patchRmLink = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(cid, { cidBase, upgrade: false }),
+      Hash: cidToString(cid, { base, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { cidBase, upgrade: false })
+          Hash: cidToString(l.cid, { base, upgrade: false })
         }
       })
     }

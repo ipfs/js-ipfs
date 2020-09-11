@@ -21,6 +21,7 @@ class Daemon {
       const prometheusClient = require('prom-client')
       const prometheusGcStats = require('prometheus-gc-stats')
       const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
+      // @ts-ignore - timeout isn't in typedefs
       collectDefaultMetrics({ timeout: 5000 })
       prometheusGcStats(prometheusClient.register)()
     }
@@ -42,7 +43,9 @@ class Daemon {
     this._httpApi = await httpApi.start()
 
     // for the CLI to know the where abouts of the API
+    // @ts-ignore - _apiServers is possibly undefined
     if (this._httpApi._apiServers.length) {
+      // @ts-ignore - _apiServers is possibly undefined
       await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
@@ -54,6 +57,7 @@ class Daemon {
     log('stopping')
     await Promise.all([
       this._httpApi && this._httpApi.stop(),
+      // @ts-ignore - may not have stop if init was false
       this._ipfs && this._ipfs.stop()
     ])
     log('stopped')
@@ -66,6 +70,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   let electronWebRTC
   let wrtc
   try {
+    // @ts-ignore - cant find type info
     electronWebRTC = require('electron-webrtc')()
   } catch (err) {
     log('failed to load optional electron-webrtc dependency')
@@ -94,6 +99,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
     const delegateApiOptions = {
       host: delegateAddr.host,
       // port is a string atm, so we need to convert for the check
+      // @ts-ignore - parseInt(input:string) => number
       protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
       port: delegateAddr.port
     }

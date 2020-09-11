@@ -6,8 +6,9 @@ const PeerId = require('peer-id')
 const errcode = require('err-code')
 
 const debug = require('debug')
-const log = debug('ipfs:ipns:republisher')
-log.error = debug('ipfs:ipns:republisher:error')
+const log = Object.assign(debug('ipfs:ipns:republisher'), {
+  error: debug('ipfs:ipns:republisher:error')
+})
 
 const minute = 60 * 1000
 const hour = 60 * minute
@@ -32,14 +33,21 @@ class IpnsRepublisher {
 
     // TODO: this handler should be isolated in another module
     const republishHandle = {
+      /** @type {null|(() => Promise<void>)} */
       _task: null,
+      /** @type {null|Promise<void>} */
       _inflightTask: null,
+      /** @type {null|NodeJS.Timeout} */
       _timeoutId: null,
+      /**
+       * @param {function(): number} period
+       */
       runPeriodically: (period) => {
         republishHandle._timeoutId = setTimeout(async () => {
           republishHandle._timeoutId = null
 
           try {
+            // @ts-ignore - _task could be null
             republishHandle._inflightTask = republishHandle._task()
             await republishHandle._inflightTask
 
@@ -54,7 +62,9 @@ class IpnsRepublisher {
       },
       cancel: async () => {
         // do not run again
-        clearTimeout(republishHandle._timeoutId)
+        if (republishHandle._timeoutId != null) {
+          clearTimeout(republishHandle._timeoutId)
+        }
         republishHandle._task = null
 
         // wait for the currently in flight task to complete

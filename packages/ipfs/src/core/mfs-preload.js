@@ -2,8 +2,9 @@
 
 const debug = require('debug')
 const { cidToString } = require('../utils/cid')
-const log = debug('ipfs:mfs-preload')
-log.error = debug('ipfs:mfs-preload:error')
+const log = Object.assign(debug('ipfs:mfs-preload'), {
+  error: debug('ipfs:mfs-preload:error')
+})
 
 module.exports = ({ preload, files, options }) => {
   options = options || {}
@@ -46,3 +47,7 @@ module.exports = ({ preload, files, options }) => {
     }
   }
 }
+
+/**
+ * @typedef {ReturnType<typeof module.exports>} MFSPreload
+ */

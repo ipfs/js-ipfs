@@ -10,23 +10,22 @@ const CID = require('cids')
 * that it will also not apply the encoding (since v0 CIDs can only be encoded
 * as base58btc).
 *
-* @param {CID|Buffer|String} cid The CID to encode
-* @param {Object} [options] Optional options
-* @param {String} [options.base] Name of multibase codec to encode the CID with
-* @param {Boolean} [options.upgrade] Automatically upgrade v0 CIDs to v1 when
+* @param {CID|Buffer|string} input - The CID to encode
+* @param {Object} [options] - Optional options
+* @param {string} [options.base] - Name of multibase codec to encode the CID with
+* @param {boolean} [options.upgrade] - Automatically upgrade v0 CIDs to v1 when
 * necessary. Default: true.
-* @returns {String}
+* @returns {string}
 */
-exports.cidToString = (cid, options) => {
-  options = options || {}
-  options.upgrade = options.upgrade !== false
-
-  if (!CID.isCID(cid)) {
-    cid = new CID(cid)
-  }
+exports.cidToString = (input, options = {}) => {
+  const upgrade = options.upgrade !== false
+  let cid = CID.isCID(input)
+    ? input
+    // @ts-ignore - TS seems to get confused by the type defs in CID repo.
+    : new CID(input)
 
   if (cid.version === 0 && options.base && options.base !== 'base58btc') {
-    if (!options.upgrade) return cid.toString()
+    if (!upgrade) return cid.toString()
     cid = cid.toV1()
   }
 

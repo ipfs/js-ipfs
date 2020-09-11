@@ -32,11 +32,20 @@ function keyToMultihash (key) {
   return encoder.decode(key.toString().slice(1))
 }
 
+/**
+ * @typedef {'direct'|'recursive'|'indirect'} PinType
+ * @typedef {PinType|'all'} PinQueryType
+ */
+
 const PinTypes = {
-  direct: 'direct',
-  recursive: 'recursive',
-  indirect: 'indirect',
-  all: 'all'
+  /** @type {'direct'} */
+  direct: ('direct'),
+  /** @type {'recursive'} */
+  recursive: ('recursive'),
+  /** @type {'indirect'} */
+  indirect: ('indirect'),
+  /** @type {'all'} */
+  all: ('all')
 }
 
 class PinManager {
@@ -57,7 +66,7 @@ class PinManager {
         yield * this._walkDag(link.Hash, { preload })
       }
     } else if (cid.codec === 'dag-cbor') {
-      for (const [_, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
+      for (const [, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
         yield childCid
         yield * this._walkDag(childCid, { preload })
       }
@@ -152,6 +161,10 @@ class PinManager {
     }
   }
 
+  /**
+   * @param {Object} options
+   * @param {boolean} [options.preload]
+   */
   async * indirectKeys ({ preload }) {
     for await (const { cid } of this.recursiveKeys()) {
       for await (const childCid of this._walkDag(cid, { preload })) {

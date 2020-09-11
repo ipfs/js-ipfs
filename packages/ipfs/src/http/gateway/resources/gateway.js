@@ -14,8 +14,9 @@ const toStream = require('it-to-stream')
 const PathUtils = require('../utils/path')
 const { cidToString } = require('../../../utils/cid')
 
-const log = debug('ipfs:http-gateway')
-log.error = debug('ipfs:http-gateway:error')
+const log = Object.assign(debug('ipfs:http-gateway'), {
+  error: debug('ipfs:http-gateway:error')
+})
 
 module.exports = {
 

@@ -57,7 +57,7 @@ module.exports = {
     if (argv.initConfig) {
       try {
         const raw = fs.readFileSync(argv.initConfig)
-        config = JSON.parse(raw)
+        config = JSON.parse(raw.toString())
       } catch (error) {
         debug(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
@@ -83,12 +83,15 @@ module.exports = {
 
     try {
       await daemon.start()
+      // @ts-ignore - _httpApi is possibly undefined
       daemon._httpApi._apiServers.forEach(apiServer => {
         print(`API listening on ${apiServer.info.ma}`)
       })
+      // @ts-ignore - _httpApi is possibly undefined
       daemon._httpApi._gatewayServers.forEach(gatewayServer => {
         print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
       })
+      // @ts-ignore - _httpApi is possibly undefined
       daemon._httpApi._apiServers.forEach(apiServer => {
         print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
       })

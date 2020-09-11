@@ -1,7 +1,7 @@
 'use strict'
 
 const { PassThrough } = require('stream')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const log = require('debug')('ipfs:http-api:utils:stream-response')
 const toIterable = require('stream-to-it')
 
