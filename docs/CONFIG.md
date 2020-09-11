@@ -308,7 +308,7 @@ Note that the origin must match exactly so `'http://127.0.0.1:8080'` is treated 
 
 The [Access-Control-Allow-Credentials](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials) header allows client-side JavaScript running in the browser to send and receive credentials with requests - cookies, auth headers or TLS certificates.
 
-For most applications this will not be necessary but if you require this to be set, see the examnple below for how to configure it.
+For most applications this will not be necessary but if you require this to be set, see the example below for how to configure it.
 
 ##### Example
 
