@@ -342,6 +342,8 @@ $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin  '["http://exam
 $ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "POST", "GET"]'
 ```
 
+If you are using `js-ipfs`, substitute `ipfs` for `jsipfs` in the commands above.
+
 ### Custom Headers
 
 If you wish to send custom headers with each request made by this library, for example, the Authorization header. You can use the config to do so:

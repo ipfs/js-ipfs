@@ -8,7 +8,6 @@ const METHODS = [
   'PUT',
   'PATCH',
   'DELETE',
-  'OPTIONS',
   'HEAD'
 ]
 
@@ -20,5 +19,6 @@ module.exports = async (url, ipfs) => {
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 405)
+    expect(res).to.have.nested.property('headers.allow', 'OPTIONS, POST')
   }
 }

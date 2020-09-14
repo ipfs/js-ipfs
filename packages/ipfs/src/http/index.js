@@ -25,7 +25,7 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-async function serverCreator (serverAddrs, createServer, ipfs) {
+async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
@@ -33,7 +33,7 @@ async function serverCreator (serverAddrs, createServer, ipfs) {
   const servers = []
   for (const address of serverAddrs) {
     const addrParts = address.split('/')
-    const server = await createServer(addrParts[2], addrParts[4], ipfs)
+    const server = await createServer(addrParts[2], addrParts[4], ipfs, cors)
     await server.start()
     server.info.ma = hapiInfoToMultiaddr(server.info)
     servers.push(server)
@@ -56,9 +56,14 @@ class HttpApi {
 
     const config = await ipfs.config.getAll()
     config.Addresses = config.Addresses || {}
+    config.API = config.API || {}
+    config.API.HTTPHeaders = config.API.HTTPHeaders || {}
 
     const apiAddrs = config.Addresses.API
-    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs)
+    this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs, {
+      origin: config.API.HTTPHeaders['Access-Control-Allow-Origin'] || [],
+      credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
+    })
 
     const gatewayAddrs = config.Addresses.Gateway
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
@@ -67,14 +72,22 @@ class HttpApi {
     return this
   }
 
-  async _createApiServer (host, port, ipfs) {
+  async _createApiServer (host, port, ipfs, cors) {
+    cors = {
+      ...cors,
+      additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
+      additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
+    }
+
+    if (!cors.origin || !cors.origin.length) {
+      cors = false
+    }
+
     const server = Hapi.server({
       host,
       port,
-      // CORS is enabled by default
-      // TODO: shouldn't, fix this
       routes: {
-        cors: true,
+        cors,
         response: {
           emptyStatusCode: 200
         }
@@ -93,6 +106,34 @@ class HttpApi {
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
         level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
       }
+    })
+
+    // block all non-post or non-options requests
+    server.ext({
+      type: 'onRequest',
+      method: function (request, h) {
+        if (request.method === 'post' || request.method === 'options') {
+          return h.continue
+        }
+
+        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui'))) {
+          // allow requests to the webui
+          return h.continue
+        }
+
+        throw Boom.methodNotAllowed()
+      }
+    })
+
+    // https://tools.ietf.org/html/rfc7231#section-6.5.5
+    server.ext('onPreResponse', (request, h) => {
+      const { response } = request
+
+      if (response.isBoom && response.output && response.output.statusCode === 405) {
+        response.output.headers.Allow = 'OPTIONS, POST'
+      }
+
+      return h.continue
     })
 
     // https://github.com/ipfs/go-ipfs-cmds/pull/193/files
@@ -143,24 +184,6 @@ class HttpApi {
         return h.continue
       }
     })
-
-    const setHeader = (key, value) => {
-      server.ext('onPreResponse', (request, h) => {
-        const { response } = request
-        if (response.isBoom) {
-          response.output.headers[key] = value
-        } else {
-          response.header(key, value)
-        }
-        return h.continue
-      })
-    }
-
-    // Set default headers
-    setHeader('Access-Control-Allow-Headers',
-      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
-    setHeader('Access-Control-Expose-Headers',
-      'X-Stream-Output, X-Chunked-Output, X-Content-Length')
 
     server.route(require('./api/routes'))
 
