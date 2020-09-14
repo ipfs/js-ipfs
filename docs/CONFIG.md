@@ -290,19 +290,21 @@ To allow requests from web browsers, configure the `API.HTTPHeaders.Access-Contr
 
 ##### Example
 
+If you are running a webapp locally that you access via the URL `http://127.0.0.1:3000`, you must add it to the list of allowed origins in order to make API requests from that webapp in the browser:
+
 ```json
 {
   "API": {
     "HTTPHeaders": {
       "Access-Control-Allow-Origin": [
-        "http://127.0.0.1:8080"
+        "http://127.0.0.1:3000"
       ]
     }
   }
 }
 ```
 
-Note that the origin must match exactly so `'http://127.0.0.1:8080'` is treated differently to `'http://127.0.0.1:8080/'`
+Note that the origin must match exactly so `'http://127.0.0.1:3000'` is treated differently to `'http://127.0.0.1:3000/'`
 
 #### `Access-Control-Allow-Credentials`
 
