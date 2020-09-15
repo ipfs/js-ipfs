@@ -39,7 +39,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "git://github.com/ipfs/aegir#eslint-config",
+    "aegir": "git://github.com/ipfs/aegir#master",
     "delay": "^4.3.0"
   }
 }

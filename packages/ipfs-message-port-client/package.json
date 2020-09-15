@@ -38,7 +38,7 @@
     "cids": "^1.0.0"
   },
   "devDependencies": {
-    "aegir": "git://github.com/ipfs/aegir#eslint-config",
+    "aegir": "git://github.com/ipfs/aegir#master",
     "cross-env": "^7.0.0",
     "interface-ipfs-core": "^0.140.0",
     "ipfs": "^0.50.2",
