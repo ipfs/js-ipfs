@@ -4,7 +4,7 @@ const modeToString = require('./mode-to-string')
 const mtimeToObject = require('./mtime-to-object')
 
 /**
- * @param {object} params
+ * @param {*} params
  * @returns {URLSearchParams}
  */
 module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) => {

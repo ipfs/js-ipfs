@@ -10,8 +10,6 @@ const {
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
-
-/**
  * @typedef {import("./ipfs").IPFS} IPFS
  * @typedef {import("ipfs-message-port-protocol/src/data").Time} Time
  * @typedef {import("ipfs-message-port-protocol/src/data").UnixFSTime} UnixFSTime
@@ -126,7 +124,7 @@ class CoreService {
    * @typedef {Object} AddAllResult
    * @property {RemoteIterable<AddedEntry>} data
    * @property {Transferable[]} transfer
-
+   *
    * @param {AddAllQuery} query
    * @returns {AddAllResult}
    */
@@ -172,7 +170,7 @@ class CoreService {
    * @typedef {Object} AddResult
    * @property {AddedEntry} data
    * @property {Transferable[]} transfer
-
+   *
    * @param {AddQuery} query
    * @returns {Promise<AddResult>}
    */
@@ -251,9 +249,9 @@ const decodeAddInput = input =>
   matchInput(
     input,
     /**
-   * @param {*} data
-   * @returns {*}
-   */
+     * @param {*} data
+     * @returns {*}
+     */
     data => {
       if (data.type === 'RemoteIterable') {
         return { content: decodeIterable(data, decodeFileInput) }
@@ -338,6 +336,7 @@ const encodeCatResult = content => {
 
 /**
  * Adds underlying `ArrayBuffer` to the transfer list.
+ *
  * @param {Buffer} buffer
  * @param {Transferable[]} transfer
  * @returns {Buffer}

@@ -31,6 +31,7 @@ class BlockClient extends Client {
 
   /**
    * Get a raw IPFS block.
+   *
    * @param {CID} cid - A CID that corresponds to the desired block
    * @param {Object} [options]
    * @param {number} [options.timeout] - A timeout in ms
@@ -51,6 +52,7 @@ class BlockClient extends Client {
 
   /**
    * Stores input as an IPFS block.
+   *
    * @param {Block|Uint8Array} block - A Block or Uint8Array of block data
    * @param {Object} [options]
    * @param {CID} [options.cid] - A CID to store the block under (if block is
@@ -85,6 +87,7 @@ class BlockClient extends Client {
 
   /**
    * Remove one or more IPFS block(s).
+   *
    * @param {CID|CID[]} cids - Block(s) to be removed
    * @param {Object} [options]
    * @param {boolean} [options.force=false] - Ignores nonexistent blocks
@@ -114,6 +117,7 @@ class BlockClient extends Client {
 
   /**
    * Returns information about a raw IPFS block.
+   *
    * @param {CID} cid - Block to get information about.
    * @param {Object} [options]
    * @param {number} [options.timeout] - A timeout in ms

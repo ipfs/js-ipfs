@@ -7,12 +7,12 @@ const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
+ * @typedef {Uint8Array | Blob | string | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  *
  * @typedef {object} FileObject
- *  - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID.
- *  - If no content is passed, then the item is treated as an empty directory.
- *  - One of path or content must be passed.
+ * - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID.
+ * - If no content is passed, then the item is treated as an empty directory.
+ * - One of path or content must be passed.
  * @property {string} [path] - The path you want to the file to be accessible at from the root CID _after_ it has been added
  * @property {FileContent} [content] - The contents of the file
  * @property {number | string} [mode] - File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
@@ -44,6 +44,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Import multiple files and data into IPFS.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback AddAll
  * @param {FileStream} source
@@ -53,8 +54,6 @@ const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
-
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {AddAll<{}>}
    */

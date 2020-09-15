@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 'use strict'
 
 const isIpfs = require('is-ipfs')
@@ -27,8 +28,8 @@ exports.MFS_MAX_LINKS = 174
  * Returns a well-formed ipfs Path.
  * The returned path will always be prefixed with /ipfs/ or /ipns/.
  *
- * @param  {String} pathStr An ipfs-path, or ipns-path or a cid
- * @return {String} ipfs-path or ipns-path
+ * @param  {string} pathStr - An ipfs-path, or ipns-path or a cid
+ * @returns {string} - ipfs-path or ipns-path
  * @throws on an invalid @param ipfsPath
  */
 const normalizePath = (pathStr) => {
@@ -63,15 +64,15 @@ const normalizeCidPath = (path) => {
  * Follows links in the path.
  *
  * Accepts formats:
- *  - <base58 string>
- *  - <base58 string>/link/to/venus
- *  - /ipfs/<base58 string>/link/to/pluto
- *  - multihash Buffer
+ * - <base58 string>
+ * - <base58 string>/link/to/venus
+ * - /ipfs/<base58 string>/link/to/pluto
+ * - multihash Buffer
  *
- * @param {Dag} dag The IPFS dag api
- * @param {CID|String} ipfsPath A CID or IPFS path
- * @param {Object} [options] Optional options passed directly to dag.resolve
- * @return {CID}
+ * @param {Dag} dag - The IPFS dag api
+ * @param {CID | string} ipfsPath - A CID or IPFS path
+ * @param {Object} [options] - Optional options passed directly to dag.resolve
+ * @returns {CID}
  */
 const resolvePath = async function (dag, ipfsPath, options) {
   options = options || {}
@@ -141,14 +142,17 @@ const mapFile = (file, options) => {
 
 /**
  * @template {any[]} ARGS
- * @template {Promise<any> | AsyncIterable} R - The return type of `fn`
+ * @template {Promise<any> | AsyncIterable<any>} R
  * @param {Fn<ARGS, R>} fn
  * @param {number} [optionsArgIndex]
  * @returns {Fn<ARGS, R>}
  */
 function withTimeoutOption (fn, optionsArgIndex) {
-  // eslint-disable-next-line valid-jsdoc
-  return /** @returns {R} */(/** @type {ARGS} */...args) => {
+  /**
+   * @param {...any} args
+   * @returns {R}
+   */
+  const fnWithTimeout = (/** @type {ARGS} */...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 
@@ -233,6 +237,8 @@ function withTimeoutOption (fn, optionsArgIndex) {
       }
     })()
   }
+
+  return fnWithTimeout
 }
 
 exports.normalizePath = normalizePath

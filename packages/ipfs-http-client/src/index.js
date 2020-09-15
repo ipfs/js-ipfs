@@ -22,7 +22,6 @@ const urlSource = require('ipfs-utils/src/files/url-source')
  * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * @param {ClientOptions} options
  */

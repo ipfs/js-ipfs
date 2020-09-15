@@ -18,10 +18,10 @@ class OfflineDatastore {
 
   /**
    * Put a value to the local datastore indexed by the received key properly encoded.
-   * @param {Uint8Array} key identifier of the value.
-   * @param {Uint8Array} value value to be stored.
-   * @param {function(Error)} callback
-   * @returns {void}
+   *
+   * @param {Uint8Array} key - identifier of the value.
+   * @param {Uint8Array} value - value to be stored.
+   * @returns {Promise<void>}
    */
   async put (key, value) { // eslint-disable-line require-await
     if (!(key instanceof Uint8Array)) {
@@ -49,9 +49,9 @@ class OfflineDatastore {
 
   /**
    * Get a value from the local datastore indexed by the received key properly encoded.
-   * @param {Uint8Array} key identifier of the value to be obtained.
-   * @param {function(Error, Uint8Array)} callback
-   * @returns {void}
+   *
+   * @param {Uint8Array} key - identifier of the value to be obtained.
+   * @returns {Promise<Uint8Array>}
    */
   async get (key) {
     if (!(key instanceof Uint8Array)) {

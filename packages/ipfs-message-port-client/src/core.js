@@ -9,7 +9,7 @@ const {
   encodeIterable,
   encodeCallback
 } = require('ipfs-message-port-protocol/src/core')
-/** @type {<T> (stream:ReadableStream<T>) => AsyncIterable<T>} */
+/** @type {<T>(stream:ReadableStream<T>) => AsyncIterable<T>} */
 // @ts-ignore - browser-stream-to-it has not types
 const iterateReadableStream = require('browser-readablestream-to-it')
 
@@ -160,6 +160,7 @@ class CoreClient extends Client {
 
   /**
    * Returns content addressed by a valid IPFS Path.
+   *
    * @param {string|CID} inputPath
    * @param {Object} [options]
    * @param {number} [options.offset]
@@ -177,6 +178,7 @@ class CoreClient extends Client {
 
 /**
  * Decodes values yield by `ipfs.add`.
+ *
  * @param {AddedEntry} data
  * @returns {AddedData}
  */
@@ -291,6 +293,7 @@ const encodeAddAllInput = (input, transfer) => {
 /**
  * Function encodes individual item of some `AsyncIterable` by choosing most
  * effective strategy.
+ *
  * @param {ArrayBuffer|ArrayBufferView|Blob|string|FileObject} content
  * @param {Transferable[]} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
@@ -400,6 +403,7 @@ const encodeFileContent = (content, transfer) => {
 /**
  * Pattern matches given input as `Iterable<I>` and returns back either matched
  * iterable or `null`.
+ *
  * @template I
  * @param {Iterable<I>|AddInput|AddAllInput} input
  * @returns {Iterable<I>|null}
@@ -417,6 +421,7 @@ const asIterable = (input) => {
 /**
  * Pattern matches given `input` as `AsyncIterable<I>` and returns back either
  * matched `AsyncIterable` or `null`.
+ *
  * @template I
  * @param {AsyncIterable<I>|AddInput|AddAllInput} input
  * @returns {AsyncIterable<I>|null}
@@ -449,6 +454,7 @@ const asReadableStream = (input) => {
 /**
  * Pattern matches given input as "FileObject" and returns back eithr matched
  * input or `null`.
+ *
  * @param {*} input
  * @returns {FileObject|null}
  */
