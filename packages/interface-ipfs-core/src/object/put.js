@@ -115,5 +115,9 @@ module.exports = (common, options) => {
       expect(node1b.Data).to.deep.equal(node.Data)
       expect(node1b.Links).to.deep.equal(node.Links)
     })
+
+    it('should not error when passed null options', () => {
+      return ipfs.object.put(uint8ArrayFromString(nanoid()), null)
+    })
   })
 }

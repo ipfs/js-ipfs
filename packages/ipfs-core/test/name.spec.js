@@ -1,12 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { nanoid } = require('nanoid')
 const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const delay = require('delay')
 const { Key } = require('interface-datastore')
-const last = require('it-last')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
 const ipns = require('ipns')
@@ -19,19 +17,7 @@ const PubsubDatastore = require('../src/ipns/routing/pubsub-datastore')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
-const publishAndResolve = async (publisher, resolver, ipfsRef, publishOpts, nodeId, resolveOpts) => {
-  await publisher.name.publish(ipfsRef, publishOpts)
-  const value = await last(resolver.name.resolve(nodeId, resolveOpts))
-  expect(value).to.equal(ipfsRef)
-}
-
-describe.skip('name', function () {
-  let df
-
-  before(() => {
-    df = factory()
-  })
-
+describe('name', function () {
   describe('republisher', function () {
     this.timeout(40 * 1000)
     let republisher
@@ -75,47 +61,6 @@ describe.skip('name', function () {
       await expect(republisher.start())
         .to.eventually.be.rejected()
         .with.a.property('code').that.equals('ERR_REPUBLISH_ALREADY_RUNNING')
-    })
-  })
-
-  // TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994
-  describe.skip('publish and resolve over DHT', () => {
-    let nodeA
-    let nodeB
-    let nodeC
-
-    const createNode = () => df.spawn({ ipfsOptions: { pass: nanoid() } })
-
-    before(async function () {
-      this.timeout(70 * 1000)
-
-      nodeA = (await createNode()).api
-      nodeB = (await createNode()).api
-      nodeC = (await createNode()).api
-
-      await nodeC.swarm.connect(nodeA.peerId.addresses[0]) // C => A
-      await nodeC.swarm.connect(nodeB.peerId.addresses[0]) // C => B
-      await nodeA.swarm.connect(nodeB.peerId.addresses[0]) // A => B
-    })
-
-    after(() => df.clean())
-
-    it('should publish and then resolve correctly with the default options', function () {
-      this.timeout(380 * 1000)
-      return publishAndResolve(nodeA, nodeB, ipfsRef, { resolve: false }, nodeA.peerId.id, {})
-    })
-
-    it('should recursively resolve to an IPFS hash', async function () {
-      this.timeout(360 * 1000)
-      const keyName = nanoid()
-
-      const key = await nodeA.key.gen(keyName, { type: 'rsa', size: 2048 })
-
-      await nodeA.name.publish(ipfsRef, { resolve: false })
-      await nodeA.name.publish(`/ipns/${nodeA.peerId.id}`, { resolve: false, key: keyName })
-      const res = await last(nodeB.name.resolve(key.id, { recursive: true }))
-
-      expect(res).to.equal(ipfsRef)
     })
   })
 

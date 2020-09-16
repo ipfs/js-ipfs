@@ -152,5 +152,9 @@ module.exports = (common, options) => {
       expect(peersA).to.have.length(1)
       expect(peersB).to.have.length(1)
     })
+
+    it('should not error when passed null options', async () => {
+      await ipfsA.swarm.peers(null)
+    })
   })
 }

@@ -2,7 +2,6 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const path = require('path')
 const fs = require('fs')
 const multibase = require('multibase')
 const cli = require('./utils/cli')
@@ -159,7 +158,7 @@ describe('object', () => {
     it('should put an object', async () => {
       ipfs.object.put.withArgs(sinon.match.instanceOf(Uint8Array), defaultOptions).resolves(cid)
 
-      const out = await cli(`object put README.md`, { ipfs })
+      const out = await cli('object put README.md', { ipfs })
 
       expect(out).to.equal(
         `added ${cid}\n`
@@ -184,7 +183,7 @@ describe('object', () => {
     })
 
     it('should put and print CID encoded in specified base', async () => {
-      const filePath = `README.md`
+      const filePath = 'README.md'
       const buf = fs.readFileSync(filePath)
 
       ipfs.object.put.withArgs(buf, defaultOptions).resolves(cid.toV1())
@@ -202,7 +201,7 @@ describe('object', () => {
         timeout: 1000
       }).resolves(cid)
 
-      const out = await cli(`object put README.md --timeout=1s`, { ipfs })
+      const out = await cli('object put README.md --timeout=1s', { ipfs })
 
       expect(out).to.equal(
         `added ${cid}\n`
@@ -340,7 +339,7 @@ describe('object', () => {
       }
 
       it('should append data', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
@@ -368,7 +367,7 @@ describe('object', () => {
       })
 
       it('should append-data and print CID encoded in specified base', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
@@ -380,7 +379,7 @@ describe('object', () => {
       })
 
       it('should append data with a timeout', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.appendData.withArgs(cid.toString(), buf, {
@@ -402,7 +401,7 @@ describe('object', () => {
       }
 
       it('should set data on an object', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.setData.withArgs(cid.toString(), buf, defaultOptions).resolves(
@@ -430,7 +429,7 @@ describe('object', () => {
       })
 
       it('should set-data and print CID encoded in specified base', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.setData.withArgs(cid.toV1().toString(), buf, defaultOptions).resolves(
@@ -442,7 +441,7 @@ describe('object', () => {
       })
 
       it('should set data on an object with a timeout', async () => {
-        const filePath = `README.md`
+        const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
         ipfs.object.patch.setData.withArgs(cid.toString(), buf, {

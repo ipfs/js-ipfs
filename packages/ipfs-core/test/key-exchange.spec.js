@@ -4,20 +4,25 @@
 
 const { expect } = require('aegir/utils/chai')
 const { nanoid } = require('nanoid')
+const IPFS = require('../')
 
-describe.skip('key exchange', function () {
+describe('key exchange', function () {
   this.timeout(20 * 1000)
-  let df
   let ipfs
   let selfPem
   const passwordPem = nanoid()
 
   before(async () => {
-    df = factory()
-    ipfs = (await df.spawn()).api
+    ipfs = await IPFS.create({
+      ipld: {
+        formats: [
+          require('ipld-dag-pb')
+        ]
+      }
+    })
   })
 
-  after(() => df.clean())
+  after(() => ipfs && ipfs.stop())
 
   it('should export key', async () => {
     const pem = await ipfs.key.export('self', passwordPem)

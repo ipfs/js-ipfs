@@ -5,6 +5,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const testTimeout = require('../../utils/test-timeout')
 const CID = require('cids')
+const { nanoid } = require('nanoid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -55,6 +56,11 @@ module.exports = (common, options) => {
       const filePath = 'test/fixtures/test-data/badnode.json'
 
       return expect(ipfs.object.patch.setData(null, filePath)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
+    })
+
+    it('should not error when passed null options', async () => {
+      const cid = await ipfs.object.put(uint8ArrayFromString(nanoid()), null)
+      await ipfs.object.patch.setData(cid, uint8ArrayFromString(nanoid()), null)
     })
   })
 }

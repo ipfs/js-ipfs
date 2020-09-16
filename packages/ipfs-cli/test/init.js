@@ -11,7 +11,6 @@ const { nanoid } = require('nanoid')
 const ipfsExec = require('./utils/ipfs-exec')
 const os = require('os')
 const tempWrite = require('temp-write')
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe.skip('init', function () {
   let repoPath

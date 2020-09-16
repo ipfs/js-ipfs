@@ -239,5 +239,17 @@ module.exports = (common, options) => {
       const result = await ipfs.dag.get(cid)
       expect(result.value).to.deep.equal(buf)
     })
+
+    it('should throw error for invalid string CID input', () => {
+      return expect(ipfs.dag.get('INVALID CID'))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
+    })
+
+    it('should throw error for invalid buffer CID input', () => {
+      return expect(ipfs.dag.get(uint8ArrayFromString('INVALID CID')))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
+    })
   })
 }

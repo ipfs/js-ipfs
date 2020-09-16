@@ -46,5 +46,18 @@ module.exports = (common, options) => {
       const peers = rmRes.Peers
       expect(peers).to.have.property('length').that.is.equal(1)
     })
+
+    it('removes a peer from the bootstrap list', async () => {
+      const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'
+      await ipfs.bootstrap.add(peer)
+      let list = await ipfs.bootstrap.list()
+      expect(list.Peers).to.include(peer)
+
+      const res = await ipfs.bootstrap.rm(peer)
+      expect(res).to.be.eql({ Peers: [peer] })
+
+      list = await ipfs.bootstrap.list()
+      expect(list.Peers).to.not.include(peer)
+    })
   })
 }

@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.0.1",
-    "ipfs-core": "^0.0.1",
+    "ipfs-cli": "0.0.1",
+    "ipfs-core": "0.0.1",
     "ipfs-repo": "^6.0.3",
     "semver": "^7.3.2",
     "update-notifier": "^4.0.0"

@@ -3,29 +3,26 @@
 
 const { expect } = require('aegir/utils/chai')
 const ipldDagPb = require('ipld-dag-pb')
+const IPFS = require('../')
 
-describe.skip('ipld', function () {
+describe('ipld', function () {
   this.timeout(10 * 1000)
-  let df
 
-  before(() => {
-    df = factory()
+  let ipfs
+
+  before(async () => {
+    ipfs = await IPFS.create({
+      ipld: {
+        formats: [
+          require('ipld-dag-pb')
+        ]
+      }
+    })
   })
 
-  after(() => df.clean())
+  after(() => ipfs && ipfs.stop())
 
   it('should allow formats to be specified without overwriting others', async () => {
-    const ipfs = (await df.spawn({
-      type: 'proc',
-      ipfsOptions: {
-        ipld: {
-          formats: [
-            require('ipld-dag-pb')
-          ]
-        }
-      }
-    })).api
-
     const dagCborNode = {
       hello: 'world'
     }

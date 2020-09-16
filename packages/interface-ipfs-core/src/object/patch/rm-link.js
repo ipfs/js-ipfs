@@ -6,6 +6,7 @@ const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')
 const testTimeout = require('../../utils/test-timeout')
 const CID = require('cids')
+const { nanoid } = require('nanoid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -76,6 +77,21 @@ module.exports = (common, options) => {
 
       return expect(ipfs.object.patch.rmLink(root, link)).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
+    })
+
+    it('should not error when passed null options', async () => {
+      const aCid = await ipfs.object.put(uint8ArrayFromString(nanoid()))
+      const bCid = await ipfs.object.put(uint8ArrayFromString(nanoid()))
+      const bNode = await ipfs.object.get(bCid)
+
+      const cCid = await ipfs.object.patch.addLink(aCid, {
+        Name: 'nodeBLink',
+        Hash: bCid,
+        Tsize: bNode.size
+      })
+      const cNode = await ipfs.object.get(cCid)
+
+      await ipfs.object.patch.rmLink(cCid, cNode.Links[0], null)
     })
   })
 }

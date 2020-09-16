@@ -2,9 +2,10 @@
 'use strict'
 
 const { expectIsBandwidth } = require('./utils')
-const { getDescribe, getIt } = require('../utils/mocha')
+const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
 const testTimeout = require('../utils/test-timeout')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -33,6 +34,16 @@ module.exports = (common, options) => {
     it('should get bandwidth stats ', async () => {
       const res = await last(ipfs.stats.bw())
       expectIsBandwidth(null, res)
+    })
+
+    it('should throw error for invalid interval option', async () => {
+      await expect(all(ipfs.stats.bw({ poll: true, interval: 'INVALID INTERVAL' })))
+        .to.eventually.be.rejected()
+        .and.to.have.property('code').that.equals('ERR_INVALID_POLL_INTERVAL')
+    })
+
+    it('should not error when passed null options', async () => {
+      await all(ipfs.stats.bw(null))
     })
   })
 }
