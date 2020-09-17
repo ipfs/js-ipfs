@@ -17,7 +17,7 @@
     "ipfs-http-client": "^47.0.0",
     "ipfs-utils": "^3.0.0",
     "ipns": "^0.8.0",
-    "it-last": "^1.0.2",
+    "it-last": "^1.0.4",
     "p-retry": "^4.2.0",
     "uint8arrays": "^1.1.0"
   },

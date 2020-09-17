@@ -91,7 +91,6 @@ module.exports = (common, options) => {
     it('should throw error for invalid CID input', () => {
       return expect(all(ipfs.dag.tree('INVALID CID')))
         .to.eventually.be.rejected()
-        .and.to.have.property('code').that.equals('ERR_INVALID_CID')
     })
   })
 }

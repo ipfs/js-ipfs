@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -16,10 +15,11 @@ module.exports = (factory, options) => {
   describe('disabled', function () {
     this.timeout(80 * 1000)
 
-    let ipfs
+    let nodeA
+    let nodeB
 
     before(async () => {
-      ipfs = (await factory.spawn({
+      nodeA = (await factory.spawn({
         ipfsOptions: {
           config: {
             Routing: {
@@ -28,14 +28,15 @@ module.exports = (factory, options) => {
           }
         }
       })).api
+      nodeB = (await factory.spawn()).api
+      await nodeA.swarm.connect(nodeB.peerId.addresses[0])
     })
 
     after(() => factory.clean())
 
     it('should error when DHT not available', async () => {
-      await expect(ipfs.dht.put(uint8ArrayFromString('a'), uint8ArrayFromString('b')))
+      await expect(nodeA.dht.get('/ipns/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh'))
         .to.eventually.be.rejected()
-        .and.to.have.property('code', 'ERR_NOT_ENABLED')
     })
   })
 }

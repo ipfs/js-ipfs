@@ -11,7 +11,6 @@ const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const { nanoid } = require('nanoid')
 const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -365,10 +364,6 @@ module.exports = (common, options) => {
       expect(file.size).to.equal(18)
     })
 
-    it('should not error when passed null options', async () => {
-      await ipfs.add(uint8ArrayFromString(nanoid()), null)
-    })
-
     it('should add a file with a v1 CID', async () => {
       const file = await ipfs.add(Uint8Array.from([0, 1, 2]), {
         cidVersion: 1
@@ -405,7 +400,18 @@ module.exports = (common, options) => {
 
       before(async function () {
         const ipfsd = await common.spawn({
-          ipfsOptions: { EXPERIMENTAL: { sharding: false } }
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enabled sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
         })
         ipfs = ipfsd.api
       })

@@ -3,8 +3,6 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const multiaddr = require('multiaddr')
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -34,24 +32,7 @@ module.exports = (common, options) => {
       const res = await ipfs.bootstrap.list()
 
       const peers = res.Peers
-      expect(peers).to.exist()
-    })
-
-    it('bootstrap list should contain dialable nodes', async () => {
-      const list = await ipfs.bootstrap.list()
-      const onlyWss = list.some(addr => {
-        const ma = multiaddr(addr)
-
-        return ma.protos().some(proto => proto.name === 'wss')
-      })
-
-      expect(list).to.not.be.empty()
-
-      if (isBrowser || isWebWorker) {
-        expect(onlyWss).to.be.true()
-      } else {
-        expect(onlyWss).to.be.false()
-      }
+      expect(peers).to.be.an('Array')
     })
   })
 }

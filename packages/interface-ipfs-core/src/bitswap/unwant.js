@@ -15,17 +15,16 @@ module.exports = (factory, options) => {
   describe('.bitswap.unwant', function () {
     this.timeout(60 * 1000)
 
+    let ipfs
+
+    before(async () => {
+      ipfs = (await factory.spawn()).api
+    })
+
     after(() => factory.clean())
 
     it('should throw error for invalid CID input', async () => {
-      const ipfs = (await factory.spawn()).api
-
-      try {
-        await ipfs.bitswap.unwant('INVALID CID')
-      } catch (err) {
-        expect(err).to.exist()
-        expect(err.code).to.equal('ERR_INVALID_CID')
-      }
+      await expect(ipfs.bitswap.unwant('INVALID CID')).to.eventually.be.rejected()
     })
   })
 }

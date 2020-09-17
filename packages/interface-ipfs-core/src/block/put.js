@@ -8,7 +8,6 @@ const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 const all = require('it-all')
-const { nanoid } = require('nanoid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -98,10 +97,6 @@ module.exports = (common, options) => {
 
       return expect(ipfs.block.put([blob, blob])).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
-    })
-
-    it('should not error when passed null options', () => {
-      return ipfs.block.put(uint8ArrayFromString(nanoid()), null)
     })
   })
 }

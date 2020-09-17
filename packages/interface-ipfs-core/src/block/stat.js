@@ -5,7 +5,6 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const { nanoid } = require('nanoid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -49,11 +48,6 @@ module.exports = (common, options) => {
     it('should return error for invalid argument', () => {
       return expect(ipfs.block.stat('invalid')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
-    })
-
-    it('should not error when passed null options', async () => {
-      const block = await ipfs.block.put(uint8ArrayFromString(nanoid()))
-      return ipfs.block.stat(block.cid, null)
     })
   })
 }

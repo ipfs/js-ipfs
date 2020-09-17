@@ -6,9 +6,7 @@ const map = require('it-map')
 const pipe = require('it-pipe')
 const streamResponse = require('../../../utils/stream-response')
 
-const mapEntry = (entry, options) => {
-  options = options || {}
-
+const mapEntry = (entry, options = {}) => {
   const output = {
     Name: entry.name,
     Type: options.long ? entry.type : 0,

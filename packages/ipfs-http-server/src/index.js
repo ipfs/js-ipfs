@@ -65,9 +65,6 @@ class HttpApi {
       credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
     })
 
-    const gatewayAddrs = config.Addresses.Gateway
-    this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
-
     this._log('started')
     return this
   }
@@ -192,33 +189,6 @@ class HttpApi {
     return server
   }
 
-  async _createGatewayServer (host, port, ipfs) {
-    const server = Hapi.server({
-      host,
-      port,
-      routes: {
-        cors: true,
-        response: {
-          emptyStatusCode: 200
-        }
-      }
-    })
-    server.app.ipfs = ipfs
-
-    await server.register({
-      plugin: Pino,
-      options: {
-        prettyPrint: Boolean(debug.enabled(LOG)),
-        logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
-        level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
-      }
-    })
-
-    server.route(require('./gateway/routes'))
-
-    return server
-  }
-
   get apiAddr () {
     if (!this._apiServers || !this._apiServers.length) {
       throw new Error('API address unavailable - server is not started')
@@ -230,8 +200,7 @@ class HttpApi {
     this._log('stopping')
     const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
-      stopServers(this._apiServers),
-      stopServers(this._gatewayServers)
+      stopServers(this._apiServers)
     ])
     this._log('stopped')
     return this

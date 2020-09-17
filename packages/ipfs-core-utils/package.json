@@ -33,8 +33,8 @@
     "cids": "^1.0.0",
     "err-code": "^2.0.3",
     "ipfs-utils": "^3.0.0",
-    "it-all": "^1.0.2",
-    "it-map": "^1.0.2",
+    "it-all": "^1.0.4",
+    "it-map": "^1.0.4",
     "it-peekable": "0.0.1",
     "uint8arrays": "^1.1.0"
   },

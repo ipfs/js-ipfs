@@ -163,7 +163,6 @@ module.exports = (common, options) => {
     it('should throw error for invalid CID input', () => {
       return expect(all(ipfs.block.rm('INVALID CID')))
         .to.eventually.be.rejected()
-        .and.to.have.a.property('code').that.equals('ERR_INVALID_CID')
     })
   })
 }

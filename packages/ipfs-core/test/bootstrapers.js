@@ -1,9 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const IPFS = require('..')
-const { createFactory } = require('ipfsd-ctl')
-const bootstrapList = require('../src/core/runtime/config-browser.js')().Bootstrap
+const IPFS = require('../src')
+const bootstrapList = require('../src/runtime/config-browser.js')().Bootstrap
 const waitFor = require('./utils/wait-for')
 
 /*
@@ -11,34 +10,21 @@ const waitFor = require('./utils/wait-for')
  * WebSockets Bootstrappers easily <3
  */
 describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
-  let ipfsd
-  let factory
+  let ipfs
 
   before(async function () {
     this.timeout(30 * 1000)
 
-    factory = createFactory({
-      type: 'proc',
-      ipfsModule: IPFS,
-      ipfsHttpModule: require('ipfs-http-client')
-    })
-
-    ipfsd = await factory.spawn({
-      config: {
-        Addresses: {
-          Swarm: []
-        }
-      }
-    })
+    ipfs = await IPFS.create()
   })
 
-  after(() => factory.clean())
+  after(() => ipfs.stop())
 
   it('a node connects to bootstrappers', async function () {
     this.timeout(2 * 60 * 1000)
 
     const test = async () => {
-      const peers = await ipfsd.api.swarm.peers()
+      const peers = await ipfs.swarm.peers()
       const peerList = peers.map((peer) => peer.addr.toString())
 
       if (peerList.length !== bootstrapList.length) {

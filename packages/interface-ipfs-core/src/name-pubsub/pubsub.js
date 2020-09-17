@@ -7,7 +7,7 @@ const { isNode } = require('ipfs-utils/src/env')
 const ipns = require('ipns')
 const delay = require('delay')
 const last = require('it-last')
-const waitFor = require('./utils/wait-for')
+const waitFor = require('../utils/wait-for')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 

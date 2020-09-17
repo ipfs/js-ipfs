@@ -159,10 +159,5 @@ module.exports = (common, options) => {
     it('returns error for request with invalid argument', () => {
       return expect(ipfs.object.get('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
-
-    it('should not error when passed null options', async () => {
-      const cid = await ipfs.object.put(uint8ArrayFromString(nanoid()))
-      await ipfs.object.get(cid)
-    })
   })
 }

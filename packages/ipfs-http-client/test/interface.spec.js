@@ -51,7 +51,14 @@ describe('interface-ipfs-core tests', () => {
     ]
   })
 
-  tests.bitswap(commonFactory)
+  tests.bitswap(commonFactory, {
+    skip: [
+      {
+        name: '.bitswap.unwant',
+        reason: 'TODO not implemented in go-ipfs yet'
+      }
+    ]
+  })
 
   tests.block(commonFactory, {
     skip: [{

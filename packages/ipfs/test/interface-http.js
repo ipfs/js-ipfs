@@ -2,8 +2,8 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const factory = require('../utils/factory')
 const { isNode, isBrowser } = require('ipfs-utils/src/env')
+const factory = require('./utils/factory')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 

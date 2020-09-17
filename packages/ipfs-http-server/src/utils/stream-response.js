@@ -7,8 +7,7 @@ const toIterable = require('stream-to-it')
 
 const errorTrailer = 'X-Stream-Error'
 
-async function streamResponse (request, h, getSource, options) {
-  options = options || {}
+async function streamResponse (request, h, getSource, options = {}) {
   options.objectMode = options.objectMode !== false
 
   // eslint-disable-next-line no-async-promise-executor

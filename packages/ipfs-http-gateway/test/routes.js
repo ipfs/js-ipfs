@@ -4,14 +4,9 @@
 
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const Daemon = require('../../src/daemon')
 const loadFixture = require('aegir/fixtures')
-const os = require('os')
-const path = require('path')
-const { nanoid } = require('nanoid')
 const FileType = require('file-type')
 const CID = require('cids')
-const all = require('it-all')
 
 const bigFile = loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
 const directoryContent = {
@@ -31,67 +26,11 @@ describe('HTTP Gateway', function () {
   const http = {}
   let gateway
 
-  before(async () => {
+  before(() => {
     this.timeout(60 * 1000)
-    const repoPath = path.join(os.tmpdir(), '/ipfs-' + nanoid())
 
-    http.api = new Daemon({
-      repo: repoPath,
-      init: true,
-      config: {
-        Addresses: {
-          Swarm: ['/ip4/127.0.0.1/tcp/0'],
-          API: '/ip4/127.0.0.1/tcp/0',
-          Gateway: '/ip4/127.0.0.1/tcp/0'
-        },
-        Bootstrap: [],
-        Discovery: {
-          MDNS: {
-            Enabled: false
-          }
-        }
-      },
-      preload: { enabled: false }
-    })
-
-    const content = (name) => ({
-      path: `test-folder/${name}`,
-      content: directoryContent[name]
-    })
-
-    const emptyDir = (name) => ({ path: `test-folder/${name}` })
-
-    await http.api.start()
-
-    gateway = http.api._httpApi._gatewayServers[0]
-
-    // QmbQD7EMEL1zeebwBsWEfA3ndgSS6F7S6iTuwuqasPgVRi
-    await all(http.api._ipfs.addAll([
-      content('index.html'),
-      emptyDir('empty-folder'),
-      content('nested-folder/hello.txt'),
-      content('nested-folder/ipfs.txt'),
-      content('nested-folder/nested.html'),
-      emptyDir('nested-folder/empty')
-    ]))
-    // Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq
-    await http.api._ipfs.add(bigFile)
-    // QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o
-    await http.api._ipfs.add(uint8ArrayFromString('hello world' + '\n'), { cidVersion: 0 })
-    // QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ
-    await http.api._ipfs.add([content('cat-folder/cat.jpg')])
-    // QmVZoGxDvKM9KExc8gaL4uTbhdNtWhzQR7ndrY7J1gWs3F
-    await all(http.api._ipfs.addAll([
-      content('unsniffable-folder/hexagons-xml.svg'),
-      content('unsniffable-folder/hexagons.svg')
-    ]))
-    // QmaRdtkDark8TgXPdDczwBneadyF44JvFGbrKLTkmTUhHk
-    await http.api._ipfs.add(content('utf8/cat-with-óąśśł-and-أعظم._.jpg'))
-    // Publish QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ to IPNS using self key
-    await http.api._ipfs.name.publish('QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ', { resolve: false })
+    gateway = {}
   })
-
-  after(() => http.api.stop())
 
   it('returns 400 for request without argument', async () => {
     const res = await gateway.inject({

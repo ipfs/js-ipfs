@@ -39,11 +39,7 @@ module.exports = (common, options) => {
     it('should throw error for invalid interval option', async () => {
       await expect(all(ipfs.stats.bw({ poll: true, interval: 'INVALID INTERVAL' })))
         .to.eventually.be.rejected()
-        .and.to.have.property('code').that.equals('ERR_INVALID_POLL_INTERVAL')
-    })
-
-    it('should not error when passed null options', async () => {
-      await all(ipfs.stats.bw(null))
+        .with.property('message').that.matches(/invalid duration/)
     })
   })
 }

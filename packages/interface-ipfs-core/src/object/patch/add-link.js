@@ -8,7 +8,6 @@ const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')
 const CID = require('cids')
 const testTimeout = require('../../utils/test-timeout')
-const { nanoid } = require('nanoid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -87,20 +86,6 @@ module.exports = (common, options) => {
 
     it('returns error for request with only one invalid argument', () => {
       return expect(ipfs.object.patch.addLink('invalid', null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
-    })
-
-    it('should not error when passed null options', async () => {
-      const aCid = await ipfs.object.put(uint8ArrayFromString(nanoid()))
-      const bCid = await ipfs.object.put(uint8ArrayFromString(nanoid()))
-      const bNode = await ipfs.object.get(bCid)
-
-      const link = {
-        name: 'link-name',
-        cid: bCid,
-        size: bNode.size
-      }
-
-      await ipfs.object.patch.addLink(aCid, link, null)
     })
   })
 }

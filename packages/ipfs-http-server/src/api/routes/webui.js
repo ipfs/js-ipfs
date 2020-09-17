@@ -1,7 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-const { gateway } = require('../../gateway/resources')
+const { gateway } = require('ipfs-http-gateway/src/resources')
 const log = debug('ipfs:webui:info')
 log.error = debug('ipfs:webui:error')
 
