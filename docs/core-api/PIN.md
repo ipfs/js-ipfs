@@ -25,6 +25,10 @@
   - [Options](#options-4)
   - [Returns](#returns-4)
   - [Example](#example-4)
+- TODO `ipfs.pin.remote.add(ipfsPath, [options])`
+- TODO `ipfs.pin.remote.ls([options])`
+- TODO `ipfs.pin.remote.rm(requestid)`
+- TODO `ipfs.pin.remote.~TBD~replace(requestid, ipfsPath, [options])`
 
 ## `ipfs.pin.add(ipfsPath, [options])`
 
