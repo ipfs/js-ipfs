@@ -38,6 +38,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
 * Check out https://docs.ipfs.io for tips, how-tos and more
+* Check out https://blog.ipfs.io for news and more
 
 ## Lead Maintainer <!-- omit in toc -->
 
