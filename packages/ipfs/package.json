@@ -140,7 +140,6 @@
     "libp2p-mplex": "^0.10.0",
     "libp2p-noise": "^2.0.0",
     "libp2p-record": "^0.9.0",
-    "libp2p-secio": "^0.13.0",
     "libp2p-tcp": "^0.15.0",
     "libp2p-webrtc-star": "^0.20.0",
     "libp2p-websockets": "^0.14.0",

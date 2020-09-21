@@ -7,7 +7,7 @@ const PeerId = require('peer-id')
 const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../../src/core/components/libp2p')
-const Crypto = require('libp2p-secio')
+const { NOISE: Crypto } = require('libp2p-noise')
 
 class DummyTransport {
   get [Symbol.toStringTag] () {
