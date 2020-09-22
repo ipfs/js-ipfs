@@ -40,6 +40,7 @@
     "test:webworker": "aegir test -t webworker -- --timeout 10000",
     "test:electron-main": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
+    "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
