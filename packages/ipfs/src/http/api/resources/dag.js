@@ -56,7 +56,7 @@ const IpldFormats = {
   },
   get [multicodec.DAG_JOSE] () {
     return require('dag-jose')
-  },
+  }
 }
 
 const encodeBufferKeys = (obj, encoding) => {
