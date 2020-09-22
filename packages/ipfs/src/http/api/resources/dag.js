@@ -53,7 +53,10 @@ const IpldFormats = {
   },
   get [multicodec.ZCASH_BLOCK] () {
     return require('ipld-zcash')
-  }
+  },
+  get [multicodec.DAG_JOSE] () {
+    return require('dag-jose')
+  },
 }
 
 const encodeBufferKeys = (obj, encoding) => {

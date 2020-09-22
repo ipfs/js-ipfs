@@ -109,6 +109,7 @@
     "ipld-git": "^0.6.1",
     "ipld-raw": "^6.0.0",
     "ipld-zcash": "^0.5.0",
+    "dag-jose": "^0.2.0",
     "ipns": "^0.8.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^2.0.0",
