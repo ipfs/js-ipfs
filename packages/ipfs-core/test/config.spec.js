@@ -5,18 +5,26 @@
 const { expect } = require('aegir/utils/chai')
 const multiaddr = require('multiaddr')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const IPFS = require('../')
+const createNode = require('./utils/create-node')
+const bootstrapList = require('../src/runtime/config-nodejs.js')().Bootstrap
 
 describe('config', function () {
   this.timeout(10 * 1000)
 
   let ipfs
+  let cleanup
 
   before(async () => {
-    ipfs = await IPFS.create()
+    const res = await createNode({
+      config: {
+        Bootstrap: bootstrapList
+      }
+    })
+    ipfs = res.ipfs
+    cleanup = res.cleanup
   })
 
-  after(() => ipfs && ipfs.stop())
+  after(() => cleanup())
 
   it('bootstrap list should contain dialable nodes', async () => {
     const res = await ipfs.bootstrap.list()

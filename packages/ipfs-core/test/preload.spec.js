@@ -6,34 +6,25 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const all = require('it-all')
 const MockPreloadNode = require('./utils/mock-preload-node-utils')
-const IPFS = require('../')
-const createTempRepo = require('./utils/create-repo-nodejs')
+const createNode = require('./utils/create-node')
 
 describe('preload', () => {
   let ipfs
-  let repo
+  let cleanup
 
-  before(async function () {
-    repo = createTempRepo()
-    ipfs = await IPFS.create({
-      silent: true,
-      repo,
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
+  before(async () => {
+    const res = await createNode({
       preload: {
         enabled: true,
         addresses: [MockPreloadNode.defaultAddr]
       }
     })
+    ipfs = res.ipfs
+    cleanup = res.cleanup
   })
 
+  after(() => cleanup())
   afterEach(() => MockPreloadNode.clearPreloadCids())
-  after(() => ipfs.stop())
-  after(() => repo.teardown())
 
   it('should preload content added with add', async function () {
     this.timeout(50 * 1000)
@@ -279,29 +270,20 @@ describe('preload', () => {
 describe('preload disabled', function () {
   this.timeout(50 * 1000)
   let ipfs
-  let repo
+  let cleanup
 
   before(async () => {
-    repo = createTempRepo()
-    ipfs = await IPFS.create({
-      silent: true,
-      repo,
-      config: {
-        Addresses: {
-          Swarm: []
-        },
-        Bootstrap: []
-      },
+    const res = await createNode({
       preload: {
         enabled: false,
         addresses: [MockPreloadNode.defaultAddr]
       }
     })
+    ipfs = res.ipfs
+    cleanup = res.cleanup
   })
 
-  afterEach(() => MockPreloadNode.clearPreloadCids())
-  after(() => ipfs.stop())
-  after(() => repo.teardown())
+  after(() => cleanup())
 
   it('should not preload if disabled', async () => {
     const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()))

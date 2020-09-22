@@ -5,37 +5,25 @@
 const { nanoid } = require('nanoid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
-const IPFS = require('../')
-const createTempRepo = require('./utils/create-repo-nodejs')
+const createNode = require('./utils/create-node')
 
 describe('pubsub disabled', () => {
   let ipfs
-  let repo
+  let cleanup
 
-  before(async function () {
-    this.timeout(20 * 1000)
-
-    repo = createTempRepo()
-    ipfs = await IPFS.create({
-      silent: true,
-      repo,
+  before(async () => {
+    const res = await createNode({
       config: {
-        Addresses: {
-          Swarm: []
-        },
         Pubsub: {
           Enabled: false
         }
-      },
-      preload: {
-        enabled: false
       }
     })
+    ipfs = res.ipfs
+    cleanup = res.cleanup
   })
 
-  after(() => ipfs.stop())
-
-  after(() => repo.teardown())
+  after(() => cleanup())
 
   it('should not allow subscribe if disabled', async () => {
     const topic = nanoid()

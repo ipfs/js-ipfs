@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const IPFS = require('../src')
 const bootstrapList = require('../src/runtime/config-browser.js')().Bootstrap
 const waitFor = require('./utils/wait-for')
+const createNode = require('./utils/create-node')
 
 /*
  * These tests were graciously made for lgierth, so that he can test the
@@ -11,14 +11,19 @@ const waitFor = require('./utils/wait-for')
  */
 describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
   let ipfs
+  let cleanup
 
-  before(async function () {
-    this.timeout(30 * 1000)
-
-    ipfs = await IPFS.create()
+  before(async () => {
+    const res = await createNode({
+      config: {
+        Bootstrap: bootstrapList
+      }
+    })
+    ipfs = res.ipfs
+    cleanup = res.cleanup
   })
 
-  after(() => ipfs.stop())
+  after(() => cleanup())
 
   it('a node connects to bootstrappers', async function () {
     this.timeout(2 * 60 * 1000)

@@ -5,11 +5,8 @@
 const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
 const { fromB58String } = require('multihashing-async').multihash
-
-// This gets replaced by `create-repo-browser.js` in the browser
-const createTempRepo = require('./utils/create-repo-nodejs.js')
-const IPFS = require('../src')
 const utils = require('../src/utils')
+const createNode = require('./utils/create-node')
 
 describe('utils', () => {
   const rootHash = 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
@@ -29,52 +26,51 @@ describe('utils', () => {
       content: fs.readFileSync(path)
     }))
 
-    let node
-    let repo
+    let ipfs
+    let cleanup
 
     before(async () => {
-      repo = createTempRepo()
-      node = await IPFS.create({
-        silent: true,
-        repo,
+      const res = await createNode({
         config: {
-          Bootstrap: []
-        },
-        preload: { enabled: false }
+          Pubsub: {
+            Enabled: false
+          }
+        }
       })
-      await node.add(fixtures)
+      ipfs = res.ipfs
+      cleanup = res.cleanup
+
+      await ipfs.add(fixtures)
     })
 
-    after(() => node.stop())
-
-    after(() => repo.teardown())
+    after(() => cleanup())
 
     it('handles base58 hash format', async () => {
-      const hash = await utils.resolvePath(node.dag, rootHash)
+      const hash = await utils.resolvePath(ipfs.dag, rootHash)
 
       expect(hash).to.have.property('bytes').that.deep.equals(rootMultihash)
     })
 
     it('handles multihash format', async () => {
-      const hash = await utils.resolvePath(node.dag, aboutMultihash)
+      const hash = await utils.resolvePath(ipfs.dag, aboutMultihash)
 
       expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      const hash = await utils.resolvePath(node.dag, aboutPath)
+      const hash = await utils.resolvePath(ipfs.dag, aboutPath)
 
       expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('should error on invalid hashes', () => {
-      return expect(utils.resolvePath(node.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
+      return expect(utils.resolvePath(ipfs.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
         .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
-      return expect(utils.resolvePath(node.dag, `${aboutPath}/fusion`))
+      return expect(utils.resolvePath(ipfs.dag, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
         .and.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')
