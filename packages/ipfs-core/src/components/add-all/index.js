@@ -60,11 +60,12 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
    * @type {AddAll<{}>}
    */
   async function * addAll (source, options) {
+    options = options || {}
     const opts = mergeOptions({
       shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
       strategy: 'balanced',
       ...parseChunkerString(options.chunker)
-    }, options || {})
+    }, options)
 
     // CID v0 is for multihashes encoded with sha2-256
     if (opts.hashAlg && opts.hashAlg !== 'sha2-256' && opts.cidVersion !== 1) {
