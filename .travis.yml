@@ -127,6 +127,155 @@ jobs:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 10000
 
     - stage: test
+      name: interface-core - node
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
+
+    - stage: test
+      name: interface-core - chrome
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser
+
+    - stage: test
+      name: interface-core - chrome webworker
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker
+
+    - stage: test
+      name: interface-core - firefox
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-core - firefox webworker
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-core - electron main
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main
+
+    - stage: test
+      name: interface-core - electron renderer
+      script:
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer
+
+    - stage: test
+      name: interface-http-go - node
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
+
+    - stage: test
+      name: interface-http-go - chrome
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser
+
+    - stage: test
+      name: interface-http-go - chrome webworker
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker
+
+    - stage: test
+      name: interface-http-go - firefox
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-http-go - firefox webworker
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-http-go - electron main
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-main
+
+    - stage: test
+      name: interface-http-go - electron renderer
+      script:
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-renderer
+
+    - stage: test
+      name: interface-http-js - node
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
+
+    - stage: test
+      name: interface-http-js - chrome
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser
+
+    - stage: test
+      name: interface-http-js - chrome webworker
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker
+
+    - stage: test
+      name: interface-http-js - firefox
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-http-js - firefox webworker
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+
+    - stage: test
+      name: interface-http-js - electron main
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main
+
+    - stage: test
+      name: interface-http-js - electron renderer
+      script:
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer
+
+    - stage: test
+      name: interface-message-port-client - chrome
+      addons:
+        chrome: stable
+      script:
+        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
+
+    - stage: test
+      name: interface-message-port-client - firefox
+      addons:
+        firefox: latest
+      script:
+        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+
+    - stage: test
       name: examples
       script:
         - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"

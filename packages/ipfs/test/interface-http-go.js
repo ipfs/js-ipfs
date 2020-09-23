@@ -7,8 +7,10 @@ const isWindows = global.process && global.process.platform && global.process.pl
 
 /** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
 
-describe('interface-ipfs-core tests', () => {
-  const commonFactory = factory()
+describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () => {
+  const commonFactory = factory({
+    type: 'go'
+  })
 
   tests.root(commonFactory, {
     skip: [

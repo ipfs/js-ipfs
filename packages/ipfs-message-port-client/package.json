@@ -23,7 +23,7 @@
   },
   "scripts": {
     "test": "echo 'Only interface tests live here'",
-    "test:interface:core:browser": "aegir test -t browser",
+    "test:interface:message-port-client": "aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
     "build": "aegir build",

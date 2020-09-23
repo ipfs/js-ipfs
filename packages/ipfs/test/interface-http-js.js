@@ -7,13 +7,11 @@ const factory = require('./utils/factory')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
-describe('interface-ipfs-core over ipfs-http-client tests', function () {
+describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', function () {
   this.timeout(20000)
 
   const commonFactory = factory({
-    type: 'js',
-    ipfsBin: require.resolve('ipfs-cli/src/bin.js'),
-    ipfsModule: false
+    type: 'js'
   })
 
   tests.root(commonFactory, {

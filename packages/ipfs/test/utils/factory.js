@@ -7,7 +7,7 @@ const commonOptions = {
   test: true,
   type: 'proc',
   ipfsHttpModule: require('ipfs-http-client'),
-  ipfsModule: require('../../src'),
+  ipfsModule: require('ipfs-core'),
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
     libp2p: {
@@ -40,6 +40,9 @@ const commonOverrides = {
         }
       }
     } : {})
+  },
+  go: {
+    ipfsBin: isNode ? require('go-ipfs').path() : undefined
   }
 }
 
