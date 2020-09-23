@@ -504,6 +504,7 @@ describe('/files', () => {
       edges: false,
       unique: false,
       maxDepth: undefined,
+      format: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -520,6 +521,23 @@ describe('/files', () => {
       const res = await http({
         method: 'POST',
         url: `/api/v0/refs?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(JSON.parse(res.result)).to.have.property('Ref', cid.toString())
+    })
+
+    it('should format refs', async () => {
+      ipfs.refs.withArgs([`${cid}`], {
+        ...defaultOptions,
+        format: 'format'
+      }).returns([{
+        ref: cid.toString()
+      }])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/refs?arg=${cid}&format=format`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
