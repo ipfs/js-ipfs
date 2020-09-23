@@ -593,6 +593,10 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should receive multiple messages',
         reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
+      },
+      {
+        name: 'should publish and then resolve correctly',
+        reason: 'go behaviour is different to js'
       }
     ] : null
   })

@@ -26,13 +26,6 @@
   },
   "scripts": {
     "test": "cross-env ECHO_SERVER_PORT=37490 aegir test",
-    "test:node": "cross-env ECHO_SERVER_PORT=37491 aegir test -t node",
-    "test:browser": "cross-env ECHO_SERVER_PORT=37492 aegir test -t browser",
-    "test:webworker": "cross-env ECHO_SERVER_PORT=37493 aegir test -t webworker",
-    "test:electron-main": "cross-env ECHO_SERVER_PORT=37494 aegir test -t electron-main",
-    "test:electron-renderer": "cross-env ECHO_SERVER_PORT=37495 aegir test -t electron-renderer",
-    "test:chrome": "cross-env ECHO_SERVER_PORT=37496 aegir test -t browser -t webworker -- --browsers ChromeHeadless",
-    "test:firefox": "cross-env ECHO_SERVER_PORT=37497 aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
     "build": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",

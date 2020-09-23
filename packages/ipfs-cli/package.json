@@ -14,18 +14,6 @@
     "dist"
   ],
   "main": "src/index.js",
-  "browser": {
-    "./src/core/runtime/init-assets-nodejs.js": "./src/core/runtime/init-assets-browser.js",
-    "./src/core/runtime/config-nodejs.js": "./src/core/runtime/config-browser.js",
-    "./src/core/runtime/dns-nodejs.js": "./src/core/runtime/dns-browser.js",
-    "./src/core/runtime/libp2p-nodejs.js": "./src/core/runtime/libp2p-browser.js",
-    "./src/core/runtime/libp2p-pubsub-routers-nodejs.js": "./src/core/runtime/libp2p-pubsub-routers-browser.js",
-    "./src/core/runtime/preload-nodejs.js": "./src/core/runtime/preload-browser.js",
-    "./src/core/runtime/repo-nodejs.js": "./src/core/runtime/repo-browser.js",
-    "./src/core/runtime/ipld-nodejs.js": "./src/core/runtime/ipld-browser.js",
-    "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
-    "ipfs-utils/src/files/glob-source": false
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
