@@ -122,7 +122,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
 
   tests.dht(commonFactory)
 
-  tests.files(factory(), {
+  tests.files(commonFactory, {
     skip: [
       {
         name: 'should ls directory',
@@ -475,13 +475,12 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.name(factory(
-    {
-      ipfsOptions: {
-        offline: true
-      }
+  tests.name(factory({
+    type: 'go',
+    ipfsOptions: {
+      offline: true
     }
-  ), {
+  }), {
     skip: [
       {
         name: 'should resolve a record from peerid as cidv1 in base32',
@@ -490,15 +489,14 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.namePubsub(factory(
-    {
-      ipfsOptions: {
-        EXPERIMENTAL: {
-          ipnsPubsub: true
-        }
+  tests.namePubsub(factory({
+    type: 'go',
+    ipfsOptions: {
+      EXPERIMENTAL: {
+        ipnsPubsub: true
       }
     }
-  ), {
+  }), {
     skip: [
       // name.pubsub.cancel
       {
@@ -509,6 +507,19 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       {
         name: 'should get the list of subscriptions updated after a resolve',
         reason: 'go-ipfs is really slow for publishing and resolving ipns records, unless in offline mode'
+      },
+      // name.pubsub
+      {
+        name: 'should publish and then resolve correctly',
+        reason: 'js-ipfs and go-ipfs behaviour differs'
+      },
+      {
+        name: 'should self resolve, publish and then resolve correctly',
+        reason: 'js-ipfs and go-ipfs behaviour differs'
+      },
+      {
+        name: 'should handle event on publish correctly',
+        reason: 'js-ipfs and go-ipfs behaviour differs'
       }
     ]
   })
@@ -564,7 +575,9 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.pubsub(factory({}, {
+  tests.pubsub(factory({
+    type: 'go'
+  }, {
     go: {
       args: ['--enable-pubsub-experiment']
     }
@@ -578,10 +591,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       {
         name: 'should receive multiple messages',
         reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-      },
-      {
-        name: 'should publish and then resolve correctly',
-        reason: 'go behaviour is different to js'
       }
     ] : null
   })

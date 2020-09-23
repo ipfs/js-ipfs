@@ -16,7 +16,9 @@ const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
 const daemonsOptions = {
   ipfsOptions: {
-    EXPERIMENTAL: { ipnsPubsub: true }
+    EXPERIMENTAL: {
+      ipnsPubsub: true
+    }
   }
 }
 
@@ -81,7 +83,7 @@ module.exports = (factory, options) => {
 
       await expect(last(nodeB.name.resolve(idA.id)))
         .to.eventually.be.rejected()
-        .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
+        .with.property('message').that.matches(/not found/)
 
       await waitFor(async () => {
         const res = await nodeA.pubsub.peers(topic)
@@ -107,7 +109,7 @@ module.exports = (factory, options) => {
 
       await expect(last(nodeA.name.resolve(idB.id)))
         .to.eventually.be.rejected()
-        .and.to.have.property('code', 'ERR_NO_RECORD_FOUND')
+        .with.property('message').that.matches(/not found/)
 
       const publish = await nodeB.name.publish(path)
       expect(publish).to.be.eql({
@@ -127,11 +129,13 @@ module.exports = (factory, options) => {
 
       const testAccountName = 'test-account'
 
+      let publishedMessageKey
       let publishedMessage = null
       let publishedMessageData = null
       let publishedMessageDataValue = null
 
       function checkMessage (msg) {
+        publishedMessageKey = msg.from
         publishedMessage = msg
         publishedMessageData = ipns.unmarshal(msg.data)
         publishedMessageDataValue = uint8ArrayToString(publishedMessageData.value)
@@ -153,7 +157,7 @@ module.exports = (factory, options) => {
       await nodeB.pubsub.subscribe(topic, checkMessage)
       await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
       await waitFor(alreadySubscribed)
-      const messageKey = await PeerId.createFromPubKey(publishedMessage.key)
+      const messageKey = await PeerId.createFromB58String(publishedMessageKey)
       const pubKeyPeerId = await PeerId.createFromPubKey(publishedMessageData.pubKey)
 
       expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())

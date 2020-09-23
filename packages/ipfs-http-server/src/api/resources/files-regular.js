@@ -472,6 +472,7 @@ exports.refs = {
         edges: Joi.boolean().default(false),
         unique: Joi.boolean().default(false),
         maxDepth: Joi.number().integer().min(-1),
+        format: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('max-depth', 'maxDepth', {
@@ -500,6 +501,7 @@ exports.refs = {
         edges,
         unique,
         maxDepth,
+        format,
         timeout
       }
     } = request
@@ -510,6 +512,7 @@ exports.refs = {
         edges,
         unique,
         maxDepth,
+        format,
         signal,
         timeout
       }),

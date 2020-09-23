@@ -51,7 +51,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }
   })
 
-  tests.files(factory(), {
+  tests.files(commonFactory, {
     skip: isBrowser ? [{
       name: 'should make directory and specify mtime as hrtime',
       reason: 'Not designed to run in the browser'
@@ -69,6 +69,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   tests.miscellaneous(commonFactory)
 
   tests.name(factory({
+    type: 'js',
     ipfsOptions: {
       offline: true
     }
@@ -103,17 +104,9 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }]
   })
 
-  tests.pubsub(factory(
-    {
-      type: 'js',
-      ipfsBin: './src/cli.js'
-    },
-    {
-      go: {
-        args: ['--enable-pubsub-experiment']
-      }
-    }
-  ))
+  tests.pubsub(factory({
+    type: 'js'
+  }))
 
   tests.repo(commonFactory)
 

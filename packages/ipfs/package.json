@@ -30,7 +30,7 @@
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core:node",
+    "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
@@ -69,6 +69,9 @@
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
     "wrtc": "^0.4.6"
+  },
+  "browser": {
+    "go-ipfs": false
   },
   "engines": {
     "node": ">=10.0.0",
