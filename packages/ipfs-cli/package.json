@@ -21,7 +21,8 @@
   "scripts": {
     "lint": "aegir lint",
     "build": "aegir build",
-    "test": "aegir test -t node",
+    "test": "npm run test:node",
+    "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
