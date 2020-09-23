@@ -51,15 +51,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }
   })
 
-  tests.files(factory({
-    type: 'js',
-    ipfsBin: './src/cli.js',
-    ipfsOptions: {
-      EXPERIMENTAL: {
-        sharding: true
-      }
-    }
-  }), {
+  tests.files(factory(), {
     skip: isBrowser ? [{
       name: 'should make directory and specify mtime as hrtime',
       reason: 'Not designed to run in the browser'

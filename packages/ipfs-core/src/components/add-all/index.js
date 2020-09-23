@@ -5,6 +5,7 @@ const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
  * @typedef {Uint8Array | Blob | String | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
@@ -59,14 +60,11 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
    * @type {AddAll<{}>}
    */
   async function * addAll (source, options) {
-    options = options || {}
-
-    const opts = {
+    const opts = mergeOptions({
       shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
-      ...options,
       strategy: 'balanced',
       ...parseChunkerString(options.chunker)
-    }
+    }, options || {})
 
     // CID v0 is for multihashes encoded with sha2-256
     if (opts.hashAlg && opts.hashAlg !== 'sha2-256' && opts.cidVersion !== 1) {

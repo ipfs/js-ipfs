@@ -33,9 +33,7 @@ describe('interface-ipfs-core tests', function () {
     }
   })
 
-  tests.files(factory({
-    ipfsOptions: { EXPERIMENTAL: { sharding: true } }
-  }), {
+  tests.files(factory(), {
     skip: isNode ? null : [{
       name: 'should make directory and specify mtime as hrtime',
       reason: 'Not designed to run in the browser'

@@ -12,6 +12,7 @@ const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIC
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const last = require('it-last')
+const UnixFS = require('ipfs-unixfs')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -378,21 +379,14 @@ module.exports = (common, options) => {
       content: uint8ArrayFromString('some content ' + i)
     }))
 
-    describe('without sharding', () => {
-      let ipfs
-
-      before(async function () {
-        const ipfsd = await common.spawn({
-          ipfsOptions: { EXPERIMENTAL: { sharding: false } }
-        })
-        ipfs = ipfsd.api
-      })
-
-      it('should be able to add dir without sharding', async () => {
-        const { path, cid } = await last(ipfs.addAll(testFiles))
-        expect(path).to.eql('test-folder')
-        expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
-      })
+    it('should be able to add dir without sharding', async () => {
+      const { path, cid } = await last(ipfs.addAll(testFiles))
+      expect(path).to.eql('test-folder')
+      console.info(await ipfs.files.stat(`/ipfs/${cid}`))
+      const { value } = await ipfs.dag.get(cid)
+      const entry = UnixFS.unmarshal(value.Data)
+      console.info(entry)
+      expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
     })
 
     describe('with sharding', () => {
@@ -406,7 +400,7 @@ module.exports = (common, options) => {
               sharding: true
             },
             config: {
-              // enabled sharding for go
+              // enable sharding for go
               Experimental: {
                 ShardingEnabled: true
               }
@@ -419,6 +413,10 @@ module.exports = (common, options) => {
       it('should be able to add dir with sharding', async () => {
         const { path, cid } = await last(ipfs.addAll(testFiles))
         expect(path).to.eql('test-folder')
+        console.info(await ipfs.files.stat(`/ipfs/${cid}`))
+        const { value } = await ipfs.dag.get(cid)
+        const entry = UnixFS.unmarshal(value.Data)
+        console.info(entry)
         expect(cid.toString()).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
       })
     })

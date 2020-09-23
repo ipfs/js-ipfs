@@ -122,24 +122,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
 
   tests.dht(commonFactory)
 
-  tests.files(factory({}, {
-    go: {
-      ipfsOptions: {
-        config: {
-          Experimental: {
-            ShardingEnabled: true
-          }
-        }
-      }
-    },
-    js: {
-      ipfsOptions: {
-        EXPERIMENTAL: {
-          sharding: true
-        }
-      }
-    }
-  }), {
+  tests.files(factory(), {
     skip: [
       {
         name: 'should ls directory',
