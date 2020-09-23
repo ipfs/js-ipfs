@@ -265,45 +265,6 @@ module.exports = (common, options) => {
       await expect(ipfs.files.cp(source, destination)).to.eventually.be.rejected()
     })
 
-    it('copies a sharded directory to a normal directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-
-      const normalDir = `dir-${Math.random()}`
-      const normalDirPath = `/${normalDir}`
-
-      await ipfs.files.mkdir(normalDirPath)
-
-      await ipfs.files.cp(shardedDirPath, normalDirPath)
-
-      const finalShardedDirPath = `${normalDirPath}${shardedDirPath}`
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
-
-      const files = await all(ipfs.files.ls(finalShardedDirPath))
-
-      expect(files.length).to.be.ok()
-    })
-
-    it('copies a normal directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-
-      const normalDir = `dir-${Math.random()}`
-      const normalDirPath = `/${normalDir}`
-
-      await ipfs.files.mkdir(normalDirPath)
-
-      await ipfs.files.cp(normalDirPath, shardedDirPath)
-
-      const finalDirPath = `${shardedDirPath}${normalDirPath}`
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
-    })
-
     it('should respect metadata when copying files', async function () {
       const testSrcPath = `/test-${nanoid()}`
       const testDestPath = `/test-${nanoid()}`
@@ -400,6 +361,45 @@ module.exports = (common, options) => {
           }
         })
         ipfs = ipfsd.api
+      })
+
+      it('copies a sharded directory to a normal directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+
+        const normalDir = `dir-${Math.random()}`
+        const normalDirPath = `/${normalDir}`
+
+        await ipfs.files.mkdir(normalDirPath)
+
+        await ipfs.files.cp(shardedDirPath, normalDirPath)
+
+        const finalShardedDirPath = `${normalDirPath}${shardedDirPath}`
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
+
+        const files = await all(ipfs.files.ls(finalShardedDirPath))
+
+        expect(files.length).to.be.ok()
+      })
+
+      it('copies a normal directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+
+        const normalDir = `dir-${Math.random()}`
+        const normalDirPath = `/${normalDir}`
+
+        await ipfs.files.mkdir(normalDirPath)
+
+        await ipfs.files.cp(normalDirPath, shardedDirPath)
+
+        const finalDirPath = `${shardedDirPath}${normalDirPath}`
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
       })
 
       it('copies a file from a normal directory to a sharded directory', async () => {
