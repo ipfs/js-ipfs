@@ -12,7 +12,6 @@ const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIC
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const last = require('it-last')
-const UnixFS = require('ipfs-unixfs')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -382,10 +381,6 @@ module.exports = (common, options) => {
     it('should be able to add dir without sharding', async () => {
       const { path, cid } = await last(ipfs.addAll(testFiles))
       expect(path).to.eql('test-folder')
-      console.info(await ipfs.files.stat(`/ipfs/${cid}`))
-      const { value } = await ipfs.dag.get(cid)
-      const entry = UnixFS.unmarshal(value.Data)
-      console.info(entry)
       expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
     })
 
@@ -413,10 +408,6 @@ module.exports = (common, options) => {
       it('should be able to add dir with sharding', async () => {
         const { path, cid } = await last(ipfs.addAll(testFiles))
         expect(path).to.eql('test-folder')
-        console.info(await ipfs.files.stat(`/ipfs/${cid}`))
-        const { value } = await ipfs.dag.get(cid)
-        const entry = UnixFS.unmarshal(value.Data)
-        console.info(entry)
         expect(cid.toString()).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
       })
     })
