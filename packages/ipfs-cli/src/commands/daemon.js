@@ -86,7 +86,7 @@ module.exports = {
       daemon._httpApi._apiServers.forEach(apiServer => {
         print(`API listening on ${apiServer.info.ma}`)
       })
-      daemon._httpApi._gatewayServers.forEach(gatewayServer => {
+      daemon._httpGateway._gatewayServers.forEach(gatewayServer => {
         print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
       })
       daemon._httpApi._apiServers.forEach(apiServer => {

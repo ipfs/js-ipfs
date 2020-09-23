@@ -36,7 +36,7 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   return servers
 }
 
-class HttpApi {
+class HttpGateway {
   constructor (ipfs, options) {
     this._ipfs = ipfs
     this._options = options || {}
@@ -90,7 +90,6 @@ class HttpApi {
     this._log('stopping')
     const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
-      stopServers(this._apiServers),
       stopServers(this._gatewayServers)
     ])
     this._log('stopped')
@@ -98,4 +97,4 @@ class HttpApi {
   }
 }
 
-module.exports = HttpApi
+module.exports = HttpGateway

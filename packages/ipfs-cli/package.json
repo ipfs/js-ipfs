@@ -52,6 +52,7 @@
     "ipfs-core": "0.0.1",
     "ipfs-core-utils": "^0.4.0",
     "ipfs-http-client": "^47.0.1",
+    "ipfs-http-gateway": "0.0.1",
     "ipfs-http-server": "0.0.1",
     "ipfs-repo": "^6.0.3",
     "ipfs-utils": "^3.0.0",
