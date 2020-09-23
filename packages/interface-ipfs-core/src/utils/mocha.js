@@ -48,7 +48,7 @@ function getDescribe (config) {
           return describe.skip(`${name} (${skip.reason})`, impl)
         }
 
-        return describe
+        describe(name, impl)
       }
 
       _describe.skip = describe.skip
