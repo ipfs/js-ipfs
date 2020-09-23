@@ -47,7 +47,7 @@ module.exports = ({ libp2p }) => {
     let interval = options.interval || 1000
     try {
       interval = typeof interval === 'string' ? parseDuration(interval) : interval
-      if (!interval || interval < 0) throw new Error('invalid poll interval')
+      if (!interval || interval < 0) throw new Error('invalid duration')
     } catch (err) {
       throw errCode(err, 'ERR_INVALID_POLL_INTERVAL')
     }

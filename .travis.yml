@@ -127,149 +127,149 @@ jobs:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 10000
 
     - stage: test
-      name: interface-core - node
+      name: js-ipfs interface tests - node
       addons:
         chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
-      name: interface-core - chrome
+      name: js-ipfs interface tests - chrome
       addons:
         chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
-      name: interface-core - chrome webworker
+      name: js-ipfs interface tests - chrome webworker
       addons:
         chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
-      name: interface-core - firefox
+      name: js-ipfs interface tests - firefox
       addons:
         firefox: latest
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-core - firefox webworker
+      name: js-ipfs interface tests - firefox webworker
       addons:
         firefox: latest
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-core - electron main
+      name: js-ipfs interface tests - electron main
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
-      name: interface-core - electron renderer
+      name: js-ipfs interface tests - electron renderer
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
-      name: interface-http-go - node
+      name: http-api-client interface tests vs go-ipfs - node
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
-      name: interface-http-go - chrome
+      name: http-api-client interface tests vs go-ipfs - chrome
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
-      name: interface-http-go - chrome webworker
+      name: http-api-client interface tests vs go-ipfs - chrome webworker
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
-      name: interface-http-go - firefox
+      name: http-api-client interface tests vs go-ipfs - firefox
       addons:
         firefox: latest
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-http-go - firefox webworker
+      name: http-api-client interface tests vs go-ipfs - firefox webworker
       addons:
         firefox: latest
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-http-go - electron main
+      name: http-api-client interface tests vs go-ipfs - electron main
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
-      name: interface-http-go - electron renderer
+      name: http-api-client interface tests vs go-ipfs - electron renderer
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
-      name: interface-http-js - node
+      name: http-api-client interface tests vs js-ipfs - node
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
-      name: interface-http-js - chrome
+      name: http-api-client interface tests vs js-ipfs - chrome
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
-      name: interface-http-js - chrome webworker
+      name: http-api-client interface tests vs js-ipfs - chrome webworker
       addons:
         chrome: stable
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
-      name: interface-http-js - firefox
+      name: http-api-client interface tests vs js-ipfs - firefox
       addons:
         firefox: latest
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-http-js - firefox webworker
+      name: http-api-client interface tests vs js-ipfs - firefox webworker
       addons:
         firefox: latest
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
-      name: interface-http-js - electron main
+      name: http-api-client interface tests vs js-ipfs - electron main
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
-      name: interface-http-js - electron renderer
+      name: http-api-client interface tests vs js-ipfs - electron renderer
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
-      name: interface-message-port-client - chrome
+      name: ipfs-message-port-client interface tests - chrome
       addons:
         chrome: stable
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
-      name: interface-message-port-client - firefox
+      name: ipfs-message-port-client interface tests - firefox
       addons:
         firefox: latest
       script:
