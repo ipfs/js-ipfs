@@ -218,6 +218,8 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
+      env:
+        - DEBUG=ipfs:*
       addons:
         chrome: stable
       script:
