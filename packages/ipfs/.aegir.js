@@ -23,7 +23,7 @@ module.exports = {
       served: true,
       included: false
     }],
-    browserNoActivityTimeout: 100 * 1000
+    browserNoActivityTimeout: 600 * 1000
   },
   webpack: {
     node: {
