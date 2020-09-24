@@ -62,10 +62,11 @@ before_install:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
 # disable auto-install as we will do one install step and cache the results
-install: true
+install:
+  - echo skipped
 
 script:
-  - npm link
+  - npm run link
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 
 jobs:
@@ -86,19 +87,6 @@ jobs:
         - npm install
 
     - stage: check
-      name: deps
-      script:
-        - npm run link
-        - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
-
-    - stage: check
-      name: lint
-      script:
-        - npm run link
-        - npm run lint -- $RUN_SINCE --concurrency 1
-
-    - stage: check
-      name: deps and lint which is faster
       script:
         - npm run link
         - npm run lint -- $RUN_SINCE --concurrency 1
@@ -443,4 +431,3 @@ jobs:
 
 notifications:
   email: false
-
