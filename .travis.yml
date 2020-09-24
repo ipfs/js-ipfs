@@ -58,10 +58,12 @@ jobs:
     - name: external - ipfs-log
     - name: external - sidetree
   include:
-    - stage: check
+    - stage: check - deps
       script:
-        - npm run build -- $RUN_SINCE --scope={ipfs,ipfs-http-client,ipfs-message-port-*}
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
+
+    - stage: check - lint
+      script:
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
@@ -218,8 +220,6 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
-      env:
-        - DEBUG=ipfs:*
       addons:
         chrome: stable
       script:

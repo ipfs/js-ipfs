@@ -22,7 +22,7 @@ const commonOptions = {
 const commonOverrides = {
   js: {
     ...(isNode ? {
-      ipfsBin: './src/cli.js'
+      ipfsBin: require.resolve('../../src/cli.js')
     } : {}),
     ...(isBrowser ? {
       remote: true

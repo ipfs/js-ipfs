@@ -33,7 +33,7 @@ module.exports = (repoPath, opts) => {
       encoding: null
     })
 
-    return execa.command(`${path.resolve(`${__dirname}/../../cli/bin.js`)} ${args}`, opts)
+    return execa.command(`${path.resolve(`${__dirname}/../../src/bin.js`)} ${args}`, opts)
   }
 
   const execute = (exec, args, options) => {
