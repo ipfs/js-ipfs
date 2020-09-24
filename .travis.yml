@@ -10,7 +10,6 @@ branches:
 
 stages:
   - install
-  - check
   - test
   - release-rc
   - test-external
@@ -61,12 +60,12 @@ before_install:
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
-# disable auto-install as we will do one install step and cache the results
+# rebuild and link to recreate symlinks that do not get cached properly
 install:
-  - echo skipped
+  - npm rebuild
+  - npm run link
 
 script:
-  - npm run link
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 
 jobs:
@@ -85,25 +84,19 @@ jobs:
     - stage: install
       name: linux
       os: linux
-      script:
+      install:
         - npm install
-
-    - stage: install
-      name: os x
-      os: osx
       script:
-        - npm install
+        - echo done
 
-    - stage: install
-      name: windows
-      os: windows
+    - stage: test
+      name: lint
       script:
-        - npm install
-
-    - stage: check
-      script:
-        - npm run link
         - npm run lint -- $RUN_SINCE --concurrency 1
+
+    - stage: test
+      name: dep-check
+      script:
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
 
     - stage: test
@@ -111,7 +104,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
@@ -119,7 +111,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:webworker -- $RUN_SINCE -- -- --bail
 
     - stage: test
@@ -127,7 +118,6 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
@@ -135,47 +125,40 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npm run link
         - npm run test:electron-main -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npm run link
         - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: interop - node
       script:
-        - npm run link
         - npm run test:interop -- $RUN_SINCE -- -- -- -t node --bail
 
     - stage: test
       name: interop - browser
       script:
-        - npm run link
         - npm run test:interop -- $RUN_SINCE -- -- -- -t browser --bail
 
     - stage: test
       name: interop - electron-main
       os: osx
       script:
-        - npm run link
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-main -f ./test/node.js --bail --timeout 10000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run link
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 10000
 
     - stage: test
@@ -183,7 +166,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
@@ -191,7 +173,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
@@ -199,7 +180,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
@@ -207,7 +187,6 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
@@ -215,19 +194,16 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
       name: js-ipfs interface tests - electron main
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
       name: js-ipfs interface tests - electron renderer
       script:
-        - npm run link
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
@@ -235,7 +211,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
@@ -243,7 +218,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
@@ -251,7 +225,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
@@ -259,7 +232,6 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
@@ -267,25 +239,21 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - electron main
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - electron renderer
       script:
-        - npm run link
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
@@ -293,7 +261,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
@@ -301,7 +268,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
@@ -309,7 +275,6 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
@@ -317,19 +282,16 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron renderer
       script:
-        - npm run link
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer
 
     - stage: test
@@ -337,7 +299,6 @@ jobs:
       addons:
         chrome: stable
       script:
-        - npm run link
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
@@ -345,13 +306,11 @@ jobs:
       addons:
         firefox: latest
       script:
-        - npm run link
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
       name: examples
       script:
-        - npm run link
         - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
         - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
         - npm run reset
@@ -364,7 +323,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: release rc
       script:
-        - npm run link
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
@@ -378,7 +336,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-webui
       script:
-        - npm run link
         - E2E_IPFSD_TYPE=js npm run test:external -- -- -- https://github.com/ipfs-shipyard/ipfs-webui.git --deps=ipfs@next
 
     - stage: test-external
@@ -386,7 +343,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-companion
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/ipfs-shipyard/ipfs-companion.git --deps=ipfs@next
 
     - stage: test-external
@@ -394,7 +350,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - npm-on-ipfs
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/ipfs-shipyard/npm-on-ipfs.git --deps=ipfs@next
 
     - stage: test-external
@@ -402,7 +357,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - peer-base
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/achingbrain/peer-base.git --branch upgrade-to-latest-ipfs-rc --deps=ipfs@next
 
     - stage: test-external
@@ -410,7 +364,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - service-worker-gateway
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/ipfs-shipyard/service-worker-gateway.git --deps=ipfs@next
 
     - stage: test-external
@@ -418,7 +371,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
 
     - stage: test-external
@@ -426,7 +378,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
 
     - stage: test-external
@@ -434,7 +385,6 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - sidetree
       script:
-        - npm run link
         - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
