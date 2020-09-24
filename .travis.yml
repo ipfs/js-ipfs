@@ -9,7 +9,6 @@ branches:
   - /^release\/.*$/
 
 stages:
-  - install
   - test
   - release-rc
   - test-external
@@ -22,21 +21,6 @@ os:
   - linux
   - osx
   - windows
-
-# cache all the node modules
-cache:
-  directories:
-    - node_modules
-    - packages/interface-ipfs-core/node_modules
-    - packages/ipfs/node_modules
-    - packages/ipfs-cli/node_modules
-    - packages/ipfs-core-utils/node_modules
-    - packages/ipfs-http-client/node_modules
-    - packages/ipfs-http-gateway/node_modules
-    - packages/ipfs-http-server/node_modules
-    - packages/ipfs-message-port-client/node_modules
-    - packages/ipfs-message-port-protocol/node_modules
-    - packages/ipfs-message-port-server/node_modules
 
 env:
   # This stops Windows builds from hanging
@@ -60,11 +44,6 @@ before_install:
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
-# rebuild and link to recreate symlinks that do not get cached properly
-install:
-  - npm rebuild
-  - npm run link
-
 script:
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
 
@@ -78,17 +57,8 @@ jobs:
     - name: external - orbit-db
     - name: external - ipfs-log
     - name: external - sidetree
+
   include:
-
-    # manual install step, we do this to cache the installed files for subsequent steps
-    - stage: install
-      name: linux
-      os: linux
-      install:
-        - npm install
-      script:
-        - echo done
-
     - stage: test
       name: lint
       script:
