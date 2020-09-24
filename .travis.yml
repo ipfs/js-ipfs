@@ -37,6 +37,7 @@ addons:
       # https://stackoverflow.com/questions/57903415/travis-ci-chrome-62-instead-of-77
       - dpkg
   chrome: stable
+  firefox: latest
 
 before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
@@ -71,29 +72,21 @@ jobs:
 
     - stage: test
       name: chrome
-      addons:
-        chrome: stable
       script:
         - npm run test:browser -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: chrome webworker
-      addons:
-        chrome: stable
       script:
         - npm run test:webworker -- $RUN_SINCE -- -- --bail
 
     - stage: test
       name: firefox
-      addons:
-        firefox: latest
       script:
         - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
     - stage: test
       name: firefox webworker
-      addons:
-        firefox: latest
       script:
         - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
 
@@ -133,36 +126,26 @@ jobs:
 
     - stage: test
       name: js-ipfs interface tests - node
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
       name: js-ipfs interface tests - chrome
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
       name: js-ipfs interface tests - chrome webworker
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
       name: js-ipfs interface tests - firefox
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
       name: js-ipfs interface tests - firefox webworker
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
@@ -178,36 +161,26 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - node
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - chrome
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - chrome webworker
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox webworker
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
@@ -232,8 +205,6 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome
-      addons:
-        chrome: stable
       env:
         - DEBUG=ipfs*
       script:
@@ -241,22 +212,16 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome webworker
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox webworker
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
@@ -272,15 +237,11 @@ jobs:
 
     - stage: test
       name: ipfs-message-port-client interface tests - chrome
-      addons:
-        chrome: stable
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
       name: ipfs-message-port-client interface tests - firefox
-      addons:
-        firefox: latest
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
