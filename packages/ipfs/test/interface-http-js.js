@@ -2,7 +2,7 @@
 'use strict'
 
 const tests = require('interface-ipfs-core')
-const { isNode, isBrowser } = require('ipfs-utils/src/env')
+const { isNode, isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const factory = require('./utils/factory')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
@@ -52,7 +52,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   })
 
   tests.files(commonFactory, {
-    skip: isBrowser ? [{
+    skip: isBrowser || isWebWorker ? [{
       name: 'should make directory and specify mtime as hrtime',
       reason: 'Not designed to run in the browser'
     }, {

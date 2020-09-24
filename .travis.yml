@@ -185,28 +185,12 @@ jobs:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
 
     - stage: test
-      name: http-api-client interface tests vs go-ipfs - electron main
-      env:
-        - DEBUG=ipfs*
-      script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-main
-
-    - stage: test
-      name: http-api-client interface tests vs go-ipfs - electron renderer
-      env:
-        - DEBUG=ipfs*
-      script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-renderer
-
-    - stage: test
       name: http-api-client interface tests vs js-ipfs - node
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome
-      env:
-        - DEBUG=ipfs*
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser
 
@@ -237,6 +221,8 @@ jobs:
 
     - stage: test
       name: ipfs-message-port-client interface tests - chrome
+      env:
+        - DEBUG=ipfs*
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
 
