@@ -83,6 +83,20 @@ jobs:
 
     # manual install step, we do this to cache the installed files for subsequent steps
     - stage: install
+      name: linux
+      os: linux
+      script:
+        - npm install
+
+    - stage: install
+      name: os x
+      os: osx
+      script:
+        - npm install
+
+    - stage: install
+      name: windows
+      os: windows
       script:
         - npm install
 
@@ -91,12 +105,6 @@ jobs:
         - npm run link
         - npm run lint -- $RUN_SINCE --concurrency 1
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
-
-    - stage: check
-      name: lint
-      script:
-        - npm run link
-        - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
       name: chrome

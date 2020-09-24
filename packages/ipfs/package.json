@@ -71,6 +71,7 @@
     "wrtc": "^0.4.6"
   },
   "browser": {
+    "./src/cli.js": false,
     "go-ipfs": false
   },
   "engines": {
