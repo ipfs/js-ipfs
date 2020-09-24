@@ -9,6 +9,7 @@ branches:
   - /^release\/.*$/
 
 stages:
+  - install
   - check
   - test
   - release-rc
@@ -22,6 +23,21 @@ os:
   - linux
   - osx
   - windows
+
+# cache all the node modules
+cache:
+  directories:
+    - node_modules
+    - packages/interface-ipfs-core/node_modules
+    - packages/ipfs/node_modules
+    - packages/ipfs-cli/node_modules
+    - packages/ipfs-core-utils/node_modules
+    - packages/ipfs-http-client/node_modules
+    - packages/ipfs-http-gateway/node_modules
+    - packages/ipfs-http-server/node_modules
+    - packages/ipfs-message-port-client/node_modules
+    - packages/ipfs-message-port-protocol/node_modules
+    - packages/ipfs-message-port-server/node_modules
 
 env:
   # This stops Windows builds from hanging
@@ -45,7 +61,8 @@ before_install:
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
 
-script: npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
+# disable auto-install as we will do one install step and cache the results
+install: true
 
 jobs:
   allow_failures:
@@ -58,6 +75,12 @@ jobs:
     - name: external - ipfs-log
     - name: external - sidetree
   include:
+
+    # manual install step, we do this to cache the installed files for subsequent steps
+    - stage: install
+      script:
+        - npm install
+
     - stage: check
       name: deps
       script:
