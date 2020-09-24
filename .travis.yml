@@ -243,11 +243,15 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - electron main
+      env:
+        - DEBUG=ipfs*
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-main
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - electron renderer
+      env:
+        - DEBUG=ipfs*
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t electron-renderer
 
@@ -260,6 +264,8 @@ jobs:
       name: http-api-client interface tests vs js-ipfs - chrome
       addons:
         chrome: stable
+      env:
+        - DEBUG=ipfs*
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser
 
