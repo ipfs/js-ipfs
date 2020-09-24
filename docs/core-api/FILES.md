@@ -125,9 +125,9 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
   path?: string
   // The contents of the file (see below for definition)
   content?: FileContent
-  // File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
+  // (Optional) mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
   mode?: number | string
-  // The modification time of the entry (see below for definition)
+  // (Optional) modification time of the entry (see below for definition)
   mtime?: UnixTime
 }
 ```
@@ -180,7 +180,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<UnixFSEntry>` | A object describing the added data |
 
-Each yielded object is of the form:
+Each yielded object is of the form (`mtime` and `mode` are optional, so may be missing):
 
 ```JavaScript
 {
@@ -262,7 +262,7 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `AsyncIterable<UnixFSEntry>` | An async iterable that yields objects describing the added data |
 
-Each yielded object is of the form:
+Each yielded object is of the form  (`mtime` and `mode` are optional, so may be missing):
 
 ```JavaScript
 {
