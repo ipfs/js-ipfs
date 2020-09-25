@@ -78,7 +78,7 @@ jobs:
     - stage: test
       name: chrome webworker
       script:
-        - npm run test:webworker -- $RUN_SINCE -- -- --bail
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --timeout 60000
 
     - stage: test
       name: firefox
@@ -88,19 +88,19 @@ jobs:
     - stage: test
       name: firefox webworker
       script:
-        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless --timeout 60000
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npm run test:electron-main -- $RUN_SINCE -- -- --bail
+        - npm run test:electron-main -- $RUN_SINCE -- -- --bail --timeout 60000
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail
+        - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 60000
 
     - stage: test
       name: interop - node
@@ -116,13 +116,13 @@ jobs:
       name: interop - electron-main
       os: osx
       script:
-        - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-main -f ./test/node.js --bail
+        - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-main -f ./test/node.js --bail --timeout 60000
 
     - stage: test
       name: interop - electron-renderer
       os: osx
       script:
-        - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail
+        - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - node
@@ -137,7 +137,7 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - chrome webworker
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - firefox
@@ -147,17 +147,17 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - firefox webworker
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - electron main
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - electron renderer
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - node
@@ -172,7 +172,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - chrome webworker
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox
@@ -182,7 +182,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
@@ -197,7 +197,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome webworker
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox
@@ -207,17 +207,17 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron renderer
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
     - stage: test
       name: ipfs-message-port-client interface tests - chrome
