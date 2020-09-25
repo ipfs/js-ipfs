@@ -106,6 +106,10 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
 
   tests.pubsub(factory({
     type: 'js'
+  }, {
+    go: {
+      args: ['--enable-pubsub-experiment']
+    }
   }))
 
   tests.repo(commonFactory)
