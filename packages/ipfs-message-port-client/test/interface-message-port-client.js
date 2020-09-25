@@ -63,6 +63,10 @@ describe('interface-ipfs-core tests', () => {
         reason: 'Cannot spawn IPFS with different args'
       },
       {
+        name: 'with sharding',
+        reason: 'TODO: allow spawning new daemons with different config'
+      },
+      {
         name: 'addAll',
         reason: 'Not implemented'
       },
