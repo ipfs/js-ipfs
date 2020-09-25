@@ -151,11 +151,13 @@ jobs:
 
     - stage: test
       name: js-ipfs interface tests - electron main
+      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - electron renderer
+      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
@@ -211,21 +213,25 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
+      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron renderer
+      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
     - stage: test
       name: ipfs-message-port-client interface tests - chrome
+      os: osx
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser
 
     - stage: test
       name: ipfs-message-port-client interface tests - firefox
+      os: osx
       script:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
 
