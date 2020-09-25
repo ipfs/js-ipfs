@@ -76,7 +76,7 @@ describe('init', function () {
   })
 
   it('should set # of bits in key', async function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     await ipfs.init({ bits: 1024 })
 

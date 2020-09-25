@@ -23,7 +23,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.add', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 

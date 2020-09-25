@@ -19,7 +19,7 @@ const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
 describe('name', function () {
   describe('republisher', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
     let republisher
 
     afterEach(async () => {

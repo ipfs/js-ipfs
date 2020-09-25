@@ -42,7 +42,7 @@ module.exports = (factory, options) => {
     let idB
 
     before(async function () {
-      this.timeout(40 * 1000)
+      this.timeout(120 * 1000)
 
       nodes = await Promise.all([
         factory.spawn({ ...daemonsOptions }),
