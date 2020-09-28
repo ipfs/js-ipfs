@@ -60,5 +60,11 @@ module.exports = (common, options) => {
 
       return expect(all(ipfsA.ping(invalidPeerId, { count }))).to.eventually.be.rejected()
     })
+
+    it('can ping without options', async () => {
+      const res = await all(ipfsA.ping(ipfsB.peerId.id))
+      expect(res.length).to.be.ok()
+      expect(res[0].success).to.be.true()
+    })
   })
 }

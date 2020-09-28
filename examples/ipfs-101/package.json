@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "ipfs": "^0.50.1",
-    "it-all": "^1.0.1",
+    "it-all": "^1.0.4",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {

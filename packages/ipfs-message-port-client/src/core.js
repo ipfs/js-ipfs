@@ -61,7 +61,7 @@ class CoreClient extends Client {
    * @param {Transport} transport
    */
   constructor (transport) {
-    super('core', ['add', 'cat'], transport)
+    super('core', ['add', 'addAll', 'cat'], transport)
   }
 
   /**
