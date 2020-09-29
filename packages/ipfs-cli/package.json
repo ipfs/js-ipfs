@@ -50,7 +50,7 @@
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "it-first": "^1.0.4",
-    "it-glob": "0.0.8",
+    "it-glob": "0.0.10",
     "it-pipe": "^1.1.0",
     "jsondiffpatch": "^0.4.1",
     "just-safe-set": "^2.1.0",
