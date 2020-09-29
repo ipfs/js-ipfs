@@ -73,7 +73,7 @@
   "devDependencies": {
     "aegir": "^26.0.0",
     "cross-env": "^7.0.0",
-    "go-ipfs": "^0.6.0",
+    "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.140.0",
     "ipfsd-ctl": "^7.0.0",
     "it-all": "^1.0.4",
