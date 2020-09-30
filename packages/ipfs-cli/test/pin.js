@@ -45,9 +45,9 @@ describe('pin', () => {
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin rm ${pins.root}`, { ipfs })
       expect(out).to.equal(`unpinned ${pins.root}\n`)
@@ -58,9 +58,9 @@ describe('pin', () => {
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin rm --recursive false ${pins.root}`, { ipfs })
       expect(out).to.equal(`unpinned ${pins.root}\n`)
@@ -71,9 +71,9 @@ describe('pin', () => {
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin rm -r false ${pins.root}`, { ipfs })
       expect(out).to.equal(`unpinned ${pins.root}\n`)
@@ -83,9 +83,9 @@ describe('pin', () => {
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin rm ${pins.root} --cid-base=base64`, { ipfs })
       const b64CidStr = new CID(pins.root).toV1().toString('base64')
@@ -99,9 +99,9 @@ describe('pin', () => {
       }], {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
-        cid: new CID(pins.root)
-      }])
+      }).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin rm ${pins.root} --timeout=1s`, { ipfs })
       expect(out).to.equal(`unpinned ${pins.root}\n`)
