@@ -209,7 +209,9 @@ exports.put = {
             const { opts } = request.server.app
             if (opts) {
               const { ipld } = opts
-              ipldFormat = ipld.formats.find((f) => f.codec === codec)
+              if (ipld) {
+                ipldFormat = ipld.formats.find((f) => f.codec === codec)
+              }
             }
           }
 
