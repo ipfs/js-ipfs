@@ -95,6 +95,7 @@ class HttpApi {
       compression: false
     })
     server.app.ipfs = ipfs
+    server.app.opts = opts
 
     await server.register({
       plugin: Pino,

@@ -203,11 +203,20 @@ exports.put = {
         } else {
           const codec = multicodec[format.toUpperCase().replace(/-/g, '_')]
 
-          if (!IpldFormats[codec]) {
-            throw new Error(`Missing IPLD format "${codec}"`)
+          let ipldFormat = IpldFormats[codec]
+          if (!ipldFormat) {
+            // look at the passed config
+            const { opts } = request.server.app
+            if (opts) {
+              const { ipld } = opts
+              ipldFormat = ipld.formats.find((f) => f.codec === codec)
+            }
           }
 
-          node = await IpldFormats[codec].util.deserialize(data)
+          if (!ipldFormat) {
+            throw new Error(`Missing IPLD format "${codec}"`)
+          }
+          node = await ipldFormat.util.deserialize(data)
         }
 
         return {
