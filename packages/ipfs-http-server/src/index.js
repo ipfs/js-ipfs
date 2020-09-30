@@ -25,7 +25,7 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-async function serverCreator (serverAddrs, createServer, ipfs, cors) {
+async function serverCreator (serverAddrs, createServer, ipfs, cors, opts) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
@@ -33,7 +33,7 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   const servers = []
   for (const address of serverAddrs) {
     const addrParts = address.split('/')
-    const server = await createServer(addrParts[2], addrParts[4], ipfs, cors)
+    const server = await createServer(addrParts[2], addrParts[4], ipfs, cors, opts)
     await server.start()
     server.info.ma = hapiInfoToMultiaddr(server.info)
     servers.push(server)
@@ -49,7 +49,12 @@ class HttpApi {
     this._log.error = debug(LOG_ERROR)
   }
 
-  async start () {
+  /**
+   * Starts the IPFS HTTP server
+   * @param {object} [opts.ipld.formats] - IPLD custom formats
+   * @return {Promise<HttpApi>}
+   */
+  async start (opts = {}) {
     this._log('starting')
 
     const ipfs = this._ipfs
@@ -63,13 +68,13 @@ class HttpApi {
     this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs, {
       origin: config.API.HTTPHeaders['Access-Control-Allow-Origin'] || [],
       credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
-    })
+    }, opts)
 
     this._log('started')
     return this
   }
 
-  async _createApiServer (host, port, ipfs, cors) {
+  async _createApiServer (host, port, ipfs, cors, opts) {
     cors = {
       ...cors,
       additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
