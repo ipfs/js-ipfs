@@ -29,6 +29,7 @@ class Daemon {
 
   /**
    * Starts the IPFS HTTP server
+   * @param {object} [opts] - specify advanced configuration
    * @param {object} [opts.ipld.formats] - IPLD custom formats
    * @return {Promise<HttpApi>}
    */
