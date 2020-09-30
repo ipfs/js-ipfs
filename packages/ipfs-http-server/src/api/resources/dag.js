@@ -206,12 +206,9 @@ exports.put = {
           let ipldFormat = IpldFormats[codec]
           if (!ipldFormat) {
             // look at the passed config
-            const { opts } = request.server.app
-            if (opts) {
-              const { ipld } = opts
-              if (ipld) {
-                ipldFormat = ipld.formats.find((f) => f.codec === codec)
-              }
+            const ipldOpts = (request.server.app.opts && request.server.app.opts.ipld) || {}
+            if (ipldOpts.formats) {
+              ipldFormat = ipldOpts.formats.find((f) => f.codec === codec)
             }
           }
 
