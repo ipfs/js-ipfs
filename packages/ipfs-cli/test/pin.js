@@ -122,9 +122,9 @@ describe('pin', () => {
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
         path: pins.root
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
@@ -135,9 +135,9 @@ describe('pin', () => {
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add --recursive false ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} directly\n`)
@@ -148,9 +148,9 @@ describe('pin', () => {
         ...defaultPinOptions,
         path: pins.root,
         recursive: false
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add -r false ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} directly\n`)
@@ -163,9 +163,9 @@ describe('pin', () => {
         metadata: {
           key: 'value'
         }
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add --metadata key=value ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
@@ -178,9 +178,9 @@ describe('pin', () => {
         metadata: {
           key: 'value'
         }
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add -m key=value ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
@@ -193,9 +193,9 @@ describe('pin', () => {
         metadata: {
           key: 'value'
         }
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add --metadata-json '{"key":"value"}' ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
@@ -207,9 +207,9 @@ describe('pin', () => {
         path: pins.root,
         recursive: true,
         comments: undefined
-      }], defaultOptions).returns([{
-        cid: new CID(pins.root)
-      }])
+      }], defaultOptions).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add ${pins.root} --cid-base=base64`, { ipfs })
       const b64CidStr = new CID(pins.root).toV1().toString('base64')
@@ -223,9 +223,9 @@ describe('pin', () => {
       }], {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
-        cid: new CID(pins.root)
-      }])
+      }).returns([
+        new CID(pins.root)
+      ])
 
       const out = await cli(`pin add ${pins.root} --timeout=1s`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
