@@ -465,158 +465,6 @@ module.exports = (common, options) => {
       expect(actualBytes).to.deep.equal(newDataStream)
     })
 
-    it('shards a large directory when writing too many links to it', async () => {
-      const shardSplitThreshold = 10
-      const dirPath = `/sharded-dir-${Math.random()}`
-      const newFile = `file-${Math.random()}`
-      const newFilePath = `/${dirPath}/${newFile}`
-
-      await ipfs.files.mkdir(dirPath, {
-        shardSplitThreshold
-      })
-
-      for (let i = 0; i < shardSplitThreshold; i++) {
-        await ipfs.files.write(`/${dirPath}/file-${Math.random()}`, Uint8Array.from([0, 1, 2, 3]), {
-          create: true,
-          shardSplitThreshold
-        })
-      }
-
-      await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
-
-      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
-        create: true,
-        shardSplitThreshold
-      })
-
-      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
-
-      const files = await all(ipfs.files.ls(dirPath, {
-        long: true
-      }))
-
-      // new file should be in directory
-      expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
-    })
-
-    it('writes a file to an already sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-
-      const newFile = `file-${Math.random()}`
-      const newFilePath = `${shardedDirPath}/${newFile}`
-
-      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
-        create: true
-      })
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
-
-      const files = await all(ipfs.files.ls(shardedDirPath, {
-        long: true
-      }))
-
-      // new file should be in the directory
-      expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
-
-      // should be able to ls new file directly
-      await expect(all(ipfs.files.ls(newFilePath, {
-        long: true
-      }))).to.eventually.not.be.empty()
-    })
-
-    it('overwrites a file in a sharded directory when positions do not match', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const newFile = 'file-0.6944395883502592'
-      const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Uint8Array.from([3, 2, 1, 0])
-
-      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
-        create: true
-      })
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
-
-      // overwrite the file
-      await ipfs.files.write(newFilePath, newContent, {
-        create: true
-      })
-
-      // read the file back
-      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
-
-      expect(buffer).to.deep.equal(newContent)
-
-      // should be able to ls new file directly
-      await expect(all(ipfs.files.ls(newFilePath, {
-        long: true
-      }))).to.eventually.not.be.empty()
-    })
-
-    it('overwrites file in a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const newFile = `file-${Math.random()}`
-      const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Uint8Array.from([3, 2, 1, 0])
-
-      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
-        create: true
-      })
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
-
-      // overwrite the file
-      await ipfs.files.write(newFilePath, newContent, {
-        create: true
-      })
-
-      // read the file back
-      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
-
-      expect(buffer).to.deep.equal(newContent)
-
-      // should be able to ls new file directly
-      await expect(all(ipfs.files.ls(newFilePath, {
-        long: true
-      }))).to.eventually.not.be.empty()
-    })
-
-    it('overwrites a file in a subshard of a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const newFile = 'file-1a.txt'
-      const newFilePath = `${shardedDirPath}/${newFile}`
-      const newContent = Uint8Array.from([3, 2, 1, 0])
-
-      await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
-        create: true
-      })
-
-      // should still be a sharded directory
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
-
-      // overwrite the file
-      await ipfs.files.write(newFilePath, newContent, {
-        create: true
-      })
-
-      // read the file back
-      const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
-
-      expect(buffer).to.deep.equal(newContent)
-
-      // should be able to ls new file directly
-      await expect(all(ipfs.files.ls(newFilePath, {
-        long: true
-      }))).to.eventually.not.be.empty()
-    })
-
     it('writes a file with a different CID version to the parent', async () => {
       const directory = `cid-versions-${Math.random()}`
       const directoryPath = `/${directory}`
@@ -733,88 +581,6 @@ module.exports = (common, options) => {
       expect(actualBytes).to.deep.equal(expectedBytes)
     })
 
-    it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
-      const {
-        nextFile,
-        dirWithSomeFiles,
-        dirPath
-      } = await createTwoShards(ipfs, 75)
-
-      await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
-
-      await ipfs.files.write(nextFile.path, nextFile.content, {
-        create: true
-      })
-
-      const stats = await ipfs.files.stat(dirPath)
-      const updatedDirCid = stats.cid
-
-      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
-      expect(stats.type).to.equal('directory')
-      expect(updatedDirCid.toString()).to.equal('QmbLw9uCrQaFgweMskqMrsVKTwwakSg94GuMT3zht1P7CQ')
-    })
-
-    it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
-      const {
-        nextFile,
-        dirWithSomeFiles,
-        dirPath
-      } = await createTwoShards(ipfs, 100)
-
-      await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
-
-      await ipfs.files.write(nextFile.path, nextFile.content, {
-        create: true
-      })
-
-      const stats = await ipfs.files.stat(dirPath)
-      const updatedDirCid = stats.cid
-
-      expect(updatedDirCid.toString()).to.equal('QmcGTKoaZeMxVenyxnkP2riibE8vSEPobkN1oxvcEZpBW5')
-    })
-
-    it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
-      const {
-        nextFile,
-        dirWithSomeFiles,
-        dirPath
-      } = await createTwoShards(ipfs, 82)
-
-      await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
-
-      await ipfs.files.write(nextFile.path, nextFile.content, {
-        create: true
-      })
-
-      const stats = await ipfs.files.stat(dirPath)
-      const updatedDirCid = stats.cid
-
-      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
-      expect(stats.type).to.equal('directory')
-      expect(updatedDirCid.toString()).to.deep.equal('QmXeJ4ercHcxdiX7Vxm1Hit9AwsTNXcwCw5Ad32yW2HdHR')
-    })
-
-    it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
-      const {
-        nextFile,
-        dirWithSomeFiles,
-        dirPath
-      } = await createTwoShards(ipfs, 2187)
-
-      await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
-
-      await ipfs.files.write(nextFile.path, nextFile.content, {
-        create: true
-      })
-
-      const stats = await ipfs.files.stat(dirPath)
-      const updatedDirCid = stats.cid
-
-      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
-      expect(stats.type).to.equal('directory')
-      expect(updatedDirCid.toString()).to.deep.equal('QmY4o7GNvr5eZPnT6k6ALp5zkQ4eiUkJQ6eeUNsdSiqS4f')
-    })
-
     it('should write file and specify mode as a string', async function () {
       const mode = '0321'
       await testMode(mode, parseInt(mode, 8))
@@ -866,6 +632,262 @@ module.exports = (common, options) => {
         create: true,
         timeout: 1
       }))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('shards a large directory when writing too many links to it', async () => {
+        const shardSplitThreshold = 10
+        const dirPath = `/sharded-dir-${Math.random()}`
+        const newFile = `file-${Math.random()}`
+        const newFilePath = `/${dirPath}/${newFile}`
+
+        await ipfs.files.mkdir(dirPath, {
+          shardSplitThreshold
+        })
+
+        for (let i = 0; i < shardSplitThreshold; i++) {
+          await ipfs.files.write(`/${dirPath}/file-${Math.random()}`, Uint8Array.from([0, 1, 2, 3]), {
+            create: true,
+            shardSplitThreshold
+          })
+        }
+
+        await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
+
+        await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
+          create: true,
+          shardSplitThreshold
+        })
+
+        await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
+
+        const files = await all(ipfs.files.ls(dirPath, {
+          long: true
+        }))
+
+        // new file should be in directory
+        expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
+      })
+
+      it('results in the same hash as a sharded directory created by the importer when adding a new file', async function () {
+        const {
+          nextFile,
+          dirWithSomeFiles,
+          dirPath
+        } = await createTwoShards(ipfs, 75)
+
+        await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
+
+        await ipfs.files.write(nextFile.path, nextFile.content, {
+          create: true
+        })
+
+        const stats = await ipfs.files.stat(dirPath)
+        const updatedDirCid = stats.cid
+
+        await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+        expect(stats.type).to.equal('directory')
+        expect(updatedDirCid.toString()).to.equal('QmbLw9uCrQaFgweMskqMrsVKTwwakSg94GuMT3zht1P7CQ')
+      })
+
+      it('results in the same hash as a sharded directory created by the importer when creating a new subshard', async function () {
+        const {
+          nextFile,
+          dirWithSomeFiles,
+          dirPath
+        } = await createTwoShards(ipfs, 100)
+
+        await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
+
+        await ipfs.files.write(nextFile.path, nextFile.content, {
+          create: true
+        })
+
+        const stats = await ipfs.files.stat(dirPath)
+        const updatedDirCid = stats.cid
+
+        expect(updatedDirCid.toString()).to.equal('QmcGTKoaZeMxVenyxnkP2riibE8vSEPobkN1oxvcEZpBW5')
+      })
+
+      it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard', async function () {
+        const {
+          nextFile,
+          dirWithSomeFiles,
+          dirPath
+        } = await createTwoShards(ipfs, 82)
+
+        await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
+
+        await ipfs.files.write(nextFile.path, nextFile.content, {
+          create: true
+        })
+
+        const stats = await ipfs.files.stat(dirPath)
+        const updatedDirCid = stats.cid
+
+        await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+        expect(stats.type).to.equal('directory')
+        expect(updatedDirCid.toString()).to.deep.equal('QmXeJ4ercHcxdiX7Vxm1Hit9AwsTNXcwCw5Ad32yW2HdHR')
+      })
+
+      it('results in the same hash as a sharded directory created by the importer when adding a file to a subshard of a subshard', async function () {
+        const {
+          nextFile,
+          dirWithSomeFiles,
+          dirPath
+        } = await createTwoShards(ipfs, 2187)
+
+        await ipfs.files.cp(`/ipfs/${dirWithSomeFiles}`, dirPath)
+
+        await ipfs.files.write(nextFile.path, nextFile.content, {
+          create: true
+        })
+
+        const stats = await ipfs.files.stat(dirPath)
+        const updatedDirCid = stats.cid
+
+        await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+        expect(stats.type).to.equal('directory')
+        expect(updatedDirCid.toString()).to.deep.equal('QmY4o7GNvr5eZPnT6k6ALp5zkQ4eiUkJQ6eeUNsdSiqS4f')
+      })
+
+      it('writes a file to an already sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+
+        const newFile = `file-${Math.random()}`
+        const newFilePath = `${shardedDirPath}/${newFile}`
+
+        await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
+          create: true
+        })
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+        const files = await all(ipfs.files.ls(shardedDirPath, {
+          long: true
+        }))
+
+        // new file should be in the directory
+        expect(files.filter(file => file.name === newFile).pop()).to.be.ok()
+
+        // should be able to ls new file directly
+        await expect(all(ipfs.files.ls(newFilePath, {
+          long: true
+        }))).to.eventually.not.be.empty()
+      })
+
+      it('overwrites a file in a sharded directory when positions do not match', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const newFile = 'file-0.6944395883502592'
+        const newFilePath = `${shardedDirPath}/${newFile}`
+        const newContent = Uint8Array.from([3, 2, 1, 0])
+
+        await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
+          create: true
+        })
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+        // overwrite the file
+        await ipfs.files.write(newFilePath, newContent, {
+          create: true
+        })
+
+        // read the file back
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
+
+        expect(buffer).to.deep.equal(newContent)
+
+        // should be able to ls new file directly
+        await expect(all(ipfs.files.ls(newFilePath, {
+          long: true
+        }))).to.eventually.not.be.empty()
+      })
+
+      it('overwrites file in a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const newFile = `file-${Math.random()}`
+        const newFilePath = `${shardedDirPath}/${newFile}`
+        const newContent = Uint8Array.from([3, 2, 1, 0])
+
+        await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
+          create: true
+        })
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+        // overwrite the file
+        await ipfs.files.write(newFilePath, newContent, {
+          create: true
+        })
+
+        // read the file back
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
+
+        expect(buffer).to.deep.equal(newContent)
+
+        // should be able to ls new file directly
+        await expect(all(ipfs.files.ls(newFilePath, {
+          long: true
+        }))).to.eventually.not.be.empty()
+      })
+
+      it('overwrites a file in a subshard of a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const newFile = 'file-1a.txt'
+        const newFilePath = `${shardedDirPath}/${newFile}`
+        const newContent = Uint8Array.from([3, 2, 1, 0])
+
+        await ipfs.files.write(newFilePath, Uint8Array.from([0, 1, 2, 3]), {
+          create: true
+        })
+
+        // should still be a sharded directory
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+        // overwrite the file
+        await ipfs.files.write(newFilePath, newContent, {
+          create: true
+        })
+
+        // read the file back
+        const buffer = uint8ArrayConcat(await all(ipfs.files.read(newFilePath)))
+
+        expect(buffer).to.deep.equal(newContent)
+
+        // should be able to ls new file directly
+        await expect(all(ipfs.files.ls(newFilePath, {
+          long: true
+        }))).to.eventually.not.be.empty()
+      })
     })
   })
 }

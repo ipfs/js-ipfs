@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "ipfs": "^0.50.1",
-    "it-all": "^1.0.1",
+    "it-all": "^1.0.4",
     "test-ipfs-example": "^2.0.3"
   },
   "browser": {

@@ -32,7 +32,7 @@ module.exports = (common, options) => {
       const res = await ipfs.bootstrap.list()
 
       const peers = res.Peers
-      expect(peers).to.exist()
+      expect(peers).to.be.an('Array')
     })
   })
 }

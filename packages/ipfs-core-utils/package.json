@@ -18,9 +18,9 @@
   "scripts": {
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
-    "test:node": "aegir test -t node",
     "test:electron": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
+    "test:node": "aegir test -t node",
     "lint": "aegir lint",
     "build": "aegir build",
     "clean": "rm -rf ./dist",
@@ -31,15 +31,15 @@
     "blob-to-it": "0.0.2",
     "browser-readablestream-to-it": "0.0.2",
     "cids": "^1.0.0",
-    "err-code": "^2.0.0",
+    "err-code": "^2.0.3",
     "ipfs-utils": "git://github.com/ipfs/js-ipfs-utils#xhr-2",
-    "it-all": "^1.0.1",
-    "it-map": "^1.0.2",
+    "it-all": "^1.0.4",
+    "it-map": "^1.0.4",
     "it-peekable": "0.0.1",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
     "aegir": "^26.0.0",
-    "delay": "^4.3.0"
+    "delay": "^4.4.0"
   }
 }

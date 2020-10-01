@@ -23,7 +23,7 @@ module.exports = {
       served: true,
       included: false
     }],
-    browserNoActivityTimeout: 100 * 1000
+    browserNoActivityTimeout: 600 * 1000
   },
   webpack: {
     node: {
@@ -75,7 +75,7 @@ module.exports = {
           type: 'js',
           ipfsModule: require(__dirname),
           ipfsHttpModule: require('ipfs-http-client'),
-          ipfsBin: path.join(__dirname, 'src', 'cli', 'bin.js'),
+          ipfsBin: path.join(__dirname, 'src', 'cli.js'),
           ipfsOptions: {
             libp2p: {
               dialer: {
