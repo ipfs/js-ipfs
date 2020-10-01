@@ -99,7 +99,7 @@
     "ipfs-unixfs": "^2.0.2",
     "ipfs-unixfs-exporter": "^3.0.2",
     "ipfs-unixfs-importer": "^3.0.2",
-    "ipfs-utils": "^3.0.0",
+    "ipfs-utils": "git://github.com/ipfs/js-ipfs-utils#xhr-2",
     "ipld": "^0.27.1",
     "ipld-bitcoin": "^0.4.0",
     "ipld-block": "^0.10.0",

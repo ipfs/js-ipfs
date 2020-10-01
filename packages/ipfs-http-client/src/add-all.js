@@ -11,10 +11,13 @@ const AbortController = require('abort-controller').default
 module.exports = configure((api) => {
   // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {import('../../ipfs/src/core/components/add-all').AddAll<import('.').HttpOptions>}
+   * @type {import('../../ipfs/src/core/components/add-all').AddAll<>}
    */
   async function * addAll (input, options = {}) {
-    const progressFn = options.progress
+    const onUploadProgress = typeof options.progress === 'function'
+      ? ({loaded}) => options.progress(loaded)
+      : null
+    
 
     // allow aborting requests on body errors
     const controller = new AbortController()
@@ -24,9 +27,12 @@ module.exports = configure((api) => {
       searchParams: toUrlSearchParams({
         'stream-channels': true,
         ...options,
-        progress: Boolean(progressFn)
+        // We use `onUploadProgress` instead because in browser response won't
+        // stream until body is uploaded, at which point it's usless.
+        progress: false
       }),
       timeout: options.timeout,
+      onUploadProgress,
       signal,
       ...(
         await multipartRequest(input, controller, options.headers)
@@ -38,8 +44,6 @@ module.exports = configure((api) => {
 
       if (file.hash !== undefined) {
         yield toCoreInterface(file)
-      } else if (progressFn) {
-        progressFn(file.bytes || 0)
       }
     }
   }
@@ -74,3 +78,9 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   // @ts-ignore
   return output
 }
+
+/**
+ * @typedef {import('./index').HttpOptions} HttpOptions
+ * @typedef {Object} HttpAddOptions
+ * @property {}
+ */
