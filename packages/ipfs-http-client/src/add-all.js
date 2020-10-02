@@ -15,9 +15,8 @@ module.exports = configure((api) => {
    */
   async function * addAll (input, options = {}) {
     const onUploadProgress = typeof options.progress === 'function'
-      ? ({loaded}) => options.progress(loaded)
+      ? ({ loaded }) => options.progress(loaded)
       : null
-    
 
     // allow aborting requests on body errors
     const controller = new AbortController()
