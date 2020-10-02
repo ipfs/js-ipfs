@@ -111,7 +111,7 @@ module.exports = (common, options) => {
       expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
       expect(file.path).to.equal(fixtures.bigFile.cid)
       expect(progCalled).to.be.true()
-      expect(accumProgress).to.greaterThan(fixtures.bigFile.data.length)
+      expect(accumProgress).to.be.at.least(fixtures.bigFile.data.length)
     })
 
     it('should add an empty file with progress enabled', async () => {
@@ -127,7 +127,7 @@ module.exports = (common, options) => {
       expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
       expect(file.path).to.equal(fixtures.emptyFile.cid)
       expect(progCalled).to.be.true()
-      expect(accumProgress).to.greaterThan(fixtures.emptyFile.data.length)
+      expect(accumProgress).to.be.at.least(fixtures.emptyFile.data.length)
     })
 
     it('should add an empty file without progress enabled', async () => {
