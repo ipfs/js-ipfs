@@ -103,173 +103,6 @@ module.exports = (common, options) => {
       }
     })
 
-    it('moves a sharded directory to a normal directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `/dir-${Math.random()}`
-      const finalShardedDirPath = `${dirPath}${shardedDirPath}`
-
-      await ipfs.files.mkdir(dirPath)
-      await ipfs.files.mv(shardedDirPath, dirPath)
-
-      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(shardedDirPath)
-        throw new Error('Dir was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a normal directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `/dir-${Math.random()}`
-      const finalDirPath = `${shardedDirPath}${dirPath}`
-
-      await ipfs.files.mkdir(dirPath)
-      await ipfs.files.mv(dirPath, shardedDirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(dirPath)
-        throw new Error('Dir was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a sharded directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const otherShardedDirPath = await createShardedDirectory(ipfs)
-      const finalShardedDirPath = `${shardedDirPath}${otherShardedDirPath}`
-
-      await ipfs.files.mv(otherShardedDirPath, shardedDirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(otherShardedDirPath)
-        throw new Error('Sharded dir was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a file from a normal directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `/dir-${Math.random()}`
-      const file = `file-${Math.random()}.txt`
-      const filePath = `${dirPath}/${file}`
-      const finalFilePath = `${shardedDirPath}/${file}`
-
-      await ipfs.files.mkdir(dirPath)
-      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
-        create: true
-      })
-
-      await ipfs.files.mv(filePath, shardedDirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-
-      try {
-        await ipfs.files.stat(filePath)
-        throw new Error('File was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a file from a sharded directory to a normal directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `/dir-${Math.random()}`
-      const file = `file-${Math.random()}.txt`
-      const filePath = `${shardedDirPath}/${file}`
-      const finalFilePath = `${dirPath}/${file}`
-
-      await ipfs.files.mkdir(dirPath)
-      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
-        create: true
-      })
-
-      await ipfs.files.mv(filePath, dirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-      expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(filePath)
-        throw new Error('File was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a file from a sharded directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const otherShardedDirPath = await createShardedDirectory(ipfs)
-      const file = `file-${Math.random()}.txt`
-      const filePath = `${shardedDirPath}/${file}`
-      const finalFilePath = `${otherShardedDirPath}/${file}`
-
-      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
-        create: true
-      })
-
-      await ipfs.files.mv(filePath, otherShardedDirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-      await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(filePath)
-        throw new Error('File was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
-    it('moves a file from a sub-shard of a sharded directory to a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const otherShardedDirPath = await createShardedDirectory(ipfs)
-      const file = 'file-1a.txt'
-      const filePath = `${shardedDirPath}/${file}`
-      const finalFilePath = `${otherShardedDirPath}/${file}`
-
-      await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
-        create: true
-      })
-
-      await ipfs.files.mv(filePath, otherShardedDirPath)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
-      expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
-      await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
-
-      try {
-        await ipfs.files.stat(filePath)
-        throw new Error('File was not removed')
-      } catch (error) {
-        expect(error.message).to.contain('does not exist')
-      }
-    })
-
     it('should respect timeout option when moving files', async () => {
       const source = `/source-file-${Math.random()}.txt`
       const destination = `/dest-file-${Math.random()}.txt`
@@ -282,6 +115,195 @@ module.exports = (common, options) => {
       await testTimeout(() => ipfs.files.mv(source, destination, {
         timeout: 1
       }))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('moves a sharded directory to a normal directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `/dir-${Math.random()}`
+        const finalShardedDirPath = `${dirPath}${shardedDirPath}`
+
+        await ipfs.files.mkdir(dirPath)
+        await ipfs.files.mv(shardedDirPath, dirPath)
+
+        await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(shardedDirPath)
+          throw new Error('Dir was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a normal directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `/dir-${Math.random()}`
+        const finalDirPath = `${shardedDirPath}${dirPath}`
+
+        await ipfs.files.mkdir(dirPath)
+        await ipfs.files.mv(dirPath, shardedDirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalDirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(dirPath)
+          throw new Error('Dir was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a sharded directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const otherShardedDirPath = await createShardedDirectory(ipfs)
+        const finalShardedDirPath = `${shardedDirPath}${otherShardedDirPath}`
+
+        await ipfs.files.mv(otherShardedDirPath, shardedDirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(otherShardedDirPath)
+          throw new Error('Sharded dir was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a file from a normal directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `/dir-${Math.random()}`
+        const file = `file-${Math.random()}.txt`
+        const filePath = `${dirPath}/${file}`
+        const finalFilePath = `${shardedDirPath}/${file}`
+
+        await ipfs.files.mkdir(dirPath)
+        await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
+          create: true
+        })
+
+        await ipfs.files.mv(filePath, shardedDirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
+
+        try {
+          await ipfs.files.stat(filePath)
+          throw new Error('File was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a file from a sharded directory to a normal directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `/dir-${Math.random()}`
+        const file = `file-${Math.random()}.txt`
+        const filePath = `${shardedDirPath}/${file}`
+        const finalFilePath = `${dirPath}/${file}`
+
+        await ipfs.files.mkdir(dirPath)
+        await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
+          create: true
+        })
+
+        await ipfs.files.mv(filePath, dirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
+        expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(filePath)
+          throw new Error('File was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a file from a sharded directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const otherShardedDirPath = await createShardedDirectory(ipfs)
+        const file = `file-${Math.random()}.txt`
+        const filePath = `${shardedDirPath}/${file}`
+        const finalFilePath = `${otherShardedDirPath}/${file}`
+
+        await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
+          create: true
+        })
+
+        await ipfs.files.mv(filePath, otherShardedDirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
+        await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(filePath)
+          throw new Error('File was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
+
+      it('moves a file from a sub-shard of a sharded directory to a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const otherShardedDirPath = await createShardedDirectory(ipfs)
+        const file = 'file-1a.txt'
+        const filePath = `${shardedDirPath}/${file}`
+        const finalFilePath = `${otherShardedDirPath}/${file}`
+
+        await ipfs.files.write(filePath, Uint8Array.from([0, 1, 2, 3, 4]), {
+          create: true
+        })
+
+        await ipfs.files.mv(filePath, otherShardedDirPath)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(shardedDirPath)).type).to.equal('directory')
+        expect((await ipfs.files.stat(finalFilePath)).type).to.equal('file')
+        await expect(isShardAtPath(otherShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(otherShardedDirPath)).type).to.equal('directory')
+
+        try {
+          await ipfs.files.stat(filePath)
+          throw new Error('File was not removed')
+        } catch (error) {
+          expect(error.message).to.contain('does not exist')
+        }
+      })
     })
   })
 }

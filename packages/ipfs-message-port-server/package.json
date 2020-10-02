@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "it-all": "^1.0.1"
+    "it-all": "^1.0.4"
   },
   "devDependencies": {
     "@types/it-all": "^1.0.0",

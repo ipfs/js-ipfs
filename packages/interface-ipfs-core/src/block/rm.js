@@ -159,5 +159,10 @@ module.exports = (common, options) => {
       expect(result).to.have.property('error').that.is.an('Error')
         .with.property('message').that.includes('pinned')
     })
+
+    it('should throw error for invalid CID input', () => {
+      return expect(all(ipfs.block.rm('INVALID CID')))
+        .to.eventually.be.rejected()
+    })
   })
 }

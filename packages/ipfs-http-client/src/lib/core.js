@@ -71,6 +71,11 @@ const errorHandler = async (response) => {
     error = new HTTP.TimeoutError(response)
   }
 
+  // This also gets returned
+  if (msg && msg.includes('request timed out')) {
+    error = new HTTP.TimeoutError(response)
+  }
+
   // If we managed to extract a message from the response, use it
   if (msg) {
     error.message = msg
