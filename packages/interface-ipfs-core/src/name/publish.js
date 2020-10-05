@@ -7,6 +7,8 @@ const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
 const testTimeout = require('../utils/test-timeout')
+const CID = require('cids')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -41,10 +43,13 @@ module.exports = (common, options) => {
       this.timeout(50 * 1000)
 
       const value = fixture.cid
+      const keys = await ipfs.key.list()
+      const self = keys.find(key => key.name === 'self')
 
       const res = await ipfs.name.publish(value, { allowOffline: true })
       expect(res).to.exist()
-      expect(res.name).to.equal(nodeId)
+
+      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -58,6 +63,8 @@ module.exports = (common, options) => {
       this.timeout(50 * 1000)
 
       const value = 'QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
+      const keys = await ipfs.key.list()
+      const self = keys.find(key => key.name === 'self')
 
       const options = {
         resolve: false,
@@ -69,7 +76,7 @@ module.exports = (common, options) => {
 
       const res = await ipfs.name.publish(value, options)
       expect(res).to.exist()
-      expect(res.name).to.equal(nodeId)
+      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -89,7 +96,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, options)
 
       expect(res).to.exist()
-      expect(res.name).to.equal(key.id)
+      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(key.id).toV1().toString('base36'))
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
   })
