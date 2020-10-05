@@ -8,7 +8,6 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
 const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
-const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
