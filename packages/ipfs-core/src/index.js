@@ -186,6 +186,6 @@ module.exports = {
 /**
  * Utility type to write type level conditionals
  * @template Conditon, Then, Else
- * @typedef {Conditon extends false
+ * @typedef {NonNullable<Conditon> extends false
  *            ? Else : Then } If
  */
