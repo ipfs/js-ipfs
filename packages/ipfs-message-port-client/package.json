@@ -22,10 +22,8 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "test": "npm run test:browser",
-    "test:browser": "npm run build:test-worker && aegir test -t browser",
-    "test:chrome": "aegir test -t browser -- --browsers ChromeHeadless",
-    "test:firefox": "aegir test -t browser -- --browsers FirefoxHeadless",
+    "test": "echo 'Only interface tests live here'",
+    "test:interface:message-port-client": "npm run build:test-worker && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
     "build": "aegir build",

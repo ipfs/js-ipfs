@@ -7,7 +7,8 @@ const tests = {
   findPeer: require('./find-peer'),
   provide: require('./provide'),
   findProvs: require('./find-provs'),
-  query: require('./query')
+  query: require('./query'),
+  disabled: require('./disabled')
 }
 
 module.exports = createSuite(tests)

@@ -25,6 +25,13 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`Enabled`](#enabled)
 - [`Swarm`](#swarm-1)
   - [`ConnMgr`](#connmgr)
+  - [Example](#example)
+- [`API`](#api-1)
+  - [`HTTPHeaders`](#httpheaders)
+    - [`Access-Control-Allow-Origin`](#access-control-allow-origin)
+      - [Example](#example-1)
+    - [`Access-Control-Allow-Credentials`](#access-control-allow-credentials)
+      - [Example](#example-2)
 
 ## Profiles
 
@@ -260,6 +267,58 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
     "ConnMgr": {
       "LowWater": 100,
       "HighWater": 200,
+    }
+  }
+}
+```
+
+## `API`
+
+Settings applied to the HTTP RPC API server
+
+### `HTTPHeaders`
+
+HTTP header settings used by the HTTP RPC API server
+
+#### `Access-Control-Allow-Origin`
+
+The RPC API endpoints running on your local node are protected by the [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.
+
+When a request is made that sends an `Origin` header, that Origin must be present in the allowed origins configured for the node, otherwise the browser will disallow that request to proceed, unless `mode: 'no-cors'` is set on the request, in which case the response will be opaque.
+
+To allow requests from web browsers, configure the `API.HTTPHeaders.Access-Control-Allow-Origin` setting.  This is an array of URL strings with safelisted Origins.
+
+##### Example
+
+If you are running a webapp locally that you access via the URL `http://127.0.0.1:3000`, you must add it to the list of allowed origins in order to make API requests from that webapp in the browser:
+
+```json
+{
+  "API": {
+    "HTTPHeaders": {
+      "Access-Control-Allow-Origin": [
+        "http://127.0.0.1:3000"
+      ]
+    }
+  }
+}
+```
+
+Note that the origin must match exactly so `'http://127.0.0.1:3000'` is treated differently to `'http://127.0.0.1:3000/'`
+
+#### `Access-Control-Allow-Credentials`
+
+The [Access-Control-Allow-Credentials](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials) header allows client-side JavaScript running in the browser to send and receive credentials with requests - cookies, auth headers or TLS certificates.
+
+For most applications this will not be necessary but if you require this to be set, see the example below for how to configure it.
+
+##### Example
+
+```json
+{
+  "API": {
+    "HTTPHeaders": {
+      "Access-Control-Allow-Credentials": true
     }
   }
 }

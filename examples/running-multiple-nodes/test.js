@@ -25,7 +25,7 @@ async function startCliNode () {
       IPFS_PATH: repoDir
     }
   }
-  const ipfs = require.resolve('ipfs/src/cli/bin.js')
+  const ipfs = require.resolve('ipfs/src/cli.js')
 
   await execa(ipfs, ['init'], opts)
   await execa(ipfs, ['config', 'Addresses.Swarm', '--json', JSON.stringify([`/ip4/0.0.0.0/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`])], opts)

@@ -149,29 +149,6 @@ module.exports = (common, options) => {
       expect(rawNodeStats.type).to.equal('file') // this is what go does
     })
 
-    it('stats a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-
-      const stats = await ipfs.files.stat(`${shardedDirPath}`)
-
-      expect(stats.type).to.equal('directory')
-      expect(stats.size).to.equal(0)
-    })
-
-    it('stats a file inside a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const files = []
-
-      for await (const file of ipfs.files.ls(`${shardedDirPath}`)) {
-        files.push(file)
-      }
-
-      const stats = await ipfs.files.stat(`${shardedDirPath}/${files[0].name}`)
-
-      expect(stats.type).to.equal('file')
-      expect(stats.size).to.equal(7)
-    })
-
     it('stats a dag-cbor node', async () => {
       const path = '/cbor.node'
       const node = {}
@@ -389,6 +366,51 @@ module.exports = (common, options) => {
       await testTimeout(() => ipfs.files.stat(path, {
         timeout: 1
       }))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('stats a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+
+        const stats = await ipfs.files.stat(`${shardedDirPath}`)
+
+        expect(stats.type).to.equal('directory')
+        expect(stats.size).to.equal(0)
+      })
+
+      it('stats a file inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const files = []
+
+        for await (const file of ipfs.files.ls(`${shardedDirPath}`)) {
+          files.push(file)
+        }
+
+        const stats = await ipfs.files.stat(`${shardedDirPath}/${files[0].name}`)
+
+        expect(stats.type).to.equal('file')
+        expect(stats.size).to.equal(7)
+      })
     })
   })
 }

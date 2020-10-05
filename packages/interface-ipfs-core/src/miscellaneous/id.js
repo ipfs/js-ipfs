@@ -5,6 +5,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const Multiaddr = require('multiaddr')
 const CID = require('cids')
 const testTimeout = require('../utils/test-timeout')
+const { isWebWorker } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -62,6 +63,15 @@ module.exports = (common, options) => {
         '/meshsub/1.0.0',
         '/meshsub/1.1.0'
       ])
+    })
+
+    it('should return swarm ports opened after startup', async function () {
+      if (isWebWorker) {
+        // TODO: webworkers are not currently dialable
+        return this.skip()
+      }
+
+      await expect(ipfs.id()).to.eventually.have.property('addresses').that.is.not.empty()
     })
   })
 }

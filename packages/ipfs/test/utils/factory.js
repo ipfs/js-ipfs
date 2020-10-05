@@ -7,7 +7,7 @@ const commonOptions = {
   test: true,
   type: 'proc',
   ipfsHttpModule: require('ipfs-http-client'),
-  ipfsModule: require('../../src'),
+  ipfsModule: require('ipfs-core'),
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
     libp2p: {
@@ -22,7 +22,7 @@ const commonOptions = {
 const commonOverrides = {
   js: {
     ...(isNode ? {
-      ipfsBin: './src/cli/bin.js'
+      ipfsBin: require.resolve('../../src/cli.js')
     } : {}),
     ...(isBrowser ? {
       remote: true
@@ -40,6 +40,9 @@ const commonOverrides = {
         }
       }
     } : {})
+  },
+  go: {
+    ipfsBin: isNode ? require('go-ipfs').path() : undefined
   }
 }
 
