@@ -55,6 +55,7 @@ class Query {
 
   /**
    * Data that will be structure cloned over message channel.
+   *
    * @returns {Object}
    */
   toJSON () {
@@ -63,6 +64,7 @@ class Query {
 
   /**
    * Data that will be transferred over message channel.
+   *
    * @returns {Transferable[]}
    */
   transfer () {
@@ -80,11 +82,13 @@ class Query {
  *
  * It is expected that there will be at most one transport for a message port
  * instance.
+ *
  * @class
  */
 class Transport {
   /**
    * Create transport for the underlying message port.
+   *
    * @param {MessagePort} [port]
    */
   constructor (port) {
@@ -209,6 +213,7 @@ class Transport {
   /**
    * Aborts this query by failing with `AbortError` and sending an abort message
    * to the server. If query is no longer pending this has no effect.
+   *
    * @param {string} id
    */
   abort (id) {
@@ -230,6 +235,7 @@ class Transport {
 
   /**
    * Sends a given `query` with a given `id` over the message channel.
+   *
    * @param {MessagePort} port
    * @param {string} id
    * @param {Query<any, any>} query
@@ -249,6 +255,7 @@ class Transport {
 
   /**
    * Handler is invoked when message on the message port is received.
+   *
    * @param {MessageEvent} event
    */
   handleEvent (event) {

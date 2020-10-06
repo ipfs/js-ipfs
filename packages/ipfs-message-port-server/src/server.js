@@ -36,7 +36,6 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
 /**
  * @template T
  * @typedef {import('ipfs-message-port-protocol/src/rpc').RPCQuery<T>} RPCQuery
-
  */
 
 /**
@@ -87,9 +86,11 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
 
 /**
  * Represents a client query received on the server.
+ *
  * @template T
  * @extends {ServiceQuery<T>}
  */
+
 class Query {
   /**
    * @param {Namespace<T>} namespace
@@ -125,6 +126,7 @@ class Query {
 
 /**
  * Server wraps `T` service and executes queries received from connected ports.
+ *
  * @template T
  */
 
@@ -156,6 +158,7 @@ class Server {
 
   /**
    * Handles messages received from connected clients
+   *
    * @param {MessageEvent} event
    * @returns {void}
    */
@@ -183,6 +186,7 @@ class Server {
 
   /**
    * Abort query for the given id.
+   *
    * @param {string} id
    */
   abort (id) {
@@ -195,6 +199,7 @@ class Server {
 
   /**
    * Handles query received from the client.
+   *
    * @param {string} id
    * @param {Query<T>} query
    * @param {MessagePort} port

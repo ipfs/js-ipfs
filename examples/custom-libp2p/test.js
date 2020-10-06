@@ -5,7 +5,7 @@ const execa = require('execa')
 const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
 const MPLEX = require('libp2p-mplex')
-const SECIO = require('libp2p-secio')
+const { NOISE } = require('libp2p-noise')
 const PeerId = require('peer-id')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
@@ -41,7 +41,7 @@ async function test () {
             MPLEX
           ],
           connEncryption: [
-            SECIO
+            NOISE
           ]
         }
       })

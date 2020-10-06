@@ -46,7 +46,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^27.0.0",
     "file-type": "^15.0.1",
     "sinon": "^9.0.3"
   }

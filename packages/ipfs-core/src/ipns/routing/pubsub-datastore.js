@@ -26,9 +26,9 @@ class IpnsPubsubDatastore {
 
   /**
    * Put a value to the pubsub datastore indexed by the received key properly encoded.
-   * @param {Buffer} key identifier of the value.
-   * @param {Buffer} value value to be stored.
-   * @param {function(Error)} callback
+   *
+   * @param {Buffer} key - identifier of the value.
+   * @param {Buffer} value - value to be stored.
    * @returns {void}
    */
   async put (key, value) { // eslint-disable-line require-await
@@ -39,9 +39,9 @@ class IpnsPubsubDatastore {
    * Get a value from the pubsub datastore indexed by the received key properly encoded.
    * Also, the identifier topic is subscribed to and the pubsub datastore records will be
    * updated once new publishes occur.
-   * @param {Buffer} key identifier of the value to be obtained.
-   * @param {function(Error, Buffer)} callback
-   * @returns {void}
+   *
+   * @param {Buffer} key - identifier of the value to be obtained.
+   * @returns {Promise<Buffer>}
    */
   async get (key) {
     let res
@@ -98,8 +98,8 @@ class IpnsPubsubDatastore {
 
   /**
    * Get pubsub subscriptions related to ipns.
-   * @param {function(Error, Object)} callback
-   * @returns {Array<Object>}
+   *
+   * @returns {string[]}
    */
   getSubscriptions () {
     const subscriptions = Object.values(this._subscriptions).filter(Boolean)
@@ -109,9 +109,9 @@ class IpnsPubsubDatastore {
 
   /**
    * Cancel pubsub subscriptions related to ipns.
-   * @param {String} name ipns path to cancel the pubsub subscription.
-   * @param {function(Error, Object)} callback
-   * @returns {void}
+   *
+   * @param {string} name - ipns path to cancel the pubsub subscription.
+   * @returns {{canceled: boolean}}
    */
   async cancel (name) { // eslint-disable-line require-await
     if (typeof name !== 'string') {

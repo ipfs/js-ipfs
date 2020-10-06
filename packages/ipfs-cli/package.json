@@ -74,7 +74,7 @@
     "yargs": "^16.0.3"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^27.0.0",
     "nanoid": "^3.1.12",
     "ncp": "^2.0.0",
     "rimraf": "^3.0.2",

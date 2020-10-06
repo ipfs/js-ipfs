@@ -70,7 +70,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^27.0.0",
     "form-data": "^3.0.0",
     "iso-random-stream": "^1.1.1",
     "it-to-buffer": "^1.0.2",

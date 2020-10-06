@@ -29,6 +29,7 @@ class IPFSClient extends CoreClient {
   /**
    * Attaches IPFS client to the given message port. Throws
    * exception if client is already attached.
+   *
    * @param {IPFSClient} self
    * @param {MessagePort} port
    */
@@ -41,6 +42,7 @@ class IPFSClient extends CoreClient {
    * This can be useful when in a scenario where obtaining message port happens
    * later on in the application logic. Datached IPFS client will queue all the
    * API calls and flush them once client is attached.
+   *
    * @returns {IPFSClient}
    */
   static detached () {
@@ -50,6 +52,7 @@ class IPFSClient extends CoreClient {
   /**
    * Creates IPFS client from the message port (assumes that
    * `ipfs-message-port-service` is instantiated on the other end)
+   *
    * @param {MessagePort} port
    * @returns {IPFSClient}
    */

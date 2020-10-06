@@ -47,6 +47,7 @@ exports.decodeNode = decodeNode
  *
  * If `transfer` array is provided all the encountered `ArrayBuffer`s within
  * this node will be added to transfer so they are moved across without copy.
+ *
  * @param {DAGNode} dagNode
  * @param {Transferable[]} [transfer]
  * @returns {EncodedDAGNode}
@@ -63,6 +64,7 @@ exports.encodeNode = encodeNode
  * Recursively traverses passed `value` and collects encountered `CID` instances
  * into provided `cids` array. If `transfer` array is passed collects all the
  * `ArrayBuffer`s into it.
+ *
  * @param {DAGNode} value
  * @param {CID[]} cids
  * @param {Transferable[]} [transfer]
