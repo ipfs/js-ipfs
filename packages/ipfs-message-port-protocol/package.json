@@ -36,7 +36,7 @@
     "ipld-block": "^0.10.1"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^27.0.0",
     "interface-ipfs-core": "^0.140.0",
     "uint8arrays": "^1.1.0"
   },

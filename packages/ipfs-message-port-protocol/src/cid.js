@@ -13,6 +13,7 @@ const CID = require('cids')
  * Encodes CID (well not really encodes it as all own properties are going to be
  * be cloned anyway). If `transfer` array is passed underlying `ArrayBuffer`
  * will be added for the transfer list.
+ *
  * @param {CID} cid
  * @param {Transferable[]} [transfer]
  * @returns {EncodedCID}
@@ -28,6 +29,7 @@ exports.encodeCID = encodeCID
 /**
  * Decodes encoded CID (well sort of instead it makes nasty mutations to turn
  * structure cloned CID back into itself).
+ *
  * @param {EncodedCID} encodedCID
  * @returns {CID}
  */

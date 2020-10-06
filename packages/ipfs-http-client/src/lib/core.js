@@ -97,13 +97,13 @@ const parseTimeout = (value) => {
 
 /**
  * @typedef {Object} ClientOptions
- * @prop {string} [host]
- * @prop {number} [port]
- * @prop {string} [protocol]
- * @prop {Headers|Record<string, string>} [headers] - Request headers.
- * @prop {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
- * @prop {string} [apiPath] - Path to the API.
- * @prop {URL|string} [url] - Full API URL.
+ * @property {string} [host]
+ * @property {number} [port]
+ * @property {string} [protocol]
+ * @property {Headers|Record<string, string>} [headers] - Request headers.
+ * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
+ * @property {string} [apiPath] - Path to the API.
+ * @property {URL|string} [url] - Full API URL.
  */
 
 class Client extends HTTP {

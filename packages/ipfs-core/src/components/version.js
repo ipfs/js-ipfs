@@ -14,6 +14,7 @@ const { withTimeoutOption } = require('../utils')
 
 /**
  * Returns the implementation version
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback Version
  * @param {import('../utils').AbortOptions & ExtraOptions} [options]
@@ -21,7 +22,6 @@ const { withTimeoutOption } = require('../utils')
  */
 
 module.exports = ({ repo }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {Version<{}>}
    */

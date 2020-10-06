@@ -36,9 +36,9 @@ class FilesClient extends Client {
    *
    * @param {string|CID} pathOrCID
    * @param {Object} [options]
-   * @param {boolean} [options.hash=false] If true will only return hash
-   * @param {boolean} [options.size=false] If true will only return size
-   * @param {boolean} [options.withLocal=false] If true computes size of the dag that is local, and total size when possible
+   * @param {boolean} [options.hash=false] - If true will only return hash
+   * @param {boolean} [options.size=false] - If true will only return size
+   * @param {boolean} [options.withLocal=false] - If true computes size of the dag that is local, and total size when possible
    * @param {number} [options.timeout]
    * @param {AbortSignal} [options.signal]
    * @returns {Promise<Stat>}
@@ -60,6 +60,7 @@ module.exports = FilesClient
 
 /**
  * Turns content address (path or CID) into path.
+ *
  * @param {string|CID} pathOrCID
  * @returns {string}
  */

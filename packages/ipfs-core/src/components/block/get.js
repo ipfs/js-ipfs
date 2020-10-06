@@ -15,6 +15,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Get a raw IPFS block.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback BlockGet
  * @param {CID | string | Buffer} cid - A CID that corresponds to the desired block
@@ -23,7 +24,6 @@ const { withTimeoutOption } = require('../../utils')
  */
 
 module.exports = ({ blockService, preload }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {BlockGet<PreloadOptions>}
    */
