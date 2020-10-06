@@ -97,7 +97,6 @@
     "libp2p-mplex": "^0.10.0",
     "libp2p-noise": "^2.0.1",
     "libp2p-record": "^0.9.0",
-    "libp2p-secio": "^0.13.1",
     "libp2p-tcp": "^0.15.1",
     "libp2p-webrtc-star": "^0.20.1",
     "libp2p-websockets": "^0.14.0",

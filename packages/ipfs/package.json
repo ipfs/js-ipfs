@@ -40,7 +40,7 @@
     "ipfs-core": "0.0.1",
     "ipfs-repo": "^6.0.3",
     "semver": "^7.3.2",
-    "update-notifier": "^4.0.0"
+    "update-notifier": "^5.0.0"
   },
   "devDependencies": {
     "aegir": "git://github.com/ipfs/aegir#master",
@@ -48,7 +48,7 @@
     "cross-env": "^7.0.0",
     "delay": "^4.4.0",
     "form-data": "^3.0.0",
-    "go-ipfs": "^0.6.0",
+    "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.140.0",
     "ipfs-http-client": "^47.0.1",
     "ipfs-interop": "^3.0.0",
