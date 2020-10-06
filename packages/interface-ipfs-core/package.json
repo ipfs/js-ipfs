@@ -66,7 +66,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "git://github.com/ipfs/aegir#master",
+    "aegir": "^27.0.0",
     "ipfsd-ctl": "^7.0.0"
   },
   "contributors": [

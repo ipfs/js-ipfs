@@ -36,7 +36,7 @@
     "ipld-block": "^0.10.1"
   },
   "devDependencies": {
-    "aegir": "git://github.com/ipfs/aegir#master",
+    "aegir": "^27.0.0",
     "interface-ipfs-core": "^0.140.0",
     "uint8arrays": "^1.1.0"
   },
