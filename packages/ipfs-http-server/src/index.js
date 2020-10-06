@@ -154,6 +154,11 @@ class HttpApi {
           return h.continue
         }
 
+        // Allow if the user agent includes Electron
+        if (userAgent.includes('Electron')) {
+          return h.continue
+        }
+
         // Allow if the user agent does not start with Mozilla... (i.e. curl)
         if (!userAgent.startsWith('Mozilla')) {
           return h.continue

@@ -25,7 +25,7 @@
     "copy-webpack-plugin": "^5.0.4",
     "execa": "^4.0.0",
     "ipfs": "^0.50.1",
-    "ipfsd-ctl": "^7.0.0",
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/use-native-fetch-if-available",
     "react-hot-loader": "^4.12.21",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",
