@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const CID = require('cids')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   timeout: undefined,

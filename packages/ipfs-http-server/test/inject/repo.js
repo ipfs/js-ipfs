@@ -6,7 +6,7 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 const allNdjson = require('../utils/all-ndjson')
 
 describe('/repo', () => {

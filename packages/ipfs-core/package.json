@@ -45,7 +45,6 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "abort-controller": "^3.0.0",
     "any-signal": "^2.0.0",
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
@@ -109,6 +108,7 @@
     "multibase": "^3.0.0",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
+    "native-abort-controller": "^0.0.3",
     "p-defer": "^3.0.0",
     "p-queue": "^6.6.1",
     "parse-duration": "^0.4.4",

@@ -9,7 +9,7 @@ const all = require('it-all')
 const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
-const AbortController = require('abort-controller')
+const AbortController = require('native-abort-controller')
 const { isWebWorker, isNode } = require('ipfs-utils/src/env')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
