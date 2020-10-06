@@ -10,6 +10,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Removes one or more CIDs from the wantlist
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback Unwant
  * @param {CID | CID[]} cids - The CIDs to remove from the wantlist

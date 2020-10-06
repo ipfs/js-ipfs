@@ -92,7 +92,7 @@ module.exports[pkg.name] = function (browser) {
     .pause(1000)
     .click('#add-file-submit')
 
-  browser.expect.element('#publish-result').text.to.contain('/ipns/Qm')
+  browser.expect.element('#publish-result').text.to.contain('/ipns/k')
 
   // resolve a name
   browser.getText('#publish-result', (result) => {

@@ -94,6 +94,7 @@ class DAGClient extends Client {
 
   /**
    * Enumerate all the entries in a graph
+   *
    * @param {CID} cid - CID of the DAG node to enumerate
    * @param {Object} [options]
    * @param {string} [options.path]

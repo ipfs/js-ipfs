@@ -19,6 +19,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Show diagnostic information on the bitswap agent.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback Stat
  * @param {import('../../utils').AbortOptions & ExtraOptions} [options]

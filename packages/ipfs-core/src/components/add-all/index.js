@@ -45,6 +45,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
  * Import multiple files and data into IPFS.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback AddAll
  * @param {FileStream} source
@@ -54,7 +55,6 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
-
   /**
    * @type {AddAll<{}>}
    */

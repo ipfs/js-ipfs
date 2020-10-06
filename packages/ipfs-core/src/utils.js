@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 'use strict'
 
 const isIpfs = require('is-ipfs')
@@ -28,7 +29,7 @@ exports.MFS_MAX_LINKS = 174
  * The returned path will always be prefixed with /ipfs/ or /ipns/.
  *
  * @param  {string} pathStr - An ipfs-path, or ipns-path or a cid
- * @returns {string} ipfs-path or ipns-path
+ * @returns {string} - ipfs-path or ipns-path
  * @throws on an invalid @param pathStr
  */
 const normalizePath = (pathStr) => {
@@ -67,10 +68,10 @@ const normalizeCidPath = (path) => {
  * Follows links in the path.
  *
  * Accepts formats:
- *  - <base58 string>
- *  - <base58 string>/link/to/venus
- *  - /ipfs/<base58 string>/link/to/pluto
- *  - multihash Buffer
+ * - <base58 string>
+ * - <base58 string>/link/to/venus
+ * - /ipfs/<base58 string>/link/to/pluto
+ * - multihash Buffer
  *
  * @param {import('./components/index').DAG} dag - The IPFS dag api
  * @param {CID | string} ipfsPath - A CID or IPFS path

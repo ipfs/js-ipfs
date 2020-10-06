@@ -8,7 +8,7 @@ module.exports = class ApiManager {
 
   /**
    * @template API
-   * @typedef {{ cancel(): any; api: API; }} Updated
+   * @typedef {{ cancel: () => any, api: API }} Updated
    */
 
   constructor () {

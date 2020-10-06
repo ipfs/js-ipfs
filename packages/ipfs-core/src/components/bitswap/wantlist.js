@@ -8,6 +8,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Returns the wantlist for your node
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback WantlistFn
  * @param {import('../../utils').AbortOptions & ExtraOptions} [options]

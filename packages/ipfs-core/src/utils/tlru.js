@@ -6,6 +6,7 @@ const hashlru = require('hashlru')
 
 /**
  * Time Aware Least Recent Used Cache
+ *
  * @see https://arxiv.org/pdf/1801.00390
  * @todo move this to ipfs-utils or it's own package
  *

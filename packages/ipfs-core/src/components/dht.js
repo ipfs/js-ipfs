@@ -96,7 +96,7 @@ module.exports = ({ libp2p, repo }) => {
      * Query the DHT for all multiaddresses associated with a `PeerId`.
      *
      * @param {PeerId} peerId - The id of the peer to search for.
-     * @returns {Promise<{ id: String, addrs: Multiaddr[] }>}
+     * @returns {Promise<{id: string, addrs: Multiaddr[]}>}
      */
     findPeer: withTimeoutOption(async peerId => { // eslint-disable-line require-await
       if (typeof peerId === 'string') {

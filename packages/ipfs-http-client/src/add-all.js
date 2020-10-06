@@ -50,6 +50,7 @@ module.exports = configure((api) => {
  */
 
 /**
+ * @param {*} input
  * @returns {UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {

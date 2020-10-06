@@ -10,6 +10,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Returns the wantlist for a connected peer
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback WantlistForPeer
  * @param {PeerId | CID | string | Buffer} peerId - A peer ID to return the wantlist for\

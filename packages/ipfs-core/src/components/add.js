@@ -22,6 +22,7 @@ const last = require('it-last')
 
 /**
  * Import a file or data into IPFS.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback Add
  * @param {Source} source - Data to import
@@ -30,7 +31,6 @@ const last = require('it-last')
  */
 
 module.exports = ({ addAll }) => {
-  // eslint-disable-next-line
   /**
    * @type {Add<{}>}
    */

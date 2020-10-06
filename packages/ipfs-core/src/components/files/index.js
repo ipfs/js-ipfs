@@ -117,7 +117,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Copy files
      *
-     * @param {string | Array<string>} from - The path(s) of the source to copy.
+     * @param {string | string[]} from - The path(s) of the source to copy.
      * @param {string} to - The path of the destination to copy to.
      * @param {Object} [opts] - Options for copy.
      * @param {boolean} [opts.parents=false] - Whether or not to make the parent directories if they don't exist. (default: false)
@@ -156,7 +156,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     /**
      * Remove a file or directory.
      *
-     * @param {string | Array<string>} paths - One or more paths to remove.
+     * @param {string | string[]} paths - One or more paths to remove.
      * @param {Object} [opts] - Options for remove.
      * @param {boolean} [opts.recursive=false] - Whether or not to remove directories recursively. (default: false)
      * @returns {Promise<void>}
