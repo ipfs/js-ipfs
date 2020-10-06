@@ -2,6 +2,7 @@
 
 const normaliseContent = require('./normalise-content')
 const normaliseInput = require('./normalise-input')
+const { isElectronRenderer } = require('ipfs-utils/src/env')
 
 /*
  * Transforms any of the `ipfs.add` input types into
@@ -16,3 +17,7 @@ const normaliseInput = require('./normalise-input')
  * @return AsyncInterable<{ path, mode, mtime, content: AsyncIterable<Buffer> }>
  */
 module.exports = (input) => normaliseInput(input, normaliseContent)
+
+if (isElectronRenderer) {
+  module.exports = require('./index.browser')
+}

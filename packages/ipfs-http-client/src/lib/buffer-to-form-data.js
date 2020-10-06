@@ -1,5 +1,6 @@
 'use strict'
 
+const { isElectronRenderer } = require('ipfs-utils/src/env')
 const FormData = require('form-data')
 
 // TODO form data append doesnt have header option
@@ -25,4 +26,8 @@ module.exports = (buf, { mode, mtime, mtimeNsecs } = {}) => {
     header: headers
   })
   return formData
+}
+
+if (isElectronRenderer) {
+  module.exports = require('./buffer-to-form-data.browser')
 }

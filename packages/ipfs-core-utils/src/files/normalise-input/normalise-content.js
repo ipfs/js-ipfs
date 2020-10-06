@@ -11,6 +11,7 @@ const {
   isBytes,
   isBlob
 } = require('./utils')
+const { isElectronRenderer } = require('ipfs-utils/src/env')
 
 async function * toAsyncIterable (input) {
   // Bytes | String
@@ -72,3 +73,7 @@ function toBuffer (chunk) {
 }
 
 module.exports = toAsyncIterable
+
+if (isElectronRenderer) {
+  module.exports = require('./normalise-content.browser')
+}
