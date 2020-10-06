@@ -26,6 +26,7 @@ module.exports = ({
   /**
    * Stops the IPFS node and in case of talking with an IPFS Daemon, it stops
    * the process.
+   *
    * @param {AbortOptions} _options
    * @returns {Promise<void>}
    * @example

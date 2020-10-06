@@ -67,6 +67,7 @@ async function create (options = {}) {
    *
    * Type trickery below attempts to affect inference by explicitly telling
    * what the return type is and when.
+   *
    * @typedef {typeof api} API
    * @typedef {NonNullable<typeof initializedApi>} InitializedAPI
    * @typedef {NonNullable<typeof startedApi>} StartedAPI
@@ -129,13 +130,13 @@ module.exports = {
  * experimental features.
  * @property {object} [config] - Modify the default IPFS node config. This
  * object will be *merged* with the default config; it will not replace it.
- *  (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
+ * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
  * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js)
  * in browsers)
  * @property {import('ipld').Config} [ipld] - Modify the default IPLD config. This object
  * will be *merged* with the default config; it will not replace it. Check IPLD
  * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
- *  on the available options. (Default: [`ipld-nodejs.js`]
+ * on the available options. (Default: [`ipld-nodejs.js`]
  * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
  * in browsers)
  * @property {object|Function} [libp2p] - The libp2p option allows you to build
@@ -147,10 +148,10 @@ module.exports = {
  * great way to achieve this.
  * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
  * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
- *   for the list of options libp2p supports.
+ * for the list of options libp2p supports.
  * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
- *   in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
- *   browsers.
+ * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
+ * browsers.
  */
 
 /**
@@ -174,7 +175,7 @@ module.exports = {
  * @typedef {object} PreloadOptions
  * @property {boolean} [enabled] - Enable content preloading (Default: `true`)
  * @property {string[]} [addresses] - Multiaddr API addresses of nodes that should preload content.
- *                                  - **NOTE:** nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`.
+ * **NOTE:** nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`.
  *
  * @typedef {object} ExperimentalOptions
  * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
@@ -185,7 +186,7 @@ module.exports = {
 
 /**
  * Utility type to write type level conditionals
+ *
  * @template Conditon, Then, Else
- * @typedef {NonNullable<Conditon> extends false
- *            ? Else : Then } If
+ * @typedef {NonNullable<Conditon> extends false ? Else : Then } If
  */

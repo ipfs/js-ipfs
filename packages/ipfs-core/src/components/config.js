@@ -6,7 +6,7 @@ const log = require('debug')('ipfs:core:config')
 
 /**
  * @param {Object} config
- * @param {import("ipfs-repo")} config.repo
+ * @param {import('ipfs-repo')} config.repo
  * @returns {Config}
  */
 module.exports = ({ repo }) => {
@@ -230,7 +230,6 @@ module.exports.profiles = profiles
  * Note that this operation will not spark the restart of any service,
  * i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will
  * have to be restarted manually for the changes to take an effect.
-
  *
  * @param {Partial<IPFSConfig>} value - A new configuration.
  * @param {AbortOptions} [options]
@@ -271,7 +270,7 @@ module.exports.profiles = profiles
  * @typedef {AbortOptions & ApplyOptionsExt} ApplyOptions
  *
  *
- * @typedef {import("../utils").AbortOptions} AbortOptions
+ * @typedef {import('../utils').AbortOptions} AbortOptions
  *
  * @typedef {Object} IPFSConfig
  * @property {AddressConfig} Addresses
@@ -462,8 +461,8 @@ module.exports.profiles = profiles
  * The "basic" connection manager tries to keep between `LowWater` and
  * `HighWater` connections. It works by:
  *
- *  1. Keeping all connections until `HighWater` connections is reached.
- *  2. Once `HighWater` is reached, it closes connections until `LowWater` is
+ * 1. Keeping all connections until `HighWater` connections is reached.
+ * 2. Once `HighWater` is reached, it closes connections until `LowWater` is
  * reached.
  *
  * @property {number} [LowWater=200] - The minimum number of connections to
@@ -471,5 +470,5 @@ module.exports.profiles = profiles
  * @property {number} [HighWater=500] - The number of connections that, when
  * exceeded, will trigger a connection GC operation.
  *
- *  {{LowWater?:number, HighWater?:number}} ConnMgr
+ * {{LowWater?:number, HighWater?:number}} ConnMgr
  */

@@ -10,6 +10,7 @@ const {
   isFileObject
 } = require('./utils')
 
+// eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
   // must give us something
   if (input === null || input === undefined) {

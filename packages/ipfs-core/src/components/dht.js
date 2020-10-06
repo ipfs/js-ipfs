@@ -69,7 +69,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.numProviders] - maximum number of providers to find
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
-    findProvs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
+    vs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
       options = options || {}
 
       if (typeof key === 'string') {
@@ -116,7 +116,7 @@ module.exports = ({ libp2p, repo }) => {
      *
      * @param {CID|CID[]} cids - The keys that should be announced.
      * @param {Object} [options] - provide options
-     * @param {bool} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
+     * @param {boolean} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @returns {Promise}
      */
     provide: withTimeoutOption(async function * (cids, options) {
@@ -171,3 +171,7 @@ module.exports = ({ libp2p, repo }) => {
     })
   }
 }
+
+/**
+ * @typedef {import('multiaddr')} Multiaddr
+ */

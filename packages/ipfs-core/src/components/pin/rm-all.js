@@ -13,6 +13,7 @@ const { PinTypes } = require('./pin-manager')
 module.exports = ({ pinManager, gcLock, dag }) => {
   /**
    * Unpin one or more blocks from your repo
+   *
    * @param {PinsSource} source - Unpin all pins from the source
    * @param {AbortOptions} [_options]
    * @returns {AsyncIterable<CID>}

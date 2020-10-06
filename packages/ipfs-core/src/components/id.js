@@ -13,6 +13,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 module.exports = ({ peerId, libp2p }) => {
   /**
    * Returns the identity of the Peer
+   *
    * @param {import('../utils').AbortOptions} [_options]
    * @returns {Promise<PeerId>}
    * @example

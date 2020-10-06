@@ -14,6 +14,7 @@ const { resolvePath } = require('./utils')
 
 /**
  * IPNS - Inter-Planetary Naming System
+ *
  * @param {Object} config
  * @param {import('../../ipns')} config.ipns
  * @param {import('../index').DAG} config.dag

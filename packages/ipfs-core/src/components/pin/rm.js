@@ -9,6 +9,7 @@ const last = require('it-last')
 module.exports = ({ rmAll }) =>
   /**
    * Unpin this block from your repo
+   *
    * @param {string|CID} path - CID or IPFS Path to unpin.
    * @param {RmOptions} [options]
    * @returns {Promise<CID>} - The CIDs that was unpinned

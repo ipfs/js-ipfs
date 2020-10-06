@@ -13,6 +13,7 @@ const BLOCK_RM_CONCURRENCY = 256
 
 /**
  * Perform mark and sweep garbage collection
+ *
  * @param {Object} config
  * @param {import('../init').RWLock} config.gcLock
  * @param {import('../index').Pin} config.pin
@@ -129,6 +130,6 @@ async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
  * @typedef {Object} BlockID
  * @property {CID} cid
  * @property {void} [err]
-
+ *
  * @typedef {import('interface-datastore').Key} Key
  */

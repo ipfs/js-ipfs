@@ -19,6 +19,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
   /**
    * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
    * repo. pinset is the set of hashes currently pinned (not gc'able)
+   *
    * @param {PinsSource} source - One or more CIDs or IPFS Paths to pin in your repo
    * @param {AddOptions} [options]
    * @returns {AsyncIterable<CID>} - CIDs that were pinned.

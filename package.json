@@ -24,6 +24,7 @@
     "build": "lerna run build",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
+    "check": "lerna run check",
     "dep-check": "lerna run dep-check",
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",

@@ -6,6 +6,7 @@ const { withTimeoutOption } = require('../../../utils')
 module.exports = ({ ipns, options: constructorOptions }) => {
   /**
    * Query the state of IPNS pubsub.
+   *
    * @param {AbortOptions} [_options]
    * @returns {Promise<{ enabled: boolean }>}
    * ```js

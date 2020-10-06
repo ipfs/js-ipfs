@@ -11,6 +11,7 @@ const { withTimeoutOption } = require('../../utils')
 module.exports = ({ blockService, preload }) => {
   /**
    * Get a raw IPFS block.
+   *
    * @param {CID | string | Buffer} cid - A CID that corresponds to the desired block
    * @param {GetOptions} [options]
    * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block

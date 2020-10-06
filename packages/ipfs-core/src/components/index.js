@@ -214,7 +214,7 @@ exports.refs = Object.assign(require('./refs'), { local: require('./refs/local')
  * @property {ReturnType<import("./repo/gc")>} gc
  * @property {ReturnType<import("./repo/stat")>} stat
  * @property {ReturnType<import("./repo/version")>} version
-*/
+ */
 exports.repo = {
   gc: require('./repo/gc'),
   stat: require('./repo/stat'),
@@ -245,7 +245,7 @@ exports.stop = require('./stop')
  * @property {ReturnType<import('./swarm/disconnect')>} disconnect
  * @property {ReturnType<import('./swarm/local-addrs')>} localAddrs
  * @property {ReturnType<import('./swarm/peers')>} peers
-*/
+ */
 exports.swarm = {
   addrs: require('./swarm/addrs'),
   connect: require('./swarm/connect'),

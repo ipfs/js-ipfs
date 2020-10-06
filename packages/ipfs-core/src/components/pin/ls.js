@@ -27,6 +27,7 @@ function toPin (type, cid, metadata) {
 module.exports = ({ pinManager, dag }) => {
   /**
    * List all the objects pinned to local storage
+   *
    * @param {LsOptions} [options]
    * @returns {AsyncIterable<LsEntry>}
    * @example

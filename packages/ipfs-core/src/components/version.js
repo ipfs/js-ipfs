@@ -9,14 +9,15 @@ const meta = { gitHead: '', ...pkg }
 module.exports = ({ repo }) => {
   /**
    * Returns the implementation version
-  * @param {import('../utils').AbortOptions} [options]
-  * @returns {Promise<Version>}
-  * @example
-  * ```js
-  * const version = await ipfs.version()
-  * console.log(version)
-  * ```
-  */
+   *
+   * @param {import('../utils').AbortOptions} [options]
+   * @returns {Promise<Version>}
+   * @example
+   * ```js
+   * const version = await ipfs.version()
+   * console.log(version)
+   * ```
+   */
   async function version (options) {
     const repoVersion = await repo.version.get(options)
 

@@ -37,21 +37,21 @@ const appendRemainder = (result, remainder) =>
 module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) => {
   /**
    * Given a key, query the DHT for its best value.
-  *
-  * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
-  * @param {ResolveOptions} [options]
-  * @returns {AsyncIterable<string>}
-  * @example
-  * ```js
-  * // The IPNS address you want to resolve.
-  * const addr = '/ipns/ipfs.io'
-  *
-  * for await (const name of ipfs.name.resolve(addr)) {
-  *   console.log(name)
-  * }
-  * // Logs: /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
-  * ```
-  */
+   *
+   * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
+   * @param {ResolveOptions} [options]
+   * @returns {AsyncIterable<string>}
+   * @example
+   * ```js
+   * // The IPNS address you want to resolve.
+   * const addr = '/ipns/ipfs.io'
+   *
+   * for await (const name of ipfs.name.resolve(addr)) {
+   *   console.log(name)
+   * }
+   * // Logs: /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
+   * ```
+   */
   async function * resolve (name, options = {}) { // eslint-disable-line require-await
     options = mergeOptions({
       nocache: false,
@@ -103,6 +103,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
 
 /**
  * IPFS resolve options.
+ *
  * @typedef {ResolveSettings & AbortOptions} ResolveOptions
  *
  * @typedef {Object} ResolveSettings

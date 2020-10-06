@@ -20,6 +20,7 @@ function fqdnFixups (domain) {
 module.exports = () => {
   /**
    * Resolve DNS links
+   *
    * @param {string} domain
    * @param {DNSOptions} [options]
    * @returns {Promise<string>}

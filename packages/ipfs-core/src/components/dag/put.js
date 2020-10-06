@@ -15,6 +15,7 @@ const { withTimeoutOption } = require('../../utils')
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
    * Store an IPLD format node
+   *
    * @param {Object} dagNode
    * @param {PutOptions} [options]
    * @returns {Promise<CID>}
@@ -93,7 +94,6 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
  * @property {import("../index").Pin} pin
  * @property {import("../init").RWLock} gcLock
  * @property {import("../init").Preload} preload
-
  *
  * @typedef {Object} PutOptions
  * @property {CID} [cid]

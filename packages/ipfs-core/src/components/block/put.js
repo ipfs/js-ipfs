@@ -16,6 +16,7 @@ const { withTimeoutOption } = require('../../utils')
 module.exports = ({ blockService, pin, gcLock, preload }) => {
   /**
    * Stores input as an IPFS block.
+   *
    * @param {Uint8Array | Block} block - The block or data to store
    * @param {PutOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
    * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
