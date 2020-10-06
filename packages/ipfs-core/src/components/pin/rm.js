@@ -23,7 +23,8 @@ module.exports = ({ rmAll }) =>
    * ```
    */
   async (path, options) =>
-    await last(rmAll({ path, ...options }, options))
+    /** @type {CID} - Need to loosen check here because it could be void */
+    (await last(rmAll({ path, ...options }, options)))
 
 /**
  * @typedef {RmSettings & AbortOptions} RmOptions

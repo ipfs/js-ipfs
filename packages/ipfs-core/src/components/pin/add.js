@@ -13,7 +13,8 @@ module.exports = ({ addAll }) =>
    * @returns {Promise<CID>}
    */
   async (path, options = {}) =>
-    await last(addAll({ path, ...options }, options))
+    /** @type {CID} - Need to loosen check here because it could be void */
+    (await last(addAll({ path, ...options }, options)))
 
 /**
  * @typedef {AddSettings & AbortOptions} AddOptions

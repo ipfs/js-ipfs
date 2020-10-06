@@ -4,7 +4,7 @@
  * Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine
  *
  *
- * @param  {string}   chunker - Chunker algorithm supported formats:
+ * @param  {string} [chunker] - Chunker algorithm supported formats:
  * "size-{size}"
  * "rabin"
  * "rabin-{avg}"

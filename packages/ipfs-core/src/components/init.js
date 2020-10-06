@@ -198,7 +198,7 @@ module.exports = ({
 
 /**
  * @param {IPFSRepo} repo
- * @param {InitOptions} options
+ * @param {Object} options
  * @param {PrivateKey} options.privateKey
  * @param {boolean} [options.emptyRepo]
  * @param {number} [options.bits=2048] - Number of bits to use in the generated key
@@ -230,8 +230,6 @@ async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, prof
     PeerID: peerId.toB58String(),
     PrivKey: uint8ArrayToString(peerId.privKey.bytes, 'base64pad')
   }
-
-  privateKey = peerId.privKey
 
   log('peer identity: %s', config.Identity.PeerID)
 

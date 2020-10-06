@@ -35,7 +35,9 @@ module.exports = ({ addAll }) => {
    * @type {Add<{}>}
    */
   async function add (source, options) { // eslint-disable-line require-await
-    return last(addAll(source, options))
+    /** @type {UnixFSEntry} - Could be undefined if empty */
+    const result = (await last(addAll(source, options)))
+    return result
   }
   return add
 }

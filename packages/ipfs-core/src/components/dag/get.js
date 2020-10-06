@@ -38,7 +38,8 @@ const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
  */
 
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function get (ipfsPath, options = {}) {
+  /** @type {Get} */
+  const get = async function get (ipfsPath, options = {}) {
     const {
       cid,
       path
@@ -53,16 +54,19 @@ module.exports = ({ ipld, preload }) => {
     }
 
     if (options.path) {
-      if (options.localResolve) {
-        return first(ipld.resolve(cid, options.path))
-      }
-
-      return last(ipld.resolve(cid, options.path))
+      const result = options.localResolve
+      /** @type {DagEntry} - first will return undefined if empty */
+        ? (await first(ipld.resolve(cid, options.path)))
+      /** @type {DagEntry} - last will return undefined if empty */
+        : (await last(ipld.resolve(cid, options.path)))
+      return result
     }
 
     return {
       value: await ipld.get(cid, options),
       remainderPath: ''
     }
-  })
+  }
+
+  return withTimeoutOption(get)
 }
