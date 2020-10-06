@@ -74,7 +74,8 @@ module.exports = ({
 
     stopPromise.resolve()
   }
-  withTimeoutOption(stop)
+
+  return withTimeoutOption(stop)
 }
 
 function createApi ({
