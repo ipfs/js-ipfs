@@ -127,47 +127,69 @@ module.exports = (common, options) => {
       await expect(ipfs.files.stat(directory)).to.eventually.be.rejectedWith(/does not exist/)
     })
 
-    it('recursively removes a sharded directory inside a normal directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dir = `dir-${Math.random()}`
-      const dirPath = `/${dir}`
+    describe('with sharding', () => {
+      let ipfs
 
-      await ipfs.files.mkdir(dirPath)
-
-      await ipfs.files.mv(shardedDirPath, dirPath)
-
-      const finalShardedDirPath = `${dirPath}${shardedDirPath}`
-
-      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
-
-      await ipfs.files.rm(dirPath, {
-        recursive: true
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
       })
 
-      await expect(ipfs.files.stat(dirPath)).to.eventually.be.rejectedWith(/does not exist/)
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
-    })
+      it('recursively removes a sharded directory inside a normal directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dir = `dir-${Math.random()}`
+        const dirPath = `/${dir}`
 
-    it('recursively removes a sharded directory inside a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const otherDirPath = await createShardedDirectory(ipfs)
+        await ipfs.files.mkdir(dirPath)
 
-      await ipfs.files.mv(shardedDirPath, otherDirPath)
+        await ipfs.files.mv(shardedDirPath, dirPath)
 
-      const finalShardedDirPath = `${otherDirPath}${shardedDirPath}`
+        const finalShardedDirPath = `${dirPath}${shardedDirPath}`
 
-      await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
-      await expect(isShardAtPath(otherDirPath, ipfs)).to.eventually.be.true()
-      expect((await ipfs.files.stat(otherDirPath)).type).to.equal('directory')
+        await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
 
-      await ipfs.files.rm(otherDirPath, {
-        recursive: true
+        await ipfs.files.rm(dirPath, {
+          recursive: true
+        })
+
+        await expect(ipfs.files.stat(dirPath)).to.eventually.be.rejectedWith(/does not exist/)
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
       })
 
-      await expect(ipfs.files.stat(otherDirPath)).to.eventually.be.rejectedWith(/does not exist/)
-      await expect(ipfs.files.stat(finalShardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
+      it('recursively removes a sharded directory inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const otherDirPath = await createShardedDirectory(ipfs)
+
+        await ipfs.files.mv(shardedDirPath, otherDirPath)
+
+        const finalShardedDirPath = `${otherDirPath}${shardedDirPath}`
+
+        await expect(isShardAtPath(finalShardedDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(finalShardedDirPath)).type).to.equal('directory')
+        await expect(isShardAtPath(otherDirPath, ipfs)).to.eventually.be.true()
+        expect((await ipfs.files.stat(otherDirPath)).type).to.equal('directory')
+
+        await ipfs.files.rm(otherDirPath, {
+          recursive: true
+        })
+
+        await expect(ipfs.files.stat(otherDirPath)).to.eventually.be.rejectedWith(/does not exist/)
+        await expect(ipfs.files.stat(finalShardedDirPath)).to.eventually.be.rejectedWith(/does not exist/)
+      })
     })
 
     it('results in the same hash as a sharded directory created by the importer when removing a file', async function () {

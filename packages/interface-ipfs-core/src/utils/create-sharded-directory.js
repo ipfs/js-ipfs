@@ -21,7 +21,7 @@ module.exports = async (ipfs, files = 1001) => {
 
   await ipfs.files.cp(`/ipfs/${result.cid}`, dirPath)
 
-  await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
+  await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true('Tried to create a shared directory but the result was not a shard')
 
   return dirPath
 }

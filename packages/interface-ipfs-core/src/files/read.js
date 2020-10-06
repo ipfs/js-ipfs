@@ -137,20 +137,6 @@ module.exports = (common, options) => {
       await expect(drain(ipfs.files.read(path))).to.eventually.be.rejectedWith(/does not exist/)
     })
 
-    it('reads file from inside a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const filePath = `${shardedDirPath}/file-${Math.random()}.txt`
-      const content = Uint8Array.from([0, 1, 2, 3, 4])
-
-      await ipfs.files.write(filePath, content, {
-        create: true
-      })
-
-      const bytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
-
-      expect(bytes).to.deep.equal(content)
-    })
-
     it('should read from outside of mfs', async () => {
       const { cid } = await ipfs.add(fixtures.smallFile.data)
       const testFileData = uint8ArrayConcat(await all(ipfs.files.read(`/ipfs/${cid}`)))
@@ -168,6 +154,42 @@ module.exports = (common, options) => {
       await testTimeout(() => drain(ipfs.files.read(path, {
         timeout: 1
       })))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('reads file from inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const filePath = `${shardedDirPath}/file-${Math.random()}.txt`
+        const content = Uint8Array.from([0, 1, 2, 3, 4])
+
+        await ipfs.files.write(filePath, content, {
+          create: true
+        })
+
+        const bytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
+
+        expect(bytes).to.deep.equal(content)
+      })
     })
   })
 }

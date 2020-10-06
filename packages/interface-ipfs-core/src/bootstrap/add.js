@@ -58,5 +58,15 @@ module.exports = (common, options) => {
       const list = await ipfs.bootstrap.list()
       expect(list).to.have.property('Peers').that.deep.equals([validIp4])
     })
+
+    it('add a peer to the bootstrap list', async () => {
+      const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb'
+
+      const res = await ipfs.bootstrap.add(peer)
+      expect(res).to.be.eql({ Peers: [peer] })
+
+      const list = await ipfs.bootstrap.list()
+      expect(list.Peers).to.include(peer)
+    })
   })
 }
