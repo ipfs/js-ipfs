@@ -23,7 +23,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.4",
-    "execa": "^4.0.0",
+    "execa": "^4.0.3",
     "ipfs": "^0.50.1",
     "ipfsd-ctl": "^7.0.0",
     "react-hot-loader": "^4.12.21",
