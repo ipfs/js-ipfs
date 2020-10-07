@@ -8,6 +8,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Returns the wantlist for your node
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback WantlistFn
  * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
@@ -15,7 +16,6 @@ const { withTimeoutOption } = require('../../utils')
  */
 
 module.exports = ({ bitswap }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {WantlistFn<{}>}
    */

@@ -7,8 +7,8 @@ module.exports = ({ ipns, options: constructorOptions }) => {
   /**
    * Cancel a name subscription.
    *
-   * @param {String} name subscription name.
-   * @param {function(Error)} [callback]
+   * @param {string} name - subscription name.
+   * @param {object} [options]
    * @returns {Promise<{ canceled: boolean }>}
    */
   return withTimeoutOption(async function cancel (name, options) { // eslint-disable-line require-await

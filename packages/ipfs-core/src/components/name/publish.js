@@ -44,19 +44,19 @@ module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
    * and resolve, the default name used is the node's own PeerID,
    * which is the hash of its public key.
    *
-   * @param {String} value ipfs path of the object to be published.
-   * @param {Object} options ipfs publish options.
-   * @param {boolean} options.resolve resolve given path before publishing.
-   * @param {String} options.lifetime time duration that the record will be valid for.
+   * @param {string} value - ipfs path of the object to be published.
+   * @param {Object} options - ipfs publish options.
+   * @param {boolean} options.resolve - resolve given path before publishing.
+   * @param {string} options.lifetime - time duration that the record will be valid for.
   This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
   "ns", "ms", "s", "m", "h". Default is 24h.
-    * @param {String} options.ttl time duration this record should be cached for (NOT IMPLEMENTED YET).
-    * This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
+   * @param {string} options.ttl - time duration this record should be cached for (NOT IMPLEMENTED YET).
+   * This accepts durations such as "300s", "1.5h" or "2h45m". Valid time units are
     "ns", "ms", "s", "m", "h" (caution: experimental).
-    * @param {String} options.key name of the key to be used, as listed by 'ipfs key list -l'.
-    * @param {function(Error)} [callback]
-    * @returns {Promise|void}
-    */
+   * @param {string} options.key - name of the key to be used, as listed by 'ipfs key list -l'.
+   * @param {function(Error)} [callback]
+   * @returns {Promise|void}
+   */
   return withTimeoutOption(async function publish (value, options) {
     options = options || {}
 

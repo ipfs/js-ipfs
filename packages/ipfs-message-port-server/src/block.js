@@ -83,6 +83,7 @@ class BlockService {
 
   /**
    * Remove one or more IPFS block(s).
+   *
    * @param {Object} query
    * @param {EncodedCID[]} query.cids
    * @param {boolean} [query.force]
@@ -109,6 +110,7 @@ class BlockService {
 
   /**
    * Gets information of a raw IPFS block.
+   *
    * @param {Object} query
    * @param {EncodedCID} query.cid
    * @param {number} [query.timeout]

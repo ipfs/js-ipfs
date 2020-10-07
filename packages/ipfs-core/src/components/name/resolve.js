@@ -35,10 +35,10 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
   /**
    * Given a key, query the DHT for its best value.
    *
-   * @param {String} name ipns name to resolve. Defaults to your node's peerID.
-   * @param {Object} options ipfs resolve options.
-   * @param {boolean} options.nocache do not use cached entries.
-   * @param {boolean} options.recursive resolve until the result is not an IPNS name.
+   * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
+   * @param {Object} options - ipfs resolve options.
+   * @param {boolean} options.nocache - do not use cached entries.
+   * @param {boolean} options.recursive - resolve until the result is not an IPNS name.
    * @param {function(Error)} [callback]
    * @returns {Promise|void}
    */

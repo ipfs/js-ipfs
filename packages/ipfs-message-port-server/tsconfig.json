@@ -18,7 +18,13 @@
     "target": "ES5",
     "noEmit": true
   },
-  "exclude": ["dist", "node_modules"],
-  "include": ["src/**/*.js", "../ipfs-message-port-protocol/src/**/*.js"],
+  "exclude": [
+    "dist",
+    "node_modules/**"
+  ],
+  "include": [
+    "src/**/*.js",
+    "../ipfs-message-port-protocol/src/**/*.js"
+  ],
   "compileOnSave": false
 }

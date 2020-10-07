@@ -24,6 +24,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * Stores input as an IPFS block.
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback BlockPut
  * @param {Buffer | Block} block - The block or data to store
@@ -32,7 +33,6 @@ const { withTimeoutOption } = require('../../utils')
  */
 
 module.exports = ({ blockService, pin, gcLock, preload }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {BlockPut<import('./get').PreloadOptions>}
    */

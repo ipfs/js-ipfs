@@ -17,6 +17,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * Returns the identity of the Peer
+ *
  * @template {Record<string, any>} ExtraOptions
  * @callback Id
  * @param {import('../utils').AbortOptions & ExtraOptions} [options]
@@ -24,7 +25,6 @@ const uint8ArrayToString = require('uint8arrays/to-string')
  */
 
 module.exports = ({ peerId, libp2p }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
    * @type {Id<{}>}
    */

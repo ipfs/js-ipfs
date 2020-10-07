@@ -160,7 +160,6 @@ module.exports = ({
   }
 })
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * @template LIBP2P
  * @template BlockAPI, DagAPI, FilesAPI, PinAPI
