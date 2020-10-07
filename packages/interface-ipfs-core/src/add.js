@@ -103,7 +103,7 @@ module.exports = (common, options) => {
       let accumProgress = 0
       function handler (p) {
         progCalled = true
-        accumProgress += p
+        accumProgress = p
       }
 
       const file = await ipfs.add(fixtures.bigFile.data, { progress: handler })
@@ -119,7 +119,7 @@ module.exports = (common, options) => {
       let accumProgress = 0
       function handler (p) {
         progCalled = true
-        accumProgress += p
+        accumProgress = p
       }
 
       const file = await ipfs.add(fixtures.emptyFile.data, { progress: handler })
