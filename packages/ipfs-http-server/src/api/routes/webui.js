@@ -5,7 +5,7 @@ const { gateway } = require('ipfs-http-gateway/src/resources')
 const log = debug('ipfs:webui:info')
 log.error = debug('ipfs:webui:error')
 
-const webuiCid = 'bafybeigv2xkwu2v27rx56m7ndg5dnz4b7235pn33andlriqhyy5s6nwyvq' // v2.11.3
+const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4
 
 module.exports = [
   {
