@@ -72,8 +72,7 @@
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
     "wrtc": "^0.4.6",
-    "typescript": "4.0.2",
-    "eslint-config-ipfs": "git://github.com/gozala/eslint-config-ipfs#default"
+    "typescript": "4.0.2"
   },
   "typesVersions": {
     "*": {
