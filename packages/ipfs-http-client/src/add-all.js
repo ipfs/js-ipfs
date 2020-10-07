@@ -73,14 +73,8 @@ const createProgressHandler = (lengthComputable, total, progress) =>
  * @param {(n:number) => void} progress
  * @returns {(event:{total:number, loaded: number}) => progress}
  */
-const createOnUploadPrgress = (size, progress) => {
-  let uploaded = 0
-  return ({ loaded, total }) => {
-    const currentUpload = Math.floor(loaded / total * size)
-    progress(currentUpload - uploaded)
-    uploaded = currentUpload
-  }
-}
+const createOnUploadPrgress = (size, progress) => ({ loaded, total }) =>
+  progress(Math.floor(loaded / total * size))
 
 /**
  * @typedef {import('../../ipfs/src/core/components/add-all').UnixFSEntry} UnixFSEntry
