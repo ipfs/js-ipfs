@@ -65,6 +65,8 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
   }
 
   return {
+    lengthComputable: false,
+    total: -1,
     headers: merge(headers, {
       'Content-Type': `multipart/form-data; boundary=${boundary}`
     }),

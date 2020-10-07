@@ -8,6 +8,7 @@ const { File, FormData } = require('ipfs-utils/src/globalthis')
 async function multipartRequest (source = '', abortController, headers = {}) {
   const formData = new FormData()
   let index = 0
+  let total = 0
 
   for await (const { content, path, mode, mtime } of normaliseInput(source)) {
     let fileSuffix = ''
@@ -42,6 +43,7 @@ async function multipartRequest (source = '', abortController, headers = {}) {
 
     if (content) {
       formData.set(fieldName, content, encodeURIComponent(path))
+      total += content.size
     } else {
       formData.set(fieldName, new File([''], encodeURIComponent(path), { type: 'application/x-directory' }))
     }
@@ -50,6 +52,8 @@ async function multipartRequest (source = '', abortController, headers = {}) {
   }
 
   return {
+    lengthComputable: true,
+    total,
     headers,
     body: formData
   }

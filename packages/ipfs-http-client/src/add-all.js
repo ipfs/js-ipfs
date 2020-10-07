@@ -13,28 +13,32 @@ module.exports = configure((api) => {
    * @type {import('../../ipfs/src/core/components/add-all').AddAll<>}
    */
   async function * addAll (input, options = {}) {
-    const onUploadProgress = typeof options.progress === 'function'
-      ? ({ loaded }) => options.progress(loaded)
-      : null
-
     // allow aborting requests on body errors
     const controller = new AbortController()
     const signal = anySignal([controller.signal, options.signal])
+    const { headers, body, total, lengthComputable } =
+      await multipartRequest(input, controller, options.headers)
+
+    // In browser response body only starts streaming once upload is
+    // complete, at which point all the progress updates are invalid. If
+    // length of the content is computable we can interpla te progress from
+    // `{ total, loaded}` passed to `onUploadProgress` and `multipart.total`
+    // in which case we disable progress updates to be written out.
+    const [progressFn, onUploadProgress] = typeof options.progress === 'function'
+      ? createProgressHandler(lengthComputable, total, options.progress)
+      : [null, null]
 
     const res = await api.post('add', {
       searchParams: toUrlSearchParams({
         'stream-channels': true,
         ...options,
-        // We use `onUploadProgress` instead because in browser response won't
-        // stream until body is uploaded, at which point it's usless.
-        progress: false
+        progress: Boolean(progressFn)
       }),
       timeout: options.timeout,
       onUploadProgress,
       signal,
-      ...(
-        await multipartRequest(input, controller, options.headers)
-      )
+      headers,
+      body
     })
 
     for await (let file of res.ndjson()) {
@@ -42,11 +46,41 @@ module.exports = configure((api) => {
 
       if (file.hash !== undefined) {
         yield toCoreInterface(file)
+      } else if (progressFn) {
+        progressFn(file.bytes || 0)
       }
     }
   }
   return addAll
 })
+
+/**
+ * Returns simple progress callback when content length isn't computable or a
+ * progress event handler that inerpolates progress from upload progress events.
+ *
+ * @param {boolean} lengthComputable
+ * @param {number} total
+ * @param {(n:number) => void} progress
+ */
+const createProgressHandler = (lengthComputable, total, progress) =>
+  lengthComputable ? [null, createOnUploadPrgress(total, progress)] : [progress, null]
+
+/**
+ * Creates a progress handler that interpolates progress from upload progress
+ * events and total size of the content that is added.
+ *
+ * @param {number} size - actual content size
+ * @param {(n:number) => void} progress
+ * @returns {(event:{total:number, loaded: number}) => progress}
+ */
+const createOnUploadPrgress = (size, progress) => {
+  let uploaded = 0
+  return ({ loaded, total }) => {
+    const currentUpload = Math.floor(loaded / total * size)
+    progress(currentUpload - uploaded)
+    uploaded = currentUpload
+  }
+}
 
 /**
  * @typedef {import('../../ipfs/src/core/components/add-all').UnixFSEntry} UnixFSEntry
