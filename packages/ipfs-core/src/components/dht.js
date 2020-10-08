@@ -69,7 +69,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.numProviders] - maximum number of providers to find
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
-    vs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
+    findProvs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
       options = options || {}
 
       if (typeof key === 'string') {
