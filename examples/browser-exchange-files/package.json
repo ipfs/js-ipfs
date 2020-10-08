@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^16.2.3",
-    "execa": "^4.0.0",
+    "execa": "^4.0.3",
     "http-server": "^0.12.3",
     "ipfs-http-client": "^47.0.0",
     "uint8arrays": "^1.1.0"
