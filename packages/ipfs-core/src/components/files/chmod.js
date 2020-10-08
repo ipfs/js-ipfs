@@ -156,7 +156,7 @@ function calculateMode (mode, metadata) {
 
   if (typeof mode === 'string') {
     if (mode.match(/^\d+$/g)) {
-      mode = parseInt(mode.toString(), 8)
+      mode = parseInt(mode, 8)
     } else {
       mode = mode.split(',').reduce((curr, acc) => {
         return parseSymbolicMode(acc, curr, metadata.isDirectory())

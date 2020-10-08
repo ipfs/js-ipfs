@@ -66,7 +66,7 @@ class PinManager {
         yield * this._walkDag(link.Hash, { preload })
       }
     } else if (cid.codec === 'dag-cbor') {
-      for (const [, childCid] of dagCborLinks(node)) { // eslint-disable-line no-unused-vars
+      for (const [, childCid] of dagCborLinks(node)) {
         yield childCid
         yield * this._walkDag(childCid, { preload })
       }
