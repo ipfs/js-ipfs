@@ -16,7 +16,10 @@
     "dist"
   ],
   "main": "src/index.js",
-  "browser": {},
+  "browser": {
+    "fs": false,
+    "http": false
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"

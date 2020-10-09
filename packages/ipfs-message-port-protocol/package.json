@@ -13,7 +13,10 @@
     "src",
     "dist"
   ],
-  "browser": {},
+  "browser": {
+    "fs": false,
+    "http": false
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
