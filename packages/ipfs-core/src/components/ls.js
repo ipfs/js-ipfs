@@ -4,8 +4,20 @@ const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ * @param {import('../preload').PreloadService} config.preload
+ */
 module.exports = function ({ ipld, preload }) {
-  return withTimeoutOption(async function * ls (ipfsPath, options) {
+  /**
+   * Lists a directory from IPFS that is addressed by a valid IPFS Path.
+   *
+   * @param {string|CID} ipfsPath - An IPFS path or CID to list
+   * @param {Options} options
+   * @returns {AsyncIterable<LSEntry>}
+   */
+  async function * ls (ipfsPath, options) {
     options = options || {}
 
     const path = normalizeCidPath(ipfsPath)
@@ -50,5 +62,22 @@ module.exports = function ({ ipld, preload }) {
     }
 
     throw errCode(new Error(`Unknown UnixFS type ${file.unixfs.type}`), 'ERR_UNKNOWN_UNIXFS_TYPE')
-  })
+  }
+
+  return withTimeoutOption(ls)
 }
+
+/**
+ * @typedef {import('../utils').IPFSEntry} LSEntry
+ *
+ * @typedef {LSOptions & AbortOptions} Options
+ *
+ * @typedef {Object} LSOptions
+ * @property {boolean} [recursive]
+ * @property {boolean} [preload]
+ * @property {boolean} [includeContent]
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {import('cids')} CID
+ */

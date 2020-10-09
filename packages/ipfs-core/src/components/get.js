@@ -4,10 +4,20 @@ const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ * @param {import('../preload').PreloadService} config.preload
+ */
 module.exports = function ({ ipld, preload }) {
-  return withTimeoutOption(async function * get (ipfsPath, options) {
-    options = options || {}
-
+  /**
+   * Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
+   *
+   * @param {import('cids')|string} ipfsPath - An IPFS path or CID to export
+   * @param {Options} [options]
+   * @returns {AsyncIterable<IPFSEntry>}
+   */
+  async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {
       let pathComponents
 
@@ -26,5 +36,17 @@ module.exports = function ({ ipld, preload }) {
         includeContent: true
       })
     }
-  })
+  }
+
+  return withTimeoutOption(get)
 }
+
+/**
+ * @typedef {GetOptions & AbortOptions} Options
+ *
+ * @typedef {Object} GetOptions
+ * @property {boolean} [preload]
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ * @typedef {import('../utils').IPFSEntry} IPFSEntry
+ */

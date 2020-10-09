@@ -103,9 +103,16 @@ const resolvePath = async function (dag, ipfsPath, options) {
   return result.cid
 }
 
+/**
+ * @param {InputFile|UnixFSFile} file
+ * @param {Object} [options]
+ * @param {boolean} [options.includeContent]
+ * @returns {IPFSEntry}
+ */
 const mapFile = (file, options) => {
   options = options || {}
 
+  /** @type {IPFSEntry} */
   const output = {
     cid: file.cid,
     path: file.path,
@@ -116,6 +123,7 @@ const mapFile = (file, options) => {
   }
 
   if (file.unixfs) {
+    // @ts-ignore - TS type can't be changed from File to Directory
     output.type = file.unixfs.type === 'directory' ? 'dir' : 'file'
 
     if (file.unixfs.type === 'file') {
@@ -132,6 +140,57 @@ const mapFile = (file, options) => {
 
   return output
 }
+
+/**
+ * @typedef {Object} File
+ * @property {'file'} type
+ * @property {CID} cid
+ * @property {string} name
+ * @property {string} path - File path
+ * @property {AsyncIterable<Uint8Array>} [content] - File content
+ * @property {number} [mode]
+ * @property {MTime} [mtime]
+ * @property {number} size
+ * @property {number} depth
+ *
+ * @typedef {Object} Directory
+ * @property {'dir'} type
+ * @property {CID} cid
+ * @property {string} name
+ * @property {string} path - Directory path
+ * @property {number} [mode]
+ * @property {MTime} [mtime]
+ * @property {number} size
+ * @property {number} depth
+ *
+ * @typedef {File|Directory} IPFSEntry
+ *
+ * @typedef {Object} BaseFile
+ * @property {CID} cid
+ * @property {string} path
+ * @property {string} name
+ *
+ * @typedef {Object} InputFileExt
+ * @property {undefined} [unixfs]
+ *
+ * @typedef {BaseFile & InputFileExt} InputFile
+ *
+ * @typedef {Object} UnixFSeExt
+ * @property {() => AsyncIterable<Uint8Array>} content
+ * @property {UnixFS} unixfs
+ *
+ * @typedef {BaseFile & UnixFSeExt} UnixFSFile
+ *
+ *
+ * @typedef {Object} UnixFS
+ * @property {'directory'|'file'|'dir'} type
+ * @property {() => number} fileSize
+ * @property {() => AsyncIterable<Uint8Array>} content
+ * @property {number} mode
+ * @property {MTime} mtime
+ *
+ * @typedef {import('./components/add-all').UnixTimeObj} MTime
+ */
 
 /**
  * @template {any[]} ARGS
