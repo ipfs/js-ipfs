@@ -4,7 +4,7 @@ const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
 const shuffle = require('array-shuffle')
-const AbortController = require('abort-controller').default
+const AbortController = require('native-abort-controller')
 const preload = require('./runtime/preload-nodejs')
 
 const log = Object.assign(

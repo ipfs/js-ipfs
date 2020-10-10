@@ -6,6 +6,7 @@ const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
+const { isElectronRenderer } = require('ipfs-utils/src/env')
 
 async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
@@ -73,3 +74,7 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
 }
 
 module.exports = multipartRequest
+
+if (isElectronRenderer) {
+  module.exports = require('./multipart-request.browser')
+}

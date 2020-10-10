@@ -5,7 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 describe('/swarm', () => {
   const multiaddr = '/ip4/127.0.0.1/tcp/4002/p2p/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'

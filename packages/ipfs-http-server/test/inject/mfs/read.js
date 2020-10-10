@@ -6,7 +6,7 @@ const http = require('../../utils/http')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const sinon = require('sinon')
 const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   offset: undefined,

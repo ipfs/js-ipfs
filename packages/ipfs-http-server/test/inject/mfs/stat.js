@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   withLocal: false,

@@ -7,7 +7,7 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const FormData = require('form-data')
 const sinon = require('sinon')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 const randomBytes = require('iso-random-stream/src/random')
 const streamToPromise = require('stream-to-promise')
 
