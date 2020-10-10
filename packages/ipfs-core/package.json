@@ -68,7 +68,7 @@
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",
     "ipfs-unixfs-importer": "^3.0.4",
-    "ipfs-utils": "ipfs/js-ipfs-utils#fix/use-native-fetch-if-available",
+    "ipfs-utils": "^4.0.0",
     "ipld": "^0.27.1",
     "ipld-bitcoin": "^0.4.0",
     "ipld-block": "^0.10.1",
@@ -119,7 +119,7 @@
   "devDependencies": {
     "aegir": "^27.0.0",
     "delay": "^4.4.0",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/use-native-fetch-if-available",
+    "ipfsd-ctl": "^7.0.2",
     "interface-ipfs-core": "^0.140.0",
     "iso-random-stream": "^1.1.1",
     "iso-url": "^0.4.7",
