@@ -32,7 +32,7 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "browser-readablestream-to-it": "0.0.2",
+    "browser-readablestream-to-it": "1.0.1",
     "cids": "^1.0.0"
   },
   "devDependencies": {
