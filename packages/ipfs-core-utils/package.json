@@ -35,7 +35,7 @@
     "ipfs-utils": "^4.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
-    "it-peekable": "0.0.1",
+    "it-peekable": "1.0.1",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
