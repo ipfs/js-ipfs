@@ -1,8 +1,6 @@
 'use strict'
 
 const fs = require('fs')
-/** @type {typeof import('it-concat').default} */
-// @ts-ignore - incorrect type defs
 const concat = require('it-concat')
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')

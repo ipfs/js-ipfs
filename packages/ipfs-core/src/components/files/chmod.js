@@ -97,8 +97,7 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
   }
 
   let [
-    // @ts-ignore - unusef variable
-    _, // eslint-disable-line no-unused-vars
+    ,
     references,
     operator,
     mode

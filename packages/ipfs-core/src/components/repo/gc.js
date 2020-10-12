@@ -22,7 +22,7 @@ const BLOCK_RM_CONCURRENCY = 256
  * @returns {GC}
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
-  return withTimeoutOption(async function * gc (_options = {}) {
+  async function * gc (_options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
 
@@ -41,7 +41,9 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(gc)
 }
 
 // Get Set of CIDs of blocks to keep

@@ -1,7 +1,5 @@
 'use strict'
 
-/** @type {typeof import('it-concat').default} */
-// @ts-ignore - incorrect type defs
 const concat = require('it-concat')
 const fs = require('fs')
 const multibase = require('multibase')

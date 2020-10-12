@@ -506,7 +506,7 @@ exports.patchAppendData = {
       },
       query: {
         cid,
-        cidBase: base,
+        cidBase,
         enc,
         timeout
       }
@@ -531,13 +531,13 @@ exports.patchAppendData = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(newCid, { base, upgrade: false }),
+      Hash: cidToString(newCid, { base: cidBase, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { base, upgrade: false })
+          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
         }
       })
     }
@@ -594,7 +594,7 @@ exports.patchSetData = {
       },
       query: {
         cid,
-        cidBase: base,
+        cidBase,
         enc,
         timeout
       }
@@ -617,12 +617,12 @@ exports.patchSetData = {
     const nodeJSON = node.toJSON()
 
     return h.response({
-      Hash: cidToString(newCid, { base, upgrade: false }),
+      Hash: cidToString(newCid, { base: cidBase, upgrade: false }),
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { base, upgrade: false })
+          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
         }
       })
     })
@@ -672,7 +672,7 @@ exports.patchAddLink = {
           name,
           ref
         ],
-        cidBase: base,
+        cidBase,
         enc,
         timeout
       }
@@ -702,13 +702,13 @@ exports.patchAddLink = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(cid, { base, upgrade: false }),
+      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { base, upgrade: false })
+          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
         }
       })
     }
@@ -758,7 +758,7 @@ exports.patchRmLink = {
           root,
           link
         ],
-        cidBase: base,
+        cidBase,
         enc,
         timeout
       }
@@ -784,13 +784,13 @@ exports.patchRmLink = {
 
     const answer = {
       Data: nodeJSON.data,
-      Hash: cidToString(cid, { base, upgrade: false }),
+      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
       Size: nodeJSON.size,
       Links: nodeJSON.links.map((l) => {
         return {
           Name: l.name,
           Size: l.size,
-          Hash: cidToString(l.cid, { base, upgrade: false })
+          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
         }
       })
     }

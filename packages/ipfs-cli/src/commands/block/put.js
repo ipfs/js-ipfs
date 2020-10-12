@@ -2,8 +2,6 @@
 
 const fs = require('fs')
 const multibase = require('multibase')
-/** @type {typeof import('it-concat').default} */
-// @ts-ignore - it-contact has invalid type defs for commonjs
 const concat = require('it-concat')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const parseDuration = require('parse-duration').default
