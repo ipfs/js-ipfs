@@ -22,7 +22,7 @@ const BLOCK_RM_CONCURRENCY = 256
  * @returns {GC}
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
-  async function * gc (_options = {}) {
+  async function * gc (options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
 
