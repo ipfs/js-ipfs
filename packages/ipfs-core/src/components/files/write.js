@@ -52,12 +52,12 @@ module.exports = (context) => {
       parent = await toMfsPath(context, destination.mfsDirectory, options)
     })()
     log('Read source, destination and parent')
-    // @ts-ignore- parent maybe undefined
+    // @ts-ignore - parent maybe undefined
     if (!options.parents && !parent.exists) {
       throw errCode(new Error('directory does not exist'), 'ERR_NO_EXIST')
     }
 
-    // @ts-ignore- parent maybe undefined
+    // @ts-ignore - parent maybe undefined
     if (!options.create && !destination.exists) {
       throw errCode(new Error('file does not exist'), 'ERR_NO_EXIST')
     }

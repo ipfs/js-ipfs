@@ -59,7 +59,7 @@ module.exports = ({ pinManager, dag }) => {
     if (options.type) {
       type = options.type
       if (typeof options.type === 'string') {
-        // @ts-ignore - can't infer that string returned by toLowerCase() is PinQueryType
+        // @ts-ignore - Can't infer that string returned by toLowerCase() is PinQueryType
         type = options.type.toLowerCase()
       }
 

@@ -14,7 +14,7 @@ exports.cleanCid = cid => {
 
   // CID constructor knows how to do the cleaning :)
   try {
-    // @ts-ignore - string|Uint8Aray union seems to confuse CID typedefs.
+    // @ts-ignore - string|Uint8Array union seems to confuse CID typedefs.
     return new CID(cid)
   } catch (err) {
     throw errCode(err, 'ERR_INVALID_CID')
