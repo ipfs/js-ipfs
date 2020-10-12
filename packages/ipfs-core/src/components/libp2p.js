@@ -23,16 +23,13 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @returns {LibP2P}
  */
 module.exports = ({
-  options,
+  options = {},
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
-  config
+  config = {}
 }) => {
-  options = options || {}
-  config = config || {}
-
   const { datastore, keys } = repo
 
   const libp2pOptions = getLibp2pOptions({

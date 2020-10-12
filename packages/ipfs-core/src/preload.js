@@ -32,8 +32,7 @@ const log = Object.assign(
  * @param {PreloadConfig} [options]
  * @returns {PreloadService}
  */
-module.exports = options => {
-  options = options || {}
+module.exports = (options = {}) => {
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 

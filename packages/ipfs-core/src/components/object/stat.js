@@ -5,9 +5,7 @@ const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ ipld, preload }) => {
   const get = require('./get')({ ipld, preload })
-  return withTimeoutOption(async function stat (multihash, options) {
-    options = options || {}
-
+  return withTimeoutOption(async function stat (multihash, options = {}) {
     const node = await get(multihash, options)
     const serialized = dagPB.util.serialize(node)
     const cid = await dagPB.util.cid(serialized, {

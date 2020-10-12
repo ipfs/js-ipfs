@@ -17,9 +17,7 @@ module.exports = function ({ ipld, preload }) {
    * @param {Options} options
    * @returns {AsyncIterable<LSEntry>}
    */
-  async function * ls (ipfsPath, options) {
-    options = options || {}
-
+  async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)
     const recursive = options.recursive
     const pathComponents = path.split('/')

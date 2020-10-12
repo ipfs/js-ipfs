@@ -127,7 +127,7 @@ class IpnsPublisher {
 
   // Returns the record this node has published corresponding to the given peer ID.
   // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
-  async _getPublished (peerId, options) {
+  async _getPublished (peerId, options = {}) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
 
@@ -136,7 +136,6 @@ class IpnsPublisher {
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
     }
 
-    options = options || {}
     const checkRouting = options.checkRouting !== false
 
     try {

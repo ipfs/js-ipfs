@@ -17,12 +17,12 @@ const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
 class IpnsRepublisher {
-  constructor (publisher, datastore, peerId, keychain, options) {
+  constructor (publisher, datastore, peerId, keychain, options = {}) {
     this._publisher = publisher
     this._datastore = datastore
     this._peerId = peerId
     this._keychain = keychain
-    this._options = options || {}
+    this._options = options
     this._republishHandle = null
   }
 

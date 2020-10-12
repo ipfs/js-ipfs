@@ -19,14 +19,11 @@ class IpnsResolver {
     this._routing = routing
   }
 
-  async resolve (name, options) {
-    options = options || {}
-
+  async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('invalid name'), 'ERR_INVALID_NAME')
     }
 
-    options = options || {}
     const recursive = options.recursive && options.recursive.toString() === 'true'
 
     const nameSegments = name.split('/')

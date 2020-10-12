@@ -14,9 +14,7 @@ const Format = {
 }
 
 module.exports = function ({ ipld, resolve, preload }) {
-  return withTimeoutOption(async function * refs (ipfsPath, options) { // eslint-disable-line require-await
-    options = options || {}
-
+  return withTimeoutOption(async function * refs (ipfsPath, options = {}) { // eslint-disable-line require-await
     if (options.maxDepth === 0) {
       return
     }

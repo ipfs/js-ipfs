@@ -15,9 +15,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.timeout] - optional timeout
      * @returns {Promise<Uint8Array>}
      */
-    get: withTimeoutOption(async (key, options) => { // eslint-disable-line require-await
-      options = options || {}
-
+    get: withTimeoutOption(async (key, options = {}) => { // eslint-disable-line require-await
       if (!(key instanceof Uint8Array)) {
         try {
           key = key.toString().split('/')
@@ -69,9 +67,7 @@ module.exports = ({ libp2p, repo }) => {
      * @param {number} [options.numProviders] - maximum number of providers to find
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
-    findProvs: withTimeoutOption(async function * (key, options) { // eslint-disable-line require-await
-      options = options || {}
-
+    findProvs: withTimeoutOption(async function * (key, options = {}) { // eslint-disable-line require-await
       if (typeof key === 'string') {
         try {
           key = new CID(key)
@@ -119,9 +115,8 @@ module.exports = ({ libp2p, repo }) => {
      * @param {boolean} [options.recursive=false] - Provide not only the given object but also all objects linked from it.
      * @returns {Promise}
      */
-    provide: withTimeoutOption(async function * (cids, options) {
+    provide: withTimeoutOption(async function * (cids, options = {}) {
       cids = Array.isArray(cids) ? cids : [cids]
-      options = options || {}
 
       for (var i in cids) {
         if (typeof cids[i] === 'string') {

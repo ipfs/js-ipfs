@@ -78,9 +78,7 @@ const normalizeCidPath = (path) => {
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
  */
-const resolvePath = async function (dag, ipfsPath, options) {
-  options = options || {}
-
+const resolvePath = async function (dag, ipfsPath, options = {}) {
   if (isIpfs.cid(ipfsPath)) {
     // @ts-ignore - CID|string seems to confuse typedef
     return new CID(ipfsPath)
@@ -109,9 +107,7 @@ const resolvePath = async function (dag, ipfsPath, options) {
  * @param {boolean} [options.includeContent]
  * @returns {IPFSEntry}
  */
-const mapFile = (file, options) => {
-  options = options || {}
-
+const mapFile = (file, options = {}) => {
   /** @type {IPFSEntry} */
   const output = {
     cid: file.cid,

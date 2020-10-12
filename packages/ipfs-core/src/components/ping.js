@@ -27,8 +27,7 @@ module.exports = ({ libp2p }) => {
    * }
    * ```
    */
-  async function * ping (peerId, options) {
-    options = options || {}
+  async function * ping (peerId, options = {}) {
     options.count = options.count || 10
 
     if (!PeerId.isPeerId(peerId)) {

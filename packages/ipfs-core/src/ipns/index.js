@@ -55,12 +55,10 @@ class IPNS {
   }
 
   // Resolve
-  async resolve (name, options) {
+  async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME')
     }
-
-    options = options || {}
 
     // If recursive, we should not try to get the cached value
     if (!options.nocache && !options.recursive) {

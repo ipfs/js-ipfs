@@ -36,9 +36,7 @@ function getBandwidthStats (libp2p, opts) {
 }
 
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function * (options) {
-    options = options || {}
-
+  return withTimeoutOption(async function * (options = {}) {
     if (!options.poll) {
       yield getBandwidthStats(libp2p, options)
       return

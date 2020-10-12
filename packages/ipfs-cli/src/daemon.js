@@ -14,8 +14,8 @@ const HttpGateway = require('ipfs-http-gateway')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 
 class Daemon {
-  constructor (options) {
-    this._options = options || {}
+  constructor (options = {}) {
+    this._options = options
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection

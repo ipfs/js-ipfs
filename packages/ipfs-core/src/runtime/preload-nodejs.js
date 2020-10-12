@@ -7,9 +7,8 @@ const log = Object.assign(debug('ipfs:preload'), {
   error: debug('ipfs:preload:error')
 })
 
-module.exports = async function preload (url, options) {
+module.exports = async function preload (url, options = {}) {
   log(url)
-  options = options || {}
 
   const res = await HTTP.post(url, { signal: options.signal })
 

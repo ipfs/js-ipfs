@@ -50,9 +50,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
    * // the CID of the object
    * ```
    */
-  async function put (block, options) {
-    options = options || {}
-
+  async function put (block, options = {}) {
     if (Array.isArray(block)) {
       throw new Error('Array is not supported')
     }

@@ -3,9 +3,7 @@
 const { withTimeoutOption } = require('../../utils')
 
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function peers (options) { // eslint-disable-line require-await
-    options = options || {}
-
+  return withTimeoutOption(async function peers (options = {}) { // eslint-disable-line require-await
     const verbose = options.v || options.verbose
     const peers = []
 
