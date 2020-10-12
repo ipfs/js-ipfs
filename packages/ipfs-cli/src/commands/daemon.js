@@ -56,8 +56,8 @@ module.exports = {
     // read and parse config file
     if (argv.initConfig) {
       try {
-        const raw = fs.readFileSync(argv.initConfig)
-        config = JSON.parse(raw.toString())
+        const raw = fs.readFileSync(argv.initConfig, { encoding: 'utf8' })
+        config = JSON.parse(raw)
       } catch (error) {
         debug(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
