@@ -99,13 +99,11 @@ jobs:
 
     - stage: test
       name: electron-main
-      os: osx
       script:
         - npm run test:electron-main -- $RUN_SINCE -- -- --bail --timeout 60000
 
     - stage: test
       name: electron-renderer
-      os: osx
       script:
         - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 60000
 
@@ -121,13 +119,11 @@ jobs:
 
     - stage: test
       name: interop - electron-main
-      os: osx
       script:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-main -f ./test/node.js --bail --timeout 60000
 
     - stage: test
       name: interop - electron-renderer
-      os: osx
       script:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 60000
 
@@ -158,13 +154,11 @@ jobs:
 
     - stage: test
       name: js-ipfs interface tests - electron main
-      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - electron renderer
-      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
@@ -220,13 +214,11 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
-      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron renderer
-      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 

@@ -6,8 +6,7 @@ const debug = require('debug')
 const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
-const AbortController = require('abort-controller').default
-
+const AbortController = require('native-abort-controller')
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
@@ -152,6 +151,11 @@ class HttpApi {
 
         // If these are set, we leave up to CORS and CSRF checks.
         if (origin || referrer) {
+          return h.continue
+        }
+
+        // Allow if the user agent includes Electron
+        if (userAgent.includes('Electron')) {
           return h.continue
         }
 

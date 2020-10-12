@@ -9,7 +9,7 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const allNdjson = require('../utils/all-ndjson')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 describe('/pin', () => {
   const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')

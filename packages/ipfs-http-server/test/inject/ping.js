@@ -7,7 +7,7 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const allNdjson = require('../utils/all-ndjson')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   count: 10,

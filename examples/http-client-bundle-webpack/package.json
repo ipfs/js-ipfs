@@ -25,7 +25,7 @@
     "copy-webpack-plugin": "^5.0.4",
     "execa": "^4.0.3",
     "ipfs": "^0.50.1",
-    "ipfsd-ctl": "^7.0.0",
+    "ipfsd-ctl": "^7.0.2",
     "react-hot-loader": "^4.12.21",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",

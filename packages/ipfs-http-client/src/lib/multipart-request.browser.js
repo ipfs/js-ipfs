@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
+const normaliseInput = require('ipfs-core-utils/src/files/normalise-input/index.browser')
 const modeToString = require('./mode-to-string')
 const mtimeToObject = require('./mtime-to-object')
 const { File, FormData } = require('ipfs-utils/src/globalthis')

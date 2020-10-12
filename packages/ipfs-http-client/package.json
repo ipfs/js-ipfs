@@ -40,14 +40,13 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "abort-controller": "^3.0.0",
     "any-signal": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.4.0",
-    "ipfs-utils": "^3.0.0",
+    "ipfs-utils": "^4.0.0",
     "ipld-block": "^0.10.1",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
@@ -65,7 +64,7 @@
     "multicodec": "^2.0.1",
     "multihashes": "^3.0.1",
     "nanoid": "^3.1.12",
-    "node-fetch": "^2.6.0",
+    "native-abort-controller": "~0.0.3",
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^1.1.0"
@@ -75,7 +74,7 @@
     "cross-env": "^7.0.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.140.0",
-    "ipfsd-ctl": "^7.0.0",
+    "ipfsd-ctl": "^7.0.2",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "it-pipe": "^1.1.0",

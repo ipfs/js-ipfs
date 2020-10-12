@@ -8,7 +8,7 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const errCode = require('err-code')
 const CID = require('cids')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 const allNdjson = require('../utils/all-ndjson')
 
 describe('/dht', () => {

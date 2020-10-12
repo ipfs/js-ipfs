@@ -12,7 +12,7 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
 const UnixFS = require('ipfs-unixfs')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 const {
   DAGNode,
   DAGLink

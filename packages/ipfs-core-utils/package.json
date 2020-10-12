@@ -32,7 +32,7 @@
     "browser-readablestream-to-it": "0.0.2",
     "cids": "^1.0.0",
     "err-code": "^2.0.3",
-    "ipfs-utils": "^3.0.0",
+    "ipfs-utils": "^4.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "0.0.1",
