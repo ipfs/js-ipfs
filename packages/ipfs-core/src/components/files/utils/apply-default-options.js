@@ -2,17 +2,27 @@
 
 const errCode = require('err-code')
 
+/**
+ * @template Options
+ * @template {{parents?:boolean, long?:boolean, length?:number, offset?:number}} Ext
+ * @param {Partial<Options> & {count?:number, p?:boolean, l?:boolean}} options
+ * @param {Options | Options & Ext} defaults
+ * @returns {Options}
+ */
 module.exports = (options = {}, defaults) => {
   if (Array.isArray(options)) {
     options = options.filter(arg => typeof arg === 'object').pop() || {}
   }
 
+  /** @type {Options & Ext} */
   const output = {}
 
   for (const key in defaults) {
     if (options[key] !== null && options[key] !== undefined) {
+      // @ts-ignore - Unable to infer type of options[key] property ts(2322)
       output[key] = options[key]
     } else {
+      // @ts-ignore - Type 'unknown' is not assignable to type '{ parents?: boolean | undefined; long?: boolean | undefined; length?: number | undefined; offset?: number | undefined; }'.ts(2322)
       output[key] = defaults[key]
     }
   }
@@ -34,7 +44,7 @@ module.exports = (options = {}, defaults) => {
     output.length = Infinity
   }
 
-  if (output.offset < 0) {
+  if (output.offset != null && output.offset < 0) {
     throw errCode(new Error('cannot have negative write offset'), 'ERR_INVALID_PARAMS')
   }
 
