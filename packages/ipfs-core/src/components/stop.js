@@ -27,14 +27,15 @@ module.exports = ({
    * Stops the IPFS node and in case of talking with an IPFS Daemon, it stops
    * the process.
    *
-   * @param {AbortOptions} _options
+   * @param {AbortOptions} options
    * @returns {Promise<void>}
    * @example
    * ```js
    * await ipfs.stop()
    * ```
    */
-  async function stop (_options) {
+  // @ts-ignore - 'options' is declared but its value is never read.ts(6133)
+  async function stop (options) {
     const stopPromise = defer()
     const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
 

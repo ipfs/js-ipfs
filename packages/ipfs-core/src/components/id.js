@@ -14,7 +14,7 @@ module.exports = ({ peerId, libp2p }) => {
   /**
    * Returns the identity of the Peer
    *
-   * @param {import('../utils').AbortOptions} [_options]
+   * @param {import('../utils').AbortOptions} [options]
    * @returns {Promise<PeerId>}
    * @example
    * ```js
@@ -22,7 +22,8 @@ module.exports = ({ peerId, libp2p }) => {
    * console.log(identity)
    * ```
    */
-  async function id (_options) { // eslint-disable-line require-await
+  // @ts-ignore - 'options' is declared but its value is never read.ts(6133)
+  async function id (options) { // eslint-disable-line require-await
     const id = peerId.toB58String()
     let addresses = []
     let protocols = []

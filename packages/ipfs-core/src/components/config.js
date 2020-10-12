@@ -64,10 +64,12 @@ module.exports = ({ repo }) => {
 }
 
 /**
- * @param {any} _options
+ * @param options
+ * @param {any} [options]
  * @returns {Promise<{name:string, description:string}[]>}
  */
-async function listProfiles (_options) { // eslint-disable-line require-await
+// @ts-ignore - 'options' is declared but its value is never read.ts(6133)
+async function listProfiles (options) { // eslint-disable-line require-await
   return Object.keys(profiles).map(name => ({
     name,
     description: profiles[name].description

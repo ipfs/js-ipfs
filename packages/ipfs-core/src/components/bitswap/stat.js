@@ -30,7 +30,8 @@ module.exports = ({ bitswap }) => {
   /**
    * @type {Stat<{}>}
    */
-  async function stat (_options) { // eslint-disable-line require-await
+  // @ts-ignore - 'options' is declared but its value is never read.ts(6133)
+  async function stat (options) { // eslint-disable-line require-await
     const snapshot = bitswap.stat().snapshot
 
     return {

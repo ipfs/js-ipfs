@@ -22,6 +22,7 @@ const BLOCK_RM_CONCURRENCY = 256
  * @returns {GC}
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
+  // @ts-ignore - 'options' is declared but its value is never read.ts(6133)
   async function * gc (options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
