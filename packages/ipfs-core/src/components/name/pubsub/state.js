@@ -19,7 +19,7 @@ module.exports = ({ ipns, options: constructorOptions }) => {
     try {
       return { enabled: Boolean(getPubsubRouting(ipns, constructorOptions)) }
     } catch (err) {
-      return { enabled: false }
+      return false
     }
   }
 

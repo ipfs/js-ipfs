@@ -83,7 +83,7 @@ module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
       pubLifetime = parseDuration(lifetime) || 0
 
       // Calculate lifetime with nanoseconds precision
-      pubLifetime = parseFloat(pubLifetime.toFixed(6))
+      pubLifetime = pubLifetime.toFixed(6)
     } catch (err) {
       log.error(err)
       throw err
