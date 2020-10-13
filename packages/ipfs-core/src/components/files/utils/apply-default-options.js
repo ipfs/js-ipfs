@@ -3,7 +3,7 @@
 const errCode = require('err-code')
 
 /**
- * @template Options
+ * @template {{}} Options
  * @template {{parents?:boolean, long?:boolean, length?:number, offset?:number}} Ext
  * @param {Partial<Options> & {count?:number, p?:boolean, l?:boolean}} options
  * @param {Options | Options & Ext} defaults
