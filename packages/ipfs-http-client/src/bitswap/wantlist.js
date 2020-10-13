@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/wantlist').WantlistFn<import('..').HttpOptions>}
+   * @type {import('../../../ipfs-core/src/components/bitswap/wantlist').WantlistFn<import('..').HttpOptions>}
    */
   async function wantlist (options = {}) {
     const res = await (await api.post('bitswap/wantlist', {

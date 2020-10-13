@@ -325,7 +325,7 @@ const encodeAddResult = out => {
 
 /**
  *
- * @param {AsyncIterable<Buffer>} content
+ * @param {AsyncIterable<Uint8Array>} content
  * @returns {CatResult}
  */
 const encodeCatResult = content => {
@@ -337,9 +337,9 @@ const encodeCatResult = content => {
 /**
  * Adds underlying `ArrayBuffer` to the transfer list.
  *
- * @param {Buffer} buffer
+ * @param {Uint8Array} buffer
  * @param {Transferable[]} transfer
- * @returns {Buffer}
+ * @returns {Uint8Array}
  */
 const moveBuffer = (buffer, transfer) => {
   transfer.push(buffer.buffer)

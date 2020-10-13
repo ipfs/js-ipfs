@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "tsc --emitDeclarationOnly --declarationDir dist",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -81,6 +81,7 @@
     "sinon": "^9.0.3",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
+    "typescript": "4.0.2",
     "wrtc": "^0.4.6"
   },
   "optionalDependencies": {

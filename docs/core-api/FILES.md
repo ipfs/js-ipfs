@@ -415,7 +415,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -842,7 +842,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -866,7 +866,7 @@ console.log(uint8ArrayConcat(chunks).toString())
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | path | `String` | The [MFS path] where you will write to |
-| content | `String`, `Buffer`, `AsyncIterable<Buffer>` or [`Blob`][blob] | The content to write to the path |
+| content | `String`, `Uint8Array`, `AsyncIterable<Uint8Array>` or [`Blob`][blob] | The content to write to the path |
 
 #### Options
 

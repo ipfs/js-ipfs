@@ -5,7 +5,7 @@ const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../ipfs/src/core/components/resolve').Resolve<import('.').HttpOptions>}
+   * @type {import('../../ipfs-core/src/components/resolve').Resolve<import('.').HttpOptions>}
    */
   async function resolve (path, options = {}) {
     const res = await api.post('resolve', {

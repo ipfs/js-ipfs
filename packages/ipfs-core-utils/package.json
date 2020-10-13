@@ -22,7 +22,9 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "aegir": "^27.0.0",
-    "delay": "^4.4.0"
+    "delay": "^4.4.0",
+    "typescript": "4.0.2"
   }
 }

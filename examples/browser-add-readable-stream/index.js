@@ -27,7 +27,7 @@ const createFiles = (directory) => {
   return [{
     path: `${directory}/file1.txt`,
 
-    // content could be a stream, a url, a Buffer, a File etc
+    // content could be a stream, a url, a Uint8Array, a File etc
     content: 'one'
   }, {
     path: `${directory}/file2.txt`,

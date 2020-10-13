@@ -23,7 +23,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     return
   }
 
-  // Buffer|ArrayBuffer|TypedArray
+  // Uint8Array|ArrayBuffer|TypedArray
   // Blob|File
   if (isBytes(input) || isBlob(input)) {
     yield toFileObject(input, normaliseContent)

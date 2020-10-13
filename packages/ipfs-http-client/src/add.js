@@ -16,7 +16,7 @@ module.exports = (options) => {
 
   return configure(() => {
     /**
-     * @type {import('../../ipfs/src/core/components/add').Add<import('.').HttpOptions>}
+     * @type {import('../../ipfs-core/src/components/add').Add<import('.').HttpOptions>}
      */
     async function add (input, options = {}) { // eslint-disable-line require-await
       // @ts-ignore

@@ -40,8 +40,9 @@ class HttpGateway {
   constructor (ipfs, options = {}) {
     this._ipfs = ipfs
     this._options = {}
-    this._log = debug(LOG)
-    this._log.error = debug(LOG_ERROR)
+    this._log = Object.assign(debug(LOG), {
+      error: debug(LOG_ERROR)
+    })
   }
 
   async start () {

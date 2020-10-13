@@ -34,7 +34,9 @@
     "test:chrome": "cross-env ECHO_SERVER_PORT=37496 aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "cross-env ECHO_SERVER_PORT=37497 aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
@@ -78,7 +80,8 @@
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "it-pipe": "^1.1.0",
-    "nock": "^13.0.2"
+    "nock": "^13.0.2",
+    "typescript": "4.0.2"
   },
   "engines": {
     "node": ">=10.3.0",

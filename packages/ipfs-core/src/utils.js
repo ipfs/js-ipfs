@@ -201,6 +201,15 @@ const mapFile = (file, options = {}) => {
  */
 
 /**
+ * @typedef {Object} PreloadOptions
+ * @property {boolean} [preload=true]
+ */
+
+/**
+ * @template {Record<string, any>} ExtraOptions
+ */
+
+/**
  * @template {any[]} ARGS
  * @template {Promise<any> | AsyncIterable<any>} R - The return type of `fn`
  * @param {Fn<ARGS, R>} fn

@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "tsc --emitDeclarationOnly --declarationDir dist",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -76,7 +76,8 @@
     "it-to-buffer": "^1.0.2",
     "qs": "^6.9.4",
     "sinon": "^9.0.3",
-    "stream-to-promise": "^3.0.0"
+    "stream-to-promise": "^3.0.0",
+    "typescript": "4.0.2"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0"

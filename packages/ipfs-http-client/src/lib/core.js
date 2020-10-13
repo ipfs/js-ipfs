@@ -104,6 +104,9 @@ const parseTimeout = (value) => {
  * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
  * @property {string} [apiPath] - Path to the API.
  * @property {URL|string} [url] - Full API URL.
+ * @property {object} [ipld]
+ * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+ * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
 
 class Client extends HTTP {

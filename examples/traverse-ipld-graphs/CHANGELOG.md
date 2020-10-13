@@ -87,7 +87,7 @@ Output:
 ```js
 { link:
    { '/':
-      <Buffer 12 20 8a…> } }
+      <Uint8Array 12 20 8a…> } }
 ```
 
 Now:
@@ -108,7 +108,7 @@ Output:
      codec: 'dag-pb',
      version: 0,
      multihash:
-      <Buffer 12 20 8a…> } }
+      <Uint8Array 12 20 8a…> } }
 ```
 
 See https://github.com/ipld/ipld/issues/44 for more information on why this

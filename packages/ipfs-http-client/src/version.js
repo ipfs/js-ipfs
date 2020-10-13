@@ -6,7 +6,7 @@ const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../ipfs/src/core/components/version').Version<import('.').HttpOptions>}
+   * @type {import('../../ipfs-core/src/components/version').Version<import('.').HttpOptions>}
    */
   async function version (options = {}) {
     const res = await api.post('version', {

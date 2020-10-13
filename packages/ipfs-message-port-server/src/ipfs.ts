@@ -58,7 +58,7 @@ export interface DAG {
 export interface Core {
   addAll(inputs: AddAllInput, options: AddOptions): AsyncIterable<FileOutput>
   add(input: AddInput, options: AddOptions): Promise<FileOutput>
-  cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Buffer>
+  cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Uint8Array>
 }
 
 interface AddOptions extends AbortOptions {
@@ -201,13 +201,13 @@ type WriteResult = {
 
 interface Block {
   cid: CID
-  data: Buffer
+  data: Uint8Array
 }
 
 interface BlockService {
   get(cid: CID, options?: GetBlockOptions): Promise<Block>
   put(block: Block, options?: PutBlockOptions): Promise<Block>
-  put(buffer: Buffer, options?: PutBufferOptions): Promise<Block>
+  put(buffer: Uint8Array, options?: PutBufferOptions): Promise<Block>
   rm(
     cid: CID | CID[],
     options?: RmBlockOptions

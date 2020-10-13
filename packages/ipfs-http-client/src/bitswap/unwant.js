@@ -6,13 +6,14 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/unwant').Unwant<import('..').HttpOptions>}
+   * @type {import('../../../ipfs-core/src/components/bitswap/unwant').Unwant<import('..').HttpOptions>}
    */
   async function unwant (cid, options = {}) {
     const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
+        // @ts-ignore - CID|string seems to confuse typedef
         arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
         ...options
       }),

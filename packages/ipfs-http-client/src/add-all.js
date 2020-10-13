@@ -10,7 +10,7 @@ const AbortController = require('native-abort-controller')
 
 module.exports = configure((api) => {
   /**
-   * @type {import('../../ipfs/src/core/components/add-all').AddAll<import('.').HttpOptions>}
+   * @type {import('../../ipfs-core/src/components/add-all').AddAll<import('.').HttpOptions>}
    */
   async function * addAll (input, options = {}) {
     const progressFn = options.progress
@@ -46,7 +46,7 @@ module.exports = configure((api) => {
 })
 
 /**
- * @typedef {import('../../ipfs/src/core/components/add-all').UnixFSEntry} UnixFSEntry
+ * @typedef {import('../../ipfs-core/src/components/add-all').UnixFSEntry} UnixFSEntry
  */
 
 /**

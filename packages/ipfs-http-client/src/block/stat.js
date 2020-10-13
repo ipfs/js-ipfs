@@ -5,7 +5,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (cid, options = {}) => {
+  /**
+   * @type {import('../../../ipfs-core/src/components/block/stat').BlockStat<import('..').HttpOptions>}
+   */
+  async function stat (cid, options = {}) {
     const res = await api.post('block/stat', {
       timeout: options.timeout,
       signal: options.signal,
@@ -19,4 +22,6 @@ module.exports = configure(api => {
 
     return { cid: new CID(data.Key), size: data.Size }
   }
+
+  return stat
 })

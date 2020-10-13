@@ -10,7 +10,7 @@ const CID = require('cids')
  * that it will also not apply the encoding (since v0 CIDs can only be encoded
  * as base58btc).
  *
- * @param {CID|Buffer|string} input - The CID to encode
+ * @param {CID|Uint8Array|string} input - The CID to encode
  * @param {Object} [options] - Optional options
  * @param {string} [options.base] - Name of multibase codec to encode the CID with
  * @param {boolean} [options.upgrade] - Automatically upgrade v0 CIDs to v1 when

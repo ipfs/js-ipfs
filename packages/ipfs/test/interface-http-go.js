@@ -551,7 +551,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'FIXME go-ipfs throws invalid encoding: base58'
       },
       {
-        name: 'should put a Protobuf encoded Buffer',
+        name: 'should put a Protobuf encoded Uint8Array',
         reason: 'FIXME go-ipfs throws invalid encoding: protobuf'
       }
     ]

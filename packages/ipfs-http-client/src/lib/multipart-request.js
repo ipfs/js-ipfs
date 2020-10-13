@@ -8,6 +8,13 @@ const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
 const { isElectronRenderer } = require('ipfs-utils/src/env')
 
+/**
+ *
+ * @param {Object} source
+ * @param {AbortController} abortController
+ * @param {Object} headers
+ * @param {string} boundary
+ */
 async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {

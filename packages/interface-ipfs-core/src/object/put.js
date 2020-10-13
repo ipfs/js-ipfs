@@ -49,7 +49,7 @@ module.exports = (common, options) => {
       expect(obj.Links).to.deep.equal(nodeJSON.links)
     })
 
-    it('should put a JSON encoded Buffer', async () => {
+    it('should put a JSON encoded Uint8Array', async () => {
       const obj = {
         Data: uint8ArrayFromString(nanoid()),
         Links: []
@@ -69,7 +69,7 @@ module.exports = (common, options) => {
       expect(nodeJSON.data).to.eql(node.Data)
     })
 
-    it('should put a Protobuf encoded Buffer', async () => {
+    it('should put a Protobuf encoded Uint8Array', async () => {
       const node = new DAGNode(uint8ArrayFromString(nanoid()))
       const serialized = node.serialize()
 
@@ -79,7 +79,7 @@ module.exports = (common, options) => {
       expect(node2.Links).to.deep.equal(node.Links)
     })
 
-    it('should put a Buffer as data', async () => {
+    it('should put a Uint8Array as data', async () => {
       const data = uint8ArrayFromString(nanoid())
 
       const cid = await ipfs.object.put(data)

@@ -4,7 +4,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {import('../../../ipfs-core/src/components/bootstrap/reset').BootstrapReset<import('..').HttpOptions>}
+   */
+  async function reset (options = {}) {
     const res = await api.post('bootstrap/add', {
       timeout: options.timeout,
       signal: options.signal,
@@ -17,4 +20,6 @@ module.exports = configure(api => {
 
     return res.json()
   }
+
+  return reset
 })

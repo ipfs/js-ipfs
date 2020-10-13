@@ -1,16 +1,13 @@
 'use strict'
 
-const Multiaddr = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (addr, options = {}) => {
-    if (addr && typeof addr === 'object' && !Multiaddr.isMultiaddr(addr)) {
-      options = addr
-      addr = null
-    }
-
+  /**
+   * @type {import('../../../ipfs-core/src/components/bootstrap/add').BootstrapAdd<import('..').HttpOptions>}
+   */
+  async function add (addr, options = {}) {
     const res = await api.post('bootstrap/add', {
       timeout: options.timeout,
       signal: options.signal,
@@ -23,4 +20,6 @@ module.exports = configure(api => {
 
     return res.json()
   }
+
+  return add
 })

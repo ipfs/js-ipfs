@@ -26,7 +26,9 @@
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
@@ -38,7 +40,8 @@
   "devDependencies": {
     "aegir": "^27.0.0",
     "interface-ipfs-core": "^0.140.0",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^1.1.0",
+    "typescript": "4.0.2"
   },
   "engines": {
     "node": ">=10.3.0",
