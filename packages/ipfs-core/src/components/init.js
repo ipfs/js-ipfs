@@ -26,9 +26,6 @@ const BlockService = require('ipfs-block-service')
 const Ipld = require('ipld')
 const getDefaultIpldOptions = require('../runtime/ipld-nodejs')
 
-/**
- * @typedef {ReturnType<import('../preload')>} Preload
- */
 const createPreloader = require('../preload')
 const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const IPNS = require('../ipns')

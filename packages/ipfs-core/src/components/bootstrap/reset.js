@@ -5,40 +5,23 @@ const { withTimeoutOption } = require('../../utils')
 const Multiaddr = require('multiaddr')
 
 /**
- * @typedef {Object} Peers
- * An object that contains an array with all the bootstrap addresses
- * @property {Array<Multiaddr>} Peers
- *
- * @typedef {Object} ResetOptions
- *
- * @typedef {import('cids')} CID
- * @typedef {import('multiaddr')} Multiaddr
- */
-
-/**
- * List all peer addresses in the bootstrap list
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback BootstrapReset
- * @param {import('../../utils').AbortOptions & ResetOptions & ExtraOptions} options
- * @returns {Promise<Peers>}
- * @example
- * ```js
- * const res = await ipfs.bootstrap.list()
- * console.log(res.Peers)
- * // Logs:
- * // [address1, address2, ...]
- * ```
- */
-
-/**
  * @typedef {import('ipfs-repo')} IPFSRepo
  *
  * @param {IPFSRepo} repo
  */
 module.exports = ({ repo }) => {
   /**
-   * @type {BootstrapReset<{}>}
+   * List all peer addresses in the bootstrap list
+   *
+   * @param {AbortOptions} options
+   * @returns {Promise<Peers>}
+   * @example
+   * ```js
+   * const res = await ipfs.bootstrap.list()
+   * console.log(res.Peers)
+   * // Logs:
+   * // [address1, address2, ...]
+   * ```
    */
   async function reset (options = {}) {
     const config = await repo.config.getAll(options)
@@ -53,3 +36,14 @@ module.exports = ({ repo }) => {
 
   return withTimeoutOption(reset)
 }
+
+/**
+ * @typedef {Object} Peers
+ * An object that contains an array with all the bootstrap addresses
+ * @property {Array<Multiaddr>} Peers
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('multiaddr')} Multiaddr
+ */

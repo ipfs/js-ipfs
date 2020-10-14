@@ -4,41 +4,24 @@ const { isValidMultiaddr } = require('./utils')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {Object} Peers
- * An object that contains an array with all the removed addresses
- * @property {Array<Multiaddr>} Peers
- *
- * @typedef {Object} RmOptions
- *
- * @typedef {import('cids')} CID
- * @typedef {import('multiaddr')} Multiaddr
- */
-
-/**
- * Remove a peer address from the bootstrap list
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback BootstrapRm
- * @param {Multiaddr} multiaddr - The address of a network peer
- * @param {import('../../utils').AbortOptions & RmOptions & ExtraOptions} options
- * @returns {Promise<Peers>}
- * @example
- * ```js
- * const res = await ipfs.bootstrap.list()
- * console.log(res.Peers)
- * // Logs:
- * // [address1, address2, ...]
- * ```
- */
-
-/**
  * @typedef {import('ipfs-repo')} IPFSRepo
  *
  * @param {IPFSRepo} repo
  */
 module.exports = ({ repo }) => {
   /**
-   * @type {BootstrapRm<{}>}
+   * Remove a peer address from the bootstrap list
+   *
+   * @param {Multiaddr} multiaddr - The address of a network peer
+   * @param {AbortOptions} options
+   * @returns {Promise<Peers>}
+   * @example
+   * ```js
+   * const res = await ipfs.bootstrap.list()
+   * console.log(res.Peers)
+   * // Logs:
+   * // [address1, address2, ...]
+   * ```
    */
   async function rm (multiaddr, options = {}) {
     if (!isValidMultiaddr(multiaddr)) {
@@ -55,3 +38,14 @@ module.exports = ({ repo }) => {
 
   return withTimeoutOption(rm)
 }
+
+/**
+ * @typedef {Object} Peers
+ * An object that contains an array with all the bootstrap addresses
+ * @property {Array<Multiaddr>} Peers
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('multiaddr')} Multiaddr
+ */

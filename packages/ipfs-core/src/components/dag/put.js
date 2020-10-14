@@ -10,15 +10,27 @@ const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @param {PutConfig} config
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ * @param {import("../index").Pin} config.pin
+ * @param {import("../index").GCLock} config.gcLock
+ * @param {import("../index").Preload} config.preload
  */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
    * Store an IPLD format node
    *
    * @param {Object} dagNode
-   * @param {PutOptions} [options]
+   * @param {PutOptions & AbortOptions} [options]
    * @returns {Promise<CID>}
+   * @example
+   * ```js
+   * const obj = { simple: 'object' }
+   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' })
+   *
+   * console.log(cid.toString())
+   * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
+   * ```
    */
   // eslint-disable-next-line complexity
   async function put (dagNode, options = {}) {
@@ -88,23 +100,15 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
 }
 
 /**
- *
- * @typedef {Object} PutConfig
- * @property {import('ipld')} ipld
- * @property {import("../index").Pin} pin
- * @property {import("../init").RWLock} gcLock
- * @property {import("../init").Preload} preload
- *
  * @typedef {Object} PutOptions
  * @property {CID} [cid]
  * @property {string|number} [format]
  * @property {string|number} [hashAlg]
  *
  * @property {boolean} [pin=false]
- * @property {number} [timetout]
  * @property {number} [version]
  * @property {boolean} [preload=false]
- * @property {AbortSignal} [signal]
  *
  * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

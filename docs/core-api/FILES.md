@@ -242,8 +242,8 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| chunker | `String` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
-| cidVersion | `Number` | `0` | the CID version to use when storing the data |
+| chunker | `string` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
+| cidVersion | `number` | `0` | the CID version to use when storing the data |
 | enableShardingExperiment | `boolean` | `false` |  allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature |
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |

@@ -386,11 +386,11 @@ function createApi ({
  * @typedef {import('../api-manager')} APIManager
  * @typedef {import('./init').ConstructorOptions<boolean | InitOptions, true>} StartOptions
  * @typedef {import('ipfs-block-service')} BlockService
- * @typedef {import('./init').RWLock} GCLock
+ * @typedef {import('./index').GCLock} GCLock
  * @typedef {import('ipld')} IPLD
  * @typedef {import('./init').Keychain} Keychain
  * @typedef {import('peer-id')} PeerId
- * @typedef {import('./init').Preload} Preload
+ * @typedef {import('./index').Preload} Preload
  * @typedef {import('ipfs-repo')} Repo
  * @typedef {import('./pin/pin-manager')} PinManager
  * @typedef {import('libp2p')} LibP2P

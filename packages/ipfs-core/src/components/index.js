@@ -260,6 +260,19 @@ exports.swarm = {
 exports.version = require('./version')
 
 /**
+ * @typedef {ReturnType<import('../preload')>} Preload
+ * @typedef {RWLock} GCLock
+ *
+ * @typedef {Object} RWLock
+ * @property {() => Promise<Lock>} readLock
+ * @property {() => Promise<Lock>} writeLock
+ *
+ * @typedef {() => void} Lock
+ *
+ * @typedef {import('ipfs-bitswap')} BitswapService
+ */
+
+/**
  * @typedef {Object} IPFSAPI
  * @property {Add} add
  * @property {BitSwap} bitswap

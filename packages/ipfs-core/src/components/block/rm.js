@@ -11,54 +11,30 @@ const { withTimeoutOption } = require('../../utils')
 const BLOCK_RM_CONCURRENCY = 8
 
 /**
- * @typedef {Object} RmOptions
- * @property {boolean} [force=false] - Ignores non-existent blocks
- * @property {boolean} [quiet=false] - Write minimal output
- *
- * @typedef {RmSucceess|RmFailure} RmResult
- * Note: If an error is present for a given object, the block with
- * that cid was not removed and the error will contain the reason why,
- * for example if the block was pinned.
- *
- * @typedef {Object} RmSucceess
- * @property {CID} cid
- * @property {void} [error]
- *
- * @typedef {Object} RmFailure
- * @property {CID} cid
- * @property {Error} error
- */
-
-/**
- * Remove one or more IPFS block(s).
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback BlockRm
- * @param {CID[]|CID} cids - CID(s) corresponding to the block(s) to be removed.
- * @param {import('../../utils').AbortOptions & RmOptions & ExtraOptions} [options]
- * @returns {AsyncIterable<RmResult>}
- *
- * @example
- * ```js
- * for await (const result of ipfs.block.rm(cid)) {
- *   if (result.error) {
- *     console.error(`Failed to remove block ${result.cid} due to ${result.error.message}`)
- *   } else {
- *    console.log(`Removed block ${result.cid}`)
- *   }
- * }
- * ```
- */
-
-/**
  * @param {Object} config
  * @param {import('ipfs-block-service')} config.blockService
  * @param {import('../pin/pin-manager')} config.pinManager
- * @param {import('../init').RWLock} config.gcLock
+ * @param {import('../index').GCLock} config.gcLock
  */
 module.exports = ({ blockService, gcLock, pinManager }) => {
   /**
-   * @type {BlockRm<{}>}
+  /**
+   * Remove one or more IPFS block(s).
+   *
+   * @param {CID[]|CID} cids - CID(s) corresponding to the block(s) to be removed.
+   * @param {RmOptions & AbortOptions} [options]
+   * @returns {AsyncIterable<RmResult>}
+   *
+   * @example
+   * ```js
+   * for await (const result of ipfs.block.rm(cid)) {
+   *   if (result.error) {
+   *     console.error(`Failed to remove block ${result.cid} due to ${result.error.message}`)
+   *   } else {
+   *    console.log(`Removed block ${result.cid}`)
+   *   }
+   * }
+   * ```
    */
   async function * rm (cids, options = {}) {
     if (!Array.isArray(cids)) {
@@ -114,3 +90,24 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
 
   return withTimeoutOption(rm)
 }
+
+/**
+ * @typedef {Object} RmOptions
+ * @property {boolean} [force=false] - Ignores nonexistent blocks
+ * @property {boolean} [quiet=false] - Write minimal output
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {RmSucceess|RmFailure} RmResult
+ * Note: If an error is present for a given object, the block with
+ * that cid was not removed and the error will contain the reason why,
+ * for example if the block was pinned.
+ *
+ * @typedef {Object} RmSucceess
+ * @property {CID} cid
+ * @property {void} [error]
+ *
+ * @typedef {Object} RmFailure
+ * @property {CID} cid
+ * @property {Error} error
+ */

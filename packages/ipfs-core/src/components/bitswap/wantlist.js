@@ -3,21 +3,21 @@
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {import('cids')} CID
+ * @param {Object} config
+ * @param {import('ipfs-bitswap')} config.bitswap
  */
-
-/**
- * Returns the wantlist for your node
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback WantlistFn
- * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<CID[]>} - An array of CIDs currently in the wantlist
- */
-
 module.exports = ({ bitswap }) => {
   /**
-   * @type {WantlistFn<{}>}
+   * Returns the wantlist for your node
+   *
+   * @param {AbortOptions} [options]
+   * @returns {Promise<CID[]>} - An array of CIDs currently in the wantlist.
+   * @example
+   * ```js
+   * const list = await ipfs.bitswap.wantlist()
+   * console.log(list)
+   * // [ CID('QmHash') ]
+   * ```
    */
   async function wantlist (options = {}) { // eslint-disable-line require-await
     const list = bitswap.getWantlist(options)
@@ -27,3 +27,8 @@ module.exports = ({ bitswap }) => {
 
   return withTimeoutOption(wantlist)
 }
+
+/**
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('cids')} CID
+ */

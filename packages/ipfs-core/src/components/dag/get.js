@@ -6,39 +6,60 @@ const last = require('it-last')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**
- * @typedef {import('cids')} CID
- * @typedef {import('ipld')} IPLD
- * @typedef {import('../../preload').PreloadService} PreloadService
- */
-
-/**
- * @typedef {Object} GetOptions
- * @property {boolean} [localResolve=false]
- * @property {number} [timeout]
- * @property {boolean} [preload=false]
- * @property {string} [path] - An optional path within the DAG to resolve
- * @property {AbortSignal} [signal]
- *
- * @typedef {Object} DagEntry
- * @property {Object} value
- * @property {string} remainderPath
- *
- * @callback Get
- * Retrieve an IPLD format node
- * @param {CID} cid - A DAG node that follows one of the supported IPLD formats
- * @param {GetOptions} [options] - An optional configration
- * @returns {Promise<DagEntry>}
- */
-
-/**
  * @param {Object} config
  * @param {IPLD} config.ipld
- * @param {PreloadService} config.preload
- * @returns {Get}
+ * @param {Preload} config.preload
  */
 
 module.exports = ({ ipld, preload }) => {
-  /** @type {Get} */
+  /**
+   * Retrieve an IPLD format node
+   *
+   * @param {CID} ipfsPath - A DAG node that follows one of the supported IPLD formats
+   * @param {GetOptions & AbortOptions} [options] - An optional configration
+   * @returns {Promise<DagEntry>}
+   * @example
+   * ```js
+   * ```JavaScript
+   * // example obj
+   * const obj = {
+   *   a: 1,
+   *   b: [1, 2, 3],
+   *   c: {
+   *     ca: [5, 6, 7],
+   *     cb: 'foo'
+   *   }
+   * }
+   *
+   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+   * console.log(cid.toString())
+   * // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
+   *
+   * async function getAndLog(cid, path) {
+   *   const result = await ipfs.dag.get(cid, { path })
+   *   console.log(result.value)
+   * }
+   *
+   * await getAndLog(cid, '/a')
+   * // Logs:
+   * // 1
+   *
+   * await getAndLog(cid, '/b')
+   * // Logs:
+   * // [1, 2, 3]
+   *
+   * await getAndLog(cid, '/c')
+   * // Logs:
+   * // {
+   * //   ca: [5, 6, 7],
+   * //   cb: 'foo'
+   * // }
+   *
+   * await getAndLog(cid, '/c/ca/1')
+   * // Logs:
+   * // 6
+   * ```
+   */
   const get = async function get (ipfsPath, options = {}) {
     const {
       cid,
@@ -70,3 +91,20 @@ module.exports = ({ ipld, preload }) => {
 
   return withTimeoutOption(get)
 }
+
+/**
+ * @typedef {Object} GetOptions
+ * @property {boolean} [localResolve=false]
+ * @property {number} [timeout]
+ * @property {boolean} [preload=false]
+ * @property {string} [path] - An optional path within the DAG to resolve
+ *
+ * @typedef {Object} DagEntry
+ * @property {Object} value
+ * @property {string} remainderPath
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipld')} IPLD
+ * @typedef {import('../index').Preload} Preload
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

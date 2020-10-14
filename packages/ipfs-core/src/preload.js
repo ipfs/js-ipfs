@@ -32,7 +32,7 @@ const log = Object.assign(
  * @param {PreloadConfig} [options]
  * @returns {PreloadService}
  */
-module.exports = (options = {}) => {
+const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 
@@ -98,3 +98,5 @@ module.exports = (options = {}) => {
 
   return api
 }
+
+module.exports = createPreloader
