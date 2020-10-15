@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * @param {MTime} mtime
+ * @returns {string}
+ */
 function formatMtime (mtime) {
   if (mtime == null) {
     return '-'
@@ -17,5 +21,13 @@ function formatMtime (mtime) {
     timeZoneName: 'short'
   })
 }
+
+/**
+ * @typedef {object} MTime
+ * @property {number} secs - the number of seconds since (positive) or before
+ * (negative) the Unix Epoch began
+ * @property {number} nsecs - the number of nanoseconds since the last full
+ * second.
+ */
 
 module.exports = formatMtime

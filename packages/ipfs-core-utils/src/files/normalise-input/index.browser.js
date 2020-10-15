@@ -12,7 +12,7 @@ const normaliseInput = require('./normalise-input')
  *
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
- * @param input Object
- * @returns AsyncInterable<{ path, mode, mtime, content: Blob }>
+ * @param {import('./normalise-input').Source} input
+ * @returns {AsyncIterable<import('./normalise-input').Entry>}
  */
 module.exports = (input) => normaliseInput(input, normaliseContent)

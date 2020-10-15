@@ -5,6 +5,10 @@ const errCode = require('err-code')
 
 const IPFS_PREFIX = '/ipfs/'
 
+/**
+ * @param {string|Uint8Array|CID} string
+ * @returns {{cid:CID, path?:string}}
+ */
 const toCidAndPath = (string) => {
   if (string instanceof Uint8Array) {
     try {
@@ -30,7 +34,7 @@ const toCidAndPath = (string) => {
   let path
 
   try {
-    cid = new CID(parts.shift())
+    cid = new CID(/** @type {string} */(parts.shift()))
   } catch (err) {
     throw errCode(err, 'ERR_INVALID_CID')
   }

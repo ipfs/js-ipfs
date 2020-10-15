@@ -9,13 +9,18 @@ const all = require('it-all')
 const map = require('it-map')
 const {
   isBytes,
+  isReadableStream,
   isBlob
 } = require('./utils')
 
+/**
+ * @param {import('./normalise-input').ToContent} input
+ * @returns {AsyncIterable<Uint8Array>}
+ */
 async function * toAsyncIterable (input) {
   // Bytes | String
   if (isBytes(input) || typeof input === 'string' || input instanceof String) {
-    yield toBuffer(input)
+    yield toBytes(input)
     return
   }
 
@@ -26,7 +31,7 @@ async function * toAsyncIterable (input) {
   }
 
   // Browser stream
-  if (typeof input.getReader === 'function') {
+  if (isReadableStream(input)) {
     input = browserStreamToIt(input)
   }
 
@@ -45,13 +50,13 @@ async function * toAsyncIterable (input) {
 
     // (Async)Iterable<Number>
     if (Number.isInteger(value)) {
-      yield toBuffer(await all(peekable))
+      yield Uint8Array.from((await all(peekable)))
       return
     }
 
     // (Async)Iterable<Bytes|String>
     if (isBytes(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, chunk => toBuffer(chunk))
+      yield * map(peekable, toBytes)
       return
     }
   }
@@ -59,9 +64,22 @@ async function * toAsyncIterable (input) {
   throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
 }
 
-function toBuffer (chunk) {
-  if (isBytes(chunk)) {
+/**
+ *
+ * @param {ArrayBuffer | ArrayBufferView | string | InstanceType<typeof window.String> | number[]} chunk
+ * @returns {Uint8Array}
+ */
+function toBytes (chunk) {
+  if (chunk instanceof Uint8Array) {
     return chunk
+  }
+
+  if (ArrayBuffer.isView(chunk)) {
+    return new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength)
+  }
+
+  if (chunk instanceof ArrayBuffer) {
+    return new Uint8Array(chunk)
   }
 
   if (Array.isArray(chunk)) {

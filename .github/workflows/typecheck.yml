@@ -23,6 +23,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm install
+      - name: Typecheck ipfs-core-utils
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-core-utils
+      - name: Generate types for ipfs-core-utils
+        run: npm run build:types --scope={ipfs-core-utils}
       - name: Typecheck ipfs-core
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:

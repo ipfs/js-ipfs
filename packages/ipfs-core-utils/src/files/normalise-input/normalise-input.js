@@ -7,9 +7,17 @@ const map = require('it-map')
 const {
   isBytes,
   isBlob,
+  isReadableStream,
   isFileObject
 } = require('./utils')
 
+// eslint-disable-next-line complexity
+
+/**
+ * @param {Source} input
+ * @param {NormaliseToBlob|NormaliseToStream} normaliseContent
+ * @returns {AsyncIterable<Entry>}
+ */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
   // must give us something
@@ -31,7 +39,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
   }
 
   // Browser ReadableStream
-  if (typeof input.getReader === 'function') {
+  if (isReadableStream(input)) {
     input = browserStreamToIt(input)
   }
 
@@ -67,7 +75,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // (Async)Iterable<ReadableStream<?>>
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
-    if (value[Symbol.iterator] || value[Symbol.asyncIterator] || typeof value.getReader === 'function') {
+    if (value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
       yield * map(peekable, (value) => toFileObject(value, normaliseContent))
       return
     }
@@ -84,18 +92,60 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
 }
 
+/**
+ * @param {ToFile} input
+ * @param {NormaliseToBlob|NormaliseToStream} normaliseContent
+ * @returns {Promise<Entry>}
+ */
 async function toFileObject (input, normaliseContent) {
-  const obj = {
-    path: input.path || '',
-    mode: input.mode,
-    mtime: input.mtime
+  // @ts-ignore - Those properties don't exist on most input types
+  const { path, mode, mtime, content } = input
+
+  const file = { path: path || '', mode, mtime }
+  if (content) {
+    file.content = await normaliseContent(content)
+  } else if (!path) { // Not already a file object with path or content prop
+    // @ts-ignore - input still can be different ToContent
+    file.content = await normaliseContent(input)
   }
 
-  if (input.content) {
-    obj.content = await normaliseContent(input.content)
-  } else if (!input.path) { // Not already a file object with path or content prop
-    obj.content = await normaliseContent(input)
-  }
-
-  return obj
+  return file
 }
+
+/**
+ * @typedef {import('../format-mtime').MTime} MTime
+ * @typedef {import('../format-mode').Mode} Mode
+ *
+ * @typedef {Object} File
+ * @property {string} path
+ * @property {Mode} [mode]
+ * @property {MTime} [mtime]
+ * @property {AsyncIterable<Uint8Array>|Blob} [content]
+ *
+ * @typedef {Object} Directory
+ * @property {string} path
+ * @property {Mode} [mode]
+ * @property {MTime} [mtime]
+ * @property {undefined} [content]
+ *
+ * @typedef {File|Directory} Entry
+ *
+ * @typedef {Object} FileInput
+ * @property {string} [path]
+ * @property {ToContent} [content]
+ * @property {number | string} [mode]
+ * @property {UnixTime} [mtime]
+ *
+ * @typedef {Date | MTime | HRTime} UnixTime
+ *
+ * Time representation as tuple of two integers, as per the output of
+ * [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
+ * @typedef {[number, number]} HRTime
+ *
+ * @typedef {string|InstanceType<typeof window.String>|ArrayBufferView|ArrayBuffer|Blob|Iterable<Uint8Array> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} ToContent
+ * @typedef {ToContent|FileInput} ToFile
+ * @typedef {Iterable<ToFile> | AsyncIterable<ToFile> | ReadableStream<ToFile>} Source
+ *
+ * @typedef {(content:ToContent) => Promise<Blob> | Blob} NormaliseToBlob
+ * @typedef {(content:ToContent) => AsyncIterable<Uint8Array>} NormaliseToStream
+ */
