@@ -10,7 +10,7 @@ const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'put', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'put', import('ipfs-core/src/components/dht')>}
    */
   async function * put (key, value, options = {}) {
     // allow aborting requests on body errors

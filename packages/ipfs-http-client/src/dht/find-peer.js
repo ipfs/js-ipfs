@@ -8,7 +8,7 @@ const { FinalPeer } = require('./response-types')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'findPeer', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'findPeer', import('ipfs-core/src/components/dht')>}
    */
   async function findPeer (peerId, options = {}) {
     const res = await api.post('dht/findpeer', {

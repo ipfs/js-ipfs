@@ -8,7 +8,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'provide', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'provide', import('ipfs-core/src/components/dht')>}
    */
   async function * provide (cids, options = {}) {
     cids = Array.isArray(cids) ? cids : [cids]

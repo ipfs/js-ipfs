@@ -16,7 +16,7 @@ module.exports = configure((api, options) => {
   const dagResolve = require('./resolve')(options)
 
   /**
-   * @type {import('..').Implements<import('../../../ipfs-core/src/components/dag/get')>}
+   * @type {import('..').Implements<import('ipfs-core/src/components/dag/get')>}
    */
   const get = async (cid, options = {}) => {
     const resolved = await dagResolve(cid, options)

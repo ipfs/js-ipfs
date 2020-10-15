@@ -8,7 +8,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'query', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'query', import('ipfs-core/src/components/dht')>}
    */
   async function * query (peerId, options = {}) {
     const res = await api.post('dht/query', {

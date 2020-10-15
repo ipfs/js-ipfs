@@ -8,7 +8,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'get', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'get', import('ipfs-core/src/components/dht')>}
    */
   async function get (key, options = {}) {
     const res = await api.post('dht/get', {

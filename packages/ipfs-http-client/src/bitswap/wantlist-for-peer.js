@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/bitswap/wantlist-for-peer')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bitswap/wantlist-for-peer')>}
    */
   async function wantlistForPeer (peerId, options = {}) {
     // @ts-ignore - CID|string seems to confuse typedef

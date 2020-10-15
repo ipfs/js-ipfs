@@ -8,7 +8,7 @@ const { Provider } = require('./response-types')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'findProvs', import('../../../ipfs-core/src/components/dht')>}
+   * @type {import('..').ImplementsMethod<'findProvs', import('ipfs-core/src/components/dht')>}
    */
   async function * findProvs (cid, options = {}) {
     const res = await api.post('dht/findprovs', {

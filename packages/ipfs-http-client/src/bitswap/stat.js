@@ -7,7 +7,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/bitswap/stat')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bitswap/stat')>}
    */
   async function stat (options = {}) {
     const res = await api.post('bitswap/stat', {

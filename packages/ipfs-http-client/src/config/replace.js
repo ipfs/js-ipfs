@@ -9,7 +9,7 @@ const AbortController = require('native-abort-controller')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'replace', import('../../../ipfs-core/src/components/config')>}
+   * @type {import('..').ImplementsMethod<'replace', import('ipfs-core/src/components/config')>}
    */
   const replace = async (config, options = {}) => {
     // allow aborting requests on body errors

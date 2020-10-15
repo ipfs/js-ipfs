@@ -5,7 +5,7 @@ const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('.').Implements<import('../../ipfs-core/src/components/dns')>}
+   * @type {import('.').Implements<import('ipfs-core/src/components/dns')>}
    */
   const dns = async (domain, options = {}) => {
     const res = await api.post('dns', {

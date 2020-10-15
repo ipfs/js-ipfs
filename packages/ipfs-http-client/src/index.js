@@ -59,7 +59,7 @@ module.exports = ipfsClient
  * @property {Headers | Record<string, string>} [headers] - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
  * @property {URLSearchParams | Record<string, string>} [searchParams] - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
  *
- * @typedef {import('../../ipfs-core/src/utils').AbortOptions} AbortOptions}
+ * @typedef {import('ipfs-core/src/utils').AbortOptions} AbortOptions}
  */
 
 /**

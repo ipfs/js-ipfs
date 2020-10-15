@@ -5,7 +5,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'get', import('../../../ipfs-core/src/components/config')>}
+   * @type {import('..').ImplementsMethod<'get', import('ipfs-core/src/components/config')>}
    */
   const get = async (key, options = {}) => {
     if (!key) {
