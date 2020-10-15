@@ -7,8 +7,8 @@ const { PinTypes } = require('./pin-manager')
 /**
  * @param {Object} config
  * @param {import('./pin-manager')} config.pinManager
- * @param {import('../init').RWLock} config.gcLock
- * @param {import('../index').DAG} config.dag
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').DAG} config.dag
  */
 module.exports = ({ pinManager, gcLock, dag }) => {
   /**
@@ -72,7 +72,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 }
 
 /**
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  * @typedef {import('./add-all').PinsSource} PinsSource
  */

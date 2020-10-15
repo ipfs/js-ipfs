@@ -6,7 +6,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-bitswap')} config.bitswap
+ * @param {import('..').IPFSBitSwap} config.bitswap
  */
 module.exports = ({ bitswap }) => {
   /**
@@ -46,14 +46,6 @@ module.exports = ({ bitswap }) => {
 }
 
 /**
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- */
-
-/**
- * @template ExtraOptions
- * @callback Unwant
- * @param {CID | CID[]} cids
- * @param {AbortOptions & ExtraOptions} [options]
- * @returns {Promise<void>}
  */

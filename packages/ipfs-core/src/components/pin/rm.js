@@ -32,7 +32,7 @@ module.exports = ({ rmAll }) =>
  * @typedef {Object} RmSettings
  * @property {boolean} [recursive=true] - Recursively unpin the object linked
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  * @typedef {import('./add-all').PinSource} PinSource
  */

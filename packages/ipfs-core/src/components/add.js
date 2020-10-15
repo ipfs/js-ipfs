@@ -38,11 +38,3 @@ module.exports = ({ addAll }) => {
  *
  * @typedef {import('../utils').AbortOptions} AbortOptions
  */
-
-/**
- * @template ExtraOptions
- * @callback Add
- * @param {Source} source - Data to import
- * @param {AddOptions & AbortOptions & ExtraOptions} [options]
- * @returns {AddResult}
- */

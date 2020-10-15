@@ -6,8 +6,8 @@ const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
- * @param {import('../preload').PreloadService} config.preload
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
   /**
@@ -77,5 +77,5 @@ module.exports = function ({ ipld, preload }) {
  *
  * @typedef {import('../utils').AbortOptions} AbortOptions
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('.').CID} CID
  */

@@ -15,13 +15,16 @@ const BLOCK_RM_CONCURRENCY = 256
  * Perform mark and sweep garbage collection
  *
  * @param {Object} config
- * @param {import('../init').RWLock} config.gcLock
- * @param {import('../index').Pin} config.pin
- * @param {import('../index').Refs} config.refs
- * @param {import('ipfs-repo').Repo} config.repo
- * @returns {GC}
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').Pin} config.pin
+ * @param {import('..').Refs} config.refs
+ * @param {import('..').IPFSRepo} config.repo
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
+  /**
+   * @param {AbortOptions} [_options]
+   * @returns {AsyncIterable<Notification>}
+   */
   async function * gc (_options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
@@ -117,10 +120,6 @@ async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
 }
 
 /**
- * @callback GC
- * @param {AbortOptions} [options]
- * @returns {AsyncIterable<Notification>}
- *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  *
  * @typedef {Err|BlockID} Notification

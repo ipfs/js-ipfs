@@ -19,7 +19,7 @@ const WEBSOCKET_STAR_PROTO_CODE = 479
  * @param {Object} config
  * @param {APIManager} config.apiManager
  * @param {StartOptions} config.options
- * @param {BlockService} config.blockService
+ * @param {IPFSBlockService} config.blockService
  * @param {GCLock} config.gcLock
  * @param {InitOptions} config.initOptions
  * @param {IPLD} config.ipld
@@ -28,7 +28,7 @@ const WEBSOCKET_STAR_PROTO_CODE = 479
  * @param {PinManager} config.pinManager
  * @param {Preload} config.preload
  * @param {Print} config.print
- * @param {Repo} config.repo
+ * @param {IPFSRepo} config.repo
  */
 module.exports = ({
   apiManager,
@@ -362,7 +362,7 @@ function createApi ({
  * @property {APIManager} apiManager
  * @property {Bitswap} [bitswap]
  * @property {Block} block
- * @property {BlockService} blockService
+ * @property {IPFSBlockService} blockService
  * @property {Config} config
  * @property {StartOptions} constructorOptions
  * @property {DAG} dag
@@ -378,26 +378,26 @@ function createApi ({
  * @property {Pin} pin
  * @property {Preload} preload
  * @property {Print} print
- * @property {Repo} repo
+ * @property {IPFSRepo} repo
  *
  * @typedef {(...args:any[]) => void} Print
  *
  * @typedef {import('./init').InitOptions} InitOptions
- * @typedef {import('../api-manager')} APIManager
  * @typedef {import('./init').ConstructorOptions<boolean | InitOptions, true>} StartOptions
- * @typedef {import('ipfs-block-service')} BlockService
- * @typedef {import('./index').GCLock} GCLock
- * @typedef {import('ipld')} IPLD
  * @typedef {import('./init').Keychain} Keychain
- * @typedef {import('peer-id')} PeerId
- * @typedef {import('./index').Preload} Preload
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('../api-manager')} APIManager
  * @typedef {import('./pin/pin-manager')} PinManager
- * @typedef {import('libp2p')} LibP2P
  * @typedef {import('../mfs-preload').MFSPreload} MFSPreload
- * @typedef {import('./index').Pin} Pin
- * @typedef {import('./index').Files} Files
- * @typedef {import('./index').DAG} DAG
- * @typedef {import('./index').Config} Config
- * @typedef {import('./index').Block} Block
+ * @typedef {import('.').IPFSBlockService} IPFSBlockService
+ * @typedef {import('.').GCLock} GCLock
+ * @typedef {import('.')} IPLD
+ * @typedef {import('.').PeerId} PeerId
+ * @typedef {import('.').Preload} Preload
+ * @typedef {import('.').IPFSRepo} IPFSRepo
+ * @typedef {import('.').LibP2P} LibP2P
+ * @typedef {import('.').Pin} Pin
+ * @typedef {import('.').Files} Files
+ * @typedef {import('.').DAG} DAG
+ * @typedef {import('.').Config} Config
+ * @typedef {import('.').Block} Block
  */

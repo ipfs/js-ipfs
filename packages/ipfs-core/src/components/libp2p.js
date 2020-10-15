@@ -6,21 +6,14 @@ const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 /**
- * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Config} LibP2PConfig
- * @typedef {import('peer-id')} PeerId
- * @typedef {import('ipfs-repo')} Repo
- */
-
-/**
  * @param {Object} config
- * @param {Repo} config.repo
+ * @param {import('.').IPFSRepo} config.repo
  * @param {Object} [config.options]
- * @param {PeerId} [config.peerId]
+ * @param {import('.').PeerId} [config.peerId]
  * @param {string[]} [config.multiaddrs]
  * @param {{pass?:string}} [config.keychainConfig]
- * @param {LibP2PConfig} [config.config]
- * @returns {LibP2P}
+ * @param {import('.').LibP2PConfig} [config.config]
+ * @returns {import('.').LibP2PService}
  */
 module.exports = ({
   options = {},

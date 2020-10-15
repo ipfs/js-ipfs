@@ -23,5 +23,5 @@ module.exports = ({ addAll }) =>
  * @property {boolean} [recursive] - Recursively pin all links contained by the object
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  */

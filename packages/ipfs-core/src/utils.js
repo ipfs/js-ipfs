@@ -73,7 +73,7 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('./components/index').DAG} dag - The IPFS dag api
+ * @param {import('./components').DAG} dag - The IPFS dag api
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
@@ -185,7 +185,11 @@ const mapFile = (file, options = {}) => {
  * @property {number} mode
  * @property {MTime} mtime
  *
- * @typedef {import('./components/add-all').UnixTimeObj} MTime
+ * @typedef {object} MTime
+ * @property {number} secs - the number of seconds since (positive) or before
+ * (negative) the Unix Epoch began
+ * @property {number} [nsecs] - the number of nanoseconds since the last full
+ * second.
  */
 
 /**

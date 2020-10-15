@@ -9,10 +9,10 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
  * @param {Object} config
- * @param {import('../index').Block} config.block
- * @param {import('../index').GCLock} config.gcLock
- * @param {import('../index').Preload} config.preload
- * @param {import('../index').Pin} config.pin
+ * @param {import('..').Block} config.block
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').Preload} config.preload
+ * @param {import('..').Pin} config.pin
  * @param {import('../init').ConstructorOptions<any, boolean>} config.options
  */
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
@@ -22,7 +22,7 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
    *
    * @param {FileStream} source
    * @param {AddAllOptions & AbortOptions} [options]
-   * @returns {AddAllResult}
+   * @returns {AsyncIterable<UnixFSEntry>}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
@@ -143,8 +143,6 @@ function pinFile (pin, opts) {
 }
 
 /**
- * @typedef {AsyncIterable<UnixFSEntry>} AddAllResult
- *
  * @typedef {Uint8Array | Blob | string | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  *
  * @typedef {object} FileObject
@@ -162,21 +160,17 @@ function pinFile (pin, opts) {
  * @typedef {FileContent | FileObject} Source
  * @typedef {Iterable<Source> | AsyncIterable<Source> | ReadableStream<Source>} FileStream
  *
- * @typedef {Date | UnixTimeObj | [number, number]} UnixTime - As an array of
- * numbers, it must have two elements, as per the output of
- * [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
+ * @typedef {Date | MTime | HRTime} UnixTime
  *
- * @typedef {object} UnixTimeObj
- * @property {number} secs - the number of seconds since (positive) or before
- * (negative) the Unix Epoch began
- * @property {number} [nsecs] - the number of nanoseconds since the last full
- * second.
+ * Time representation as tuple of two integers, as per the output of
+ * [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
+ * @typedef {[number, number]} HRTime
  *
  * @typedef {object} UnixFSEntry
  * @property {string} path
- * @property {import('cids')} cid
+ * @property {CID} cid
  * @property {number} [mode]
- * @property {UnixTimeObj} [mtime]
+ * @property {MTime} [mtime]
  * @property {number} size
  *
  * @typedef {Object} AddAllOptions
@@ -203,5 +197,7 @@ function pinFile (pin, opts) {
  * @property {boolean} [wrapWithDirectory=false] - Adds a wrapping node around
  * the content.
  *
+ * @typedef {import('../../utils').MTime} MTime
  * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('..').CID} CID
  */

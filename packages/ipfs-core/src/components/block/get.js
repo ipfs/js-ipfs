@@ -5,8 +5,8 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('../index').Preload} config.preload
+ * @param {import('..').IPFSBlockService} config.blockService
+ * @param {import('..').Preload} config.preload
  */
 module.exports = ({ blockService, preload }) => {
   /**
@@ -14,7 +14,7 @@ module.exports = ({ blockService, preload }) => {
    *
    * @param {CID | string | Uint8Array} cid - A CID that corresponds to the desired block
    * @param {GetOptions & AbortOptions} [options]
-   * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
+   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
    *
    * @example
    * ```js
@@ -40,6 +40,6 @@ module.exports = ({ blockService, preload }) => {
  * @property {boolean} [preload=true]
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('cids')} CID
- * @typedef {import('ipld-block')} Block
+ * @typedef {import('..').CID} CID
+ * @typedef {import('..').IPLDBlock} IPLDBlock
  */

@@ -13,3 +13,11 @@ exports.isValidMultiaddr = ma => {
     return false
   }
 }
+
+/**
+ * @typedef {Object} Peers
+ * An object that contains an array with all the added addresses
+ * @property {Array<Multiaddr>} Peers
+ *
+ * @typedef {import('..').Multiaddr} Multiaddr
+ */

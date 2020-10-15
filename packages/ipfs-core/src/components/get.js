@@ -6,14 +6,14 @@ const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
- * @param {import('../preload').PreloadService} config.preload
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
   /**
    * Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
    *
-   * @param {import('cids')|string} ipfsPath - An IPFS path or CID to export
+   * @param {CID|string} ipfsPath - An IPFS path or CID to export
    * @param {Options} [options]
    * @returns {AsyncIterable<IPFSEntry>}
    */
@@ -47,6 +47,7 @@ module.exports = function ({ ipld, preload }) {
  * @typedef {Object} GetOptions
  * @property {boolean} [preload]
  *
+ * @typedef {import('.').CID} CID
  * @typedef {import('../utils').AbortOptions} AbortOptions
  * @typedef {import('../utils').IPFSEntry} IPFSEntry
  */

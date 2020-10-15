@@ -12,6 +12,10 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ * @param {Object} context
+ * @param {import('..').IPLD} context.ipld
+ */
 module.exports = (context) => {
   /**
    * Get file or directory statistics
@@ -59,27 +63,6 @@ module.exports = (context) => {
 
   return withTimeoutOption(mfsStat)
 }
-
-/**
- * @typedef {Object} Stat
- * @property {import('cids')} cid - Content idenntifier
- * @property {number} size - An integer with the file size in bytes.
- * @property {number} cumulativeSize - An integer with the size of the
- * DAGNodes making up the file in bytes.
- * @property {'directory'|'file'} type - Type of the file which is  either directory
- * or file.
- * @property {number} blocks - If type is directory, this is the number of files
- * in the directory. If it is file it is the number of blocks that make up the
- * file.
- * @property {boolean} [withLocality] - A boolean to indicate if locality
- * information is present.
- * @property {boolean} [local] - Is a boolean to indicate if the queried dag is
- * fully present locally.
- * @property {number} [sizeLocal] - An integer indicating the cumulative size of
- * the data present locally.
- * @property {number} [mode] - File mode
- * @property {import('../add-all').UnixTimeObj} [mtime] - Modification time
- */
 
 /** @type {Record<string, (file:any) => Stat>} */
 const statters = {
@@ -179,3 +162,26 @@ const statters = {
     }
   }
 }
+
+/**
+ * @typedef {Object} Stat
+ * @property {CID} cid - Content idenntifier
+ * @property {number} size - An integer with the file size in bytes.
+ * @property {number} cumulativeSize - An integer with the size of the
+ * DAGNodes making up the file in bytes.
+ * @property {'directory'|'file'} type - Type of the file which is  either directory
+ * or file.
+ * @property {number} blocks - If type is directory, this is the number of files
+ * in the directory. If it is file it is the number of blocks that make up the
+ * file.
+ * @property {boolean} [withLocality] - A boolean to indicate if locality
+ * information is present.
+ * @property {boolean} [local] - Is a boolean to indicate if the queried dag is
+ * fully present locally.
+ * @property {number} [sizeLocal] - An integer indicating the cumulative size of
+ * the data present locally.
+ * @property {number} [mode] - File mode
+ * @property {import('../add-all').MTime} [mtime] - Modification time
+ *
+ * @typedef {import('..').CID} CID
+ */

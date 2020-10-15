@@ -6,7 +6,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-bitswap')} config.bitswap
+ * @param {import('..').IPFSBitSwap} config.bitswap
  */
 module.exports = ({ bitswap }) => {
   /**
@@ -58,7 +58,7 @@ module.exports = ({ bitswap }) => {
 /**
  * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
  * @property {number} provideBufLen - an integer
- * @property {import('cids')[]} wantlist
+ * @property {CID[]} wantlist
  * @property {string[]} peers - array of peer IDs as Strings
  * @property {Big} blocksReceived
  * @property {Big} dataReceived
@@ -66,11 +66,6 @@ module.exports = ({ bitswap }) => {
  * @property {Big} dataSent
  * @property {Big} dupBlksReceived
  * @property {Big} dupDataReceived
- */
-
-/**
- * @template ExtraOptions
- * @callback Stat
- * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<BitswapStats>}
+ *
+ * @typedef {import('..').CID} CID
  */

@@ -133,7 +133,7 @@ module.exports = {
  * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
  * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js)
  * in browsers)
- * @property {import('ipld').Config} [ipld] - Modify the default IPLD config. This object
+ * @property {import('./components').IPLDConfig} [ipld] - Modify the default IPLD config. This object
  * will be *merged* with the default config; it will not replace it. Check IPLD
  * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
  * on the available options. (Default: [`ipld-nodejs.js`]
@@ -181,7 +181,7 @@ module.exports = {
  * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
  * @property {boolean} [sharding] - Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
  *
- * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('./components').IPFSRepo} IPFSRepo
  */
 
 /**

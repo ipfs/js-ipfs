@@ -12,9 +12,9 @@ const BLOCK_RM_CONCURRENCY = 8
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('..').IPFSBlockService} config.blockService
  * @param {import('../pin/pin-manager')} config.pinManager
- * @param {import('../index').GCLock} config.gcLock
+ * @param {import('..').GCLock} config.gcLock
  */
 module.exports = ({ blockService, gcLock, pinManager }) => {
   /**

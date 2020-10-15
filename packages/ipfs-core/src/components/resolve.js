@@ -7,8 +7,8 @@ const { withTimeoutOption } = require('../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld - An instance of IPLD
- * @param {import('./index').Name} [config.name] - An IPFS core interface name API
+ * @param {import('.').IPLD} config.ipld - An instance of IPLD
+ * @param {import('.').Name} [config.name] - An IPFS core interface name API
  */
 module.exports = ({ ipld, name }) => {
   /**

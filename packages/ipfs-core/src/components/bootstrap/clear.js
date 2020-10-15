@@ -4,7 +4,7 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('..').IPFSRepo} config.repo
  */
 module.exports = ({ repo }) => {
   /**
@@ -34,12 +34,8 @@ module.exports = ({ repo }) => {
 }
 
 /**
- * @typedef {Object} Peers
- * An object that contains an array with all the removed addresses
- * @property {Array<Multiaddr>} Peers
- *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('cids')} CID
- * @typedef {import('multiaddr')} Multiaddr
+ * @typedef {import('./utils').Peers} Peers
+ * @typedef {import('..').CID} CID
+ * @typedef {import('..').Multiaddr} Multiaddr
  */

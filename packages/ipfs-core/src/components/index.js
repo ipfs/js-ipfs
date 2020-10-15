@@ -269,7 +269,21 @@ exports.version = require('./version')
  *
  * @typedef {() => void} Lock
  *
- * @typedef {import('ipfs-bitswap')} BitswapService
+ * // External library types
+ * @typedef {import('cids')} CID
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('multiaddr')} Multiaddr
+ *
+ * // Justs pretending these things are typed & hopefully in the future they
+ * // wil be.
+ * @typedef {import('ipld')} IPLD
+ * @typedef {import('ipld').Config} IPLDConfig
+ * @typedef {import('ipld-block')} IPLDBlock
+ * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('ipfs-block-service')} IPFSBlockService
+ * @typedef {import('ipfs-bitswap')} IPFSBitSwap
+ * @typedef {import('libp2p')} LibP2PService
+ * @typedef {import('libp2p').Config} LibP2PConfig
  */
 
 /**

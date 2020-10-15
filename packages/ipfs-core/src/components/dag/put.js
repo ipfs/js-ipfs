@@ -11,10 +11,10 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
- * @param {import("../index").Pin} config.pin
- * @param {import("../index").GCLock} config.gcLock
- * @param {import("../index").Preload} config.preload
+ * @param {import('..').IPLD} config.ipld
+ * @param {import("..").Pin} config.pin
+ * @param {import("..").GCLock} config.gcLock
+ * @param {import("..").Preload} config.preload
  */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
@@ -109,6 +109,6 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
  * @property {number} [version]
  * @property {boolean} [preload=false]
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

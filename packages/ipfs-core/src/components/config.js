@@ -6,7 +6,7 @@ const log = require('debug')('ipfs:core:config')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('.').IPFSRepo} config.repo
  * @returns {Config}
  */
 module.exports = ({ repo }) => {

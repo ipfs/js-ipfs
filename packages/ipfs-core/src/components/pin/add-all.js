@@ -11,8 +11,8 @@ const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 /**
  *
  * @param {Object} config
- * @param {import('../init').RWLock} config.gcLock
- * @param {import('../index').DAG} config.dag
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').DAG} config.dag
  * @param {import('./pin-manager')} config.pinManager
  */
 module.exports = ({ pinManager, gcLock, dag }) => {
@@ -34,6 +34,9 @@ module.exports = ({ pinManager, gcLock, dag }) => {
    * ```
    */
   async function * addAll (source, options = {}) {
+    /**
+     * @returns {AsyncIterable<CID>}
+     */
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
         const cid = await resolvePath(dag, path)
@@ -108,7 +111,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  */
 
 /**

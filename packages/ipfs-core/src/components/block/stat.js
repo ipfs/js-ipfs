@@ -5,8 +5,8 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('../index').Preload} config.preload
+ * @param {import('..').IPFSBlockService} config.blockService
+ * @param {import('..').Preload} config.preload
  */
 module.exports = ({ blockService, preload }) => {
   /**
@@ -52,5 +52,5 @@ module.exports = ({ blockService, preload }) => {
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  */

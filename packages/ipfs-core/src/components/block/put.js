@@ -8,10 +8,10 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('../index').Pin} config.pin
- * @param {import('../index').GCLock} config.gcLock
- * @param {import('../index').Preload} config.preload
+ * @param {import('..').IPFSBlockService} config.blockService
+ * @param {import('..').Pin} config.pin
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').Preload} config.preload
  */
 module.exports = ({ blockService, pin, gcLock, preload }) => {
   /**
@@ -21,9 +21,9 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
    * don't need to pass options, as the block instance will carry the CID
    * value as a property.
    *
-   * @param {Uint8Array | Block} block - The block or data to store
+   * @param {Uint8Array | IPLDBlock} block - The block or data to store
    * @param {PutOptions & AbortOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
-   * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
+   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
    * @example
    * ```js
    * // Defaults
@@ -123,7 +123,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
  * @property {boolean} [preload]
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('cids')} CID
- * @typedef {import('ipld-block')} Block
+ * @typedef {import('..').CID} CID
+ * @typedef {import('..').IPLDBlock} IPLDBlock
  * @typedef {0|1} CIDVersion
  */

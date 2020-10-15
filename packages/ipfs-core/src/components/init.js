@@ -21,7 +21,7 @@ const {
 const BlockService = require('ipfs-block-service')
 
 /**
- * @typedef {import('ipld')} IPLD
+ * @typedef {import('.').IPLD} IPLD
  */
 const Ipld = require('ipld')
 const getDefaultIpldOptions = require('../runtime/ipld-nodejs')
@@ -483,7 +483,7 @@ function createApi ({
  * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
  * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js)
  * in browsers)
- * @property {import('ipld').Config} [ipld] - Modify the default IPLD config. This object
+ * @property {import('.').IPLDConfig} [ipld] - Modify the default IPLD config. This object
  * will be *merged* with the default config; it will not replace it. Check IPLD
  * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
  * on the available options. (Default: [`ipld-nodejs.js`]
@@ -549,13 +549,7 @@ function createApi ({
  * @property {IPFSConfig} [config]
  *
  * @typedef {import('./config').IPFSConfig} IPFSConfig
- * @typedef {import('ipfs-repo')} IPFSRepo
- *
- * @typedef {Object} RWLock
- * @property {() => Promise<Lock>} readLock
- * @property {() => Promise<Lock>} writeLock
- *
- * @typedef {() => void} Lock
+ * @typedef {import('.').IPFSRepo} IPFSRepo
  *
  * @typedef {'RSA' | 'ed25519' | 'secp256k1'} KeyType
  *

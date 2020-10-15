@@ -13,24 +13,9 @@ const log = Object.assign(
 )
 
 /**
- * @typedef {Object} PreloadConfig
- * @property {boolean} [enabled]
- * @property {string[]} [addresses]
- *
- * @callback Preload
- * @param {string|CID} path
- * @returns {void|Promise<void>}
- *
- * @typedef {Object} PreloadExt
- * @property {function():void} start
- * @property {function():void} stop
- *
- * @typedef {Preload & PreloadExt} PreloadService
- */
-
-/**
- * @param {PreloadConfig} [options]
- * @returns {PreloadService}
+ * @param {Object} [options]
+ * @param {boolean} [options.enabled]
+ * @param {string[]} [options.addresses]
  */
 const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
@@ -49,6 +34,10 @@ const createPreloader = (options = {}) => {
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
+  /**
+   * @param {string|CID} path
+   * @returns {Promise<void>}
+   */
   const api = async path => {
     try {
       if (stopped) throw new Error(`preload ${path} but preloader is not started`)
@@ -85,10 +74,16 @@ const createPreloader = (options = {}) => {
     }
   }
 
+  /**
+   * @returns {void}
+   */
   api.start = () => {
     stopped = false
   }
 
+  /**
+   * @returns {void}
+   */
   api.stop = () => {
     stopped = true
     log(`aborting ${requests.length} pending preload request(s)`)

@@ -138,5 +138,5 @@ module.exports = ({ pinManager, dag }) => {
  * @typedef {import('./pin-manager').PinQueryType} PinQueryType
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
  */
