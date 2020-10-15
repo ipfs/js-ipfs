@@ -4,7 +4,7 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const TimeoutController = require('timeout-abort-controller')
-const anySignal = require('any-signal').default
+const { anySignal } = require('any-signal')
 const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
