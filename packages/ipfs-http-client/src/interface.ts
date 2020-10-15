@@ -1,5 +1,5 @@
 // This file contains some utility types that either can't be expressed in
-// JSDoc syntax or that result in a differt behavior when typed in JSDoc.
+// JSDoc syntax or that result in a different behavior when typed in JSDoc.
 
 /**
  * Utility type that takes IPFS Core API function type (with 0 to 4 arguments

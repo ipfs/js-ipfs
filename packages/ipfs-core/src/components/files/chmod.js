@@ -1,6 +1,6 @@
 'use strict'
 
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const log = require('debug')('ipfs:mfs:touch')
 const errCode = require('err-code')
@@ -167,8 +167,14 @@ function calculateMode (mode, metadata) {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsChmod (path, mode, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * @param {string} path
+   * @param {string | number} mode
+   * @param {ChmodOptions & AbortOptions} options
+   * @returns {Promise<void>}
+   */
+  async function mfsChmod (path, mode, options) {
+    options = mergeOptions(defaultOptions, options)
 
     log(`Fetching stats for ${path}`)
 
@@ -235,7 +241,7 @@ module.exports = (context) => {
 
     const updatedCid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: cid.version,
-      hashAlg: mh.names[options.hashAlg],
+      hashAlg: mh.names[options.hashAlg || defaultOptions.hashAlg],
       onlyHash: !options.flush
     })
 
@@ -260,5 +266,19 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid, options)
-  })
+  }
+
+  return withTimeoutOption(mfsChmod)
 }
+
+/**
+ * @typedef {Object} ChmodOptions
+ * @property {boolean} [flush=false]
+ * @property {number} [shardSplitThreshold=1000]
+ * @property {string} [hashAlg=sha2-256]
+ * @property {0|1} [cidVersion=0]
+ * @property {boolean} [recursive=false]
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

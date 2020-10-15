@@ -21,12 +21,18 @@ const defaultOptions = {
   signal: undefined
 }
 
-module.exports = (context) => {
-  return withTimeoutOption(async function mfsCp (...args) {
+/**
+ * @return {function}
+ */
+module.exports = function derp (context) {
+  /**
+   * @param  {...object} args
+   */
+  async function mfsCp (...args) {
     let {
       sources,
       destination,
-      options
+      options,
     } = await toSourcesAndDestination(context, args, defaultOptions)
 
     if (!sources.length) {
@@ -96,7 +102,9 @@ module.exports = (context) => {
 
     log('Multiple sources, wrapping in a directory')
     return copyToDirectory(context, sources, destination, trail, options)
-  })
+  }
+
+  return withTimeoutOption(mfsCp)
 }
 
 const isDirectory = (destination) => {
@@ -158,3 +166,15 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
 
   return parent
 }
+
+/**
+ * @typedef {Object} CpOptions
+ * @property {boolean} [flush=false]
+ * @property {number} [shardSplitThreshold=1000]
+ * @property {string} [hashAlg=sha2-256]
+ * @property {0|1} [cidVersion=0]
+ * @property {boolean} [parents=false]
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

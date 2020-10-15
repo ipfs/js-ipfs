@@ -6,7 +6,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async function * ls (path, options = {}) {
+  /**
+   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/ls')>}
+   */
+  async function * ls (path, options = {}) {
     if (!path || typeof path !== 'string') {
       throw new Error('ipfs.files.ls requires a path')
     }
@@ -35,6 +38,8 @@ module.exports = configure(api => {
       }
     }
   }
+
+  return ls
 })
 
 function toCoreInterface (entry) {

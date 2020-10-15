@@ -1,5 +1,6 @@
 'use strict'
 
+// @ts-ignore
 const yargs = require('yargs/yargs')(process.argv.slice(2))
 const utils = require('./utils')
 

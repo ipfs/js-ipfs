@@ -4,7 +4,7 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const TimeoutController = require('timeout-abort-controller')
-const anySignal = require('any-signal').default
+const { anySignal } = require('any-signal')
 const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
@@ -198,6 +198,16 @@ const mapFile = (file, options = {}) => {
  * @typedef {object} AbortOptions
  * @property {number} [timeout] - A timeout in ms
  * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call
+ */
+
+/**
+ * @typedef {Object} Mtime
+ * @property {number} [secs]
+ * @property {number} [nsecs]
+ */
+
+/**
+ * @typedef {[number, number]} Hrtime
  */
 
 /**

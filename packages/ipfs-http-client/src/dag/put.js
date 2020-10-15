@@ -8,7 +8,7 @@ const multihash = require('multihashes')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const anySignal = require('any-signal').default
+const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
 const multicodec = require('multicodec')
 

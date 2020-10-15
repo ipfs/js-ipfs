@@ -66,7 +66,6 @@
     "ipfs-bitswap": "^3.0.0",
     "ipfs-block-service": "^0.18.0",
     "ipfs-core-utils": "^0.4.0",
-    "ipfs-http-client": "^47.0.1",
     "ipfs-repo": "^6.0.3",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",
