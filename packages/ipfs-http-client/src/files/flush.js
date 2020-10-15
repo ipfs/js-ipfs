@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/flush')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/flush')>}
    */
   async function flush (path, options = {}) {
     if (!path || typeof path !== 'string') {

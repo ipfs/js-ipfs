@@ -183,4 +183,5 @@ const statters = {
  * @property {import('../add-all').MTime} [mtime] - Modification time
  *
  * @typedef {import('..').CID} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

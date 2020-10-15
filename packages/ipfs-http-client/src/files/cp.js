@@ -7,7 +7,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/cp')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/cp')>}
    */
   async function cp (...args) {
     const { sources, options } = findSources(args)

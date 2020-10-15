@@ -5,7 +5,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/chmod')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/chmod')>}
    */
   async function chmod (path, mode, options = {}) {
     const res = await api.post('files/chmod', {

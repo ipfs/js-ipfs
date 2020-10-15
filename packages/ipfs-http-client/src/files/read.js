@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/read')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/read')>}
    */
   async function * read (path, options = {}) {
     const res = await api.post('files/read', {

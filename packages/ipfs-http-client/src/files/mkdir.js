@@ -5,7 +5,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/mkdir')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/mkdir')>}
    */
   async function mkdir (path, options = {}) {
     const res = await api.post('files/mkdir', {
