@@ -134,7 +134,7 @@ export type LsEntry = {
   size: number
   depth: number
   cid: CID
-  mode?: Mode
+  mode: Mode
   mtime?: UnixFSTime
 }
 
