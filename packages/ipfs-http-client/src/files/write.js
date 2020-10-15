@@ -10,7 +10,7 @@ const AbortController = require('native-abort-controller')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/write')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/write')>}
    */
   async function write (path, input, options = {}) {
     // allow aborting requests on body errors
