@@ -20,6 +20,13 @@
     "go-ipfs": false,
     "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -34,6 +41,7 @@
     "test:chrome": "cross-env ECHO_SERVER_PORT=37496 aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "cross-env ECHO_SERVER_PORT=37497 aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
+    "check": "tsc --noEmit",
     "build": "npm run build:bundle && npm run build:types",
     "build:bundle": "aegir build",
     "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
@@ -81,7 +89,7 @@
     "it-concat": "^1.0.1",
     "it-pipe": "^1.1.0",
     "nock": "^13.0.2",
-    "typescript": "4.0.2"
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

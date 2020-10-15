@@ -43,6 +43,6 @@
   "devDependencies": {
     "aegir": "^27.0.0",
     "delay": "^4.4.0",
-    "typescript": "4.0.2"
+    "typescript": "^4.0.3"
   }
 }

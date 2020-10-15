@@ -12,8 +12,8 @@ const { isElectronRenderer } = require('ipfs-utils/src/env')
  *
  * @param {Object} source
  * @param {AbortController} abortController
- * @param {Object} headers
- * @param {string} boundary
+ * @param {Headers|Record<string, string>} [headers]
+ * @param {string} [boundary]
  */
 async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
@@ -37,10 +37,9 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
           qs.push(`mode=${modeToString(mode)}`)
         }
 
-        if (mtime != null) {
-          const {
-            secs, nsecs
-          } = mtimeToObject(mtime)
+        const time = mtimeToObject(mtime)
+        if (time != null) {
+          const { secs, nsecs } = time
 
           qs.push(`mtime=${secs}`)
 
@@ -66,6 +65,7 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
       }
     } catch (err) {
       // workaround for https://github.com/node-fetch/node-fetch/issues/753
+      // @ts-ignore - abort does not expect an arguments
       abortController.abort(err)
     } finally {
       yield `\r\n--${boundary}--\r\n`

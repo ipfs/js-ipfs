@@ -36,3 +36,11 @@ module.exports = ({ bitswap }) => {
  * @typedef {import('cids')} CID
  * @typedef {import('peer-id')} PeerId
  */
+
+/**
+ * @template ExtraOptions
+ * @callback WantlistForPeer
+ * @param {PeerId | CID | string | Uint8Array} peerId
+ * @param {AbortOptions & ExtraOptions} [options]
+ * @returns {Promise<CID[]>}
+ */

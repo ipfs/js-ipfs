@@ -9,6 +9,10 @@ const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
 
+/**
+ * @param {any} input
+ * @returns {input is Multiaddr}
+ */
 const isMultiaddr = (input) => {
   try {
     Multiaddr(input) // eslint-disable-line no-new
@@ -18,6 +22,10 @@ const isMultiaddr = (input) => {
   }
 }
 
+/**
+ * @param {any} options
+ * @returns {ClientOptions}
+ */
 const normalizeInput = (options = {}) => {
   if (isMultiaddr(options)) {
     options = { url: toUri(options) }
@@ -108,14 +116,11 @@ const parseTimeout = (value) => {
  * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
  * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
-
 class Client extends HTTP {
   /**
-   *
-   * @param {ClientOptions|URL|Multiaddr|string} options
+   * @param {ClientOptions|URL|Multiaddr|string} [options]
    */
   constructor (options = {}) {
-    /** @type {ClientOptions} */
     const opts = normalizeInput(options)
     super({
       timeout: parseTimeout(opts.timeout) || 60000 * 20,

@@ -22,7 +22,7 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
    *
    * @param {FileStream} source
    * @param {AddAllOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<UnixFSEntry>}
+   * @returns {AddAllResult}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
@@ -143,6 +143,8 @@ function pinFile (pin, opts) {
 }
 
 /**
+ * @typedef {AsyncIterable<UnixFSEntry>} AddAllResult
+ *
  * @typedef {Uint8Array | Blob | string | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
  *
  * @typedef {object} FileObject
@@ -173,8 +175,8 @@ function pinFile (pin, opts) {
  * @typedef {object} UnixFSEntry
  * @property {string} path
  * @property {import('cids')} cid
- * @property {number} mode
- * @property {UnixTimeObj} mtime
+ * @property {number} [mode]
+ * @property {UnixTimeObj} [mtime]
  * @property {number} size
  *
  * @typedef {Object} AddAllOptions

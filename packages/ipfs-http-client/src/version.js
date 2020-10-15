@@ -6,7 +6,7 @@ const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../ipfs-core/src/components/version').Version<import('.').HttpOptions>}
+   * @type {import('.').Implements<import('../../ipfs-core/src/components/version')>}
    */
   async function version (options = {}) {
     const res = await api.post('version', {
@@ -19,5 +19,6 @@ module.exports = configure(api => {
 
     return toCamel(data)
   }
+
   return version
 })

@@ -7,7 +7,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs-core/src/components/block/get').BlockGet<import('..').HttpOptions>}
+   * @type {import('..').Implements<import('../../../ipfs-core/src/components/block/get')>}
    */
   async function get (cid, options = {}) {
     // @ts-ignore - CID|string seems to confuse typedef

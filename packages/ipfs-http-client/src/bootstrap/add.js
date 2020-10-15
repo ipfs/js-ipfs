@@ -5,7 +5,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs-core/src/components/bootstrap/add').BootstrapAdd<import('..').HttpOptions>}
+   * @type {import('..').Implements<import('../../../ipfs-core/src/components/bootstrap/add')>}
    */
   async function add (addr, options = {}) {
     const res = await api.post('bootstrap/add', {

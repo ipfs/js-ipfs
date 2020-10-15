@@ -7,7 +7,10 @@ const toUrlSearchParams = require('./lib/to-url-search-params')
 const map = require('it-map')
 
 module.exports = configure(api => {
-  return async function * get (path, options = {}) {
+  /**
+   * @type {import('.').Implements<import('../../ipfs-core/src/components/get')>}
+   */
+  async function * get (path, options = {}) {
     const res = await api.post('get', {
       timeout: options.timeout,
       signal: options.signal,
@@ -22,15 +25,23 @@ module.exports = configure(api => {
 
     for await (const { header, body } of extractor(res.iterator())) {
       if (header.type === 'directory') {
+        // @ts-ignore - Missing the following properties from type 'Directory':
+        // cid, name, size, depthts
         yield {
+          type: 'dir',
           path: header.name
         }
       } else {
+        // @ts-ignore - Missing the following properties from type 'File':
+        // cid, name, size, depthts
         yield {
+          type: 'file',
           path: header.name,
           content: map(body, (chunk) => chunk.slice()) // convert bl to Buffer/Uint8Array
         }
       }
     }
   }
+
+  return get
 })

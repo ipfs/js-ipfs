@@ -7,12 +7,15 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async function * query (peerId, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'query', import('../../../ipfs-core/src/components/dht')>}
+   */
+  async function * query (peerId, options = {}) {
     const res = await api.post('dht/query', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: new CID(peerId),
+        arg: new CID(`${peerId}`),
         ...options
       }),
       headers: options.headers
@@ -28,4 +31,6 @@ module.exports = configure(api => {
       yield message
     }
   }
+
+  return query
 })

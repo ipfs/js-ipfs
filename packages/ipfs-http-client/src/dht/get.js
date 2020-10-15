@@ -7,7 +7,10 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = configure(api => {
-  return async function get (key, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'get', import('../../../ipfs-core/src/components/dht')>}
+   */
+  async function get (key, options = {}) {
     const res = await api.post('dht/get', {
       timeout: options.timeout,
       signal: options.signal,
@@ -26,4 +29,6 @@ module.exports = configure(api => {
 
     throw new Error('not found')
   }
+
+  return get
 })

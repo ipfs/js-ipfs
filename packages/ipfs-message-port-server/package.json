@@ -46,7 +46,7 @@
     "interface-ipfs-core": "^0.140.0",
     "ipfs": "^0.50.2",
     "ipfs-message-port-protocol": "^0.2.0",
-    "typescript": "4.0.2"
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

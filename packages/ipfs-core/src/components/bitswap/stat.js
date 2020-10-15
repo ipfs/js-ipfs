@@ -67,3 +67,10 @@ module.exports = ({ bitswap }) => {
  * @property {Big} dupBlksReceived
  * @property {Big} dupDataReceived
  */
+
+/**
+ * @template ExtraOptions
+ * @callback Stat
+ * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
+ * @returns {Promise<BitswapStats>}
+ */

@@ -361,7 +361,7 @@ function createApi ({
  * @typedef {Object} CreateAPIConfig
  * @property {APIManager} apiManager
  * @property {Bitswap} [bitswap]
- * @property {Block} [block]
+ * @property {Block} block
  * @property {BlockService} blockService
  * @property {Config} config
  * @property {StartOptions} constructorOptions

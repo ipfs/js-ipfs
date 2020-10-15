@@ -6,18 +6,26 @@ const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
-
+const anySignal = require('any-signal').default
+const AbortController = require('native-abort-controller')
 module.exports = configure(api => {
-  return async function * put (key, value, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'put', import('../../../ipfs-core/src/components/dht')>}
+   */
+  async function * put (key, value, options = {}) {
+    // allow aborting requests on body errors
+    const controller = new AbortController()
+    const signal = anySignal([controller.signal, options.signal])
+
     const res = await api.post('dht/put', {
       timeout: options.timeout,
-      signal: options.signal,
+      signal,
       searchParams: toUrlSearchParams({
         arg: key,
         ...options
       }),
       ...(
-        await multipartRequest(value, options.headers)
+        await multipartRequest(value, controller, options.headers)
       )
     })
 
@@ -33,4 +41,6 @@ module.exports = configure(api => {
       yield message
     }
   }
+
+  return put
 })

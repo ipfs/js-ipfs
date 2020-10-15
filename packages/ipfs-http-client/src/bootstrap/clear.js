@@ -5,7 +5,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs-core/src/components/bootstrap/clear').BootstrapClear<import('..').HttpOptions>}
+   * @type {import('..').Implements<import('../../../ipfs-core/src/components/bootstrap/clear')>}
    */
   async function clear (options = {}) {
     const res = await api.post('bootstrap/rm', {

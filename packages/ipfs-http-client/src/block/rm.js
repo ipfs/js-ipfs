@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../../ipfs-core/src/components/block/rm').BlockRm<import('..').HttpOptions>}
+   * @type {import('..').Implements<import('../../../ipfs-core/src/components/block/rm')>}
    */
   async function * rm (cid, options = {}) {
     if (!Array.isArray(cid)) {

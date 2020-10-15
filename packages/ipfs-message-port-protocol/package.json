@@ -41,7 +41,7 @@
     "aegir": "^27.0.0",
     "interface-ipfs-core": "^0.140.0",
     "uint8arrays": "^1.1.0",
-    "typescript": "4.0.2"
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

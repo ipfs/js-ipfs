@@ -7,7 +7,10 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const { Provider } = require('./response-types')
 
 module.exports = configure(api => {
-  return async function * findProvs (cid, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'findProvs', import('../../../ipfs-core/src/components/dht')>}
+   */
+  async function * findProvs (cid, options = {}) {
     const res = await api.post('dht/findprovs', {
       timeout: options.timeout,
       signal: options.signal,
@@ -29,4 +32,6 @@ module.exports = configure(api => {
       }
     }
   }
+
+  return findProvs
 })

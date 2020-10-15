@@ -525,6 +525,7 @@ function createApi ({
  *
  * @typedef {object} PreloadOptions
  * @property {boolean} [enabled] - Enable content preloading (Default: `true`)
+ * @property {number} [interval]
  * @property {string[]} [addresses] - Multiaddr API addresses of nodes that should preload content.
  * **NOTE:** nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`.
  *
