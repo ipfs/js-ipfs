@@ -27,14 +27,18 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-core-utils
-      - name: Generate types for ipfs-core-utils
+      - name: Generate typedefs for ipfs-core-utils
         run: npm run build:types --scope={ipfs-core-utils}
       - name: Typecheck ipfs-core
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-core
-      - name: Generate typedefs for dependencies
+      - name: Generate typedefs for ipfs-core
         run: npm run build:types --scope={ipfs-core}
+      - name: Typecheck ipfs-http-client
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-http-client
       - name: Typecheck ipfs
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
