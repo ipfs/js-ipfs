@@ -5,7 +5,7 @@ const importer = require('ipfs-unixfs-importer')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const createLock = require('./utils/create-lock')
 const toAsyncIterator = require('./utils/to-async-iterator')
 const toMfsPath = require('./utils/to-mfs-path')
@@ -41,8 +41,16 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsWrite (path, content, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * Write to an MFS path
+   *
+   * @param {string} path - The MFS path where you will write to
+   * @param {string|Uint8Array|AsyncIterable<Uint8Array>|Blob} content - The content to write to the path
+   * @param {WriteOptions & AbortOptions} options
+   * @returns {Promise<void>}
+   */
+  async function mfsWrite (path, content, options) {
+    options = mergeOptions(options, defaultOptions)
 
     let source, destination, parent
     log('Reading source, destination and parent')
@@ -63,7 +71,9 @@ module.exports = (context) => {
     }
 
     return updateOrImport(context, path, source, destination, options)
-  })
+  }
+
+  return withTimeoutOption(mfsWrite)
 }
 
 const updateOrImport = async (context, path, source, destination, options) => {
@@ -280,3 +290,22 @@ const countBytesStreamed = async function * (source, notify) {
     yield buf
   }
 }
+
+/**
+ * @typedef {Object} WriteOptions
+ * @property {number} [offset] - An offset to start writing to file at
+ * @property {number} [length] - Optionally limit how many bytes are read from the stream
+ * @property {boolean} [create=false] - Create the MFS path if it does not exist
+ * @property {boolean} [parents=false] - Create intermediate MFS paths if they do not exist
+ * @property {boolean} [truncate=false] - Truncate the file at the MFS path if it would have been larger than the passed content
+ * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw file data and not be wrapped in a protobuf
+ * @property {number} [mode] - An integer that represents the file mode
+ * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
+ * @property {boolean} [flush] 	If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('../../utils').Mtime} Mtime
+ * @typedef {import('../../utils').Hrtime} Hrtime
+ */

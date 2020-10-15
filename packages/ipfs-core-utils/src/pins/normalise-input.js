@@ -3,7 +3,7 @@
 const errCode = require('err-code')
 const CID = require('cids')
 
-/*
+/**
  * Transform one of:
  *
  * ```
@@ -27,7 +27,7 @@ const CID = require('cids')
  * ```
  *
  * @param input Object
- * @return AsyncIterable<{ path: CID|String, recursive, metadata }>
+ * @returns AsyncIterable<{ path: CID|String, recursive, metadata }>
  */
 module.exports = function normaliseInput (input) {
   // must give us something

@@ -9,7 +9,10 @@ const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
 
 module.exports = configure(api => {
-  return async (path, input, options = {}) => {
+  /**
+   * @type {import('..').Implements<typeof import('../../../ipfs-core/src/components/files/write')>}
+   */
+  async function write (path, input, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
     const signal = anySignal([controller.signal, options.signal])
@@ -20,7 +23,7 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({
         arg: path,
         streamChannels: true,
-        count: options.count || options.length,
+        count: options.length,
         ...options
       }),
       ...(
@@ -35,4 +38,6 @@ module.exports = configure(api => {
 
     await res.text()
   }
+
+  return write
 })

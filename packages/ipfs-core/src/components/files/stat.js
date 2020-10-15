@@ -1,6 +1,6 @@
 'use strict'
 
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const exporter = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
@@ -21,17 +21,11 @@ module.exports = (context) => {
    * Get file or directory statistics
    *
    * @param {string} path - The MFS path return statistics from
-   * @param {Object} options
-   * @param {boolean} [options.hash] - If true, return only the CID.
-   * @param {boolean} [options.size] - If true, return only the size.
-   * @param {boolean} [options.withLocal] - If true, compute the amount of the DAG that is local and if possible the total size
-   * @param {number} [options.timeout] - A timeout in ms
-   * @param {AbortSignal} [options.abort] - Can be used to cancel any long
-   * running requests started as a result of this call
+   * @param {StatOptions & AbortOptions} options
    * @returns {Promise<Stat>} - An object containing the file/directory status
    */
   async function mfsStat (path, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+    options = mergeOptions(options, defaultOptions)
 
     log(`Fetching stats for ${path}`)
 
@@ -164,6 +158,11 @@ const statters = {
 }
 
 /**
+ * @typedef {Object} StatOptions
+ * @property {boolean} [hash=false] - If true, return only the CID
+ * @property {boolean} [size=false] - If true, return only the size
+ * @property {boolean} [withLocal=false] - If true, compute the amount of the DAG that is local and if possible the total size
+ *
  * @typedef {Object} Stat
  * @property {CID} cid - Content idenntifier
  * @property {number} size - An integer with the file size in bytes.

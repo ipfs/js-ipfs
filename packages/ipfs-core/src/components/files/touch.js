@@ -1,6 +1,6 @@
 'use strict'
 
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const log = require('debug')('ipfs:mfs:touch')
 const errCode = require('err-code')
@@ -29,19 +29,7 @@ module.exports = (context) => {
    * Update the mtime of a file or directory
    *
    * @param {string} path - The MFS path to update the mtime for
-   * @param {Object} [options]
-   * @param {import('../add-all').UnixTime} [options.mtime] - Either a `Date`
-   * object, an object with `{ sec, nsecs }` properties or the output of
-   * `process.hrtime()`.
-   * @param {boolean} [options.flush] - If `true` the changes will be
-   * immediately flushed to disk.
-   * @param {string} [options.hashAlg='sha2-256'] - The hash algorithm to use
-   * for any updated entries
-   * @param {0|1} [options.cidVersion=0] - The CID version to use for any
-   * updated entries
-   * @param {number} [options.timeout] - A timeout in ms
-   * @param {AbortSignal} [options.abort] - Can be used to cancel any long
-   * running requests started as a result of this call
+   * @param {TouchOptions & AbortOptions} [options]
    * @returns {Promise<void>}
    *
    * @example
@@ -55,7 +43,7 @@ module.exports = (context) => {
    * ```
    */
   async function mfsTouch (path, options = {}) {
-    const settings = applyDefaultOptions(options, defaultOptions)
+    const settings = mergeOptions(options, defaultOptions)
     settings.mtime = settings.mtime || new Date()
 
     log(`Touching ${path} mtime: ${settings.mtime}`)
@@ -130,3 +118,16 @@ module.exports = (context) => {
 
   return withTimeoutOption(mfsTouch)
 }
+
+/**
+ * @typedef {Object} TouchOptions
+ * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
+ * @property {boolean} [flush=false] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion] - The CID version to use for any updated entries
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('../../utils').Mtime} Mtime
+ * @typedef {import('../../utils').Hrtime} Hrtime
+ */

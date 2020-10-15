@@ -17,8 +17,17 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ * @returns {Function}
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsRm (...args) {
+  /**
+   * Remove a file or directory
+   *
+   * @param  {...any} args
+   * @returns {Promise<void>}
+   */
+  async function mfsRm (...args) {
     const {
       sources,
       options
@@ -37,7 +46,9 @@ module.exports = (context) => {
     for (const source of sources) {
       await removePath(context, source.path, options)
     }
-  })
+  }
+
+  return withTimeoutOption(mfsRm)
 }
 
 const removePath = async (context, path, options) => {
@@ -73,3 +84,14 @@ const removePath = async (context, path, options) => {
   // Update the MFS record with the new CID for the root of the tree
   await updateMfsRoot(context, newRootCid, options)
 }
+
+/**
+ * @typedef {Object} RmOptions
+ * @property {boolean} [recursive=false] - If true all paths under the specifed path(s) will be removed
+ * @property {boolean} [flush=false] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion] - The CID version to use for any updated entries
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

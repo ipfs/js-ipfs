@@ -902,7 +902,7 @@ await ipfs.files.write('/hello-world', new TextEncoder().encode('Hello, world!')
 
 ### `ipfs.files.mv(...from, to, [options])`
 
-> Move files from one location to another#### Parameters
+> Move files from one location to another
 
 #### Parameters
 

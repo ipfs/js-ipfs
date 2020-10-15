@@ -9,7 +9,7 @@ const updateMfsRoot = require('./utils/update-mfs-root')
 const updateTree = require('./utils/update-tree')
 const addLink = require('./utils/add-link')
 const withMfsRoot = require('./utils/with-mfs-root')
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
@@ -24,8 +24,19 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsMkdir (path, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * Make a directory in your MFS
+   *
+   * @param {string} path
+   * @param {MkdirOptions & AbortOptions} options
+   * @returns {Promise<void>}
+   * @example
+   * ```js
+   * await ipfs.files.mkdir('/my/beautiful/directory')
+   * ```
+   */
+  async function mfsMkdir (path, options) {
+    options = mergeOptions(options, defaultOptions)
 
     if (!path) {
       throw new Error('no path given to Mkdir')
@@ -102,7 +113,9 @@ module.exports = (context) => {
 
     // Update the MFS record with the new CID for the root of the tree
     await updateMfsRoot(context, newRootCid, options)
-  })
+  }
+
+  return withTimeoutOption(mfsMkdir)
 }
 
 const addEmptyDir = async (context, childName, emptyDir, parent, trail, options) => {
@@ -126,3 +139,18 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     cid: emptyDir.cid
   })
 }
+
+/**
+ * @typedef {Object} MkdirOptions
+ * @property {boolean} [parents=false] - If true, create intermediate directories
+ * @property {number} [mode] - An integer that represents the file mode
+ * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
+ * @property {boolean} [flush] 	If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('../../utils').Mtime} Mtime
+ * @typedef {import('../../utils').Hrtime} Hrtime
+ */

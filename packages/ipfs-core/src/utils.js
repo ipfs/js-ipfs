@@ -205,6 +205,16 @@ const mapFile = (file, options = {}) => {
  */
 
 /**
+ * @typedef {Object} Mtime
+ * @property {number} [secs]
+ * @property {number} [nsecs]
+ */
+
+/**
+ * @typedef {[number, number]} Hrtime
+ */
+
+/**
  * @typedef {Object} PreloadOptions
  * @property {boolean} [preload=true]
  */
