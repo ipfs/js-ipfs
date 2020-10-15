@@ -106,7 +106,7 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     if (type === PinTypes.indirect || type === PinTypes.all) {
-      // @ts-ignore - LsSettings & AbortOptions has no properties in common
+      // @ts-ignore - LsSettings & AbortOptions have no properties in common
       // with type { preload?: boolean }
       for await (const cid of pinManager.indirectKeys(options)) {
         yield toPin(PinTypes.indirect, cid)
