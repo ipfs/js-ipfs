@@ -49,6 +49,8 @@ const iterateReadableStream = require('browser-readablestream-to-it')
 /**
  * @typedef {import('ipfs-message-port-server/src/core').CoreService} CoreService
  * @typedef {import('ipfs-message-port-server/src/core').AddedEntry} AddedEntry
+ * @typedef {import('ipfs-message-port-server/src/core').EncodedLsEntry} EncodedLsEntry
+ * @typedef {import('ipfs-message-port-server/src/core').LsEntry} LsEntry
  * @typedef {import('./client').ClientTransport} Transport
  */
 
@@ -61,7 +63,7 @@ class CoreClient extends Client {
    * @param {Transport} transport
    */
   constructor (transport) {
-    super('core', ['add', 'addAll', 'cat'], transport)
+    super('core', ['add', 'addAll', 'cat', 'ls'], transport)
   }
 
   /**
@@ -174,6 +176,24 @@ class CoreClient extends Client {
     const result = await this.remote.cat({ ...options, path: input })
     yield * decodeIterable(result.data, identity)
   }
+
+  /**
+   * Returns content addressed by a valid IPFS Path.
+   *
+   * @param {string|CID} inputPath
+   * @param {Object} [options]
+   * @param {boolean} [options.recursive]
+   * @param {boolean} [options.preload]
+   * @param {number} [options.timeout]
+   * @param {AbortSignal} [options.signal]
+   * @returns {AsyncIterable<LsEntry>}
+   */
+  async * ls (inputPath, options = {}) {
+    const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+    const result = await this.remote.ls({ ...options, path: input })
+
+    yield * decodeIterable(result.data, decodeLsEntry)
+  }
 }
 
 /**
@@ -191,6 +211,21 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
     size
   }
 }
+
+/**
+ * @param {EncodedLsEntry} encodedEntry
+ * @returns {LsEntry}
+ */
+const decodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+  cid: decodeCID(cid),
+  type,
+  name,
+  path,
+  mode,
+  mtime,
+  size,
+  depth
+})
 
 /**
  * @template T
@@ -359,7 +394,7 @@ const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
 
 /**
  *
- * @param {FileContent} [content]
+ * @param {FileContent|undefined} content
  * @param {Transferable[]} transfer
  * @returns {EncodedFileContent}
  */

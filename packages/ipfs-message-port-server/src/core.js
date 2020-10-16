@@ -21,6 +21,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {import('./ipfs').FileObject} FileObject
  * @typedef {import('./ipfs').FileContent} DecodedFileContent
  * @typedef {import('./ipfs').FileInput} DecodedFileInput
+ * @typedef {import('./ipfs').LsEntry} LsEntry
  */
 
 /**
@@ -95,17 +96,15 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {Object} LsQuery
  * @property {string} path
  *
- * @typedef {RemoteIterable<LsEntry>} LsResult
- *
- * @typedef {Object} LsEntry
- * @property {number} depth
- * @property {string} name
- * @property {string} path
- * @property {number} size
+ * @typedef {Object} EncodedLsEntry
  * @property {EncodedCID} cid
  * @property {FileType} type
- * @property {Mode} mode
- * @property {UnixFSTime} mtime
+ * @property {string} name
+ * @property {string} path
+ * @property {number} depth
+ * @property {number} size
+ * @property {Mode} [mode]
+ * @property {UnixFSTime} [mtime]
  */
 
 /**
@@ -231,6 +230,26 @@ class CoreService {
     const content = this.ipfs.cat(location, { offset, length, timeout, signal })
     return encodeCatResult(content)
   }
+
+  /**
+   * @typedef {Object} LsResult
+   * @property {RemoteIterable<EncodedLsEntry>} data
+   * @property {Transferable[]} transfer
+   *
+   * @param {Object} query
+   * @param {string|EncodedCID} query.path
+   * @param {boolean} [query.preload]
+   * @param {boolean} [query.recursive]
+   * @param {number} [query.timeout]
+   * @param {AbortSignal} [query.signal]
+   * @returns {LsResult}
+   */
+  ls (query) {
+    const { path, recursive, preload, timeout, signal } = query
+    const location = typeof path === 'string' ? path : decodeCID(path)
+    const entries = this.ipfs.ls(location, { recursive, preload, timeout, signal })
+    return encodeLsResult(entries)
+  }
 }
 // @returns {string|ArrayBufferView|ArrayBuffer|Blob|AsyncIterable<string>|AsyncIterable<ArrayBufferView>|AsyncIterable<ArrayBuffer>|AsyncIterable<Blob>|AsyncIterable<FileObject>}
 
@@ -333,6 +352,33 @@ const encodeCatResult = content => {
   const transfer = []
   return { data: encodeIterable(content, moveBuffer, transfer), transfer }
 }
+
+/**
+ *
+ * @param {AsyncIterable<LsEntry>} entries
+ * @returns {LsResult}
+ */
+const encodeLsResult = entries => {
+  /** @type {Transferable[]} */
+  const transfer = []
+  return { data: encodeIterable(entries, encodeLsEntry, transfer), transfer }
+}
+
+/**
+ *
+ * @param {LsEntry} entry
+ * @returns {EncodedLsEntry}
+ */
+const encodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+  cid: encodeCID(cid),
+  type,
+  name,
+  path,
+  mode,
+  mtime,
+  size,
+  depth
+})
 
 /**
  * Adds underlying `ArrayBuffer` to the transfer list.
