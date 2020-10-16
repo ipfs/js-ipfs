@@ -43,3 +43,20 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs
+      - name: Typecheck ipfs-message-port-protocol
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-message-port-protocol
+      - name: Genarate typedfes for ipfs-message-port-protocol
+        run: npm run build:types --scope={ipfs-message-port-protocol}
+      - name: Typecheck ipfs-message-port-server
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-message-port-server
+      - name: Genarate typedfes for ipfs-message-port-server
+        run: npm run build:types --scope={ipfs-message-port-server}
+      - name: Typecheck ipfs-message-port-client
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-message-port-client
+      

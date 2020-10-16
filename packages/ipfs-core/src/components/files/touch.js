@@ -15,7 +15,7 @@ const mh = require('multihashing-async').multihash
 const { withTimeoutOption } = require('../../utils')
 
 const defaultOptions = {
-  /** @type {import('../add-all').UnixTime|undefined} */
+  /** @type {UnixTime|undefined} */
   mtime: undefined,
   flush: true,
   shardSplitThreshold: 1000,
@@ -121,7 +121,7 @@ module.exports = (context) => {
 
 /**
  * @typedef {Object} TouchOptions
- * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
+ * @property {UnixTime} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
  * @property {boolean} [flush=false] - If true the changes will be immediately flushed to disk
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
  * @property {0|1} [cidVersion] - The CID version to use for any updated entries
@@ -130,4 +130,5 @@ module.exports = (context) => {
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  * @typedef {import('../../utils').Mtime} Mtime
  * @typedef {import('../../utils').Hrtime} Hrtime
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').UnixTime} UnixTime
  */

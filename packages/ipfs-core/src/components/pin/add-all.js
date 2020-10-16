@@ -5,7 +5,7 @@ const { resolvePath, withTimeoutOption } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 
-/** @type {(source:PinsSource) => AsyncIterable<PinTarget>} */
+/** @type {(source:Source) => AsyncIterable<PinTarget>} */
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**
@@ -20,7 +20,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
    * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
    * repo. pinset is the set of hashes currently pinned (not gc'able)
    *
-   * @param {PinsSource} source - One or more CIDs or IPFS Paths to pin in your repo
+   * @param {Source} source - One or more CIDs or IPFS Paths to pin in your repo
    * @param {AddOptions} [options]
    * @returns {AsyncIterable<CID>} - CIDs that were pinned.
    * @example
@@ -81,28 +81,8 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 }
 
 /**
- * @typedef {AwaitIterable<PinSource>|PinSource} PinsSource
- * @typedef {CID|string|AddByPath|AddByCID|AddByPathOrCID} PinSource
- *
- * @typedef {Object} AddByPath
- * @property {string} path
- * @property {boolean} [recursive]
- * @property {object} [metadata=null]
- *
- * @typedef {Object} AddByCID
- * @property {CID} cid
- * @property {boolean} [recursive]
- * @property {object} [metadata=null]
- *
- * @typedef {Object} AddByPathOrCID
- * @property {string|CID} path
- * @property {boolean} [recursive]
- * @property {object} [metadata=null]
- *
- * @typedef {Object} PinTarget
- * @property {CID|string} path
- * @property {boolean} recursive
- * @property {Object} metadata
+ * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
+ * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Pin} PinTarget
  *
  * @typedef {AddSettings & AbortOptions} AddOptions
  *

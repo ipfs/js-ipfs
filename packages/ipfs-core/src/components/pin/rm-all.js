@@ -14,7 +14,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
   /**
    * Unpin one or more blocks from your repo
    *
-   * @param {PinsSource} source - Unpin all pins from the source
+   * @param {Source} source - Unpin all pins from the source
    * @param {AbortOptions} [_options]
    * @returns {AsyncIterable<CID>}
    * @example
@@ -74,5 +74,5 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 /**
  * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('./add-all').PinsSource} PinsSource
+ * @typedef {import('./add-all').Source} Source
  */

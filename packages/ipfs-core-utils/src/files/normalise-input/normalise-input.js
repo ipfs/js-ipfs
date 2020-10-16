@@ -14,9 +14,10 @@ const {
 // eslint-disable-next-line complexity
 
 /**
+ * @template {Blob|AsyncIterable<Uint8Array>} Content
  * @param {Source} input
- * @param {NormaliseToBlob|NormaliseToStream} normaliseContent
- * @returns {AsyncIterable<Entry>}
+ * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
+ * @returns {AsyncIterable<Entry<Content>>}
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
@@ -93,9 +94,10 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 }
 
 /**
+ * @template {Blob|AsyncIterable<Uint8Array>} Content
  * @param {ToFile} input
- * @param {NormaliseToBlob|NormaliseToStream} normaliseContent
- * @returns {Promise<Entry>}
+ * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
+ * @returns {Promise<Entry<Content>>}
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
@@ -115,20 +117,11 @@ async function toFileObject (input, normaliseContent) {
 /**
  * @typedef {import('../format-mtime').MTime} MTime
  * @typedef {import('../format-mode').Mode} Mode
- *
- * @typedef {Object} File
- * @property {string} path
- * @property {Mode} [mode]
- * @property {MTime} [mtime]
- * @property {AsyncIterable<Uint8Array>|Blob} [content]
- *
  * @typedef {Object} Directory
  * @property {string} path
  * @property {Mode} [mode]
  * @property {MTime} [mtime]
  * @property {undefined} [content]
- *
- * @typedef {File|Directory} Entry
  *
  * @typedef {Object} FileInput
  * @property {string} [path]
@@ -145,7 +138,17 @@ async function toFileObject (input, normaliseContent) {
  * @typedef {string|InstanceType<typeof window.String>|ArrayBufferView|ArrayBuffer|Blob|Iterable<Uint8Array> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} ToContent
  * @typedef {ToContent|FileInput} ToFile
  * @typedef {Iterable<ToFile> | AsyncIterable<ToFile> | ReadableStream<ToFile>} Source
- *
- * @typedef {(content:ToContent) => Promise<Blob> | Blob} NormaliseToBlob
- * @typedef {(content:ToContent) => AsyncIterable<Uint8Array>} NormaliseToStream
+ */
+/**
+ * @template {AsyncIterable<Uint8Array>|Blob} Content
+ * @typedef {Object} File
+ * @property {string} path
+ * @property {Mode} [mode]
+ * @property {MTime} [mtime]
+ * @property {Content} [content]
+ */
+
+/**
+ * @template {AsyncIterable<Uint8Array>|Blob} Content
+ * @typedef {File<Content>|Directory} Entry
  */

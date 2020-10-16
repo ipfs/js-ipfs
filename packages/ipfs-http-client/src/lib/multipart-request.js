@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
+const normaliseInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { nanoid } = require('nanoid')
 const modeToString = require('../lib/mode-to-string')
 const mtimeToObject = require('../lib/mtime-to-object')

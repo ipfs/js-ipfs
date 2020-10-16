@@ -91,7 +91,7 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
  * @extends {ServiceQuery<T>}
  */
 
-class Query {
+const Query = class Query {
   /**
    * @param {Namespace<T>} namespace
    * @param {Method<T>} method
@@ -118,6 +118,7 @@ class Query {
     this.fail(new AbortError())
   }
 }
+exports.Query = Query
 
 /**
  * @template T
@@ -130,7 +131,7 @@ class Query {
  * @template T
  */
 
-class Server {
+exports.Server = class Server {
   /**
    * @param {MultiService<T>} services
    */
@@ -262,7 +263,7 @@ class Server {
   }
 }
 
-class UnsupportedMessageError extends RangeError {
+const UnsupportedMessageError = class UnsupportedMessageError extends RangeError {
   /**
    * @param {MessageEvent} event
    */
@@ -275,13 +276,11 @@ class UnsupportedMessageError extends RangeError {
     return this.constructor.name
   }
 }
+exports.UnsupportedMessageError = UnsupportedMessageError
 
-class AbortError extends Error {
+const AbortError = class AbortError extends Error {
   get name () {
     return this.constructor.name
   }
 }
-
-exports.Query = Query
-exports.Server = Server
 exports.AbortError = AbortError

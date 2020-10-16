@@ -2,11 +2,11 @@
   "name": "ipfs-core-utils",
   "version": "0.4.0",
   "description": "Package to share code between ipfs and ipfs-http-client",
-  "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "main": "src/index.js",
   "files": [
     "src",
     "dist"
@@ -29,10 +29,10 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "check": "tsc --noEmit",
+    "check": "npm run build:types",
     "build": "npm run build:js && npm run build:types",
     "build:js": "aegir build",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir dist/src",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },

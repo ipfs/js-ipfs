@@ -11,7 +11,7 @@ module.exports = configure(api => {
       const searchParams = new URLSearchParams(options.searchParams)
       searchParams.append('arg', `${path}`)
 
-      if (recursive != null) searchParams.set('recursive', recursive)
+      if (recursive != null) searchParams.set('recursive', String(recursive))
 
       const res = await api.post('pin/rm', {
         timeout: options.timeout,

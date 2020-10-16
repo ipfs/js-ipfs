@@ -63,7 +63,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  *
  * @typedef {Object} FileInput
  * @property {string} [path]
- * @property {FileContent} content
+ * @property {FileContent} [content]
  * @property {Mode} [mode]
  * @property {Time} [mtime]
  *
@@ -75,16 +75,6 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {number} mode
  * @property {UnixFSTime} mtime
  * @property {number} size
- *
- * @typedef {Object} CatQuery
- * @property {string} path
- * @property {number} [offset]
- * @property {number} [length]
- *
- * @typedef {Object} GetQuery
- * @property {string} path
- *
- * @typedef {RemoteIterable<FileEntry>} GetResult
  *
  * @typedef {Object} FileEntry
  * @property {string} path
@@ -108,10 +98,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {UnixFSTime} mtime
  */
 
-/**
- * @class
- */
-class CoreService {
+exports.CoreService = class CoreService {
   /**
    *
    * @param {IPFS} ipfs
@@ -213,16 +200,18 @@ class CoreService {
   }
 
   /**
+   * @typedef {Object} CatQuery
+   * @property {string|EncodedCID} path
+   * @property {number} [offset]
+   * @property {number} [length]
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
+   *
    * @typedef {Object} CatResult
    * @property {RemoteIterable<Uint8Array>} data
    * @property {Transferable[]} transfer
    *
-   * @param {Object} query
-   * @param {string|EncodedCID} query.path
-   * @param {number} [query.offset]
-   * @param {number} [query.length]
-   * @param {number} [query.timeout]
-   * @param {AbortSignal} [query.signal]
+   * @param {CatQuery} query
    * @returns {CatResult}
    */
   cat (query) {
@@ -268,7 +257,7 @@ const decodeAddInput = input =>
 const decodeFileInput = input =>
   matchInput(input, file => ({
     ...file,
-    content: decodeFileContent(file.content)
+    content: file.content && decodeFileContent(file.content)
   }))
 
 /**
@@ -363,5 +352,3 @@ const encodeFileOutput = (file, _transfer) => ({
  * @returns {T}
  */
 const identity = v => v
-
-exports.CoreService = CoreService

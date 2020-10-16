@@ -9,7 +9,7 @@ const last = require('it-last')
 module.exports = ({ addAll }) =>
   /**
    * @param {CID|string} path
-   * @param {AddOptions} [options]
+   * @param {AddOptions & AbortOptions} [options]
    * @returns {Promise<CID>}
    */
   async (path, options = {}) =>
@@ -17,8 +17,7 @@ module.exports = ({ addAll }) =>
     (await last(addAll({ path, ...options }, options)))
 
 /**
- * @typedef {AddSettings & AbortOptions} AddOptions
- * @typedef {Object} AddSettings
+ * @typedef {Object} AddOptions
  * @property {boolean} [lock]
  * @property {boolean} [recursive] - Recursively pin all links contained by the object
  *

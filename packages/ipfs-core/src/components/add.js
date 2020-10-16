@@ -32,7 +32,7 @@ module.exports = ({ addAll }) => {
  *
  * @typedef {Promise<UnixFSEntry>} AddResult
  *
- * @typedef {import('./add-all').Source} Source
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').FileInput} Source
  *
  * @typedef {import('./add-all').UnixFSEntry} UnixFSEntry
  *

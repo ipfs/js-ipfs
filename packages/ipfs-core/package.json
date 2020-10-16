@@ -9,11 +9,11 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "main": "src/index.js",
   "files": [
     "src",
     "dist"
   ],
-  "main": "src/index.js",
   "browser": {
     "./src/runtime/init-assets-nodejs.js": "./src/runtime/init-assets-browser.js",
     "./src/runtime/config-nodejs.js": "./src/runtime/config-browser.js",
@@ -26,15 +26,22 @@
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
     "ipfs-utils/src/files/glob-source": false
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "lint": "aegir lint",
-    "check": "tsc --noEmit",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
+    "check": "npm run build:types",
+    "build": "npm run build:js && npm run build:types",
+    "build:js": "aegir build",
     "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
     "test": "aegir test",
     "test:node": "aegir test -t node",
@@ -135,12 +142,5 @@
   "optionalDependencies": {
     "prom-client": "^12.0.0",
     "prometheus-gc-stats": "^0.6.0"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
   }
 }

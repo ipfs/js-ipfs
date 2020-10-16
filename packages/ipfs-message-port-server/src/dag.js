@@ -17,10 +17,7 @@ const collect = require('it-all')
  * @property {string} remainderPath
  */
 
-/**
- * @class
- */
-class DAGService {
+exports.DAGService = class DAGService {
   /**
    * @param {IPFS} ipfs
    */
@@ -29,15 +26,16 @@ class DAGService {
   }
 
   /**
-   * @param {Object} query
-   * @param {EncodedDAGNode} query.dagNode
-   * @param {string} [query.format]
-   * @param {string} [query.hashAlg]
-   * @param {EncodedCID|void} [query.cid]
-   * @param {boolean} [query.pin]
-   * @param {boolean} [query.preload]
-   * @param {number} [query.timeout]
-   * @param {AbortSignal} [query.signal]
+   * @typedef {Object} PutDag
+   * @property {EncodedDAGNode} dagNode
+   * @property {string} [hashAlg]
+   * @property {EncodedCID|void} [cid]
+   * @property {boolean} [pin]
+   * @property {boolean} [preload]
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
+   *
+   * @param {PutDag} query
    * @returns {Promise<EncodedCID>}
    */
   async put (query) {
@@ -148,5 +146,3 @@ const decodePathOrCID = (input) => {
  * @param {EncodedDAGNode} value
  * @returns {DAGNode}
  */
-
-exports.DAGService = DAGService

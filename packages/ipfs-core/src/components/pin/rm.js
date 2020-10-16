@@ -34,5 +34,4 @@ module.exports = ({ rmAll }) =>
  *
  * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('./add-all').PinSource} PinSource
  */

@@ -1,6 +1,10 @@
 {
   "extends": "../../typescript.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "rootDir": "./"
+  },
   "include": [
-    "./src"
+    "src"
   ]
 }

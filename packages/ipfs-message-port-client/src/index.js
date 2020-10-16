@@ -1,14 +1,14 @@
 'use strict'
 /* eslint-env browser */
 
-const { Transport } = require('./client')
+const MessageTransport = require('./client/transport')
 const BlockClient = require('./block')
 const DAGClient = require('./dag')
 const CoreClient = require('./core')
 const FilesClient = require('./files')
 
 /**
- * @typedef {import('./client').Transport} ClientTransport
+ * @typedef {import('./client').MessageTransport} MessageTransport
  *
  * @typedef {Object} ClientOptions
  * @property {MessagePort} port
@@ -16,7 +16,7 @@ const FilesClient = require('./files')
 
 class IPFSClient extends CoreClient {
   /**
-   * @param {ClientTransport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
     super(transport)
@@ -46,7 +46,7 @@ class IPFSClient extends CoreClient {
    * @returns {IPFSClient}
    */
   static detached () {
-    return new IPFSClient(new Transport(undefined))
+    return new IPFSClient(new MessageTransport(undefined))
   }
 
   /**
@@ -57,7 +57,7 @@ class IPFSClient extends CoreClient {
    * @returns {IPFSClient}
    */
   static from (port) {
-    return new IPFSClient(new Transport(port))
+    return new IPFSClient(new MessageTransport(port))
   }
 }
 

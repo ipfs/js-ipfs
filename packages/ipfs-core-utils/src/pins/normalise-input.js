@@ -26,7 +26,7 @@ const CID = require('cids')
  * AsyncIterable<{ path: CID|String, recursive:boolean, metadata }>
  * ```
  *
- * @param {PinSource} input
+ * @param {Source} input
  * @returns {AsyncIterable<Pin>}
  */
 // eslint-disable-next-line complexity
@@ -130,7 +130,7 @@ function toPin (input) {
 
 /**
  * @typedef {Object} ToPinWithPath
- * @property {string | InstanceType<typeof window.String>} path
+ * @property {string | InstanceType<typeof window.String> | CID} path
  * @property {undefined} [cid]
  * @property {boolean} [recursive]
  * @property {any} [metadata]
@@ -142,7 +142,7 @@ function toPin (input) {
  * @property {any} [metadata]
  *
  * @typedef {CID|string|InstanceType<typeof window.String>|ToPinWithPath|ToPinWithPath} ToPin
- * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} PinSource
+ * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
  *
  * @typedef {Object} Pin
  * @property {string|CID} path

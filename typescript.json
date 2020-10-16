@@ -26,7 +26,6 @@
     "resolveJsonModule": true
   },
   "include": [],
-  "baseUrl": ".",
   "exclude": [
     "packages/*/dist",
     "packages/*/test*.js",
