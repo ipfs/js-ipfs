@@ -83,8 +83,6 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {Mode} [mode]
  * @property {UnixFSTime} [mtime]
  *
- * @typedef {Object} LsQuery
- * @property {string} path
  *
  * @typedef {Object} EncodedLsEntry
  * @property {EncodedCID} cid
@@ -93,7 +91,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {string} path
  * @property {number} depth
  * @property {number} size
- * @property {Mode} [mode]
+ * @property {Mode} mode
  * @property {UnixFSTime} [mtime]
  */
 
@@ -221,16 +219,18 @@ exports.CoreService = class CoreService {
   }
 
   /**
+   * @typedef {Object} LsQuery
+   * @property {string|EncodedCID} path
+   * @property {boolean} [preload]
+   * @property {boolean} [recursive]
+   * @property {number} [timeout]
+   * @property {AbortSignal} [signal]
+   *
    * @typedef {Object} LsResult
    * @property {RemoteIterable<EncodedLsEntry>} data
    * @property {Transferable[]} transfer
    *
-   * @param {Object} query
-   * @param {string|EncodedCID} query.path
-   * @param {boolean} [query.preload]
-   * @param {boolean} [query.recursive]
-   * @param {number} [query.timeout]
-   * @param {AbortSignal} [query.signal]
+   * @param {LsQuery} query
    * @returns {LsResult}
    */
   ls (query) {
