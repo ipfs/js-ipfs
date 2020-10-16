@@ -461,10 +461,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
   tests.miscellaneous(commonFactory, {
     skip: [
       {
-        name: 'should include the ipfs-http-client version',
-        reason: 'TODO not implemented in go-ipfs yet'
-      },
-      {
         name: 'should include the interface-ipfs-core version',
         reason: 'TODO not implemented in go-ipfs yet'
       },

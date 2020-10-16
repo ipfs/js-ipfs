@@ -25,8 +25,7 @@ module.exports = ({ repo }) => {
       version: meta.version,
       repo: repoVersion,
       commit: meta.gitHead,
-      'interface-ipfs-core': meta.devDependencies['interface-ipfs-core'],
-      'ipfs-http-client': meta.dependencies['ipfs-http-client']
+      'interface-ipfs-core': meta.devDependencies['interface-ipfs-core']
     }
   }
 
