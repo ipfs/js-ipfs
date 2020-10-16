@@ -24,43 +24,43 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Typecheck ipfs-core-utils
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-core-utils
       - name: Typecheck ipfs-core
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-core
       - name: Typecheck ipfs-http-client
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-http-client
       - name: Typecheck ipfs
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs
       - name: Typecheck ipfs-cli
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-cli
       - name: Typecheck ipfs-http-server
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-http-server
       - name: Typecheck ipfs-http-gateway
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-http-gateway
       - name: Typecheck ipfs-message-port-protocol
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-message-port-protocol
       - name: Typecheck ipfs-message-port-server
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-message-port-server
       - name: Typecheck ipfs-message-port-client
-        uses: gozala/typescript-error-reporter-action@v1.0.4
+        uses: gozala/typescript-error-reporter-action@v1.0.5
         with:
           project: packages/ipfs-message-port-client
 
