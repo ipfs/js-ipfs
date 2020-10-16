@@ -22,17 +22,18 @@ const defaultOptions = {
 }
 
 /**
- * @return {function}
+ * @param {any} context
  */
 module.exports = function derp (context) {
   /**
-   * @param  {...object} args
+   * @param {[...from:From, options?:CpOptions]} args
+   * @returns {Promise<void>}
    */
   async function mfsCp (...args) {
     let {
       sources,
       destination,
-      options,
+      options
     } = await toSourcesAndDestination(context, args, defaultOptions)
 
     if (!sources.length) {
@@ -175,6 +176,8 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
  * @property {0|1} [cidVersion=0]
  * @property {boolean} [parents=false]
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('./utils/types').Tuple<CID|string>} From
+ *
+ * @typedef {import('..').CID} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

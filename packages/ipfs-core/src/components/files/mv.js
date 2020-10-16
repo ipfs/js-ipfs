@@ -15,10 +15,14 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ *
+ * @param {any} context
+ */
 module.exports = (context) => {
   /**
    *
-   * @param  {...any} args
+   * @param  {[...from:From, to:string, options?:MvOptions]} args
    * @returns {Promise<void>}
    */
   async function mfsMv (...args) {
@@ -52,6 +56,7 @@ module.exports = (context) => {
  * @property {string} [hashAlg='sha2-256']
  * @property {0|1} [cidVersion]
  *
+ * @typedef {import('./utils/types').Tuple<string>} From
  * @typedef {import('cids')} CID
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

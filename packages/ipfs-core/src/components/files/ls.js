@@ -45,8 +45,9 @@ const toOutput = (fsEntry) => {
 module.exports = (context) => {
   /**
    * List directories in the local mutable namespace
+   *
    * @param {string} path
-   * @param {AbortOptions} options
+   * @param {AbortOptions} [options]
    * @returns {AsyncIterable<UnixFSEntry>}
    * @example
    *

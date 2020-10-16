@@ -21,7 +21,7 @@ module.exports = (context) => {
    * Get file or directory statistics
    *
    * @param {string} path - The MFS path return statistics from
-   * @param {StatOptions & AbortOptions} options
+   * @param {StatOptions & AbortOptions} [options]
    * @returns {Promise<Stat>} - An object containing the file/directory status
    */
   async function mfsStat (path, options) {

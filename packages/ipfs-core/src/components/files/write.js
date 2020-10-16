@@ -46,10 +46,10 @@ module.exports = (context) => {
    *
    * @param {string} path - The MFS path where you will write to
    * @param {string|Uint8Array|AsyncIterable<Uint8Array>|Blob} content - The content to write to the path
-   * @param {WriteOptions & AbortOptions} options
+   * @param {WriteOptions & AbortOptions} [options]
    * @returns {Promise<void>}
    */
-  async function mfsWrite (path, content, options) {
+  async function mfsWrite (path, content, options = {}) {
     options = mergeOptions(options, defaultOptions)
 
     let source, destination, parent
@@ -301,7 +301,7 @@ const countBytesStreamed = async function * (source, notify) {
  * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw file data and not be wrapped in a protobuf
  * @property {number} [mode] - An integer that represents the file mode
  * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
- * @property {boolean} [flush] 	If true the changes will be immediately flushed to disk
+ * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
  * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
  *

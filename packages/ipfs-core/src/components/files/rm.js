@@ -18,13 +18,13 @@ const defaultOptions = {
 }
 
 /**
- * @returns {Function}
+ * @param {any} context
  */
 module.exports = (context) => {
   /**
    * Remove a file or directory
    *
-   * @param  {...any} args
+   * @param  {[...paths: Paths, options?:RmOptions]} args
    * @returns {Promise<void>}
    */
   async function mfsRm (...args) {
@@ -92,6 +92,7 @@ const removePath = async (context, path, options) => {
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
  * @property {0|1} [cidVersion] - The CID version to use for any updated entries
  *
- * @typedef {import('cids')} CID
+ * @typedef {import('..').CID} CID
+ * @typedef {import('./utils/types').Tuple<string>} Paths
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  */

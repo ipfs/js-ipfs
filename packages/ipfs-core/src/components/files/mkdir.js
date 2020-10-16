@@ -28,15 +28,15 @@ module.exports = (context) => {
    * Make a directory in your MFS
    *
    * @param {string} path
-   * @param {MkdirOptions & AbortOptions} options
+   * @param {MkdirOptions & AbortOptions} [options]
    * @returns {Promise<void>}
    * @example
    * ```js
    * await ipfs.files.mkdir('/my/beautiful/directory')
    * ```
    */
-  async function mfsMkdir (path, options) {
-    options = mergeOptions(options, defaultOptions)
+  async function mfsMkdir (path, options = {}) {
+    const opts = mergeOptions(options, defaultOptions)
 
     if (!path) {
       throw new Error('no path given to Mkdir')
@@ -45,7 +45,7 @@ module.exports = (context) => {
     path = path.trim()
 
     if (path === '/') {
-      if (options.parents) {
+      if (opts.parents) {
         return
       }
 
@@ -64,10 +64,10 @@ module.exports = (context) => {
       throw errCode(new Error("path cannot have the prefix 'ipfs'"), 'ERR_INVALID_PATH')
     }
 
-    const root = await withMfsRoot(context, options)
+    const root = await withMfsRoot(context, opts)
     let parent
     const trail = []
-    const emptyDir = await createNode(context, 'directory', options)
+    const emptyDir = await createNode(context, 'directory', opts)
 
     // make sure the containing folder exists, creating it if necessary
     for (let i = 0; i <= pathComponents.length; i++) {
@@ -80,7 +80,7 @@ module.exports = (context) => {
         log(`${subPath} had children ${parent.node.Links.map(link => link.Name)}`)
 
         if (i === pathComponents.length) {
-          if (options.parents) {
+          if (opts.parents) {
             return
           }
 
@@ -93,12 +93,12 @@ module.exports = (context) => {
         })
       } catch (err) {
         if (err.code === 'ERR_NOT_FOUND') {
-          if (i < pathComponents.length && !options.parents) {
+          if (i < pathComponents.length && !opts.parents) {
             throw errCode(new Error(`Intermediate directory path ${subPath} does not exist, use the -p flag to create it`), 'ERR_NOT_FOUND')
           }
 
           // add the intermediate directory
-          await addEmptyDir(context, subPathComponents[subPathComponents.length - 1], emptyDir, trail[trail.length - 1], trail, options)
+          await addEmptyDir(context, subPathComponents[subPathComponents.length - 1], emptyDir, trail[trail.length - 1], trail, opts)
         } else {
           throw err
         }
@@ -109,10 +109,10 @@ module.exports = (context) => {
     // await addEmptyDir(context, pathComponents[pathComponents.length - 1], emptyDir, parent, trail)
 
     // update the tree from the leaf to the root
-    const newRootCid = await updateTree(context, trail, options)
+    const newRootCid = await updateTree(context, trail, opts)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid, options)
+    await updateMfsRoot(context, newRootCid, opts)
   }
 
   return withTimeoutOption(mfsMkdir)
@@ -145,7 +145,7 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
  * @property {boolean} [parents=false] - If true, create intermediate directories
  * @property {number} [mode] - An integer that represents the file mode
  * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
- * @property {boolean} [flush] 	If true the changes will be immediately flushed to disk
+ * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
  * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
  *

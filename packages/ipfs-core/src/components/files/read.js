@@ -12,12 +12,15 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ * @param {any} context
+ */
 module.exports = (context) => {
   /**
    * Read a file
    *
    * @param {string | CID} path - An MFS path, IPFS Path or CID to read
-   * @param {ReadOptions & AbortOptions} options
+   * @param {ReadOptions & AbortOptions} [options]
    * @returns {AsyncIterable<Uint8Array>}
    * @example
    * ```js

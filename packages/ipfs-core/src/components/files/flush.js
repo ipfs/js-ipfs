@@ -14,7 +14,7 @@ module.exports = (context) => {
    * Flush a given path's data to disk
    *
    * @param {string} path
-   * @param {AbortOptions} options
+   * @param {AbortOptions} [options]
    * @returns {Promise<CID>} The CID of the path that has been flushed
    */
   async function mfsFlush (path, options = {}) {
