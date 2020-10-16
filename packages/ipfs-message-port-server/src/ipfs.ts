@@ -59,6 +59,8 @@ export interface Core {
   addAll(inputs: AddAllInput, options: AddOptions): AsyncIterable<FileOutput>
   add(input: AddInput, options: AddOptions): Promise<FileOutput>
   cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Uint8Array>
+
+  ls(ipfsPath: CID | string, options: CoreLsOptions): AsyncIterable<LsEntry>
 }
 
 export interface AddOptions extends AbortOptions {
@@ -95,6 +97,11 @@ export interface CatOptions extends AbortOptions {
   length?: number
 }
 
+interface CoreLsOptions extends AbortOptions {
+  preload?: boolean
+  recursive?: boolean
+}
+
 export interface Files {
   chmod(path: string | CID, mode: Mode, options?: ChmodOptions): Promise<void>
 
@@ -122,11 +129,13 @@ interface LsOptions extends AbortOptions {
 
 export type LsEntry = {
   name: string
+  path: string
   type: FileType
   size: number
+  depth: number
   cid: CID
   mode: Mode
-  mtime: UnixFSTime
+  mtime?: UnixFSTime
 }
 
 export interface StatOptions extends AbortOptions {

@@ -2,7 +2,7 @@
 
 const { gateway } = require('ipfs-http-gateway/src/resources')
 
-const webuiCid = 'bafybeigkbbjnltbd4ewfj7elajsbnjwinyk6tiilczkqsibf3o7dcr6nn4' // v2.9.0
+const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4
 
 module.exports = [
   {
