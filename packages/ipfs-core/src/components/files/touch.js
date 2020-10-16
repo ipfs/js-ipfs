@@ -43,7 +43,7 @@ module.exports = (context) => {
    * ```
    */
   async function mfsTouch (path, options = {}) {
-    const settings = mergeOptions(options, defaultOptions)
+    const settings = mergeOptions(defaultOptions, options)
     settings.mtime = settings.mtime || new Date()
 
     log(`Touching ${path} mtime: ${settings.mtime}`)

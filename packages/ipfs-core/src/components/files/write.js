@@ -50,7 +50,7 @@ module.exports = (context) => {
    * @returns {Promise<void>}
    */
   async function mfsWrite (path, content, options = {}) {
-    options = mergeOptions(options, defaultOptions)
+    options = mergeOptions(defaultOptions, options)
 
     let source, destination, parent
     log('Reading source, destination and parent')

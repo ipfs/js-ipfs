@@ -25,7 +25,7 @@ module.exports = (context) => {
    * @returns {Promise<Stat>} - An object containing the file/directory status
    */
   async function mfsStat (path, options) {
-    options = mergeOptions(options, defaultOptions)
+    options = mergeOptions(defaultOptions, options)
 
     log(`Fetching stats for ${path}`)
 

@@ -18,7 +18,7 @@ module.exports = (context) => {
    * @returns {Promise<CID>} The CID of the path that has been flushed
    */
   async function mfsFlush (path, options = {}) {
-    options = mergeOptions(options, defaultOptions)
+    options = mergeOptions(defaultOptions, options)
 
     const { cid } = await stat(context)(path, options)
 

@@ -36,7 +36,7 @@ module.exports = (context) => {
    * ```
    */
   async function mfsMkdir (path, options = {}) {
-    const opts = mergeOptions(options, defaultOptions)
+    const opts = mergeOptions(defaultOptions, options)
 
     if (!path) {
       throw new Error('no path given to Mkdir')

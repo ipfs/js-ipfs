@@ -35,7 +35,7 @@ module.exports = (context) => {
    * ```
    */
   function mfsRead (path, options = {}) {
-    options = mergeOptions(options, defaultOptions)
+    options = mergeOptions(defaultOptions, options)
 
     return {
       [Symbol.asyncIterator]: async function * read () {
