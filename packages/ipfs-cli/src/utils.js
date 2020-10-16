@@ -125,7 +125,6 @@ async function getIpfs (argv) {
     endpoint = argv.api
   }
   // Required inline to reduce startup time
-  // @ts-ignore
   const APIctl = require('ipfs-http-client')
   return {
     isDaemon: true,

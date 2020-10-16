@@ -7,7 +7,6 @@ const Multiaddr = require('multiaddr')
 const WebRTCStar = require('libp2p-webrtc-star')
 const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
-// @ts-ignore
 const ipfsHttpClient = require('ipfs-http-client')
 const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')

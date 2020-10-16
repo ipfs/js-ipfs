@@ -20,13 +20,6 @@
     "go-ipfs": false,
     "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
