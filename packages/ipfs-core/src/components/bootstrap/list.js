@@ -1,6 +1,7 @@
 'use strict'
 
 const { withTimeoutOption } = require('../../utils')
+const Multiaddr = require('multiaddr')
 
 /**
  * @param {import('..').IPFSRepo} repo
@@ -21,7 +22,7 @@ module.exports = ({ repo }) => {
    */
   async function list (options) {
     const peers = await repo.config.get('Bootstrap', options)
-    return { Peers: peers || [] }
+    return { Peers: (peers || []).map(ma => new Multiaddr(ma)) }
   }
 
   return withTimeoutOption(list)

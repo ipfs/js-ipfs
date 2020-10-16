@@ -27,7 +27,7 @@ module.exports = ({ repo }) => {
     }
 
     const config = await repo.config.getAll(options)
-    config.Bootstrap = (config.Bootstrap || []).filter(ma => ma !== multiaddr)
+    config.Bootstrap = (config.Bootstrap || []).filter(ma => ma.toString() !== multiaddr.toString())
 
     await repo.config.set(config)
 

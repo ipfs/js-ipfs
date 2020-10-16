@@ -1,6 +1,7 @@
 'use strict'
 
 const { withTimeoutOption } = require('../../utils')
+const Multiaddr = require('multiaddr')
 
 /**
  * @param {Object} config
@@ -27,7 +28,7 @@ module.exports = ({ repo }) => {
 
     await repo.config.set(config)
 
-    return { Peers: removed }
+    return { Peers: removed.map(ma => new Multiaddr(ma)) }
   }
 
   return withTimeoutOption(clear)

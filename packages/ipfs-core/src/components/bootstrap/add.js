@@ -30,8 +30,8 @@ module.exports = ({ repo }) => {
 
     const config = await repo.config.getAll(options)
 
-    if (config.Bootstrap.indexOf(multiaddr) === -1) {
-      config.Bootstrap.push(multiaddr)
+    if (config.Bootstrap.indexOf(multiaddr.toString()) === -1) {
+      config.Bootstrap.push(multiaddr.toString())
     }
 
     await repo.config.set(config)

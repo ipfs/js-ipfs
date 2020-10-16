@@ -55,7 +55,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Object>` | An object that contains an array with all the added addresses |
+| `Promise<{ Peers: Array<MultiAddr> }>` | An object that contains an array with all the added addresses |
 
 example of the returned object:
 
@@ -141,7 +141,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Object>` | An object that contains an array with all the bootstrap addresses |
+| `Promise<{ Peers: Array<MultiAddr> }>` | An object that contains an array with all the bootstrap addresses |
 
 example of the returned object:
 
@@ -225,7 +225,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Object>` | An object that contains an array with all the removed addresses |
+| `Promise<{ Peers: Array<MultiAddr> }>` | An object that contains an array with all the removed addresses |
 
 ```JavaScript
 {
