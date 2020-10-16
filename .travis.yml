@@ -67,12 +67,6 @@ jobs:
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
-      name: type-check
-      script:
-        - npm run build:types -- $RUN_SINCE
-        - npm run check -- $RUN_SINCE
-
-    - stage: test
       name: dep-check
       script:
         - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
