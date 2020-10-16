@@ -53,6 +53,7 @@ print.cursorTo = (pos) => {
 
 /**
  * Write data directly to stdout
+ *
  * @param {string|Uint8Array} data
  */
 print.write = (data) => {
@@ -61,6 +62,7 @@ print.write = (data) => {
 
 /**
  * Print an error message
+ *
  * @param {string} msg
  * @param {boolean} [newline=true]
  */
