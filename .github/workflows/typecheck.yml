@@ -27,20 +27,14 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-core-utils
-      - name: Generate typedefs for ipfs-core-utils
-        run: npm run build:types --scope={ipfs-core-utils}
       - name: Typecheck ipfs-core
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-core
-      - name: Generate typedefs for ipfs-core
-        run: npm run build:types --scope={ipfs-core}
       - name: Typecheck ipfs-http-client
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-http-client
-      - name: Generate typedefs for ipfs-http-client
-        run: npm run build:types --scope={ipfs-http-client}
       - name: Typecheck ipfs
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
@@ -61,14 +55,10 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-message-port-protocol
-      - name: Genarate typedfes for ipfs-message-port-protocol
-        run: npm run build:types --scope={ipfs-message-port-protocol}
       - name: Typecheck ipfs-message-port-server
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-message-port-server
-      - name: Genarate typedfes for ipfs-message-port-server
-        run: npm run build:types --scope={ipfs-message-port-server}
       - name: Typecheck ipfs-message-port-client
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
