@@ -43,6 +43,18 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs
+      - name: Typecheck ipfs-cli
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-cli
+      - name: Typecheck ipfs-http-server
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-http-server
+      - name: Typecheck ipfs-http-gateway
+        uses: gozala/typescript-error-reporter-action@v1.0.4
+        with:
+          project: packages/ipfs-http-gateway
       - name: Typecheck ipfs-message-port-protocol
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
@@ -59,4 +71,4 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-message-port-client
-      
+

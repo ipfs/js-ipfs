@@ -81,5 +81,12 @@
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   }
 }
