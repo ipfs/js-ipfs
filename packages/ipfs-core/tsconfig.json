@@ -1,10 +1,15 @@
 {
-  "extends": "../../typescript.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "rootDir": "./"
+    "outDir": "dist"
   },
   "include": [
-    "src"
+    "src",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-core-utils"
+    }
   ]
 }

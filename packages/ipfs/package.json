@@ -23,10 +23,9 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "check": "tsc --noEmit",
     "build": "npm run build:bundle && npm run build:types",
     "build:bundle": "aegir build",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
+    "build:types": "tsc --build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",

@@ -39,6 +39,8 @@ jobs:
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:
           project: packages/ipfs-http-client
+      - name: Generate typedefs for ipfs-http-client
+        run: npm run build:types --scope={ipfs-http-client}
       - name: Typecheck ipfs
         uses: gozala/typescript-error-reporter-action@v1.0.4
         with:

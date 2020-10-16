@@ -35,10 +35,9 @@
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "check": "npm run build:types",
     "build": "npm run build:bundle && npm run build:types",
     "build:bundle": "aegir build",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist/src",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"

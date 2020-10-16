@@ -1,6 +1,18 @@
 {
-  "extends": "../../typescript.json",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
   "include": [
-    "./src"
+    "src",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-message-port-protocol"
+    },
+    {
+      "path": "../ipfs-message-port-server"
+    }
   ]
 }

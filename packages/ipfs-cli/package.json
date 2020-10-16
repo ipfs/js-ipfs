@@ -21,7 +21,7 @@
   "scripts": {
     "lint": "aegir lint",
     "build": "npm run build:types",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist",
+    "build:types": "tsc --build",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",

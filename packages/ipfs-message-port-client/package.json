@@ -32,11 +32,10 @@
     "test": "echo 'Only interface tests live here'",
     "test:interface:message-port-client": "npm run build:test-worker && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
-    "check": "npm run build:types",
     "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
     "build": "npm run build:bundle && npm run build:types",
     "build:bundle": "aegir build",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist/src",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"

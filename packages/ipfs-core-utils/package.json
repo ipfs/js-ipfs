@@ -29,10 +29,9 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "check": "npm run build:types",
     "build": "npm run build:js && npm run build:types",
     "build:js": "aegir build",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir dist/src",
+    "build:types": "tsc --build",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
