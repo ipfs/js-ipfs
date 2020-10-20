@@ -1,12 +1,8 @@
 # Checks bundlesize, does not run on master
 on:
-  push:
-    branches:
-      - '*'
-      - '!master'
   pull_request:
     branches:
-      - '**'
+      - '*'
 
 name: Bundlesize
 jobs:
