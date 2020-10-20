@@ -27,15 +27,21 @@ jobs:
           - packages/ipfs-message-port-server
           - packages/ipfs-message-port-client
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Restore dependencies
+        id: cache-modules
+        uses: actions/checkout@v2
+        with:
+          path: node_modules
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
       - name: Install dependencies
         run: npm install
-      - name: Typecheck ${{matrix.project}}
-        uses: gozala/typescript-error-reporter-action@v1.0.6
+      - name: Typecheck ${{ matrix.project }}
+        uses: gozala/typescript-error-reporter-action@v1.0.8
         with:
-          project: $${{matrix.project}}
+          project: ${{ matrix.project }}
 
