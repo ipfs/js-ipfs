@@ -1,18 +1,31 @@
 # Checks bundlesize, does not run on master
-name: Bundlesize
-
 on:
   push:
     branches:
       - '*'
       - '!master'
+  pull_request:
+    branches:
+      - '**'
 
+name: Bundlesize
 jobs:
-  checks:
+  check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+        project:
+          - packages/ipfs-core-utils
+          - packages/ipfs-core
+          - packages/ipfs-http-client
+          - packages/ipfs
+          - packages/ipfs-message-port-protocol
+          - packages/ipfs-message-port-client
     steps:
-    - uses: actions/checkout@v2
-    - run: npm i
-    - uses: ipfs/aegir/actions/bundle-size@feat/opt-in-to-size-check
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - run: npm install
+      - name: Bundlesize ${{ matrix.project }}
+      - uses: ipfs/aegir/actions/bundle-size
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
