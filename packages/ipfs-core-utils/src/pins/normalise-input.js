@@ -50,7 +50,7 @@ module.exports = async function * normaliseInput (input) {
   // { cid: CID recursive, metadata }
   // @ts-ignore - it still could be iterable or async iterable
   if (input.cid != null || input.path != null) {
-    // @ts-ignore
+    // @ts-ignore - same as above
     return yield toPin(input)
   }
 

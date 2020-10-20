@@ -309,7 +309,6 @@ function createPeerId ({ privateKey, algorithm = 'RSA', bits, print }) {
   } else {
     // Generate peer identity keypair + transform to desired format + add to config.
     print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
-    // @ts-ignore - expects "Ed25519" | "RSA" | "secp256k1" instoad of string
     return PeerId.create({ keyType: algorithm, bits })
   }
 }
@@ -551,7 +550,7 @@ function createApi ({
  * @typedef {import('./config').IPFSConfig} IPFSConfig
  * @typedef {import('.').IPFSRepo} IPFSRepo
  *
- * @typedef {'RSA' | 'ed25519' | 'secp256k1'} KeyType
+ * @typedef {import('libp2p-crypto').KeyType} KeyType
  *
  * @typedef {string|PeerId} PrivateKey
  * Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id)

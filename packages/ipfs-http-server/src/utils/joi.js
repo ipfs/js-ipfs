@@ -46,7 +46,7 @@ const reqiureIfRequired = (value, helpers) => {
 module.exports = Joi
   .extend(
     // @ts-ignore - according to typedfs coerce should always return
-    // { errors?: ErrorReport[], value?: any }
+    // { errors?: ErrorReport[], value?: any } but below undefined is returned.
     (joi) => {
       return {
         type: 'cid',

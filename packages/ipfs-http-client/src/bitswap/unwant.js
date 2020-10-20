@@ -9,11 +9,14 @@ module.exports = configure(api => {
    * @type {import('..').Implements<import('ipfs-core/src/components/bitswap/unwant')>}
    */
   async function unwant (cid, options = {}) {
+    if (Array.isArray(cid)) {
+      throw Error('cid argument must be CID or a string')
+    }
+
     const res = await api.post('bitswap/unwant', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        // @ts-ignore - CID|string seems to confuse typedef
         arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
         ...options
       }),

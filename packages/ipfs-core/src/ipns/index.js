@@ -35,8 +35,7 @@ class IPNS {
 
       // // Add to cache
       const id = peerId.toB58String()
-      // @ts-ignore - parseFloat expects string
-      const ttEol = parseFloat(lifetime)
+      const ttEol = parseFloat(`${lifetime}`)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
       this.cache.set(id, value, ttl)

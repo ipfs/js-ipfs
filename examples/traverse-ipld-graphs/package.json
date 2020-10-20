@@ -13,7 +13,7 @@
     "test-ipfs-example": "^2.0.3"
   },
   "dependencies": {
-    "cids": "^1.0.0",
+    "cids": "^1.0.2",
     "ipfs": "^0.50.1",
     "ipld-block": "^0.10.1",
     "ipld-dag-pb": "^0.20.0",

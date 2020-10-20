@@ -38,8 +38,8 @@
   "license": "MIT",
   "dependencies": {
     "blob-to-it": "0.0.2",
-    "browser-readablestream-to-it": "0.0.2",
-    "cids": "^1.0.0",
+    "browser-readablestream-to-it": "^1.0.1",
+    "cids": "^1.0.2",
     "err-code": "^2.0.3",
     "ipfs-utils": "^4.0.0",
     "it-all": "^1.0.4",

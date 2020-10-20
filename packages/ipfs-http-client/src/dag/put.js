@@ -57,7 +57,6 @@ module.exports = configure((api, opts) => {
 
     if (!format) {
       if (opts && opts.ipld && opts.ipld.loadFormat) {
-        // @ts-ignore - loadFormat expect string but it could be a number
         format = await opts.ipld.loadFormat(settings.format)
       }
 

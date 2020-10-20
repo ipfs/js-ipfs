@@ -28,7 +28,7 @@ module.exports = ({ pinManager, dag }) => {
   /**
    * List all the objects pinned to local storage
    *
-   * @param {LsOptions} [options]
+   * @param {LsOptions & AbortOptions} [options]
    * @returns {AsyncIterable<LsEntry>}
    * @example
    * ```js
@@ -106,8 +106,6 @@ module.exports = ({ pinManager, dag }) => {
     }
 
     if (type === PinTypes.indirect || type === PinTypes.all) {
-      // @ts-ignore - LsSettings & AbortOptions have no properties in common
-      // with type { preload?: boolean }
       for await (const cid of pinManager.indirectKeys(options)) {
         yield toPin(PinTypes.indirect, cid)
       }
@@ -124,11 +122,10 @@ module.exports = ({ pinManager, dag }) => {
 }
 
 /**
- * @typedef {LsSettings & AbortOptions} LsOptions
- *
- * @typedef {Object} LsSettings
+ * @typedef {Object} LsOptions
  * @property {string[]|CID[]} [paths] - CIDs or IPFS paths to search for in the pinset.
  * @property {PinQueryType} [type] - Filter by this type of pin ("recursive", "direct" or "indirect")
+ * @property {boolean} [preload]
  *
  * @typedef {Object} LsEntry
  * @property {CID} cid -  CID of the pinned node

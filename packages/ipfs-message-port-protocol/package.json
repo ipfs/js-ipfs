@@ -41,7 +41,7 @@
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "cids": "^1.0.0",
+    "cids": "^1.0.2",
     "ipld-block": "^0.10.1"
   },
   "devDependencies": {
