@@ -13,6 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: npm i
-    - uses: ipfs/aegir/actions/bundle-size@master
+    - uses: ipfs/aegir/actions/bundle-size@gozala/nosizecheck
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
