@@ -48,7 +48,7 @@ const echoServer = async (port = 3000) => {
 let echo
 
 module.exports = {
-  bundlesize: true,
+  bundlesize: { maxSize: '540B' },
   hooks: {
     pre: async () => {
       echo = await echoServer()
