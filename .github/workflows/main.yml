@@ -35,4 +35,5 @@ jobs:
       - name: Bundlesize ${{ matrix.project }}
         uses: ipfs/aegir/actions/bundle-size@feat/opt-in-to-size-check
         with:
+          project: ${{ matrix.project }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
