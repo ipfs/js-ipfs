@@ -1,9 +1,8 @@
 on:
   push:
     branches:
-      - master
-      - main
-      - default
+      - '*'
+      - '!master'
   pull_request:
     branches:
       - '**'

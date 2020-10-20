@@ -24,8 +24,19 @@ jobs:
           - packages/ipfs-message-port-client
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Restore dependencies
+        id: cache-modules
+        uses: actions/checkout@v2
+        with:
+          path: node_modules
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+      - name: Install dependencies
+        run: npm install
       - name: Bundlesize ${{ matrix.project }}
-      - uses: ipfs/aegir/actions/bundle-size
+        uses: ipfs/aegir/actions/bundle-size
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
