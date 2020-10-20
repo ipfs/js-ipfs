@@ -33,6 +33,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Bundlesize ${{ matrix.project }}
-        uses: ipfs/aegir/actions/bundle-size
+        uses: ipfs/aegir/actions/bundle-size@v27.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
