@@ -45,7 +45,7 @@
     "ipld-block": "^0.10.1"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "uint8arrays": "^1.1.0",
     "typescript": "^4.0.3"
   },
