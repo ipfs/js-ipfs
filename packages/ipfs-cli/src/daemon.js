@@ -103,7 +103,9 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
     const delegateAddr = Multiaddr(delegateString).toOptions()
     const delegateApiOptions = {
       host: delegateAddr.host,
-      protocol: parseInt(`${delegateAddr.port}`) === 443 ? 'https' : 'http',
+      // port is a string atm, so we need to convert for the check
+      // @ts-ignore - parseInt(input:string) => number
+      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
       port: delegateAddr.port
     }
 

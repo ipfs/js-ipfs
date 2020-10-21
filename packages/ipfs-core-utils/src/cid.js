@@ -21,6 +21,7 @@ exports.cidToString = (input, options = {}) => {
   const upgrade = options.upgrade !== false
   let cid = CID.isCID(input)
     ? input
+    // @ts-ignore - TS seems to get confused by the type defs in CID repo.
     : new CID(input)
 
   if (cid.version === 0 && options.base && options.base !== 'base58btc') {

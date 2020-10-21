@@ -8,7 +8,8 @@
  */
 module.exports = {
   handler: (_request, h) => {
-    setImmediate(() => process.emit('SIGTERM', 'SIGTERM'))
+    // @ts-ignore - TS expects second argument
+    setImmediate(() => process.emit('SIGTERM'))
     return h.response()
   }
 }

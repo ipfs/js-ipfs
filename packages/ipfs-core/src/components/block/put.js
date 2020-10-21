@@ -73,6 +73,8 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
           // Pick appropriate CID version
           cidVersion = mhtype === 'sha2-256' && format === 'dag-pb' ? 0 : 1
         } else {
+          // @ts-ignore - options.version is a {number} but the CID constructor arg version is a {0|1}
+          // TODO: https://github.com/multiformats/js-cid/pull/129
           cidVersion = options.version
         }
 

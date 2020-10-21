@@ -73,7 +73,7 @@ async function create (options = {}) {
    * @typedef {NonNullable<typeof startedApi>} StartedAPI
    * @type {If<Init, If<Start, StartedAPI, InitializedAPI>, API>}
    */
-  // @ts-ignore - Will be fixed by https://github.com/ipfs/js-ipfs/issues/3285
+  // @ts-ignore
   const ipfs = startedApi || initializedApi || api
   return ipfs
 }

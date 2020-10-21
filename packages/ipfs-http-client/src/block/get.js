@@ -10,6 +10,7 @@ module.exports = configure(api => {
    * @type {import('..').Implements<import('ipfs-core/src/components/block/get')>}
    */
   async function get (cid, options = {}) {
+    // @ts-ignore - CID|string seems to confuse typedef
     cid = new CID(cid)
 
     const res = await api.post('block/get', {

@@ -114,7 +114,7 @@ const parseTimeout = (value) => {
  * @property {URL|string} [url] - Full API URL.
  * @property {object} [ipld]
  * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
- * @property {(format: string|number) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
+ * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
 class Client extends HTTP {
   /**
@@ -127,13 +127,10 @@ class Client extends HTTP {
       headers: opts.headers,
       base: normalizeInput(opts.url).toString(),
       handleError: errorHandler,
-      /**
-       * @param {URLSearchParams} search
-       * @returns {URLSearchParams}
-       */
       transformSearchParams: (search) => {
         const out = new URLSearchParams()
 
+        // @ts-ignore https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
         for (const [key, value] of search) {
           if (
             value !== 'undefined' &&
@@ -144,7 +141,7 @@ class Client extends HTTP {
           }
 
           // server timeouts are strings
-          if (key === 'timeout' && !isNaN(parseInt(value))) {
+          if (key === 'timeout' && !isNaN(value)) {
             out.append(kebabCase(key), value)
           }
         }

@@ -80,6 +80,7 @@ const normalizeCidPath = (path) => {
  */
 const resolvePath = async function (dag, ipfsPath, options = {}) {
   if (isIpfs.cid(ipfsPath)) {
+    // @ts-ignore - CID|string seems to confuse typedef
     return new CID(ipfsPath)
   }
 
