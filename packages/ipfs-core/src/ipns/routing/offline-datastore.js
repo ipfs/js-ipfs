@@ -6,8 +6,9 @@ const { encodeBase32 } = require('./utils')
 
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns:offline-datastore')
-log.error = debug('ipfs:ipns:offline-datastore:error')
+const log = Object.assign(debug('ipfs:ipns:offline-datastore'), {
+  error: debug('ipfs:ipns:offline-datastore:error')
+})
 
 // Offline datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore

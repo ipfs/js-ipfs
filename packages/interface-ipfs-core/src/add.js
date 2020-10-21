@@ -80,7 +80,7 @@ module.exports = (common, options) => {
       expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
-    it('should add a Buffer', async () => {
+    it('should add a Uint8Array', async () => {
       const file = await ipfs.add(fixtures.smallFile.data)
 
       expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
@@ -89,7 +89,7 @@ module.exports = (common, options) => {
       expect(file.size).greaterThan(fixtures.smallFile.data.length)
     })
 
-    it('should add a BIG Buffer', async () => {
+    it('should add a BIG Uint8Array', async () => {
       const file = await ipfs.add(fixtures.bigFile.data)
 
       expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
@@ -98,7 +98,7 @@ module.exports = (common, options) => {
       expect(file.size).greaterThan(fixtures.bigFile.data.length)
     })
 
-    it('should add a BIG Buffer with progress enabled', async () => {
+    it('should add a BIG Uint8Array with progress enabled', async () => {
       let progCalled = false
       let accumProgress = 0
       function handler (p) {
@@ -137,7 +137,7 @@ module.exports = (common, options) => {
       expect(file.path).to.equal(fixtures.emptyFile.cid)
     })
 
-    it('should add a Buffer as tuple', async () => {
+    it('should add a Uint8Array as tuple', async () => {
       const tuple = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
       const file = await ipfs.add(tuple)

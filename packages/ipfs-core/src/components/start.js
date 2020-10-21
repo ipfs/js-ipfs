@@ -15,6 +15,21 @@ const { withTimeoutOption } = require('../utils')
 
 const WEBSOCKET_STAR_PROTO_CODE = 479
 
+/**
+ * @param {Object} config
+ * @param {APIManager} config.apiManager
+ * @param {StartOptions} config.options
+ * @param {IPFSBlockService} config.blockService
+ * @param {GCLock} config.gcLock
+ * @param {InitOptions} config.initOptions
+ * @param {IPLD} config.ipld
+ * @param {Keychain} config.keychain
+ * @param {PeerId} config.peerId
+ * @param {PinManager} config.pinManager
+ * @param {Preload} config.preload
+ * @param {Print} config.print
+ * @param {IPFSRepo} config.repo
+ */
 module.exports = ({
   apiManager,
   options: constructorOptions,
@@ -28,142 +43,142 @@ module.exports = ({
   preload,
   print,
   repo
-}) => withTimeoutOption(async function start () {
-  const startPromise = defer()
-  startPromise.promise.catch((err) => log(err))
+}) => {
+  async function start () {
+    const startPromise = defer()
+    startPromise.promise.catch((err) => log(err))
 
-  const { cancel } = apiManager.update({ start: () => startPromise.promise })
+    const { cancel } = apiManager.update({ start: () => startPromise.promise })
 
-  try {
+    try {
     // The repo may be closed if previously stopped
-    if (repo.closed) {
-      await repo.open()
-    }
+      if (repo.closed) {
+        await repo.open()
+      }
 
-    const config = await repo.config.getAll()
-    const addrs = []
+      const config = await repo.config.getAll()
+      const addrs = []
 
-    if (config.Addresses && config.Addresses.Swarm) {
-      config.Addresses.Swarm.forEach(addr => {
-        let ma = multiaddr(addr)
+      if (config.Addresses && config.Addresses.Swarm) {
+        config.Addresses.Swarm.forEach(addr => {
+          let ma = multiaddr(addr)
 
-        // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
-        // websocket-star support was removed from ipfs and libp2p
-        if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
-          throw errCode(new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
-        }
+          // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
+          // websocket-star support was removed from ipfs and libp2p
+          if (ma.protoCodes().includes(WEBSOCKET_STAR_PROTO_CODE)) {
+            throw errCode(new Error('websocket-star swarm addresses are not supported. See https://github.com/ipfs/js-ipfs/issues/2779'), 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
+          }
 
-        // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
-        // webrtc-star) can have the intermediary's peer ID in the address, so append our
-        // peer ID to the end of it
-        const maId = ma.getPeerId()
-        if (maId && maId !== peerId.toB58String()) {
-          ma = ma.encapsulate(`/p2p/${peerId.toB58String()}`)
-        }
+          // multiaddrs that go via a signalling server or other intermediary (e.g. stardust,
+          // webrtc-star) can have the intermediary's peer ID in the address, so append our
+          // peer ID to the end of it
+          const maId = ma.getPeerId()
+          if (maId && maId !== peerId.toB58String()) {
+            ma = ma.encapsulate(`/p2p/${peerId.toB58String()}`)
+          }
 
-        addrs.push(ma)
+          addrs.push(ma)
+        })
+      }
+
+      const libp2p = Components.libp2p({
+        options: constructorOptions,
+        repo,
+        peerId: peerId,
+        multiaddrs: addrs,
+        config
       })
+
+      libp2p.keychain && await libp2p.loadKeychain()
+
+      await libp2p.start()
+
+      libp2p.transportManager.getAddrs().forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`))
+
+      const ipnsRouting = routingConfig({ libp2p, repo, peerId, options: constructorOptions })
+      const ipns = new IPNS(ipnsRouting, repo.datastore, peerId, keychain, { pass: initOptions.pass })
+      const bitswap = new Bitswap(libp2p, repo.blocks, { statsEnabled: true })
+
+      await bitswap.start()
+
+      blockService.setExchange(bitswap)
+
+      const dag = {
+        get: Components.dag.get({ ipld, preload }),
+        resolve: Components.dag.resolve({ ipld, preload }),
+        tree: Components.dag.tree({ ipld, preload }),
+        // FIXME: resolve this circular dependency
+        get put () {
+          const put = Components.dag.put({ ipld, pin, gcLock, preload })
+          Object.defineProperty(this, 'put', { value: put })
+          return put
+        }
+      }
+
+      const pinAddAll = Components.pin.addAll({ pinManager, gcLock, dag })
+      const pinRmAll = Components.pin.rmAll({ pinManager, gcLock, dag })
+
+      const pin = {
+        add: Components.pin.add({ addAll: pinAddAll }),
+        addAll: pinAddAll,
+        ls: Components.pin.ls({ pinManager, dag }),
+        rm: Components.pin.rm({ rmAll: pinRmAll }),
+        rmAll: pinRmAll
+      }
+
+      const block = {
+        get: Components.block.get({ blockService, preload }),
+        put: Components.block.put({ blockService, pin, gcLock, preload }),
+        rm: Components.block.rm({ blockService, gcLock, pinManager }),
+        stat: Components.block.stat({ blockService, preload })
+      }
+
+      const files = Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions })
+      const mfsPreload = createMfsPreload({ files, preload, options: constructorOptions.preload })
+
+      await Promise.all([
+        ipns.republisher.start(),
+        preload.start(),
+        mfsPreload.start()
+      ])
+
+      const api = createApi({
+        apiManager,
+        bitswap,
+        block,
+        blockService,
+        config,
+        constructorOptions,
+        dag,
+        files,
+        gcLock,
+        initOptions,
+        ipld,
+        ipns,
+        keychain,
+        libp2p,
+        mfsPreload,
+        peerId,
+        pin,
+        preload,
+        print,
+        repo
+      })
+
+      const { api: startedApi } = apiManager.update(api, () => undefined)
+      startPromise.resolve(startedApi)
+      return startedApi
+    } catch (err) {
+      cancel()
+      startPromise.reject(err)
+      throw err
     }
-
-    const libp2p = Components.libp2p({
-      options: constructorOptions,
-      repo,
-      peerId: peerId,
-      multiaddrs: addrs,
-      config
-    })
-
-    libp2p.keychain && await libp2p.loadKeychain()
-
-    await libp2p.start()
-
-    libp2p.transportManager.getAddrs().forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`))
-
-    const ipnsRouting = routingConfig({ libp2p, repo, peerId, options: constructorOptions })
-    const ipns = new IPNS(ipnsRouting, repo.datastore, peerId, keychain, { pass: initOptions.pass })
-    const bitswap = new Bitswap(libp2p, repo.blocks, { statsEnabled: true })
-
-    await bitswap.start()
-
-    blockService.setExchange(bitswap)
-
-    const dag = {
-      get: Components.dag.get({ ipld, preload }),
-      resolve: Components.dag.resolve({ ipld, preload }),
-      tree: Components.dag.tree({ ipld, preload })
-    }
-
-    const pinAddAll = Components.pin.addAll({ pinManager, gcLock, dag })
-    const pinRmAll = Components.pin.rmAll({ pinManager, gcLock, dag })
-
-    const pin = {
-      add: Components.pin.add({ addAll: pinAddAll }),
-      addAll: pinAddAll,
-      ls: Components.pin.ls({ pinManager, dag }),
-      rm: Components.pin.rm({ rmAll: pinRmAll }),
-      rmAll: pinRmAll
-    }
-
-    // FIXME: resolve this circular dependency
-    dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
-
-    const block = {
-      get: Components.block.get({ blockService, preload }),
-      put: Components.block.put({ blockService, pin, gcLock, preload }),
-      rm: Components.block.rm({ blockService, gcLock, pinManager }),
-      stat: Components.block.stat({ blockService, preload })
-    }
-
-    const files = Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions })
-    const mfsPreload = createMfsPreload({ files, preload, options: constructorOptions.preload })
-
-    await Promise.all([
-      ipns.republisher.start(),
-      preload.start(),
-      mfsPreload.start()
-    ])
-
-    const api = createApi({
-      apiManager,
-      bitswap,
-      block,
-      blockService,
-      config,
-      constructorOptions,
-      dag,
-      files,
-      gcLock,
-      initOptions,
-      ipld,
-      ipns,
-      keychain,
-      libp2p,
-      mfsPreload,
-      peerId,
-      pin,
-      pinManager,
-      preload,
-      print,
-      repo
-    })
-
-    apiManager.update(api, () => undefined)
-
-    /** @type {typeof api} */
-    const startedApi = apiManager.api
-    startPromise.resolve(startedApi)
-    return startedApi
-  } catch (err) {
-    cancel()
-    startPromise.reject(err)
-    throw err
   }
-})
+  return withTimeoutOption(start)
+}
 
 /**
- * @template LIBP2P
- * @template BlockAPI, DagAPI, FilesAPI, PinAPI
- * @param {{ [x: string]: any; libp2p: LIBP2P; block: BlockAPI; dag: DagAPI; files: FilesAPI; pin: PinAPI; }} options
+ * @param {CreateAPIConfig} config
  */
 function createApi ({
   apiManager,
@@ -183,7 +198,6 @@ function createApi ({
   mfsPreload,
   peerId,
   pin,
-  pinManager,
   preload,
   print,
   repo
@@ -230,7 +244,7 @@ function createApi ({
       state: Components.name.pubsub.state({ ipns, options: constructorOptions }),
       subs: Components.name.pubsub.subs({ ipns, options: constructorOptions })
     },
-    publish: Components.name.publish({ ipns, dag, peerId, isOnline, keychain, options: constructorOptions }),
+    publish: Components.name.publish({ ipns, dag, peerId, isOnline, keychain }),
     resolve: Components.name.resolve({ dns, ipns, peerId, isOnline, options: constructorOptions })
   }
   const resolve = Components.resolve({ name, ipld })
@@ -342,3 +356,48 @@ function createApi ({
 
   return api
 }
+
+/**
+ * @typedef {Object} CreateAPIConfig
+ * @property {APIManager} apiManager
+ * @property {Bitswap} [bitswap]
+ * @property {Block} block
+ * @property {IPFSBlockService} blockService
+ * @property {Config} config
+ * @property {StartOptions} constructorOptions
+ * @property {DAG} dag
+ * @property {Files} [files]
+ * @property {GCLock} gcLock
+ * @property {InitOptions} initOptions
+ * @property {IPLD} ipld
+ * @property {import('../ipns')} ipns
+ * @property {Keychain} keychain
+ * @property {LibP2P} libp2p
+ * @property {MFSPreload} mfsPreload
+ * @property {PeerId} peerId
+ * @property {Pin} pin
+ * @property {Preload} preload
+ * @property {Print} print
+ * @property {IPFSRepo} repo
+ *
+ * @typedef {(...args:any[]) => void} Print
+ *
+ * @typedef {import('./init').InitOptions} InitOptions
+ * @typedef {import('./init').ConstructorOptions<boolean | InitOptions, true>} StartOptions
+ * @typedef {import('./init').Keychain} Keychain
+ * @typedef {import('../api-manager')} APIManager
+ * @typedef {import('./pin/pin-manager')} PinManager
+ * @typedef {import('../mfs-preload').MFSPreload} MFSPreload
+ * @typedef {import('.').IPFSBlockService} IPFSBlockService
+ * @typedef {import('.').GCLock} GCLock
+ * @typedef {import('.')} IPLD
+ * @typedef {import('.').PeerId} PeerId
+ * @typedef {import('.').Preload} Preload
+ * @typedef {import('.').IPFSRepo} IPFSRepo
+ * @typedef {import('.').LibP2P} LibP2P
+ * @typedef {import('.').Pin} Pin
+ * @typedef {import('.').Files} Files
+ * @typedef {import('.').DAG} DAG
+ * @typedef {import('.').Config} Config
+ * @typedef {import('.').Block} Block
+ */

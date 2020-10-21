@@ -22,9 +22,7 @@ const ipfsPath = (response) => {
 }
 
 module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
-  const resolveDnslink = async (fqdn, opts) => {
-    opts = opts || {}
-
+  const resolveDnslink = async (fqdn, opts = {}) => {
     const searchParams = new URLSearchParams(opts)
     searchParams.set('arg', fqdn)
 

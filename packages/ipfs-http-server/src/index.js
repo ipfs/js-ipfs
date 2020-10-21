@@ -7,7 +7,6 @@ const multiaddr = require('multiaddr')
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
 const AbortController = require('native-abort-controller')
-
 const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
@@ -42,11 +41,11 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
 }
 
 class HttpApi {
-  constructor (ipfs, options) {
+  constructor (ipfs, options = {}) {
     this._ipfs = ipfs
-    this._options = options || {}
-    this._log = debug(LOG)
-    this._log.error = debug(LOG_ERROR)
+    this._log = Object.assign(debug(LOG), {
+      error: debug(LOG_ERROR)
+    })
   }
 
   async start () {

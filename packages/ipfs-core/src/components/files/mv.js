@@ -15,8 +15,17 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ *
+ * @param {any} context
+ */
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsMv (...args) {
+  /**
+   *
+   * @param  {[...from:From, to:string, options?:MvOptions]} args
+   * @returns {Promise<void>}
+   */
+  async function mfsMv (...args) {
     const {
       sources,
       options
@@ -35,5 +44,19 @@ module.exports = (context) => {
 
     await cp(context).apply(null, cpArgs)
     await rm(context).apply(null, rmArgs)
-  })
+  }
+
+  return withTimeoutOption(mfsMv)
 }
+
+/**
+ * @typedef {Object} MvOptions
+ * @property {boolean} [parents=false]
+ * @property {boolean} [flush=false]
+ * @property {string} [hashAlg='sha2-256']
+ * @property {0|1} [cidVersion]
+ *
+ * @typedef {import('./utils/types').Tuple<string>} From
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

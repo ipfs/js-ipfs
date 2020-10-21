@@ -17,6 +17,13 @@
   ],
   "main": "src/index.js",
   "browser": {},
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -28,7 +35,9 @@
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
@@ -39,11 +48,10 @@
   },
   "devDependencies": {
     "@types/it-all": "^1.0.0",
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
-    "interface-ipfs-core": "^0.140.0",
-    "ipfs": "^0.50.2",
-    "ipfs-message-port-protocol": "^0.2.0"
+    "ipfs-message-port-protocol": "^0.2.0",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

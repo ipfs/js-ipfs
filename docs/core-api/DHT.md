@@ -126,7 +126,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | `Buffer` or `string` | The key associated with the value to find |
+| key | `Uint8Array` or `string` | The key associated with the value to find |
 
 ### Options
 
@@ -141,7 +141,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Buffer>` | The value that was stored under that key |
+| `Promise<Uint8Array>` | The value that was stored under that key |
 
 ### Example
 
@@ -228,8 +228,8 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | Buffer | The key to put the value as |
-| value | Buffer | Value to put |
+| key | Uint8Array | The key to put the value as |
+| value | Uint8Array | Value to put |
 
 ### Options
 

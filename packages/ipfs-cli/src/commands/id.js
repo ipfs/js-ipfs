@@ -37,6 +37,6 @@ module.exports = {
       return
     }
 
-    print(JSON.stringify(id, '', 2))
+    print(JSON.stringify(id, null, 2))
   }
 }

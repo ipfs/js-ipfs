@@ -3,10 +3,20 @@
 const exporter = require('ipfs-unixfs-exporter')
 const { normalizeCidPath, withTimeoutOption } = require('../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
+ */
 module.exports = function ({ ipld, preload }) {
-  return withTimeoutOption(async function * cat (ipfsPath, options) {
-    options = options || {}
-
+  /**
+   * Returns content of the file addressed by a valid IPFS Path or CID.
+   *
+   * @param {CID|string} ipfsPath - An IPFS path or CID to export
+   * @param {Options} [options]
+   * @returns {AsyncIterable<Uint8Array>}
+   */
+  async function * cat (ipfsPath, options = {}) {
     ipfsPath = normalizeCidPath(ipfsPath)
 
     if (options.preload !== false) {
@@ -26,5 +36,20 @@ module.exports = function ({ ipld, preload }) {
     }
 
     yield * file.content(options)
-  })
+  }
+
+  return withTimeoutOption(cat)
 }
+
+/**
+ * @typedef {CatOptions & AbortOptions} Options
+ *
+ * @typedef {Object} CatOptions
+ * @property {number} [offset] - An offset to start reading the file from
+ * @property {number} [length] - An optional max length to read from the file
+ * @property {boolean} [preload]
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {import('.').CID} CID
+ */

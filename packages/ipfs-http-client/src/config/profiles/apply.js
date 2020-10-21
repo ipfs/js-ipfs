@@ -4,7 +4,7 @@ const configure = require('../../lib/configure')
 const toUrlSearchParams = require('../../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (profile, options = {}) => {
+  async function apply (profile, options = {}) {
     const res = await api.post('config/profile/apply', {
       timeout: options.timeout,
       signal: options.signal,
@@ -20,4 +20,6 @@ module.exports = configure(api => {
       original: data.OldCfg, updated: data.NewCfg
     }
   }
+
+  return apply
 })

@@ -2,7 +2,7 @@
 
 /* eslint-env browser */
 
-const { Client } = require('./client')
+const Client = require('./client')
 const { encodeCID, decodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,
@@ -51,7 +51,7 @@ const iterateReadableStream = require('browser-readablestream-to-it')
  * @typedef {import('ipfs-message-port-server/src/core').AddedEntry} AddedEntry
  * @typedef {import('ipfs-message-port-server/src/core').EncodedLsEntry} EncodedLsEntry
  * @typedef {import('ipfs-message-port-server/src/core').LsEntry} LsEntry
- * @typedef {import('./client').ClientTransport} Transport
+ * @typedef {import('./client').MessageTransport} MessageTransport
  */
 
 /**
@@ -60,7 +60,7 @@ const iterateReadableStream = require('browser-readablestream-to-it')
  */
 class CoreClient extends Client {
   /**
-   * @param {Transport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
     super('core', ['add', 'addAll', 'cat', 'ls'], transport)
@@ -353,7 +353,7 @@ const encodeAsyncIterableContent = (content, transfer) => {
 }
 
 /**
- * @param {number|Bytes|Blob|string|FileObject} content
+ * @param {number|Bytes|Blob|string|FileObject|void} content
  * @param {Transferable[]} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
  */
@@ -388,7 +388,7 @@ const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
     path,
     mode,
     mtime,
-    content: encodeFileContent(content, transfer)
+    content: content ? encodeFileContent(content, transfer) : undefined
   }
 }
 

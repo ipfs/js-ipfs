@@ -73,22 +73,6 @@ module.exports = (common, options) => {
       expect(bytes).to.deep.equal(data.slice(0, length))
     })
 
-    it('reads a file with a legacy count argument', async () => {
-      const path = `/some-file-${Math.random()}.txt`
-      const data = randomBytes(100)
-      const length = 10
-
-      await ipfs.files.write(path, data, {
-        create: true
-      })
-
-      const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
-        count: length
-      })))
-
-      expect(buffer).to.deep.equal(data.slice(0, length))
-    })
-
     it('reads a file with an offset and a length', async () => {
       const path = `/some-file-${Math.random()}.txt`
       const data = randomBytes(100)
@@ -102,24 +86,6 @@ module.exports = (common, options) => {
       const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
         offset,
         length
-      })))
-
-      expect(buffer).to.deep.equal(data.slice(offset, offset + length))
-    })
-
-    it('reads a file with an offset and a legacy count argument', async () => {
-      const path = `/some-file-${Math.random()}.txt`
-      const data = randomBytes(100)
-      const offset = 10
-      const length = 10
-
-      await ipfs.files.write(path, data, {
-        create: true
-      })
-
-      const buffer = uint8ArrayConcat(await all(ipfs.files.read(path, {
-        offset,
-        count: length
       })))
 
       expect(buffer).to.deep.equal(data.slice(offset, offset + length))

@@ -1,8 +1,5 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('cli:config')
-log.error = debug('cli:config:error')
 const parseDuration = require('parse-duration').default
 
 module.exports = {

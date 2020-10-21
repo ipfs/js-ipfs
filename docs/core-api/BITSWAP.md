@@ -62,7 +62,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| peerId | [PeerId][], [CID][], `String` or `Buffer` | A peer ID to return the wantlist for |
+| peerId | [PeerId][], [CID][], `String` or `Uint8Array` | A peer ID to return the wantlist for |
 
 ### Options
 

@@ -1,30 +1,15 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strict": true,
-    "alwaysStrict": true,
-    "esModuleInterop": true,
-    "target": "ES5",
-    "noEmit": true
+    "outDir": "dist"
   },
-  "exclude": [
-    "dist",
-    "node_modules/**"
-  ],
   "include": [
-    "src/**/*.js",
-    "../ipfs-message-port-protocol/src/**/*.js"
+    "src",
+    "package.json"
   ],
-  "compileOnSave": false
+  "references": [
+    {
+      "path": "../ipfs-message-port-protocol"
+    }
+  ]
 }

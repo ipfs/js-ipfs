@@ -55,7 +55,7 @@ module.exports = {
     // read and parse config file
     if (argv.defaultConfig) {
       try {
-        const raw = fs.readFileSync(argv.defaultConfig)
+        const raw = fs.readFileSync(argv.defaultConfig, { encoding: 'utf8' })
         config = JSON.parse(raw)
       } catch (error) {
         debug(error)

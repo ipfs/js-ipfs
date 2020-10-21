@@ -5,7 +5,7 @@ const importer = require('ipfs-unixfs-importer')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const createLock = require('./utils/create-lock')
 const toAsyncIterator = require('./utils/to-async-iterator')
 const toMfsPath = require('./utils/to-mfs-path')
@@ -41,27 +41,39 @@ const defaultOptions = {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsWrite (path, content, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * Write to an MFS path
+   *
+   * @param {string} path - The MFS path where you will write to
+   * @param {string|Uint8Array|AsyncIterable<Uint8Array>|Blob} content - The content to write to the path
+   * @param {WriteOptions & AbortOptions} [options]
+   * @returns {Promise<void>}
+   */
+  async function mfsWrite (path, content, options = {}) {
+    options = mergeOptions(defaultOptions, options)
 
     let source, destination, parent
     log('Reading source, destination and parent')
     await createLock().readLock(async () => {
-      source = await toAsyncIterator(content, options)
+      source = await toAsyncIterator(content)
       destination = await toMfsPath(context, path, options)
       parent = await toMfsPath(context, destination.mfsDirectory, options)
     })()
     log('Read source, destination and parent')
+    // @ts-ignore - parent maybe undefined
     if (!options.parents && !parent.exists) {
       throw errCode(new Error('directory does not exist'), 'ERR_NO_EXIST')
     }
 
+    // @ts-ignore - parent maybe undefined
     if (!options.create && !destination.exists) {
       throw errCode(new Error('file does not exist'), 'ERR_NO_EXIST')
     }
 
     return updateOrImport(context, path, source, destination, options)
-  })
+  }
+
+  return withTimeoutOption(mfsWrite)
 }
 
 const updateOrImport = async (context, path, source, destination, options) => {
@@ -89,7 +101,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
 
     // get an updated mfs path in case the root changed while we were writing
     const updatedPath = await toMfsPath(context, path, options)
-    const trail = await toTrail(context, updatedPath.mfsDirectory, options)
+    const trail = await toTrail(context, updatedPath.mfsDirectory)
     const parent = trail[trail.length - 1]
 
     if (!parent.type.includes('directory')) {
@@ -244,7 +256,7 @@ const limitAsyncStreamBytes = (stream, limit) => {
 }
 
 const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
-  const buf = new Uint8Array(chunkSize, 0)
+  const buf = new Uint8Array(chunkSize)
 
   const stream = {
     [Symbol.asyncIterator]: function * _asyncZeroes () {
@@ -278,3 +290,22 @@ const countBytesStreamed = async function * (source, notify) {
     yield buf
   }
 }
+
+/**
+ * @typedef {Object} WriteOptions
+ * @property {number} [offset] - An offset to start writing to file at
+ * @property {number} [length] - Optionally limit how many bytes are read from the stream
+ * @property {boolean} [create=false] - Create the MFS path if it does not exist
+ * @property {boolean} [parents=false] - Create intermediate MFS paths if they do not exist
+ * @property {boolean} [truncate=false] - Truncate the file at the MFS path if it would have been larger than the passed content
+ * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw file data and not be wrapped in a protobuf
+ * @property {number} [mode] - An integer that represents the file mode
+ * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
+ * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
+ * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
+ * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('../../utils').Mtime} Mtime
+ * @typedef {import('../../utils').Hrtime} Hrtime
+ */
