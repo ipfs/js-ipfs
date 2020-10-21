@@ -119,7 +119,7 @@
   "devDependencies": {
     "aegir": "^27.0.0",
     "delay": "^4.4.0",
-    "ipfsd-ctl": "^7.0.2",
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/guard-on-null-subprocess",
     "interface-ipfs-core": "^0.140.0",
     "iso-random-stream": "^1.1.1",
     "iso-url": "^0.4.7",

@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "aegir": "^27.0.0",
-    "ipfsd-ctl": "^7.0.2"
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/guard-on-null-subprocess"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
