@@ -15,7 +15,8 @@ stages:
 
 node_js:
   - 'lts/*'
-  - 'node'
+# node 15 is broken until the fix for https://github.com/nodejs/node/issues/35722 is released
+#  - 'node'
 
 os:
   - linux
