@@ -44,6 +44,8 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
+  # modules with pre-built binaries may not have deployed versions for bleeding-edge node so this lets us fall back to building from source
+  - npm install -g node-pre-gyp
 
 script:
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
