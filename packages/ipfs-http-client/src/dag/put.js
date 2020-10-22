@@ -8,7 +8,7 @@ const multihash = require('multihashes')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const anySignal = require('any-signal')
+const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
 const multicodec = require('multicodec')
 
@@ -25,7 +25,10 @@ module.exports = configure((api, opts) => {
     formats[format.codec] = format
   })
 
-  return async (dagNode, options = {}) => {
+  /**
+   * @type {import('..').Implements<import('ipfs-core/src/components/dag/put')>}
+   */
+  const put = async (dagNode, options = {}) => {
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Failed to put DAG node. Provide either `cid` OR `format` and `hashAlg` options')
     } else if ((options.format && !options.hashAlg) || (!options.format && options.hashAlg)) {
@@ -42,19 +45,20 @@ module.exports = configure((api, opts) => {
       delete options.cid
     }
 
-    options = {
+    const settings = {
       format: 'dag-cbor',
       hashAlg: 'sha2-256',
       inputEnc: 'raw',
       ...options
     }
 
-    const number = multicodec.getNumber(options.format)
+    const number = multicodec.getNumber(settings.format)
     let format = formats[number]
 
     if (!format) {
       if (opts && opts.ipld && opts.ipld.loadFormat) {
-        format = await opts.ipld.loadFormat(options.format)
+        // @ts-ignore - loadFormat expect string but it could be a number
+        format = await opts.ipld.loadFormat(settings.format)
       }
 
       if (!format) {
@@ -70,18 +74,20 @@ module.exports = configure((api, opts) => {
 
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = anySignal([controller.signal, settings.signal])
 
     const res = await api.post('dag/put', {
-      timeout: options.timeout,
+      timeout: settings.timeout,
       signal,
-      searchParams: toUrlSearchParams(options),
+      searchParams: toUrlSearchParams(settings),
       ...(
-        await multipartRequest(serialized, controller, options.headers)
+        await multipartRequest(serialized, controller, settings.headers)
       )
     })
     const data = await res.json()
 
     return new CID(data.Cid['/'])
   }
+
+  return put
 })

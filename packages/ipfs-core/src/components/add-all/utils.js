@@ -1,16 +1,28 @@
 'use strict'
 
 /**
+ * @typedef {Object} FixedChunkerOptions
+ * @property {'fixed'} chunker
+ * @property {number} [maxChunkSize]
+ *
+ * @typedef {Object} RabinChunkerOptions
+ * @property {'rabin'} chunker
+ * @property {number} avgChunkSize
+ * @property {number} [minChunkSize]
+ * @property {number} [maxChunkSize]
+ *
+ * @typedef {FixedChunkerOptions|RabinChunkerOptions} ChunkerOptions
+ *
  * Parses chunker string into options used by DAGBuilder in ipfs-unixfs-engine
  *
  *
- * @param  {string}   chunker - Chunker algorithm supported formats:
+ * @param  {string} [chunker] - Chunker algorithm supported formats:
  * "size-{size}"
  * "rabin"
  * "rabin-{avg}"
  * "rabin-{min}-{avg}-{max}"
  *
- * @returns {Object}   Chunker options for DAGBuilder
+ * @returns {ChunkerOptions}   Chunker options for DAGBuilder
  */
 const parseChunkerString = (chunker) => {
   if (!chunker) {
@@ -38,6 +50,11 @@ const parseChunkerString = (chunker) => {
 }
 
 /**
+ * @typedef {Object} RabinChunkerSettings
+ * @property {number} avgChunkSize
+ * @property {number} [minChunkSize]
+ * @property {number} [maxChunkSize]
+ *
  * Parses rabin chunker string
  *
  * @param  {string}   chunker - Chunker algorithm supported formats:
@@ -45,7 +62,7 @@ const parseChunkerString = (chunker) => {
  * "rabin-{avg}"
  * "rabin-{min}-{avg}-{max}"
  *
- * @returns {Object}   rabin chunker options
+ * @returns {RabinChunkerSettings}   rabin chunker options
  */
 const parseRabinString = (chunker) => {
   const options = {}
@@ -69,6 +86,12 @@ const parseRabinString = (chunker) => {
   return options
 }
 
+/**
+ *
+ * @param {string} str
+ * @param {string} name
+ * @returns {number}
+ */
 const parseChunkSize = (str, name) => {
   const size = parseInt(str)
   if (isNaN(size)) {

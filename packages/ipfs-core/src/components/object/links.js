@@ -36,9 +36,7 @@ function findLinks (node, links = []) {
 }
 
 module.exports = ({ dag }) => {
-  return withTimeoutOption(async function links (multihash, options) {
-    options = options || {}
-
+  return withTimeoutOption(async function links (multihash, options = {}) {
     const cid = new CID(multihash)
     const result = await dag.get(cid, options)
 

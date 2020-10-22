@@ -5,22 +5,17 @@ const last = require('it-last')
 const configure = require('./lib/configure')
 
 /**
- * @typedef {import("./lib/core").ClientOptions} ClientOptions
- */
-
-/**
- * @param {ClientOptions} options
+ * @param {import("./lib/core").ClientOptions} options
  */
 module.exports = (options) => {
   const all = addAll(options)
-
   return configure(() => {
     /**
-     * @type {import('../../ipfs/src/core/components/add').Add<import('.').HttpOptions>}
+     * @type {import('.').Implements<import('ipfs-core/src/components/add')>}
      */
-    async function add (input, options = {}) { // eslint-disable-line require-await
-      // @ts-ignore
-      return last(all(input, options))
+    async function add (input, options = {}) {
+      // @ts-ignore - last may return undefind if source is empty
+      return await last(all(input, options))
     }
     return add
   })(options)

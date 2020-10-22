@@ -5,14 +5,14 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
-const anySignal = require('any-signal')
+const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
 
 module.exports = configure((api) => {
   /**
-   * @type {import('../../ipfs/src/core/components/add-all').AddAll<import('.').HttpOptions>}
+   * @type {import('.').Implements<import('ipfs-core/src/components/add-all/index')>}
    */
-  async function * addAll (input, options = {}) {
+  async function * addAll (source, options = {}) {
     const progressFn = options.progress
 
     // allow aborting requests on body errors
@@ -28,7 +28,7 @@ module.exports = configure((api) => {
       timeout: options.timeout,
       signal,
       ...(
-        await multipartRequest(input, controller, options.headers)
+        await multipartRequest(source, controller, options.headers)
       )
     })
 
@@ -46,11 +46,7 @@ module.exports = configure((api) => {
 })
 
 /**
- * @typedef {import('../../ipfs/src/core/components/add-all').UnixFSEntry} UnixFSEntry
- */
-
-/**
- * @param {*} input
+ * @param {any} input
  * @returns {UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
@@ -71,6 +67,9 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
     }
   }
 
-  // @ts-ignore
   return output
 }
+
+/**
+ * @typedef {import('ipfs-core/src/components/add-all/index').UnixFSEntry} UnixFSEntry
+ */

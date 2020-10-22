@@ -2,7 +2,7 @@
 
 const Joi = require('../../utils/joi')
 const { map, filter } = require('streaming-iterables')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 

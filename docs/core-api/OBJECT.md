@@ -100,7 +100,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| obj | `Object{ Data: <data>, Links: [] }`, `Buffer` or [DAGNode][] | The MerkleDAG Node to be stored |
+| obj | `Object{ Data: <data>, Links: [] }`, `Uint8Array` or [DAGNode][] | The MerkleDAG Node to be stored |
 
 ### Options
 
@@ -108,7 +108,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| enc | `String` | `undefined` | The encoding of the Buffer (json, yml, etc), if passed a Buffer |
+| enc | `String` | `undefined` | The encoding of the Uint8Array (json, yml, etc), if passed a Uint8Array |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
@@ -195,7 +195,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Buffer>` | An Promise that resolves to Buffer objects with the data that the MerkleDAG node contained |
+| `Promise<Uint8Array>` | An Promise that resolves to Uint8Array objects with the data that the MerkleDAG node contained |
 
 ### Example
 
@@ -431,7 +431,7 @@ A great source of [examples][] can be found in the tests for this API.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | cid | [CID][] | Add data to the [DAGNode][] that corresponds to this CID |
-| data | `Buffer` | The data to append to the `.Data` field of the node |
+| data | `Uint8Array` | The data to append to the `.Data` field of the node |
 
 ### Options
 
@@ -465,7 +465,7 @@ A great source of [examples][] can be found in the tests for this API.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | cid | [CID][] | Replace data of the [DAGNode][] that corresponds to this CID |
-| data | `Buffer` | The data to overwrite with |
+| data | `Uint8Array` | The data to overwrite with |
 
 ### Options
 

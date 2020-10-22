@@ -19,7 +19,7 @@ module.exports = {
       describe: 'Input PEM file',
       type: 'string',
       demandOption: true,
-      coerce: ('input', input => fs.readFileSync(input, 'utf8'))
+      coerce: input => fs.readFileSync(input, 'utf8')
     },
     timeout: {
       type: 'string',

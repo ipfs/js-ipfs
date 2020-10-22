@@ -14,10 +14,7 @@ const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {Stat} EncodedStat
  */
 
-/**
- * @class
- */
-class FilesService {
+exports.FilesService = class FilesService {
   /**
    *
    * @param {IPFS} ipfs
@@ -59,4 +56,3 @@ class FilesService {
     return { stat: { ...stat, cid: encodeCID(stat.cid, transfer) }, transfer }
   }
 }
-exports.FilesService = FilesService

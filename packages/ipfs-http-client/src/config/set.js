@@ -5,25 +5,17 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (key, value, options = {}) => {
+  /**
+   * @type {import('..').ImplementsMethod<'set', import('ipfs-core/src/components/config')>}
+   */
+  const set = async (key, value, options = {}) => {
     if (typeof key !== 'string') {
       throw new Error('Invalid key type')
     }
 
     const params = {
-      arg: [
-        key,
-        value
-      ],
-      ...options
-    }
-
-    if (typeof value === 'boolean') {
-      params.arg[1] = value.toString()
-      params.bool = true
-    } else if (typeof value !== 'string') {
-      params.arg[1] = JSON.stringify(value)
-      params.json = true
+      ...options,
+      ...encodeParam(key, value)
     }
 
     const res = await api.post('config', {
@@ -35,4 +27,17 @@ module.exports = configure(api => {
 
     return toCamel(await res.json())
   }
+
+  return set
 })
+
+const encodeParam = (key, value) => {
+  switch (typeof value) {
+    case 'boolean':
+      return { arg: [key, value.toString()], bool: true }
+    case 'string':
+      return { arg: [key, value] }
+    default:
+      return { arg: [key, JSON.stringify(value)], json: true }
+  }
+}

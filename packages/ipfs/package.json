@@ -23,7 +23,9 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
@@ -43,7 +45,7 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "clear-module": "^4.0.0",
     "cross-env": "^7.0.0",
     "delay": "^4.4.0",
@@ -68,7 +70,15 @@
     "stream-to-promise": "^3.0.0",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
-    "wrtc": "^0.4.6"
+    "wrtc": "^0.4.6",
+    "typescript": "^4.0.3"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   },
   "browser": {
     "./src/cli.js": false,

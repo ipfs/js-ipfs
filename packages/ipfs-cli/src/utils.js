@@ -26,6 +26,12 @@ const isDaemonOn = () => {
 let visible = true
 const disablePrinting = () => { visible = false }
 
+/**
+ *
+ * @param {string} msg
+ * @param {boolean} [includeNewline=true]
+ * @param {boolean} [isError=false]
+ */
 const print = (msg, includeNewline = true, isError = false) => {
   if (visible) {
     if (msg === undefined) {
@@ -38,18 +44,29 @@ const print = (msg, includeNewline = true, isError = false) => {
 }
 
 print.clearLine = () => {
-  return process.stdout.clearLine()
+  return process.stdout.clearLine(0)
 }
 
 print.cursorTo = (pos) => {
   process.stdout.cursorTo(pos)
 }
 
+/**
+ * Write data directly to stdout
+ *
+ * @param {string|Uint8Array} data
+ */
 print.write = (data) => {
   process.stdout.write(data)
 }
 
-print.error = (msg, newline) => {
+/**
+ * Print an error message
+ *
+ * @param {string} msg
+ * @param {boolean} [newline=true]
+ */
+print.error = (msg, newline = true) => {
   print(msg, newline, true)
 }
 
@@ -92,6 +109,7 @@ async function getIpfs (argv) {
       start: false,
       pass: argv.pass
     })
+
     return {
       isDaemon: false,
       ipfs,

@@ -11,9 +11,21 @@ const multibase = require('multibase')
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
 
-// Perform mark and sweep garbage collection
+/**
+ * Perform mark and sweep garbage collection
+ *
+ * @param {Object} config
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').Pin} config.pin
+ * @param {import('..').Refs} config.refs
+ * @param {import('..').IPFSRepo} config.repo
+ */
 module.exports = ({ gcLock, pin, refs, repo }) => {
-  return withTimeoutOption(async function * gc (options = {}) {
+  /**
+   * @param {AbortOptions} [_options]
+   * @returns {AsyncIterable<Notification>}
+   */
+  async function * gc (_options = {}) {
     const start = Date.now()
     log('Creating set of marked blocks')
 
@@ -26,13 +38,15 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
       const blockKeys = repo.blocks.query({ keysOnly: true })
 
       // Delete blocks that are not being used
-      yield * deleteUnmarkedBlocks({ repo, refs }, markedSet, blockKeys)
+      yield * deleteUnmarkedBlocks({ repo }, markedSet, blockKeys)
 
       log(`Complete (${Date.now() - start}ms)`)
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(gc)
 }
 
 // Get Set of CIDs of blocks to keep
@@ -67,7 +81,7 @@ async function createMarkedSet ({ pin, refs, repo }) {
 }
 
 // Delete all blocks that are not marked as in use
-async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
+async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
   // blockKeys yields { key: Key() }
   let blocksCount = 0
@@ -104,3 +118,19 @@ async function * deleteUnmarkedBlocks ({ repo, refs }, markedSet, blockKeys) {
   log(`Marked set has ${markedSet.size} unique blocks. Blockstore has ${blocksCount} blocks. ` +
   `Deleted ${removedBlocksCount} blocks.`)
 }
+
+/**
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ *
+ * @typedef {Err|BlockID} Notification
+ *
+ * @typedef {Object} Err
+ * @property {void} [cid]
+ * @property {Error} err
+ *
+ * @typedef {Object} BlockID
+ * @property {CID} cid
+ * @property {void} [err]
+ *
+ * @typedef {import('interface-datastore').Key} Key
+ */

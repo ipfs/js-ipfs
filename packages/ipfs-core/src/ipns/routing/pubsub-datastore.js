@@ -10,8 +10,9 @@ const withIs = require('class-is')
 
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns:pubsub')
-log.error = debug('ipfs:ipns:pubsub:error')
+const log = Object.assign(debug('ipfs:ipns:pubsub'), {
+  error: debug('ipfs:ipns:pubsub:error')
+})
 
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
@@ -29,7 +30,7 @@ class IpnsPubsubDatastore {
    *
    * @param {Buffer} key - identifier of the value.
    * @param {Buffer} value - value to be stored.
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   async put (key, value) { // eslint-disable-line require-await
     return this._pubsubDs.put(key, value)
@@ -111,7 +112,7 @@ class IpnsPubsubDatastore {
    * Cancel pubsub subscriptions related to ipns.
    *
    * @param {string} name - ipns path to cancel the pubsub subscription.
-   * @returns {{canceled: boolean}}
+   * @returns {Promise<{canceled: boolean}>}
    */
   async cancel (name) { // eslint-disable-line require-await
     if (typeof name !== 'string') {

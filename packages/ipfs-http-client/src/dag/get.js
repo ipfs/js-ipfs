@@ -15,7 +15,10 @@ module.exports = configure((api, options) => {
   const getBlock = require('../block/get')(options)
   const dagResolve = require('./resolve')(options)
 
-  return async (cid, options = {}) => {
+  /**
+   * @type {import('..').Implements<import('ipfs-core/src/components/dag/get')>}
+   */
+  const get = async (cid, options = {}) => {
     const resolved = await dagResolve(cid, options)
     const block = await getBlock(resolved.cid, options)
     const dagResolver = resolvers[resolved.cid.codec]
@@ -27,10 +30,12 @@ module.exports = configure((api, options) => {
       )
     }
 
-    if (resolved.cid.codec === 'raw' && !resolved.remPath) {
+    if (resolved.cid.codec === 'raw' && !resolved.remainderPath) {
       resolved.remainderPath = '/'
     }
 
     return dagResolver.resolve(block.data, resolved.remainderPath)
   }
+
+  return get
 })

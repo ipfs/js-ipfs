@@ -2,10 +2,21 @@
 
 const last = require('it-last')
 
-/**
- * @typedef {import('./add-all').Source} Source
- * @typedef {import('./add-all').UnixFSEntry} UnixFSEntry
- */
+module.exports = ({ addAll }) => {
+  /**
+   * Import a file or data into IPFS.
+   *
+   * @param {Source} source
+   * @param {AddOptions & AbortOptions} [options]
+   * @returns {AddResult}
+   */
+  async function add (source, options) { // eslint-disable-line require-await
+    /** @type {UnixFSEntry} - Could be undefined if empty */
+    const result = (await last(addAll(source, options)))
+    return result
+  }
+  return add
+}
 
 /**
  * @typedef {object} AddOptions
@@ -18,24 +29,12 @@ const last = require('it-last')
  * @property {boolean} [rawLeaves] - if true, DAG leaves will contain raw file data and not be wrapped in a protobuf (default: `false`)
  * @property {boolean} [trickle] - if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation (default: `false`)
  * @property {boolean} [wrapWithDirectory] - Adds a wrapping node around the content (default: `false`)
- */
-
-/**
- * Import a file or data into IPFS.
  *
- * @template {Record<string, any>} ExtraOptions
- * @callback Add
- * @param {Source} source - Data to import
- * @param {AddOptions & import('../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<UnixFSEntry>}
+ * @typedef {Promise<UnixFSEntry>} AddResult
+ *
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').FileInput} Source
+ *
+ * @typedef {import('./add-all').UnixFSEntry} UnixFSEntry
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
  */
-
-module.exports = ({ addAll }) => {
-  /**
-   * @type {Add<{}>}
-   */
-  async function add (source, options) { // eslint-disable-line require-await
-    return last(addAll(source, options))
-  }
-  return add
-}

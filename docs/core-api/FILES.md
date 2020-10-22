@@ -242,8 +242,8 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| chunker | `String` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
-| cidVersion | `Number` | `0` | the CID version to use when storing the data |
+| chunker | `string` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
+| cidVersion | `number` | `0` | the CID version to use when storing the data |
 | enableShardingExperiment | `boolean` | `false` |  allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature |
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
@@ -415,7 +415,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -842,7 +842,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -866,7 +866,7 @@ console.log(uint8ArrayConcat(chunks).toString())
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | path | `String` | The [MFS path] where you will write to |
-| content | `String`, `Buffer`, `AsyncIterable<Buffer>` or [`Blob`][blob] | The content to write to the path |
+| content | `String`, `Uint8Array`, `AsyncIterable<Uint8Array>` or [`Blob`][blob] | The content to write to the path |
 
 #### Options
 
@@ -902,7 +902,7 @@ await ipfs.files.write('/hello-world', new TextEncoder().encode('Hello, world!')
 
 ### `ipfs.files.mv(...from, to, [options])`
 
-> Move files from one location to another#### Parameters
+> Move files from one location to another
 
 #### Parameters
 

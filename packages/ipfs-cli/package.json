@@ -20,7 +20,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:types",
+    "build:types": "tsc --build",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -56,8 +57,8 @@
     "just-safe-set": "^2.1.0",
     "libp2p": "^0.29.0",
     "libp2p-crypto": "^0.18.0",
-    "libp2p-delegated-content-routing": "^0.7.0",
-    "libp2p-delegated-peer-routing": "^0.7.0",
+    "libp2p-delegated-content-routing": "^0.8.0",
+    "libp2p-delegated-peer-routing": "^0.8.0",
     "libp2p-webrtc-star": "^0.20.1",
     "mafmt": "^8.0.0",
     "multiaddr": "^8.0.0",
@@ -74,13 +75,14 @@
     "yargs": "^16.0.3"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "nanoid": "^3.1.12",
     "ncp": "^2.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0",
+    "typescript": "^4.0.3",
     "wrtc": "^0.4.6"
   },
   "optionalDependencies": {

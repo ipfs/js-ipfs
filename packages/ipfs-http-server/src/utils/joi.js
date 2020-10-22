@@ -45,12 +45,14 @@ const reqiureIfRequired = (value, helpers) => {
 
 module.exports = Joi
   .extend(
+    // @ts-ignore - according to typedfs coerce should always return
+    // { errors?: ErrorReport[], value?: any }
     (joi) => {
       return {
         type: 'cid',
         base: joi.any(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -64,7 +66,7 @@ module.exports = Joi
         type: 'ipfsPath',
         base: joi.string(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -78,7 +80,7 @@ module.exports = Joi
         type: 'peerId',
         base: joi.string(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -92,7 +94,7 @@ module.exports = Joi
         type: 'multiaddr',
         base: joi.string(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -106,7 +108,7 @@ module.exports = Joi
         type: 'timeout',
         base: joi.number(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -120,7 +122,7 @@ module.exports = Joi
         type: 'cidAndPath',
         base: joi.any(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -134,7 +136,7 @@ module.exports = Joi
         type: 'cidBase',
         base: joi.string(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }
@@ -152,7 +154,7 @@ module.exports = Joi
         type: 'json',
         base: joi.any(),
         validate: reqiureIfRequired,
-        coerce (value, helpers) {
+        coerce (value, _helpers) {
           if (!value) {
             return
           }

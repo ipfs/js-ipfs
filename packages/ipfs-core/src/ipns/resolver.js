@@ -4,8 +4,9 @@ const ipns = require('ipns')
 const PeerId = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns:resolver')
-log.error = debug('ipfs:ipns:resolver:error')
+const log = Object.assign(debug('ipfs:ipns:resolver'), {
+  error: debug('ipfs:ipns:resolver:error')
+})
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')
@@ -18,14 +19,11 @@ class IpnsResolver {
     this._routing = routing
   }
 
-  async resolve (name, options) {
-    options = options || {}
-
+  async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('invalid name'), 'ERR_INVALID_NAME')
     }
 
-    options = options || {}
     const recursive = options.recursive && options.recursive.toString() === 'true'
 
     const nameSegments = name.split('/')

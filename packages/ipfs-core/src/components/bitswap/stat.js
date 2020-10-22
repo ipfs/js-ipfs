@@ -5,32 +5,38 @@ const CID = require('cids')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
- * @property {number} provideBufLen - an integer
- * @property {import('cids')[]} wantlist
- * @property {string[]} peers - array of peer IDs as Strings
- * @property {Big} blocksReceived
- * @property {Big} dataReceived
- * @property {Big} blocksSent
- * @property {Big} dataSent
- * @property {Big} dupBlksReceived
- * @property {Big} dupDataReceived
+ * @param {Object} config
+ * @param {import('..').IPFSBitSwap} config.bitswap
  */
-
-/**
- * Show diagnostic information on the bitswap agent.
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback Stat
- * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<BitswapStats>}
- */
-
 module.exports = ({ bitswap }) => {
   /**
-   * @type {Stat<{}>}
+   * Show diagnostic information on the bitswap agent.
+   * Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
+   *
+   * @param {import('../../utils').AbortOptions} [_options]
+   * @returns {Promise<BitswapStats>}
+   *
+   * @example
+   * ```js
+   * const stats = await ipfs.bitswap.stat()
+   * console.log(stats)
+   * // {
+   * //   provideBufLen: 0,
+   * //   wantlist: [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM') ],
+   * //   peers:
+   * //    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+   * //      'QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
+   * //      'QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd' ],
+   * //   blocksReceived: 0,
+   * //   dataReceived: 0,
+   * //   blocksSent: 0,
+   * //   dataSent: 0,
+   * //   dupBlksReceived: 0,
+   * //   dupDataReceived: 0
+   * // }
+   * ```
    */
-  async function stat (options) { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
+  async function stat (_options) { // eslint-disable-line require-await
     const snapshot = bitswap.stat().snapshot
 
     return {
@@ -48,3 +54,18 @@ module.exports = ({ bitswap }) => {
 
   return withTimeoutOption(stat)
 }
+
+/**
+ * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
+ * @property {number} provideBufLen - an integer
+ * @property {CID[]} wantlist
+ * @property {string[]} peers - array of peer IDs as Strings
+ * @property {Big} blocksReceived
+ * @property {Big} dataReceived
+ * @property {Big} blocksSent
+ * @property {Big} dataSent
+ * @property {Big} dupBlksReceived
+ * @property {Big} dupDataReceived
+ *
+ * @typedef {import('..').CID} CID
+ */

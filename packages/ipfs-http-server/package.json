@@ -20,7 +20,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:types",
+    "build:types": "tsc --build",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -70,13 +71,14 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "form-data": "^3.0.0",
     "iso-random-stream": "^1.1.1",
     "it-to-buffer": "^1.0.2",
     "qs": "^6.9.4",
     "sinon": "^9.0.3",
-    "stream-to-promise": "^3.0.0"
+    "stream-to-promise": "^3.0.0",
+    "typescript": "^4.0.3"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0"

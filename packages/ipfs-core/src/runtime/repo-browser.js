@@ -2,8 +2,7 @@
 
 const IPFSRepo = require('ipfs-repo')
 
-module.exports = (options) => {
-  options = options || {}
+module.exports = (options = {}) => {
   const repoPath = options.path || 'ipfs'
   return new IPFSRepo(repoPath, { autoMigrate: options.autoMigrate })
 }

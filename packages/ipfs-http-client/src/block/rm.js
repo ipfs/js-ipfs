@@ -5,7 +5,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async function * rm (cid, options = {}) {
+  /**
+   * @type {import('..').Implements<import('ipfs-core/src/components/block/rm')>}
+   */
+  async function * rm (cid, options = {}) {
     if (!Array.isArray(cid)) {
       cid = [cid]
     }
@@ -25,6 +28,8 @@ module.exports = configure(api => {
       yield toCoreInterface(removed)
     }
   }
+
+  return rm
 })
 
 function toCoreInterface (removed) {

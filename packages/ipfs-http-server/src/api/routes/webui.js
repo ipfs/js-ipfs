@@ -1,9 +1,6 @@
 'use strict'
 
-const debug = require('debug')
 const { gateway } = require('ipfs-http-gateway/src/resources')
-const log = debug('ipfs:webui:info')
-log.error = debug('ipfs:webui:error')
 
 const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4
 
@@ -24,7 +21,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/webui/{slug?}', // optional slug makes it work with and without slash
-    handler (request, h) {
+    handler (_request, h) {
       return h.redirect(`/ipfs/${webuiCid}/`)
     }
   }

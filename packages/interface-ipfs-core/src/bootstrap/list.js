@@ -3,6 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const Multiaddr = require('multiaddr')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -33,6 +34,7 @@ module.exports = (common, options) => {
 
       const peers = res.Peers
       expect(peers).to.be.an('Array')
+      expect(peers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
     })
   })
 }

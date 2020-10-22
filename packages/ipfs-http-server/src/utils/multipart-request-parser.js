@@ -78,16 +78,16 @@ async function * parseEntry (stream, options) {
     const query = qs.parse(disposition.name.split('?').pop())
 
     if (query.mode) {
-      entry.mode = parseInt(query.mode, 8)
+      entry.mode = parseInt(readQueryParam(query.mode), 8)
     }
 
     if (query.mtime) {
       entry.mtime = {
-        secs: parseInt(query.mtime, 10)
+        secs: parseInt(readQueryParam(query.mtime), 10)
       }
 
       if (query['mtime-nsecs']) {
-        entry.mtime.nsecs = parseInt(query['mtime-nsecs'], 10)
+        entry.mtime.nsecs = parseInt(readQueryParam(query['mtime-nsecs']), 10)
       }
     }
 
@@ -97,6 +97,12 @@ async function * parseEntry (stream, options) {
     yield entry
   }
 }
+
+/**
+ * @param {string|string[]} value
+ * @returns {string}
+ */
+const readQueryParam = value => Array.isArray(value) ? value[0] : value
 
 async function * parser (stream, options) {
   for await (const entry of parseEntry(multipart(stream, options.boundary), options)) {

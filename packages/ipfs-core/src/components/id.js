@@ -6,29 +6,23 @@ const { withTimeoutOption } = require('../utils')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
- * @typedef {object} PeerIdObj - An object with the Peer identity
- * @property {string} id - the Peer ID
- * @property {string} publicKey - the public key of the peer as a base64 encoded string
- * @property {import('multiaddr')[]} addresses - A list of multiaddrs this node is listening on
- * @property {string} agentVersion - The agent version
- * @property {string} protocolVersion - The supported protocol version
- * @property {string[]} protocols - The supported protocols
+ * @param {Object} config
+ * @param {import('peer-id')} config.peerId
+ * @param {import('libp2p')} [config.libp2p]
  */
-
-/**
- * Returns the identity of the Peer
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback Id
- * @param {import('../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<PeerIdObj>}
- */
-
 module.exports = ({ peerId, libp2p }) => {
   /**
-   * @type {Id<{}>}
+   * Returns the identity of the Peer
+   *
+   * @param {import('../utils').AbortOptions} [_options]
+   * @returns {Promise<PeerId>}
+   * @example
+   * ```js
+   * const identity = await ipfs.id()
+   * console.log(identity)
+   * ```
    */
-  async function id (options) { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
+  async function id (_options) { // eslint-disable-line require-await
     const id = peerId.toB58String()
     let addresses = []
     let protocols = []
@@ -63,3 +57,14 @@ module.exports = ({ peerId, libp2p }) => {
   }
   return withTimeoutOption(id)
 }
+
+/**
+ * @typedef {object} PeerId
+ * The Peer identity
+ * @property {string} id - the Peer ID
+ * @property {string} publicKey - the public key of the peer as a base64 encoded string
+ * @property {import('multiaddr')[]} addresses - A list of multiaddrs this node is listening on
+ * @property {string} agentVersion - The agent version
+ * @property {string} protocolVersion - The supported protocol version
+ * @property {string[]} protocols - The supported protocols
+ */

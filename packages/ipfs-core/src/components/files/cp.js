@@ -21,8 +21,15 @@ const defaultOptions = {
   signal: undefined
 }
 
-module.exports = (context) => {
-  return withTimeoutOption(async function mfsCp (...args) {
+/**
+ * @param {any} context
+ */
+module.exports = function derp (context) {
+  /**
+   * @param {[...from:From, options?:CpOptions]} args
+   * @returns {Promise<void>}
+   */
+  async function mfsCp (...args) {
     let {
       sources,
       destination,
@@ -83,7 +90,7 @@ module.exports = (context) => {
     }
 
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
-    const trail = await toTrail(context, destinationPath, options)
+    const trail = await toTrail(context, destinationPath)
 
     if (sources.length === 1) {
       const source = sources.pop()
@@ -96,7 +103,9 @@ module.exports = (context) => {
 
     log('Multiple sources, wrapping in a directory')
     return copyToDirectory(context, sources, destination, trail, options)
-  })
+  }
+
+  return withTimeoutOption(mfsCp)
 }
 
 const isDirectory = (destination) => {
@@ -158,3 +167,17 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
 
   return parent
 }
+
+/**
+ * @typedef {Object} CpOptions
+ * @property {boolean} [flush=false]
+ * @property {number} [shardSplitThreshold=1000]
+ * @property {string} [hashAlg=sha2-256]
+ * @property {0|1} [cidVersion=0]
+ * @property {boolean} [parents=false]
+ *
+ * @typedef {import('./utils/types').Tuple<CID|string>} From
+ *
+ * @typedef {import('..').CID} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */
