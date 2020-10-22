@@ -33,7 +33,7 @@
     "release:pre:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*')\"",
     "release:pre:add-hoisted-modules": "json -I -f ./lerna.json -e \"this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']\"",
     "release:pre:reinstall": "npm run reset && npm i && rm -rf package-lock.json **/*/package-lock.json",
-    "release:pre:build": "NODE_ENV=production npm run build -- --scope={ipfs,ipfs-http-client,ipfs-message-port-*}",
+    "release:pre:build": "NODE_ENV=production npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*}",
     "release:publish": "lerna publish",
     "docker:release": "run-s docker:release:*",
     "docker:release:build": "docker build . --no-cache --tag js-ipfs:latest --file ./Dockerfile.latest",
