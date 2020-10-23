@@ -11,6 +11,7 @@ branches:
 stages:
   - test
   - release-rc
+  - release-docker
   - test-external
 
 node_js:
@@ -251,6 +252,19 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
+
+    - stage: release-docker
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: release docker
+      script:
+        # travis does not fetch the whole repo history, but we need that to work out the
+        # ref count to publish canary releases properly
+        - git fetch --unshallow
+        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        # only run if the last commit was not part of a release
+        - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run docker:rc ; fi
 
     - stage: test-external
       # only run on changes to master
