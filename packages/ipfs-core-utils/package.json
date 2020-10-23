@@ -48,7 +48,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
+    "aegir": "ipfs/aegir#fix/global-object",
     "delay": "^4.4.0",
     "typescript": "^4.0.3"
   }
