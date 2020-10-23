@@ -31,7 +31,7 @@ module.exports = {
     const { ipfs, print } = ctx
 
     for await (const res of ipfs.pin.rmAll(ipfsPath.map(path => ({ path, recursive })), { timeout })) {
-      print(`unpinned ${cidToString(res.cid, { base: cidBase })}`)
+      print(`unpinned ${cidToString(res, { base: cidBase })}`)
     }
   }
 }

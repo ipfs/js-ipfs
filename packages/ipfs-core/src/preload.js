@@ -4,7 +4,7 @@ const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
 const CID = require('cids')
 const shuffle = require('array-shuffle')
-const AbortController = require('abort-controller').default
+const AbortController = require('native-abort-controller')
 const preload = require('./runtime/preload-nodejs')
 
 const log = Object.assign(
@@ -12,8 +12,12 @@ const log = Object.assign(
   { error: debug('ipfs:preload:error') }
 )
 
-module.exports = options => {
-  options = options || {}
+/**
+ * @param {Object} [options]
+ * @param {boolean} [options.enabled]
+ * @param {string[]} [options.addresses]
+ */
+const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
 
@@ -30,6 +34,10 @@ module.exports = options => {
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
+  /**
+   * @param {string|CID} path
+   * @returns {Promise<void>}
+   */
   const api = async path => {
     try {
       if (stopped) throw new Error(`preload ${path} but preloader is not started`)
@@ -66,10 +74,16 @@ module.exports = options => {
     }
   }
 
+  /**
+   * @returns {void}
+   */
   api.start = () => {
     stopped = false
   }
 
+  /**
+   * @returns {void}
+   */
   api.stop = () => {
     stopped = true
     log(`aborting ${requests.length} pending preload request(s)`)
@@ -79,3 +93,5 @@ module.exports = options => {
 
   return api
 }
+
+module.exports = createPreloader

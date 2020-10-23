@@ -7,7 +7,10 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const { FinalPeer } = require('./response-types')
 
 module.exports = configure(api => {
-  return async function findPeer (peerId, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'findPeer', import('ipfs-core/src/components/dht')>}
+   */
+  async function findPeer (peerId, options = {}) {
     const res = await api.post('dht/findpeer', {
       timeout: options.timeout,
       signal: options.signal,
@@ -30,4 +33,6 @@ module.exports = configure(api => {
 
     throw new Error('not found')
   }
+
+  return findPeer
 })

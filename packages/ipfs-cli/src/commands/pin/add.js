@@ -60,7 +60,7 @@ module.exports = {
     }
 
     for await (const res of ipfs.pin.addAll(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
-      print(`pinned ${cidToString(res.cid, { base: cidBase })} ${type}ly`)
+      print(`pinned ${cidToString(res, { base: cidBase })} ${type}ly`)
     }
   }
 }

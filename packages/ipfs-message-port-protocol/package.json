@@ -13,6 +13,13 @@
     "src",
     "dist"
   ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "browser": {},
   "repository": {
     "type": "git",
@@ -26,7 +33,9 @@
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
@@ -36,9 +45,9 @@
     "ipld-block": "^0.10.1"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
-    "interface-ipfs-core": "^0.140.0",
-    "uint8arrays": "^1.1.0"
+    "aegir": "^28.0.0",
+    "uint8arrays": "^1.1.0",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

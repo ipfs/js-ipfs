@@ -4,31 +4,25 @@ const { cleanCid } = require('./utils')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @typedef {import('cids')} CID
- * @typedef {import('ipld-block')} Block
+ * @param {Object} config
+ * @param {import('..').IPFSBlockService} config.blockService
+ * @param {import('..').Preload} config.preload
  */
-
-/**
- * @typedef {object} PreloadOptions
- * @property {boolean} [preload] - (default: `true`)
- */
-
-/**
- * Get a raw IPFS block.
- * @template {Record<string, any>} ExtraOptions
- * @callback BlockGet
- * @param {CID | string | Buffer} cid - A CID that corresponds to the desired block
- * @param {import('../../utils').AbortOptions & ExtraOptions} [options]
- * @returns {Promise<Block>} - A Block type object, containing both the data and the hash of the block
- */
-
 module.exports = ({ blockService, preload }) => {
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {BlockGet<PreloadOptions>}
+   * Get a raw IPFS block.
+   *
+   * @param {CID | string | Uint8Array} cid - A CID that corresponds to the desired block
+   * @param {GetOptions & AbortOptions} [options]
+   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
+   *
+   * @example
+   * ```js
+   * const block = await ipfs.block.get(cid)
+   * console.log(block.data)
+   * ```
    */
-  async function get (cid, options) { // eslint-disable-line require-await
-    options = options || {}
+  async function get (cid, options = {}) { // eslint-disable-line require-await
     cid = cleanCid(cid)
 
     if (options.preload !== false) {
@@ -40,3 +34,12 @@ module.exports = ({ blockService, preload }) => {
 
   return withTimeoutOption(get)
 }
+
+/**
+ * @typedef {Object} GetOptions
+ * @property {boolean} [preload=true]
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('..').CID} CID
+ * @typedef {import('..').IPLDBlock} IPLDBlock
+ */

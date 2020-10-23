@@ -32,7 +32,7 @@
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | topic | `String` | The topic name |
-| handler | `Function<(msg) => {}>` | Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: String, seqno: Buffer, data: Buffer, topicIDs: Array<String>}` |
+| handler | `Function<(msg) => {}>` | Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: String, seqno: Uint8Array, data: Uint8Array, topicIDs: Array<String>}` |
 
 ### Options
 
@@ -125,7 +125,7 @@ If **only** the `topic` param is provided, unsubscribe will remove **all** handl
 > Publish a data message to a pubsub topic.
 
 - `topic: String`
-- `data: Buffer|String` - The message to send
+- `data: Uint8Array|String` - The message to send
 
 ### Returns
 

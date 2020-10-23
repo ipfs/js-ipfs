@@ -47,9 +47,7 @@ function parseProtoBuffer (buf) {
 }
 
 module.exports = ({ ipld, gcLock, preload }) => {
-  return withTimeoutOption(async function put (obj, options) {
-    options = options || {}
-
+  return withTimeoutOption(async function put (obj, options = {}) {
     const encoding = options.enc
     let node
 

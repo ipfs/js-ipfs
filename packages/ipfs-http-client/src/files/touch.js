@@ -4,7 +4,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async function touch (path, options = {}) {
+  /**
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/touch')>}
+   */
+  async function touch (path, options = {}) {
     const res = await api.post('files/touch', {
       timeout: options.timeout,
       signal: options.signal,
@@ -17,4 +20,6 @@ module.exports = configure(api => {
 
     await res.text()
   }
+
+  return touch
 })

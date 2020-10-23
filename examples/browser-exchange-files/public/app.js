@@ -107,7 +107,7 @@ async function start () {
     }, 10000)
 
     try {
-      await subscribeToWorkpsace()
+      await subscribeToWorkspace()
     } catch (err) {
       err.message = `Failed to subscribe to the workspace: ${err.message}`
       return onError(err)
@@ -140,7 +140,7 @@ const messageHandler = (message) => {
   }
 }
 
-const subscribeToWorkpsace = async () => {
+const subscribeToWorkspace = async () => {
   await node.pubsub.subscribe(workspace, messageHandler)
   const msg = `Subscribed to workspace '${workspace}'`
   $logs.innerHTML = msg
@@ -154,7 +154,7 @@ const workspaceUpdated = async () => {
   $fileHistory.innerHTML = ''
 
   workspace = location.hash.replace(/^#/, '')
-  await subscribeToWorkpsace()
+  await subscribeToWorkspace()
 }
 
 const publishHash = (hash) => {

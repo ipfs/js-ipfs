@@ -29,4 +29,5 @@ const routes = [
 // webui is loaded from API port, but works over GET (not a part of RPC API)
 const extraRoutes = [...require('./webui')]
 
+// @ts-ignore - two routes array seem to inferred as diff types
 module.exports = routes.concat(extraRoutes)

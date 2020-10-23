@@ -7,7 +7,7 @@ const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 describe('/name', function () {
   const cid = new CID('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')

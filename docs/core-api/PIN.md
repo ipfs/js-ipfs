@@ -50,7 +50,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| [CID[] | The CIDs that was pinned |
+| [CID][] | The CIDs that was pinned |
 
 ### Example
 

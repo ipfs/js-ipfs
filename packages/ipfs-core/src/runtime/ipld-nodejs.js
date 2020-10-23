@@ -45,9 +45,7 @@ const IpldFormats = {
   }
 }
 
-module.exports = (blockService, options, log) => {
-  options = options || {}
-
+module.exports = (blockService, options = {}, log) => {
   return mergeOptions.call(
     // ensure we have the defaults formats even if the user overrides `formats: []`
     { concatArrays: true },

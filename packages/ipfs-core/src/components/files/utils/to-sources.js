@@ -1,7 +1,7 @@
 'use strict'
 
 const toMfsPath = require('./to-mfs-path')
-const applyDefaultOptions = require('./apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 async function toSources (context, args, defaultOptions) {
   const sources = []
@@ -16,7 +16,7 @@ async function toSources (context, args, defaultOptions) {
     }
   }
 
-  options = applyDefaultOptions(options, defaultOptions)
+  options = mergeOptions(defaultOptions, options)
 
   return {
     sources: await toMfsPath(context, sources, options),

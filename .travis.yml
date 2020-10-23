@@ -11,6 +11,7 @@ branches:
 stages:
   - test
   - release-rc
+  - release-docker
   - test-external
 
 node_js:
@@ -44,6 +45,8 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
+  # modules with pre-built binaries may not have deployed versions for bleeding-edge node so this lets us fall back to building from source
+  - npm install -g node-pre-gyp
 
 script:
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
@@ -93,13 +96,11 @@ jobs:
 
     - stage: test
       name: electron-main
-      os: osx
       script:
         - npm run test:electron-main -- $RUN_SINCE -- -- --bail --timeout 60000
 
     - stage: test
       name: electron-renderer
-      os: osx
       script:
         - npm run test:electron-renderer -- $RUN_SINCE -- -- --bail --timeout 60000
 
@@ -115,13 +116,11 @@ jobs:
 
     - stage: test
       name: interop - electron-main
-      os: osx
       script:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-main -f ./test/node.js --bail --timeout 60000
 
     - stage: test
       name: interop - electron-renderer
-      os: osx
       script:
         - npm run test:interop -- $RUN_SINCE -- -- -- -t electron-renderer -f ./test/browser.js -bail --timeout 60000
 
@@ -152,13 +151,11 @@ jobs:
 
     - stage: test
       name: js-ipfs interface tests - electron main
-      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: js-ipfs interface tests - electron renderer
-      os: osx
       script:
         - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
@@ -214,13 +211,11 @@ jobs:
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
-      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-main --timeout 60000
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron renderer
-      os: osx
       script:
         - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t electron-renderer --timeout 60000
 
@@ -237,12 +232,13 @@ jobs:
     - stage: test
       name: examples
       script:
-        - npx json -I -f ./lerna.json -e "this.packages.push('examples/*')"
-        - npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']"
-        - npm run reset
-        - npm install
-        - npm run build -- --scope={ipfs,ipfs-http-client,ipfs-message-port-*}
-        - npm run test -- --scope=example* --concurrency=1
+        # Travis lets scripts continue even if previous steps fail: https://github.com/travis-ci/travis-ci/issues/1066
+        - npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*} &&
+          rm -rf node_modules packages/*/node_modules &&
+          npx json -I -f ./lerna.json -e "this.packages.push('examples/*')" &&
+          npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']" &&
+          npm install &&
+          npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
       # only run on changes to master
@@ -256,6 +252,19 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
+
+    - stage: release-docker
+      # only run on changes to master
+      if: branch = master AND type = push AND fork = false
+      name: release docker
+      script:
+        # travis does not fetch the whole repo history, but we need that to work out the
+        # ref count to publish canary releases properly
+        - git fetch --unshallow
+        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        # only run if the last commit was not part of a release
+        - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run docker:rc ; fi
 
     - stage: test-external
       # only run on changes to master

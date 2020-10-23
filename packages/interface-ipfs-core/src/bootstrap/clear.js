@@ -3,6 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const Multiaddr = require('multiaddr')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -13,7 +14,7 @@ module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  const validIp4 = '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'
+  const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
 
   describe('.bootstrap.clear', function () {
     this.timeout(100 * 1000)
@@ -51,6 +52,8 @@ module.exports = (common, options) => {
       const removedPeers = rmRes.Peers
 
       expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
+
+      expect(removedPeers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
     })
   })
 }

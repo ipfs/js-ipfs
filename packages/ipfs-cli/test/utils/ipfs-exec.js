@@ -73,10 +73,11 @@ module.exports = (repoPath, opts) => {
 
   /**
    * Expect the command passed as @param arguments to fail.
-   * @param {String} command String command to run, e.g. `'pin ls'`
-   * @param {Object} options Options to pass to `execa`
-   * @return {Promise} Resolves if the command passed as @param arguments fails,
-   *                    rejects if it was successful.
+   *
+   * @param {string} command - String command to run, e.g. `'pin ls'`
+   * @param {Object} options - Options to pass to `execa`
+   * @returns {Promise} Resolves if the command passed as @param arguments fails,
+   * rejects if it was successful.
    */
   ipfs.fail = function ipfsFail (command, options) {
     return ipfs(command, { disableErrorLog: true, ...(options || {}) })

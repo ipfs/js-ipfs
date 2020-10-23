@@ -5,11 +5,11 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/wantlist-for-peer').WantlistForPeer<import('..').HttpOptions>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bitswap/wantlist-for-peer')>}
    */
   async function wantlistForPeer (peerId, options = {}) {
+    // @ts-ignore - CID|string seems to confuse typedef
     peerId = typeof peerId === 'string' ? peerId : new CID(peerId).toString()
 
     const res = await (await api.post('bitswap/wantlist', {

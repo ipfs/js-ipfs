@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('../../utils/joi')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
 const last = require('it-last')
 const ndjson = require('iterable-ndjson')

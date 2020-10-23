@@ -5,7 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   recursive: false,

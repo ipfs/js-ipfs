@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('bignumber.js')
+const Big = require('bignumber.js').default
 const parseDuration = require('parse-duration').default
 const errCode = require('err-code')
 const { withTimeoutOption } = require('../../utils')
@@ -36,9 +36,7 @@ function getBandwidthStats (libp2p, opts) {
 }
 
 module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function * (options) {
-    options = options || {}
-
+  return withTimeoutOption(async function * (options = {}) {
     if (!options.poll) {
       yield getBandwidthStats(libp2p, options)
       return

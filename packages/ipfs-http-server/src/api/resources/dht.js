@@ -2,15 +2,16 @@
 
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
 const { PassThrough } = require('stream')
 const toIterable = require('stream-to-it')
 const debug = require('debug')
-const log = debug('ipfs:http-api:dht')
-log.error = debug('ipfs:http-api:dht:error')
+const log = Object.assign(debug('ipfs:http-api:dht'), {
+  error: debug('ipfs:http-api:dht:error')
+})
 
 exports.findPeer = {
   options: {

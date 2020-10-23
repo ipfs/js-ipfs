@@ -1,13 +1,39 @@
 'use strict'
 
 const multicodec = require('multicodec')
+
+/**
+ * @param {string} name
+ * @returns {number}
+ */
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('..').IPLD} config.ipld
+ * @param {import("..").Pin} config.pin
+ * @param {import("..").GCLock} config.gcLock
+ * @param {import("..").Preload} config.preload
+ */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
-  return withTimeoutOption(async function put (dagNode, options) {
-    options = options || {}
-
+  /**
+   * Store an IPLD format node
+   *
+   * @param {Object} dagNode
+   * @param {PutOptions & AbortOptions} [options]
+   * @returns {Promise<CID>}
+   * @example
+   * ```js
+   * const obj = { simple: 'object' }
+   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' })
+   *
+   * console.log(cid.toString())
+   * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
+   * ```
+   */
+  // eslint-disable-next-line complexity
+  async function put (dagNode, options = {}) {
     if (options.cid && (options.format || options.hashAlg)) {
       throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
     } else if (((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
@@ -68,5 +94,21 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
         release()
       }
     }
-  })
+  }
+
+  return withTimeoutOption(put)
 }
+
+/**
+ * @typedef {Object} PutOptions
+ * @property {CID} [cid]
+ * @property {string|number} [format]
+ * @property {string|number} [hashAlg]
+ *
+ * @property {boolean} [pin=false]
+ * @property {number} [version]
+ * @property {boolean} [preload=false]
+ *
+ * @typedef {import('..').CID} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

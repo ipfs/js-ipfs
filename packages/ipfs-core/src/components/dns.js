@@ -4,6 +4,10 @@
 const dns = require('../runtime/dns-nodejs')
 const { withTimeoutOption } = require('../utils')
 
+/**
+ * @param {string} domain
+ * @returns {string}
+ */
 function fqdnFixups (domain) {
   // Allow resolution of .eth names via .eth.link
   // More context at the go-ipfs counterpart: https://github.com/ipfs/go-ipfs/pull/6448
@@ -14,15 +18,31 @@ function fqdnFixups (domain) {
 }
 
 module.exports = () => {
-  return withTimeoutOption(async (domain, opts) => { // eslint-disable-line require-await
-    opts = opts || {}
-
+  /**
+   * Resolve DNS links
+   *
+   * @param {string} domain
+   * @param {DNSOptions} [options]
+   * @returns {Promise<string>}
+   */
+  const resolveDNS = async (domain, options = {}) => { // eslint-disable-line require-await
     if (typeof domain !== 'string') {
       throw new Error('Invalid arguments, domain must be a string')
     }
 
     domain = fqdnFixups(domain)
 
-    return dns(domain, opts)
-  })
+    return dns(domain, options)
+  }
+
+  return withTimeoutOption(resolveDNS)
 }
+
+/**
+ * @typedef {DNSSettings & AbortOptions} DNSOptions
+ *
+ * @typedef {Object} DNSSettings
+ * @property {boolean} [recursive=true] - Resolve until result is not a domain name
+ *
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ */

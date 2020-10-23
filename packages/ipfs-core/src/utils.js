@@ -1,9 +1,10 @@
+/* eslint-disable no-unreachable */
 'use strict'
 
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const TimeoutController = require('timeout-abort-controller')
-const anySignal = require('any-signal')
+const { anySignal } = require('any-signal')
 const parseDuration = require('parse-duration').default
 const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
@@ -27,9 +28,9 @@ exports.MFS_MAX_LINKS = 174
  * Returns a well-formed ipfs Path.
  * The returned path will always be prefixed with /ipfs/ or /ipns/.
  *
- * @param  {String} pathStr An ipfs-path, or ipns-path or a cid
- * @return {String} ipfs-path or ipns-path
- * @throws on an invalid @param ipfsPath
+ * @param  {string} pathStr - An ipfs-path, or ipns-path or a cid
+ * @returns {string} - ipfs-path or ipns-path
+ * @throws on an invalid @param pathStr
  */
 const normalizePath = (pathStr) => {
   if (isIpfs.cid(pathStr)) {
@@ -42,6 +43,10 @@ const normalizePath = (pathStr) => {
 }
 
 // TODO: do we need both normalizePath and normalizeCidPath?
+/**
+ * @param {Uint8Array|CID|string} path
+ * @returns {string}
+ */
 const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
     return new CID(path).toString()
@@ -63,20 +68,19 @@ const normalizeCidPath = (path) => {
  * Follows links in the path.
  *
  * Accepts formats:
- *  - <base58 string>
- *  - <base58 string>/link/to/venus
- *  - /ipfs/<base58 string>/link/to/pluto
- *  - multihash Buffer
+ * - <base58 string>
+ * - <base58 string>/link/to/venus
+ * - /ipfs/<base58 string>/link/to/pluto
+ * - multihash Buffer
  *
- * @param {Dag} dag The IPFS dag api
- * @param {CID|String} ipfsPath A CID or IPFS path
- * @param {Object} [options] Optional options passed directly to dag.resolve
- * @return {CID}
+ * @param {import('./components').DAG} dag - The IPFS dag api
+ * @param {CID | string} ipfsPath - A CID or IPFS path
+ * @param {Object} [options] - Optional options passed directly to dag.resolve
+ * @returns {Promise<CID>}
  */
-const resolvePath = async function (dag, ipfsPath, options) {
-  options = options || {}
-
+const resolvePath = async function (dag, ipfsPath, options = {}) {
   if (isIpfs.cid(ipfsPath)) {
+    // @ts-ignore - CID|string seems to confuse typedef
     return new CID(ipfsPath)
   }
 
@@ -97,9 +101,14 @@ const resolvePath = async function (dag, ipfsPath, options) {
   return result.cid
 }
 
-const mapFile = (file, options) => {
-  options = options || {}
-
+/**
+ * @param {InputFile|UnixFSFile} file
+ * @param {Object} [options]
+ * @param {boolean} [options.includeContent]
+ * @returns {IPFSEntry}
+ */
+const mapFile = (file, options = {}) => {
+  /** @type {IPFSEntry} */
   const output = {
     cid: file.cid,
     path: file.path,
@@ -110,6 +119,7 @@ const mapFile = (file, options) => {
   }
 
   if (file.unixfs) {
+    // @ts-ignore - TS type can't be changed from File to Directory
     output.type = file.unixfs.type === 'directory' ? 'dir' : 'file'
 
     if (file.unixfs.type === 'file') {
@@ -128,6 +138,61 @@ const mapFile = (file, options) => {
 }
 
 /**
+ * @typedef {Object} File
+ * @property {'file'} type
+ * @property {CID} cid
+ * @property {string} name
+ * @property {string} path - File path
+ * @property {AsyncIterable<Uint8Array>} [content] - File content
+ * @property {number} [mode]
+ * @property {MTime} [mtime]
+ * @property {number} size
+ * @property {number} depth
+ *
+ * @typedef {Object} Directory
+ * @property {'dir'} type
+ * @property {CID} cid
+ * @property {string} name
+ * @property {string} path - Directory path
+ * @property {number} [mode]
+ * @property {MTime} [mtime]
+ * @property {number} size
+ * @property {number} depth
+ *
+ * @typedef {File|Directory} IPFSEntry
+ *
+ * @typedef {Object} BaseFile
+ * @property {CID} cid
+ * @property {string} path
+ * @property {string} name
+ *
+ * @typedef {Object} InputFileExt
+ * @property {undefined} [unixfs]
+ *
+ * @typedef {BaseFile & InputFileExt} InputFile
+ *
+ * @typedef {Object} UnixFSeExt
+ * @property {() => AsyncIterable<Uint8Array>} content
+ * @property {UnixFS} unixfs
+ *
+ * @typedef {BaseFile & UnixFSeExt} UnixFSFile
+ *
+ *
+ * @typedef {Object} UnixFS
+ * @property {'directory'|'file'|'dir'} type
+ * @property {() => number} fileSize
+ * @property {() => AsyncIterable<Uint8Array>} content
+ * @property {number} mode
+ * @property {MTime} mtime
+ *
+ * @typedef {object} MTime
+ * @property {number} secs - the number of seconds since (positive) or before
+ * (negative) the Unix Epoch began
+ * @property {number} [nsecs] - the number of nanoseconds since the last full
+ * second.
+ */
+
+/**
  * @template {any[]} ARGS
  * @template R
  * @typedef {(...args: ARGS) => R} Fn
@@ -140,14 +205,33 @@ const mapFile = (file, options) => {
  */
 
 /**
+ * @typedef {Object} Mtime
+ * @property {number} [secs]
+ * @property {number} [nsecs]
+ */
+
+/**
+ * @typedef {[number, number]} Hrtime
+ */
+
+/**
+ * @typedef {Object} PreloadOptions
+ * @property {boolean} [preload=true]
+ */
+
+/**
+ * @template {Record<string, any>} ExtraOptions
+ */
+
+/**
  * @template {any[]} ARGS
- * @template {Promise<any> | AsyncIterable} R - The return type of `fn`
+ * @template {Promise<any> | AsyncIterable<any>} R - The return type of `fn`
  * @param {Fn<ARGS, R>} fn
  * @param {number} [optionsArgIndex]
  * @returns {Fn<ARGS, R>}
  */
 function withTimeoutOption (fn, optionsArgIndex) {
-  // eslint-disable-next-line valid-jsdoc
+  // eslint-disable-next-line
   return /** @returns {R} */(/** @type {ARGS} */...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
@@ -161,7 +245,8 @@ function withTimeoutOption (fn, optionsArgIndex) {
     options.signal = anySignal([options.signal, controller.signal])
 
     const fnRes = fn(...args)
-    const timeoutPromise = new Promise((resolve, reject) => {
+    // eslint-disable-next-line promise/param-names
+    const timeoutPromise = new Promise((_resolve, reject) => {
       controller.signal.addEventListener('abort', () => {
         reject(new TimeoutError())
       })

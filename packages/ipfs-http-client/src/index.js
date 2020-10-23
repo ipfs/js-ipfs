@@ -10,21 +10,7 @@ const globSource = require('ipfs-utils/src/files/glob-source')
 const urlSource = require('ipfs-utils/src/files/url-source')
 
 /**
- * @typedef { import("./lib/core").ClientOptions } ClientOptions
- */
-
-/**
- * @typedef {object} HttpOptions
- * @property {Headers | Record<string, string>} [headers] - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
- * @property {URLSearchParams | Record<string, string>} [searchParams] - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
- * @property {object} [ipld]
- * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
- * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
- */
-
-// eslint-disable-next-line valid-jsdoc
-/**
- * @param {ClientOptions} options
+ * @param {import("./lib/core").ClientOptions} options
  */
 function ipfsClient (options = {}) {
   return {
@@ -67,3 +53,40 @@ function ipfsClient (options = {}) {
 Object.assign(ipfsClient, { CID, multiaddr, multibase, multicodec, multihash, globSource, urlSource })
 
 module.exports = ipfsClient
+
+/**
+ * @typedef {Object} HttpOptions
+ * @property {Headers | Record<string, string>} [headers] - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
+ * @property {URLSearchParams | Record<string, string>} [searchParams] - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+ *
+ * @typedef {import('ipfs-core/src/utils').AbortOptions} AbortOptions}
+ */
+
+/**
+ * This is an utility type that can be used to derive type of the HTTP Client
+ * API from the Core API. It takes type of the API factory (from ipfs-core),
+ * derives API from it's return type and extends it last `options` parameter
+ * with `HttpOptions`.
+ *
+ * This can be used to avoid (re)typing API interface when implemeting it in
+ * http client e.g you can annotate `ipfs.addAll` implementation with
+ *
+ * `@type {Implements<typeof import('ipfs-core/src/components/add-all')>}`
+ *
+ * **Caution**: This supports APIs with up to four parameters and last optional
+ * `options` parameter, anything else will result to `never` type.
+ *
+ * @template {(config:any) => any} APIFactory
+ * @typedef {APIWithExtraOptions<ReturnType<APIFactory>, HttpOptions>} Implements
+ */
+
+/**
+ * @template Key
+ * @template {(config:any) => any} APIFactory
+ * @typedef {import('./interface').APIMethadWithExtraOptions<ReturnType<APIFactory>, Key, HttpOptions>} ImplementsMethod
+ */
+
+/**
+ * @template API, Extra
+ * @typedef {import('./interface').APIWithExtraOptions<API, Extra>} APIWithExtraOptions
+ */

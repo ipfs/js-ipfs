@@ -22,46 +22,61 @@ module.exports = ({
   preload,
   print,
   repo
-}) => withTimeoutOption(async function stop () {
-  const stopPromise = defer()
-  const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
+}) => {
+  /**
+   * Stops the IPFS node and in case of talking with an IPFS Daemon, it stops
+   * the process.
+   *
+   * @param {AbortOptions} _options
+   * @returns {Promise<void>}
+   * @example
+   * ```js
+   * await ipfs.stop()
+   * ```
+   */
+  async function stop (_options) {
+    const stopPromise = defer()
+    const { cancel } = apiManager.update({ stop: () => stopPromise.promise })
 
-  try {
-    blockService.unsetExchange()
-    bitswap.stop()
-    preload.stop()
+    try {
+      blockService.unsetExchange()
+      bitswap.stop()
+      preload.stop()
 
-    await Promise.all([
-      ipns.republisher.stop(),
-      mfsPreload.stop(),
-      libp2p.stop(),
-      repo.close()
-    ])
+      await Promise.all([
+        ipns.republisher.stop(),
+        mfsPreload.stop(),
+        libp2p.stop(),
+        repo.close()
+      ])
 
-    const api = createApi({
-      apiManager,
-      constructorOptions,
-      blockService,
-      gcLock,
-      initOptions,
-      ipld,
-      keychain,
-      peerId,
-      pinManager,
-      preload,
-      print,
-      repo
-    })
+      const api = createApi({
+        apiManager,
+        constructorOptions,
+        blockService,
+        gcLock,
+        initOptions,
+        ipld,
+        keychain,
+        peerId,
+        pinManager,
+        preload,
+        print,
+        repo
+      })
 
-    apiManager.update(api, () => { throw new NotStartedError() })
-  } catch (err) {
-    cancel()
-    stopPromise.reject(err)
-    throw err
+      apiManager.update(api, () => { throw new NotStartedError() })
+    } catch (err) {
+      cancel()
+      stopPromise.reject(err)
+      throw err
+    }
+
+    stopPromise.resolve()
   }
 
-  stopPromise.resolve()
-})
+  return withTimeoutOption(stop)
+}
 
 function createApi ({
   apiManager,
@@ -80,7 +95,13 @@ function createApi ({
   const dag = {
     get: Components.dag.get({ ipld, preload }),
     resolve: Components.dag.resolve({ ipld, preload }),
-    tree: Components.dag.tree({ ipld, preload })
+    tree: Components.dag.tree({ ipld, preload }),
+    // FIXME: resolve this circular dependency
+    get put () {
+      const put = Components.dag.put({ ipld, pin, gcLock, preload })
+      Object.defineProperty(this, 'put', { value: put })
+      return put
+    }
   }
   const object = {
     data: Components.object.data({ ipld, preload }),
@@ -107,9 +128,6 @@ function createApi ({
     rm: Components.pin.rm({ rmAll: pinRmAll }),
     rmAll: pinRmAll
   }
-
-  // FIXME: resolve this circular dependency
-  dag.put = Components.dag.put({ ipld, pin, gcLock, preload })
 
   const block = {
     get: Components.block.get({ blockService, preload }),
@@ -171,7 +189,7 @@ function createApi ({
     pin,
     refs,
     repo: {
-      gc: Components.repo.gc({ gcLock, pin, pinManager, refs, repo }),
+      gc: Components.repo.gc({ gcLock, pin, refs, repo }),
       stat: Components.repo.stat({ repo }),
       version: Components.repo.version({ repo })
     },
@@ -208,3 +226,7 @@ function createApi ({
 
   return api
 }
+
+/**
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ */

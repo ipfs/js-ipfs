@@ -7,11 +7,11 @@ const blobToIt = require('blob-to-it')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
 const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
+const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
 let normalise = require('../../src/files/normalise-input')
 
-if (isBrowser || isWebWorker) {
+if (isBrowser || isWebWorker || isElectronRenderer) {
   normalise = require('../../src/files/normalise-input/index.browser')
 }
 
@@ -34,7 +34,7 @@ async function verifyNormalisation (input) {
 
   let content = input[0].content
 
-  if (isBrowser || isWebWorker) {
+  if (isBrowser || isWebWorker || isElectronRenderer) {
     expect(content).to.be.an.instanceOf(Blob)
     content = blobToIt(content)
   }

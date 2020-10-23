@@ -9,6 +9,10 @@ const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
 
+/**
+ * @param {any} input
+ * @returns {input is Multiaddr}
+ */
 const isMultiaddr = (input) => {
   try {
     Multiaddr(input) // eslint-disable-line no-new
@@ -18,6 +22,10 @@ const isMultiaddr = (input) => {
   }
 }
 
+/**
+ * @param {any} options
+ * @returns {ClientOptions}
+ */
 const normalizeInput = (options = {}) => {
   if (isMultiaddr(options)) {
     options = { url: toUri(options) }
@@ -97,22 +105,22 @@ const parseTimeout = (value) => {
 
 /**
  * @typedef {Object} ClientOptions
- * @prop {string} [host]
- * @prop {number} [port]
- * @prop {string} [protocol]
- * @prop {Headers|Record<string, string>} [headers] - Request headers.
- * @prop {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
- * @prop {string} [apiPath] - Path to the API.
- * @prop {URL|string} [url] - Full API URL.
+ * @property {string} [host]
+ * @property {number} [port]
+ * @property {string} [protocol]
+ * @property {Headers|Record<string, string>} [headers] - Request headers.
+ * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
+ * @property {string} [apiPath] - Path to the API.
+ * @property {URL|string} [url] - Full API URL.
+ * @property {object} [ipld]
+ * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+ * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
-
 class Client extends HTTP {
   /**
-   *
-   * @param {ClientOptions|URL|Multiaddr|string} options
+   * @param {ClientOptions|URL|Multiaddr|string} [options]
    */
   constructor (options = {}) {
-    /** @type {ClientOptions} */
     const opts = normalizeInput(options)
     super({
       timeout: parseTimeout(opts.timeout) || 60000 * 20,

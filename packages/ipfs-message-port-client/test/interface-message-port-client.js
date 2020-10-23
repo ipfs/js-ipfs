@@ -75,10 +75,6 @@ describe('interface-ipfs-core tests', () => {
         reason: 'Not implemented'
       },
       {
-        name: 'ls',
-        reason: 'Not implemented'
-      },
-      {
         name: 'refs',
         reason: 'Not implemented'
       },

@@ -1,7 +1,7 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const errCode = require('err-code')
 const { withTimeoutOption } = require('../../utils')
@@ -12,9 +12,30 @@ const defaultOptions = {
   signal: undefined
 }
 
+/**
+ * @param {any} context
+ */
 module.exports = (context) => {
-  return withTimeoutOption(function mfsRead (path, options = {}) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * Read a file
+   *
+   * @param {string | CID} path - An MFS path, IPFS Path or CID to read
+   * @param {ReadOptions & AbortOptions} [options]
+   * @returns {AsyncIterable<Uint8Array>}
+   * @example
+   * ```js
+   * const chunks = []
+   *
+   * for await (const chunk of ipfs.files.read('/hello-world')) {
+   *   chunks.push(chunk)
+   * }
+   *
+   * console.log(uint8ArrayConcat(chunks).toString())
+   * // Hello, World!
+   * ```
+   */
+  function mfsRead (path, options = {}) {
+    options = mergeOptions(defaultOptions, options)
 
     return {
       [Symbol.asyncIterator]: async function * read () {
@@ -37,5 +58,16 @@ module.exports = (context) => {
         }
       }
     }
-  })
+  }
+
+  return withTimeoutOption(mfsRead)
 }
+
+/**
+ * @typedef {Object} ReadOptions
+ * @property {number} [offset] - An offset to start reading the file from
+ * @property {number} [length] - An optional max length to read from the file
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

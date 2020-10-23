@@ -6,9 +6,8 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/stat').Stat<import('..').HttpOptions>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bitswap/stat')>}
    */
   async function stat (options = {}) {
     const res = await api.post('bitswap/stat', {

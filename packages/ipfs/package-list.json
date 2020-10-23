@@ -42,7 +42,6 @@
     ["libp2p/js-libp2p-kad-dht", "libp2p-kad-dht"],
     ["libp2p/js-libp2p-mdns", "libp2p-mdns"],
     ["libp2p/js-libp2p-bootstrap", "libp2p-bootstrap"],
-    ["libp2p/js-libp2p-secio", "libp2p-secio"],
     ["NodeFactoryIo/js-libp2p-noise", "libp2p-noise"],
     ["libp2p/js-libp2p-tcp", "libp2p-tcp"],
     ["libp2p/js-libp2p-webrtc-star", "libp2p-webrtc-star"],

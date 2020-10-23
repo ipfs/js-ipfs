@@ -27,7 +27,7 @@ module.exports = {
       timeout
     })
     const delta = JSONDiff.diff(diff.original, diff.updated)
-    const res = JSONDiff.formatters.console.format(delta, diff.original)
+    const res = delta && JSONDiff.formatters.console.format(delta, diff.original)
 
     if (res) {
       print(res)
