@@ -18,7 +18,7 @@ exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'
 exports.MFS_FILE_TYPES = {
   file: 0,
   directory: 1,
-  'hamt-sharded-directory': 1
+  'hamt-sharded-directory': 2
 }
 exports.MFS_ROOT_KEY = new Key('/local/filesroot')
 exports.MFS_MAX_CHUNK_SIZE = 262144

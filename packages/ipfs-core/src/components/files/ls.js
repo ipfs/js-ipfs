@@ -12,14 +12,14 @@ const {
  * @returns {UnixFSEntry}
  */
 const toOutput = (fsEntry) => {
-  let type = 0
+  let type = 'file'
   let size = fsEntry.node.size || fsEntry.node.length
   let mode
   let mtime
 
   if (fsEntry.unixfs) {
     size = fsEntry.unixfs.fileSize()
-    type = MFS_FILE_TYPES[fsEntry.unixfs.type]
+    type = Object.entries(MFS_FILE_TYPES).find(x => x[1] == fsEntry.unixfs.type)[0]
     mode = fsEntry.unixfs.mode
     mtime = fsEntry.unixfs.mtime
   }
