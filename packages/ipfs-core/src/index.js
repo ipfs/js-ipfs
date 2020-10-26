@@ -82,7 +82,6 @@ module.exports = {
   create,
   crypto,
   isIPFS,
-  Buffer,
   CID,
   multiaddr,
   multibase,
