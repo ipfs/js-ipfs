@@ -31,11 +31,9 @@ class Daemon {
   /**
    * Starts the IPFS HTTP server
    *
-   * @param {object} [opts] - specify advanced configuration
-   * @param {object} [opts.ipld.formats] - IPLD custom formats
-   * @returns {Promise<HttpApi>}
+   * @returns {Promise<Daemon>}
    */
-  async start (opts = {}) {
+  async start () {
     log('starting')
 
     const repo = typeof this._options.repo === 'string' || this._options.repo == null
@@ -48,7 +46,7 @@ class Daemon {
 
     // start HTTP servers (if API or Gateway is enabled in options)
     const httpApi = new HttpApi(ipfs, ipfsOpts)
-    this._httpApi = await httpApi.start(opts)
+    this._httpApi = await httpApi.start()
 
     const httpGateway = new HttpGateway(ipfs, ipfsOpts)
     this._httpGateway = await httpGateway.start()
