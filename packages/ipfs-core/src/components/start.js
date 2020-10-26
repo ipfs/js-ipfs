@@ -294,6 +294,7 @@ function createApi ({
     id: Components.id({ peerId, libp2p }),
     init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
     isOnline,
+    ipld,
     key: {
       export: Components.key.export({ keychain }),
       gen: Components.key.gen({ keychain }),

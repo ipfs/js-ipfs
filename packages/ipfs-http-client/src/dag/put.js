@@ -41,7 +41,6 @@ module.exports = configure((api, opts) => {
     }
 
     const format = await load(settings.format)
-
     const serialized = format.util.serialize(dagNode)
 
     // allow aborting requests on body errors
