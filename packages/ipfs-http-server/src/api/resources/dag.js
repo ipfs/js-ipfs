@@ -3,55 +3,12 @@
 const multipart = require('../../utils/multipart-request-parser')
 const mh = require('multihashing-async').multihash
 const Joi = require('../../utils/joi')
-const multicodec = require('multicodec')
 const Boom = require('@hapi/boom')
 const {
   cidToString
 } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
-
-const IpldFormats = {
-  get [multicodec.RAW] () {
-    return require('ipld-raw')
-  },
-  get [multicodec.DAG_PB] () {
-    return require('ipld-dag-pb')
-  },
-  get [multicodec.DAG_CBOR] () {
-    return require('ipld-dag-cbor')
-  },
-  get [multicodec.BITCOIN_BLOCK] () {
-    return require('ipld-bitcoin')
-  },
-  get [multicodec.ETH_ACCOUNT_SNAPSHOT] () {
-    return require('ipld-ethereum').ethAccountSnapshot
-  },
-  get [multicodec.ETH_BLOCK] () {
-    return require('ipld-ethereum').ethBlock
-  },
-  get [multicodec.ETH_BLOCK_LIST] () {
-    return require('ipld-ethereum').ethBlockList
-  },
-  get [multicodec.ETH_STATE_TRIE] () {
-    return require('ipld-ethereum').ethStateTrie
-  },
-  get [multicodec.ETH_STORAGE_TRIE] () {
-    return require('ipld-ethereum').ethStorageTrie
-  },
-  get [multicodec.ETH_TX] () {
-    return require('ipld-ethereum').ethTx
-  },
-  get [multicodec.ETH_TX_TRIE] () {
-    return require('ipld-ethereum').ethTxTrie
-  },
-  get [multicodec.GIT_RAW] () {
-    return require('ipld-git')
-  },
-  get [multicodec.ZCASH_BLOCK] () {
-    return require('ipld-zcash')
-  }
-}
 
 const encodeBufferKeys = (obj, encoding) => {
   if (!obj) {
@@ -198,20 +155,14 @@ exports.put = {
             throw Boom.badRequest('Failed to parse the JSON: ' + err)
           }
         } else {
-          const codec = multicodec[format.toUpperCase().replace(/-/g, '_')]
-
-          let ipldFormat = IpldFormats[codec]
-          if (!ipldFormat) {
-            // look at the passed config
-            const ipldOpts = (request.server.app.opts && request.server.app.opts.ipld) || {}
-            if (ipldOpts.formats) {
-              ipldFormat = ipldOpts.formats.find((f) => f.codec === codec)
-            }
-          }
+          // the node is an uncommon format which the client should have
+          // serialized so deserialize it before continuing
+          const ipldFormat = await request.server.app.ipfs.ipld._getFormat(format)
 
           if (!ipldFormat) {
-            throw new Error(`Missing IPLD format "${codec}"`)
+            throw new Error(`Missing IPLD format "${format}"`)
           }
+
           node = await ipldFormat.util.deserialize(data)
         }
 

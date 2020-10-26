@@ -50,11 +50,10 @@ class HttpApi {
 
   /**
    * Starts the IPFS HTTP server
-   * @param {object} [opts] - specify advanced configuration
-   * @param {object} [opts.ipld.formats] - IPLD custom formats
-   * @return {Promise<HttpApi>}
+   *
+   * @returns {Promise<HttpApi>}
    */
-  async start (opts = {}) {
+  async start () {
     this._log('starting')
 
     const ipfs = this._ipfs
@@ -68,13 +67,13 @@ class HttpApi {
     this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs, {
       origin: config.API.HTTPHeaders['Access-Control-Allow-Origin'] || [],
       credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
-    }, opts)
+    })
 
     this._log('started')
     return this
   }
 
-  async _createApiServer (host, port, ipfs, cors, opts) {
+  async _createApiServer (host, port, ipfs, cors) {
     cors = {
       ...cors,
       additionalHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length'],
@@ -100,7 +99,6 @@ class HttpApi {
       compression: false
     })
     server.app.ipfs = ipfs
-    server.app.opts = opts
 
     await server.register({
       plugin: Pino,

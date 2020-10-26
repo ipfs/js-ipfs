@@ -73,7 +73,7 @@ describe('.dag', function () {
   it('should error when putting node with esoteric format', () => {
     const node = uint8ArrayFromString('some data')
 
-    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/Format unsupported/)
+    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/Missing IPLD format/)
   })
 
   it('should attempt to load an unsupported format', async () => {

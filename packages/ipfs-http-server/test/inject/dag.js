@@ -37,6 +37,9 @@ describe('/dag', () => {
         get: sinon.stub(),
         put: sinon.stub(),
         resolve: sinon.stub()
+      },
+      ipld: {
+        _getFormat: sinon.stub()
       }
     }
   })
@@ -288,6 +291,32 @@ describe('/dag', () => {
         ...await toHeadersAndPayload(JSON.stringify(node))
       }, { ipfs })
 
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
+    })
+
+    it('should attempt to load an unsupported format', async () => {
+      const data = Buffer.from('some data')
+      const codec = 'git-raw'
+      const format = {
+        util: {
+          deserialize: (buf) => buf
+        }
+      }
+      ipfs.ipld._getFormat.withArgs(codec).returns(format)
+
+      ipfs.dag.put.withArgs(data, {
+        ...defaultOptions,
+        format: codec
+      }).returns(cid)
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/put?format=git-raw&input-enc=raw',
+        ...await toHeadersAndPayload(data)
+      }, { ipfs })
+
+      expect(ipfs.ipld._getFormat.calledWith(codec)).to.be.true()
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
     })
