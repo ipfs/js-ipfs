@@ -1,6 +1,6 @@
 # Custom IPLD formats
 
-This example shows you how to configure and IPFS daemon with the ability to load extra IPLD formats so you can use them in your applications.
+This example shows you how to configure an IPFS daemon with the ability to load extra IPLD formats so you can use them in your applications.
 
 ## Before you start
 
