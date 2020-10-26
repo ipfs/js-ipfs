@@ -7,7 +7,7 @@ const loadFormat = require('../lib/ipld-formats')
 module.exports = configure((api, opts) => {
   const getBlock = require('../block/get')(opts)
   const dagResolve = require('./resolve')(opts)
-  const load = loadFormat(opts)
+  const load = loadFormat(opts.ipld)
 
   /**
    * @type {import('..').Implements<import('ipfs-core/src/components/dag/get')>}

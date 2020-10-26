@@ -11,7 +11,7 @@ const multicodec = require('multicodec')
 const loadFormat = require('../lib/ipld-formats')
 
 module.exports = configure((api, opts) => {
-  const load = loadFormat(opts)
+  const load = loadFormat(opts.ipld)
 
   /**
    * @type {import('..').Implements<import('ipfs-core/src/components/dag/put')>}

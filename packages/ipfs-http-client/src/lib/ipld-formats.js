@@ -5,6 +5,8 @@ const dagCBOR = require('ipld-dag-cbor')
 const raw = require('ipld-raw')
 const multicodec = require('multicodec')
 
+const noop = () => {}
+
 /**
  * @typedef {import('cids')} CID
  */
@@ -12,26 +14,24 @@ const multicodec = require('multicodec')
 /**
  * Return an object containing supported IPLD Formats
  *
- * @param {object} [options] - Options passed to the http client constructor
- * @param {object} [options.ipld] - IPLD options passed to the http client constructor
- * @param {Array} [options.ipld.formats] - A list of IPLD Formats to use
- * @param {Function} [options.ipld.loadFormat] - An async function that can load a format when passed a codec name
+ * @param {object} [options] - IPLD options passed to the http client constructor
+ * @param {Array} [options.formats] - A list of IPLD Formats to use
+ * @param {Function} [options.loadFormat] - An async function that can load a format when passed a codec number
  * @returns {Function}
  */
-module.exports = (options) => {
-  const formats = {
+module.exports = ({ formats = [], loadFormat = noop } = {}) => {
+  formats = formats || []
+  loadFormat = loadFormat || noop
+
+  const configuredFormats = {
     [multicodec.DAG_PB]: dagPB,
     [multicodec.DAG_CBOR]: dagCBOR,
     [multicodec.RAW]: raw
   }
 
-  const ipldOptions = (options && options.ipld) || {}
-  const configuredFormats = (ipldOptions && ipldOptions.formats) || []
-  configuredFormats.forEach(format => {
-    formats[format.codec] = format
+  formats.forEach(format => {
+    configuredFormats[format.codec] = format
   })
-
-  const loadExtraFormat = options && options.ipld && options.ipld.loadFormat
 
   /**
    * Attempts to load an IPLD format for the passed CID
@@ -39,13 +39,9 @@ module.exports = (options) => {
    * @param {string} codec - The code to load the format for
    * @returns {Promise<object>} - An IPLD format
    */
-  const loadFormat = async (codec) => {
+  const loadResolver = async (codec) => {
     const number = multicodec.getNumber(codec)
-    let format = formats[number]
-
-    if (!format && loadExtraFormat) {
-      format = await loadExtraFormat(codec)
-    }
+    const format = configuredFormats[number] || await loadFormat(codec)
 
     if (!format) {
       throw Object.assign(
@@ -57,5 +53,5 @@ module.exports = (options) => {
     return format
   }
 
-  return loadFormat
+  return loadResolver
 }
