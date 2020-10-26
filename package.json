@@ -46,7 +46,7 @@
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.2",
     "cids": "^1.0.0",
     "get-stream": "^6.0.0",
     "ipfs": "^0.50.1",
