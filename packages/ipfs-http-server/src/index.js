@@ -48,6 +48,11 @@ class HttpApi {
     })
   }
 
+  /**
+   * Starts the IPFS HTTP server
+   *
+   * @returns {Promise<HttpApi>}
+   */
   async start () {
     this._log('starting')
 

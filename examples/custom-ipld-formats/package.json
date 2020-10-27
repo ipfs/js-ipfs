@@ -1,0 +1,22 @@
+{
+  "name": "example-custom-ipld-formats",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "test-ipfs-example"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "execa": "^4.0.3",
+    "test-ipfs-example": "^2.0.3"
+  },
+  "dependencies": {
+    "cids": "^1.0.0",
+    "ipfs-cli": "0.0.1",
+    "ipfs-core": "0.0.1",
+    "ipfs-http-client": "^47.0.0",
+    "multicodec": "^2.0.1",
+    "multihashing-async": "^2.0.1",
+    "uint8arrays": "^1.1.0"
+  }
+}

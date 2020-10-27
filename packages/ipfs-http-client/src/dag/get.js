@@ -1,19 +1,13 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const dagCBOR = require('ipld-dag-cbor')
-const raw = require('ipld-raw')
 const configure = require('../lib/configure')
+const multicodec = require('multicodec')
+const loadFormat = require('../lib/ipld-formats')
 
-const resolvers = {
-  'dag-cbor': dagCBOR.resolver,
-  'dag-pb': dagPB.resolver,
-  raw: raw.resolver
-}
-
-module.exports = configure((api, options) => {
-  const getBlock = require('../block/get')(options)
-  const dagResolve = require('./resolve')(options)
+module.exports = configure((api, opts) => {
+  const getBlock = require('../block/get')(opts)
+  const dagResolve = require('./resolve')(opts)
+  const load = loadFormat(opts.ipld)
 
   /**
    * @type {import('..').Implements<import('ipfs-core/src/components/dag/get')>}
@@ -21,20 +15,15 @@ module.exports = configure((api, options) => {
   const get = async (cid, options = {}) => {
     const resolved = await dagResolve(cid, options)
     const block = await getBlock(resolved.cid, options)
-    const dagResolver = resolvers[resolved.cid.codec]
 
-    if (!dagResolver) {
-      throw Object.assign(
-        new Error(`Missing IPLD format "${resolved.cid.codec}"`),
-        { missingMulticodec: resolved.cid.codec }
-      )
-    }
+    const codecName = multicodec.getName(resolved.cid.code)
+    const format = await load(codecName)
 
-    if (resolved.cid.codec === 'raw' && !resolved.remainderPath) {
+    if (resolved.cid.code === multicodec.RAW && !resolved.remainderPath) {
       resolved.remainderPath = '/'
     }
 
-    return dagResolver.resolve(block.data, resolved.remainderPath)
+    return format.resolver.resolve(block.data, resolved.remainderPath)
   }
 
   return get

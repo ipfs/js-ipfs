@@ -28,6 +28,11 @@ class Daemon {
     }
   }
 
+  /**
+   * Starts the IPFS HTTP server
+   *
+   * @returns {Promise<Daemon>}
+   */
   async start () {
     log('starting')
 
