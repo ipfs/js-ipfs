@@ -10,12 +10,6 @@ const drain = require('it-drain')
 const randomBytes = require('iso-random-stream/src/random')
 const testTimeout = require('../utils/test-timeout')
 
-const MFS_FILE_TYPES = {
-  file: 0,
-  directory: 1,
-  'hamt-sharded-directory': 1
-}
-
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -53,7 +47,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -81,7 +75,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -99,7 +93,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -128,7 +122,7 @@ module.exports = (common, options) => {
         cid: child.Hash,
         name: child.Hash.toString(),
         size: 262144,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -160,7 +154,7 @@ module.exports = (common, options) => {
         cid: child.Hash,
         name: child.Hash.toString(),
         size: 262144,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -200,7 +194,7 @@ module.exports = (common, options) => {
 
         files.forEach(file => {
           // should be a file
-          expect(file.type).to.equal(0)
+          expect(file.type).to.equal('file')
         })
       })
 
