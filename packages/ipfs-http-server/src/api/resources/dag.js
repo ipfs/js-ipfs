@@ -157,7 +157,7 @@ exports.put = {
         } else {
           // the node is an uncommon format which the client should have
           // serialized so deserialize it before continuing
-          const ipldFormat = await request.server.app.ipfs.ipld._getFormat(format)
+          const ipldFormat = await request.server.app.ipfs.ipld.getFormat(format)
 
           if (!ipldFormat) {
             throw new Error(`Missing IPLD format "${format}"`)

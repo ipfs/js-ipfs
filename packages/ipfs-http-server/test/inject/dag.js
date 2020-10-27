@@ -39,7 +39,7 @@ describe('/dag', () => {
         resolve: sinon.stub()
       },
       ipld: {
-        _getFormat: sinon.stub()
+        getFormat: sinon.stub()
       }
     }
   })
@@ -303,7 +303,7 @@ describe('/dag', () => {
           deserialize: (buf) => buf
         }
       }
-      ipfs.ipld._getFormat.withArgs(codec).returns(format)
+      ipfs.ipld.getFormat.withArgs(codec).returns(format)
 
       ipfs.dag.put.withArgs(data, {
         ...defaultOptions,
@@ -316,7 +316,7 @@ describe('/dag', () => {
         ...await toHeadersAndPayload(data)
       }, { ipfs })
 
-      expect(ipfs.ipld._getFormat.calledWith(codec)).to.be.true()
+      expect(ipfs.ipld.getFormat.calledWith(codec)).to.be.true()
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
     })

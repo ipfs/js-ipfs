@@ -77,7 +77,7 @@
     "ipfs-unixfs-exporter": "^3.0.4",
     "ipfs-unixfs-importer": "^3.0.4",
     "ipfs-utils": "^4.0.0",
-    "ipld": "^0.27.1",
+    "ipld": "^0.27.2",
     "ipld-bitcoin": "^0.4.0",
     "ipld-block": "^0.10.1",
     "ipld-dag-cbor": "^0.17.0",
