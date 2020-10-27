@@ -12,6 +12,7 @@ module.exports = (command, ctxMiddleware) => {
     try {
       parser
         .middleware(ctxMiddleware)
+        // @ts-ignore
         .onFinishCommand((data) => {
           resolve(data)
         })
