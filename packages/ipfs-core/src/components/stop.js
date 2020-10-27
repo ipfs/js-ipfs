@@ -1,7 +1,7 @@
 'use strict'
 
 const defer = require('p-defer')
-const { NotStartedError, AlreadyInitializedError } = require('../errors')
+const { NotStartedError } = require('../errors')
 const Components = require('./')
 const { withTimeoutOption } = require('../utils')
 
@@ -171,9 +171,7 @@ function createApi ({
     files: Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions }),
     get: Components.get({ ipld, preload }),
     id: Components.id({ peerId }),
-    init: async () => { // eslint-disable-line require-await
-      throw new AlreadyInitializedError()
-    },
+    init: () => {},
     isOnline: Components.isOnline({}),
     key: {
       export: Components.key.export({ keychain }),

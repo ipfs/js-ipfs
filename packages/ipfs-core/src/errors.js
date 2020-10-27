@@ -15,23 +15,12 @@ class AlreadyInitializingError extends Error {
   constructor (message = 'cannot initialize an initializing node') {
     super(message)
     this.name = 'AlreadyInitializingError'
-    this.code = AlreadyInitializedError.code
+    this.code = AlreadyInitializingError.code
   }
 }
 
 AlreadyInitializingError.code = 'ERR_ALREADY_INITIALIZING'
 exports.AlreadyInitializingError = AlreadyInitializingError
-
-class AlreadyInitializedError extends Error {
-  constructor (message = 'cannot re-initialize an initialized node') {
-    super(message)
-    this.name = 'AlreadyInitializedError'
-    this.code = AlreadyInitializedError.code
-  }
-}
-
-AlreadyInitializedError.code = 'ERR_ALREADY_INITIALIZED'
-exports.AlreadyInitializedError = AlreadyInitializedError
 
 class NotStartedError extends Error {
   constructor (message = 'not started') {

@@ -5,6 +5,7 @@ const MockPreloadNode = require('./test/utils/mock-preload-node')
 const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
+const { commonOptions, commonOverrides } = require('./test/utils/factory')
 
 let preloadNode
 let echoServer = new EchoServer()
@@ -68,26 +69,13 @@ module.exports = {
           port: 14578,
           metrics: false
         })
+
+        const url = new URL(commonOptions.endpoint)
+
         ipfsdServer = await createServer({
-          host: '127.0.0.1',
-          port: 57483
-        }, {
-          type: 'js',
-          ipfsModule: require(__dirname),
-          ipfsHttpModule: require('ipfs-http-client'),
-          ipfsBin: path.join(__dirname, 'src', 'cli.js'),
-          ipfsOptions: {
-            libp2p: {
-              dialer: {
-                dialTimeout: 60e3 // increase timeout because travis is slow
-              }
-            }
-          }
-        }, {
-          go: {
-            ipfsBin: require('go-ipfs').path()
-          }
-        }).start()
+          host: url.hostname,
+          port: url.port
+        }, commonOptions, commonOverrides).start()
 
         return {
           env: {

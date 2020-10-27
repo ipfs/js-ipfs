@@ -14,7 +14,6 @@ const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
 const {
   AlreadyInitializingError,
-  AlreadyInitializedError,
   NotStartedError,
   NotEnabledError
 } = require('../errors')
@@ -390,7 +389,7 @@ function createApi ({
     files: Components.files({ ipld, block, blockService, repo, preload, options: constructorOptions }),
     get: Components.get({ ipld, preload }),
     id: Components.id({ peerId }),
-    init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
+    init: () => {},
     isOnline: Components.isOnline({}),
     key: {
       export: Components.key.export({ keychain }),

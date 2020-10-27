@@ -8,7 +8,7 @@ const defer = require('p-defer')
 const errCode = require('err-code')
 const IPNS = require('../ipns')
 const routingConfig = require('../ipns/routing/config')
-const { AlreadyInitializedError, NotEnabledError } = require('../errors')
+const { NotEnabledError } = require('../errors')
 const Components = require('./')
 const createMfsPreload = require('../mfs-preload')
 const { withTimeoutOption } = require('../utils')
@@ -292,7 +292,7 @@ function createApi ({
     files,
     get: Components.get({ ipld, preload }),
     id: Components.id({ peerId, libp2p }),
-    init: async () => { throw new AlreadyInitializedError() }, // eslint-disable-line require-await
+    init: () => {},
     isOnline,
     key: {
       export: Components.key.export({ keychain }),

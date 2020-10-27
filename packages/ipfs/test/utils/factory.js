@@ -14,9 +14,12 @@ const commonOptions = {
       dialer: {
         dialTimeout: 60e3 // increase timeout because travis is slow
       }
+    },
+    init: {
+      bits: 512
     }
   },
-  endpoint: 'http://localhost:57483'
+  endpoint: 'http://127.0.0.1:57483'
 }
 
 const commonOverrides = {
@@ -54,3 +57,5 @@ const factory = (options = {}, overrides = {}) => {
 }
 
 module.exports = factory
+module.exports.commonOptions = commonOptions
+module.exports.commonOverrides = commonOverrides
