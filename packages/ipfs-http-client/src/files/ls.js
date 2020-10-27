@@ -43,7 +43,13 @@ module.exports = configure(api => {
 })
 
 function toCoreInterface (entry) {
-  if (entry.hash) entry.cid = new CID(entry.hash)
+  if (entry.hash) {
+    entry.cid = new CID(entry.hash)
+  }
+
   delete entry.hash
+
+  entry.type = entry.type === 1 ? 'directory' : 'file'
+
   return entry
 }

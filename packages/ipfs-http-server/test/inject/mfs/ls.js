@@ -83,7 +83,7 @@ describe('/files/ls', () => {
 
     expect(response).to.have.nested.property('result.Entries.length', 1)
     expect(response).to.have.nested.property('result.Entries[0].Name', file.name)
-    expect(response).to.have.nested.property('result.Entries[0].Type', file.type)
+    expect(response).to.have.nested.property('result.Entries[0].Type', 1)
     expect(response).to.have.nested.property('result.Entries[0].Size', file.size)
     expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString())
     expect(response).to.have.nested.property('result.Entries[0].Mode', file.mode)

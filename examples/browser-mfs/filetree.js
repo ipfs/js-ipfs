@@ -5,8 +5,8 @@ const {
 } = require('./utils')
 
 const FILE_TYPES = {
-  FILE: 0,
-  DIRECTORY: 1
+  FILE: 'file',
+  DIRECTORY: 'directory'
 }
 
 let selected = {}
