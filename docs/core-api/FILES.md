@@ -138,6 +138,10 @@ If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
 
+Both `mode` and `mtime` are optional and will result in different [CID][]s for the same file if passed.
+
+`mode` will have a default value applied if not set, see [UnixFS Metadata](https://github.com/ipfs/specs/blob/master/UNIXFS.md#metadata) for further discussion.
+
 ##### FileContent
 
 `FileContent` is one of the following types:
@@ -186,8 +190,8 @@ Each yielded object is of the form:
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -268,8 +272,8 @@ Each yielded object is of the form:
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -458,8 +462,8 @@ Each yielded object is of the form:
 {
   path: string,
   content: <AsyncIterable<Uint8Array>>,
-  mode: number,
-  mtime: { secs: number, nsecs: number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -522,8 +526,8 @@ Each yielded object is of the form:
   size: 11696,
   cid: CID('QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi'),
   type: 'file',
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
