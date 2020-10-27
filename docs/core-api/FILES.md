@@ -138,7 +138,7 @@ If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
 
-Both `mode` and `mtime` are optional and will result in different [CID][]s for the same file if passed.
+Both `mode` and `mtime` are optional and will result in different [CID][]s for the same file if passed.  `mode` will have a default value applied if not set, see [UnixFS Metadata](https://github.com/ipfs/specs/blob/master/UNIXFS.md#metadata) for more information.
 
 ##### FileContent
 
