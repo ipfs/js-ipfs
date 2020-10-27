@@ -125,9 +125,9 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
   path?: string
   // The contents of the file (see below for definition)
   content?: FileContent
-  // (Optional) mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
+  // File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
   mode?: number | string
-  // (Optional) modification time of the entry (see below for definition)
+  // The modification time of the entry (see below for definition)
   mtime?: UnixTime
 }
 ```
@@ -137,6 +137,10 @@ If no `path` is specified, then the item will be added to the root level and wil
 If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
+
+Both `mode` and `mtime` are optional and will result in different [CID][]s for the same file if passed.
+
+`mode` will have a default value applied if not set, see [UnixFS Metadata](https://github.com/ipfs/specs/blob/master/UNIXFS.md#metadata) for further discussion.
 
 ##### FileContent
 
@@ -180,14 +184,14 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `Promise<UnixFSEntry>` | A object describing the added data |
 
-Each yielded object is of the form (`mtime` and `mode` are optional, so may be missing):
+Each yielded object is of the form:
 
 ```JavaScript
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -262,14 +266,14 @@ An optional object which may have the following keys:
 | -------- | -------- |
 | `AsyncIterable<UnixFSEntry>` | An async iterable that yields objects describing the added data |
 
-Each yielded object is of the form  (`mtime` and `mode` are optional, so may be missing):
+Each yielded object is of the form:
 
 ```JavaScript
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -458,8 +462,8 @@ Each yielded object is of the form:
 {
   path: string,
   content: <AsyncIterable<Uint8Array>>,
-  mode: number,
-  mtime: { secs: number, nsecs: number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -522,8 +526,8 @@ Each yielded object is of the form:
   size: 11696,
   cid: CID('QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi'),
   type: 'file',
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
