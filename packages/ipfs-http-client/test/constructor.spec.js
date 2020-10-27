@@ -86,6 +86,14 @@ describe('ipfs-http-client constructor tests', () => {
       const ipfs = ipfsClient({ host, port, apiPath })
       expectConfig(ipfs, { host, port, apiPath })
     })
+
+    it('url', () => {
+      const host = '10.100.100.255'
+      const port = '9999'
+      const apiPath = '/future/api/v1/'
+      const ipfs = ipfsClient({ url: `http://${host}:${port}${apiPath}` })
+      expectConfig(ipfs, { host, port, apiPath })
+    })
   })
 
   describe('integration', () => {
