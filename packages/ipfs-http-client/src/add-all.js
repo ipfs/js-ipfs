@@ -10,7 +10,7 @@ const AbortController = require('native-abort-controller')
 
 module.exports = configure((api) => {
   /**
-   * @type {import('.').Implements<import('ipfs-core/src/components/add-all/index')>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all/index')>}
    */
   async function * addAll (source, options = {}) {
     const progressFn = options.progress

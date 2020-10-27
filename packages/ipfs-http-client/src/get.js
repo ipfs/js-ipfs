@@ -8,7 +8,7 @@ const map = require('it-map')
 
 module.exports = configure(api => {
   /**
-   * @type {import('.').Implements<import('ipfs-core/src/components/get')>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/get')>}
    */
   async function * get (path, options = {}) {
     const res = await api.post('get', {

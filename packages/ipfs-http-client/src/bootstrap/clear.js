@@ -6,7 +6,7 @@ const Multiaddr = require('multiaddr')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<import('ipfs-core/src/components/bootstrap/clear')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bootstrap/clear')>}
    */
   async function clear (options = {}) {
     const res = await api.post('bootstrap/rm', {
