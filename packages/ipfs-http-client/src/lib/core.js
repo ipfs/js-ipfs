@@ -122,10 +122,11 @@ class Client extends HTTP {
    */
   constructor (options = {}) {
     const opts = normalizeInput(options)
+
     super({
       timeout: parseTimeout(opts.timeout) || 60000 * 20,
       headers: opts.headers,
-      base: normalizeInput(opts.url).toString(),
+      base: `${opts.url}`,
       handleError: errorHandler,
       transformSearchParams: (search) => {
         const out = new URLSearchParams()
