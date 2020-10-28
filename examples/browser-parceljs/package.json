@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ipfs": "^0.50.1"
+    "ipfs": "^0.51.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
