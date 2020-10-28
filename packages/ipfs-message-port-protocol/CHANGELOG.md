@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-protocol@0.2.0...ipfs-message-port-protocol@0.3.0) (2020-10-28)
+
+
+### Features
+
+* type check & generate defs from jsdoc ([#3281](https://github.com/ipfs/js-ipfs/issues/3281)) ([bbcaf34](https://github.com/ipfs/js-ipfs/commit/bbcaf34111251b142273a5675f4754ff68bd9fa0))
+
+
+
+
+
 # [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-protocol@0.1.1...ipfs-message-port-protocol@0.2.0) (2020-09-03)
 
 

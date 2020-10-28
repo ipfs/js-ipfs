@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.4.0...ipfs-core-utils@0.5.0) (2020-10-28)
+
+
+### Bug Fixes
+
+* use fetch in electron renderer and electron-fetch in main ([#3251](https://github.com/ipfs/js-ipfs/issues/3251)) ([639d71f](https://github.com/ipfs/js-ipfs/commit/639d71f7ac8f66d9633e753a2a6be927e14a5af0))
+
+
+### Features
+
+* type check & generate defs from jsdoc ([#3281](https://github.com/ipfs/js-ipfs/issues/3281)) ([bbcaf34](https://github.com/ipfs/js-ipfs/commit/bbcaf34111251b142273a5675f4754ff68bd9fa0))
+
+
+
+
+
 # [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.3.2...ipfs-core-utils@0.4.0) (2020-09-03)
 
 

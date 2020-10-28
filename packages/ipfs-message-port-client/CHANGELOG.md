@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.2.2...ipfs-message-port-client@0.3.0) (2020-10-28)
+
+
+### Features
+
+* implement message-port ipfs.ls ([#3322](https://github.com/ipfs/js-ipfs/issues/3322)) ([4b8021d](https://github.com/ipfs/js-ipfs/commit/4b8021d389ac01f191d4fe87beead10088e53297))
+* type check & generate defs from jsdoc ([#3281](https://github.com/ipfs/js-ipfs/issues/3281)) ([bbcaf34](https://github.com/ipfs/js-ipfs/commit/bbcaf34111251b142273a5675f4754ff68bd9fa0))
+
+
+
+
+
 ## [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.2.1...ipfs-message-port-client@0.2.2) (2020-09-09)
 
 **Note:** Version bump only for package ipfs-message-port-client

@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.51.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.50.2...ipfs@0.51.0) (2020-10-28)
+
+
+### Bug Fixes
+
+* disable cors by default ([#3275](https://github.com/ipfs/js-ipfs/issues/3275)) ([3ff833d](https://github.com/ipfs/js-ipfs/commit/3ff833db6444a3e931db9b76bf74c3420e57ee02))
+* types path for ipfs-core ([#3356](https://github.com/ipfs/js-ipfs/issues/3356)) ([a6bcad5](https://github.com/ipfs/js-ipfs/commit/a6bcad5d9e63a74897715e6bf66ff213424faa66))
+* use fetch in electron renderer and electron-fetch in main ([#3251](https://github.com/ipfs/js-ipfs/issues/3251)) ([639d71f](https://github.com/ipfs/js-ipfs/commit/639d71f7ac8f66d9633e753a2a6be927e14a5af0))
+
+
+### Features
+
+* remove support for SECIO ([#3295](https://github.com/ipfs/js-ipfs/issues/3295)) ([5f5ef7e](https://github.com/ipfs/js-ipfs/commit/5f5ef7ee6cc6dc634cc6adbede0602492490a85d))
+* type check & generate defs from jsdoc ([#3281](https://github.com/ipfs/js-ipfs/issues/3281)) ([bbcaf34](https://github.com/ipfs/js-ipfs/commit/bbcaf34111251b142273a5675f4754ff68bd9fa0))
+
+
+### BREAKING CHANGES
+
+* this removes support for SECIO making Noise the only security transport.
+
+Closes https://github.com/ipfs/js-ipfs/issues/3210
+
+Co-authored-by: achingbrain <alex@achingbrain.net>
+* - CORS origins will need to be [configured manually](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-http-client/README.md#cors) before use with ipfs-http-client
+
+
+
+
+
 ## [0.50.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.50.1...ipfs@0.50.2) (2020-09-09)
 
 **Note:** Version bump only for package ipfs

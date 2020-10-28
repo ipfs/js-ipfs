@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "47.0.1",
+  "version": "48.0.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -54,7 +54,7 @@
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
-    "ipfs-core-utils": "^0.4.0",
+    "ipfs-core-utils": "^0.5.0",
     "ipfs-utils": "^4.0.0",
     "ipld-block": "^0.10.1",
     "ipld-dag-cbor": "^0.17.0",
@@ -82,13 +82,13 @@
     "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
     "go-ipfs": "^0.7.0",
-    "interface-ipfs-core": "^0.140.0",
+    "interface-ipfs-core": "^0.141.0",
+    "ipfs-core": "^0.1.0",
     "ipfsd-ctl": "^7.0.2",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "it-pipe": "^1.1.0",
     "nock": "^13.0.2",
-    "ipfs-core": "0.0.1",
     "typescript": "^4.0.3"
   },
   "engines": {
