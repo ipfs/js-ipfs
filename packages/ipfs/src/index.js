@@ -1,11 +1,7 @@
-/* eslint-disable jsdoc/valid-types */
 'use strict'
 
-const IPFS = require('ipfs-core')
-
-/**
- * @typedef { ReturnType<typeof IPFS['create']> extends Promise<infer U>
- * ? U : never } IPFS
- */
+// TODO: Fix TS issue that prevents use of require('ipfs-core') instead
+// https://github.com/ipfs/js-ipfs/issues/3358
+const IPFS = require('ipfs-core/src')
 
 module.exports = IPFS
