@@ -24,7 +24,7 @@ const BlockService = require('ipfs-block-service')
  * @typedef {import('.').IPLD} IPLD
  */
 const Ipld = require('ipld')
-const getDefaultIpldOptions = require('../runtime/ipld-nodejs')
+const getDefaultIpldOptions = require('../runtime/ipld')
 
 const createPreloader = require('../preload')
 const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
@@ -486,8 +486,8 @@ function createApi ({
  * @property {import('.').IPLDConfig} [ipld] - Modify the default IPLD config. This object
  * will be *merged* with the default config; it will not replace it. Check IPLD
  * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
- * on the available options. (Default: [`ipld-nodejs.js`]
- * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
+ * on the available options. (Default: [`ipld.js`]
+ * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
  * in browsers)
  * @property {object|Function} [libp2p] - The libp2p option allows you to build
  * your libp2p node by configuration, or via a bundle function. If you are
