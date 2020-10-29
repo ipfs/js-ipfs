@@ -12,7 +12,7 @@ async function main () {
   const ipfs = await createNode({
     ipld: {
       formats: [
-        ...Object.values(require('ipld-etherum'))
+        ...Object.values(require('ipld-ethereum'))
       ]
     }
   })
