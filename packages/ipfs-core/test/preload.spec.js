@@ -26,6 +26,19 @@ describe('preload', () => {
   after(() => cleanup())
   afterEach(() => MockPreloadNode.clearPreloadCids())
 
+  it('should not preload content multiple times', async function () {
+    this.timeout(50 * 1000)
+    const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()), { preload: false })
+
+    await all(ipfs.cat(cid))
+    await MockPreloadNode.waitForCids(cid)
+
+    // should not preload the second time
+    await MockPreloadNode.clearPreloadCids()
+    await all(ipfs.cat(cid))
+    await expect(MockPreloadNode.waitForCids(cid)).to.eventually.be.rejectedWith('Timed out waiting for CIDs to be preloaded')
+  })
+
   it('should preload content added with add', async function () {
     this.timeout(50 * 1000)
     const res = await ipfs.add(uint8ArrayFromString(nanoid()))
@@ -112,7 +125,7 @@ describe('preload', () => {
     }, {
       path: 'dir0/file2',
       content: uint8ArrayFromString(nanoid())
-    }], { wrapWithDirectory: true }))
+    }], { wrapWithDirectory: true, preload: false }))
 
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
@@ -147,12 +160,12 @@ describe('preload', () => {
 
     const [parent, link] = await Promise.all([createNode(), createNode()])
 
+    await MockPreloadNode.clearPreloadCids()
     const cid = await ipfs.object.patch.addLink(parent.cid, {
       Name: 'link',
       Hash: link.cid,
       Tsize: link.node.size
     })
-
     await MockPreloadNode.waitForCids(cid)
   })
 
@@ -171,6 +184,7 @@ describe('preload', () => {
       }]
     })
 
+    await MockPreloadNode.clearPreloadCids()
     const cid = await ipfs.object.patch.rmLink(parentCid, { name: 'link' })
     await MockPreloadNode.waitForCids(cid)
   })
@@ -178,6 +192,7 @@ describe('preload', () => {
   it('should preload content added with object.patch.setData', async function () {
     this.timeout(50 * 1000)
     const originalCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
+    await MockPreloadNode.clearPreloadCids()
     const patchedCid = await ipfs.object.patch.setData(originalCid, uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(patchedCid)
   })
@@ -185,13 +200,15 @@ describe('preload', () => {
   it('should preload content added with object.patch.appendData', async function () {
     this.timeout(50 * 1000)
     const originalCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
+    await MockPreloadNode.clearPreloadCids()
     const patchedCid = await ipfs.object.patch.appendData(originalCid, uint8ArrayFromString(nanoid()))
     await MockPreloadNode.waitForCids(patchedCid)
   })
 
   it('should preload content retrieved with object.get', async function () {
     this.timeout(50 * 1000)
-    const cid = await ipfs.object.new({ preload: false })
+    const cid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] }, { preload: false })
+    await MockPreloadNode.clearPreloadCids()
     await ipfs.object.get(cid)
     await MockPreloadNode.waitForCids(cid)
   })
@@ -205,6 +222,7 @@ describe('preload', () => {
   it('should preload content retrieved with block.get', async function () {
     this.timeout(50 * 1000)
     const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    await MockPreloadNode.clearPreloadCids()
     await ipfs.block.get(block.cid)
     await MockPreloadNode.waitForCids(block.cid)
   })
@@ -212,6 +230,7 @@ describe('preload', () => {
   it('should preload content retrieved with block.stat', async function () {
     this.timeout(50 * 1000)
     const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    await MockPreloadNode.clearPreloadCids()
     await ipfs.block.stat(block.cid)
     await MockPreloadNode.waitForCids(block.cid)
   })
@@ -228,39 +247,35 @@ describe('preload', () => {
     const obj = { test: nanoid() }
     const opts = { format: 'dag-cbor', hashAlg: 'sha2-256', preload: false }
     const cid = await ipfs.dag.put(obj, opts)
+    await MockPreloadNode.clearPreloadCids()
     await ipfs.dag.get(cid)
     await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content retrieved with files.ls', async () => {
-    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) })
+    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) }, { preload: false })
     const dirCid = res.cid
-    await MockPreloadNode.waitForCids(dirCid)
     await MockPreloadNode.clearPreloadCids()
     await all(ipfs.files.ls(`/ipfs/${dirCid}`))
     await MockPreloadNode.waitForCids(`/ipfs/${dirCid}`)
   })
 
   it('should preload content retrieved with files.ls by CID', async () => {
-    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) })
+    const res = await ipfs.add({ path: `/t/${nanoid()}`, content: uint8ArrayFromString(nanoid()) }, { preload: false })
     const dirCid = res.cid
-    await MockPreloadNode.waitForCids(dirCid)
-    await MockPreloadNode.clearPreloadCids()
     await all(ipfs.files.ls(dirCid))
     await MockPreloadNode.waitForCids(dirCid)
   })
 
   it('should preload content retrieved with files.read', async () => {
-    const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()))
-    await MockPreloadNode.waitForCids(cid)
+    const { cid } = await ipfs.add(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.read(`/ipfs/${cid}`)
     await MockPreloadNode.waitForCids(`/ipfs/${cid}`)
   })
 
   it('should preload content retrieved with files.stat', async () => {
-    const { cid: fileCid } = await ipfs.add(uint8ArrayFromString(nanoid()))
-    await MockPreloadNode.waitForCids(fileCid)
+    const { cid: fileCid } = await ipfs.add(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
     await ipfs.files.stat(`/ipfs/${fileCid}`)
     await MockPreloadNode.waitForCids(`/ipfs/${fileCid}`)
