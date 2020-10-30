@@ -1,6 +1,6 @@
-import IPFS from 'ipfs'
+const IPFS = require('ipfs')
 
-export default async function main () {
+async function main () {
   const node = await IPFS.create()
   const version = await node.version()
 
@@ -13,7 +13,6 @@ export default async function main () {
 
   console.log('Added file:', file.path, file.cid.toString())
   try {
-    // @ts-expect-error - CID is not a string
     file.cid.toUpperCase()
   } catch(error) {
 
@@ -27,3 +26,5 @@ export default async function main () {
 
   console.log('Added file contents:', content)
 }
+
+main()
