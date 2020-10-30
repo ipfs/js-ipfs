@@ -35,10 +35,9 @@
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Getting started](#getting-started)
-- [Lead Maintainer](#lead-maintainer)
-- [Table of Contents](#table-of-contents)
-- [Install](#install)
+- [Getting Started](#getting-started)
+  - [Install](#install)
+  - [Next Steps](#next-steps)
 - [Usage](#usage)
   - [API](#api)
   - [Additional Options](#additional-options)

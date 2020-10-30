@@ -5,7 +5,7 @@
 - [Clone and install dependencies](#clone-and-install-dependencies)
 - [Run tests](#run-tests)
 - [Lint](#lint)
-- [Build a dist version](#build-a-dist-version)
+- [Build types and minified browser bundles](#build-types-and-minified-browser-bundles)
 - [Publishing new versions](#publishing-new-versions)
 - [Using prerelease versions](#using-prerelease-versions)
 - [Testing strategy](#testing-strategy)
@@ -27,8 +27,6 @@ This will install [lerna](https://www.npmjs.com/package/lerna) and bootstrap the
 If later you add new dependencies to submodules or just wish to remove all the `node_modules`/`dist` folders and start again, run `npm run reset && npm install` from the root.
 
 See the scripts section of the root [`package.json`](./package.json) for more commands.
-
-## Run tests
 
 ## Run tests
 

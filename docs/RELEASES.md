@@ -1,6 +1,6 @@
-# Releases
+# Releases <!-- omit in toc -->
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Release Philosophy](#release-philosophy)
 - [Release Flow](#release-flow)
@@ -13,7 +13,7 @@
   - [Patch Releases](#patch-releases)
 - [Performing a Release](#performing-a-release)
 - [Release Version Numbers](#release-version-numbers)
-  - [Pre-Releases and Release Candidates](#pre-releases-and-release-candidates)
+  - [Release Candidates](#release-candidates)
 
 ## Release Philosophy
 

@@ -1,4 +1,7 @@
-# Configuring Delegate Routers
+# Configuring Delegate Routers  <!-- omit in toc -->
+
+- [What is it?](#what-is-it)
+- [How do I do it?](#how-do-i-do-it)
 
 ## What is it?
 

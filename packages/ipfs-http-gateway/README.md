@@ -1,6 +1,16 @@
-# ipfs-http-gateway
+# ipfs-http-gateway <!-- omit in toc -->
 
 > A web server that bridges HTTP to IPFS
+
+## Lead Maintainer <!-- omit in toc -->
+
+[Alex Potsides](http://github.com/achingbrain)
+
+## Table of Contents <!-- omit in toc -->
+
+- [Install](#install)
+- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
+- [License](#license)
 
 ## Install
 

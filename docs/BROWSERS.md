@@ -1,4 +1,11 @@
-# Using JS IPFS in the Browser
+# Using JS IPFS in the Browser  <!-- omit in toc -->
+
+## Table of Contents <!-- omit in toc -->
+
+- [Limitations of the Browser Context](#limitations-of-the-browser-context)
+- [Addressing Limitations](#addressing-limitations)
+- [Best Practices](#best-practices)
+- [Code Examples](#code-examples)
 
 JS IPFS is the implementation of IPFS protocol in JavaScript. It can run on any
 evergreen browser, inside a service or web worker, browser extensions, Electron and in Node.js.

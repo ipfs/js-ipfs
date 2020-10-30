@@ -1,6 +1,16 @@
-# ipfs-http-server
+# ipfs-http-server  <!-- omit in toc -->
 
 > The implementation of the IPFS RPC-over-HTTP API
+
+## Lead Maintainer <!-- omit in toc -->
+
+[Alex Potsides](http://github.com/achingbrain)
+
+## Table of Contents <!-- omit in toc -->
+
+- [Install](#install)
+- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
+- [License](#license)
 
 ## Install
 

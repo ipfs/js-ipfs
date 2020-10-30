@@ -39,19 +39,10 @@ If you want to integrate IPFS into your application without including a CLI or H
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Getting started](#getting-started)
-- [Install](#install)
-  - [Browser CDN](#browser-cdn)
-  - [Browser bundle](#browser-bundle)
-- [Documentation](#documentation)
-  - [Getting started & constructor options](#getting-started--constructor-options)
-  - [Core API](#core-api)
-  - [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
-  - [Different topics in detail](#different-topics-in-detail)
-  - [Questions?](#questions)
-  - [Need help?](#need-help)
+- [Getting Started](#getting-started)
+  - [Install](#install)
+  - [Next Steps](#next-steps)
 - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
-- [Packages](#packages)
 - [License](#license)
 
 ## Getting Started

@@ -1,4 +1,9 @@
-# IPFS Architecture
+# IPFS Architecture <!-- omit in toc -->
+
+## Table of Contents <!-- omit in toc -->
+
+- [Code Architecture and folder Structure](#code-architecture-and-folder-structure)
+  - [Source code](#source-code)
 
 ![](./img/architecture.png)
 

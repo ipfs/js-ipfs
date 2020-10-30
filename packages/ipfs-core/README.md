@@ -41,19 +41,11 @@ If you want to run IPFS as a standalone daemon process, see the [ipfs](https://g
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Getting started](#getting-started)
-- [Install](#install)
-- [Browser CDN](#browser-cdn)
-- [Browser bundle](#browser-bundle)
-- [Documentation](#documentation)
-- [Getting started & constructor options](#getting-started--constructor-options)
-- [Core API](#core-api)
-- [How to run IPFS in various environments](#how-to-run-ipfs-in-various-environments)
-- [Different topics in detail](#different-topics-in-detail)
-- [Questions?](#questions)
-- [Need help?](#need-help)
+- [Getting Started](#getting-started)
+- [Next Steps](#next-steps)
+  - [Browser CDN](#browser-cdn)
+  - [Browser bundle](#browser-bundle)
 - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
-- [Packages](#packages)
 - [License](#license)
 
 ## Getting Started
