@@ -17,9 +17,9 @@ const log = Object.assign(
 
 /**
  * @param {Object} [options]
- * @param {boolean} [options.enabled] - Whether to preload anything
- * @param {string[]} [options.addresses] - Which preload servers to use
- * @param {number} [options.cache] - How many CIDs to cache
+ * @param {boolean} [options.enabled = false] - Whether to preload anything
+ * @param {string[]} [options.addresses = []] - Which preload servers to use
+ * @param {number} [options.cache = 1000] - How many CIDs to cache
  */
 const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
