@@ -60,7 +60,7 @@
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
     "ipld-raw": "^6.0.0",
-    "iso-url": "^0.4.7",
+    "iso-url": "^1.0.0",
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
     "it-tar": "^1.2.2",
