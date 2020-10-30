@@ -1,11 +1,11 @@
-# Configuring Delegate Routers  <!-- omit in toc -->
+# Configuring Delegate Routers <!-- omit in toc -->
 
 - [What is it?](#what-is-it)
 - [How do I do it?](#how-do-i-do-it)
 
 ## What is it?
 
-Delegate routers peform tasks on behalf of nodes that may be missing functionality, so for example they may search the DHT for peers or content providers on behalf of IPFS implementations that do not have a DHT.
+Delegate routers perform tasks on behalf of nodes that may be missing functionality, so for example they may search the DHT for peers or content providers on behalf of IPFS implementations that do not have a DHT.
 
 The delegate node is started and the client of the delegate calls API methods using the IPFS HTTP API client.
 

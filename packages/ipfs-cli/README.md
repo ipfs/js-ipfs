@@ -1,4 +1,4 @@
-# ipfs-cli  <!-- omit in toc -->
+# ipfs-cli <!-- omit in toc -->
 
 > The implementation of the js-IPFS CLI
 
@@ -38,7 +38,6 @@ Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of
   c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
 - **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
-
 
 ## License
 

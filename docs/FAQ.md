@@ -1,4 +1,4 @@
-# FAQ  <!-- omit in toc -->
+# FAQ <!-- omit in toc -->
 
 ## Table of Contents <!-- omit in toc -->
 

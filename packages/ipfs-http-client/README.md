@@ -49,12 +49,9 @@
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
       - [Example](#example-1)
-  - [IPLD Formats](#ipld-formats)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
-  - [Importing a sub-module and usage](#importing-a-sub-module-and-usage)
   - [In a web browser](#in-a-web-browser)
-  - [CORS](#cors)
   - [Custom Headers](#custom-headers)
   - [Global Timeouts](#global-timeouts)
 - [Development](#development)
@@ -197,53 +194,6 @@ console.log(file)
 */
 ```
 
-### IPLD Formats
-
-By default an instance of the client supports the following [IPLD formats](https://github.com/ipld/interface-ipld-format), which are enough to do all core IPFS operations:
-
-  * [dag-pb](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-pb.md)
-  * [dag-cbor](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
-  * [raw](https://github.com/ipld/specs/issues/223)
-
-If your application requires support for extra codecs, you can configure them as follows:
-
-1. Configure the [IPLD layer](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionsipld) of your IPFS daemon to support the codec. This step is necessary so the node knows how to prepare data received over HTTP to be passed to IPLD for serialization:
-    ```javascript
-    const ipfs = require('ipfs')
-
-    const node = await ipfs({
-      ipld: {
-        // either specify them as part of the `formats` list
-        formats: [
-          require('my-format')
-        ],
-
-        // or supply a function to load them dynamically
-        loadFormat: async (format) => {
-          return require(format)
-        }
-      }
-    })
-2. Configure your IPFS HTTP API Client to support the codec. This is necessary so that the client can send the data to the IPFS node over HTTP:
-    ```javascript
-    const ipfsHttpClient = require('ipfs-http-client')
-
-    const client = ipfsHttpClient({
-      url: 'http://127.0.0.1:5002',
-      ipld: {
-        // either specify them as part of the `formats` list
-        formats: [
-          require('my-format')
-        ],
-
-        // or supply a function to load them dynamically
-        loadFormat: async (format) => {
-          return require(format)
-        }
-      }
-    })
-    ```
-
 ### Running the daemon with the right port
 
 To interact with the API, you need to have a local daemon running. It needs to be open on the right port. `5001` is the default, and is used in the examples below, but it can be set to whatever you need.
@@ -276,15 +226,6 @@ const ipfs = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' })
 
 // or specifying a specific API path
 const ipfs = ipfsClient({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' })
-```
-
-### Importing a sub-module and usage
-
-```javascript
-const bitswap = require('ipfs-http-client/src/bitswap')('/ip4/127.0.0.1/tcp/5001')
-
-const list = await bitswap.wantlist()
-// ...
 ```
 
 ### In a web browser
@@ -335,17 +276,6 @@ If you omit the host and port, the client will parse `window.host`, and use this
 ```js
 const ipfs = window.IpfsHttpClient()
 ```
-
-### CORS
-
-In a web browser IPFS HTTP client (either browserified or CDN-based) might encounter an error saying that the origin is not allowed. This would be a CORS ("Cross Origin Resource Sharing") failure: IPFS servers are designed to reject requests from unknown domains by default. You can whitelist the domain that you are calling from by changing your ipfs config like this:
-
-```console
-$ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin  '["http://example.com"]'
-$ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "POST", "GET"]'
-```
-
-If you are using `js-ipfs`, substitute `ipfs` for `jsipfs` in the commands above.
 
 ### Custom Headers
 

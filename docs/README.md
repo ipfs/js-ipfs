@@ -20,10 +20,12 @@ Whether accessed directly or over HTTP, both methods support the full [Core API]
 * [How to run js-IPFS in the browser](./BROWSERS.md)
 * [Running js-IPFS on the CLI](./CLI.md)
 * [js-IPFS configuration options](./CONFIG.md)
+* [How to configure CORS for use with the http client](./CORS.md)
 * [Running js-IPFS as a daemon](./DAEMON.md)
 * [Configuring Delegate Routers](./DELEGATE_ROUTERS.md)
 * [Running js-IPFS under Docker](./DOCKER.md)
 * [FAQ](./FAQ.md)
+* [How to configure additional IPLD codecs](./IPLD.md)
 * [Running js-IPFS in your application](./MODULE.md)
 * [How to get metrics out of js-IPFS](./MONITORING.md)
 

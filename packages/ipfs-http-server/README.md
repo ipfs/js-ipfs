@@ -1,4 +1,4 @@
-# ipfs-http-server  <!-- omit in toc -->
+# ipfs-http-server <!-- omit in toc -->
 
 > The implementation of the IPFS RPC-over-HTTP API
 
