@@ -16,6 +16,32 @@ $ npm install
 $ npm run build
 ```
 
+## IPLD Formats
+
+[IPLD](https://docs.ipld.io/) can read many datatypes, all of which are represented as blocks in the blockstore of your IPFS node.  In order to turn a block into a data structure it can use, IPLD uses different codecs to turn `Uint8Arrays` into JavaScript objects and back.
+
+By default IPFS is bundled with [dag-pb](https://www.npmjs.com/package/ipld-dag-pb), [dag-cbor](https://www.npmjs.com/package/ipld-dag-cbor) and [raw](https://www.npmjs.com/package/ipld-raw) codecs which allow reading UnixFS files and JavaScript objects from the blockstore.
+
+To configure other types, we must pass the `ipld.formats` option to the `IPFS.create()` function:
+
+```javascript
+const IPFS = require('ipfs')
+
+const node = await IPFS.create({
+  ipld: {
+    formats: [
+      require('ipld-git'),
+      require('ipld-zcash'),
+      require('ipld-bitcoin'),
+      ...Object.values(require('ipld-ethereum')) // this format exports multiple codecs so flatten into a list
+      // etc, etc
+    ]
+  }
+})
+```
+
+See [ipld/interface-ipld-format](https://github.com/ipld/interface-ipld-format) for a list of modules that implement the `ipld-format` interface.
+
 ## [create nodes to build a graph](./put.js)
 
 ## [retrieve a node from a graph](./get.js)

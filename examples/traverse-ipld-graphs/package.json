@@ -17,6 +17,8 @@
     "ipfs": "^0.51.0",
     "ipld-block": "^0.10.1",
     "ipld-dag-pb": "^0.20.0",
+    "ipld-git": "^0.6.1",
+    "ipld-ethereum": "^5.0.1",
     "multihashing-async": "^2.0.1"
   }
 }
