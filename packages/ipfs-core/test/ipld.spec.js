@@ -15,7 +15,7 @@ describe('ipld', function () {
     const res = await createNode({
       ipld: {
         formats: [
-          require('ipld-dag-pb')
+          require('ipld-git')
         ]
       }
     })
