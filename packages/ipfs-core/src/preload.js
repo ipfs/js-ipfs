@@ -6,6 +6,9 @@ const CID = require('cids')
 const shuffle = require('array-shuffle')
 const AbortController = require('native-abort-controller')
 const preload = require('./runtime/preload-nodejs')
+/** @type {typeof import('hashlru').default} */
+// @ts-ignore - hashlru has incorrect typedefs
+const hashlru = require('hashlru')
 
 const log = Object.assign(
   debug('ipfs:preload'),
@@ -14,12 +17,14 @@ const log = Object.assign(
 
 /**
  * @param {Object} [options]
- * @param {boolean} [options.enabled]
- * @param {string[]} [options.addresses]
+ * @param {boolean} [options.enabled] - Whether to preload anything
+ * @param {string[]} [options.addresses] - Which preload servers to use
+ * @param {number} [options.cache] - How many CIDs to cache
  */
 const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
   options.addresses = options.addresses || []
+  options.cache = options.cache || 1000
 
   if (!options.enabled || !options.addresses.length) {
     log('preload disabled')
@@ -34,6 +39,9 @@ const createPreloader = (options = {}) => {
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
+  // Avoid preloading the same CID over and over again
+  const cache = hashlru(options.cache)
+
   /**
    * @param {string|CID} path
    * @returns {Promise<void>}
@@ -45,6 +53,14 @@ const createPreloader = (options = {}) => {
       if (typeof path !== 'string') {
         path = new CID(path).toString()
       }
+
+      if (cache.has(path)) {
+        // we've preloaded this recently, don't preload it again
+        return
+      }
+
+      // make sure we don't preload this again any time soon
+      cache.set(path, true)
 
       const fallbackApiUris = shuffle(apiUris)
       let success = false
