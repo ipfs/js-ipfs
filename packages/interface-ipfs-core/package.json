@@ -41,7 +41,7 @@
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-importer": "^3.0.4",
     "ipfs-utils": "^4.0.0",
-    "ipld-block": "^0.10.1",
+    "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
     "ipns": "^0.8.0",
