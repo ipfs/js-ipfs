@@ -234,10 +234,7 @@ jobs:
       script:
         # Travis lets scripts continue even if previous steps fail: https://github.com/travis-ci/travis-ci/issues/1066
         - npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*} &&
-          rm -rf node_modules packages/*/node_modules &&
-          npx json -I -f ./lerna.json -e "this.packages.push('examples/*')" &&
-          npx json -I -f ./lerna.json -e "this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']" &&
-          npm install &&
+          npm run configure-examples &&
           npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc

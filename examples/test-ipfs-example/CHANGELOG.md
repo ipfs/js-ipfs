@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.3...test-ipfs-example@2.1.0) (2020-10-28)
+
+
+### Features
+
+* ipns publish example ([#3207](https://github.com/ipfs/js-ipfs/issues/3207)) ([91faec6](https://github.com/ipfs/js-ipfs/commit/91faec6e3d89b0d9883b8d7815c276d44048e739))
+* store pins in datastore instead of a DAG ([#2771](https://github.com/ipfs/js-ipfs/issues/2771)) ([64b7fe4](https://github.com/ipfs/js-ipfs/commit/64b7fe41738cbe96d5a9075f0c01156c6f889c40))
+
+
+
+
+
 ## [2.0.3](https://github.com/ipfs/js-ipfs/compare/test-ipfs-example@2.0.2...test-ipfs-example@2.0.3) (2020-05-29)
 
 **Note:** Version bump only for package test-ipfs-example

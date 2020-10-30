@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-gateway",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -35,7 +35,7 @@
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
-    "ipfs-core-utils": "^0.4.0",
+    "ipfs-core-utils": "^0.5.0",
     "ipfs-http-response": "^0.6.0",
     "is-ipfs": "^2.0.0",
     "it-all": "^1.0.4",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "aegir": "^28.0.0",
-    "file-type": "^15.0.1",
+    "file-type": "^16.0.0",
     "sinon": "^9.0.3",
     "typescript": "^4.0.3"
   }

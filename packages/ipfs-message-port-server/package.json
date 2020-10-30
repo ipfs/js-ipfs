@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -51,7 +51,7 @@
     "@types/it-all": "^1.0.0",
     "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
-    "ipfs-message-port-protocol": "^0.2.0",
+    "ipfs-message-port-protocol": "^0.3.0",
     "typescript": "^4.0.3"
   },
   "engines": {
