@@ -29,19 +29,11 @@
 
 > A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
-## Getting started
-
-* Look into the [examples](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
-* Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
-* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs.ipfs.io for tips, how-tos and more
-
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
 [Alex Potsides](http://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Getting started](#getting-started)
 - [Lead Maintainer](#lead-maintainer)
@@ -72,7 +64,11 @@
 - [Historical context](#historical-context)
 - [License](#license)
 
-## Install
+## Getting Started
+
+We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
+
+### Install
 
 This module uses node.js, and can be installed through npm:
 
@@ -82,13 +78,24 @@ npm install --save ipfs-http-client
 
 Both the Current and Active LTS versions of Node.js are supported. Please see [nodejs.org](https://nodejs.org/) for what these currently are.
 
+### Next Steps
+
+* Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
+* Look into the [examples](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
+* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
+* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
+* Check out https://docs.ipfs.io for tips, how-tos and more
+* See https://blog.ipfs.io for news and more
+* Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
+
 ## Usage
 
 ### API
 
 [![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
 
-> `js-ipfs-http-client` implements the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) - please follow the previous link to see the the methods available.
+> `js-ipfs-http-client` implements the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) - please follow the previous link to see the methods available.
 
 ### Additional Options
 
@@ -107,7 +114,6 @@ Call this on your client instance to return an object containing the `host`, `po
 
 Aside from the default export, `ipfs-http-client` exports various types and utilities that are included in the bundle:
 
-- [`Buffer`](https://www.npmjs.com/package/buffer)
 - [`multiaddr`](https://www.npmjs.com/package/multiaddr)
 - [`multibase`](https://www.npmjs.com/package/multibase)
 - [`multicodec`](https://www.npmjs.com/package/multicodec)

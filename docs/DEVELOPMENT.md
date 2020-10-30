@@ -1,5 +1,7 @@
 # Development <!-- omit in toc -->
 
+> Getting started with development on IPFS
+
 - [Clone and install dependencies](#clone-and-install-dependencies)
 - [Run tests](#run-tests)
 - [Lint](#lint)
@@ -28,18 +30,32 @@ See the scripts section of the root [`package.json`](./package.json) for more co
 
 ## Run tests
 
+## Run tests
+
 ```sh
 # run all the unit tests
 > npm test
 
+# run individual tests (findprovs)
+> npm run test -- --grep findprovs
+
 # run just IPFS tests in Node.js
-> npm run test:node
+> npm run test -- -- -- -t node
 
-# run just IPFS tests in a browser
-> npm run test:browser
+# run just IPFS tests in a headless browser
+> npm run test -- -- -- -t browser
 
-# run just IPFS tests in a webworker
-> npm run test:webworker
+# run the interface tests against ipfs-core
+> npm run test:interface:core
+
+# run the interface tests over HTTP against js-ipfs
+> npm run test:interface:http-js
+
+# run the interface tests over HTTP against go-ipfs from a browser
+> npm run test:interface:http-go -- -- -- -t browser
+
+# run the interop tests against js-ipfs and go-ipfs on the Electron main process
+> npm run test:interop -- -- -- -t electron-main
 ```
 
 More granular test suites can be run from each submodule.
@@ -54,7 +70,7 @@ Please run the linter before submitting a PR, the build will not pass if it fail
 > npm run lint
 ```
 
-## Build a dist version
+## Build types and minified browser bundles
 
 ```sh
 > npm run build

@@ -1,6 +1,6 @@
-# ipfs-cli
+# ipfs-http-gateway
 
-> The implementation of the js-IPFS CLI
+> A web server that bridges HTTP to IPFS
 
 ## Install
 
@@ -10,6 +10,7 @@ You probably don't need to install this module directly, use it by installing th
 $ npm install -g ipfs
 // npm install output
 $ jsipfs daemon
+$ curl http://localhost:9090/ipfs/Qmfoo
 ```
 
 ## Want to hack on IPFS?

@@ -100,19 +100,11 @@ Post `1.x.x` (future), MAJOR version number increments will contain BREAKING CHA
 
 We do not yet retroactively apply fixes to older releases (no Long Term Support releases for now), which means that we always recommend users to update to the latest, whenever possible.
 
-### Pre-Releases and Release Candidates
+### Release Candidates
 
-Prior to or during the early stages of a release cycle, js-ipfs may release a pre-release version for users who want to try out the "bleeding edge". This typically happens when a new major feature or breaking change lands in master. When this happens is entirely at the discretion of the Lead Maintainer.
+Every commit to master results in the publishing of a Release Candidate. These are made available for users who want to try out the "bleeding edge" and can be installed using version numbers with the form `x.y.z-rc.n` where `x`, `y`, and `z` are the usual MAJOR, MINOR and PATCH version numbers and `n` (starting at 0) which is the number of commits to master since the last full release.
 
-Pre-release version numbers take the form `x.y.z-pre.n`.
-
-Where `x`, `y`, and `z` are the usual MAJOR, MINOR and PATCH version numbers and `n` (starting at 0) increments by 1 for every pre-release version that is released.
-
-Following any pre-releases, at least one release candidate will be published during stage 1/2.
-
-Release candidate version numbers take the form `x.y.z-rc.n`.
-
-Where `x`, `y`, and `z` are the usual MAJOR, MINOR and PATCH version numbers and `n` (starting at 0) increments by 1 for every release candidate that is released.
+Alternatively the latest RC is tagged `next` on npm and can be installed using `npm install ipfs@next`.
 
 ---
 
