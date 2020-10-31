@@ -15,7 +15,7 @@ const Service = require('../utils/service')
  * @param {import('.').Keychain} config.keychain
  * @param {string} [config.pass]
  */
-module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService, print, pass }) => {
+module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService, mfsPreload, print, pass }) => {
   const start = async () => {
     const { bitswap, libp2p } = await Service.start(network, {
       peerId,
@@ -23,9 +23,14 @@ module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService
       print,
       pass
     })
-    ipns.startOnline({ keychain, libp2p, peerId, repo })
-    preload.start()
+
     blockService.setExchange(bitswap)
+
+    await Promise.all([
+      ipns.startOnline({ keychain, libp2p, peerId, repo }),
+      preload.start(),
+      mfsPreload.start()
+    ])
   }
 
   return start

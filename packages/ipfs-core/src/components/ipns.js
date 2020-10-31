@@ -65,13 +65,14 @@ class IPNSAPI {
    * @param {import('.').PeerId} config.peerId
    * @param {import('.').Keychain} config.keychain
    */
-  startOnline ({ libp2p, repo, peerId, keychain }) {
+  async startOnline ({ libp2p, repo, peerId, keychain }) {
     if (this.online != null) {
       throw new AlreadyInitializedError()
     }
 
     const routing = routingConfig({ libp2p, repo, peerId, options: this.options })
     const ipns = new IPNS(routing, repo.datastore, peerId, keychain, this.options)
+    await ipns.republisher.start()
     this.online = ipns
   }
 
@@ -79,6 +80,7 @@ class IPNSAPI {
     const ipns = this.online
     if (ipns) {
       await ipns.republisher.stop()
+      this.online = null
     }
   }
 

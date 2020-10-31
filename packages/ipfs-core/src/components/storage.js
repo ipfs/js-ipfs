@@ -2,7 +2,7 @@
 
 const log = require('debug')('ipfs:components:peer:storage')
 const createRepo = require('../runtime/repo-nodejs')
-
+const getDefaultConfig = require('../runtime/config-nodejs')
 const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
@@ -83,7 +83,7 @@ const loadRepo = async (repo, options) => {
  */
 const openRepo = async (repo) => {
   // If repo is closed attempt to open it.
-  if (!repo.closed) {
+  if (repo.closed) {
     try {
       await repo.open()
       return null
@@ -123,7 +123,7 @@ const initRepo = async (repo, options) => {
   // 3. Init new repo with provided `.config` and restored / initalized
   // peerd identity.
   const config = {
-    ...options.config,
+    ...mergeOptions(applyProfiles(getDefaultConfig(), options.profiles), options.config),
     Identity: identity
   }
   await repo.init(config)

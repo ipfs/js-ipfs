@@ -311,6 +311,7 @@ module.exports.profiles = profiles
  * @property {KeychainConfig} [Keychain]
  * @property {PubsubConfig} [Pubsub]
  * @property {SwarmConfig} [Swarm]
+ * @property {RoutingConfig} [Routing]
  *
  * @typedef {Object} AddressConfig
  * Contains information about various listener addresses to be used by this node.
@@ -500,6 +501,9 @@ module.exports.profiles = profiles
  * exceeded, will trigger a connection GC operation.
  *
  * {{LowWater?:number, HighWater?:number}} ConnMgr
+ *
+ * @typedef {Object} RoutingConfig
+ * @property {string} [Type]
  *
  * @typedef {import('../interface/basic').ToJSON} ToJSON
  * @typedef {import('.').AbortOptions} AbortOptions

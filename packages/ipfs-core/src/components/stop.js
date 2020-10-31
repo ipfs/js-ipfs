@@ -13,8 +13,8 @@ const Service = require('../utils/service')
  */
 module.exports = ({ network, preload, blockService, ipns, repo, mfsPreload }) => {
   const stop = async () => {
+    blockService.unsetExchange()
     await Promise.all([
-      blockService.unsetExchange(),
       preload.stop(),
       ipns.stop(),
       mfsPreload.stop(),

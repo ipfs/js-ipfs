@@ -8,6 +8,7 @@ const { DAGNode } = require('ipld-dag-pb')
 const UnixFs = require('ipfs-unixfs')
 const multicodec = require('multicodec')
 const initAssets = require('../runtime/init-assets-nodejs')
+const { AlreadyInitializedError } = require('../errors')
 
 const createStartAPI = require('./start')
 const createStopAPI = require('./stop')
@@ -176,8 +177,9 @@ class IPFS {
     })
   }
 
-  async init () {
+  async init () { // eslint-disable-line require-await
     // Just keep this around for backwards compatibility
+    throw new AlreadyInitializedError()
   }
 
   /**
@@ -188,6 +190,10 @@ class IPFS {
 
     // eslint-disable-next-line no-console
     const print = options.silent ? log : console.log
+
+    if (options.init === false) {
+      throw new Error('Creating a non-initalized repo is no longer supported')
+    }
 
     const init = {
       ...mergeOptions(initOptions(options), options),
@@ -231,7 +237,7 @@ module.exports = IPFS
  * @returns {InitOptions}
  */
 const initOptions = ({ init }) =>
-  init === 'object' ? init : {}
+  typeof init === 'object' ? init : {}
 
 /**
  * @param {IPFS} ipfs

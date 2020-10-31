@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @returns {import('../components/config').IPFSConfig}
+ */
 module.exports = () => ({
   Addresses: {
     Swarm: [
