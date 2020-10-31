@@ -94,11 +94,11 @@ function createMfs (options) {
 /**
  * @param {Object} context
  * @param {import('..').IPLD} context.ipld
- * @param {import('..').IPLDBlock} context.block
- * @param {import('..').IPFSBlockService} context.blockService
- * @param {import('..').IPFSRepo} context.repo
+ * @param {import('..').Block} context.block
+ * @param {import('..').BlockService} context.blockService
+ * @param {import('..').Repo} context.repo
  * @param {import('..').Preload} context.preload
- * @param {import('../init').ConstructorOptions<any, any>} context.options
+ * @param {import('..').Options} context.options
  * @returns {MFS}
  */
 module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {

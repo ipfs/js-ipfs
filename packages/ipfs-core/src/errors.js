@@ -44,6 +44,28 @@ class NotStartedError extends Error {
 NotStartedError.code = 'ERR_NOT_STARTED'
 exports.NotStartedError = NotStartedError
 
+class AlreadyStartingError extends Error {
+  constructor (message = 'cannot start, already startin') {
+    super(message)
+    this.name = 'AlreadyStartingError'
+    this.code = AlreadyStartingError.code
+  }
+}
+
+AlreadyStartingError.code = 'ERR_ALREADY_STARTING'
+exports.AlreadyStartingError = AlreadyStartingError
+
+class AlreadyStartedError extends Error {
+  constructor (message = 'cannot start, already started') {
+    super(message)
+    this.name = 'AlreadyStartedError'
+    this.code = AlreadyStartedError.code
+  }
+}
+
+AlreadyStartedError.code = 'ERR_ALREADY_STARTED'
+exports.AlreadyStartedError = AlreadyStartedError
+
 class NotEnabledError extends Error {
   constructor (message = 'not enabled') {
     super(message)

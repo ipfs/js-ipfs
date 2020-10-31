@@ -23,21 +23,24 @@ module.exports = configure((api, opts) => {
       throw new Error('Failed to put DAG node. Provide `format` AND `hashAlg` options')
     }
 
+    let encodingOptions
     if (options.cid) {
       const cid = new CID(options.cid)
-      options = {
+      encodingOptions = {
         ...options,
         format: multicodec.getName(cid.code),
         hashAlg: multihash.decode(cid.multihash).name
       }
       delete options.cid
+    } else {
+      encodingOptions = options
     }
 
     const settings = {
       format: 'dag-cbor',
       hashAlg: 'sha2-256',
       inputEnc: 'raw',
-      ...options
+      ...encodingOptions
     }
 
     const format = await load(settings.format)

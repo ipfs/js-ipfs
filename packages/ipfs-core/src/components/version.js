@@ -6,11 +6,15 @@ const { withTimeoutOption } = require('../utils')
 // gitHead is defined in published versions
 const meta = { gitHead: '', ...pkg }
 
+/**
+ * @param {Object} config
+ * @param {import('.').Repo} config.repo
+ */
 module.exports = ({ repo }) => {
   /**
    * Returns the implementation version
    *
-   * @param {import('../utils').AbortOptions} [options]
+   * @param {import('.').AbortOptions} [options]
    * @returns {Promise<Version>}
    * @example
    * ```js
@@ -40,7 +44,7 @@ module.exports = ({ repo }) => {
  * supported by this node
  *
  * @property {string} version
- * @property {string} repo
+ * @property {number} repo
  * @property {string} [commit]
  * @property {string} [interface-ipfs-core]
  * @property {string} [ipfs-http-client]

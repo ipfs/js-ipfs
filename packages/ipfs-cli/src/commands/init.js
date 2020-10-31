@@ -69,22 +69,20 @@ module.exports = {
     const IPFS = require('ipfs-core')
     const Repo = require('ipfs-repo')
 
-    const node = await IPFS.create({
-      repo: new Repo(repoPath),
-      init: false,
-      start: false,
-      config
-    })
-
     try {
-      await node.init({
-        algorithm: argv.algorithm,
-        bits: argv.bits,
-        privateKey: argv.privateKey,
-        emptyRepo: argv.emptyRepo,
-        profiles: argv.profile,
-        pass: argv.pass,
-        log: print
+      await IPFS.create({
+        repo: new Repo(repoPath),
+        init: {
+          algorithm: argv.algorithm,
+          bits: argv.bits,
+          privateKey: argv.privateKey,
+          emptyRepo: argv.emptyRepo,
+          profiles: argv.profile,
+          pass: argv.pass
+        },
+        start: false,
+        // @ts-ignore - Expects more than {}
+        config
       })
     } catch (err) {
       if (err.code === 'EACCES') {

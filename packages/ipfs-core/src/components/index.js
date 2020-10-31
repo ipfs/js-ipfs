@@ -1,322 +1,377 @@
 'use strict'
 
-/**
- * @typedef {ReturnType<import('./add')>} Add
- */
-exports.add = require('./add')
+const { mergeOptions } = require('../utils')
+const { isTest } = require('ipfs-utils/src/env')
+const log = require('debug')('ipfs')
+
+const { DAGNode } = require('ipld-dag-pb')
+const UnixFs = require('ipfs-unixfs')
+const multicodec = require('multicodec')
+const initAssets = require('../runtime/init-assets-nodejs')
+
+const createStartAPI = require('./start')
+const createStopAPI = require('./stop')
+const createDNSAPI = require('./dns')
+const createIsOnlineAPI = require('./is-online')
+const createResolveAPI = require('./resolve')
+const PinAPI = require('./pin')
+const IPNSAPI = require('./ipns')
+const NameAPI = require('./name')
+const createRefsAPI = require('./refs')
+const createRefsLocalAPI = require('./refs/local')
+const BitswapAPI = require('./bitswap')
+const BootstrapAPI = require('./bootstrap')
+const BlockAPI = require('./block')
+const CoreAPI = require('./core')
+const createVersionAPI = require('./version')
+const createIDAPI = require('./id')
+const createConfigAPI = require('./config')
+const DagAPI = require('./dag')
+const PinManagerAPI = require('./pin/pin-manager')
+const createPreloadAPI = require('../preload')
+const createMfsPreloadAPI = require('../mfs-preload')
+const createFilesAPI = require('./files')
+const KeyAPI = require('./key')
+const ObjectAPI = require('./object')
+const RepoAPI = require('./repo')
+const StatsAPI = require('./stats')
+const IPFSBlockService = require('ipfs-block-service')
+const createIPLD = require('./ipld')
+const Storage = require('./storage')
+const Network = require('./network')
+const Service = require('../utils/service')
+const SwarmAPI = require('./swarm')
+const createGCLockAPI = require('./gc-lock')
+const createPingAPI = require('./ping')
+const createDHTAPI = require('./dht')
+const createPubSubAPI = require('./pubsub')
+
+class IPFS {
+  /**
+   * @param {Object} config
+   * @param {Print} config.print
+   * @param {StorageAPI} config.storage
+   * @param {Options} config.options
+   */
+  constructor ({ print, storage, options }) {
+    const { peerId, repo, keychain, pass } = storage
+    const network = Service.create(Network)
+
+    const preload = createPreloadAPI(options.preload)
+
+    /** @type {BlockService} */
+    const blockService = new IPFSBlockService(storage.repo)
+    const ipld = createIPLD({ blockService, print, options: options.ipld })
+
+    const gcLock = createGCLockAPI({
+      path: repo.path,
+      repoOwner: options.repoOwner
+    })
+    const dns = createDNSAPI()
+    const isOnline = createIsOnlineAPI({ network })
+    const ipns = new IPNSAPI()
+    const dagReader = DagAPI.reader({ ipld, preload })
+
+    const name = new NameAPI({
+      dns,
+      ipns,
+      dagReader,
+      peerId,
+      isOnline,
+      keychain,
+      options
+    })
+    const resolve = createResolveAPI({ ipld, name })
+    const pinManager = new PinManagerAPI({ repo, dagReader })
+    const pin = new PinAPI({ gcLock, pinManager, dagReader })
+    const block = new BlockAPI({ blockService, preload, gcLock, pinManager, pin })
+    const dag = new DagAPI({ ipld, preload, gcLock, pin, dagReader })
+    const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
+      local: createRefsLocalAPI({ repo: storage.repo })
+    })
+    const { add, addAll, cat, get, ls } = new CoreAPI({
+      gcLock,
+      preload,
+      pin,
+      block,
+      ipld,
+      options: options.EXPERIMENTAL
+    })
+
+    const files = createFilesAPI({
+      ipld,
+      block,
+      blockService,
+      repo,
+      preload,
+      options
+    })
+
+    const mfsPreload = createMfsPreloadAPI({
+      files,
+      preload,
+      options: options.preload
+    })
+
+    this.preload = preload
+    this.name = name
+    this.ipld = ipld
+    this.ipns = ipns
+    this.pin = pin
+    this.resolve = resolve
+    this.block = block
+    this.refs = refs
+
+    this.start = createStartAPI({
+      network,
+      peerId,
+      repo,
+      blockService,
+      preload,
+      ipns,
+      mfsPreload,
+      print,
+      keychain,
+      pass
+    })
+
+    this.stop = createStopAPI({
+      network,
+      preload,
+      mfsPreload,
+      blockService,
+      ipns,
+      repo
+    })
+
+    this.dht = createDHTAPI({ network, repo })
+    this.pubsub = createPubSubAPI({ network, config: options.config })
+    this.dns = dns
+    this.isOnline = isOnline
+    this.id = createIDAPI({ network, peerId })
+    this.version = createVersionAPI({ repo })
+    this.bitswap = new BitswapAPI({ network })
+    this.bootstrap = new BootstrapAPI({ repo })
+    this.config = createConfigAPI({ repo })
+    this.ping = createPingAPI({ network })
+
+    this.add = add
+    this.addAll = addAll
+    this.cat = cat
+    this.get = get
+    this.ls = ls
+
+    this.dag = dag
+    this.files = files
+    this.key = new KeyAPI({ keychain })
+    this.object = new ObjectAPI({ ipld, preload, gcLock, dag })
+    this.repo = new RepoAPI({ gcLock, pin, repo, refs })
+    this.stats = new StatsAPI({ repo, network })
+    this.swarm = new SwarmAPI({ network })
+
+    // For the backwards compatibility
+    Object.defineProperty(this, 'libp2p', () => {
+      const net = network.try()
+      return net ? net.libp2p : undefined
+    })
+  }
+
+  async init () {
+    // Just keep this around for backwards compatibility
+  }
+
+  /**
+   * @param {Options} options
+   */
+  static async create (options = {}) {
+    options = mergeOptions(getDefaultOptions(), options)
+
+    // eslint-disable-next-line no-console
+    const print = options.silent ? log : console.log
+
+    const init = {
+      ...mergeOptions(initOptions(options), options),
+      print
+    }
+
+    const storage = await Storage.start(init)
+    const config = await storage.repo.config.getAll()
+
+    const ipfs = new IPFS({
+      storage,
+      print,
+      options: { ...options, config }
+    })
+
+    await ipfs.preload.start()
+
+    ipfs.ipns.startOffline(storage)
+    if (!storage.isInitialized && !init.emptyRepo) {
+      // add empty unixfs dir object (go-ipfs assumes this exists)
+      const cid = await addEmptyDir(ipfs)
+
+      log('adding default assets')
+      await initAssets({ addAll: ipfs.addAll, print })
+
+      log('initializing IPNS keyspace')
+      await ipfs.ipns.initializeKeyspace(storage.peerId.privKey, cid.toString())
+    }
+
+    if (options.start !== false) {
+      await ipfs.start()
+    }
+
+    return ipfs
+  }
+}
+module.exports = IPFS
 
 /**
- * @typedef {ReturnType<import('./add-all')>} AddAll
+ * @param {Options} options
+ * @returns {InitOptions}
  */
-
-exports.addAll = require('./add-all')
+const initOptions = ({ init }) =>
+  init === 'object' ? init : {}
 
 /**
- * @typedef {Object} Block
- * @property {ReturnType<import('./block/get')>} get
- * @property {ReturnType<import('./block/put')>} put
- * @property {ReturnType<import('./block/rm')>} rm
- * @property {ReturnType<import('./block/stat')>} stat
+ * @param {IPFS} ipfs
  */
-exports.block = {
-  get: require('./block/get'),
-  put: require('./block/put'),
-  rm: require('./block/rm'),
-  stat: require('./block/stat')
+const addEmptyDir = async (ipfs) => {
+  const node = new DAGNode(new UnixFs('directory').marshal())
+  const cid = await ipfs.dag.put(node, {
+    version: 0,
+    format: multicodec.DAG_PB,
+    hashAlg: multicodec.SHA2_256,
+    preload: false
+  })
+
+  await ipfs.pin.add(cid)
+
+  return cid
 }
 
 /**
- * @typedef {Object} BitSwap
- * @property {ReturnType<import('./bitswap/stat')>} stat
- * @property {ReturnType<import('./bitswap/unwant')>} unwant
- * @property {ReturnType<import('./bitswap/wantlist')>} wantlist
+ * @returns {Options}
  */
-exports.bitswap = {
-  stat: require('./bitswap/stat'),
-  unwant: require('./bitswap/unwant'),
-  wantlist: require('./bitswap/wantlist'),
-  wantlistForPeer: require('./bitswap/wantlist-for-peer')
-}
+const getDefaultOptions = () => ({
+  init: true,
+  start: true,
+  EXPERIMENTAL: {},
+  preload: {
+    enabled: !isTest, // preload by default, unless in test env
+    addresses: [
+      '/dns4/node0.preload.ipfs.io/https',
+      '/dns4/node1.preload.ipfs.io/https',
+      '/dns4/node2.preload.ipfs.io/https',
+      '/dns4/node3.preload.ipfs.io/https'
+    ]
+  }
+})
 
 /**
- * @typedef {Object} Bootstrap
- * @property {ReturnType<import('./bootstrap/add')>} add
- * @property {ReturnType<import('./bootstrap/list')>} list
- * @property {ReturnType<import('./bootstrap/rm')>} rm
- */
-exports.bootstrap = {
-  add: require('./bootstrap/add'),
-  clear: require('./bootstrap/clear'),
-  list: require('./bootstrap/list'),
-  reset: require('./bootstrap/reset'),
-  rm: require('./bootstrap/rm')
-}
-
-/**
- * @typedef {ReturnType<import('./cat')>} Cat
- */
-exports.cat = require('./cat')
-
-/**
- * @typedef {ReturnType<import('./config')>} Config
- */
-exports.config = require('./config')
-
-/**
- * @typedef {Object} DAG
- * @property {ReturnType<import('./dag/get')>} get
- * @property {ReturnType<import('./dag/put')>} put
- * @property {ReturnType<import('./dag/resolve')>} resolve
- * @property {ReturnType<import('./dag/tree')>} tree
- */
-exports.dag = {
-  get: require('./dag/get'),
-  put: require('./dag/put'),
-  resolve: require('./dag/resolve'),
-  tree: require('./dag/tree')
-}
-
-/** @typedef {ReturnType<import('./dht')>} DHT */
-exports.dht = require('./dht')
-
-/** @typedef {ReturnType<import('./dns')>} DNS */
-exports.dns = require('./dns')
-
-/** @typedef {ReturnType<import('./files')>} Files */
-exports.files = require('./files')
-
-/** @typedef {ReturnType<import('./get')>} Get */
-exports.get = require('./get')
-
-/** @typedef {ReturnType<import('./id')>} ID */
-exports.id = require('./id')
-
-/** @typedef {ReturnType<import('./init')>} Init */
-exports.init = require('./init')
-
-/** @typedef {ReturnType<import('./is-online')>} IsOnline */
-exports.isOnline = require('./is-online')
-
-/**
- * @typedef {Object} Key
- * @property {ReturnType<import('./key/export')>} export
- * @property {ReturnType<import('./key/gen')>} gen
- * @property {ReturnType<import('./key/import')>} import
- * @property {ReturnType<import('./key/info')>} info
- * @property {ReturnType<import('./key/list')>} list
- * @property {ReturnType<import('./key/rename')>} rename
- * @property {ReturnType<import('./key/rm')>} rm
- */
-
-exports.key = {
-  export: require('./key/export'),
-  gen: require('./key/gen'),
-  import: require('./key/import'),
-  info: require('./key/info'),
-  list: require('./key/list'),
-  rename: require('./key/rename'),
-  rm: require('./key/rm')
-}
-
-/** @typedef {ReturnType<import('./libp2p')>} LibP2P */
-exports.libp2p = require('./libp2p')
-
-/** @typedef {ReturnType<import('./ls')>} LS */
-exports.ls = require('./ls')
-
-/**
- * @typedef {Object} Name
- * @property {ReturnType<import('./name/publish')>} publish
- * @property {ReturnType<import('./name/resolve')>} resolve
- * @property {NamePubSub} pubsub
+ * @typedef {StorageOptions & IPFSOptions} Options
  *
- * @typedef {Object} NamePubSub
- * @property {ReturnType<import('./name/pubsub/cancel')>} cancel
- * @property {ReturnType<import('./name/pubsub/state')>} state
- * @property {ReturnType<import('./name/pubsub/subs')>} subs
- */
-
-exports.name = {
-  publish: require('./name/publish'),
-  pubsub: {
-    cancel: require('./name/pubsub/cancel'),
-    state: require('./name/pubsub/state'),
-    subs: require('./name/pubsub/subs')
-  },
-  resolve: require('./name/resolve')
-}
-
-/**
- * @typedef {Object} ObjectAPI
- * @property {ReturnType<import('./object/data')>} data
- * @property {ReturnType<import('./object/get')>} get
- * @property {ReturnType<import('./object/links')>} links
- * @property {ReturnType<import('./object/new')>} new
- * @property {ReturnType<import('./object/put')>} put
- * @property {ReturnType<import('./object/stat')>} stat
- * @property {ObjectPath} patch
+ * @typedef {Object} IPFSOptions
+ * Options argument can be used to specify advanced configuration.
+ * @property {InitOptions|boolean} [init=true] - Perform repo initialization steps when creating
+ * the IPFS node.
+ * Note that *initializing* a repo is different from creating an instance of
+ * [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor
+ * sets many special properties when initializing a repo, so you should usually
+ * not try and call `repoInstance.init()` yourself.
+ * @property {boolean} [start=true] - If `false`, do not automatically
+ * start the IPFS node. Instead, you’ll need to manually call
+ * [`node.start()`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#nodestart)
+ * yourself.
+ * @property {string} [pass=null] - A passphrase to encrypt/decrypt your keys.
+ * @property {boolean} [silent=false] - Prevents all logging output from the
+ * IPFS node. (Default: `false`)
+ * @property {RelayOptions} [relay={ enabled: true, hop: { enabled: false, active: false } }]
+ * - Configure circuit relay (see the [circuit relay tutorial]
+ * (https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying)
+ * to learn more).
+ * @property {boolean} [offline=false] - Run ipfs node offline. The node does
+ * not connect to the rest of the network but provides a local API.
+ * @property {PreloadOptions} [preload] - Configure remote preload nodes.
+ * The remote will preload content added on this node, and also attempt to
+ * preload objects requested by this node.
+ * @property {ExperimentalOptions} [EXPERIMENTAL] - Enable and configure
+ * experimental features.
+ * @property {IPFSConfig} [config] - Modify the default IPFS node config. This
+ * object will be *merged* with the default config; it will not replace it.
+ * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
+ * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js)
+ * in browsers)
+ * @property {IPLDOptions} [ipld] - Modify the default IPLD config. This object
+ * will be *merged* with the default config; it will not replace it. Check IPLD
+ * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
+ * on the available options. (Default: [`ipld-nodejs.js`]
+ * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
+ * in browsers)
+ * @property {LibP2POptions|Function} [libp2p] - The libp2p option allows you to build
+ * your libp2p node by configuration, or via a bundle function. If you are
+ * looking to just modify the below options, using the object format is the
+ * quickest way to get the default features of libp2p. If you need to create a
+ * more customized libp2p node, such as with custom transports or peer/content
+ * routers that need some of the ipfs data on startup, a custom bundle is a
+ * great way to achieve this.
+ * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+ * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
+ * for the list of options libp2p supports.
+ * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
+ * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
+ * browsers.
+ * @property {boolean} [repoOwner]
  *
- * @typedef {Object} ObjectPath
- * @property {ReturnType<import('./object/patch/add-link')>} addLink
- * @property {ReturnType<import('./object/patch/rm-link')>} rmLink
- * @property {ReturnType<import('./object/patch/append-data')>} appendData
- * @property {ReturnType<import('./object/patch/set-data')>} setData
- */
-exports.object = {
-  data: require('./object/data'),
-  get: require('./object/get'),
-  links: require('./object/links'),
-  new: require('./object/new'),
-  patch: {
-    addLink: require('./object/patch/add-link'),
-    appendData: require('./object/patch/append-data'),
-    rmLink: require('./object/patch/rm-link'),
-    setData: require('./object/patch/set-data')
-  },
-  put: require('./object/put'),
-  stat: require('./object/stat')
-}
-
-/**
- * @typedef Pin
- * @property {ReturnType<import("./pin/add")>} add
- * @property {ReturnType<import("./pin/add-all")>} addAll
- * @property {ReturnType<import("./pin/ls")>} ls
- * @property {ReturnType<import("./pin/rm")>} rm
- */
-exports.pin = {
-  add: require('./pin/add'),
-  addAll: require('./pin/add-all'),
-  ls: require('./pin/ls'),
-  rm: require('./pin/rm'),
-  rmAll: require('./pin/rm-all')
-}
-
-/**
- * @typedef {ReturnType<import('./ping')>} Ping
- */
-exports.ping = require('./ping')
-
-/**
- * @typedef {ReturnType<import('./pubsub')>} PubSub
- */
-exports.pubsub = require('./pubsub')
-
-/**
- * @typedef {ReturnType<import('./refs')>} Refs
- * @typedef {ReturnType<import('./refs/local')>} LocalRefs
- * @typedef {Refs & {local:LocalRefs}} RefsWithLocal
- */
-exports.refs = Object.assign(require('./refs'), { local: require('./refs/local') })
-
-/**
- * @typedef {Object} Repo
- * @property {ReturnType<import("./repo/gc")>} gc
- * @property {ReturnType<import("./repo/stat")>} stat
- * @property {ReturnType<import("./repo/version")>} version
- */
-exports.repo = {
-  gc: require('./repo/gc'),
-  stat: require('./repo/stat'),
-  version: require('./repo/version')
-}
-
-/** @typedef {ReturnType<import('./resolve')>} Resolve */
-exports.resolve = require('./resolve')
-
-/** @typedef {ReturnType<import('./start')>} Start */
-exports.start = require('./start')
-
-/**
- * @typedef {Object} Stats
- * @property {ReturnType<import('./stats/bw')>} bw
- */
-exports.stats = {
-  bw: require('./stats/bw')
-}
-
-/** @typedef {ReturnType<import('./stop')>} Stop */
-exports.stop = require('./stop')
-
-/**
- * @typedef {Object} Swarm
- * @property {ReturnType<import('./swarm/addrs')>} addrs
- * @property {ReturnType<import('./swarm/connect')>} connect
- * @property {ReturnType<import('./swarm/disconnect')>} disconnect
- * @property {ReturnType<import('./swarm/local-addrs')>} localAddrs
- * @property {ReturnType<import('./swarm/peers')>} peers
- */
-exports.swarm = {
-  addrs: require('./swarm/addrs'),
-  connect: require('./swarm/connect'),
-  disconnect: require('./swarm/disconnect'),
-  localAddrs: require('./swarm/local-addrs'),
-  peers: require('./swarm/peers')
-}
-
-/**
- * @typedef {ReturnType<import('./version')>} Version
- */
-exports.version = require('./version')
-
-/**
- * @typedef {ReturnType<import('../preload')>} Preload
- * @typedef {RWLock} GCLock
+ * @typedef {object} ExperimentalOptions
+ * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
+ * @property {boolean} [sharding] - Enable directory sharding. Directories that have many child objects will be represented by multiple DAG nodes instead of just one. It can improve lookup performance when a directory has several thousand files or more. (Default: `false`)
  *
- * @typedef {Object} RWLock
- * @property {() => Promise<Lock>} readLock
- * @property {() => Promise<Lock>} writeLock
  *
- * @typedef {() => void} Lock
+ * @typedef {import('./storage').StorageOptions} StorageOptions
+ * @typedef {import('../preload').Options} PreloadOptions
+ * @typedef {import('./ipld').Options} IPLDOptions
+ * @typedef {import('./libp2p').Options} LibP2POptions
  *
- * // External library types
- * @typedef {import('cids')} CID
+ * @typedef {object} RelayOptions
+ * @property {boolean} [enabled] - Enable circuit relay dialer and listener. (Default: `true`)
+ * @property {object} [hop]
+ * @property {boolean} [hop.enabled] - Make this node a relay (other nodes can connect *through* it). (Default: `false`)
+ * @property {boolean} [hop.active] - Make this an *active* relay node. Active relay nodes will attempt to dial a destin
+ *
+ * @typedef {import('./storage').InitOptions} InitOptions
+ *
+ * @typedef {import('./storage')} StorageAPI
+ *
+ * @typedef {import('./network').Options} NetworkOptions
+ * @typedef {Service<NetworkOptions, Network>} NetworkService
+ * @typedef {import('./storage').Repo} Repo
+ * @typedef {(...args:any[]) => void} Print
+ * @typedef {import('./storage').Keychain} Keychain
+ * @typedef {import('./config').IPFSConfig} IPFSConfig
+ *
  * @typedef {import('peer-id')} PeerId
+ * @typedef {import('./libp2p').LibP2P} LibP2P
+ * @typedef {import('./pin/pin-manager')} PinManager
+ * @typedef {import('../interface/block-service').BlockService} BlockService
+ * @typedef {import('../interface/bitswap').Bitswap} BitSwap
+ * @typedef {import('./ipld').IPLD} IPLD
+ * @typedef {import('./gc-lock').GCLock} GCLock
+ * @typedef {import('../preload').Preload} Preload
+ * @typedef {import('../mfs-preload').MFSPreload} MFSPreload
+ * @typedef {import('./ipns')} IPNS
+ * @typedef {import('./pin')} Pin
+ * @typedef {import('./block')} Block
+ * @typedef {import('./dag').DagReader} DagReader
+ * @typedef {import('./dag')} Dag
+ * @typedef {ReturnType<typeof import('./files')>} Files
+ * @typedef {ReturnType<typeof createIsOnlineAPI>} IsOnline
+ * @typedef {ReturnType<typeof createResolveAPI>} Resolve
+ * @typedef {ReturnType<typeof createRefsAPI>} Refs
+ * @typedef {ReturnType<typeof createDNSAPI>} DNS
+ * @typedef {import('./name')} Name
+ * @typedef {import('../utils').AbortOptions} AbortOptions
+ * @typedef {import('cids')} CID
  * @typedef {import('multiaddr')} Multiaddr
- *
- * // Justs pretending these things are typed & hopefully in the future they
- * // wil be.
- * @typedef {import('ipld')} IPLD
- * @typedef {import('ipld').Config} IPLDConfig
- * @typedef {import('ipld-block')} IPLDBlock
- * @typedef {import('ipfs-repo')} IPFSRepo
- * @typedef {import('ipfs-block-service')} IPFSBlockService
- * @typedef {import('ipfs-bitswap')} IPFSBitSwap
- * @typedef {import('libp2p')} LibP2PService
- * @typedef {import('libp2p').Config} LibP2PConfig
- */
-
-/**
- * @typedef {Object} IPFSAPI
- * @property {Add} add
- * @property {BitSwap} bitswap
- * @property {Block} block
- * @property {Bootstrap} bootstrap
- * @property {Cat} cat
- * @property {Config} config
- * @property {DAG} dag
- * @property {DHT} dht
- * @property {DNS} dns
- * @property {Files} files
- * @property {Get} get
- * @property {ID} id
- * @property {IsOnline} isOnline
- * @property {Key} key
- * @property {LibP2P} libp2p
- * @property {LS} ls
- * @property {Name} name
- * @property {ObjectAPI} object
- * @property {Pin} pin
- * @property {Ping} ping
- * @property {PubSub} pubsub
- * @property {Refs} refs
- * @property {Repo} repo
- * @property {Resolve} resolve
- * @property {Stats} stats
- * @property {Swarm} swarm
- * @property {Version} version
- *
- * @property {Init} init
- * @property {Start} start
- * @property {Stop} stop
+ * @typedef {import('./ipld').Block} IPLDBlock
  */

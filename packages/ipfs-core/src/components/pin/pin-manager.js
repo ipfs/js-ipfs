@@ -49,14 +49,25 @@ const PinTypes = {
 }
 
 class PinManager {
-  constructor (repo, dag) {
+  /**
+   * @param {Object} config
+   * @param {import('.').Repo} config.repo
+   * @param {import('.').DagReader} config.dagReader
+   */
+  constructor ({ repo, dagReader }) {
     this.repo = repo
-    this.dag = dag
+    this.dag = dagReader
     this.log = debug('ipfs:pin')
     this.directPins = new Set()
     this.recursivePins = new Set()
   }
 
+  /**
+   * @private
+   * @param {CID} cid
+   * @param {Object} [options]
+   * @param {boolean} [options.preload]
+   */
   async * _walkDag (cid, { preload = false }) {
     const { value: node } = await this.dag.get(cid, { preload })
 
@@ -73,6 +84,11 @@ class PinManager {
     }
   }
 
+  /**
+   * @param {CID} cid
+   * @param {PinOptions & AbortOptions} [options]
+   * @returns {Promise<void>}
+   */
   async pinDirectly (cid, options = {}) {
     await this.dag.get(cid, options)
 
@@ -95,10 +111,21 @@ class PinManager {
     return this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
   }
 
-  async unpin (cid) { // eslint-disable-line require-await
+  /**
+   * @param {CID} cid
+   * @param {AbortOptions} [options]
+   * @returns {Promise<void>}
+   */
+  // eslint-disable-next-line require-await
+  async unpin (cid, options) {
     return this.repo.pins.delete(cidToKey(cid))
   }
 
+  /**
+   * @param {CID} cid
+   * @param {PreloadOptions & PinOptions & AbortOptions} [options]
+   * @returns {Promise<void>}
+   */
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
 
@@ -121,7 +148,11 @@ class PinManager {
     await this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
   }
 
-  async * directKeys () {
+  /**
+   * @param {AbortOptions} [options]
+   * @returns AsyncIterable<{ cid: CID, metadata: any }>
+   */
+  async * directKeys (options) {
     for await (const entry of this.repo.pins.query({
       filters: [(entry) => {
         const pin = cbor.decode(entry.value)
@@ -141,7 +172,11 @@ class PinManager {
     }
   }
 
-  async * recursiveKeys () {
+  /**
+   * @param {AbortOptions} [options]
+   * @returns {AsyncIterable<{ cid: CID, metadata: any }>}
+   */
+  async * recursiveKeys (options) {
     for await (const entry of this.repo.pins.query({
       filters: [(entry) => {
         const pin = cbor.decode(entry.value)
@@ -184,7 +219,12 @@ class PinManager {
     }
   }
 
-  async isPinnedWithType (cid, types) {
+  /**
+   * @param {CID} cid
+   * @param {PinQueryType|PinQueryType[]} types
+   * @param {AbortOptions} [options]
+   */
+  async isPinnedWithType (cid, types, options) {
     if (!Array.isArray(types)) {
       types = [types]
     }
@@ -256,18 +296,38 @@ class PinManager {
     }
   }
 
+  /**
+   * @param {CID} cid
+   * @param {PreloadOptions & AbortOptions} options
+   */
   async fetchCompleteDag (cid, options) {
     await all(this._walkDag(cid, { preload: options.preload }))
   }
 
-  // Throws an error if the pin type is invalid
+  /**
+   * Throws an error if the pin type is invalid
+   *
+   * @param {any} type
+   * @returns {type is PinType}
+   */
   static checkPinType (type) {
     if (typeof type !== 'string' || !Object.keys(PinTypes).includes(type)) {
       throw invalidPinTypeErr(type)
     }
+    return true
   }
 }
 
 PinManager.PinTypes = PinTypes
 
 module.exports = PinManager
+
+/**
+ * @typedef {Object} PinOptions
+ * @property {any} [metadata]
+ *
+ * @typedef {Object} PreloadOptions
+ * @property {boolean} [preload]
+ *
+ * @typedef {import('.').AbortOptions} AbortOptions
+ */

@@ -10,10 +10,20 @@ const Key = require('interface-datastore').Key
 const { TimeoutError } = require('./errors')
 const errCode = require('err-code')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+/** @type {typeof Object.assign} */
+const mergeOptions = require('merge-options')
+
+exports.mergeOptions = mergeOptions
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 
 exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
+
+exports.MFS_FILE_TYPES = {
+  file: 0,
+  directory: 1,
+  'hamt-sharded-directory': 1
+}
 exports.MFS_ROOT_KEY = new Key('/local/filesroot')
 exports.MFS_MAX_CHUNK_SIZE = 262144
 exports.MFS_MAX_LINKS = 174
@@ -67,7 +77,7 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('./components').DAG} dag - The IPFS dag api
+ * @param {import('./components').DagReader} dag
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
@@ -314,8 +324,19 @@ function withTimeoutOption (fn, optionsArgIndex) {
   }
 }
 
+const withTimeout = withTimeoutOption(
+  /**
+   * @template T
+   * @param {Promise<T>|T} promise
+   * @param {AbortOptions} [_options]
+   * @returns {Promise<T>}
+   */
+  async (promise, _options) => await promise
+)
+
 exports.normalizePath = normalizePath
 exports.normalizeCidPath = normalizeCidPath
 exports.resolvePath = resolvePath
 exports.mapFile = mapFile
 exports.withTimeoutOption = withTimeoutOption
+exports.withTimeout = withTimeout

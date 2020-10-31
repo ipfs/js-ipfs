@@ -23,6 +23,8 @@ module.exports = configure(api => {
         mhlen: length,
         version: data.cid.version
       }
+      // @ts-ignore - data is typed as block so TS complains about
+      // Uint8Array assignment.
       data = data.data
     } else if (options.cid) {
       const cid = new CID(options.cid)

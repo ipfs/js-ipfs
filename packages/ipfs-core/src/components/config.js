@@ -6,25 +6,56 @@ const log = require('debug')('ipfs:core:config')
 
 /**
  * @param {Object} config
- * @param {import('.').IPFSRepo} config.repo
- * @returns {Config}
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ repo }) => {
   return {
-    getAll: withTimeoutOption(repo.config.getAll),
-    get: withTimeoutOption((key, options) => {
-      if (!key) {
-        return Promise.reject(new Error('key argument is required'))
-      }
-
-      return repo.config.get(key, options)
-    }),
-    set: withTimeoutOption(repo.config.set),
-    replace: withTimeoutOption(repo.config.replace),
+    getAll: withTimeoutOption(getAll),
+    get: withTimeoutOption(get),
+    set: withTimeoutOption(set),
+    replace: withTimeoutOption(replace),
     profiles: {
       apply: withTimeoutOption(applyProfile),
       list: withTimeoutOption(listProfiles)
     }
+  }
+
+  /**
+   * @param {AbortOptions} [options]
+   */
+  async function getAll (options = {}) {
+    return await repo.config.getAll()
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @param {AbortOptions} [options]
+   */
+  async function get (key, options) {
+    if (!key) {
+      return Promise.reject(new Error('key argument is required'))
+    }
+
+    return await repo.config.get(key, options)
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @param {ToJSON} value
+   * @param {AbortOptions} [options]
+   */
+  async function set (key, value, options) {
+    return await repo.config.set(key, value, options)
+  }
+
+  /**
+   * @param {IPFSConfig} value
+   * @param {AbortOptions} [options]
+   */
+  async function replace (value, options) {
+    return await repo.config.replace(value, options)
   }
 
   /**
@@ -51,6 +82,7 @@ module.exports = ({ repo }) => {
       }
 
       // Scrub private key from output
+      // @ts-ignore `oldCfg.Identity` maybe undefined
       delete oldCfg.Identity.PrivKey
       delete newCfg.Identity.PrivKey
 
@@ -190,10 +222,10 @@ module.exports.profiles = profiles
  * Returns the currently being used config. If the daemon is off, it returns
  * the stored config.
  *
- * @param {string} [key] - The key of the value that should be fetched from the
+ * @param {string} key - The key of the value that should be fetched from the
  * config file. If no key is passed, then the whole config will be returned.
  * @param {AbortOptions} [options]
- * @returns {Promise<JSON>} - An object containing the configuration of the IPFS node
+ * @returns {Promise<ToJSON>} - An object containing the configuration of the IPFS node
  * @example
  * const config = await ipfs.config.get('Addresses.Swarm')
  * console.log(config)
@@ -216,7 +248,7 @@ module.exports.profiles = profiles
  * an effect.
  *
  * @param {string} key - The key of the value that should be added or replaced.
- * @param {JSON} value - The value to be set.
+ * @param {ToJSON} value - The value to be set.
  * @param {AbortOptions} [options]
  * @returns {Promise<void>} - Promise succeeds if config change succeeded,
  * otherwise fails with error.
@@ -231,7 +263,7 @@ module.exports.profiles = profiles
  * i.e: if a config.replace changes the multiaddrs of the Swarm, Swarm will
  * have to be restarted manually for the changes to take an effect.
  *
- * @param {Partial<IPFSConfig>} value - A new configuration.
+ * @param {IPFSConfig} value - A new configuration.
  * @param {AbortOptions} [options]
  * @returns {Promise<void>}
  * @example
@@ -262,15 +294,12 @@ module.exports.profiles = profiles
  * @callback ApplyProfile
  * List available config profiles
  * @param {string} name
- * @param {ApplyOptions} [options]
+ * @param {ApplyOptions & AbortOptions} [options]
  * @returns {Promise<{original: IPFSConfig, updated: IPFSConfig}>}
  *
- * @typedef {Object} ApplyOptionsExt
+ * @typedef {Object} ApplyOptions
  * @property {boolean} [dryRun=false] - If true does not apply the profile
- * @typedef {AbortOptions & ApplyOptionsExt} ApplyOptions
  *
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
  *
  * @typedef {Object} IPFSConfig
  * @property {AddressConfig} Addresses
@@ -471,4 +500,7 @@ module.exports.profiles = profiles
  * exceeded, will trigger a connection GC operation.
  *
  * {{LowWater?:number, HighWater?:number}} ConnMgr
+ *
+ * @typedef {import('../interface/basic').ToJSON} ToJSON
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

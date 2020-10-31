@@ -5,10 +5,10 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBlockService} config.blockService
- * @param {import('..').Preload} config.preload
+ * @param {import('.').BlockService} config.blockService
+ * @param {import('.').Preload} config.preload
  */
-module.exports = ({ blockService, preload }) => {
+module.exports = ({ preload, blockService }) => {
   /**
    * Get a raw IPFS block.
    *
@@ -22,14 +22,14 @@ module.exports = ({ blockService, preload }) => {
    * console.log(block.data)
    * ```
    */
-  async function get (cid, options = {}) { // eslint-disable-line require-await
+  async function get (cid, options = {}) {
     cid = cleanCid(cid)
 
     if (options.preload !== false) {
       preload(cid)
     }
 
-    return blockService.get(cid, options)
+    return await blockService.get(cid, options)
   }
 
   return withTimeoutOption(get)
@@ -39,7 +39,7 @@ module.exports = ({ blockService, preload }) => {
  * @typedef {Object} GetOptions
  * @property {boolean} [preload=true]
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').IPLDBlock} IPLDBlock
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').IPLDBlock} IPLDBlock
  */

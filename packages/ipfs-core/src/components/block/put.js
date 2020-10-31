@@ -8,12 +8,12 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBlockService} config.blockService
- * @param {import('..').Pin} config.pin
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').Preload} config.preload
+ * @param {import('.').BlockService} config.blockService
+ * @param {import('.').Pin} config.pin
+ * @param {import('.').GCLock} config.gcLock
+ * @param {import('.').Preload} config.preload
  */
-module.exports = ({ blockService, pin, gcLock, preload }) => {
+module.exports = ({ blockService, preload, gcLock, pin }) => {
   /**
    * Stores input as an IPFS block.
    *
@@ -21,7 +21,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
    * don't need to pass options, as the block instance will carry the CID
    * value as a property.
    *
-   * @param {Uint8Array | IPLDBlock} block - The block or data to store
+   * @param {IPLDBlock} block - The block or data to store
    * @param {PutOptions & AbortOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
    * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
    * @example
@@ -122,8 +122,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
  * @property {boolean} [pin=false] - If true, pin added blocks recursively (default: `false`)
  * @property {boolean} [preload]
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').IPLDBlock} IPLDBlock
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').IPLDBlock} IPLDBlock
  * @typedef {0|1} CIDVersion
  */

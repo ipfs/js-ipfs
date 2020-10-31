@@ -11,12 +11,12 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('..').IPLD} config.ipld
- * @param {import("..").Pin} config.pin
- * @param {import("..").GCLock} config.gcLock
- * @param {import("..").Preload} config.preload
+ * @param {import('.').Pin} config.pin
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
+ * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ ipld, pin, gcLock, preload }) => {
+module.exports = ({ ipld, preload, pin, gcLock }) => {
   /**
    * Store an IPLD format node
    *
@@ -32,49 +32,15 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
    * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
    * ```
    */
-  // eslint-disable-next-line complexity
   async function put (dagNode, options = {}) {
-    if (options.cid && (options.format || options.hashAlg)) {
-      throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
-    } else if (((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
-      throw new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.')
-    }
+    const { cidVersion, format, hashAlg } = readEncodingOptions(options)
 
-    const optionDefaults = {
-      format: multicodec.DAG_CBOR,
-      hashAlg: multicodec.SHA2_256
-    }
-
-    // The IPLD expects the format and hashAlg as constants
-    if (options.format && typeof options.format === 'string') {
-      options.format = nameToCodec(options.format)
-    }
-    if (options.hashAlg && typeof options.hashAlg === 'string') {
-      options.hashAlg = nameToCodec(options.hashAlg)
-    }
-
-    options = options.cid ? options : Object.assign({}, optionDefaults, options)
-
-    // js-ipld defaults to verion 1 CIDs. Hence set version 0 explicitly for
-    // dag-pb nodes
-    if (options.version === undefined) {
-      if (options.format === multicodec.DAG_PB && options.hashAlg === multicodec.SHA2_256) {
-        options.version = 0
-      } else {
-        options.version = 1
-      }
-    }
-
-    let release
-
-    if (options.pin) {
-      release = await gcLock.readLock()
-    }
+    const release = options.pin ? await gcLock.readLock() : null
 
     try {
-      const cid = await ipld.put(dagNode, options.format, {
-        hashAlg: options.hashAlg,
-        cidVersion: options.version,
+      const cid = await ipld.put(dagNode, format, {
+        hashAlg,
+        cidVersion,
         signal: options.signal
       })
 
@@ -100,15 +66,79 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
 }
 
 /**
- * @typedef {Object} PutOptions
- * @property {CID} [cid]
- * @property {string|number} [format]
- * @property {string|number} [hashAlg]
  *
+ * @param {PutOptions} options
+ */
+const readEncodingOptions = (options) => {
+  if (options.cid && (options.format || options.hashAlg)) {
+    throw new Error('Can\'t put dag node. Please provide either `cid` OR `format` and `hashAlg` options.')
+  } else if (((options.format && !options.hashAlg) || (!options.format && options.hashAlg))) {
+    throw new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.')
+  }
+
+  const cidVersion = readVersion(options)
+
+  const { hashAlg, format } = options.cid != null
+    ? { format: options.cid.code, hashAlg: undefined }
+    : { ...defaultCIDOptions, ...options }
+
+  return {
+    cidVersion,
+    format: typeof format === 'string' ? nameToCodec(format) : format,
+    hashAlg: typeof hashAlg === 'string' ? nameToCodec(hashAlg) : hashAlg
+  }
+}
+
+/**
+ * Figures out what version of CID should be used given the options.
+ *
+ * @param {PutOptions} options
+ */
+const readVersion = ({ version, cid, format, hashAlg }) => {
+  // If version is passed just use that.
+  if (typeof version === 'number') {
+    return version
+  // If cid is provided use version field from it.
+  } else if (cid) {
+    return cid.version
+  // If it's dag-pb nodes use version 0
+  } else if (format === multicodec.DAG_PB && hashAlg === multicodec.SHA2_256) {
+    return 0
+  } else {
+  // Otherwise use version 1
+    return 1
+  }
+}
+
+/** @type {WithCIDOptions} */
+const defaultCIDOptions = {
+  format: multicodec.DAG_CBOR,
+  hashAlg: multicodec.SHA2_256
+}
+
+/**
+ * @typedef {PutWith & OtherPutOptions} PutOptions
+ * @typedef {WithCID | WithCIDOptions} PutWith
+ *
+ *
+ * @typedef {Object} WithCID
+ * @property {CID} [cid]
+ * // Note: We still stil need to reserve these fields otherwise it implies
+ * // that those fields can still be there and have very different types.
+ * @property {undefined} [format]
+ * @property {undefined} [hashAlg]
+ * @property {undefined} [version]
+ *
+ * @typedef {Object} WithCIDOptions
+ * @property {undefined} [cid]
+ * @property {string|number} format
+ * @property {string|number} hashAlg
+ * @property {0|1} [version]
+ *
+ * @typedef {Object} OtherPutOptions
  * @property {boolean} [pin=false]
- * @property {number} [version]
  * @property {boolean} [preload=false]
  *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

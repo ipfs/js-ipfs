@@ -4,7 +4,8 @@ const { isValidMultiaddr } = require('./utils')
 const { withTimeoutOption } = require('../../utils')
 
 /**
- * @param {import('..').IPFSRepo} repo
+ * @param {Object} config
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ repo }) => {
   /**
@@ -30,11 +31,13 @@ module.exports = ({ repo }) => {
 
     const config = await repo.config.getAll(options)
 
+    // @ts-ignore - May not have `Bootstrap`
     if (config.Bootstrap.indexOf(multiaddr.toString()) === -1) {
+      // @ts-ignore - May not have `Bootstrap`
       config.Bootstrap.push(multiaddr.toString())
     }
 
-    await repo.config.set(config)
+    await repo.config.replace(config)
 
     return {
       Peers: [multiaddr]
@@ -46,7 +49,7 @@ module.exports = ({ repo }) => {
 
 /**
  * @typedef {import('./utils').Peers} Peers
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').Multiaddr} Multiaddr
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').Multiaddr} Multiaddr
  */

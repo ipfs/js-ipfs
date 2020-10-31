@@ -12,11 +12,11 @@ const BLOCK_RM_CONCURRENCY = 8
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBlockService} config.blockService
- * @param {import('../pin/pin-manager')} config.pinManager
- * @param {import('..').GCLock} config.gcLock
+ * @param {import('.').BlockService} config.blockService
+ * @param {import('.').PinManager} config.pinManager
+ * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ blockService, gcLock, pinManager }) => {
+module.exports = ({ gcLock, blockService, pinManager }) => {
   /**
   /**
    * Remove one or more IPFS block(s).
@@ -65,6 +65,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
             }
 
             // remove has check when https://github.com/ipfs/js-ipfs-block-service/pull/88 is merged
+            // @ts-ignore - this accesses some internals
             const has = await blockService._repo.blocks.has(cid)
 
             if (!has) {
@@ -96,7 +97,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
  * @property {boolean} [force=false] - Ignores nonexistent blocks
  * @property {boolean} [quiet=false] - Write minimal output
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  *
  * @typedef {RmSucceess|RmFailure} RmResult
  * Note: If an error is present for a given object, the block with

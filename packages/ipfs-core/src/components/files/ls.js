@@ -3,6 +3,7 @@
 const exporter = require('ipfs-unixfs-exporter')
 const toMfsPath = require('./utils/to-mfs-path')
 const {
+  MFS_FILE_TYPES,
   withTimeoutOption
 } = require('../../utils')
 
@@ -11,20 +12,14 @@ const {
  * @returns {UnixFSEntry}
  */
 const toOutput = (fsEntry) => {
-  /** @type FileType */
-  let type = 'file'
+  let type = 0
   let size = fsEntry.node.size || fsEntry.node.length
   let mode
   let mtime
 
   if (fsEntry.unixfs) {
     size = fsEntry.unixfs.fileSize()
-    type = fsEntry.unixfs.type
-
-    if (fsEntry.unixfs.type === 'hamt-sharded-directory') {
-      type = 'directory'
-    }
-
+    type = MFS_FILE_TYPES[fsEntry.unixfs.type]
     mode = fsEntry.unixfs.mode
     mtime = fsEntry.unixfs.mtime
   }
@@ -94,13 +89,10 @@ module.exports = (context) => {
  * @property {number} [nsecs] - the number of nanoseconds since the last full
  * second.
  *
- * @typedef {'file'|'directory'} FileType
- *
  * @typedef {object} UnixFSEntry
  * @property {CID} cid
- * @property {string} name
  * @property {number} [mode]
  * @property {UnixTimeObj} [mtime]
  * @property {number} size
- * @property {FileType} type
+ * @property {number} type
  */

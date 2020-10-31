@@ -6,8 +6,18 @@ const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
 const { withTimeoutOption } = require('../../utils')
 
+/**
+ * @param {Object} config
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
+ */
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function _new (options = {}) {
+  /**
+   *
+   * @param {NewOptions & AbortOptions} options
+   * @returns {Promise<CID>}
+   */
+  async function _new (options = {}) {
     let data
 
     if (options.template) {
@@ -33,5 +43,19 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return cid
-  })
+  }
+
+  return withTimeoutOption(_new)
 }
+
+/**
+ * @typedef {Object} NewOptions
+ * @property {string} [template]
+ * @property {boolean} [recursive]
+ * @property {boolean} [nocache]
+ * @property {boolean} [preload]
+ * @property {string} [enc]
+ *
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
+ */

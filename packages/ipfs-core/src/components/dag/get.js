@@ -14,20 +14,16 @@ module.exports = ({ ipld, preload }) => {
   /**
    * Retrieve an IPLD format node
    *
-   * @param {CID} ipfsPath - A DAG node that follows one of the supported IPLD formats
-   * @param {GetOptions & AbortOptions} [options] - An optional configration
-   * @returns {Promise<DagEntry>}
    * @example
    * ```js
-   * ```JavaScript
    * // example obj
    * const obj = {
-   *   a: 1,
-   *   b: [1, 2, 3],
-   *   c: {
-   *     ca: [5, 6, 7],
-   *     cb: 'foo'
-   *   }
+   * a: 1,
+   * b: [1, 2, 3],
+   * c: {
+   * ca: [5, 6, 7],
+   * cb: 'foo'
+   * }
    * }
    *
    * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
@@ -35,8 +31,8 @@ module.exports = ({ ipld, preload }) => {
    * // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
    *
    * async function getAndLog(cid, path) {
-   *   const result = await ipfs.dag.get(cid, { path })
-   *   console.log(result.value)
+   * const result = await ipfs.dag.get(cid, { path })
+   * console.log(result.value)
    * }
    *
    * await getAndLog(cid, '/a')
@@ -58,6 +54,11 @@ module.exports = ({ ipld, preload }) => {
    * // Logs:
    * // 6
    * ```
+   *
+   * @param {CID|string} ipfsPath - A DAG node that follows one of the supported IPLD formats
+   * @param ipfsPath
+   * @param {GetOptions & AbortOptions} [options] - An optional configration
+   * @returns {Promise<DagEntry>}
    */
   const get = async function get (ipfsPath, options = {}) {
     const {
@@ -74,11 +75,11 @@ module.exports = ({ ipld, preload }) => {
     }
 
     if (options.path) {
-      const result = options.localResolve
-      /** @type {DagEntry} - first will return undefined if empty */
-        ? (await first(ipld.resolve(cid, options.path)))
-      /** @type {DagEntry} - last will return undefined if empty */
-        : (await last(ipld.resolve(cid, options.path)))
+      const entry = options.localResolve
+        ? await first(ipld.resolve(cid, options.path))
+        : await last(ipld.resolve(cid, options.path))
+      /** @type {DagEntry} - first and last will return undefined when empty */
+      const result = (entry)
       return result
     }
 
@@ -102,6 +103,6 @@ module.exports = ({ ipld, preload }) => {
  * @property {Object} value
  * @property {string} remainderPath
  *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

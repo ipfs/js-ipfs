@@ -6,15 +6,12 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBitSwap} config.bitswap
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ bitswap }) => {
+module.exports = ({ network }) => {
   /**
    * Removes one or more CIDs from the wantlist
    *
-   * @param {CID | CID[]} cids - The CIDs to remove from the wantlist
-   * @param {AbortOptions} [options]
-   * @returns {Promise<void>} - A promise that resolves once the request is complete
    * @example
    * ```JavaScript
    * let list = await ipfs.bitswap.wantlist()
@@ -27,8 +24,14 @@ module.exports = ({ bitswap }) => {
    * console.log(list)
    * // []
    * ```
+   *
+   * @param {CID | CID[]} cids - The CIDs to remove from the wantlist
+   * @param {AbortOptions} [options]
+   * @returns {Promise<void>} - A promise that resolves once the request is complete
    */
-  async function unwant (cids, options) { // eslint-disable-line require-await
+  async function unwant (cids, options) {
+    const { bitswap } = await network.use(options)
+
     if (!Array.isArray(cids)) {
       cids = [cids]
     }
@@ -46,6 +49,5 @@ module.exports = ({ bitswap }) => {
 }
 
 /**
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

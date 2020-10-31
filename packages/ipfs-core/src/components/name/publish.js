@@ -16,13 +16,13 @@ const { resolvePath } = require('./utils')
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('../../ipns')} config.ipns
- * @param {import('../index').DAG} config.dag
- * @param {import('peer-id')} config.peerId
- * @param {import('../index').IsOnline} config.isOnline
- * @param {import('../init').Keychain} config.keychain
+ * @param {import('.').IPNS} config.ipns
+ * @param {import('.').DagReader} config.dagReader
+ * @param {import('.').PeerId} config.peerId
+ * @param {import('.').IsOnline} config.isOnline
+ * @param {import('.').Keychain} config.keychain
  */
-module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
+module.exports = ({ ipns, dagReader, peerId, isOnline, keychain }) => {
   const lookupKey = async keyName => {
     if (keyName === 'self') {
       return peerId.privKey
@@ -93,7 +93,7 @@ module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
     const results = await Promise.all([
       // verify if the path exists, if not, an error will stop the execution
       lookupKey(key),
-      resolve ? resolvePath({ ipns, dag }, value) : Promise.resolve()
+      resolve ? resolvePath({ ipns, dagReader }, value) : Promise.resolve()
     ])
 
     // Start publishing process
@@ -123,5 +123,5 @@ module.exports = ({ ipns, dag, peerId, isOnline, keychain }) => {
  * @property {string} name
  * @property {string} value
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

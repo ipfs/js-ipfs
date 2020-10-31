@@ -8,9 +8,9 @@ const log = Object.assign(debug('ipfs:mfs-preload'), {
 
 /**
  * @param {Object} config
- * @param {import('./components/index').Preload} config.preload
- * @param {import('./components/index').Files} config.files
- * @param {import('./components/init').PreloadOptions} [config.options]
+ * @param {import('./components').Preload} config.preload
+ * @param {import('./components').Files} config.files
+ * @param {import('./components').PreloadOptions} [config.options]
  */
 module.exports = ({ preload, files, options = {} }) => {
   options.interval = options.interval || 30 * 1000

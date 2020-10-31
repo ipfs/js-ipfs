@@ -21,10 +21,10 @@ function toPin (type, cid, metadata) {
 
 /**
  * @param {Object} config
- * @param {import('./pin-manager')} config.pinManager
- * @param {import('../index').DAG} config.dag
+ * @param {import('.').PinManager} config.pinManager
+ * @param {import('.').DagReader} config.dagReader
  */
-module.exports = ({ pinManager, dag }) => {
+module.exports = ({ pinManager, dagReader }) => {
   /**
    * List all the objects pinned to local storage
    *
@@ -73,7 +73,7 @@ module.exports = ({ pinManager, dag }) => {
       let matched = false
 
       for await (const { path } of normaliseInput(options.paths)) {
-        const cid = await resolvePath(dag, path)
+        const cid = await resolvePath(dagReader, path)
         const { reason, pinned, parent, metadata } = await pinManager.isPinnedWithType(cid, type)
 
         if (!pinned) {
@@ -137,6 +137,6 @@ module.exports = ({ pinManager, dag }) => {
  * @typedef {import('./pin-manager').PinType} PinType
  * @typedef {import('./pin-manager').PinQueryType} PinQueryType
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
  */
