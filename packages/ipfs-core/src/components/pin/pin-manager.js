@@ -150,7 +150,7 @@ class PinManager {
 
   /**
    * @param {AbortOptions} [options]
-   * @returns AsyncIterable<{ cid: CID, metadata: any }>
+   * @returns {AsyncIterable<{ cid: CID, metadata: any }>}
    */
   async * directKeys (options) {
     for await (const entry of this.repo.pins.query({

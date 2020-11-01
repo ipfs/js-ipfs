@@ -12,7 +12,7 @@ module.exports = ({ repo }) => {
    * If the repo has been initialized, report the current version.
    * Otherwise report the version that would be initialized.
    *
-   * @param options
+   * @param {import('.').AbortOptions} options
    * @returns {Promise<number>}
    */
   async function version (options) {
