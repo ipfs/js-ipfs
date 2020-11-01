@@ -107,7 +107,6 @@ const encodingCodes = ({ format, hashAlg }) => ({
  * @param {CID} [options.cid]
  * @param {number} [options.format]
  * @param {number} [options.hashAlg]
- * @param options.version
  */
 const readVersion = ({ version, cid, format, hashAlg }) => {
   // If version is passed just use that.
