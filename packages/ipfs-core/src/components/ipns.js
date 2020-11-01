@@ -8,7 +8,7 @@ const log = require('debug')('ipfs:components:ipns')
 
 class IPNSAPI {
   /**
-   * @param {Object} [options]
+   * @param {Object} options
    * @param {string} [options.pass]
    * @param {boolean} [options.offline]
    * @param {LibP2POptions} [options.libp2p]
@@ -69,8 +69,8 @@ class IPNSAPI {
     if (this.online != null) {
       throw new AlreadyInitializedError()
     }
-
     const routing = routingConfig({ libp2p, repo, peerId, options: this.options })
+
     const ipns = new IPNS(routing, repo.datastore, peerId, keychain, this.options)
     await ipns.republisher.start()
     this.online = ipns

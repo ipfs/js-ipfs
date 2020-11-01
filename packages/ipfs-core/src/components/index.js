@@ -70,7 +70,7 @@ class IPFS {
     })
     const dns = createDNSAPI()
     const isOnline = createIsOnlineAPI({ network })
-    const ipns = new IPNSAPI()
+    const ipns = new IPNSAPI(options)
     const dagReader = DagAPI.reader({ ipld, preload })
 
     const name = new NameAPI({
