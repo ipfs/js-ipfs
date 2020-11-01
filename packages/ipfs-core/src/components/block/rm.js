@@ -16,7 +16,7 @@ const BLOCK_RM_CONCURRENCY = 8
  * @param {import('.').PinManager} config.pinManager
  * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ gcLock, blockService, pinManager }) => {
+module.exports = ({ blockService, gcLock, pinManager }) => {
   /**
   /**
    * Remove one or more IPFS block(s).

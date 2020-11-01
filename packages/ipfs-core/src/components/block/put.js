@@ -13,7 +13,7 @@ const { withTimeoutOption } = require('../../utils')
  * @param {import('.').GCLock} config.gcLock
  * @param {import('.').Preload} config.preload
  */
-module.exports = ({ blockService, preload, gcLock, pin }) => {
+module.exports = ({ blockService, pin, gcLock, preload }) => {
   /**
    * Stores input as an IPFS block.
    *

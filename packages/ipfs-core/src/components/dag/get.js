@@ -56,7 +56,6 @@ module.exports = ({ ipld, preload }) => {
    * ```
    *
    * @param {CID|string} ipfsPath - A DAG node that follows one of the supported IPLD formats
-   * @param ipfsPath
    * @param {GetOptions & AbortOptions} [options] - An optional configration
    * @returns {Promise<DagEntry>}
    */

@@ -11,12 +11,12 @@ const { withTimeoutOption } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('.').Pin} config.pin
  * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Pin} config.pin
  * @param {import('.').Preload} config.preload
  * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ ipld, preload, pin, gcLock }) => {
+module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
    * Store an IPLD format node
    *

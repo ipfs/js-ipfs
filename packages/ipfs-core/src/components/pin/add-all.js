@@ -12,7 +12,7 @@ const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
  * @param {import('.').DagReader} config.dagReader
  * @param {import('.').PinManager} config.pinManager
  */
-module.exports = ({ gcLock, dagReader, pinManager }) => {
+module.exports = ({ pinManager, gcLock, dagReader }) => {
   /**
    * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
    * repo. pinset is the set of hashes currently pinned (not gc'able)

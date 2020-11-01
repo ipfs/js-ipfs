@@ -10,7 +10,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
  * @param {import('.').PeerId} config.peerId
  * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ network, peerId }) => {
+module.exports = ({ peerId, network }) => {
   /**
    * Returns the identity of the Peer
    *

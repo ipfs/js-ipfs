@@ -42,9 +42,9 @@ module.exports = function ({ ipld, resolve, preload }) {
       options.maxDepth = options.recursive ? Infinity : 1
     }
 
+    /** @type {(string|CID)[]} */
     const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
 
-    // @ts-ignore
     const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {

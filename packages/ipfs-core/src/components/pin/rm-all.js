@@ -15,7 +15,7 @@ module.exports = ({ pinManager, gcLock, dagReader }) => {
    * Unpin one or more blocks from your repo
    *
    * @param {Source} source - Unpin all pins from the source
-   * @param {AbortOptions} [options]
+   * @param {AbortOptions} [_options]
    * @returns {AsyncIterable<CID>}
    * @example
    * ```js
@@ -29,7 +29,7 @@ module.exports = ({ pinManager, gcLock, dagReader }) => {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  async function * rmAll (source, options = {}) {
+  async function * rmAll (source, _options = {}) {
     const release = await gcLock.readLock()
 
     try {
