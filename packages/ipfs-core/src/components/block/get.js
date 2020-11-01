@@ -8,7 +8,7 @@ const { withTimeoutOption } = require('../../utils')
  * @param {import('.').BlockService} config.blockService
  * @param {import('.').Preload} config.preload
  */
-module.exports = ({ preload, blockService }) => {
+module.exports = ({ blockService, preload }) => {
   /**
    * Get a raw IPFS block.
    *
