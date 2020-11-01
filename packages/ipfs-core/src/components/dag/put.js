@@ -76,23 +76,38 @@ const readEncodingOptions = (options) => {
     throw new Error('Can\'t put dag node. Please provide `format` AND `hashAlg` options.')
   }
 
-  const cidVersion = readVersion(options)
-
   const { hashAlg, format } = options.cid != null
     ? { format: options.cid.code, hashAlg: undefined }
-    : { ...defaultCIDOptions, ...options }
+    : encodingCodes({ ...defaultCIDOptions, ...options })
+  const cidVersion = readVersion({ ...options, format, hashAlg })
 
   return {
     cidVersion,
-    format: typeof format === 'string' ? nameToCodec(format) : format,
-    hashAlg: typeof hashAlg === 'string' ? nameToCodec(hashAlg) : hashAlg
+    format,
+    hashAlg
   }
 }
 
 /**
+ *
+ * @param {Object} options
+ * @param {number|string} options.format
+ * @param {number|string} [options.hashAlg]
+ */
+const encodingCodes = ({ format, hashAlg }) => ({
+  format: typeof format === 'string' ? nameToCodec(format) : format,
+  hashAlg: typeof hashAlg === 'string' ? nameToCodec(hashAlg) : hashAlg
+})
+
+/**
  * Figures out what version of CID should be used given the options.
  *
- * @param {PutOptions} options
+ * @param {Object} options
+ * @param {0|1} [options.version]
+ * @param {CID} [options.cid]
+ * @param {number} [options.format]
+ * @param {number} [options.hashAlg]
+ * @param options.version
  */
 const readVersion = ({ version, cid, format, hashAlg }) => {
   // If version is passed just use that.
