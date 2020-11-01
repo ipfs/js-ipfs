@@ -59,7 +59,7 @@ module.exports = ({ network }) => {
  * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
  * @property {number} provideBufLen - an integer
  * @property {CID[]} wantlist
- * @property {CID[]} peers - array of peer IDs as Strings
+ * @property {CID[]} peers - array of peer IDs
  * @property {Big} blocksReceived
  * @property {Big} dataReceived
  * @property {Big} blocksSent
