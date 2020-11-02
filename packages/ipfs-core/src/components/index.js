@@ -55,7 +55,7 @@ class IPFS {
    * @param {Options} config.options
    */
   constructor ({ print, storage, options }) {
-    const { peerId, repo, keychain, pass } = storage
+    const { peerId, repo, keychain } = storage
     const network = Service.create(Network)
 
     const preload = createPreloadAPI(options.preload)
@@ -133,7 +133,7 @@ class IPFS {
       mfsPreload,
       print,
       keychain,
-      pass
+      options
     })
 
     this.stop = createStopAPI({
@@ -212,7 +212,7 @@ class IPFS {
     await ipfs.preload.start()
 
     ipfs.ipns.startOffline(storage)
-    if (!storage.isInitialized && !init.emptyRepo) {
+    if (!storage.isNew && !init.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
       const cid = await addEmptyDir(ipfs)
 

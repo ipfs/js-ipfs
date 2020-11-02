@@ -8,20 +8,20 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 /**
  * @param {Object} config
  * @param {Repo} config.repo
- * @param {Options} [config.options]
- * @param {PeerId} [config.peerId]
- * @param {string[]|Multiaddr[]} [config.multiaddrs]
- * @param {{pass?:string}} [config.keychainConfig]
- * @param {Config} [config.config]
+ * @param {IPFSOptions} config.options
+ * @param {PeerId} config.peerId
+ * @param {Multiaddr[]} config.multiaddrs
+ * @param {KeychainConfig} [config.keychainConfig]
+ * @param {IPFSConfig} config.config
  * @returns {LibP2P}
  */
 module.exports = ({
-  options = {},
+  options,
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
-  config = {}
+  config
 }) => {
   const { datastore, keys } = repo
 
@@ -45,6 +45,17 @@ module.exports = ({
   return new Libp2p(libp2pOptions)
 }
 
+/**
+ * @param {Object} input
+ * @param {IPFSOptions} input.options
+ * @param {IPFSConfig} input.config
+ * @param {Repo['datastore']} input.datastore
+ * @param {Repo['keys']} input.keys
+ * @param {KeychainConfig} input.keychainConfig
+ * @param {PeerId} input.peerId
+ * @param {Multiaddr[]} input.multiaddrs
+ * @returns {Options}
+ */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
@@ -143,10 +154,14 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 }
 
 /**
+ * @typedef {Object} KeychainConfig
+ * @property {string} [pass]
+ *
  * @typedef {import('.').Repo} Repo
  * @typedef {import('.').Multiaddr} Multiaddr
  * @typedef {import('.').PeerId} PeerId
+ * @typedef {import('.').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
  * @typedef {import('libp2p').Options} Options
- * @typedef {import('libp2p').Config} Config
+ * @typedef {import('.').IPFSConfig} IPFSConfig
  */

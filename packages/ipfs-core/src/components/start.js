@@ -13,15 +13,15 @@ const Service = require('../utils/service')
  * @param {import('.').MFSPreload} config.mfsPreload
  * @param {import('.').IPNS} config.ipns
  * @param {import('.').Keychain} config.keychain
- * @param {string} [config.pass]
+ * @param {import('.').Options} config.options
  */
-module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService, mfsPreload, print, pass }) => {
+module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService, mfsPreload, print, options }) => {
   const start = async () => {
     const { bitswap, libp2p } = await Service.start(network, {
       peerId,
       repo,
       print,
-      pass
+      options
     })
 
     blockService.setExchange(bitswap)

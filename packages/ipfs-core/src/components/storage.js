@@ -19,17 +19,15 @@ class Storage {
    * @param {Keychain} keychain
    * @param {Repo} repo
    * @param {Print} print
-   * @param {string|undefined} pass
-   * @param {boolean} isInitialized
+   * @param {boolean} isNew
    */
-  constructor (peerId, keychain, repo, print, pass, isInitialized) {
+  constructor (peerId, keychain, repo, print, isNew) {
     this.print = print
     this.peerId = peerId
     this.keychain = keychain
     this.repo = repo
     this.print = print
-    this.pass = pass
-    this.isInitialized = isInitialized
+    this.isNew = isNew
   }
 
   /**
@@ -37,15 +35,15 @@ class Storage {
    * @param {Options} options
    */
   static async start (options) {
-    const { repoAutoMigrate: autoMigrate, repo: repoInit, print, pass } = options
+    const { repoAutoMigrate: autoMigrate, repo: inputRepo, print, silent } = options
 
-    const repo = (typeof repoInit === 'string' || repoInit == null)
-      ? createRepo({ path: repoInit, autoMigrate })
-      : repoInit
+    const repo = (typeof inputRepo === 'string' || inputRepo == null)
+      ? createRepo({ path: inputRepo, autoMigrate, silent })
+      : inputRepo
 
-    const { peerId, keychain, isInitialized } = await loadRepo(repo, options)
+    const { peerId, keychain, isNew } = await loadRepo(repo, options)
 
-    return new Storage(peerId, keychain, repo, print, pass, isInitialized)
+    return new Storage(peerId, keychain, repo, print, isNew)
   }
 }
 module.exports = Storage
@@ -54,20 +52,20 @@ module.exports = Storage
  *
  * @param {Repo} repo
  * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain:Keychain, isInitialized:boolean }>}
+ * @returns {Promise<{peerId: PeerId, keychain:Keychain, isNew:boolean }>}
  */
 const loadRepo = async (repo, options) => {
   const openError = await openRepo(repo)
   if (openError == null) {
     // If opened succefully configure repo
-    return { ...await configureRepo(repo, options), isInitialized: true }
+    return { ...await configureRepo(repo, options), isNew: true }
   } else if (openError.code === ERR_REPO_NOT_INITIALIZED) {
     if (options.allowNew === false) {
       throw new NotEnabledError('new repo initialization is not enabled')
     } else {
       // If failed to open, because repo isn't initilaized and initalizing a
       // new repo allowed, init repo:
-      return { ...await initRepo(repo, options), isInitialized: false }
+      return { ...await initRepo(repo, options), isNew: false }
     }
   } else {
     throw openError
@@ -135,6 +133,8 @@ const initRepo = async (repo, options) => {
 
   // Create libp2p for Keychain creation
   const libp2p = createLibP2P({
+    options: {},
+    multiaddrs: [],
     peerId,
     repo,
     config,
@@ -210,6 +210,8 @@ const configureRepo = async (repo, { config, profiles, pass }) => {
   // @ts-ignore - Identity may not be present
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
   const libp2p = createLibP2P({
+    options: {},
+    multiaddrs: [],
     peerId,
     repo,
     config: changed,
@@ -218,7 +220,10 @@ const configureRepo = async (repo, { config, profiles, pass }) => {
       ...changed.Keychain
     }
   })
-  libp2p.keychain && await libp2p.loadKeychain()
+
+  if (libp2p.keychain) {
+    await libp2p.loadKeychain()
+  }
 
   return { peerId, keychain: libp2p.keychain }
 }
@@ -264,6 +269,7 @@ const applyProfiles = (config, profiles) => {
  * @typedef {Object} RepoOptions
  * @property {Print} print
  * @property {IPFSConfig} [config]
+ * @property {boolean} [silent]
  *
  * @typedef {Object} ConfigureOptions
  * @property {IPFSConfig} [options.config]

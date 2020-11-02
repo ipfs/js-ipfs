@@ -20,7 +20,7 @@ class Network {
   /**
    * @param {Options} options
    */
-  static async start ({ peerId, repo, print, pass }) {
+  static async start ({ peerId, repo, print, options }) {
     // Need to ensure that repo is open as it could have been closed between
     // `init` and `start`.
     if (repo.closed) {
@@ -30,25 +30,15 @@ class Network {
     const config = await repo.config.getAll()
 
     const libp2p = createLibP2P({
+      options,
       repo,
       peerId,
       multiaddrs: readAddrs(peerId, config),
-      config,
-      keychainConfig: {
-        pass,
-        ...config.Keychain
-      }
+      config
     })
 
     if (libp2p.keychain) {
       await libp2p.loadKeychain()
-
-      // If it is a new repo we don't have Keychain persisted yet.
-      if (libp2p.keychain.opts && !config.Keychain) {
-        await repo.config.set('Keychain', {
-          dek: libp2p.keychain.opts.dek
-        })
-      }
     }
 
     await libp2p.start()
@@ -117,9 +107,10 @@ const WEBSOCKET_STAR_PROTO_CODE = 479
  * @property {PeerId} options.peerId
  * @property {Repo} options.repo
  * @property {Print} options.print
- * @property {string} [options.pass]
+ * @property {IPFSOptions} options.options
  *
  * @typedef {import('.').IPFSConfig} IPFSConfig
+ * @typedef {import('.').Options} IPFSOptions
  * @typedef {import('.').Repo} Repo
  * @typedef {import('.').Print} Print
  * @typedef {import('.').LibP2P} LibP2P
