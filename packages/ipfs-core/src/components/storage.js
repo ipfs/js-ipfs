@@ -133,8 +133,8 @@ const initRepo = async (repo, options) => {
 
   // Create libp2p for Keychain creation
   const libp2p = createLibP2P({
-    options: {},
-    multiaddrs: [],
+    options: undefined,
+    multiaddrs: undefined,
     peerId,
     repo,
     config,
@@ -210,8 +210,8 @@ const configureRepo = async (repo, { config, profiles, pass }) => {
   // @ts-ignore - Identity may not be present
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
   const libp2p = createLibP2P({
-    options: {},
-    multiaddrs: [],
+    options: undefined,
+    multiaddrs: undefined,
     peerId,
     repo,
     config: changed,

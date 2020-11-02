@@ -8,20 +8,20 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 /**
  * @param {Object} config
  * @param {Repo} config.repo
- * @param {IPFSOptions} config.options
+ * @param {IPFSOptions|undefined} config.options
  * @param {PeerId} config.peerId
- * @param {Multiaddr[]} config.multiaddrs
- * @param {KeychainConfig} [config.keychainConfig]
- * @param {IPFSConfig} config.config
+ * @param {Multiaddr[]|undefined} config.multiaddrs
+ * @param {KeychainConfig|undefined} config.keychainConfig
+ * @param {Partial<IPFSConfig>|undefined} config.config
  * @returns {LibP2P}
  */
 module.exports = ({
-  options,
+  options = {},
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
-  config
+  config = {}
 }) => {
   const { datastore, keys } = repo
 
@@ -48,7 +48,7 @@ module.exports = ({
 /**
  * @param {Object} input
  * @param {IPFSOptions} input.options
- * @param {IPFSConfig} input.config
+ * @param {Partial<IPFSConfig>} input.config
  * @param {Repo['datastore']} input.datastore
  * @param {Repo['keys']} input.keys
  * @param {KeychainConfig} input.keychainConfig

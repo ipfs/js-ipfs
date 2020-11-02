@@ -34,7 +34,8 @@ class Network {
       repo,
       peerId,
       multiaddrs: readAddrs(peerId, config),
-      config
+      config,
+      keychainConfig: undefined
     })
 
     if (libp2p.keychain) {
