@@ -179,8 +179,13 @@ class IPFS {
     })
   }
 
+  /**
+   * `IPFS.create` will do the initialization. Keep this around for backwards
+   * compatibility.
+   *
+   * @deprecated
+   */
   async init () { // eslint-disable-line require-await
-    // Just keep this around for backwards compatibility
     throw new AlreadyInitializedError()
   }
 
