@@ -57,9 +57,11 @@ class Network {
   /**
    * @param {Network} network
    */
-  // eslint-disable-next-line require-await
   static async stop (network) {
-    network.bitswap.stop()
+    await Promise.all([
+      network.bitswap.stop(),
+      network.libp2p.stop()
+    ])
   }
 }
 module.exports = Network
