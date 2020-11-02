@@ -58,14 +58,14 @@ const loadRepo = async (repo, options) => {
   const openError = await openRepo(repo)
   if (openError == null) {
     // If opened succefully configure repo
-    return { ...await configureRepo(repo, options), isNew: true }
+    return { ...await configureRepo(repo, options), isNew: false }
   } else if (openError.code === ERR_REPO_NOT_INITIALIZED) {
     if (options.allowNew === false) {
       throw new NotEnabledError('new repo initialization is not enabled')
     } else {
       // If failed to open, because repo isn't initilaized and initalizing a
       // new repo allowed, init repo:
-      return { ...await initRepo(repo, options), isNew: false }
+      return { ...await initRepo(repo, options), isNew: true }
     }
   } else {
     throw openError

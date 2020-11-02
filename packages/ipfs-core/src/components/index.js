@@ -212,7 +212,7 @@ class IPFS {
     await ipfs.preload.start()
 
     ipfs.ipns.startOffline(storage)
-    if (!storage.isNew && !init.emptyRepo) {
+    if (storage.isNew && !init.emptyRepo) {
       // add empty unixfs dir object (go-ipfs assumes this exists)
       const cid = await addEmptyDir(ipfs)
 
