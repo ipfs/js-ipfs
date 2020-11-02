@@ -1,15 +1,16 @@
-# FAQ
+# FAQ <!-- omit in toc -->
 
-- [FAQ](#faq)
-  - [Why isn't there DHT support in js-IPFS?](#why-isnt-there-dht-support-in-js-ipfs)
-    - [Node.js](#nodejs)
-    - [Browser](#browser)
-  - [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
-  - [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
-  - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
-  - [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
-  - [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
-  - [Have more questions?](#have-more-questions)
+## Table of Contents <!-- omit in toc -->
+
+- [Why isn't there DHT support in js-IPFS?](#why-isnt-there-dht-support-in-js-ipfs)
+  - [Node.js](#nodejs)
+  - [Browser](#browser)
+- [How to enable WebRTC support for js-ipfs in the Browser](#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser)
+- [Is there WebRTC support for js-ipfs with Node.js?](#is-there-webrtc-support-for-js-ipfs-with-nodejs)
+- [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
+- [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
+- [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
+- [Have more questions?](#have-more-questions)
 
 ## Why isn't there DHT support in js-IPFS?
 
