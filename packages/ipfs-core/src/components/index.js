@@ -171,9 +171,11 @@ class IPFS {
     this.swarm = new SwarmAPI({ network })
 
     // For the backwards compatibility
-    Object.defineProperty(this, 'libp2p', () => {
-      const net = network.try()
-      return net ? net.libp2p : undefined
+    Object.defineProperty(this, 'libp2p', {
+      get () {
+        const net = network.try()
+        return net ? net.libp2p : undefined
+      }
     })
   }
 
