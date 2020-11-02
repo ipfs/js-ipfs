@@ -11,7 +11,7 @@ module.exports = (options) => {
   const all = addAll(options)
   return configure(() => {
     /**
-     * @type {import('.').Implements<import('ipfs-core/src/components/add')>}
+     * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
      */
     async function add (input, options = {}) {
       // @ts-ignore - last may return undefind if source is empty

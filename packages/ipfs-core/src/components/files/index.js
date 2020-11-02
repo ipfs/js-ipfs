@@ -5,17 +5,17 @@ const isIpfs = require('is-ipfs')
 
 /**
  * @typedef {Object} MFS
- * @property {ReturnType<import('./stat')>} stat
- * @property {ReturnType<import('./chmod')>} chmod
- * @property {ReturnType<import('./cp')>} cp
- * @property {ReturnType<import('./flush')>} flush
- * @property {ReturnType<import('./mkdir')>} mkdir
- * @property {ReturnType<import('./mv')>} mv
- * @property {ReturnType<import('./rm')>} rm
- * @property {ReturnType<import('./touch')>} touch
- * @property {ReturnType<import('./write')>} write
- * @property {ReturnType<import('./read')>} read
- * @property {ReturnType<import('./ls')>} ls
+ * @property {ReturnType<typeof import('./stat')>} stat
+ * @property {ReturnType<typeof import('./chmod')>} chmod
+ * @property {ReturnType<typeof import('./cp')>} cp
+ * @property {ReturnType<typeof import('./flush')>} flush
+ * @property {ReturnType<typeof import('./mkdir')>} mkdir
+ * @property {ReturnType<typeof import('./mv')>} mv
+ * @property {ReturnType<typeof import('./rm')>} rm
+ * @property {ReturnType<typeof import('./touch')>} touch
+ * @property {ReturnType<typeof import('./write')>} write
+ * @property {ReturnType<typeof import('./read')>} read
+ * @property {ReturnType<typeof import('./ls')>} ls
  */
 
 // These operations are read-locked at the function level and will execute simultaneously

@@ -4,7 +4,7 @@ const last = require('it-last')
 
 /**
  * @param {Object} config
- * @param {ReturnType<import('./rm-all')>} config.rmAll
+ * @param {ReturnType<typeof import('./rm-all')>} config.rmAll
  */
 module.exports = ({ rmAll }) =>
   /**

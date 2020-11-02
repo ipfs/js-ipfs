@@ -20,7 +20,7 @@ applications running in the different JS context to use [IPFS API](https://githu
 
 - [Install](#install)
 - [Usage](#usage)
-- [Notes on Performance](#notes-on-performance)
+  - [Notes on Performance](#notes-on-performance)
 - [Contribute](#contribute)
 - [License](#license)
 

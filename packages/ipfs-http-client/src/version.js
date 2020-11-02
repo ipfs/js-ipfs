@@ -7,7 +7,7 @@ const pkg = require('../package.json')
 
 module.exports = configure(api => {
   /**
-   * @type {import('.').Implements<import('ipfs-core/src/components/version')>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/version')>}
    */
   async function version (options = {}) {
     const res = await api.post('version', {

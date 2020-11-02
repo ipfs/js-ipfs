@@ -11,7 +11,7 @@ const AbortController = require('native-abort-controller')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<import('ipfs-core/src/components/block/put')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/block/put')>}
    */
   async function put (data, options = {}) {
     if (Block.isBlock(data)) {
