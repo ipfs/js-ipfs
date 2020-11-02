@@ -6,7 +6,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<import('ipfs-core/src/components/dag/resolve')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/dag/resolve')>}
    */
   const resolve = async (ipfsPath, options = {}) => {
     const res = await api.post('dag/resolve', {

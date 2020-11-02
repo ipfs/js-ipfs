@@ -1,22 +1,22 @@
 'use strict'
 
 /**
- * @typedef {ReturnType<import('./add')>} Add
+ * @typedef {ReturnType<typeof import('./add')>} Add
  */
 exports.add = require('./add')
 
 /**
- * @typedef {ReturnType<import('./add-all')>} AddAll
+ * @typedef {ReturnType<typeof import('./add-all')>} AddAll
  */
 
 exports.addAll = require('./add-all')
 
 /**
  * @typedef {Object} Block
- * @property {ReturnType<import('./block/get')>} get
- * @property {ReturnType<import('./block/put')>} put
- * @property {ReturnType<import('./block/rm')>} rm
- * @property {ReturnType<import('./block/stat')>} stat
+ * @property {ReturnType<typeof import('./block/get')>} get
+ * @property {ReturnType<typeof import('./block/put')>} put
+ * @property {ReturnType<typeof import('./block/rm')>} rm
+ * @property {ReturnType<typeof import('./block/stat')>} stat
  */
 exports.block = {
   get: require('./block/get'),
@@ -27,9 +27,9 @@ exports.block = {
 
 /**
  * @typedef {Object} BitSwap
- * @property {ReturnType<import('./bitswap/stat')>} stat
- * @property {ReturnType<import('./bitswap/unwant')>} unwant
- * @property {ReturnType<import('./bitswap/wantlist')>} wantlist
+ * @property {ReturnType<typeof import('./bitswap/stat')>} stat
+ * @property {ReturnType<typeof import('./bitswap/unwant')>} unwant
+ * @property {ReturnType<typeof import('./bitswap/wantlist')>} wantlist
  */
 exports.bitswap = {
   stat: require('./bitswap/stat'),
@@ -40,9 +40,9 @@ exports.bitswap = {
 
 /**
  * @typedef {Object} Bootstrap
- * @property {ReturnType<import('./bootstrap/add')>} add
- * @property {ReturnType<import('./bootstrap/list')>} list
- * @property {ReturnType<import('./bootstrap/rm')>} rm
+ * @property {ReturnType<typeof import('./bootstrap/add')>} add
+ * @property {ReturnType<typeof import('./bootstrap/list')>} list
+ * @property {ReturnType<typeof import('./bootstrap/rm')>} rm
  */
 exports.bootstrap = {
   add: require('./bootstrap/add'),
@@ -53,21 +53,21 @@ exports.bootstrap = {
 }
 
 /**
- * @typedef {ReturnType<import('./cat')>} Cat
+ * @typedef {ReturnType<typeof import('./cat')>} Cat
  */
 exports.cat = require('./cat')
 
 /**
- * @typedef {ReturnType<import('./config')>} Config
+ * @typedef {ReturnType<typeof import('./config')>} Config
  */
 exports.config = require('./config')
 
 /**
  * @typedef {Object} DAG
- * @property {ReturnType<import('./dag/get')>} get
- * @property {ReturnType<import('./dag/put')>} put
- * @property {ReturnType<import('./dag/resolve')>} resolve
- * @property {ReturnType<import('./dag/tree')>} tree
+ * @property {ReturnType<typeof import('./dag/get')>} get
+ * @property {ReturnType<typeof import('./dag/put')>} put
+ * @property {ReturnType<typeof import('./dag/resolve')>} resolve
+ * @property {ReturnType<typeof import('./dag/tree')>} tree
  */
 exports.dag = {
   get: require('./dag/get'),
@@ -76,36 +76,36 @@ exports.dag = {
   tree: require('./dag/tree')
 }
 
-/** @typedef {ReturnType<import('./dht')>} DHT */
+/** @typedef {ReturnType<typeof import('./dht')>} DHT */
 exports.dht = require('./dht')
 
-/** @typedef {ReturnType<import('./dns')>} DNS */
+/** @typedef {ReturnType<typeof import('./dns')>} DNS */
 exports.dns = require('./dns')
 
-/** @typedef {ReturnType<import('./files')>} Files */
+/** @typedef {ReturnType<typeof import('./files')>} Files */
 exports.files = require('./files')
 
-/** @typedef {ReturnType<import('./get')>} Get */
+/** @typedef {ReturnType<typeof import('./get')>} Get */
 exports.get = require('./get')
 
-/** @typedef {ReturnType<import('./id')>} ID */
+/** @typedef {ReturnType<typeof import('./id')>} ID */
 exports.id = require('./id')
 
-/** @typedef {ReturnType<import('./init')>} Init */
+/** @typedef {ReturnType<typeof import('./init')>} Init */
 exports.init = require('./init')
 
-/** @typedef {ReturnType<import('./is-online')>} IsOnline */
+/** @typedef {ReturnType<typeof import('./is-online')>} IsOnline */
 exports.isOnline = require('./is-online')
 
 /**
  * @typedef {Object} Key
- * @property {ReturnType<import('./key/export')>} export
- * @property {ReturnType<import('./key/gen')>} gen
- * @property {ReturnType<import('./key/import')>} import
- * @property {ReturnType<import('./key/info')>} info
- * @property {ReturnType<import('./key/list')>} list
- * @property {ReturnType<import('./key/rename')>} rename
- * @property {ReturnType<import('./key/rm')>} rm
+ * @property {ReturnType<typeof import('./key/export')>} export
+ * @property {ReturnType<typeof import('./key/gen')>} gen
+ * @property {ReturnType<typeof import('./key/import')>} import
+ * @property {ReturnType<typeof import('./key/info')>} info
+ * @property {ReturnType<typeof import('./key/list')>} list
+ * @property {ReturnType<typeof import('./key/rename')>} rename
+ * @property {ReturnType<typeof import('./key/rm')>} rm
  */
 
 exports.key = {
@@ -118,22 +118,22 @@ exports.key = {
   rm: require('./key/rm')
 }
 
-/** @typedef {ReturnType<import('./libp2p')>} LibP2P */
+/** @typedef {ReturnType<typeof import('./libp2p')>} LibP2P */
 exports.libp2p = require('./libp2p')
 
-/** @typedef {ReturnType<import('./ls')>} LS */
+/** @typedef {ReturnType<typeof import('./ls')>} LS */
 exports.ls = require('./ls')
 
 /**
  * @typedef {Object} Name
- * @property {ReturnType<import('./name/publish')>} publish
- * @property {ReturnType<import('./name/resolve')>} resolve
+ * @property {ReturnType<typeof import('./name/publish')>} publish
+ * @property {ReturnType<typeof import('./name/resolve')>} resolve
  * @property {NamePubSub} pubsub
  *
  * @typedef {Object} NamePubSub
- * @property {ReturnType<import('./name/pubsub/cancel')>} cancel
- * @property {ReturnType<import('./name/pubsub/state')>} state
- * @property {ReturnType<import('./name/pubsub/subs')>} subs
+ * @property {ReturnType<typeof import('./name/pubsub/cancel')>} cancel
+ * @property {ReturnType<typeof import('./name/pubsub/state')>} state
+ * @property {ReturnType<typeof import('./name/pubsub/subs')>} subs
  */
 
 exports.name = {
@@ -148,19 +148,19 @@ exports.name = {
 
 /**
  * @typedef {Object} ObjectAPI
- * @property {ReturnType<import('./object/data')>} data
- * @property {ReturnType<import('./object/get')>} get
- * @property {ReturnType<import('./object/links')>} links
- * @property {ReturnType<import('./object/new')>} new
- * @property {ReturnType<import('./object/put')>} put
- * @property {ReturnType<import('./object/stat')>} stat
+ * @property {ReturnType<typeof import('./object/data')>} data
+ * @property {ReturnType<typeof import('./object/get')>} get
+ * @property {ReturnType<typeof import('./object/links')>} links
+ * @property {ReturnType<typeof import('./object/new')>} new
+ * @property {ReturnType<typeof import('./object/put')>} put
+ * @property {ReturnType<typeof import('./object/stat')>} stat
  * @property {ObjectPath} patch
  *
  * @typedef {Object} ObjectPath
- * @property {ReturnType<import('./object/patch/add-link')>} addLink
- * @property {ReturnType<import('./object/patch/rm-link')>} rmLink
- * @property {ReturnType<import('./object/patch/append-data')>} appendData
- * @property {ReturnType<import('./object/patch/set-data')>} setData
+ * @property {ReturnType<typeof import('./object/patch/add-link')>} addLink
+ * @property {ReturnType<typeof import('./object/patch/rm-link')>} rmLink
+ * @property {ReturnType<typeof import('./object/patch/append-data')>} appendData
+ * @property {ReturnType<typeof import('./object/patch/set-data')>} setData
  */
 exports.object = {
   data: require('./object/data'),
@@ -179,10 +179,10 @@ exports.object = {
 
 /**
  * @typedef Pin
- * @property {ReturnType<import("./pin/add")>} add
- * @property {ReturnType<import("./pin/add-all")>} addAll
- * @property {ReturnType<import("./pin/ls")>} ls
- * @property {ReturnType<import("./pin/rm")>} rm
+ * @property {ReturnType<typeof import("./pin/add")>} add
+ * @property {ReturnType<typeof import("./pin/add-all")>} addAll
+ * @property {ReturnType<typeof import("./pin/ls")>} ls
+ * @property {ReturnType<typeof import("./pin/rm")>} rm
  */
 exports.pin = {
   add: require('./pin/add'),
@@ -193,27 +193,27 @@ exports.pin = {
 }
 
 /**
- * @typedef {ReturnType<import('./ping')>} Ping
+ * @typedef {ReturnType<typeof import('./ping')>} Ping
  */
 exports.ping = require('./ping')
 
 /**
- * @typedef {ReturnType<import('./pubsub')>} PubSub
+ * @typedef {ReturnType<typeof import('./pubsub')>} PubSub
  */
 exports.pubsub = require('./pubsub')
 
 /**
- * @typedef {ReturnType<import('./refs')>} Refs
- * @typedef {ReturnType<import('./refs/local')>} LocalRefs
+ * @typedef {ReturnType<typeof import('./refs')>} Refs
+ * @typedef {ReturnType<typeof import('./refs/local')>} LocalRefs
  * @typedef {Refs & {local:LocalRefs}} RefsWithLocal
  */
 exports.refs = Object.assign(require('./refs'), { local: require('./refs/local') })
 
 /**
  * @typedef {Object} Repo
- * @property {ReturnType<import("./repo/gc")>} gc
- * @property {ReturnType<import("./repo/stat")>} stat
- * @property {ReturnType<import("./repo/version")>} version
+ * @property {ReturnType<typeof import("./repo/gc")>} gc
+ * @property {ReturnType<typeof import("./repo/stat")>} stat
+ * @property {ReturnType<typeof import("./repo/version")>} version
  */
 exports.repo = {
   gc: require('./repo/gc'),
@@ -221,30 +221,30 @@ exports.repo = {
   version: require('./repo/version')
 }
 
-/** @typedef {ReturnType<import('./resolve')>} Resolve */
+/** @typedef {ReturnType<typeof import('./resolve')>} Resolve */
 exports.resolve = require('./resolve')
 
-/** @typedef {ReturnType<import('./start')>} Start */
+/** @typedef {ReturnType<typeof import('./start')>} Start */
 exports.start = require('./start')
 
 /**
  * @typedef {Object} Stats
- * @property {ReturnType<import('./stats/bw')>} bw
+ * @property {ReturnType<typeof import('./stats/bw')>} bw
  */
 exports.stats = {
   bw: require('./stats/bw')
 }
 
-/** @typedef {ReturnType<import('./stop')>} Stop */
+/** @typedef {ReturnType<typeof import('./stop')>} Stop */
 exports.stop = require('./stop')
 
 /**
  * @typedef {Object} Swarm
- * @property {ReturnType<import('./swarm/addrs')>} addrs
- * @property {ReturnType<import('./swarm/connect')>} connect
- * @property {ReturnType<import('./swarm/disconnect')>} disconnect
- * @property {ReturnType<import('./swarm/local-addrs')>} localAddrs
- * @property {ReturnType<import('./swarm/peers')>} peers
+ * @property {ReturnType<typeof import('./swarm/addrs')>} addrs
+ * @property {ReturnType<typeof import('./swarm/connect')>} connect
+ * @property {ReturnType<typeof import('./swarm/disconnect')>} disconnect
+ * @property {ReturnType<typeof import('./swarm/local-addrs')>} localAddrs
+ * @property {ReturnType<typeof import('./swarm/peers')>} peers
  */
 exports.swarm = {
   addrs: require('./swarm/addrs'),
@@ -255,12 +255,12 @@ exports.swarm = {
 }
 
 /**
- * @typedef {ReturnType<import('./version')>} Version
+ * @typedef {ReturnType<typeof import('./version')>} Version
  */
 exports.version = require('./version')
 
 /**
- * @typedef {ReturnType<import('../preload')>} Preload
+ * @typedef {ReturnType<typeof import('../preload')>} Preload
  * @typedef {RWLock} GCLock
  *
  * @typedef {Object} RWLock

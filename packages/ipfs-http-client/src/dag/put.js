@@ -14,7 +14,7 @@ module.exports = configure((api, opts) => {
   const load = loadFormat(opts.ipld)
 
   /**
-   * @type {import('..').Implements<import('ipfs-core/src/components/dag/put')>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/dag/put')>}
    */
   const put = async (dagNode, options = {}) => {
     if (options.cid && (options.format || options.hashAlg)) {
