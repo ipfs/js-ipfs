@@ -1,4 +1,4 @@
-# Using IPFS with typed JS 
+# Using IPFS with typed JS
 
 > This example provides a template for setting up a [JS project that utilizes type checker](https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html) and `js-ipfs` type [declarations the were generated from JSDoc comments](https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html)
 
@@ -45,9 +45,9 @@ Found 1 error.
 
 ## IntelliSense
 
-In the vscode and other code editors that provide [comparable IntelliSense features](https://docs.microsoft.com/en-us/visualstudio/ide/using-intellisense?view=vs-2019) you should be able to get code auto complete, paramatere and return value information for `js-ipfs` APIs.
+In [VSCode](https://code.visualstudio.com/) and other code editors that provide [comparable IntelliSense features](https://docs.microsoft.com/en-us/visualstudio/ide/using-intellisense?view=vs-2019) you should be able to get code auto complete, parameter and return value information for `js-ipfs` APIs.
 
-![Preview](Preview.png)
+![Preview](./preview.png)
 
 ## Limitations
 
