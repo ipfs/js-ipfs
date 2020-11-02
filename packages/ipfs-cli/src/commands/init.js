@@ -27,7 +27,8 @@ module.exports = {
         type: 'number',
         alias: 'b',
         default: '2048',
-        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)'
+        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)',
+        coerce: Number
       })
       .option('empty-repo', {
         alias: 'e',

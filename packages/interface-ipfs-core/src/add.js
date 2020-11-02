@@ -55,7 +55,7 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should respect timeout option when adding files', () => {
+    it('should respect timeout option when adding file', () => {
       return testTimeout(() => ipfs.add('Hello', {
         timeout: 1
       }))
