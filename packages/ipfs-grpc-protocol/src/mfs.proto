@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package ipfs;
+
+service MFS {
+    rpc ls (LsRequest) returns (stream LsResponse) {}
+    rpc write (stream WriteRequest) returns (WriteResponse) {}
+}
+
+message LsRequest {
+    string path = 1;
+}
+
+message LsResponse {
+    string name = 1;
+    FileType type = 2;
+    uint32 size = 3;
+    string cid = 4;
+    uint32 mode = 5;
+    int32 mtime = 6;
+    uint32 mtime_nsecs = 7;
+}
+
+message WriteRequest {
+    string path = 1;
+    bytes content = 2;
+}
+
+message WriteResponse {
+
+}

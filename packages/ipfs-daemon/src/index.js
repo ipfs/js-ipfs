@@ -11,6 +11,7 @@ const ipfsHttpClient = require('ipfs-http-client')
 const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
+const gRPCServer = require('ipfs-grpc-server')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 const { isElectron } = require('ipfs-utils/src/env')
 
@@ -59,6 +60,8 @@ class Daemon {
       await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
+    this._grpcServer = await gRPCServer(ipfs, ipfsOpts)
+
     log('started')
     return this
   }
@@ -68,6 +71,7 @@ class Daemon {
     await Promise.all([
       this._httpApi && this._httpApi.stop(),
       this._httpGateway && this._httpGateway.stop(),
+      this._grpcServer && this._grpcServer.stop(),
       // @ts-ignore - may not have stop if init was false
       this._ipfs && this._ipfs.stop()
     ])

@@ -80,7 +80,7 @@
     "aegir": "^29.2.2",
     "go-ipfs": "^0.7.0",
     "ipfs-core": "^0.3.1",
-    "ipfsd-ctl": "^7.1.1",
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#feat/expose-grpc-addr",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "nock": "^13.0.2",

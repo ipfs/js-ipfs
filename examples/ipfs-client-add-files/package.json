@@ -1,0 +1,27 @@
+{
+  "name": "example-ipfs-client-add-files",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "parcel build index.html --public-url '.'",
+    "start": "parcel index.html -p 8888",
+    "test": "test-ipfs-example"
+  },
+  "dependencies": {
+    "ipfs-client": "^0.1.0"
+  },
+  "devDependencies": {
+    "execa": "^4.0.3",
+    "ipfs": "^0.52.0",
+    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#feat/expose-grpc-addr",
+    "parcel-bundler": "^1.12.4",
+    "rimraf": "^3.0.2",
+    "test-ipfs-example": "^2.0.3"
+  },
+  "browserslist": [
+    "last 2 versions and not dead and > 2%"
+  ]
+}

@@ -59,6 +59,10 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
+        name: 'should add directories with metadata',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
         name: 'should support bidirectional streaming',
         reason: 'Not supported by http'
       },
