@@ -40,6 +40,7 @@
     "get-folder-size": "^2.0.1",
     "ipfs-core": "^0.2.1",
     "ipfs-core-utils": "^0.5.2",
+    "ipfs-grpc-server": "0.0.0",
     "ipfs-http-client": "^48.1.1",
     "ipfs-http-gateway": "^0.1.2",
     "ipfs-http-server": "^0.1.2",

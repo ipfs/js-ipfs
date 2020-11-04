@@ -11,6 +11,7 @@ const ipfsHttpClient = require('ipfs-http-client')
 const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
+const gRPCServer = require('ipfs-grpc-server')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 
 class Daemon {
@@ -57,6 +58,8 @@ class Daemon {
       // @ts-ignore - _apiServers is possibly undefined
       await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
+
+    this._grpcServer = await gRPCServer(ipfs, ipfsOpts)
 
     log('started')
     return this

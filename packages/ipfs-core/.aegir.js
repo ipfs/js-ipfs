@@ -8,7 +8,7 @@ let preloadNode = MockPreloadNode.createNode()
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '524kB' },
+  bundlesize: { maxSize: '560kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',

@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package ipfs;
+
+service Root {
+    rpc id (IdRequest) returns (IdResponse) {}
+    rpc addAll (stream AddRequest) returns (stream AddResponse) {}
+}
+
+enum FileType {
+    DIRECTORY = 0;
+    FILE = 1;
+}
+
+message IdRequest {
+    string peer_id = 1;
+}
+
+message IdResponse {
+    string id = 1;
+    string public_key = 2;
+    repeated string addresses = 3;
+    string agent_version = 4;
+    string protocol_version = 5;
+    repeated string protocols = 6;
+}
+
+message AddRequest {
+    int32 index = 1;
+    FileType type = 2;
+    string path = 3;
+    uint32 mode = 4;
+    int32 mtime = 5;
+    uint32 mtime_nsecs = 6;
+    bytes content = 7;
+}
+
+message AddResponse {
+    bool progress = 1;
+    string path = 2;
+    int32 bytes = 3;
+    string cid = 4;
+    uint32 mode = 5;
+    int32 mtime = 6;
+    uint32 mtime_nsecs = 7;
+    uint32 size = 8;
+}

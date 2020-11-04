@@ -420,5 +420,58 @@ module.exports = (common, options) => {
       expect(files[0].cid.codec).to.equal('dag-pb')
       expect(files[0].size).to.equal(18)
     })
+
+    it('should support bidirectional streaming', async function () {
+      let progressInvoked
+
+      const handler = (bytes, path) => {
+        progressInvoked = true
+      }
+
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        await new Promise((resolve) => {
+          const interval = setInterval(() => {
+            // we've received a progress result, that means we've received some
+            // data from the server before we're done sending data to the server
+            // so the streaming is bidirectional and we can finish up
+            if (progressInvoked) {
+              clearInterval(interval)
+              resolve()
+            }
+          }, 10)
+        })
+      }
+
+      await drain(ipfs.addAll(source(), {
+        progress: handler,
+        fileImportConcurrency: 1
+      }))
+
+      expect(progressInvoked).to.be.true()
+    })
+
+    it('should error during add-all stream', async function () {
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+      }
+
+      await expect(drain(ipfs.addAll(source(), {
+        fileImportConcurrency: 1,
+        chunker: 'rabin-2048--50' // invalid chunker parameters, validated after the stream starts moving
+      }))).to.eventually.be.rejectedWith(/Chunker parameter avg must be an integer/)
+    })
   })
 }

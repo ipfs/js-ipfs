@@ -8,6 +8,7 @@ module.exports = () => ({
     ],
     API: '/ip4/127.0.0.1/tcp/5002',
     Gateway: '/ip4/127.0.0.1/tcp/9090',
+    RPC: '/ip4/127.0.0.1/tcp/5003',
     Delegates: [
       '/dns4/node0.delegate.ipfs.io/tcp/443/https',
       '/dns4/node1.delegate.ipfs.io/tcp/443/https',

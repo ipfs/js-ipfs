@@ -49,6 +49,14 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       {
         name: 'should override raw leaves when file is smaller than one block and metadata is present',
         reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should support bidirectional streaming',
+        reason: 'Not supported by http'
+      },
+      {
+        name: 'should error during add-all stream',
+        reason: 'Not supported by http'
       }
     ]
   })

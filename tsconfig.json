@@ -35,11 +35,23 @@
       "ipfs-cli/*": [
         "ipfs-cli/*"
       ],
+      "ipfs-client/*": [
+        "ipfs-client/*"
+      ],
       "ipfs-core/*": [
         "ipfs-core/*"
       ],
       "ipfs-core-utils/*": [
         "ipfs-core-utils/*"
+      ],
+      "ipfs-grpc-client/*": [
+        "ipfs-grpc-client/*"
+      ],
+      "ipfs-grpc-protocol/*": [
+        "ipfs-grpc-protocol/*"
+      ],
+      "ipfs-grpc-server/*": [
+        "ipfs-grpc-server/*"
       ],
       "ipfs-http-client/*": [
         "ipfs-http-client/*"
