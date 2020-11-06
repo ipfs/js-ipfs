@@ -4,7 +4,6 @@ const log = require('debug')('ipfs:components:init')
 const PeerId = require('peer-id')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
-
 const mergeOptions = require('merge-options')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
 const createRepo = require('../runtime/repo-nodejs')
@@ -209,6 +208,7 @@ async function initNewRepo (repo, { privateKey, emptyRepo, algorithm, bits, prof
   emptyRepo = emptyRepo || false
   bits = bits == null ? 2048 : Number(bits)
 
+  // @ts-ignore https://github.com/schnittstabil/merge-options/pull/26
   config = mergeOptions(applyProfiles(profiles, getDefaultConfig()), config)
 
   // Verify repo does not exist yet
@@ -271,6 +271,7 @@ async function initExistingRepo (repo, { config: newConfig, profiles, pass }) {
       config = applyProfiles(profiles, config)
     }
     if (newConfig) {
+      // @ts-ignore https://github.com/schnittstabil/merge-options/pull/26
       config = mergeOptions(config, newConfig)
     }
     await repo.config.set(config)

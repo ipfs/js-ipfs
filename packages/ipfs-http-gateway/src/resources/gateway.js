@@ -176,7 +176,7 @@ module.exports = {
 
   afterHandler (request, h) {
     const { response } = request
-    // Add headers to successfult responses (regular or range)
+    // Add headers to successful responses (regular or range)
     if (response.statusCode === 200 || response.statusCode === 206) {
       const path = request.path
       response.header('X-Ipfs-Path', path)

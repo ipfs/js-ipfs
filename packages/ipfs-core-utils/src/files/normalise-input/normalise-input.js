@@ -46,12 +46,15 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 
   // Iterable<?>
   if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    /** @type {any} peekable */
     const peekable = itPeekable(input)
+
+    /** @type {any} value **/
     const { value, done } = await peekable.peek()
 
     if (done) {
       // make sure empty iterators result in empty files
-      yield * peekable
+      yield * []
       return
     }
 
@@ -102,8 +105,8 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
-
   const file = { path: path || '', mode, mtime }
+
   if (content) {
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop

@@ -1,4 +1,5 @@
 'use strict'
+
 const mergeOptions = require('merge-options')
 const multicodec = require('multicodec')
 

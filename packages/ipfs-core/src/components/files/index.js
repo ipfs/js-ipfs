@@ -94,7 +94,7 @@ function createMfs (options) {
 /**
  * @param {Object} context
  * @param {import('..').IPLD} context.ipld
- * @param {import('..').IPLDBlock} context.block
+ * @param {import('..').Block} context.block
  * @param {import('..').IPFSBlockService} context.blockService
  * @param {import('..').IPFSRepo} context.repo
  * @param {import('..').Preload} context.preload
