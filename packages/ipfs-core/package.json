@@ -75,7 +75,7 @@
     "ipfs-repo": "^6.0.3",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",
-    "ipfs-unixfs-importer": "^3.0.4",
+    "ipfs-unixfs-importer": "^4.0.0",
     "ipfs-utils": "^4.0.0",
     "ipld": "^0.27.2",
     "ipld-block": "^0.10.1",

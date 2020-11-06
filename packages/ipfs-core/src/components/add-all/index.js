@@ -41,6 +41,23 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
       opts.strategy = 'trickle'
     }
 
+    if (opts.strategy === 'trickle') {
+      opts.leafType = 'raw'
+      opts.reduceSingleLeafToSelf = false
+    }
+
+    if (opts.cidVersion > 0 && opts.rawLeaves === undefined) {
+      // if the cid version is 1 or above, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
+    if (opts.hashAlg !== undefined && opts.rawLeaves === undefined) {
+      // if a non-default hash alg has been specified, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
     delete opts.trickle
 
     if (opts.progress) {
