@@ -176,7 +176,7 @@ module.exports = (common, options) => {
         receivedNames.push(name)
       }
 
-      await drain(ipfs.add([{
+      await drain(ipfs.addAll([{
         content: 'hello',
         path: 'foo.txt'
       }, {
