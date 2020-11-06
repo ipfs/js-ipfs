@@ -68,7 +68,7 @@ module.exports = ipfsClient
  * derives API from it's return type and extends it last `options` parameter
  * with `HttpOptions`.
  *
- * This can be used to avoid (re)typing API interface when implemeting it in
+ * This can be used to avoid (re)typing API interface when implementing it in
  * http client e.g you can annotate `ipfs.addAll` implementation with
  *
  * `@type {Implements<typeof import('ipfs-core/src/components/add-all')>}`
@@ -83,7 +83,7 @@ module.exports = ipfsClient
 /**
  * @template Key
  * @template {(config:any) => any} APIFactory
- * @typedef {import('./interface').APIMethadWithExtraOptions<ReturnType<APIFactory>, Key, HttpOptions>} ImplementsMethod
+ * @typedef {import('./interface').APIMethodWithExtraOptions<ReturnType<APIFactory>, Key, HttpOptions>} ImplementsMethod
  */
 
 /**

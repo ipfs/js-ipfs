@@ -252,7 +252,7 @@ An optional object which may have the following keys:
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
 | pin | `boolean` | `true` | pin this object when adding |
-| progress | function | `undefined` | a function that will be called with the byte length of chunks as a file is added to ipfs |
+| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the name of the file being added |
 | rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
 | shardSplitThreshold | `Number` | `1000` | Directories with more than this number of files will be created as HAMT-sharded directories |
 | trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |

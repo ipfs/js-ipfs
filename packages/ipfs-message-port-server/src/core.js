@@ -25,8 +25,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  */
 
 /**
- * @template T
- * @typedef {import('ipfs-message-port-protocol/src/core').RemoteCallback<T>} RemoteCallback
+ * @typedef {import('ipfs-message-port-protocol/src/core').RemoteCallback} RemoteCallback
  */
 
 /**
@@ -42,7 +41,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @property {HashAlg} [hashAlg]
  * @property {boolean} [onlyHash]
  * @property {boolean} [pin]
- * @property {RemoteCallback<number>|void} [progress]
+ * @property {RemoteCallback|void} [progress]
  * @property {boolean} [rawLeaves]
  * @property {number} [shardSplitThreshold]
  * @property {boolean} [trickle]
@@ -130,6 +129,13 @@ exports.CoreService = class CoreService {
       signal
     } = query
 
+    let progressCallback
+
+    if (progress) {
+      const fn = decodeCallback(progress)
+      progressCallback = (bytes, fileName) => fn([bytes, fileName])
+    }
+
     const options = {
       chunker,
       cidVersion,
@@ -142,7 +148,7 @@ exports.CoreService = class CoreService {
       trickle,
       wrapWithDirectory,
       timeout,
-      progress: progress != null ? decodeCallback(progress) : undefined,
+      progress: progressCallback,
       signal
     }
 
@@ -176,6 +182,13 @@ exports.CoreService = class CoreService {
       signal
     } = query
 
+    let progressCallback
+
+    if (progress) {
+      const fn = decodeCallback(progress)
+      progressCallback = (bytes, fileName) => fn([bytes, fileName])
+    }
+
     const options = {
       chunker,
       cidVersion,
@@ -188,7 +201,7 @@ exports.CoreService = class CoreService {
       trickle,
       wrapWithDirectory,
       timeout,
-      progress: progress != null ? decodeCallback(progress) : undefined,
+      progress: progressCallback,
       signal
     }
 

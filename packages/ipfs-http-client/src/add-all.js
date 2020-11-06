@@ -38,7 +38,7 @@ module.exports = configure((api) => {
       if (file.hash !== undefined) {
         yield toCoreInterface(file)
       } else if (progressFn) {
-        progressFn(file.bytes || 0)
+        progressFn(file.bytes || 0, file.name)
       }
     }
   }
