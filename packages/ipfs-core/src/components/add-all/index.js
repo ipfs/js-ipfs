@@ -47,9 +47,9 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
       let total = 0
       const prog = opts.progress
 
-      opts.progress = (bytes, file) => {
+      opts.progress = (bytes, fileName) => {
         total += bytes
-        prog(total, file)
+        prog(total, fileName)
       }
     }
 
