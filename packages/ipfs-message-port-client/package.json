@@ -50,6 +50,7 @@
     "cross-env": "^7.0.0",
     "interface-ipfs-core": "^0.141.0",
     "ipfs": "^0.51.0",
+    "ipfs-core": "^0.1.0",
     "ipfs-message-port-protocol": "^0.3.0",
     "ipfs-message-port-server": "^0.3.0",
     "ipld-dag-pb": "^0.20.0",

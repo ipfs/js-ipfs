@@ -73,30 +73,7 @@ class CoreClient extends Client {
    * `transfer: [input.buffer]` which would allow transferring it instead of
    * copying.
    *
-   * @param {AddAllInput} input
-   * @param {Object} [options]
-   * @param {string} [options.chunker="size-262144"]
-   * @param {number} [options.cidVersion=0]
-   * @param {boolean} [options.enableShardingExperiment]
-   * @param {string} [options.hashAlg="sha2-256"]
-   * @param {boolean} [options.onlyHash=false]
-   * @param {boolean} [options.pin=true]
-   * @param {function(number):void} [options.progress]
-   * @param {boolean} [options.rawLeaves=false]
-   * @param {number} [options.shardSplitThreshold=1000]
-   * @param {boolean} [options.trickle=false]
-   * @param {boolean} [options.wrapWithDirectory=false]
-   * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer]
-   * @param {AbortSignal} [options.signal]
-   * @returns {AsyncIterable<AddedData>}
-   *
-   * @typedef {Object} AddedData
-   * @property {string} path
-   * @property {CID} cid
-   * @property {number} mode
-   * @property {number} size
-   * @property {Time} mtime
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all')>}
    */
   async * addAll (input, options = {}) {
     const { timeout, signal } = options
@@ -123,23 +100,7 @@ class CoreClient extends Client {
    * `transfer: [input.buffer]` which would allow transferring it instead of
    * copying.
    *
-   * @param {AddInput} input
-   * @param {Object} [options]
-   * @param {string} [options.chunker="size-262144"]
-   * @param {number} [options.cidVersion=0]
-   * @param {boolean} [options.enableShardingExperiment]
-   * @param {string} [options.hashAlg="sha2-256"]
-   * @param {boolean} [options.onlyHash=false]
-   * @param {boolean} [options.pin=true]
-   * @param {function(number):void} [options.progress]
-   * @param {boolean} [options.rawLeaves=false]
-   * @param {number} [options.shardSplitThreshold=1000]
-   * @param {boolean} [options.trickle=false]
-   * @param {boolean} [options.wrapWithDirectory=false]
-   * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer]
-   * @param {AbortSignal} [options.signal]
-   * @returns {Promise<AddedData>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
    */
   async add (input, options = {}) {
     const { timeout, signal } = options
@@ -200,7 +161,7 @@ class CoreClient extends Client {
  * Decodes values yield by `ipfs.add`.
  *
  * @param {AddedEntry} data
- * @returns {AddedData}
+ * @returns {import('ipfs-core/src/components/add-all').UnixFSEntry}
  */
 const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
   return {

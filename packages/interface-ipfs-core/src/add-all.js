@@ -170,6 +170,26 @@ module.exports = (common, options) => {
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })
 
+    it('should receive file name from progress event', async () => {
+      const receivedNames = []
+      function handler (p, name) {
+        receivedNames.push(name)
+      }
+
+      await drain(ipfs.addAll([{
+        content: 'hello',
+        path: 'foo.txt'
+      }, {
+        content: 'world',
+        path: 'bar.txt'
+      }], {
+        progress: handler,
+        wrapWithDirectory: true
+      }))
+
+      expect(receivedNames).to.deep.equal(['foo.txt', 'bar.txt'])
+    })
+
     it('should add files to a directory non sequentially', async function () {
       const content = path => ({
         path: `test-dir/${path}`,
