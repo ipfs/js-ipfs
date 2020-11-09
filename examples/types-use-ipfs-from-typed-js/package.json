@@ -2,7 +2,7 @@
   "name": "types-use-ipfs-from-typed-js",
   "private": true,
   "dependencies": {
-    "ipfs": "^0.51.0"
+    "ipfs": "^0.52.0"
   },
   "devDependencies": {
     "typescript": "^4.0.3"
