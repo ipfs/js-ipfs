@@ -35,7 +35,6 @@
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "dlv": "^1.1.3",
-    "electron-webrtc": "^0.3.0",
     "err-code": "^2.0.3",
     "execa": "^4.0.3",
     "get-folder-size": "^2.0.1",
