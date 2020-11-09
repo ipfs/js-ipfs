@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.0...ipfs-core-utils@0.5.1) (2020-11-09)
+
+
+### Bug Fixes
+
+* typedef resolution & add examples that use types ([#3359](https://github.com/ipfs/js-ipfs/issues/3359)) ([dc2795a](https://github.com/ipfs/js-ipfs/commit/dc2795a4f3b515683d09967ce611bf87d5e67f86)), closes [#3356](https://github.com/ipfs/js-ipfs/issues/3356) [#3358](https://github.com/ipfs/js-ipfs/issues/3358)
+
+
+
+
+
 # [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.4.0...ipfs-core-utils@0.5.0) (2020-10-28)
 
 

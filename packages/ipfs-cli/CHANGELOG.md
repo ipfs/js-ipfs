@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.1.0...ipfs-cli@0.2.0) (2020-11-09)
+
+
+### Bug Fixes
+
+* remove electron-webrtc dependency ([#3378](https://github.com/ipfs/js-ipfs/issues/3378)) ([2bd5368](https://github.com/ipfs/js-ipfs/commit/2bd53686003527a102db9df92cedad4c6d9164f9)), closes [#3376](https://github.com/ipfs/js-ipfs/issues/3376)
+
+
+### BREAKING CHANGES
+
+* electron-webrtc was accidentally bundled with ipfs, now it needs installing separately
+
+
+
+
+
 # 0.1.0 (2020-10-28)
 
 

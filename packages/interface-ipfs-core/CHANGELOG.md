@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.142.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.141.0...interface-ipfs-core@0.142.0) (2020-11-09)
+
+
+### Features
+
+* pass file name to add/addAll progress handler ([#3372](https://github.com/ipfs/js-ipfs/issues/3372)) ([69681a7](https://github.com/ipfs/js-ipfs/commit/69681a7d7a8434c11f6f10e370e324f5a3d31042)), closes [ipfs/js-ipfs-unixfs#87](https://github.com/ipfs/js-ipfs-unixfs/issues/87)
+
+
+
+
+
 # [0.141.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.140.0...interface-ipfs-core@0.141.0) (2020-10-28)
 
 
