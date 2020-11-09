@@ -37,12 +37,15 @@ async function * toAsyncIterable (input) {
 
   // (Async)Iterator<?>
   if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    /** @type {any} peekable */
     const peekable = itPeekable(input)
+
+    /** @type {any} value */
     const { value, done } = await peekable.peek()
 
     if (done) {
       // make sure empty iterators result in empty files
-      yield * peekable
+      yield * []
       return
     }
 
