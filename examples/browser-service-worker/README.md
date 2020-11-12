@@ -37,8 +37,8 @@ You should see the following:
 
 ![Screen Shot](./index-view.png)
 
-If you navigate to the following address `http://localhost:3030/ipfs/bafybeicqzoixu6ivztffjy4bktwxy6lxaxkvnavkya7kfgwyhx4bund2ga/` it should load a
-page from ipfs and appear as: 
+If you navigate to the following address `http://localhost:3000/ipfs/bafybeicqzoixu6ivztffjy4bktwxy6lxaxkvnavkya7kfgwyhx4bund2ga/` it should load a
+page from ipfs and appear as:
 
 ![Screen Shot](./page-view.png)
 
