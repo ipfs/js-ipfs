@@ -1,5 +1,7 @@
+// @ts-check
 /* eslint-env browser, serviceworker */
 import IPFS from "ipfs-message-port-client"
+import { defer, selectClient } from "./service/util"
 
 /**
  * @param {LifecycleEvent} event 
@@ -143,7 +145,7 @@ const fetchIPNSContent = async ({/* path, event */}) => {
  */
 const fetchIPFSContent = async ({ event, path }) => {
   // Obtains IPFS instance
-  const ipfs = await new IPFSService().use(event)
+  const ipfs = await createIPFSClient(event)
   try {
     // Attempt to fetch the file for the path.
     return await fetchIPFSFile(ipfs, path)
@@ -295,120 +297,24 @@ const unsupportedProtocol = async (protocol) => {
 })
 }
 
-/**
- * Class is used to create IPFS clients for nodes in shared worker. Since service
- * worker may get multiple concurrent requests (e.g when pages with html, js,
- * images are loaded) we might either have IPFS client ready or have a request
- * to obtain message port for it in flight. This class encapsulates details to
- * deal with this concurrency.
- */
-class IPFSService {
-  constructor() {
-    /** @type {State<IPFS>} */
-    this.state = { status: 'idle' }
-  }
 
-  /**
-   * Obtains message port for the SharedWorker operating IPFS node and
+/**
+   * Obtains MessagePort for the SharedWorker operating IPFS node and
    * creates a client for it.
    *
    * @param {Fetch} context
    */
-  static async activate (context) {
-    // Selects a service worker client that can be used to obtain a message port
-    // from, then sends a request to it and once a response is obtained, creates a
-    // IPFS client and returns it
-    const client = await selectClient(context)
-    const port = await requestIPFSPort(client)
-    return IPFS.from(port)
-  }
-  /**
-   * Just a wrapper around `activate` that deals with state machine.
-   * 
-   * @param {IPFSService} self
-   * @param {Fetch} context
-   */
-  static async use(self, context) {
-    const { state } = self
-    switch (state.status) {
-      // If "idle" call `activate` and transtion to "pending" state and once
-      // returned promise resolves transition to "ready" state.
-      case 'idle': {
-        try {
-          const ready = IPFSService.activate(context)
-          self.state = { status: 'pending', ready }
-          const value = await ready
-          self.state = { status: 'ready', value }
-          return value
-        // If error occurs transition back to `idle` state.
-        } catch (error) {
-          self.state = { status: 'idle' }
-          throw error
-        }
-      }
-      // If "pending" request just wait for completion and return
-      case 'pending': {
-        return await state.ready
-      }
-      // If "ready" just return the value.
-      case 'ready': {
-        return state.value
-      }
-    }
-  }
-  /**
-   * Just sugar for `IPFSService.use(this, event)`
-   * 
-   * @param {Fetch} event
-   * @returns {Promise<IPFS>}
-   */
-  use(event) {
-    return IPFSService.use(this, event)
-  }
+const createIPFSClient = async (context) => {
+  // Selects a service worker client that can be used to obtain a message port
+  // from, then sends a request to it and once a response is obtained, creates a
+  // IPFS client and returns it
+  const client = await selectClient(context.target)
+  const port = await requestIPFSPort(client)
+  return IPFS.from(port)
 }
 
 
-/**
- * Find a window client that can provide a message port for a shared worker.
- * @param {Fetch} context
- * @returns {Promise<WindowClient>}
- */
-const selectClient = async ({ target, clientId  }) => {
-  // Get all the controlled window clients, score them and use the best one if
-  // it is visible.
-  const controlled = await getWindowClients(target)
-  const [best] = controlled.sort((a, b) => scoreClient(b) - scoreClient(a))
-  if (best && best.visibilityState === 'visible') {
-    return best
-  // Otherwise collect all window client (including not yet controlled ones)
-  // score them and use the best one.
-  } else {
-    const clients = await getWindowClients(target, true)
-    const [best] = clients.sort((a, b) => scoreClient(b) - scoreClient(a))
-    if (best) {
-      return best
-    } else {
-      // In theory this should never happen because all the content is loaded
-      // from iframes that have windows.
-      throw new Error('No viable client can be found')
-    }
-  }
-}
 
-/**
- * @param {WindowClient} client 
- */
-const scoreClient = ({ frameType, type, focused, visibilityState }) => {
-  // Eliminate nested clients because they won't embed JS that responds to our request.
-  const top = frameType === "nested" ? 0 : 1
-  // If not a window it's not use to us.
-  const typeScore = type === 'window' ? 1 : 0
-  // if not visible it can't execute js so not use for us either.
-  const visibiltyScore = visibilityState === 'visible' ? 1 : 0
-  // if not focused it's event loop may be throttled so prefer focused.
-  const focusScore = focused ? 2 : 1
-  return typeScore * focusScore * visibiltyScore * top
-}
 
 /**
  * Sends a message prot request to the window client and waits for the response.
@@ -436,7 +342,7 @@ const requestIPFSPort = (client) => {
 }
 
 
-/** @type {Record<string, PromiseController<Error, MessagePort>>} */
+/** @type {Record<string, { promise: Promise<MessagePort>, resolve(port:MessagPort):void, reject(error:Error):void }>} */
 const portRequests = Object.create(null)
 
 /**
@@ -459,38 +365,7 @@ const onmessage = ({data}) => {
   }
 }
 
-/**
- * Utility function to create a `promise` and it's `resolve`, `reject`
- * controllers.
- *
- * @template X,T
- * @returns {PromiseController<X,T>}
- */
-const defer = () => {
-  /** @type {PromiseController<X,T>} */
-  const controller = {}
-  controller.promise = new Promise((resolve, reject) => {
-    controller.resolve = resolve
-    controller.reject = reject
-  })
 
-  return controller
-}
-
-/**
- * Utility function to get window clients.
- *
- * @param {ServiceWorkerGlobalScope} target 
- * @param {boolean} [includeUncontrolled=false]
- * @returns {Promise<WindowClient[]>}
- */
-const getWindowClients = async (target, includeUncontrolled=false) => {
-  const clients = await target.clients.matchAll({
-    type: 'window',
-    includeUncontrolled
-  })
-  return /** @type {WindowClient[]} */ (clients)
-}
 
 /**
  * Sets up service worker event handlers.
@@ -511,19 +386,4 @@ setup(self)
  * @typedef {ExtendableEvent & { target: Scope }} LifecycleEvent
  * @typedef {ServiceWorkerGlobalScope & { onMessagePort: (event:MessageEvent) => void }} Scope 
  * @typedef {Object} MessagePortRequest
- * 
- */
-/**
- * @template X,T
- * @typedef {Object} PromiseController
- * @property {(ok:T) => void} resolve
- * @property {(error:X) => void} reject
- * @property {Promise<T>} promise
- */
-/**
- * @template T
- * @typedef {{ status: 'idle' }
- * | { status: 'pending', ready: Promise<T> }
- * | { status: 'ready', value: T }
- * } State
  */

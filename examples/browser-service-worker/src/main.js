@@ -3,9 +3,9 @@
 // This is an entry point to our program.
 const main = async () => { 
   // We start a shared worker where IPFS node is loaded.
-  const worker = useIPFSWorker()
+  const worker = createIPFSWorker()
   // @ts-ignore - Store worker in the window so that it's available in console.
-  window.worker = useIPFSWorker()
+  window.worker = createIPFSWorker()
   
   // Service workers do not have access to the `SharedWorker` API
   // (see https://github.com/w3c/ServiceWorker/issues/678)
@@ -64,7 +64,7 @@ const onServiceWorkerMessage = (event) => {
       // Note: MessagePort can be transferred only once which is why we need to
       // create a SharedWorker each time. However a ServiceWorker is only created
       // once (in main function) all other creations just create port to it.
-      const worker = useIPFSWorker()
+      const worker = createIPFSWorker()
       return serviceWorker.postMessage({
         method: 'ipfs-message-port',
         id: event.data.id,
@@ -78,7 +78,7 @@ const onServiceWorkerMessage = (event) => {
  * Creates a shared worker instance that exposes JS-IPFS node over MessagePort.
  * @returns {SharedWorker}
  */
-const useIPFSWorker = () => new SharedWorker(
+const createIPFSWorker = () => new SharedWorker(
   // @ts-ignore - Constructor takes string but webpack needs URL
   new URL('./worker.js', import.meta.url),
   'IPFS'
