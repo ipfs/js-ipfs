@@ -7,9 +7,9 @@ const main = async () => {
   // @ts-ignore - Store worker in the window so that it's available in console.
   window.worker = useIPFSWorker()
   
-  // Service workers do not have access to `SharedWorker` API
+  // Service workers do not have access to the `SharedWorker` API
   // (see https://github.com/w3c/ServiceWorker/issues/678)
-  // To overcome that limitation page will listen for the service worker message
+  // To overcome that limitation the page will listen for the service worker message
   // and provide it with a message port to the shared worker, which will enable
   // it to use our (shared) IPFS node.
   navigator.serviceWorker.onmessage = onServiceWorkerMessage
@@ -18,10 +18,10 @@ const main = async () => {
   await navigator.serviceWorker.register(new URL('./service.js', import.meta.url), { scope: '/' })
 
   // URLs like `localhost:3000/ipfs/Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD`
-  // are loaded from service worker. However it could be that such URL is loaded
-  // before service worker was registered in which case server just loads blank
+  // are loaded from service worker. However it could be that such a URL is loaded
+  // before the service worker was registered in which case our server just loads a blank
   // page (that doesn't have data-viewer attribute). If that is the case we load
-  // actual IPFS content after SW is ready.
+  // the actual IPFS content after the SW is ready.
   if (document.documentElement.dataset.viewer == null) {
     await navigator.serviceWorker.ready
     load(location.pathname)
@@ -54,9 +54,9 @@ const onServiceWorkerMessage = (event) => {
   switch (event.data.method) {
     case 'ipfs-message-port': {
       // Receives request from service worker, creates a new shared worker and
-      // responds back with a it's message port.
+      // responds back with the message port.
       // Note: MessagePort can be transferred only once which is why we need to
-      // create SharedWorker each time. However if shared worker is only created
+      // create a SharedWorker each time. However a ServiceWorker is only created
       // once (in main function) all other creations just create port to it.
       const worker = useIPFSWorker()
       return serviceWorker.postMessage({

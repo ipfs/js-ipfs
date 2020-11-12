@@ -5,8 +5,8 @@ import IPFS from "ipfs-message-port-client"
  * @param {LifecycleEvent} event 
  */
 const oninstall = async (event) => {
-  // We don't want to wait for old workers to be deactivated before new one
-  // gets activated.
+  // We don't want to wait for old workers to be deactivated before the
+  // new one gets activated
   event.waitUntil(event.target.skipWaiting())
 }
 
@@ -26,16 +26,16 @@ const onactivate = async (event) => {
 const onfetch = (event) => {
   const url = new URL(event.request.url)
   switch (url.origin) {
-    // Our service worker only serves pages for it's own page origin.
+    // Our service worker only serves pages for its own page origin
     case location.origin: {
       const [,protocol] = url.pathname.split('/')
       switch (protocol) {
         // If requests are for `/ipfs/...` or `/ipns/` URLs we respond with
-        // a content viewer which is page which are pages containing iframe
+        // a content viewer which is a page containing an iframe
         // for actual content like <iframe src=`/view${url.pathname}` />
-        // and a script that we can talk to to obtain message port for IPFS node.
+        // and a script that we can talk to in order to obtain a connection to the shared IPFS node via a MessagePort.
         // This might be confusing but this wrapper page is what allows this
-        // service worker to obtain a mesasge port, otherwise there may not even
+        // service worker to obtain a MessagePort, otherwise there may not even
         // be a page that will start a shared worker, nor a way to get a message
         // port if on is present.
         case 'ipfs':
@@ -49,8 +49,7 @@ const onfetch = (event) => {
             path: url.pathname.slice(protocol.length + 1)
           }))
         // Anything else might be for scripts, source maps etc.. we just fetch
-        // those from network (might be worth caching, but irrelevant for this
-        // demo).
+        // those from network
         default:
           return event.respondWith(fetch(event.request))
       }
@@ -193,9 +192,9 @@ const fetchIPFSContent = async ({ event, path }) => {
 const fetchIPFSFile = async (ipfs, path) => {
   const content = ipfs.cat(path)
   // We get back `AsyncIterable<Uint8Array>`, but if such file does not exists
-  // we will only know once we start reading. To responding with a stream that
+  // we will only know once we start reading. To respond with a stream that
   // fails we attempt to read first chunk and only then produce a response
-  // instace. This ensures that we either error or return Response that doesn't
+  // instance. This ensures that we either error or return a Response that doesn't
   // immediately fail.
   const chunks = content[Symbol.asyncIterator]()
   const head = await chunks.next()
@@ -239,7 +238,7 @@ const fetchIPFSFile = async (ipfs, path) => {
 const fetchIPFSDirectory = async (ipfs, path) => {
   try {
     // Collect diretory entries. If happens to contain `index.html` create a
-    // response containing that file otherwise respond with a diretory listings.
+    // response containing that file otherwise respond with a directory listing.
     const entries = []
     for await (const entry of ipfs.ls(path)) {
       if (entry.name === 'index.html') {
@@ -317,8 +316,8 @@ class IPFSService {
    */
   static async activate (context) {
     // Selects a service worker client that can be used to obtain a message port
-    // from, then send a request to it and once response is obtained create a
-    // IPFS client and return it.
+    // from, then sends a request to it and once a response is obtained, creates a
+    // IPFS client and returns it
     const client = await selectClient(context)
     const port = await requestIPFSPort(client)
     return IPFS.from(port)
@@ -333,7 +332,7 @@ class IPFSService {
     const { state } = self
     switch (state.status) {
       // If "idle" call `activate` and transtion to "pending" state and once
-      // returned promise reloves transition to "ready" state.
+      // returned promise resolves transition to "ready" state.
       case 'idle': {
         try {
           const ready = IPFSService.activate(context)
@@ -347,7 +346,7 @@ class IPFSService {
           throw error
         }
       }
-      // If "pending" request just wait for completion and return return.
+      // If "pending" request just wait for completion and return
       case 'pending': {
         return await state.ready
       }
@@ -358,7 +357,7 @@ class IPFSService {
     }
   }
   /**
-   * Just a sugar to for `IPFSService.use(this, event)`
+   * Just sugar for `IPFSService.use(this, event)`
    * 
    * @param {Fetch} event
    * @returns {Promise<IPFS>}
@@ -375,7 +374,7 @@ class IPFSService {
  * @returns {Promise<WindowClient>}
  */
 const selectClient = async ({ target, clientId  }) => {
-  // Get all the controlled window clients score them and use the best one if
+  // Get all the controlled window clients, score them and use the best one if
   // it is visible.
   const controlled = await getWindowClients(target)
   const [best] = controlled.sort((a, b) => scoreClient(b) - scoreClient(a))

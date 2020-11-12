@@ -4,14 +4,14 @@ import IPFS from 'ipfs'
 import { Server, IPFSService } from 'ipfs-message-port-server'
 
 const main = async () => {
-  // start listening to all the incoming connections (browsing contexts that
-  // which run new SharedWorker...)
-  // Note: It is important to start listening before we do any await to ensure
-  // that connections aren't missed while awaiting.
+  // start listening to all incoming connections - they will be from browsing
+  // contexts that run `new SharedWorker(...)`
+  // Note: It is important to start listening before we do any async work to
+  //  ensure that connections aren't missed while awaiting
   const connections = listen(self, 'connect')
 
-  // Start an IPFS node & create server that will expose it's API to all clients
-  // over message channel.
+  // Start an IPFS node & create server that will expose its API to all clients
+  // over message channel
   const ipfs = await IPFS.create()
   // And add hello world for tests
   await ipfs.add({ content: 'hello world' })
@@ -22,7 +22,7 @@ const main = async () => {
   self.server = server
   self.ipfs = ipfs
 
-  // connect every queued and future connection to the server.
+  // connect every queued and future connection to the server
   for await (const event of connections) {
     const port = event.ports[0]
     if (port) {

@@ -1,21 +1,21 @@
 # Using js-ipfs node in [SharedWorker][] from [ServiceWorker][]
 
-> In this example, you will find a boilerplate you can use to set up a js-ipfs
-> node in the [SharedWorker][] and use it from the [ServiceWorker][].
+> In this example, you will find boilerplate code you can use to set up an IPFS
+> node in a [SharedWorker][] and use it from a [ServiceWorker][].
 
-File `src/worker.js` demonstrates how to setup js-ipfs node in [SharedWorker][]
+File `src/worker.js` demonstrates how to setup and IPFS node in a [SharedWorker][]
 such that it can be used in other browsing contexts.
 
-File `src/service.js` demonstrates how js-ipfs node (we have setup in
-[SharedWorker][]) can be used from the [ServiceWorker][].
+File `src/service.js` demonstrates how the IPFS node we previously started in a
+[SharedWorker][] can be used from a [ServiceWorker][].
 
 File `src/main.js` demonstrates how to wire all the pieces together. It is also
-a crucial piece that enables service worker to obtain [MessagePort]() to a
-shared worker containing IPFS node.
+a crucial piece that enables a [ServiceWorker][] to obtain a connection to the
+[SharedWorker][] containing the IPFS node via a [MessagePort][]
 
 ## Before you start
 
-First clone this repo, install dependencies in the project root and build the project.
+First clone this repo, cd into the example directory and install the dependencies
 
 ```bash
 git clone https://github.com/ipfs/js-ipfs.git
