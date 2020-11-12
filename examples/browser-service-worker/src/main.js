@@ -17,13 +17,19 @@ const main = async () => {
   // @ts-ignore - register expects string but weback requires this URL hack.
   await navigator.serviceWorker.register(new URL('./service.js', import.meta.url), { scope: '/' })
 
+  await navigator.serviceWorker.ready
+
+  // This is just for testing, lets us know when SW is ready.
+  const meta = document.createElement("meta")
+  meta.name = "sw-ready"
+  document.head.appendChild(meta)
+
   // URLs like `localhost:3000/ipfs/Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD`
   // are loaded from service worker. However it could be that such a URL is loaded
   // before the service worker was registered in which case our server just loads a blank
   // page (that doesn't have data-viewer attribute). If that is the case we load
   // the actual IPFS content after the SW is ready.
   if (document.documentElement.dataset.viewer == null) {
-    await navigator.serviceWorker.ready
     load(location.pathname)
   }
 }

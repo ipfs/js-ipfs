@@ -12,8 +12,7 @@ module.exports = {
     browser.expect.element('body').text.to.contain('Load content by adding IPFS path to the URL')
     browser.expect.element('a').text.to.contain('/ipfs/bafy')
 
-    // Sometimes service worker activation takes a bit so we give it a moment
-    browser.pause(1000)
+    browser.waitForElementPresent('meta[name=sw-ready]')
 
     browser
       .url(`${process.env.IPFS_EXAMPLE_TEST_URL}/ipfs/Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD`)
