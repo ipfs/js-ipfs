@@ -96,7 +96,6 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
 
         yield added
       }
-      yield * iterator
     } finally {
       releaseLock()
     }
