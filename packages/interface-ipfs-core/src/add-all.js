@@ -140,6 +140,7 @@ module.exports = (common, options) => {
       })
 
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
+      const progressSizes = {}
 
       const dirs = [
         content('pp.txt'),
@@ -152,20 +153,20 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const total = dirs.reduce((i, entry) => {
-        return i + (entry.content ? entry.content.length : 0)
-      }, 0)
+      const total = dirs.reduce((acc, curr) => {
+        if (curr.content) {
+          acc[curr.path] = curr.content.length
+        }
 
-      let progCalled = false
-      let accumProgress = 0
-      const handler = (p) => {
-        progCalled = true
-        accumProgress += p
+        return acc
+      }, {})
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
       }
 
       const root = await last(ipfs.addAll(dirs, { progress: handler }))
-      expect(progCalled).to.be.true()
-      expect(accumProgress).to.be.at.least(total)
+      expect(progressSizes).to.deep.equal(total)
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })

@@ -60,13 +60,19 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
 
     delete opts.trickle
 
+    const totals = {}
+
     if (opts.progress) {
-      let total = 0
       const prog = opts.progress
 
-      opts.progress = (bytes, fileName) => {
-        total += bytes
-        prog(total, fileName)
+      opts.progress = (bytes, path) => {
+        if (!totals[path]) {
+          totals[path] = 0
+        }
+
+        totals[path] += bytes
+
+        prog(totals[path], path)
       }
     }
 
@@ -84,6 +90,12 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     const releaseLock = await gcLock.readLock()
 
     try {
+      for await (const added of iterator) {
+        // do not keep file totals around forever
+        delete totals[added.path]
+
+        yield added
+      }
       yield * iterator
     } finally {
       releaseLock()
@@ -179,8 +191,7 @@ function pinFile (pin, opts) {
  * @property {boolean} [onlyHash=false] - If true, will not add blocks to the
  * blockstore.
  * @property {boolean} [pin=true] - Pin this object when adding.
- * @property {(bytes:number, fileName:string) => void} [progress] - A function that will be
- * called with the number of bytes added as a file is added to ipfs and the name of the file being added.
+ * @property {(bytes:number, path:string) => void} [progress] - a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added
  * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
  * file data and not be wrapped in a protobuf.
  * @property {number} [shardSplitThreshold=1000] - Directories with more than this
