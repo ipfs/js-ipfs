@@ -171,6 +171,28 @@ module.exports = (common, options) => {
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
     })
 
+    it('should receive progress path as empty string when adding content without paths', async function () {
+      const content = (name) => fixtures.directory.files[name]
+      const progressSizes = {}
+
+      const dirs = [
+        content('pp.txt'),
+        content('holmes.txt'),
+        content('jungle.txt')
+      ]
+
+      const total = {
+        '': dirs.reduce((acc, curr) => acc + curr.length, 0)
+      }
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
+      }
+
+      await drain(ipfs.addAll(dirs, { progress: handler }))
+      expect(progressSizes).to.deep.equal(total)
+    })
+
     it('should receive file name from progress event', async () => {
       const receivedNames = []
       function handler (p, name) {
