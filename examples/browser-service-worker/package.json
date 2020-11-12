@@ -5,9 +5,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "npm run build:js && npm run build:html",
-    "build:html": "cp index.html dist",
-    "build:js": "webpack",
+    "build": "webpack",
     "start": "webpack-dev-server",
     "test": "test-ipfs-example"
   },
@@ -21,8 +19,7 @@
     "test-ipfs-example": "^2.0.3",
     "webpack": "5.4.0",
     "webpack-cli": "4.1.0",
-    "webpack-dev-server": "3.11.0",
-    "worker-plugin": "4.0.3"
+    "webpack-dev-server": "3.11.0"
   },
   "dependencies": {
     "ipfs": "^0.51.0",
