@@ -73,5 +73,16 @@ module.exports = (common, options) => {
 
       await expect(ipfs.id()).to.eventually.have.property('addresses').that.is.not.empty()
     })
+
+    it('should get the id of another node in the swarm', async function () {
+      const ipfsB = (await common.spawn()).api
+      await ipfs.swarm.connect(ipfsB.peerId.addresses[0])
+
+      const result = await ipfs.id({
+        peerId: ipfsB.peerId.id
+      })
+
+      expect(result).to.deep.equal(ipfsB.peerId)
+    })
   })
 }

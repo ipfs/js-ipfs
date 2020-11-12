@@ -4,6 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
+const PeerId = require('peer-id')
 
 const defaultOptions = {
   timeout: undefined
@@ -50,6 +51,23 @@ describe('id', () => {
     })
 
     const out = await cli('id --timeout=1s', { ipfs })
+    const res = JSON.parse(out)
+    expect(res).to.have.property('id', 'id')
+    expect(res).to.have.property('publicKey', 'publicKey')
+  })
+
+  it('get the id of another peer', async () => {
+    const peerId = PeerId.createFromB58String('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
+
+    ipfs.id.withArgs({
+      ...defaultOptions,
+      peerId: peerId.toString()
+    }).resolves({
+      id: 'id',
+      publicKey: 'publicKey'
+    })
+
+    const out = await cli(`id ${peerId}`, { ipfs })
     const res = JSON.parse(out)
     expect(res).to.have.property('id', 'id')
     expect(res).to.have.property('publicKey', 'publicKey')
