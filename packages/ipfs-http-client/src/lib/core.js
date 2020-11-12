@@ -1,58 +1,59 @@
 'use strict'
 /* eslint-env browser */
 const Multiaddr = require('multiaddr')
-const toUri = require('multiaddr-to-uri')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const { URL } = require('iso-url')
 const parseDuration = require('parse-duration').default
 const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
+const toUrlString = require('ipfs-core-utils/src/to-url-string')
 
 /**
- * @param {any} input
- * @returns {input is Multiaddr}
- */
-const isMultiaddr = (input) => {
-  try {
-    Multiaddr(input) // eslint-disable-line no-new
-    return true
-  } catch (e) {
-    return false
-  }
-}
-
-/**
- * @param {any} options
+ * @param {ClientOptions|URL|Multiaddr|string} options
  * @returns {ClientOptions}
  */
-const normalizeInput = (options = {}) => {
-  if (isMultiaddr(options)) {
-    options = { url: toUri(options) }
-  } else if (typeof options === 'string') {
-    options = { url: options }
+const normalizeOptions = (options = {}) => {
+  let url
+  let opts
+
+  if (typeof options === 'string' || Multiaddr.isMultiaddr(options)) {
+    url = new URL(toUrlString(options))
+    opts = {}
+  } else if (options instanceof URL) {
+    url = options
+    opts = {}
+  } else if (typeof options.url === 'string' || Multiaddr.isMultiaddr(options.url)) {
+    url = new URL(toUrlString(options.url))
+    opts = options
+  } else if (options.url instanceof URL) {
+    url = options.url
+    opts = options
+  } else {
+    opts = options || {}
+
+    if (isBrowser || isWebWorker) {
+      const protocol = (opts.protocol || location.protocol).replace(':', '')
+
+      url = new URL(`${protocol}://${opts.host || location.hostname}:${opts.port || location.port}`)
+    } else {
+      url = new URL(`${opts.protocol || 'http'}://${opts.host || 'localhost'}:${opts.port || '5001'}`)
+    }
   }
 
-  const url = new URL(options.url)
-  if (options.apiPath) {
-    url.pathname = options.apiPath
+  if (opts.apiPath) {
+    url.pathname = opts.apiPath
   } else if (url.pathname === '/' || url.pathname === undefined) {
     url.pathname = 'api/v0'
   }
-  if (!options.url) {
-    if (isBrowser || isWebWorker) {
-      url.protocol = options.protocol || location.protocol
-      url.hostname = options.host || location.hostname
-      url.port = options.port || location.port
-    } else {
-      url.hostname = options.host || 'localhost'
-      url.port = options.port || '5001'
-      url.protocol = options.protocol || 'http'
-    }
-  }
-  options.url = url
 
-  return options
+  return {
+    ...opts,
+    host: url.host,
+    protocol: url.protocol.replace(':', ''),
+    port: Number(url.port),
+    apiPath: url.pathname,
+    url
+  }
 }
 
 const errorHandler = async (response) => {
@@ -111,7 +112,7 @@ const parseTimeout = (value) => {
  * @property {Headers|Record<string, string>} [headers] - Request headers.
  * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
  * @property {string} [apiPath] - Path to the API.
- * @property {URL|string} [url] - Full API URL.
+ * @property {URL|string|Multiaddr} [url] - Full API URL.
  * @property {object} [ipld]
  * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
  * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
@@ -121,7 +122,7 @@ class Client extends HTTP {
    * @param {ClientOptions|URL|Multiaddr|string} [options]
    */
   constructor (options = {}) {
-    const opts = normalizeInput(options)
+    const opts = normalizeOptions(options)
 
     super({
       timeout: parseTimeout(opts.timeout) || 60000 * 20,
