@@ -34,7 +34,7 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop -i libp2p-webrtc-star"
+    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -54,6 +54,7 @@
     "ipfs-utils": "^4.0.0",
     "ipfsd-ctl": "^7.0.2",
     "iso-url": "^1.0.0",
+    "libp2p-webrtc-star": "^0.20.1",
     "merge-options": "^2.0.0",
     "typescript": "^4.0.3"
   },
