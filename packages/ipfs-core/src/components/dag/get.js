@@ -18,12 +18,12 @@ module.exports = ({ ipld, preload }) => {
    * ```js
    * // example obj
    * const obj = {
-   * a: 1,
-   * b: [1, 2, 3],
-   * c: {
-   * ca: [5, 6, 7],
-   * cb: 'foo'
-   * }
+   *   a: 1,
+   *   b: [1, 2, 3],
+   *   c: {
+   *     ca: [5, 6, 7],
+   *     cb: 'foo'
+   *   }
    * }
    *
    * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
