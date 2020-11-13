@@ -6,8 +6,8 @@ const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
 
 /**
  * @param {Object} config
- * @param {import('./core').IPLD} config.ipld
- * @param {import('./core').Preload} config.preload
+ * @param {import('./root').IPLD} config.ipld
+ * @param {import('./root').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
   /**

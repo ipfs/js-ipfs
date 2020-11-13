@@ -23,7 +23,7 @@ const createRefsLocalAPI = require('./refs/local')
 const BitswapAPI = require('./bitswap')
 const BootstrapAPI = require('./bootstrap')
 const BlockAPI = require('./block')
-const CoreAPI = require('./core')
+const RootAPI = require('./root')
 const createVersionAPI = require('./version')
 const createIDAPI = require('./id')
 const createConfigAPI = require('./config')
@@ -90,7 +90,7 @@ class IPFS {
     const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })
-    const { add, addAll, cat, get, ls } = new CoreAPI({
+    const { add, addAll, cat, get, ls } = new RootAPI({
       gcLock,
       preload,
       pin,
@@ -267,7 +267,6 @@ const addEmptyDir = async (ipfs) => {
  * @returns {Options}
  */
 const getDefaultOptions = () => ({
-  init: true,
   start: true,
   EXPERIMENTAL: {},
   preload: {

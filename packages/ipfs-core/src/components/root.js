@@ -6,7 +6,7 @@ const createCatAPI = require('./cat')
 const createGetAPI = require('./get')
 const createLsAPI = require('./ls')
 
-class CoreAPI {
+class RootAPI {
   /**
    * @param {Object} config
    * @param {Block} config.block
@@ -33,7 +33,7 @@ class CoreAPI {
   }
 }
 
-module.exports = CoreAPI
+module.exports = RootAPI
 
 /**
  * @typedef {import('.').Block} Block
