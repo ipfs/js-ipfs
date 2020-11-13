@@ -465,6 +465,10 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
+        name: 'should include the ipfs-http-client version',
+        reason: 'TODO not implemented in go-ipfs yet'
+      }
+      {
         name: 'should have protocols property',
         reason: 'TODO not implemented in go-ipfs yet'
       }
