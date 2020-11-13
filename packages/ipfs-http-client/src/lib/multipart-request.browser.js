@@ -50,7 +50,6 @@ async function multipartRequest (source = '', abortController, headers = {}) {
       total = end
     } else {
       formData.set(fieldName, new File([''], encodeURIComponent(path), { type: 'application/x-directory' }))
-      parts.push({ name: path, start: total, end: total })
     }
 
     index++
