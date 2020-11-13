@@ -9,19 +9,17 @@ const merge = require('merge-options')
 const toUrlString = require('ipfs-core-utils/src/to-url-string')
 
 /**
- * @param {ClientOptions|URL|Multiaddr|string} options
+ * @param {ClientOptions|URL|Multiaddr|string} [options]
  * @returns {ClientOptions}
  */
 const normalizeOptions = (options = {}) => {
   let url
-  let opts
+  let opts = {}
 
   if (typeof options === 'string' || Multiaddr.isMultiaddr(options)) {
     url = new URL(toUrlString(options))
-    opts = {}
   } else if (options instanceof URL) {
     url = options
-    opts = {}
   } else if (typeof options.url === 'string' || Multiaddr.isMultiaddr(options.url)) {
     url = new URL(toUrlString(options.url))
     opts = options
