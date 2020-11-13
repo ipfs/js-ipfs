@@ -57,8 +57,8 @@ module.exports = DagAPI
  * @property {ReturnType<typeof createTree>} tree
  *
  * @typedef {Object} ReaderConfig
- * @property {IPLD} config.ipld
- * @property {Preload} config.preload
+ * @property {IPLD} ipld
+ * @property {Preload} preload
  *
  * @typedef {import('..').IPLD} IPLD
  * @typedef {import('..').Preload} Preload
