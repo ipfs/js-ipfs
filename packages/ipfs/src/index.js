@@ -1,10 +1,5 @@
 'use strict'
 
-const IPFS = require('./core')
-
-/**
- * @typedef { ReturnType<typeof IPFS['create']> extends Promise<infer U>
- *             ? U : never } IPFS
- */
+const IPFS = require('ipfs-core')
 
 module.exports = IPFS

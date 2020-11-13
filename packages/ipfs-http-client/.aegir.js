@@ -16,7 +16,7 @@ const server = createServer({
 let echoServer = new EchoServer()
 
 module.exports = {
-  bundlesize: { maxSize: '90kB' },
+  bundlesize: { maxSize: '83kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',

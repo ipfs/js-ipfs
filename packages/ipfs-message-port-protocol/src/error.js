@@ -48,6 +48,7 @@ exports.decodeError = decodeError
 
 /**
  * Create error by error name.
+ *
  * @param {string} name
  * @param {string} message
  * @returns {Error}

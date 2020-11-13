@@ -1,6 +1,6 @@
 'use strict'
 
-const { Client } = require('./client')
+const Client = require('./client')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { decodeError } = require('ipfs-message-port-protocol/src/error')
 const {
@@ -14,7 +14,7 @@ const {
  * @typedef {import('ipfs-message-port-server/src/block').EncodedBlock} EncodedBlock
  * @typedef {import('ipfs-message-port-server/src/block').Rm} EncodedRmEntry
  * @typedef {import('ipfs-message-port-server/src/block').BlockService} BlockService
- * @typedef {import('./client').ClientTransport} Transport
+ * @typedef {import('./client').MessageTransport} MessageTransport
  */
 
 /**
@@ -23,7 +23,7 @@ const {
  */
 class BlockClient extends Client {
   /**
-   * @param {Transport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
     super('block', ['put', 'get', 'rm', 'stat'], transport)
@@ -31,6 +31,7 @@ class BlockClient extends Client {
 
   /**
    * Get a raw IPFS block.
+   *
    * @param {CID} cid - A CID that corresponds to the desired block
    * @param {Object} [options]
    * @param {number} [options.timeout] - A timeout in ms
@@ -51,6 +52,7 @@ class BlockClient extends Client {
 
   /**
    * Stores input as an IPFS block.
+   *
    * @param {Block|Uint8Array} block - A Block or Uint8Array of block data
    * @param {Object} [options]
    * @param {CID} [options.cid] - A CID to store the block under (if block is
@@ -85,6 +87,7 @@ class BlockClient extends Client {
 
   /**
    * Remove one or more IPFS block(s).
+   *
    * @param {CID|CID[]} cids - Block(s) to be removed
    * @param {Object} [options]
    * @param {boolean} [options.force=false] - Ignores nonexistent blocks
@@ -114,6 +117,7 @@ class BlockClient extends Client {
 
   /**
    * Returns information about a raw IPFS block.
+   *
    * @param {CID} cid - Block to get information about.
    * @param {Object} [options]
    * @param {number} [options.timeout] - A timeout in ms

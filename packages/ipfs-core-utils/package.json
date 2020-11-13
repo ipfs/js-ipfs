@@ -1,16 +1,24 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.4.0",
+  "version": "0.5.1",
   "description": "Package to share code between ipfs and ipfs-http-client",
-  "main": "src/index.js",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "main": "src/index.js",
   "files": [
     "src",
     "dist"
   ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*",
+        "dist/*/index"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -18,28 +26,33 @@
   "scripts": {
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
-    "test:node": "aegir test -t node",
     "test:electron": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
+    "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:js && npm run build:types",
+    "build:js": "aegir build",
+    "build:types": "tsc --build",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
   "license": "MIT",
   "dependencies": {
-    "blob-to-it": "0.0.2",
-    "browser-readablestream-to-it": "0.0.2",
+    "blob-to-it": "^1.0.1",
+    "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.0.0",
-    "err-code": "^2.0.0",
-    "ipfs-utils": "^3.0.0",
-    "it-all": "^1.0.1",
-    "it-map": "^1.0.2",
-    "it-peekable": "0.0.1",
+    "err-code": "^2.0.3",
+    "ipfs-utils": "^4.0.0",
+    "it-all": "^1.0.4",
+    "it-map": "^1.0.4",
+    "it-peekable": "^1.0.1",
+    "multiaddr": "^8.0.0",
+    "multiaddr-to-uri": "^6.0.0",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
-    "delay": "^4.3.0"
+    "aegir": "^28.0.0",
+    "delay": "^4.4.0",
+    "typescript": "^4.0.3"
   }
 }

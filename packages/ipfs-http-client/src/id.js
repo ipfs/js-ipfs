@@ -6,9 +6,8 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {import('../../ipfs/src/core/components/id').Id<import('.').HttpOptions>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/id')>}
    */
   async function id (options = {}) {
     const res = await api.post('id', {

@@ -7,7 +7,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async function * provide (cids, options = {}) {
+  /**
+   * @type {import('..').ImplementsMethod<'provide', import('ipfs-core/src/components/dht')>}
+   */
+  async function * provide (cids, options = {}) {
     cids = Array.isArray(cids) ? cids : [cids]
 
     const res = await api.post('dht/provide', {
@@ -34,4 +37,6 @@ module.exports = configure(api => {
       yield message
     }
   }
+
+  return provide
 })

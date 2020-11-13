@@ -8,9 +8,14 @@ const all = require('it-all')
 
 const {
   isBytes,
-  isBlob
+  isBlob,
+  isReadableStream
 } = require('./utils')
 
+/**
+ * @param {import('./normalise-input').ToContent} input
+ * @returns {Promise<Blob>}
+ */
 async function toBlob (input) {
   // Bytes | String
   if (isBytes(input) || typeof input === 'string' || input instanceof String) {
@@ -23,13 +28,16 @@ async function toBlob (input) {
   }
 
   // Browser stream
-  if (typeof input.getReader === 'function') {
+  if (isReadableStream(input)) {
     input = browserStreamToIt(input)
   }
 
   // (Async)Iterator<?>
   if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+    /** @type {any} peekable */
     const peekable = itPeekable(input)
+
+    /** @type {any} value **/
     const { value, done } = await peekable.peek()
 
     if (done) {
@@ -53,6 +61,10 @@ async function toBlob (input) {
   throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
 }
 
+/**
+ * @param {AsyncIterable<BlobPart>|Iterable<BlobPart>} stream
+ * @returns {Promise<Blob>}
+ */
 async function itToBlob (stream) {
   const parts = []
 

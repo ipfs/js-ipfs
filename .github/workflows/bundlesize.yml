@@ -1,0 +1,39 @@
+# Checks bundlesize, does not run on master
+on:
+  pull_request:
+    branches:
+      - '*'
+
+name: Bundlesize
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+        project:
+          - packages/ipfs-core-utils
+          - packages/ipfs-core
+          - packages/ipfs-http-client
+          - packages/ipfs
+          - packages/ipfs-message-port-protocol
+          - packages/ipfs-message-port-client
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Restore dependencies
+        id: cache-modules
+        uses: actions/checkout@v2
+        with:
+          path: node_modules
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+      - name: Install dependencies
+        run: npm install
+      - name: Bundlesize ${{ matrix.project }}
+        uses: ipfs/aegir/actions/bundle-size@v28.0.0
+        with:
+          project: ${{ matrix.project }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

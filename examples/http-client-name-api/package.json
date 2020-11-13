@@ -13,12 +13,12 @@
   "author": "Tara Vancil <tbvanc@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^47.0.0"
+    "ipfs-http-client": "^48.1.0"
   },
   "devDependencies": {
-    "execa": "^4.0.0",
-    "go-ipfs": "^0.6.0",
-    "ipfsd-ctl": "^7.0.0",
+    "execa": "^4.0.3",
+    "go-ipfs": "^0.7.0",
+    "ipfsd-ctl": "^7.0.2",
     "parcel-bundler": "^1.12.4",
     "test-ipfs-example": "^2.0.3"
   },

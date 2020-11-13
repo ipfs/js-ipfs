@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "47.0.1",
+  "version": "48.1.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -20,6 +20,14 @@
     "go-ipfs": false,
     "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*",
+        "dist/*/index"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -34,52 +42,53 @@
     "test:chrome": "cross-env ECHO_SERVER_PORT=37496 aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "cross-env ECHO_SERVER_PORT=37497 aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:js && npm run build:types",
+    "build:js": "aegir build",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "abort-controller": "^3.0.0",
-    "any-signal": "^1.1.0",
+    "any-signal": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "cids": "^1.0.0",
-    "debug": "^4.1.0",
+    "debug": "^4.1.1",
     "form-data": "^3.0.0",
-    "ipfs-core-utils": "^0.4.0",
-    "ipfs-utils": "^3.0.0",
-    "ipld-block": "^0.10.0",
+    "ipfs-core-utils": "^0.5.1",
+    "ipfs-utils": "^4.0.0",
+    "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
     "ipld-raw": "^6.0.0",
-    "iso-url": "^0.4.7",
-    "it-last": "^1.0.2",
-    "it-map": "^1.0.2",
+    "it-last": "^1.0.4",
+    "it-map": "^1.0.4",
     "it-tar": "^1.2.2",
-    "it-to-buffer": "^1.0.0",
-    "it-to-stream": "^0.1.1",
+    "it-to-buffer": "^1.0.2",
+    "it-to-stream": "^0.1.2",
     "merge-options": "^2.0.0",
     "multiaddr": "^8.0.0",
-    "multiaddr-to-uri": "^6.0.0",
     "multibase": "^3.0.0",
-    "multicodec": "^2.0.0",
+    "multicodec": "^2.0.1",
     "multihashes": "^3.0.1",
-    "nanoid": "^3.0.2",
-    "node-fetch": "^2.6.0",
+    "nanoid": "^3.1.12",
+    "native-abort-controller": "~0.0.3",
     "parse-duration": "^0.4.4",
-    "stream-to-it": "^0.2.1",
+    "stream-to-it": "^0.2.2",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
-    "go-ipfs": "^0.6.0",
-    "interface-ipfs-core": "^0.140.0",
-    "ipfsd-ctl": "^7.0.0",
-    "it-all": "^1.0.1",
-    "it-concat": "^1.0.0",
+    "go-ipfs": "^0.7.0",
+    "interface-ipfs-core": "^0.142.0",
+    "ipfs-core": "^0.2.0",
+    "ipfsd-ctl": "^7.0.2",
+    "it-all": "^1.0.4",
+    "it-concat": "^1.0.1",
     "it-pipe": "^1.1.0",
-    "nock": "^13.0.2"
+    "nock": "^13.0.2",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

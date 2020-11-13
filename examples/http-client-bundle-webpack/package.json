@@ -13,7 +13,7 @@
   "license": "MIT",
   "keywords": [],
   "dependencies": {
-    "ipfs-http-client": "^47.0.0",
+    "ipfs-http-client": "^48.1.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
@@ -23,9 +23,9 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.4",
-    "execa": "^4.0.0",
-    "ipfs": "^0.50.1",
-    "ipfsd-ctl": "^7.0.0",
+    "execa": "^4.0.3",
+    "ipfs": "^0.52.0",
+    "ipfsd-ctl": "^7.0.2",
     "react-hot-loader": "^4.12.21",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",

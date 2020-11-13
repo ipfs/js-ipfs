@@ -165,19 +165,6 @@ module.exports = (common, options) => {
         .that.satisfies(hash => multihash.decode(hash).name === 'sha2-512')
     })
 
-    it('makes a directory inside a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
-
-      await ipfs.files.mkdir(`${dirPath}`)
-
-      await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
-      await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
-
-      await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.false()
-      await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
-    })
-
     it('should make directory and have default mode', async function () {
       await testMode(undefined, parseInt('0755', 8))
     })
@@ -230,6 +217,41 @@ module.exports = (common, options) => {
       await testTimeout(() => ipfs.files.mkdir('/dir-to-make', {
         timeout: 1
       }))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('makes a directory inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
+
+        await ipfs.files.mkdir(`${dirPath}`)
+
+        await expect(isShardAtPath(shardedDirPath, ipfs)).to.eventually.be.true()
+        await expect(ipfs.files.stat(shardedDirPath)).to.eventually.have.property('type', 'directory')
+
+        await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.false()
+        await expect(ipfs.files.stat(dirPath)).to.eventually.have.property('type', 'directory')
+      })
     })
   })
 }

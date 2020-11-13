@@ -26,7 +26,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.addAll', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
@@ -140,6 +140,7 @@ module.exports = (common, options) => {
       })
 
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
+      const progressSizes = {}
 
       const dirs = [
         content('pp.txt'),
@@ -152,22 +153,64 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const total = dirs.reduce((i, entry) => {
-        return i + (entry.content ? entry.content.length : 0)
-      }, 0)
+      const total = dirs.reduce((acc, curr) => {
+        if (curr.content) {
+          acc[curr.path] = curr.content.length
+        }
 
-      let progCalled = false
-      let accumProgress = 0
-      const handler = (p) => {
-        progCalled = true
-        accumProgress += p
+        return acc
+      }, {})
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
       }
 
       const root = await last(ipfs.addAll(dirs, { progress: handler }))
-      expect(progCalled).to.be.true()
-      expect(accumProgress).to.be.at.least(total)
+      expect(progressSizes).to.deep.equal(total)
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+    })
+
+    it('should receive progress path as empty string when adding content without paths', async function () {
+      const content = (name) => fixtures.directory.files[name]
+      const progressSizes = {}
+
+      const dirs = [
+        content('pp.txt'),
+        content('holmes.txt'),
+        content('jungle.txt')
+      ]
+
+      const total = {
+        '': dirs.reduce((acc, curr) => acc + curr.length, 0)
+      }
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
+      }
+
+      await drain(ipfs.addAll(dirs, { progress: handler }))
+      expect(progressSizes).to.deep.equal(total)
+    })
+
+    it('should receive file name from progress event', async () => {
+      const receivedNames = []
+      function handler (p, name) {
+        receivedNames.push(name)
+      }
+
+      await drain(ipfs.addAll([{
+        content: 'hello',
+        path: 'foo.txt'
+      }, {
+        content: 'world',
+        path: 'bar.txt'
+      }], {
+        progress: handler,
+        wrapWithDirectory: true
+      }))
+
+      expect(receivedNames).to.deep.equal(['foo.txt', 'bar.txt'])
     })
 
     it('should add files to a directory non sequentially', async function () {

@@ -16,6 +16,7 @@ const Block = require('ipld-block')
  * If `transfer` array is provided all the encountered `ArrayBuffer`s within
  * this block will be added to the transfer so they are moved across without
  * copy.
+ *
  * @param {Block} block
  * @param {Transferable[]} [transfer]
  * @returns {EncodedBlock}

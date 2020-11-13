@@ -1,6 +1,6 @@
 'use strict'
 
-const { Client } = require('./client')
+const Client = require('./client')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
 
@@ -11,7 +11,7 @@ const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
  * @typedef {import('ipfs-message-port-server/src/dag').EncodedDAGNode} EncodedDAGNode
  * @typedef {import('ipfs-message-port-server/src/dag').DAGEntry} DAGEntry
  * @typedef {import('ipfs-message-port-server/src/dag').DAGService} DagService
- * @typedef {import('./client').ClientTransport} Transport
+ * @typedef {import('./client').MessageTransport} MessageTransport
  */
 
 /**
@@ -20,7 +20,7 @@ const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
  */
 class DAGClient extends Client {
   /**
-   * @param {Transport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
     super('dag', ['put', 'get', 'resolve', 'tree'], transport)
@@ -44,8 +44,8 @@ class DAGClient extends Client {
 
     const encodedCID = await this.remote.put({
       ...options,
-      dagNode: encodeNode(dagNode, options.transfer),
-      cid: cid != null ? encodeCID(cid) : undefined
+      cid: cid != null ? encodeCID(cid) : undefined,
+      dagNode: encodeNode(dagNode, options.transfer)
     })
 
     return decodeCID(encodedCID)
@@ -94,6 +94,7 @@ class DAGClient extends Client {
 
   /**
    * Enumerate all the entries in a graph
+   *
    * @param {CID} cid - CID of the DAG node to enumerate
    * @param {Object} [options]
    * @param {string} [options.path]

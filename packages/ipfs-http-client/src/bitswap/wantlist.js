@@ -5,9 +5,8 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * @type {import('../../../ipfs/src/core/components/bitswap/wantlist').WantlistFn<import('..').HttpOptions>}
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bitswap/wantlist')>}
    */
   async function wantlist (options = {}) {
     const res = await (await api.post('bitswap/wantlist', {

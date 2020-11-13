@@ -7,13 +7,11 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
   return async function * rmAll (source, options = {}) {
-    options = options || {}
-
     for await (const { path, recursive } of normaliseInput(source)) {
       const searchParams = new URLSearchParams(options.searchParams)
       searchParams.append('arg', `${path}`)
 
-      if (recursive != null) searchParams.set('recursive', recursive)
+      if (recursive != null) searchParams.set('recursive', String(recursive))
 
       const res = await api.post('pin/rm', {
         timeout: options.timeout,

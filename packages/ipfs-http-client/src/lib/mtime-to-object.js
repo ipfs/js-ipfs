@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * @param {any} mtime
+ * @returns {{secs:number, nsecs:number}|undefined}
+ */
 module.exports = function parseMtime (mtime) {
   if (mtime == null) {
     return undefined

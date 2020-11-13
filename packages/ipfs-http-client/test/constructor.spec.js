@@ -28,6 +28,15 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port, protocol })
     })
 
+    it('opts with URL components from URL', () => {
+      const host = 'wizard.world'
+      const port = '999'
+      const protocol = 'https'
+      const url = new URL(`${protocol}://${host}:${port}`)
+      const ipfs = ipfsClient({ host: url.host, port: url.port, protocol: url.protocol })
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
     it('multiaddr dns4 string (implicit http)', () => {
       const host = 'foo.com'
       const port = '1001'
@@ -79,12 +88,80 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port })
     })
 
+    it('URL as string', () => {
+      const host = '10.100.100.255'
+      const port = '9999'
+      const apiPath = '/future/api/v1/'
+      const ipfs = ipfsClient(`http://${host}:${port}${apiPath}`)
+      expectConfig(ipfs, { host, port, apiPath })
+    })
+
+    it('URL as URL', () => {
+      const host = '10.100.100.255'
+      const port = '9999'
+      const apiPath = '/future/api/v1/'
+      const ipfs = ipfsClient(new URL(`http://${host}:${port}${apiPath}`))
+      expectConfig(ipfs, { host, port, apiPath })
+    })
+
     it('host, port and api path', () => {
       const host = '10.100.100.255'
       const port = '9999'
       const apiPath = '/future/api/v1/'
       const ipfs = ipfsClient({ host, port, apiPath })
       expectConfig(ipfs, { host, port, apiPath })
+    })
+
+    it('options.url as URL string', () => {
+      const host = '10.100.100.255'
+      const port = '9999'
+      const apiPath = '/future/api/v1/'
+      const ipfs = ipfsClient({ url: `http://${host}:${port}${apiPath}` })
+      expectConfig(ipfs, { host, port, apiPath })
+    })
+
+    it('options.url as URL', () => {
+      const host = '10.100.100.255'
+      const port = '9999'
+      const apiPath = '/future/api/v1/'
+      const ipfs = ipfsClient({ url: new URL(`http://${host}:${port}${apiPath}`) })
+      expectConfig(ipfs, { host, port, apiPath })
+    })
+
+    it('options.url as multiaddr (implicit http)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'http' // default to http if not specified in multiaddr
+      const addr = `/dns4/${host}/tcp/${port}`
+      const ipfs = ipfsClient({ url: multiaddr(addr) })
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('options.url as multiaddr (explicit https)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'https'
+      const addr = `/dns4/${host}/tcp/${port}/https`
+      const ipfs = ipfsClient({ url: multiaddr(addr) })
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('options.url as multiaddr string (implicit http)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'http' // default to http if not specified in multiaddr
+      const addr = `/dns4/${host}/tcp/${port}`
+      const ipfs = ipfsClient({ url: addr })
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
+    it('options.url as multiaddr string (explicit https)', () => {
+      const host = 'foo.com'
+      const port = '1001'
+      const protocol = 'https'
+      const addr = `/dns4/${host}/tcp/${port}/https`
+      const ipfs = ipfsClient({ url: addr })
+      expectConfig(ipfs, { host, port, protocol })
     })
   })
 

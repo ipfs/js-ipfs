@@ -19,7 +19,7 @@
 
 - [Install](#install)
 - [Usage](#usage)
-- [Notes on Performance](#notes-on-performance)
+  - [Notes on Performance](#notes-on-performance)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -44,7 +44,7 @@ It provides following API subset:
 
 A client can be instantiated from the [`MessagePort`][] instance. The primary
 goal of this library is to allow sharing a node across browsing contexts (tabs,
-iframes) and therefore most likely `ipfs-message-port-server` will be in a 
+iframes) and therefore most likely `ipfs-message-port-server` will be in a
 separate JS bundle and loaded in the [SharedWorker][].
 
 

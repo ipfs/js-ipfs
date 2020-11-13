@@ -1,50 +1,59 @@
 'use strict'
 /* eslint-env browser */
 const Multiaddr = require('multiaddr')
-const toUri = require('multiaddr-to-uri')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const { URL } = require('iso-url')
 const parseDuration = require('parse-duration').default
 const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
+const toUrlString = require('ipfs-core-utils/src/to-url-string')
 
-const isMultiaddr = (input) => {
-  try {
-    Multiaddr(input) // eslint-disable-line no-new
-    return true
-  } catch (e) {
-    return false
+const DEFAULT_PROTOCOL = isBrowser || isWebWorker ? location.protocol : 'http'
+const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
+const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
+
+/**
+ * @param {ClientOptions|URL|Multiaddr|string} [options]
+ * @returns {ClientOptions}
+ */
+const normalizeOptions = (options = {}) => {
+  let url
+  let opts = {}
+
+  if (typeof options === 'string' || Multiaddr.isMultiaddr(options)) {
+    url = new URL(toUrlString(options))
+  } else if (options instanceof URL) {
+    url = options
+  } else if (typeof options.url === 'string' || Multiaddr.isMultiaddr(options.url)) {
+    url = new URL(toUrlString(options.url))
+    opts = options
+  } else if (options.url instanceof URL) {
+    url = options.url
+    opts = options
+  } else {
+    opts = options || {}
+
+    const protocol = (opts.protocol || DEFAULT_PROTOCOL).replace(':', '')
+    const host = (opts.host || DEFAULT_HOST).split(':')[0]
+    const port = (opts.port || DEFAULT_PORT)
+
+    url = new URL(`${protocol}://${host}:${port}`)
   }
-}
 
-const normalizeInput = (options = {}) => {
-  if (isMultiaddr(options)) {
-    options = { url: toUri(options) }
-  } else if (typeof options === 'string') {
-    options = { url: options }
-  }
-
-  const url = new URL(options.url)
-  if (options.apiPath) {
-    url.pathname = options.apiPath
+  if (opts.apiPath) {
+    url.pathname = opts.apiPath
   } else if (url.pathname === '/' || url.pathname === undefined) {
     url.pathname = 'api/v0'
   }
-  if (!options.url) {
-    if (isBrowser || isWebWorker) {
-      url.protocol = options.protocol || location.protocol
-      url.hostname = options.host || location.hostname
-      url.port = options.port || location.port
-    } else {
-      url.hostname = options.host || 'localhost'
-      url.port = options.port || '5001'
-      url.protocol = options.protocol || 'http'
-    }
-  }
-  options.url = url
 
-  return options
+  return {
+    ...opts,
+    host: url.host,
+    protocol: url.protocol.replace(':', ''),
+    port: Number(url.port),
+    apiPath: url.pathname,
+    url
+  }
 }
 
 const errorHandler = async (response) => {
@@ -71,6 +80,11 @@ const errorHandler = async (response) => {
     error = new HTTP.TimeoutError(response)
   }
 
+  // This also gets returned
+  if (msg && msg.includes('request timed out')) {
+    error = new HTTP.TimeoutError(response)
+  }
+
   // If we managed to extract a message from the response, use it
   if (msg) {
     error.message = msg
@@ -92,27 +106,28 @@ const parseTimeout = (value) => {
 
 /**
  * @typedef {Object} ClientOptions
- * @prop {string} [host]
- * @prop {number} [port]
- * @prop {string} [protocol]
- * @prop {Headers|Record<string, string>} [headers] - Request headers.
- * @prop {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
- * @prop {string} [apiPath] - Path to the API.
- * @prop {URL|string} [url] - Full API URL.
+ * @property {string} [host]
+ * @property {number} [port]
+ * @property {string} [protocol]
+ * @property {Headers|Record<string, string>} [headers] - Request headers.
+ * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
+ * @property {string} [apiPath] - Path to the API.
+ * @property {URL|string|Multiaddr} [url] - Full API URL.
+ * @property {object} [ipld]
+ * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
+ * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
  */
-
 class Client extends HTTP {
   /**
-   *
-   * @param {ClientOptions|URL|Multiaddr|string} options
+   * @param {ClientOptions|URL|Multiaddr|string} [options]
    */
   constructor (options = {}) {
-    /** @type {ClientOptions} */
-    const opts = normalizeInput(options)
+    const opts = normalizeOptions(options)
+
     super({
       timeout: parseTimeout(opts.timeout) || 60000 * 20,
       headers: opts.headers,
-      base: normalizeInput(opts.url).toString(),
+      base: `${opts.url}`,
       handleError: errorHandler,
       transformSearchParams: (search) => {
         const out = new URLSearchParams()

@@ -10,12 +10,6 @@ const drain = require('it-drain')
 const randomBytes = require('iso-random-stream/src/random')
 const testTimeout = require('../utils/test-timeout')
 
-const MFS_FILE_TYPES = {
-  file: 0,
-  directory: 1,
-  'hamt-sharded-directory': 1
-}
-
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -53,7 +47,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -81,7 +75,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -99,7 +93,7 @@ module.exports = (common, options) => {
         cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -128,7 +122,7 @@ module.exports = (common, options) => {
         cid: child.Hash,
         name: child.Hash.toString(),
         size: 262144,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
     })
 
@@ -160,54 +154,76 @@ module.exports = (common, options) => {
         cid: child.Hash,
         name: child.Hash.toString(),
         size: 262144,
-        type: MFS_FILE_TYPES.file
+        type: 'file'
       }])
-    })
-
-    it('lists a sharded directory contents', async () => {
-      const fileCount = 1001
-      const dirPath = await createShardedDirectory(ipfs, fileCount)
-      const files = await all(ipfs.files.ls(dirPath))
-
-      expect(files.length).to.equal(fileCount)
-
-      files.forEach(file => {
-        // should be a file
-        expect(file.type).to.equal(0)
-      })
-    })
-
-    it('lists a file inside a sharded directory directly', async () => {
-      const dirPath = await createShardedDirectory(ipfs)
-      const files = await all(ipfs.files.ls(dirPath))
-      const filePath = `${dirPath}/${files[0].name}`
-
-      // should be able to ls new file directly
-      const file = await all(ipfs.files.ls(filePath))
-
-      expect(file).to.have.lengthOf(1).and.to.containSubset([files[0]])
-    })
-
-    it('lists the contents of a directory inside a sharded directory', async () => {
-      const shardedDirPath = await createShardedDirectory(ipfs)
-      const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
-      const fileName = `small-file-${Math.random()}.txt`
-
-      await ipfs.files.mkdir(`${dirPath}`)
-      await ipfs.files.write(`${dirPath}/${fileName}`, Uint8Array.from([0, 1, 2, 3]), {
-        create: true
-      })
-
-      const files = await all(ipfs.files.ls(dirPath))
-
-      expect(files.length).to.equal(1)
-      expect(files.filter(file => file.name === fileName)).to.be.ok()
     })
 
     it('should respect timeout option when listing files', async () => {
       await testTimeout(() => drain(ipfs.files.ls('/', {
         timeout: 1
       })))
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('lists a sharded directory contents', async () => {
+        const fileCount = 1001
+        const dirPath = await createShardedDirectory(ipfs, fileCount)
+        const files = await all(ipfs.files.ls(dirPath))
+
+        expect(files.length).to.equal(fileCount)
+
+        files.forEach(file => {
+          // should be a file
+          expect(file.type).to.equal('file')
+        })
+      })
+
+      it('lists a file inside a sharded directory directly', async () => {
+        const dirPath = await createShardedDirectory(ipfs)
+        const files = await all(ipfs.files.ls(dirPath))
+        const filePath = `${dirPath}/${files[0].name}`
+
+        // should be able to ls new file directly
+        const file = await all(ipfs.files.ls(filePath))
+
+        expect(file).to.have.lengthOf(1).and.to.containSubset([files[0]])
+      })
+
+      it('lists the contents of a directory inside a sharded directory', async () => {
+        const shardedDirPath = await createShardedDirectory(ipfs)
+        const dirPath = `${shardedDirPath}/subdir-${Math.random()}`
+        const fileName = `small-file-${Math.random()}.txt`
+
+        await ipfs.files.mkdir(`${dirPath}`)
+        await ipfs.files.write(`${dirPath}/${fileName}`, Uint8Array.from([0, 1, 2, 3]), {
+          create: true
+        })
+
+        const files = await all(ipfs.files.ls(dirPath))
+
+        expect(files.length).to.equal(1)
+        expect(files.filter(file => file.name === fileName)).to.be.ok()
+      })
     })
   })
 }

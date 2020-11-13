@@ -11,6 +11,7 @@ const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -22,7 +23,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.add', function () {
-    this.timeout(40 * 1000)
+    this.timeout(120 * 1000)
 
     let ipfs
 
@@ -79,7 +80,7 @@ module.exports = (common, options) => {
       expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
-    it('should add a Buffer', async () => {
+    it('should add a Uint8Array', async () => {
       const file = await ipfs.add(fixtures.smallFile.data)
 
       expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
@@ -88,7 +89,7 @@ module.exports = (common, options) => {
       expect(file.size).greaterThan(fixtures.smallFile.data.length)
     })
 
-    it('should add a BIG Buffer', async () => {
+    it('should add a BIG Uint8Array', async () => {
       const file = await ipfs.add(fixtures.bigFile.data)
 
       expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
@@ -97,7 +98,7 @@ module.exports = (common, options) => {
       expect(file.size).greaterThan(fixtures.bigFile.data.length)
     })
 
-    it('should add a BIG Buffer with progress enabled', async () => {
+    it('should add a BIG Uint8Array with progress enabled', async () => {
       let progCalled = false
       let accumProgress = 0
       function handler (p) {
@@ -129,6 +130,20 @@ module.exports = (common, options) => {
       expect(accumProgress).to.equal(fixtures.emptyFile.data.length)
     })
 
+    it('should receive file name from progress event', async () => {
+      let receivedName
+      function handler (p, name) {
+        receivedName = name
+      }
+
+      await ipfs.add({
+        content: 'hello',
+        path: 'foo.txt'
+      }, { progress: handler })
+
+      expect(receivedName).to.equal('foo.txt')
+    })
+
     it('should add an empty file without progress enabled', async () => {
       const file = await ipfs.add(fixtures.emptyFile.data)
 
@@ -136,7 +151,7 @@ module.exports = (common, options) => {
       expect(file.path).to.equal(fixtures.emptyFile.cid)
     })
 
-    it('should add a Buffer as tuple', async () => {
+    it('should add a Uint8Array as tuple', async () => {
       const tuple = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
       const file = await ipfs.add(tuple)
@@ -361,6 +376,54 @@ module.exports = (common, options) => {
       expect(file.cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
       expect(file.cid.codec).to.equal('dag-pb')
       expect(file.size).to.equal(18)
+    })
+
+    it('should add a file with a v1 CID', async () => {
+      const file = await ipfs.add(Uint8Array.from([0, 1, 2]), {
+        cidVersion: 1
+      })
+
+      expect(file.cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
+      expect(file.size).to.equal(3)
+    })
+
+    const testFiles = Array.from(Array(1005), (_, i) => ({
+      path: 'test-folder/' + i,
+      content: uint8ArrayFromString('some content ' + i)
+    }))
+
+    it('should be able to add dir without sharding', async () => {
+      const { path, cid } = await last(ipfs.addAll(testFiles))
+      expect(path).to.eql('test-folder')
+      expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
+    })
+
+    describe('with sharding', () => {
+      let ipfs
+
+      before(async function () {
+        const ipfsd = await common.spawn({
+          ipfsOptions: {
+            EXPERIMENTAL: {
+              // enable sharding for js
+              sharding: true
+            },
+            config: {
+              // enable sharding for go
+              Experimental: {
+                ShardingEnabled: true
+              }
+            }
+          }
+        })
+        ipfs = ipfsd.api
+      })
+
+      it('should be able to add dir with sharding', async () => {
+        const { path, cid } = await last(ipfs.addAll(testFiles))
+        expect(path).to.eql('test-folder')
+        expect(cid.toString()).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
+      })
     })
   })
 }
