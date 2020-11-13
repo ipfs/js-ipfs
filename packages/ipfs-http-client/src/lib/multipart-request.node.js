@@ -7,6 +7,13 @@ const mtimeToObject = require('./mtime-to-object')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
 
+/**
+ *
+ * @param {Object} source
+ * @param {AbortController} abortController
+ * @param {Headers|Record<string, string>} [headers]
+ * @param {string} [boundary]
+ */
 async function multipartRequest (source = '', abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   async function * streamFiles (source) {
     try {
@@ -29,10 +36,9 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
           qs.push(`mode=${modeToString(mode)}`)
         }
 
-        if (mtime != null) {
-          const {
-            secs, nsecs
-          } = mtimeToObject(mtime)
+        const time = mtimeToObject(mtime)
+        if (time != null) {
+          const { secs, nsecs } = time
 
           qs.push(`mtime=${secs}`)
 
@@ -58,6 +64,7 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
       }
     } catch (err) {
       // workaround for https://github.com/node-fetch/node-fetch/issues/753
+      // @ts-ignore - abort does not expect an arguments
       abortController.abort(err)
     } finally {
       yield `\r\n--${boundary}--\r\n`
@@ -65,7 +72,7 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
   }
 
   return {
-    lengthComputable: false,
+    parts: null,
     total: -1,
     headers: merge(headers, {
       'Content-Type': `multipart/form-data; boundary=${boundary}`

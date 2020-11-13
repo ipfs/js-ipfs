@@ -8,6 +8,7 @@ const mtimeToObject = require('./mtime-to-object')
 const { File, FormData } = require('ipfs-utils/src/globalthis')
 
 async function multipartRequest (source = '', abortController, headers = {}) {
+  const parts = []
   const formData = new FormData()
   let index = 0
   let total = 0
@@ -27,10 +28,9 @@ async function multipartRequest (source = '', abortController, headers = {}) {
       qs.push(`mode=${modeToString(mode)}`)
     }
 
-    if (mtime != null) {
-      const {
-        secs, nsecs
-      } = mtimeToObject(mtime)
+    const time = mtimeToObject(mtime)
+    if (time != null) {
+      const { secs, nsecs } = time
 
       qs.push(`mtime=${secs}`)
 
@@ -45,17 +45,20 @@ async function multipartRequest (source = '', abortController, headers = {}) {
 
     if (content) {
       formData.set(fieldName, content, encodeURIComponent(path))
-      total += content.size
+      const end = total + content.size
+      parts.push({ name: path, start: total, end })
+      total = end
     } else {
       formData.set(fieldName, new File([''], encodeURIComponent(path), { type: 'application/x-directory' }))
+      parts.push({ name: path, start: total, end: total })
     }
 
     index++
   }
 
   return {
-    lengthComputable: true,
     total,
+    parts,
     headers,
     body: formData
   }
