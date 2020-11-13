@@ -8,6 +8,10 @@ const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
 const toUrlString = require('ipfs-core-utils/src/to-url-string')
 
+const DEFAULT_PROTOCOL = isBrowser || isWebWorker ? location.protocol : 'http'
+const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
+const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
+
 /**
  * @param {ClientOptions|URL|Multiaddr|string} [options]
  * @returns {ClientOptions}
@@ -29,13 +33,11 @@ const normalizeOptions = (options = {}) => {
   } else {
     opts = options || {}
 
-    if (isBrowser || isWebWorker) {
-      const protocol = (opts.protocol || location.protocol).replace(':', '')
+    const protocol = (opts.protocol || DEFAULT_PROTOCOL).replace(':', '')
+    const host = (opts.host || DEFAULT_HOST).split(':')[0]
+    const port = (opts.port || DEFAULT_PORT)
 
-      url = new URL(`${protocol}://${opts.host || location.hostname}:${opts.port || location.port}`)
-    } else {
-      url = new URL(`${opts.protocol || 'http'}://${opts.host || 'localhost'}:${opts.port || '5001'}`)
-    }
+    url = new URL(`${protocol}://${host}:${port}`)
   }
 
   if (opts.apiPath) {

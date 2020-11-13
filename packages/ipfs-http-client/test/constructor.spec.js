@@ -28,6 +28,15 @@ describe('ipfs-http-client constructor tests', () => {
       expectConfig(ipfs, { host, port, protocol })
     })
 
+    it('opts with URL components from URL', () => {
+      const host = 'wizard.world'
+      const port = '999'
+      const protocol = 'https'
+      const url = new URL(`${protocol}://${host}:${port}`)
+      const ipfs = ipfsClient({ host: url.host, port: url.port, protocol: url.protocol })
+      expectConfig(ipfs, { host, port, protocol })
+    })
+
     it('multiaddr dns4 string (implicit http)', () => {
       const host = 'foo.com'
       const port = '1001'
