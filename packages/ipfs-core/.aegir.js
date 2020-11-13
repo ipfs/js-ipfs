@@ -45,7 +45,7 @@ module.exports = {
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
-          ipfsHttpModule: require('ipfs-http-client'),
+          ipfsHttpModule: require(path.join(__dirname, '..', 'ipfs-http-client')),
           ipfsBin: path.resolve(path.join(__dirname, '..', 'ipfs', 'src', 'cli.js')),
           ipfsOptions: {
             libp2p: {
