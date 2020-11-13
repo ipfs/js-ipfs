@@ -24,7 +24,7 @@ module.exports = ({ repo }) => {
    * @param {AbortOptions} [options]
    */
   async function getAll (options = {}) {
-    return await repo.config.getAll()
+    return await repo.config.getAll(options)
   }
 
   /**

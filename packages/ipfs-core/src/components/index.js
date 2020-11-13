@@ -286,7 +286,7 @@ const getDefaultOptions = () => ({
  *
  * @typedef {Object} IPFSOptions
  * Options argument can be used to specify advanced configuration.
- * @property {InitOptions|boolean} [init=true] - Perform repo initialization steps when creating
+ * @property {InitOptions} [init] - Initialization options
  * the IPFS node.
  * Note that *initializing* a repo is different from creating an instance of
  * [`ipfs.Repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor

@@ -192,7 +192,7 @@ class Service {
    * Allows you to asynchronously obtain service implementation. If service
    * is starting it will await for completion. If service is stopped or stopping
    * this will (async) throw exception. This allows components that need to use
-   * this service convinient API to do it.
+   * this service convenient API to do it.
    *
    * @param {AbortOptions} [options] - Abort options.
    * @returns {Promise<T>}
@@ -223,8 +223,8 @@ module.exports = Service
  * @typedef {ReturnType<T> extends ? Promise<infer U> ? U : ReturnType<T>} State
  */
 /**
- * Reperests service state which can be not started in which case
- * it is instaceof `Error`. Pending in which case it's promise or
+ * Represents service state which can be not started in which case
+ * it is instanceof `Error`. Pending in which case it's promise or
  * ready in which case it is the value itself.
  *
  * @template T

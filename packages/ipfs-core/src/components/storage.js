@@ -57,7 +57,7 @@ module.exports = Storage
 const loadRepo = async (repo, options) => {
   const openError = await openRepo(repo)
   if (openError == null) {
-    // If opened succefully configure repo
+    // If opened successfully configure repo
     return { ...await configureRepo(repo, options), isNew: false }
   } else if (openError.code === ERR_REPO_NOT_INITIALIZED) {
     if (options.allowNew === false) {
