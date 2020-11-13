@@ -76,10 +76,11 @@ const createProgressHandler = (total, parts, progress) =>
  */
 const createOnUploadPrgress = (size, parts, progress) => {
   let index = 0
+  const count = parts.length
   return ({ loaded, total }) => {
     // Derive position from the current progress.
     const position = Math.floor(loaded / total * size)
-    while (true) {
+    while (index < count) {
       const { start, end, name } = parts[index]
       // If within current part range reporst progress and break the loop
       if (position < end) {
