@@ -12,14 +12,12 @@ module.exports = ({ keychain }) => {
    * @param {AbortOptions} [options]
    * @returns {Promise<Key>}
    */
-  const info = async (name, options = {}) => {
-    return await keychain.findKeyByName(name, options)
-  }
+  const info = (name, options = {}) => keychain.findKeyByName(name, options)
 
   return withTimeoutOption(info)
 }
 
 /**
- * @typedef {import('./gen').Key} Key
+ * @typedef {import('.').Key} Key
  * @typedef {import('.').AbortOptions} AbortOptions
  */

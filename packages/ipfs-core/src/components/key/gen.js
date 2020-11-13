@@ -24,10 +24,10 @@ module.exports = ({ keychain }) => {
    *
    * @param {string} name - The name to give the key
    * @param {GenOptions & AbortOptions} options
-   * @returns {Promise<>}
+   * @returns {Promise<Key>}
    */
-  const gen = async (name, options = {}) => {
-    return await keychain.createKey(name, options.type || 'rsa', options.size || 2048)
+  const gen = (name, options = {}) => {
+    return keychain.createKey(name, options.type || 'rsa', options.size || 2048)
   }
 
   return withTimeoutOption(gen)
@@ -38,9 +38,6 @@ module.exports = ({ keychain }) => {
  * @property {import('libp2p-crypto').KeyType} [type='RSA'] - The key type
  * @property {number} [size=2048] - The key size in bits
  *
- * @typedef {Object} Key
- * @property {string} id
- * @property {string} name
- *
+ * @typedef {import('.').Key} Key
  * @typedef {import('.').AbortOptions} AbortOptions
  */

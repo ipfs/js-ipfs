@@ -26,9 +26,7 @@ module.exports = ({ keychain }) => {
    * @param {AbortOptions} [options]
    * @returns {Promise<KeyEntry[]>}
    */
-  const list = async (options = {}) => {
-    return await keychain.listKeys(options)
-  }
+  const list = (options = {}) => keychain.listKeys(options)
 
   return withTimeoutOption(list)
 }

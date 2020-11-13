@@ -26,9 +26,8 @@ module.exports = ({ keychain }) => {
    * @param {import('.').AbortOptions} options
    * @returns {Promise<string>} - The string representation of the key
    */
-  const exportKey = async (name, password, options) => {
-    return await keychain.exportKey(name, password, options)
-  }
+  const exportKey = (name, password, options) =>
+    keychain.exportKey(name, password, options)
 
   return withTimeoutOption(exportKey)
 }

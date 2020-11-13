@@ -47,7 +47,7 @@ module.exports = ({ ipld, preload }) => {
    * // c/cb
    * ```
    */
-  async function * tree (ipfsPath, options = {}) {
+  async function * tree (ipfsPath, options = {}) { // eslint-disable-line require-await
     const {
       cid,
       path

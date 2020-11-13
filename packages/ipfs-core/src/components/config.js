@@ -23,8 +23,8 @@ module.exports = ({ repo }) => {
   /**
    * @param {AbortOptions} [options]
    */
-  async function getAll (options = {}) {
-    return await repo.config.getAll(options)
+  async function getAll (options = {}) { // eslint-disable-line require-await
+    return repo.config.getAll(options)
   }
 
   /**
@@ -32,12 +32,12 @@ module.exports = ({ repo }) => {
    * @param {string} key
    * @param {AbortOptions} [options]
    */
-  async function get (key, options) {
+  async function get (key, options) { // eslint-disable-line require-await
     if (!key) {
       return Promise.reject(new Error('key argument is required'))
     }
 
-    return await repo.config.get(key, options)
+    return repo.config.get(key, options)
   }
 
   /**
@@ -46,16 +46,16 @@ module.exports = ({ repo }) => {
    * @param {ToJSON} value
    * @param {AbortOptions} [options]
    */
-  async function set (key, value, options) {
-    return await repo.config.set(key, value, options)
+  async function set (key, value, options) { // eslint-disable-line require-await
+    return repo.config.set(key, value, options)
   }
 
   /**
    * @param {IPFSConfig} value
    * @param {AbortOptions} [options]
    */
-  async function replace (value, options) {
-    return await repo.config.replace(value, options)
+  async function replace (value, options) { // eslint-disable-line require-await
+    return repo.config.replace(value, options)
   }
 
   /**

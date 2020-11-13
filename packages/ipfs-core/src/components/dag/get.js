@@ -31,8 +31,8 @@ module.exports = ({ ipld, preload }) => {
    * // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
    *
    * async function getAndLog(cid, path) {
-   * const result = await ipfs.dag.get(cid, { path })
-   * console.log(result.value)
+   *   const result = await ipfs.dag.get(cid, { path })
+   *   console.log(result.value)
    * }
    *
    * await getAndLog(cid, '/a')

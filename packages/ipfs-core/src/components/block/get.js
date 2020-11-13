@@ -22,14 +22,14 @@ module.exports = ({ blockService, preload }) => {
    * console.log(block.data)
    * ```
    */
-  async function get (cid, options = {}) {
+  async function get (cid, options = {}) { // eslint-disable-line require-await
     cid = cleanCid(cid)
 
     if (options.preload !== false) {
       preload(cid)
     }
 
-    return await blockService.get(cid, options)
+    return blockService.get(cid, options)
   }
 
   return withTimeoutOption(get)

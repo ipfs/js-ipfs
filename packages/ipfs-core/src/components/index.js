@@ -198,10 +198,6 @@ class IPFS {
     // eslint-disable-next-line no-console
     const print = options.silent ? log : console.log
 
-    if (options.init === false) {
-      throw new Error('Creating a non-initalized repo is no longer supported')
-    }
-
     const init = {
       ...mergeOptions(initOptions(options), options),
       print
