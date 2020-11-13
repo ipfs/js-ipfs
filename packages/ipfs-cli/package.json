@@ -26,11 +26,12 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check -i @types/yargs -i typescript"
+    "dep-check": "aegir dep-check -i @types/yargs -i typescript -i cid-tool"
   },
   "dependencies": {
     "bignumber.js": "^9.0.0",
     "byteman": "^1.3.5",
+    "cid-tool": "^1.0.0",
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "dlv": "^1.1.3",
