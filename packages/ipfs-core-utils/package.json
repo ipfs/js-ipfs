@@ -34,7 +34,7 @@
     "build:js": "aegir build",
     "build:types": "tsc --build",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i typescript"
   },
   "license": "MIT",
   "dependencies": {
@@ -51,8 +51,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
-    "delay": "^4.4.0",
+    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
     "typescript": "^4.0.3"
   }
 }

@@ -26,7 +26,7 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i typescript"
   },
   "dependencies": {
     "@hapi/ammo": "^5.0.1",
@@ -38,7 +38,6 @@
     "ipfs-core-utils": "^0.5.1",
     "ipfs-http-response": "^0.6.0",
     "is-ipfs": "^2.0.0",
-    "it-all": "^1.0.4",
     "it-last": "^1.0.4",
     "it-to-stream": "^0.1.2",
     "joi": "^17.2.1",
@@ -47,7 +46,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
+    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
     "file-type": "^16.0.0",
     "sinon": "^9.0.3",
     "typescript": "^4.0.3"

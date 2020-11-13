@@ -70,9 +70,14 @@ jobs:
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
-      name: dep-check
+      name: dep-check (production deps)
       script:
-        - npm run dep-check -- $RUN_SINCE -- -- -- -i electron-webrtc
+        - npm run dep-check -- $RUN_SINCE -- -- -p
+
+    - stage: test
+      name: dep-check (unused deps)
+      script:
+        - npm run dep-check -- $RUN_SINCE -- -- -- --unused
 
     - stage: test
       name: chrome
