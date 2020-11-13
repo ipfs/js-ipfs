@@ -11,7 +11,7 @@ const { BlockService } = require('./block')
  * @typedef {import('./ipfs').IPFS} IPFS
  */
 
-class IPFSService {
+exports.IPFSService = class IPFSService {
   /**
    *
    * @param {IPFS} ipfs
@@ -23,5 +23,3 @@ class IPFSService {
     this.block = new BlockService(ipfs)
   }
 }
-
-exports.IPFSService = IPFSService

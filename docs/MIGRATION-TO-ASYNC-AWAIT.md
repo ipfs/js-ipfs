@@ -8,7 +8,7 @@ Impact key:
 * 🍋 medium - involved refactoring in application code
 * 🍊 hard - complicated refactoring in application code
 
-## ToC <!-- omit in toc -->
+## Table of Contents <!-- omit in toc -->
 
 - [Migrating from callbacks](#migrating-from-callbacks)
 - [Migrating from `PeerId`](#migrating-from-peerid)

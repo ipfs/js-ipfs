@@ -67,7 +67,7 @@ const toAsyncIterator = (content) => {
 
             resolve({
               done: false,
-              value: new Uint8Array(reader.result, reader.result.byteOffset, reader.result.byteLength)
+              value: new Uint8Array(/** @type {ArrayBuffer} */(reader.result))
             })
           }
 

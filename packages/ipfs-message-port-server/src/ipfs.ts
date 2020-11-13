@@ -21,12 +21,12 @@ export interface IPFSFactory {
   create(): Promise<IPFS>
 }
 
-interface AbortOptions {
+export interface AbortOptions {
   timeout?: number
   signal?: AbortSignal
 }
 
-interface PutOptions extends AbortOptions {
+export interface PutOptions extends AbortOptions {
   format?: string | void
   hashAlg?: string | void
   cid?: CID | void
@@ -34,16 +34,16 @@ interface PutOptions extends AbortOptions {
   pin?: boolean
 }
 
-interface GetOptions extends AbortOptions {
+export interface GetOptions extends AbortOptions {
   path?: string,
   localResolve?: boolean
 }
 
-interface ResolveOptions extends AbortOptions {
+export interface ResolveOptions extends AbortOptions {
   path?: string
 }
 
-interface TreeOptions extends AbortOptions {
+export interface TreeOptions extends AbortOptions {
   path?: string,
   recursive?: boolean
 }
@@ -58,10 +58,12 @@ export interface DAG {
 export interface Core {
   addAll(inputs: AddAllInput, options: AddOptions): AsyncIterable<FileOutput>
   add(input: AddInput, options: AddOptions): Promise<FileOutput>
-  cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Buffer>
+  cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Uint8Array>
+
+  ls(ipfsPath: CID | string, options: CoreLsOptions): AsyncIterable<LsEntry>
 }
 
-interface AddOptions extends AbortOptions {
+export interface AddOptions extends AbortOptions {
   chunker?: string
   cidVersion?: number
   enableShardingExperiment?: boolean
@@ -90,9 +92,14 @@ export type FileOutput = {
   size: number
 }
 
-interface CatOptions extends AbortOptions {
+export interface CatOptions extends AbortOptions {
   offset?: number
   length?: number
+}
+
+interface CoreLsOptions extends AbortOptions {
+  preload?: boolean
+  recursive?: boolean
 }
 
 export interface Files {
@@ -109,7 +116,7 @@ export interface Files {
   stat(path: string, options?: StatOptions): Promise<Stat>
 }
 
-interface ChmodOptions extends AbortOptions {
+export interface ChmodOptions extends AbortOptions {
   recursive?: boolean
   flush?: boolean
   hashAlg?: string
@@ -120,22 +127,24 @@ interface LsOptions extends AbortOptions {
   sort?: boolean
 }
 
-type LsEntry = {
+export type LsEntry = {
   name: string
+  path: string
   type: FileType
   size: number
+  depth: number
   cid: CID
   mode: Mode
-  mtime: UnixFSTime
+  mtime?: UnixFSTime
 }
 
-interface StatOptions extends AbortOptions {
+export interface StatOptions extends AbortOptions {
   hash?: boolean
   size?: boolean
   withLocal?: boolean
 }
 
-type Stat = {
+export type Stat = {
   cid: CID
   size: number
   cumulativeSize: number
@@ -146,14 +155,14 @@ type Stat = {
   sizeLocal: number
 }
 
-type WriteContent =
+export type WriteContent =
   | string
   | ArrayBufferView
   | ArrayBuffer
   | Blob
   | AsyncIterable<ArrayBufferView>
 
-type AddInput =
+export type AddInput =
   | Blob
   | string
   | ArrayBufferView
@@ -161,7 +170,7 @@ type AddInput =
   | FileInput
   | ReadStream
 
-type AddAllInput =
+export type AddAllInput =
   | Iterable<AddInput>
   | AsyncIterable<AddInput>
 
@@ -180,7 +189,7 @@ export type FileContent =
   | Iterable<ArrayBuffer | ArrayBufferView>
   | AsyncIterable<ArrayBuffer | ArrayBufferView>
 
-interface WriteOptions extends AbortOptions {
+export interface WriteOptions extends AbortOptions {
   offset?: number
   length?: number
   create?: boolean
@@ -194,20 +203,20 @@ interface WriteOptions extends AbortOptions {
   cidVersion?: CIDVersion
 }
 
-type WriteResult = {
+export type WriteResult = {
   cid: CID
   size: number
 }
 
-interface Block {
+export interface Block {
   cid: CID
-  data: Buffer
+  data: Uint8Array
 }
 
-interface BlockService {
+export interface BlockService {
   get(cid: CID, options?: GetBlockOptions): Promise<Block>
   put(block: Block, options?: PutBlockOptions): Promise<Block>
-  put(buffer: Buffer, options?: PutBufferOptions): Promise<Block>
+  put(buffer: Uint8Array, options?: PutBufferOptions): Promise<Block>
   rm(
     cid: CID | CID[],
     options?: RmBlockOptions
@@ -218,21 +227,21 @@ interface BlockService {
   ): Promise<{ cid: CID; size: number }>
 }
 
-interface GetBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface
-interface PutBlockOptions extends AbortOptions {
+export interface GetBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface PutBlockOptions extends AbortOptions {
   format?: string
   mhtype?: string
   mhlen?: number
   version?: number
   pin?: boolean
 }
-interface PutBufferOptions extends PutBlockOptions {
+export interface PutBufferOptions extends PutBlockOptions {
   cid?: EncodedCID | void
 }
 
-interface RmBlockOptions extends AbortOptions {
+export interface RmBlockOptions extends AbortOptions {
   force?: boolean
   quiet?: boolean
 }
 
-interface StatBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface StatBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface

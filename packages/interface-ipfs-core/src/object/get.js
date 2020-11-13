@@ -49,7 +49,7 @@ module.exports = (common, options) => {
       let node2 = await ipfs.object.get(node1Cid)
 
       // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
+      // returned Data is Uint8Array or String
       if (typeof node2.Data === 'string') {
         node2 = new DAGNode(uint8ArrayFromString(node2.Data), node2.Links, node2.size)
       }
@@ -69,7 +69,7 @@ module.exports = (common, options) => {
       let node2 = await ipfs.object.get(node1Cid.toBaseEncodedString())
 
       // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
+      // returned Data is Uint8Array or String
       if (typeof node2.Data === 'string') {
         node2 = new DAGNode(uint8ArrayFromString(node2.Data), node2.Links, node2.size)
       }
@@ -89,7 +89,7 @@ module.exports = (common, options) => {
       let node1c = await ipfs.object.get(node1bCid)
 
       // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
+      // returned Data is Uint8Array or String
       if (typeof node1c.Data === 'string') {
         node1c = new DAGNode(uint8ArrayFromString(node1c.Data), node1c.Links, node1c.size)
       }
@@ -108,7 +108,7 @@ module.exports = (common, options) => {
       let node1b = await ipfs.object.get(node1aCid, { enc: 'base58' })
 
       // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
+      // returned Data is Uint8Array or String
       if (typeof node1b.Data === 'string') {
         node1b = new DAGNode(uint8ArrayFromString(node1b.Data), node1b.Links, node1b.size)
       }
@@ -128,7 +128,7 @@ module.exports = (common, options) => {
       let node1b = await ipfs.object.get(node1aCid.toBaseEncodedString(), { enc: 'base58' })
 
       // because js-ipfs-api can't infer if the
-      // returned Data is Buffer or String
+      // returned Data is Uint8Array or String
       if (typeof node1b.Data === 'string') {
         node1b = new DAGNode(uint8ArrayFromString(node1b.Data), node1b.Links, node1b.size)
       }

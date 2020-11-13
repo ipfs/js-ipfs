@@ -6,7 +6,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (path, options = {}) => {
+  /**
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/stat')>}
+   */
+  async function stat (path, options = {}) {
     if (typeof path !== 'string') {
       options = path || {}
       path = '/'
@@ -26,6 +29,8 @@ module.exports = configure(api => {
     data.WithLocality = data.WithLocality || false
     return toCoreInterface(toCamelWithMetadata(data))
   }
+
+  return stat
 })
 
 function toCoreInterface (entry) {

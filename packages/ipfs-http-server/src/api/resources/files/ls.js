@@ -3,13 +3,15 @@
 const Joi = require('../../../utils/joi')
 const all = require('it-all')
 const map = require('it-map')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const streamResponse = require('../../../utils/stream-response')
 
 const mapEntry = (entry, options = {}) => {
+  const type = entry.type === 'file' ? 0 : 1
+
   const output = {
     Name: entry.name,
-    Type: options.long ? entry.type : 0,
+    Type: options.long ? type : 0,
     Size: options.long ? entry.size || 0 : 0,
     Hash: entry.cid.toString(options.cidBase)
   }

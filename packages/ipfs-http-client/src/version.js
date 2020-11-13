@@ -3,10 +3,11 @@
 const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
+const pkg = require('../package.json')
 
 module.exports = configure(api => {
   /**
-   * @type {import('../../ipfs/src/core/components/version').Version<import('.').HttpOptions>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/version')>}
    */
   async function version (options = {}) {
     const res = await api.post('version', {
@@ -15,9 +16,12 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams(options),
       headers: options.headers
     })
-    const data = await res.json()
 
-    return toCamel(data)
+    const data = toCamel(await res.json())
+    data['ipfs-http-client'] = pkg.version
+
+    return data
   }
+
   return version
 })

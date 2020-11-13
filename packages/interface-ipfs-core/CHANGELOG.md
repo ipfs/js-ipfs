@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.142.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.141.0...interface-ipfs-core@0.142.0) (2020-11-09)
+
+
+### Features
+
+* pass file name to add/addAll progress handler ([#3372](https://github.com/ipfs/js-ipfs/issues/3372)) ([69681a7](https://github.com/ipfs/js-ipfs/commit/69681a7d7a8434c11f6f10e370e324f5a3d31042)), closes [ipfs/js-ipfs-unixfs#87](https://github.com/ipfs/js-ipfs-unixfs/issues/87)
+
+
+
+
+
+# [0.141.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.140.0...interface-ipfs-core@0.141.0) (2020-10-28)
+
+
+### Bug Fixes
+
+* files ls should return string ([#3352](https://github.com/ipfs/js-ipfs/issues/3352)) ([16ecc74](https://github.com/ipfs/js-ipfs/commit/16ecc7485dfbb1f0c827c5f804974bb804f3dafd)), closes [#3345](https://github.com/ipfs/js-ipfs/issues/3345) [#2939](https://github.com/ipfs/js-ipfs/issues/2939) [#3330](https://github.com/ipfs/js-ipfs/issues/3330) [#2948](https://github.com/ipfs/js-ipfs/issues/2948)
+* use fetch in electron renderer and electron-fetch in main ([#3251](https://github.com/ipfs/js-ipfs/issues/3251)) ([639d71f](https://github.com/ipfs/js-ipfs/commit/639d71f7ac8f66d9633e753a2a6be927e14a5af0))
+
+
+### Features
+
+* type check & generate defs from jsdoc ([#3281](https://github.com/ipfs/js-ipfs/issues/3281)) ([bbcaf34](https://github.com/ipfs/js-ipfs/commit/bbcaf34111251b142273a5675f4754ff68bd9fa0))
+
+
+### BREAKING CHANGES
+
+* types returned by `ipfs.files.ls` are now strings, in line with the docs but different to previous behaviour
+
+Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
+
+
+
+
+
 # [0.140.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.139.1...interface-ipfs-core@0.140.0) (2020-09-03)
 
 

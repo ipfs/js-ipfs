@@ -202,7 +202,7 @@ The base64 encoded protobuf describing (and containing) the nodes private key.
 
 ## `Keychain`
 
-We can customize the key management and criptographically protected messages by changing the Keychain options. Those options are used for generating the derived encryption key (`DEK`). The `DEK` object, along with the passPhrase, is the input to a PBKDF2 function.
+We can customize the key management and cryptographically protected messages by changing the Keychain options. Those options are used for generating the derived encryption key (`DEK`). The `DEK` object, along with the passPhrase, is the input to a PBKDF2 function.
 
 Default:
 ```json

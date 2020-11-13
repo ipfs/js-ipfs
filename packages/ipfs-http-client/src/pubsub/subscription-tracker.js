@@ -1,6 +1,6 @@
 'use strict'
 
-const AbortController = require('abort-controller').default
+const AbortController = require('native-abort-controller')
 
 class SubscriptionTracker {
   constructor () {

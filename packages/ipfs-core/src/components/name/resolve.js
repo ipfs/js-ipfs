@@ -6,52 +6,61 @@ const mergeOptions = require('merge-options')
 const CID = require('cids')
 const isDomain = require('is-domain-name')
 
-const log = debug('ipfs:name:resolve')
-log.error = debug('ipfs:name:resolve:error')
+const log = Object.assign(debug('ipfs:name:resolve'), {
+  error: debug('ipfs:name:resolve:error')
+})
 
 const { OFFLINE_ERROR, withTimeoutOption } = require('../../utils')
 
-const appendRemainder = async (result, remainder) => {
-  result = await result
-
-  if (remainder.length) {
-    return result + '/' + remainder.join('/')
-  }
-
-  return result
-}
-
 /**
- * @typedef { import("../index") } IPFS
+ *
+ * @param {string} result
+ * @param {string[]} remainder
+ * @returns {string}
  */
+const appendRemainder = (result, remainder) =>
+  remainder.length > 0
+    ? result + '/' + remainder.join('/')
+    : result
 
 /**
  * IPNS - Inter-Planetary Naming System
  *
- * @param {IPFS} self
- * @returns {Object}
+ * @param {Object} config
+ * @param {import('../index').DNS} config.dns
+ * @param {import('../../ipns')} config.ipns
+ * @param {import('peer-id')} config.peerId
+ * @param {import('../index').IsOnline} config.isOnline
+ * @param {{offline?:boolean}} config.options
  */
 module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) => {
   /**
    * Given a key, query the DHT for its best value.
    *
    * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
-   * @param {Object} options - ipfs resolve options.
-   * @param {boolean} options.nocache - do not use cached entries.
-   * @param {boolean} options.recursive - resolve until the result is not an IPNS name.
-   * @param {function(Error)} [callback]
-   * @returns {Promise|void}
+   * @param {ResolveOptions} [options]
+   * @returns {AsyncIterable<string>}
+   * @example
+   * ```js
+   * // The IPNS address you want to resolve.
+   * const addr = '/ipns/ipfs.io'
+   *
+   * for await (const name of ipfs.name.resolve(addr)) {
+   *   console.log(name)
+   * }
+   * // Logs: /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
+   * ```
    */
-  return withTimeoutOption(async function * resolve (name, options) { // eslint-disable-line require-await
+  async function * resolve (name, options = {}) { // eslint-disable-line require-await
     options = mergeOptions({
       nocache: false,
       recursive: true
-    }, options || {})
+    }, options)
 
     const { offline } = constructorOptions
 
     // TODO: params related logic should be in the core implementation
-    if (offline && options.nocache) {
+    if (offline && options && options.nocache) {
       throw errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE')
     }
 
@@ -70,7 +79,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
     } catch (err) {
       // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
       if (isDomain(hash)) {
-        yield appendRemainder(dns(hash, options), remainder)
+        yield appendRemainder(await dns(hash, options), remainder)
         return
       }
 
@@ -85,6 +94,20 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
     }
 
     // TODO: convert ipns.resolve to return an iterator
-    yield appendRemainder(ipns.resolve(`/${namespace}/${hash}`, options), remainder)
-  })
+    yield appendRemainder(await ipns.resolve(`/${namespace}/${hash}`, options), remainder)
+  }
+
+  return withTimeoutOption(resolve)
 }
+
+/**
+ * IPFS resolve options.
+ *
+ * @typedef {ResolveSettings & AbortOptions} ResolveOptions
+ *
+ * @typedef {Object} ResolveSettings
+ * @property {boolean} [options.nocache=false] - do not use cached entries.
+ * @property {boolean} [options.recursive=true] - resolve until the result is not an IPNS name.
+ *
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

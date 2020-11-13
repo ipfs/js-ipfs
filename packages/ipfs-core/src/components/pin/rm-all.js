@@ -4,13 +4,37 @@ const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath, withTimeoutOption } = require('../../utils')
 const { PinTypes } = require('./pin-manager')
 
+/**
+ * @param {Object} config
+ * @param {import('./pin-manager')} config.pinManager
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').DAG} config.dag
+ */
 module.exports = ({ pinManager, gcLock, dag }) => {
-  return withTimeoutOption(async function * rm (paths, options = {}) {
+  /**
+   * Unpin one or more blocks from your repo
+   *
+   * @param {Source} source - Unpin all pins from the source
+   * @param {AbortOptions} [_options]
+   * @returns {AsyncIterable<CID>}
+   * @example
+   * ```js
+   * const source = [
+   *   CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * ]
+   * for await (const cid of ipfs.pin.rmAll(source)) {
+   *   console.log(cid)
+   * }
+   * // prints the CIDs that were unpinned
+   * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * ```
+   */
+  async function * rmAll (source, _options = {}) {
     const release = await gcLock.readLock()
 
     try {
       // verify that each hash can be unpinned
-      for await (const { path, recursive } of normaliseInput(paths)) {
+      for await (const { path, recursive } of normaliseInput(source)) {
         const cid = await resolvePath(dag, path)
         const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 
@@ -42,5 +66,13 @@ module.exports = ({ pinManager, gcLock, dag }) => {
     } finally {
       release()
     }
-  })
+  }
+
+  return withTimeoutOption(rmAll)
 }
+
+/**
+ * @typedef {import('..').CID} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('./add-all').Source} Source
+ */

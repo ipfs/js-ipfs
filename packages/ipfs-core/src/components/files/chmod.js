@@ -1,6 +1,6 @@
 'use strict'
 
-const applyDefaultOptions = require('./utils/apply-default-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const log = require('debug')('ipfs:mfs:touch')
 const errCode = require('err-code')
@@ -97,7 +97,7 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
   }
 
   let [
-    _, // eslint-disable-line no-unused-vars
+    ,
     references,
     operator,
     mode
@@ -149,7 +149,11 @@ function parseSymbolicMode (input, originalMode, isDirectory) {
 }
 
 function calculateMode (mode, metadata) {
-  if (typeof mode === 'string' || mode instanceof String) {
+  if (mode instanceof String) {
+    mode = mode.toString()
+  }
+
+  if (typeof mode === 'string') {
     if (mode.match(/^\d+$/g)) {
       mode = parseInt(mode, 8)
     } else {
@@ -163,8 +167,14 @@ function calculateMode (mode, metadata) {
 }
 
 module.exports = (context) => {
-  return withTimeoutOption(async function mfsChmod (path, mode, options) {
-    options = applyDefaultOptions(options, defaultOptions)
+  /**
+   * @param {string} path
+   * @param {string | number} mode
+   * @param {ChmodOptions & AbortOptions} [options]
+   * @returns {Promise<void>}
+   */
+  async function mfsChmod (path, mode, options = {}) {
+    const opts = mergeOptions(defaultOptions, options)
 
     log(`Fetching stats for ${path}`)
 
@@ -172,13 +182,13 @@ module.exports = (context) => {
       cid,
       mfsDirectory,
       name
-    } = await toMfsPath(context, path, options)
+    } = await toMfsPath(context, path, opts)
 
     if (cid.codec !== 'dag-pb') {
       throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
     }
 
-    if (options.recursive) {
+    if (opts.recursive) {
       // recursively export from root CID, change perms of each entry then reimport
       // but do not reimport files, only manipulate dag-pb nodes
       const root = await pipe(
@@ -195,12 +205,12 @@ module.exports = (context) => {
           }
         },
         (source) => importer(source, context.block, {
-          ...options,
+          ...opts,
           pin: false,
-          dagBuilder: async function * (source, block, options) {
+          dagBuilder: async function * (source, block, opts) {
             for await (const entry of source) {
               yield async function () {
-                const cid = await persist(entry.content.serialize(), block, options)
+                const cid = await persist(entry.content.serialize(), block, opts)
 
                 return {
                   cid,
@@ -216,10 +226,10 @@ module.exports = (context) => {
       )
 
       // remove old path from mfs
-      await rm(context)(path, options)
+      await rm(context)(path, opts)
 
       // add newly created tree to mfs at path
-      await cp(context)(`/ipfs/${root.cid}`, path, options)
+      await cp(context)(`/ipfs/${root.cid}`, path, opts)
 
       return
     }
@@ -231,11 +241,11 @@ module.exports = (context) => {
 
     const updatedCid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: cid.version,
-      hashAlg: mh.names[options.hashAlg],
-      onlyHash: !options.flush
+      hashAlg: mh.names[opts.hashAlg || defaultOptions.hashAlg],
+      onlyHash: !opts.flush
     })
 
-    const trail = await toTrail(context, mfsDirectory, options)
+    const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
     const parentNode = await context.ipld.get(parent.cid)
 
@@ -244,17 +254,31 @@ module.exports = (context) => {
       name: name,
       cid: updatedCid,
       size: node.serialize().length,
-      flush: options.flush,
-      hashAlg: options.hashAlg,
+      flush: opts.flush,
+      hashAlg: opts.hashAlg,
       cidVersion: cid.version
     })
 
     parent.cid = result.cid
 
     // update the tree with the new child
-    const newRootCid = await updateTree(context, trail, options)
+    const newRootCid = await updateTree(context, trail, opts)
 
     // Update the MFS record with the new CID for the root of the tree
-    await updateMfsRoot(context, newRootCid, options)
-  })
+    await updateMfsRoot(context, newRootCid, opts)
+  }
+
+  return withTimeoutOption(mfsChmod)
 }
+
+/**
+ * @typedef {Object} ChmodOptions
+ * @property {boolean} [flush=false]
+ * @property {number} [shardSplitThreshold=1000]
+ * @property {string} [hashAlg=sha2-256]
+ * @property {0|1} [cidVersion=0]
+ * @property {boolean} [recursive=false]
+ *
+ * @typedef {import('cids')} CID
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ */

@@ -5,7 +5,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (path, options = {}) => {
+  /**
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/flush')>}
+   */
+  async function flush (path, options = {}) {
     if (!path || typeof path !== 'string') {
       throw new Error('ipfs.files.flush requires a path')
     }
@@ -23,4 +26,6 @@ module.exports = configure(api => {
 
     return new CID(data.Cid)
   }
+
+  return flush
 })

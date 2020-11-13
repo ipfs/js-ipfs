@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.2.2",
+  "version": "0.4.0",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -16,6 +16,14 @@
     "dist"
   ],
   "main": "src/index.js",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*",
+        "dist/*/index"
+      ]
+    }
+  },
   "browser": {},
   "repository": {
     "type": "git",
@@ -26,23 +34,27 @@
     "test:interface:message-port-client": "npm run build:test-worker && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
-    "browser-readablestream-to-it": "0.0.2",
+    "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.0.0"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
+    "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
-    "interface-ipfs-core": "^0.140.0",
-    "ipfs": "^0.50.2",
-    "ipfs-message-port-protocol": "^0.2.0",
-    "ipfs-message-port-server": "^0.2.2",
-    "ipld-dag-pb": "^0.20.0"
+    "interface-ipfs-core": "^0.142.0",
+    "ipfs": "^0.52.0",
+    "ipfs-core": "^0.2.0",
+    "ipfs-message-port-protocol": "^0.4.0",
+    "ipfs-message-port-server": "^0.4.0",
+    "ipld-dag-pb": "^0.20.0",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.3.0",

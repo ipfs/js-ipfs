@@ -2,7 +2,7 @@
 
 /* eslint-env browser */
 
-const { Client } = require('./client')
+const Client = require('./client')
 const { encodeCID, decodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,
@@ -49,7 +49,9 @@ const iterateReadableStream = require('browser-readablestream-to-it')
 /**
  * @typedef {import('ipfs-message-port-server/src/core').CoreService} CoreService
  * @typedef {import('ipfs-message-port-server/src/core').AddedEntry} AddedEntry
- * @typedef {import('./client').ClientTransport} Transport
+ * @typedef {import('ipfs-message-port-server/src/core').EncodedLsEntry} EncodedLsEntry
+ * @typedef {import('ipfs-message-port-server/src/core').LsEntry} LsEntry
+ * @typedef {import('./client').MessageTransport} MessageTransport
  */
 
 /**
@@ -58,10 +60,10 @@ const iterateReadableStream = require('browser-readablestream-to-it')
  */
 class CoreClient extends Client {
   /**
-   * @param {Transport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
-    super('core', ['add', 'addAll', 'cat'], transport)
+    super('core', ['add', 'addAll', 'cat', 'ls'], transport)
   }
 
   /**
@@ -71,30 +73,7 @@ class CoreClient extends Client {
    * `transfer: [input.buffer]` which would allow transferring it instead of
    * copying.
    *
-   * @param {AddAllInput} input
-   * @param {Object} [options]
-   * @param {string} [options.chunker="size-262144"]
-   * @param {number} [options.cidVersion=0]
-   * @param {boolean} [options.enableShardingExperiment]
-   * @param {string} [options.hashAlg="sha2-256"]
-   * @param {boolean} [options.onlyHash=false]
-   * @param {boolean} [options.pin=true]
-   * @param {function(number):void} [options.progress]
-   * @param {boolean} [options.rawLeaves=false]
-   * @param {number} [options.shardSplitThreshold=1000]
-   * @param {boolean} [options.trickle=false]
-   * @param {boolean} [options.wrapWithDirectory=false]
-   * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer]
-   * @param {AbortSignal} [options.signal]
-   * @returns {AsyncIterable<AddedData>}
-   *
-   * @typedef {Object} AddedData
-   * @property {string} path
-   * @property {CID} cid
-   * @property {number} mode
-   * @property {number} size
-   * @property {Time} mtime
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all')>}
    */
   async * addAll (input, options = {}) {
     const { timeout, signal } = options
@@ -121,23 +100,7 @@ class CoreClient extends Client {
    * `transfer: [input.buffer]` which would allow transferring it instead of
    * copying.
    *
-   * @param {AddInput} input
-   * @param {Object} [options]
-   * @param {string} [options.chunker="size-262144"]
-   * @param {number} [options.cidVersion=0]
-   * @param {boolean} [options.enableShardingExperiment]
-   * @param {string} [options.hashAlg="sha2-256"]
-   * @param {boolean} [options.onlyHash=false]
-   * @param {boolean} [options.pin=true]
-   * @param {function(number):void} [options.progress]
-   * @param {boolean} [options.rawLeaves=false]
-   * @param {number} [options.shardSplitThreshold=1000]
-   * @param {boolean} [options.trickle=false]
-   * @param {boolean} [options.wrapWithDirectory=false]
-   * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer]
-   * @param {AbortSignal} [options.signal]
-   * @returns {Promise<AddedData>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
    */
   async add (input, options = {}) {
     const { timeout, signal } = options
@@ -174,13 +137,31 @@ class CoreClient extends Client {
     const result = await this.remote.cat({ ...options, path: input })
     yield * decodeIterable(result.data, identity)
   }
+
+  /**
+   * Returns content addressed by a valid IPFS Path.
+   *
+   * @param {string|CID} inputPath
+   * @param {Object} [options]
+   * @param {boolean} [options.recursive]
+   * @param {boolean} [options.preload]
+   * @param {number} [options.timeout]
+   * @param {AbortSignal} [options.signal]
+   * @returns {AsyncIterable<LsEntry>}
+   */
+  async * ls (inputPath, options = {}) {
+    const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+    const result = await this.remote.ls({ ...options, path: input })
+
+    yield * decodeIterable(result.data, decodeLsEntry)
+  }
 }
 
 /**
  * Decodes values yield by `ipfs.add`.
  *
  * @param {AddedEntry} data
- * @returns {AddedData}
+ * @returns {import('ipfs-core/src/components/add-all').UnixFSEntry}
  */
 const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
   return {
@@ -191,6 +172,21 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
     size
   }
 }
+
+/**
+ * @param {EncodedLsEntry} encodedEntry
+ * @returns {LsEntry}
+ */
+const decodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+  cid: decodeCID(cid),
+  type,
+  name,
+  path,
+  mode,
+  mtime,
+  size,
+  depth
+})
 
 /**
  * @template T
@@ -318,7 +314,7 @@ const encodeAsyncIterableContent = (content, transfer) => {
 }
 
 /**
- * @param {number|Bytes|Blob|string|FileObject} content
+ * @param {number|Bytes|Blob|string|FileObject|void} content
  * @param {Transferable[]} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
  */
@@ -353,13 +349,13 @@ const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
     path,
     mode,
     mtime,
-    content: encodeFileContent(content, transfer)
+    content: content ? encodeFileContent(content, transfer) : undefined
   }
 }
 
 /**
  *
- * @param {FileContent} [content]
+ * @param {FileContent|undefined} content
  * @param {Transferable[]} transfer
  * @returns {EncodedFileContent}
  */

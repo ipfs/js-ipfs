@@ -85,7 +85,7 @@ exports.publish = {
     },
     pre: [{
       assign: 'data',
-      method: async (request, h) => {
+      method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest('argument "data" is required')
         }

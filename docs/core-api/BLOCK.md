@@ -29,7 +29,7 @@
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| cid | [CID][], `String` or `Buffer` | A CID that corresponds to the desired block |
+| cid | [CID][], `String` or `Uint8Array` | A CID that corresponds to the desired block |
 
 ### Options
 
@@ -63,7 +63,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| block | A `Buffer` or [Block][] instance | The block or data to store |
+| block | A `Uint8Array` or [Block][] instance | The block or data to store |
 
 ### Options
 

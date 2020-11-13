@@ -4,7 +4,10 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (key, options = {}) => {
+  /**
+   * @type {import('..').ImplementsMethod<'get', import('ipfs-core/src/components/config')>}
+   */
+  const get = async (key, options = {}) => {
     if (!key) {
       throw new Error('key argument is required')
     }
@@ -22,4 +25,6 @@ module.exports = configure(api => {
 
     return data.Value
   }
+
+  return get
 })

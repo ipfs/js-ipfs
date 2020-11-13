@@ -3,14 +3,15 @@
 const multipart = require('../../utils/multipart-request-parser')
 const debug = require('debug')
 const tar = require('it-tar')
-const log = debug('ipfs:http-api:files')
-log.error = debug('ipfs:http-api:files:error')
+const log = Object.assign(debug('ipfs:http-api:files'), {
+  error: debug('ipfs:http-api:files:error')
+})
 const toIterable = require('stream-to-it')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { PassThrough } = require('stream')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const all = require('it-all')
 const ndjson = require('iterable-ndjson')
 const { map } = require('streaming-iterables')
@@ -259,7 +260,7 @@ exports.add = {
       multipart(request),
       async function * (source) {
         for await (const entry of source) {
-          currentFileName = entry.name || 'unknown'
+          currentFileName = entry.name || ''
 
           if (entry.type === 'file') {
             filesParsed = true

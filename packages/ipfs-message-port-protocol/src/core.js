@@ -11,7 +11,6 @@ const { encodeError, decodeError } = require('./error')
  */
 
 /**
- * @template T
  * @typedef {Object} RemoteCallback
  * @property {'RemoteCallback'} type
  * @property {MessagePort} port
@@ -173,15 +172,14 @@ const toIterator = iterable => {
 }
 
 /**
- * @template T
- * @param {function(T):void} callback
+ * @param {Function} callback
  * @param {Transferable[]} transfer
- * @returns {RemoteCallback<T>}
+ * @returns {RemoteCallback}
  */
 const encodeCallback = (callback, transfer) => {
   // eslint-disable-next-line no-undef
   const { port1: port, port2: remote } = new MessageChannel()
-  port.onmessage = ({ data }) => callback(data)
+  port.onmessage = ({ data }) => callback.apply(null, data)
   transfer.push(remote)
   return { type: 'RemoteCallback', port: remote }
 }
@@ -189,17 +187,17 @@ exports.encodeCallback = encodeCallback
 
 /**
  * @template T
- * @param {RemoteCallback<T>} remote
- * @returns {function(T):void | function(T, Transferable[]):void}
+ * @param {RemoteCallback} remote
+ * @returns {function(T[]):void | function(T[], Transferable[]):void}
  */
 const decodeCallback = ({ port }) => {
   /**
-   * @param {T} value
+   * @param {T[]} args
    * @param {Transferable[]} [transfer]
    * @returns {void}
    */
-  const callback = (value, transfer = []) => {
-    port.postMessage(value, transfer)
+  const callback = (args, transfer = []) => {
+    port.postMessage(args, transfer)
   }
 
   return callback

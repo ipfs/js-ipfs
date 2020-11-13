@@ -3,7 +3,7 @@
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { map, reduce } = require('streaming-iterables')
-const pipe = require('it-pipe')
+const { pipe } = require('it-pipe')
 const ndjson = require('iterable-ndjson')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const streamResponse = require('../../utils/stream-response')

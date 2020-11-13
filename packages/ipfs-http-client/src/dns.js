@@ -4,7 +4,10 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
 module.exports = configure(api => {
-  return async (domain, options = {}) => {
+  /**
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/dns')>}
+   */
+  const dns = async (domain, options = {}) => {
     const res = await api.post('dns', {
       timeout: options.timeout,
       signal: options.signal,
@@ -18,4 +21,6 @@ module.exports = configure(api => {
 
     return data.Path
   }
+
+  return dns
 })

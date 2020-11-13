@@ -7,7 +7,7 @@ module.exports = ({ libp2p }) => {
   return {
     subscribe: withTimeoutOption((...args) => libp2p.pubsub.subscribe(...args)),
     unsubscribe: withTimeoutOption((...args) => libp2p.pubsub.unsubscribe(...args)),
-    publish: withTimeoutOption(async (topic, data, options) => {
+    publish: withTimeoutOption(async (topic, data, _options) => {
       if (!data) {
         throw errCode(new Error('argument "data" is required'), 'ERR_ARG_REQUIRED')
       }

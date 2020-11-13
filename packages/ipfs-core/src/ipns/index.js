@@ -3,8 +3,9 @@
 const { createFromPrivKey } = require('peer-id')
 const errcode = require('err-code')
 const debug = require('debug')
-const log = debug('ipfs:ipns')
-log.error = debug('ipfs:ipns:error')
+const log = Object.assign(debug('ipfs:ipns'), {
+  error: debug('ipfs:ipns:error')
+})
 
 const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')
@@ -34,6 +35,7 @@ class IPNS {
 
       // // Add to cache
       const id = peerId.toB58String()
+      // @ts-ignore - parseFloat expects string
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
@@ -53,12 +55,10 @@ class IPNS {
   }
 
   // Resolve
-  async resolve (name, options) {
+  async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME')
     }
-
-    options = options || {}
 
     // If recursive, we should not try to get the cached value
     if (!options.nocache && !options.recursive) {

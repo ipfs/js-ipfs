@@ -1,13 +1,13 @@
 'use strict'
 
 /* eslint-env browser */
-const { Client } = require('./client')
+const Client = require('./client')
 const { decodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
  * @typedef {import('ipfs-message-port-server/src/files').FilesService} FilesService
  * @typedef {import('ipfs-message-port-server/src/files').EncodedStat} EncodedStat
- * @typedef {import('./client').ClientTransport} Transport
+ * @typedef {import('./client').MessageTransport} MessageTransport
  */
 
 /**
@@ -16,7 +16,7 @@ const { decodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
  */
 class FilesClient extends Client {
   /**
-   * @param {Transport} transport
+   * @param {MessageTransport} transport
    */
   constructor (transport) {
     super('files', ['stat'], transport)

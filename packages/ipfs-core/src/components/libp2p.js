@@ -5,17 +5,24 @@ const mergeOptions = require('merge-options')
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
+/**
+ * @param {Object} config
+ * @param {import('.').IPFSRepo} config.repo
+ * @param {Object} [config.options]
+ * @param {import('.').PeerId} [config.peerId]
+ * @param {string[]} [config.multiaddrs]
+ * @param {{pass?:string}} [config.keychainConfig]
+ * @param {import('.').LibP2PConfig} [config.config]
+ * @returns {import('.').LibP2PService}
+ */
 module.exports = ({
-  options,
+  options = {},
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
-  config
+  config = {}
 }) => {
-  options = options || {}
-  config = config || {}
-
   const { datastore, keys } = repo
 
   const libp2pOptions = getLibp2pOptions({

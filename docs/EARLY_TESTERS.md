@@ -1,4 +1,9 @@
-# Early Testers Programme
+# Early Testers Programme <!-- omit in toc -->
+
+- [What is it?](#what-is-it)
+- [What are the expectations?](#what-are-the-expectations)
+- [Who has signed up?](#who-has-signed-up)
+- [How to sign up?](#how-to-sign-up)
 
 ## What is it?
 

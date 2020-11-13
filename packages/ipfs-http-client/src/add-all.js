@@ -5,19 +5,19 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
-const anySignal = require('any-signal')
-const AbortController = require('abort-controller').default
+const { anySignal } = require('any-signal')
+const AbortController = require('native-abort-controller')
 
 module.exports = configure((api) => {
   /**
-   * @type {import('../../ipfs/src/core/components/add-all').AddAll<>}
+   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all/index')>}
    */
-  async function * addAll (input, options = {}) {
+  async function * addAll (source, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
     const signal = anySignal([controller.signal, options.signal])
     const { headers, body, total, lengthComputable } =
-      await multipartRequest(input, controller, options.headers)
+      await multipartRequest(source, controller, options.headers)
 
     // In browser response body only starts streaming once upload is
     // complete, at which point all the progress updates are invalid. If
@@ -47,7 +47,7 @@ module.exports = configure((api) => {
       if (file.hash !== undefined) {
         yield toCoreInterface(file)
       } else if (progressFn) {
-        progressFn(file.bytes || 0)
+        progressFn(file.bytes || 0, file.name)
       }
     }
   }
@@ -81,7 +81,7 @@ const createOnUploadPrgress = (size, progress) => ({ loaded, total }) =>
  */
 
 /**
- * @param {*} input
+ * @param {any} input
  * @returns {UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
@@ -107,6 +107,7 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
 }
 
 /**
+ * @typedef {import('ipfs-core/src/components/add-all/index').UnixFSEntry} UnixFSEntry
  * @typedef {import('./index').HttpOptions} HttpOptions
  * @typedef {Object} HttpAddOptions
  * @property {}

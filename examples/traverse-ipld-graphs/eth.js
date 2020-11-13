@@ -9,7 +9,13 @@ const fs = require('fs').promises
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function main () {
-  const ipfs = await createNode()
+  const ipfs = await createNode({
+    ipld: {
+      formats: [
+        ...Object.values(require('ipld-ethereum'))
+      ]
+    }
+  })
 
   console.log('\nStart of the example:')
 

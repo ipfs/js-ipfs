@@ -1,6 +1,11 @@
-# IPFS Architecture
+# IPFS Architecture <!-- omit in toc -->
 
-![](../img/architecture.png)
+## Table of Contents <!-- omit in toc -->
+
+- [Code Architecture and folder Structure](#code-architecture-and-folder-structure)
+  - [Source code](#source-code)
+
+![](./img/architecture.png)
 
 [Annotated version](https://user-images.githubusercontent.com/1211152/47606420-b6265780-da13-11e8-923b-b365a8534e0e.png)
 
@@ -14,7 +19,7 @@ What does this image explain?
 
 ## Code Architecture and folder Structure
 
-![](img/overview.png)
+![](./img/overview.png)
 
 ### Source code
 

@@ -15,7 +15,7 @@ let sigServerB
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '530kB' },
+  bundlesize: { maxSize: '523kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -74,7 +74,7 @@ module.exports = {
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
-          ipfsHttpModule: require('ipfs-http-client'),
+          ipfsHttpModule: require('../ipfs-http-client'),
           ipfsBin: path.resolve(path.join(__dirname, '..', 'ipfs', 'src', 'cli.js')),
           ipfsOptions: {
             libp2p: {

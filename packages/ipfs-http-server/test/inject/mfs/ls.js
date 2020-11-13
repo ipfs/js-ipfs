@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const CID = require('cids')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   timeout: undefined,
@@ -83,7 +83,7 @@ describe('/files/ls', () => {
 
     expect(response).to.have.nested.property('result.Entries.length', 1)
     expect(response).to.have.nested.property('result.Entries[0].Name', file.name)
-    expect(response).to.have.nested.property('result.Entries[0].Type', file.type)
+    expect(response).to.have.nested.property('result.Entries[0].Type', 1)
     expect(response).to.have.nested.property('result.Entries[0].Size', file.size)
     expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString())
     expect(response).to.have.nested.property('result.Entries[0].Mode', file.mode)

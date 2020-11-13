@@ -138,6 +138,10 @@ If no `content` is passed, then the item is treated as an empty directory.
 
 One of `path` or `content` _must_ be passed.
 
+Both `mode` and `mtime` are optional and will result in different [CID][]s for the same file if passed.
+
+`mode` will have a default value applied if not set, see [UnixFS Metadata](https://github.com/ipfs/specs/blob/master/UNIXFS.md#metadata) for further discussion.
+
 ##### FileContent
 
 `FileContent` is one of the following types:
@@ -167,7 +171,7 @@ An optional object which may have the following keys:
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
 | pin | `boolean` | `true` | pin this object when adding |
-| progress | function | `undefined` | a function that will be called with the byte length of chunks as a file is added to ipfs (Please note that for http client it would include bytes for all of the request body not just file(s) content) |
+| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added |
 | rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
 | trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |
 | wrapWithDirectory | `boolean` | `false` | Adds a wrapping node around the content |
@@ -186,8 +190,8 @@ Each yielded object is of the form:
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -242,13 +246,13 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| chunker | `String` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
-| cidVersion | `Number` | `0` | the CID version to use when storing the data |
+| chunker | `string` | `'size-262144'` | chunking algorithm used to build ipfs DAGs |
+| cidVersion | `number` | `0` | the CID version to use when storing the data |
 | enableShardingExperiment | `boolean` | `false` |  allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature |
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
 | pin | `boolean` | `true` | pin this object when adding |
-| progress | function | `undefined` | a function that will be called with the byte length of chunks as a file is added to ipfs (Please note that for http client it would include bytes for all of the request body not just file(s) content) |
+| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added |
 | rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
 | shardSplitThreshold | `Number` | `1000` | Directories with more than this number of files will be created as HAMT-sharded directories |
 | trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |
@@ -268,8 +272,8 @@ Each yielded object is of the form:
 {
   path: '/tmp/myfile.txt',
   cid: CID('QmHash'),
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number },
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number },
   size: 123
 }
 ```
@@ -415,7 +419,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -458,8 +462,8 @@ Each yielded object is of the form:
 {
   path: string,
   content: <AsyncIterable<Uint8Array>>,
-  mode: number,
-  mtime: { secs: number, nsecs: number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -522,8 +526,8 @@ Each yielded object is of the form:
   size: 11696,
   cid: CID('QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi'),
   type: 'file',
-  mode: Number,
-  mtime: { secs: Number, nsecs: Number }
+  mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
+  mtime?: { secs: Number, nsecs: Number }
 }
 ```
 
@@ -842,7 +846,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<Buffer>` | An async iterable that yields [`Buffer`][b] objects with the contents of `path` |
+| `AsyncIterable<Uint8Array>` | An async iterable that yields `Uint8Array` objects with the contents of `path` |
 
 #### Example
 
@@ -866,7 +870,7 @@ console.log(uint8ArrayConcat(chunks).toString())
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | path | `String` | The [MFS path] where you will write to |
-| content | `String`, `Buffer`, `AsyncIterable<Buffer>` or [`Blob`][blob] | The content to write to the path |
+| content | `String`, `Uint8Array`, `AsyncIterable<Uint8Array>` or [`Blob`][blob] | The content to write to the path |
 
 #### Options
 
@@ -902,7 +906,7 @@ await ipfs.files.write('/hello-world', new TextEncoder().encode('Hello, world!')
 
 ### `ipfs.files.mv(...from, to, [options])`
 
-> Move files from one location to another#### Parameters
+> Move files from one location to another
 
 #### Parameters
 

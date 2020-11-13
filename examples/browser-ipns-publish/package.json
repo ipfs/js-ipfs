@@ -13,8 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "human-crypto-keys": "^0.1.4",
-    "ipfs": "^0.50.1",
-    "ipfs-http-client": "^47.0.0",
+    "ipfs": "^0.52.0",
+    "ipfs-http-client": "^48.1.0",
     "ipfs-utils": "git://github.com/ipfs/js-ipfs-utils#xhr-2",
     "ipns": "^0.8.0",
     "it-last": "^1.0.4",
@@ -26,8 +26,8 @@
   ],
   "devDependencies": {
     "delay": "^4.4.0",
-    "execa": "^4.0.0",
-    "ipfsd-ctl": "^7.0.0",
+    "execa": "^4.0.3",
+    "ipfsd-ctl": "^7.0.2",
     "go-ipfs": "^0.7.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",

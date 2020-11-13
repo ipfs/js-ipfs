@@ -6,7 +6,7 @@ const CID = require('cids')
 const sinon = require('sinon')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 describe('/bitswap', () => {
   const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')

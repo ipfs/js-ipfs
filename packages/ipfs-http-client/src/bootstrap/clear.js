@@ -2,9 +2,13 @@
 
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const Multiaddr = require('multiaddr')
 
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bootstrap/clear')>}
+   */
+  async function clear (options = {}) {
     const res = await api.post('bootstrap/rm', {
       timeout: options.timeout,
       signal: options.signal,
@@ -15,6 +19,10 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    return res.json()
+    const { Peers } = await res.json()
+
+    return { Peers: Peers.map(ma => new Multiaddr(ma)) }
   }
+
+  return clear
 })

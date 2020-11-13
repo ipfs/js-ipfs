@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"
@@ -13,6 +13,14 @@
     "src",
     "dist"
   ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*",
+        "dist/*/index"
+      ]
+    }
+  },
   "browser": {},
   "repository": {
     "type": "git",
@@ -26,18 +34,20 @@
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:bundle && npm run build:types",
+    "build:bundle": "aegir build",
+    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rm -rf ./dist",
     "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "ipld-block": "^0.10.1"
+    "ipld-block": "^0.11.0"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
-    "interface-ipfs-core": "^0.140.0",
+    "aegir": "^28.0.0",
+    "typescript": "^4.0.3",
     "uint8arrays": "^1.1.0"
   },
   "engines": {

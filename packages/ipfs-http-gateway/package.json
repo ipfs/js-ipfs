@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-gateway",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -20,7 +20,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "aegir build",
+    "build": "npm run build:types",
+    "build:types": "tsc --build",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -34,7 +35,7 @@
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
-    "ipfs-core-utils": "^0.4.0",
+    "ipfs-core-utils": "^0.5.1",
     "ipfs-http-response": "^0.6.0",
     "is-ipfs": "^2.0.0",
     "it-all": "^1.0.4",
@@ -46,8 +47,9 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^27.0.0",
-    "file-type": "^15.0.1",
-    "sinon": "^9.0.3"
+    "aegir": "^28.0.0",
+    "file-type": "^16.0.0",
+    "sinon": "^9.0.3",
+    "typescript": "^4.0.3"
   }
 }

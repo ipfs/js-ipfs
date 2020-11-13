@@ -1,65 +1,30 @@
 'use strict'
 
 const importer = require('ipfs-unixfs-importer')
-const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input')
+const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
 const { withTimeoutOption } = require('../../utils')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
- * @typedef {Uint8Array | Blob | string | Iterable<Uint8Array> | Iterable<number> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} FileContent
- *
- * @typedef {object} FileObject
- * - If no path is specified, then the item will be added to the root level and will be given a name according to it's CID.
- * - If no content is passed, then the item is treated as an empty directory.
- * - One of path or content must be passed.
- * @property {string} [path] - The path you want to the file to be accessible at from the root CID _after_ it has been added
- * @property {FileContent} [content] - The contents of the file
- * @property {number | string} [mode] - File mode to store the entry with (see https://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation)
- * @property {UnixTime} [mtime] - The modification time of the entry
- *
- * @typedef {FileContent | FileObject} Source
- * @typedef {Iterable<Source> | AsyncIterable<Source> | ReadableStream<Source>} FileStream
- *
- * @typedef {Date | UnixTimeObj | [number, number]} UnixTime - As an array of numbers, it must have two elements, as per the output of [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
- *
- * @typedef {object} UnixTimeObj
- * @property {number} secs - the number of seconds since (positive) or before (negative) the Unix Epoch began
- * @property {number} [nsecs] - the number of nanoseconds since the last full second.
- *
- * @typedef {object} UnixFSEntry
- * @property {string} path
- * @property {import('cids')} cid
- * @property {number} mode
- * @property {UnixTimeObj} mtime
- * @property {number} size
+ * @param {Object} config
+ * @param {import('..').Block} config.block
+ * @param {import('..').GCLock} config.gcLock
+ * @param {import('..').Preload} config.preload
+ * @param {import('..').Pin} config.pin
+ * @param {import('../init').ConstructorOptions<any, boolean>} config.options
  */
-
-/**
- * @typedef {import('../add').AddOptions & _AddAllOptions} AddAllOptions
- * @typedef {object} _AddAllOptions
- * @property {boolean} [enableShardingExperiment] - allows to create directories with an unlimited number of entries currently size of unixfs directories is limited by the maximum block size. Note that this is an experimental feature (default: `false`)
- * @property {number} [shardSplitThreshold] - Directories with more than this number of files will be created as HAMT-sharded directories (default: `1000`)
- */
-
-/**
- * Import multiple files and data into IPFS.
- *
- * @template {Record<string, any>} ExtraOptions
- * @callback AddAll
- * @param {FileStream} source
- * @param {AddAllOptions & import('../../utils').AbortOptions & ExtraOptions} [options]
- * @returns {AsyncIterable<UnixFSEntry>}
- */
-
 module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
   const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
   /**
-   * @type {AddAll<{}>}
+   * Import multiple files and data into IPFS.
+   *
+   * @param {FileStream} source
+   * @param {AddAllOptions & AbortOptions} [options]
+   * @returns {AsyncIterable<UnixFSEntry>}
    */
-  async function * addAll (source, options) {
-    options = options || {}
+  async function * addAll (source, options = {}) {
     const opts = mergeOptions({
       shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,
       strategy: 'balanced'
@@ -76,15 +41,38 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
       opts.strategy = 'trickle'
     }
 
+    if (opts.strategy === 'trickle') {
+      opts.leafType = 'raw'
+      opts.reduceSingleLeafToSelf = false
+    }
+
+    if (opts.cidVersion > 0 && opts.rawLeaves === undefined) {
+      // if the cid version is 1 or above, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
+    if (opts.hashAlg !== undefined && opts.rawLeaves === undefined) {
+      // if a non-default hash alg has been specified, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
     delete opts.trickle
 
+    const totals = {}
+
     if (opts.progress) {
-      let total = 0
       const prog = opts.progress
 
-      opts.progress = (bytes) => {
-        total += bytes
-        prog(total)
+      opts.progress = (bytes, path) => {
+        if (!totals[path]) {
+          totals[path] = 0
+        }
+
+        totals[path] += bytes
+
+        prog(totals[path], path)
       }
     }
 
@@ -102,7 +90,12 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     const releaseLock = await gcLock.readLock()
 
     try {
-      yield * iterator
+      for await (const added of iterator) {
+        // do not keep file totals around forever
+        delete totals[added.path]
+
+        yield added
+      }
     } finally {
       releaseLock()
     }
@@ -176,3 +169,40 @@ function pinFile (pin, opts) {
     }
   }
 }
+
+/**
+ * @typedef {object} UnixFSEntry
+ * @property {string} path
+ * @property {CID} cid
+ * @property {number} [mode]
+ * @property {MTime} [mtime]
+ * @property {number} size
+ *
+ * @typedef {Object} AddAllOptions
+ * @property {string} [chunker='size-262144'] - Chunking algorithm used to build
+ * ipfs DAGs.
+ * @property {0|1} [cidVersion=0] - The CID version to use when storing the data.
+ * @property {boolean} [enableShardingExperiment=false] - Allows to create
+ * directories with an unlimited number of entries currently size of unixfs
+ * directories is limited by the maximum block size. **Note** that this is an
+ * experimental feature.
+ * @property {string} [hashAlg='sha2-256'] - Multihash hashing algorithm to use.
+ * @property {boolean} [onlyHash=false] - If true, will not add blocks to the
+ * blockstore.
+ * @property {boolean} [pin=true] - Pin this object when adding.
+ * @property {(bytes:number, path:string) => void} [progress] - a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added
+ * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
+ * file data and not be wrapped in a protobuf.
+ * @property {number} [shardSplitThreshold=1000] - Directories with more than this
+ * number of files will be created as HAMT-sharded directories.
+ * @property {boolean} [trickle=false] - If true will use the
+ * [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle)
+ * format for DAG generation.
+ * @property {boolean} [wrapWithDirectory=false] - Adds a wrapping node around
+ * the content.
+ *
+ * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').Source} FileStream
+ * @typedef {import('../../utils').MTime} MTime
+ * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('..').CID} CID
+ */

@@ -1,4 +1,11 @@
-# Using JS IPFS in the Browser
+# Using JS IPFS in the Browser <!-- omit in toc -->
+
+## Table of Contents <!-- omit in toc -->
+
+- [Limitations of the Browser Context](#limitations-of-the-browser-context)
+- [Addressing Limitations](#addressing-limitations)
+- [Best Practices](#best-practices)
+- [Code Examples](#code-examples)
 
 JS IPFS is the implementation of IPFS protocol in JavaScript. It can run on any
 evergreen browser, inside a service or web worker, browser extensions, Electron and in Node.js.
@@ -44,8 +51,8 @@ You can find detailed information about running js-ipfs [here](https://github.co
 
 ## Best Practices
 
-- Configure nodes for using self-hosted `*-star` signaling and transport service.  When in doubt, use WebSockets ones.
-- Run your own instance of `*-star` signaling service.
+- Configure nodes for using self-hosted `*-star` signalling and transport service.  When in doubt, use WebSockets ones.
+- Run your own instance of `*-star` signalling service.
   The default ones are under high load and should be used only for tests and development.
 - Make sure content added to js-ipfs running in the browser is persisted/cached somewhere on regular IPFS daemon
   - Manually `pin` or preload CIDs of interest with `refs -r` beforehand.

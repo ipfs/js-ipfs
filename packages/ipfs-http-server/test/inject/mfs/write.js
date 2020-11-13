@@ -6,7 +6,7 @@ const http = require('../../utils/http')
 const sinon = require('sinon')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
-const { AbortSignal } = require('abort-controller')
+const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   offset: undefined,

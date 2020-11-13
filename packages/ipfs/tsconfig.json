@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": [
+    "package.json",
+    "./src"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-cli"
+    },
+    {
+      "path": "../ipfs-core"
+    }
+  ]
+}

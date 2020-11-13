@@ -15,7 +15,14 @@ const df = createFactory({
 async function runTest () {
   const ipfsd = await df.spawn({
     type: 'proc',
-    test: true
+    test: true,
+    ipfsOptions: {
+      ipld: {
+        formats: [
+          ...Object.values(require('ipld-ethereum'))
+        ]
+      }
+    }
   })
 
   const cids = []
