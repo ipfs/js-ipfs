@@ -47,6 +47,7 @@
   "devDependencies": {
     "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
     "cross-env": "^7.0.0",
+    "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.142.0",
     "ipfs-http-client": "^48.1.0",
@@ -56,7 +57,8 @@
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.20.1",
     "merge-options": "^2.0.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "wrtc": "^0.4.6"
   },
   "typesVersions": {
     "*": {

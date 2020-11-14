@@ -89,7 +89,7 @@
     "prometheus-gc-stats": "^0.6.0"
   },
   "peerDependencies": {
-    "wrtc": "^0.4.6",
-    "electron-webrtc": "^0.3.0"
+    "electron-webrtc": "^0.3.0",
+    "wrtc": "^0.4.6"
   }
 }
