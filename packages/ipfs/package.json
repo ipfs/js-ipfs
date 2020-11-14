@@ -34,7 +34,7 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop"
+    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop -i electron-webrtc -i webrtc"
   },
   "dependencies": {
     "debug": "^4.1.1",
