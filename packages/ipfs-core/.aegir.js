@@ -9,7 +9,7 @@ const path = require('path')
 let preloadNode
 let echoServer = new EchoServer()
 
-// the second signalling server is needed for the inferface test 'should list peers only once even if they have multiple addresses'
+// the second signalling server is needed for the interface test 'should list peers only once even if they have multiple addresses'
 let sigServerA
 let sigServerB
 let ipfsdServer
