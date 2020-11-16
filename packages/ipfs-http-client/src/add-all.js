@@ -21,7 +21,7 @@ module.exports = configure((api) => {
 
     // In browser response body only starts streaming once upload is
     // complete, at which point all the progress updates are invalid. If
-    // length of the content is computable we can interpla te progress from
+    // length of the content is computable we can interpret progress from
     // `{ total, loaded}` passed to `onUploadProgress` and `multipart.total`
     // in which case we disable progress updates to be written out.
     const [progressFn, onUploadProgress] = typeof options.progress === 'function'
