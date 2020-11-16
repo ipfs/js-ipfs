@@ -34,7 +34,7 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop -i electron-webrtc -i wrtc"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -45,31 +45,18 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
-    "clear-module": "^4.0.0",
+    "aegir": "^28.2.0",
     "cross-env": "^7.0.0",
-    "delay": "^4.4.0",
-    "form-data": "^3.0.0",
+    "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.142.0",
     "ipfs-http-client": "^48.1.0",
     "ipfs-interop": "^3.0.0",
     "ipfs-utils": "^4.0.0",
     "ipfsd-ctl": "^7.0.2",
-    "iso-random-stream": "^1.1.1",
     "iso-url": "^1.0.0",
-    "it-to-buffer": "^1.0.2",
+    "libp2p-webrtc-star": "^0.20.1",
     "merge-options": "^2.0.0",
-    "nanoid": "^3.1.12",
-    "ncp": "^2.0.0",
-    "p-event": "^4.2.0",
-    "p-map": "^4.0.0",
-    "qs": "^6.9.4",
-    "rimraf": "^3.0.2",
-    "sinon": "^9.0.3",
-    "stream-to-promise": "^3.0.0",
-    "string-argv": "^0.3.1",
-    "temp-write": "^4.0.0",
     "typescript": "^4.0.3",
     "wrtc": "^0.4.6"
   },

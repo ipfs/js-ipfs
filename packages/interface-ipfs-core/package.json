@@ -31,6 +31,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "aegir": "^28.2.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
@@ -62,12 +63,7 @@
     "p-map": "^4.0.0",
     "peer-id": "^0.14.1",
     "readable-stream": "^3.4.0",
-    "temp-write": "^4.0.0",
     "uint8arrays": "^1.1.0"
-  },
-  "devDependencies": {
-    "aegir": "^28.0.0",
-    "ipfsd-ctl": "^7.0.2"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",
