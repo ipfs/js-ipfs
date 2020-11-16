@@ -168,12 +168,6 @@ class HttpApi {
           return h.continue
         }
 
-        // The fetch API in the Electron Renderer process sends no referer or
-        // origin but should be allowed
-        if (userAgent.includes('Electron')) {
-          return h.continue
-        }
-
         // Disallow otherwise.
         //
         // This means the request probably came from a browser and thus, it
