@@ -26,7 +26,7 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i typescript -i ipfs-http-client"
   },
   "dependencies": {
     "@hapi/boom": "^9.1.0",
@@ -65,8 +65,9 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
+    "aegir": "^28.2.0",
     "form-data": "^3.0.0",
+    "ipfs-http-client": "^48.1.0",
     "iso-random-stream": "^1.1.1",
     "it-to-buffer": "^1.0.2",
     "qs": "^6.9.4",

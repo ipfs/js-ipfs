@@ -52,7 +52,7 @@ describe('interface-ipfs-core tests', function () {
     skip: [
       {
         name: 'should include the ipfs-http-client version',
-        reason: 'Value is added by the http client and the client is not part of ipfs-core'
+        reason: 'Value is added by the HTTP RPC API server which is not part of ipfs-core'
       }
     ]
   })

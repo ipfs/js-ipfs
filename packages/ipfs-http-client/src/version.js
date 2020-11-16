@@ -3,7 +3,6 @@
 const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
-const pkg = require('../package.json')
 
 module.exports = configure(api => {
   /**
@@ -17,10 +16,7 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    const data = toCamel(await res.json())
-    data['ipfs-http-client'] = pkg.version
-
-    return data
+    return toCamel(await res.json())
   }
 
   return version
