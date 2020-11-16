@@ -42,7 +42,7 @@
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.0.0",
     "err-code": "^2.0.3",
-    "ipfs-utils": "git://github.com/ipfs/js-ipfs-utils#xhr-2",
+    "ipfs-utils": "^5.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
