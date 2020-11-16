@@ -45,13 +45,13 @@
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "it-all": "^1.0.4"
+    "it-all": "^1.0.4",
+    "ipfs-message-port-protocol": "^0.4.0"
   },
   "devDependencies": {
     "@types/it-all": "^1.0.0",
     "aegir": "^28.0.0",
     "cross-env": "^7.0.0",
-    "ipfs-message-port-protocol": "^0.4.0",
     "typescript": "^4.0.3"
   },
   "engines": {

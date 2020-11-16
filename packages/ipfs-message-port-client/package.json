@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.0.0"
+    "cids": "^1.0.0",
+    "ipfs-message-port-protocol": "^0.4.0"
   },
   "devDependencies": {
     "aegir": "^28.0.0",
@@ -51,7 +52,6 @@
     "interface-ipfs-core": "^0.142.0",
     "ipfs": "^0.52.0",
     "ipfs-core": "^0.2.0",
-    "ipfs-message-port-protocol": "^0.4.0",
     "ipfs-message-port-server": "^0.4.0",
     "ipld-dag-pb": "^0.20.0",
     "typescript": "^4.0.3"
