@@ -52,7 +52,7 @@
     "interface-ipfs-core": "^0.142.0",
     "ipfs-http-client": "^48.1.0",
     "ipfs-interop": "^3.0.0",
-    "ipfs-utils": "^4.0.0",
+    "ipfs-utils": "^5.0.0",
     "ipfsd-ctl": "^7.0.2",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.20.1",

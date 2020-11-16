@@ -56,7 +56,7 @@
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.5.1",
-    "ipfs-utils": "^4.0.0",
+    "ipfs-utils": "^5.0.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
