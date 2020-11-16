@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.1.1...ipfs-http-server@0.1.2) (2020-11-16)
+
+
+### Bug Fixes
+
+* align behaviour between go and js for content without paths ([#3385](https://github.com/ipfs/js-ipfs/issues/3385)) ([334873d](https://github.com/ipfs/js-ipfs/commit/334873d3784e2baa2b19f8f69b5aade36715ba03))
+
+
+
+
+
 ## [0.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.1.0...ipfs-http-server@0.1.1) (2020-11-09)
 
 **Note:** Version bump only for package ipfs-http-server

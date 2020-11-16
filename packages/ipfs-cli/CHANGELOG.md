@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.2.0...ipfs-cli@0.2.1) (2020-11-16)
+
+
+### Bug Fixes
+
+* correct raw leaves setting ([#3401](https://github.com/ipfs/js-ipfs/issues/3401)) ([c0703ef](https://github.com/ipfs/js-ipfs/commit/c0703ef78626a91186e0c7c3374584283367c064))
+* report ipfs.add progress over http ([#3310](https://github.com/ipfs/js-ipfs/issues/3310)) ([39cad4b](https://github.com/ipfs/js-ipfs/commit/39cad4b76b950ea6a76477fd01f8631b8bd9aa1e))
+
+
+
+
+
 # [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.1.0...ipfs-cli@0.2.0) (2020-11-09)
 
 
