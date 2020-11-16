@@ -101,7 +101,8 @@ describe('add', () => {
 
     ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
-      cidVersion: 1
+      cidVersion: 1,
+      rawLeaves: true
     }).returns([{
       cid,
       path: 'README.md'

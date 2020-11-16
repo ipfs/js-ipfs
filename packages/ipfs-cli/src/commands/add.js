@@ -79,8 +79,7 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      describe: 'Use raw blocks for leaf nodes. (experimental)',
-      default: false
+      describe: 'Use raw blocks for leaf nodes. (experimental)'
     },
     'cid-version': {
       type: 'integer',
@@ -239,6 +238,10 @@ module.exports = {
       if (mtimeNsecs != null) {
         mtime.nsecs = mtimeNsecs
       }
+    }
+
+    if (options.rawLeaves == null) {
+      options.rawLeaves = cidVersion > 0
     }
 
     const source = file
