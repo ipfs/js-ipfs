@@ -46,7 +46,7 @@
     "ipfs-message-port-protocol": "^0.4.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
+    "aegir": "^28.2.0",
     "interface-ipfs-core": "^0.142.0",
     "ipfs": "^0.52.0",
     "ipfs-core": "^0.2.0",

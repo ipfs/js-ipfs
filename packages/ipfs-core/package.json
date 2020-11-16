@@ -120,7 +120,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
+    "aegir": "^28.2.0",
     "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.142.0",

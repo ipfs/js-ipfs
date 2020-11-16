@@ -65,7 +65,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
+    "aegir": "^28.2.0",
     "form-data": "^3.0.0",
     "ipfs-http-client": "^48.1.0",
     "iso-random-stream": "^1.1.1",

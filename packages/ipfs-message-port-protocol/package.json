@@ -46,7 +46,7 @@
     "ipld-block": "^0.11.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/allow-passing-input-to-dep-check",
+    "aegir": "^28.2.0",
     "typescript": "^4.0.3",
     "uint8arrays": "^1.1.0"
   },
