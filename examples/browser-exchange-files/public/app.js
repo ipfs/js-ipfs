@@ -294,7 +294,7 @@ async function refreshPeerList () {
         if (addr.indexOf('/p2p/') >= 0) {
           return addr
         } else {
-          return addr + peer.peer
+          return addr + '/p2p/' + peer.peer
         }
       }
     })
