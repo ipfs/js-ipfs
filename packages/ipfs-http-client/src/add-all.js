@@ -56,7 +56,7 @@ module.exports = configure((api) => {
 
 /**
  * Returns simple progress callback when content length isn't computable or a
- * progress event handler that inerpolates progress from upload progress events.
+ * progress event handler that calculates progress from upload progress events.
  *
  * @param {number} total
  * @param {{name:string, start:number, end:number}[]|null} parts
@@ -82,7 +82,7 @@ const createOnUploadPrgress = (size, parts, progress) => {
     const position = Math.floor(loaded / total * size)
     while (index < count) {
       const { start, end, name } = parts[index]
-      // If within current part range reporst progress and break the loop
+      // If within current part range report progress and break the loop
       if (position < end) {
         progress(position - start, name)
         break
