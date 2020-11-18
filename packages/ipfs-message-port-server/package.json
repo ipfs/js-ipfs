@@ -41,7 +41,7 @@
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i @types/* -i typescript"
+    "dep-check": "aegir dep-check -i @types/* -i typescript -i rimraf"
   },
   "dependencies": {
     "ipfs-message-port-protocol": "^0.4.1",

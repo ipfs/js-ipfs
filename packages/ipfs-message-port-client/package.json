@@ -39,7 +39,7 @@
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-core"
+    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",

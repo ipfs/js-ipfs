@@ -26,7 +26,7 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript"
+    "dep-check": "aegir dep-check -i typescript -i rimraf"
   },
   "dependencies": {
     "@hapi/ammo": "^5.0.1",
