@@ -3,7 +3,7 @@
 const Big = require('bignumber.js').default
 const parseDuration = require('parse-duration').default
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 function getBandwidthStats (libp2p, opts) {
   let stats

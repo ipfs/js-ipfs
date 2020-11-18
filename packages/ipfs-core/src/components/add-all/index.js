@@ -4,7 +4,7 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**

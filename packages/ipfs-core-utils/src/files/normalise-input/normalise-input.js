@@ -8,7 +8,9 @@ const {
   isBytes,
   isBlob,
   isReadableStream,
-  isFileObject
+  isFileObject,
+  mtimeToObject,
+  modeToNumber
 } = require('./utils')
 
 // eslint-disable-next-line complexity
@@ -105,7 +107,8 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
-  const file = { path: path || '', mode, mtime }
+
+  const file = { path: path || '', mode: modeToNumber(mode), mtime: mtimeToObject(mtime) }
 
   if (content) {
     file.content = await normaliseContent(content)

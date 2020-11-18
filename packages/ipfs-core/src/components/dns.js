@@ -2,7 +2,7 @@
 
 // dns-nodejs gets replaced by dns-browser when webpacked/browserified
 const dns = require('../runtime/dns-nodejs')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {string} domain

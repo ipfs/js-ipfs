@@ -4,7 +4,7 @@ const exporter = require('ipfs-unixfs-exporter')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   offset: 0,

@@ -1,6 +1,6 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**

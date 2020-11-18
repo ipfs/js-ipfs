@@ -1,7 +1,7 @@
 'use strict'
 
 const { isValidMultiaddr } = require('./utils')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {import('..').IPFSRepo} repo

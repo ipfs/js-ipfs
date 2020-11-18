@@ -15,6 +15,7 @@ const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const bufferStream = require('it-buffer-stream')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -419,6 +420,85 @@ module.exports = (common, options) => {
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
       expect(files[0].cid.codec).to.equal('dag-pb')
       expect(files[0].size).to.equal(18)
+    })
+
+    it('should support bidirectional streaming', async function () {
+      let progressInvoked
+
+      const handler = (bytes, path) => {
+        progressInvoked = true
+      }
+
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        await new Promise((resolve) => {
+          const interval = setInterval(() => {
+            // we've received a progress result, that means we've received some
+            // data from the server before we're done sending data to the server
+            // so the streaming is bidirectional and we can finish up
+            if (progressInvoked) {
+              clearInterval(interval)
+              resolve()
+            }
+          }, 10)
+        })
+      }
+
+      await drain(ipfs.addAll(source(), {
+        progress: handler,
+        fileImportConcurrency: 1
+      }))
+
+      expect(progressInvoked).to.be.true()
+    })
+
+    it('should error during add-all stream', async function () {
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+      }
+
+      await expect(drain(ipfs.addAll(source(), {
+        fileImportConcurrency: 1,
+        chunker: 'rabin-2048--50' // invalid chunker parameters, validated after the stream starts moving
+      }))).to.eventually.be.rejectedWith(/Chunker parameter avg must be an integer/)
+    })
+
+    it('should add big files', async function () {
+      const totalSize = 1024 * 1024 * 200
+      const chunkSize = 1024 * 1024 * 99
+
+      const source = async function * () {
+        yield {
+          path: '/dir/file-200mb-1',
+          content: bufferStream(totalSize, {
+            chunkSize
+          })
+        }
+
+        yield {
+          path: '/dir/file-200mb-2',
+          content: bufferStream(totalSize, {
+            chunkSize
+          })
+        }
+      }
+
+      const results = await all(ipfs.addAll(source()))
+
+      expect(await ipfs.files.stat(`/ipfs/${results[0].cid}`)).to.have.property('size', totalSize)
+      expect(await ipfs.files.stat(`/ipfs/${results[1].cid}`)).to.have.property('size', totalSize)
     })
   })
 }

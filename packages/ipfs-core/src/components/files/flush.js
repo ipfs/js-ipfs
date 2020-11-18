@@ -1,7 +1,7 @@
 'use strict'
 
 const stat = require('./stat')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 const defaultOptions = {

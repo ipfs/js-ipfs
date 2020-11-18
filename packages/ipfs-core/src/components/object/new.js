@@ -4,7 +4,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({ ipld, preload }) => {
   return withTimeoutOption(async function _new (options = {}) {
