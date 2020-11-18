@@ -25,7 +25,7 @@
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i @types/yargs -i typescript -i cid-tool"
   },
   "dependencies": {

@@ -4,7 +4,7 @@
   "version": "1.1.1",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "webpack",
     "start": "node server.js",
     "test": "test-ipfs-example"
@@ -20,6 +20,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.12.21",
+    "rimraf": "^3.0.2",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",

@@ -38,8 +38,8 @@
     "build:bundle": "aegir build",
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
-    "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check -i typescript"
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i typescript -i rimraf"
   },
   "dependencies": {
     "cids": "^1.0.0",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "aegir": "^28.2.0",
+    "rimraf": "^3.0.2",
     "typescript": "^4.0.3",
     "uint8arrays": "^1.1.0"
   },

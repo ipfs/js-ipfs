@@ -4,7 +4,7 @@
   "description": "Bundle js-ipfs-http-client with Webpack",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "webpack",
     "start": "node server.js",
     "test": "test-ipfs-example"
@@ -27,6 +27,7 @@
     "ipfs": "^0.52.1",
     "ipfsd-ctl": "^7.0.2",
     "react-hot-loader": "^4.12.21",
+    "rimraf": "^3.0.2",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",
     "webpack-dev-server": "^3.11.0"

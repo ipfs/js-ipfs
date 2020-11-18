@@ -33,8 +33,8 @@
     "build": "npm run build:js && npm run build:types",
     "build:js": "aegir build",
     "build:types": "tsc --build",
-    "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check -i typescript"
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i typescript -i rimraf"
   },
   "license": "MIT",
   "dependencies": {
@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "aegir": "^28.2.0",
+    "rimraf": "^3.0.2",
     "typescript": "^4.0.3"
   }
 }
