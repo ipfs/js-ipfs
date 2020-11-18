@@ -1,7 +1,8 @@
 'use strict'
 
 const exporter = require('ipfs-unixfs-exporter')
-const { normalizeCidPath, withTimeoutOption } = require('../utils')
+const { normalizeCidPath } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

@@ -3,7 +3,6 @@
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
 const { nanoid } = require('nanoid')
 const modeToString = require('./mode-to-string')
-const mtimeToObject = require('./mtime-to-object')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
 
@@ -36,9 +35,8 @@ async function multipartRequest (source = '', abortController, headers = {}, bou
           qs.push(`mode=${modeToString(mode)}`)
         }
 
-        const time = mtimeToObject(mtime)
-        if (time != null) {
-          const { secs, nsecs } = time
+        if (mtime != null) {
+          const { secs, nsecs } = mtime
 
           qs.push(`mtime=${secs}`)
 
