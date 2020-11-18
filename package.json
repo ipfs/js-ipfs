@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "lerna bootstrap",
     "link": "lerna link",
-    "reset": "lerna run clean && rm -rf packages/*/node_modules node_modules",
+    "reset": "lerna run clean && rimraf packages/*/node_modules node_modules",
     "test": "lerna run test",
     "test:node": "lerna run test:node",
     "test:browser": "lerna run test:browser",
@@ -34,7 +34,7 @@
     "release:pre:build": "NODE_ENV=production npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*}",
     "release:pre:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
     "release:pre:add-hoisted-modules": "json -I -f ./lerna.json -e \"this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']; this.command.bootstrap.nohoist = [...new Set(this.command.bootstrap.nohoist)]\"",
-    "release:pre:reinstall": "rm -rf node_modules */*/node_modules package-lock.json */*/package-lock.json && npm i && rm -rf package-lock.json */*/package-lock.json",
+    "release:pre:reinstall": "rimraf node_modules */*/node_modules package-lock.json */*/package-lock.json && npm i && rimraf package-lock.json */*/package-lock.json",
     "release:publish": "lerna publish",
     "docker:release": "run-s docker:release:*",
     "docker:release:build": "docker build . --no-cache --tag js-ipfs:latest --file ./Dockerfile.latest",
@@ -57,7 +57,8 @@
   "devDependencies": {
     "json": "^10.0.0",
     "lerna": "^3.22.0",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",

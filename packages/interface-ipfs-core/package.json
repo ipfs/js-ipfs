@@ -14,7 +14,6 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "clean": "rm -rf ./dist",
     "test": "echo 'No tests here'",
     "dep-check": "aegir dep-check"
   },

@@ -50,7 +50,7 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i typescript -i interface-ipfs-core"
   },
   "dependencies": {

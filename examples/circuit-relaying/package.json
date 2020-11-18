@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "parcel build index.html --public-url '.'",
     "start": "parcel index.html",
     "deploy": "ipfs add -r --quieter dist",
@@ -24,6 +24,7 @@
     "ipfs-css": "^0.13.1",
     "ipfs-http-client": "^48.1.1",
     "parcel-bundler": "^1.12.4",
+    "rimraf": "^3.0.2",
     "tachyons": "^4.11.1",
     "test-ipfs-example": "^2.0.3"
   },

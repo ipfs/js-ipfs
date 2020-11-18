@@ -8,7 +8,7 @@
     "last 2 Chrome versions"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "lint": "standard public/**/*.js",
     "start": "parcel public/index.html",
     "build": "parcel build public/index.html --public-url ./",
@@ -28,6 +28,7 @@
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "parcel-bundler": "^1.12.4",
+    "rimraf": "^3.0.2",
     "standard": "^13.1.0",
     "test-ipfs-example": "^2.0.3"
   }

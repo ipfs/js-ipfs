@@ -4,7 +4,7 @@
   "description": "Upload file to IPFS via browser using js-ipfs-http-client with Webpack",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "parcel build index.html --public-url '.'",
     "start": "parcel index.html",
     "test": "test-ipfs-example"
@@ -22,6 +22,7 @@
     "parcel-bundler": "^1.12.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "rimraf": "^3.0.2",
     "test-ipfs-example": "^2.0.3"
   },
   "browserslist": [

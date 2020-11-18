@@ -46,7 +46,7 @@
     "build:js": "aegir build",
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i typescript -i ipfs-core"
   },
   "dependencies": {
@@ -84,6 +84,7 @@
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "nock": "^13.0.2",
+    "rimraf": "^3.0.2",
     "typescript": "^4.0.3"
   },
   "engines": {
