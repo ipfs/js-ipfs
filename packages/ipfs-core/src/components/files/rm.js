@@ -7,7 +7,7 @@ const toSources = require('./utils/to-sources')
 const removeLink = require('./utils/remove-link')
 const toMfsPath = require('./utils/to-mfs-path')
 const toTrail = require('./utils/to-trail')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   recursive: false,

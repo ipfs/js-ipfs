@@ -3,7 +3,7 @@
 const defer = require('p-defer')
 const { NotStartedError, AlreadyInitializedError } = require('../errors')
 const Components = require('./')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({
   apiManager,

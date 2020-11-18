@@ -10,7 +10,7 @@ const updateTree = require('./utils/update-tree')
 const addLink = require('./utils/add-link')
 const withMfsRoot = require('./utils/with-mfs-root')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   parents: false,

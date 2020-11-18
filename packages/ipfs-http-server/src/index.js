@@ -182,7 +182,7 @@ class HttpApi {
         const controller = new AbortController()
         request.app.signal = controller.signal
 
-        // abort the reqest if the client disconnects
+        // abort the request if the client disconnects
         request.events.once('disconnect', () => {
           controller.abort()
         })

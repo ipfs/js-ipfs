@@ -54,7 +54,6 @@
     "dep-check": "aegir dep-check -i typescript -i interface-ipfs-core"
   },
   "dependencies": {
-    "any-signal": "^2.0.0",
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
     "cbor": "^5.1.0",
@@ -116,7 +115,6 @@
     "parse-duration": "^0.4.4",
     "peer-id": "^0.14.1",
     "streaming-iterables": "^5.0.2",
-    "timeout-abort-controller": "^1.1.1",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {

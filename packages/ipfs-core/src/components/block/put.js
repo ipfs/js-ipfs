@@ -4,7 +4,7 @@ const Block = require('ipld-block')
 const multihashing = require('multihashing-async')
 const CID = require('cids')
 const isIPFS = require('is-ipfs')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

@@ -1,6 +1,6 @@
 'use strict'
 
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const errCode = require('err-code')
 
 module.exports = ({ libp2p }) => {

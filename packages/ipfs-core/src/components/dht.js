@@ -3,7 +3,7 @@
 const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({ libp2p, repo }) => {
   const { get, put, findProvs, findPeer, provide, query } = {

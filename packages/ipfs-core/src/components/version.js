@@ -1,7 +1,7 @@
 'use strict'
 
 const pkg = require('../../package.json')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 // gitHead is defined in published versions
 const meta = { gitHead: '', ...pkg }
