@@ -158,6 +158,8 @@ describe('libp2p customization', function () {
     })
 
     it('should allow for overriding via options', async () => {
+      const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
+
       libp2p = libp2pComponent({
         peerId,
         repo: { datastore },
@@ -169,7 +171,10 @@ describe('libp2p customization', function () {
               transport: [DummyTransport],
               peerDiscovery: [DummyDiscovery]
             },
-            config: { relay: { enabled: false } }
+            config: { relay: { enabled: false } },
+            addresses: {
+              announce: [annAddr]
+            }
           }
         }
       })
@@ -183,10 +188,33 @@ describe('libp2p customization', function () {
       const discoveries = Array.from(libp2p._discovery.values())
       expect(discoveries).to.have.length(1)
       expect(discoveries[0] instanceof DummyDiscovery).to.be.true()
+
+      expect(libp2p.multiaddrs.map(m => m.toString())).to.include(annAddr)
     })
   })
 
   describe('config', () => {
+    it('should be able to specify Announce addresses', async () => {
+      const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
+
+      libp2p = libp2pComponent({
+        peerId,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: {
+          ...testConfig,
+          Addresses: {
+            ...testConfig.Addresses,
+            Announce: [annAddr]
+          }
+        }
+      })
+
+      await libp2p.start()
+
+      expect(libp2p.multiaddrs.map(m => m.toString())).to.include(annAddr)
+    })
+
     it('should select gossipsub as pubsub router', async () => {
       libp2p = libp2pComponent({
         peerId,
