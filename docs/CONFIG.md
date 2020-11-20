@@ -10,6 +10,7 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`Delegates`](#delegates)
   - [`Gateway`](#gateway)
   - [`Swarm`](#swarm)
+  - [`Announce`](#announce)
 - [`Bootstrap`](#bootstrap)
 - [`Datastore`](#datastore)
   - [`Spec`](#spec)
@@ -109,6 +110,15 @@ Default:
   "/ip4/0.0.0.0/tcp/4002",
   "/ip4/127.0.0.1/tcp/4003/ws"
 ]
+```
+
+### `Announce`
+
+Array of [Multiaddr](https://github.com/multiformats/multiaddr/) describing which addresses to [announce](https://github.com/libp2p/js-libp2p/tree/master/src/address-manager#announce-addresses) over the network.
+
+Default:
+```json
+[]
 ```
 
 ## `Bootstrap`
