@@ -52,7 +52,7 @@
     "interface-ipfs-core": "^0.142.1",
     "ipfs-http-client": "^48.1.1",
     "ipfs-interop": "^3.0.0",
-    "ipfs-utils": "^5.0.0",
+    "ipfs-utils": "ipfs/ipfs-utils#chore/revert-to-upstream-electron-fetch",
     "ipfsd-ctl": "^7.0.2",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.20.1",
