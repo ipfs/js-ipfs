@@ -75,7 +75,7 @@
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",
     "ipfs-unixfs-importer": "^4.0.0",
-    "ipfs-utils": "ipfs/ipfs-utils#chore/revert-to-upstream-electron-fetch",
+    "ipfs-utils": "ipfs/js-ipfs-utils#chore/revert-to-upstream-electron-fetch",
     "ipld": "^0.28.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
