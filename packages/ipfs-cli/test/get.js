@@ -149,4 +149,38 @@ describe('get', () => {
 
     await clean(outPath)
   })
+
+  it('should not get file with path traversal characters that result in leaving the output directory', async () => {
+    ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      path: '../foo.txt',
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const outPath = path.join(process.cwd(), 'derp')
+
+    await expect(cli(`get ${cid} --output ${outPath}`, { ipfs })).to.eventually.be.rejectedWith(/File prefix invalid/)
+  })
+
+  it('should get file with path traversal characters that result in leaving the output directory when forced', async () => {
+    ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      path: '../foo.txt',
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const dir = path.join(process.cwd(), 'derp')
+    const outPath = path.join(process.cwd(), 'derp', 'herp')
+    await clean(dir)
+
+    const out = await cli(`get ${cid} --output ${outPath} --force`, { ipfs })
+    expect(out)
+      .to.equal(`Saving file(s) ${cid}\n`)
+
+    expect(fs.readFileSync(path.join(dir, 'foo.txt'))).to.deep.equal(buf)
+
+    await clean(dir)
+  })
 })
