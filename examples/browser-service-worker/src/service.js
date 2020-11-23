@@ -39,7 +39,7 @@ const onfetch = (event) => {
         // This might be confusing but this wrapper page is what allows this
         // service worker to obtain a MessagePort, otherwise there may not even
         // be a page that will start a shared worker, nor a way to get a message
-        // port if on is present.
+        // port for it.
         case 'ipfs':
         case 'ipns':
           return event.respondWith(fetchViewer({ url }))
@@ -239,7 +239,7 @@ const fetchIPFSFile = async (ipfs, path) => {
  */
 const fetchIPFSDirectory = async (ipfs, path) => {
   try {
-    // Collect diretory entries. If happens to contain `index.html` create a
+    // Collect directory entries. If happens to contain `index.html` create a
     // response containing that file otherwise respond with a directory listing.
     const entries = []
     for await (const entry of ipfs.ls(path)) {
