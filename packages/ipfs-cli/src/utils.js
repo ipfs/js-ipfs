@@ -251,8 +251,8 @@ const escapeControlCharacters = (str) => {
  * Removes control characters from all key/values and stringifies
  * CID properties
  *
- * @param {object} obj - a string to strip control characters from
- * @param {string} cidBase - a string to strip control characters from
+ * @param {object} obj - all keys/values in this object will be have control characters stripped
+ * @param {string} cidBase - any encountered CIDs will be stringified using this base
  * @returns {object}
  */
 const makeEntriesPrintable = (obj, cidBase = 'base58btc') => {
