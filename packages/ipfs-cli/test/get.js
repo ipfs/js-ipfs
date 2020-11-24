@@ -184,9 +184,14 @@ describe('get', () => {
     await clean(dir)
   })
 
-  it('should strip control characters when getting a file', async () => {
-    const ipfsPath = `/ipfs/${cid}/foo/bar`
-    const junkPath = `/ipfs/${cid}/foo\b/bar`
+  it('should strip control characters when getting a file', async function () {
+    if (process.platform === 'win32') {
+      // windows cannot write files with control characters in the path
+      return this.skip()
+    }
+
+    const ipfsPath = `${cid}/foo/bar`
+    const junkPath = `${cid}/foo\b/bar`
 
     ipfs.get.withArgs(junkPath, defaultOptions).returns([{
       path: junkPath,

@@ -195,6 +195,8 @@ const coerceMtimeNsecs = (value) => {
   return value
 }
 
+const DEL = 127
+
 /**
  * Strip control characters from a string
  *
@@ -204,7 +206,11 @@ const coerceMtimeNsecs = (value) => {
 const stripControlCharacters = (str) => {
   return (str || '')
     .split('')
-    .filter((c) => c.charCodeAt(0) > 31)
+    .filter((c) => {
+      const charCode = c.charCodeAt(0)
+
+      return charCode > 31 && charCode !== DEL
+    })
     .join('')
 }
 
@@ -228,7 +234,9 @@ const escapeControlCharacters = (str) => {
   return (str || '')
     .split('')
     .map((c) => {
-      if (c.charCodeAt(0) > 31) {
+      const charCode = c.charCodeAt(0)
+
+      if (charCode > 31 && charCode !== DEL) {
         return c
       }
 
