@@ -96,6 +96,26 @@ describe('object', () => {
       expect(result.Data).to.equal('')
     })
 
+    it('should get an object and strip control characters from link names', async () => {
+      const node = new DAGNode()
+      node.addLink({
+        Name: 'derp\n\b',
+        Tsize: 10,
+        Hash: cid
+      })
+
+      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+
+      const out = await cli(`object get ${cid}`, { ipfs })
+      const result = JSON.parse(out)
+      expect(result.Links).to.deep.equal([{
+        Name: 'derp',
+        Size: 10,
+        Hash: cid.toString()
+      }])
+      expect(result.Data).to.equal('')
+    })
+
     it('get with data', async () => {
       const node = new DAGNode(uint8ArrayFromString('aGVsbG8gd29ybGQK', 'base64'))
 
@@ -327,6 +347,17 @@ describe('object', () => {
       const out = await cli(`object links ${cid} --timeout=1s`, { ipfs })
       expect(out).to.equal(
         'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 some link\n'
+      )
+    })
+
+    it('should get an object and strip control characters from link names', async () => {
+      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+        new DAGLink('derp\t\n\b', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
+      ])
+
+      const out = await cli(`object links ${cid}`, { ipfs })
+      expect(out).to.equal(
+        'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V 8 derp\n'
       )
     })
   })

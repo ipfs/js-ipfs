@@ -3,6 +3,9 @@
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'links <key>',
@@ -26,7 +29,7 @@ module.exports = {
 
     links.forEach((link) => {
       const cidStr = cidToString(link.Hash, { base: cidBase, upgrade: false })
-      print(`${cidStr} ${link.Tsize} ${link.Name}`)
+      print(`${cidStr} ${link.Tsize} ${stripControlCharacters(link.Name)}`)
     })
   }
 }

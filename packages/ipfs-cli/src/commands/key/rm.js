@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'rm <name>',
@@ -18,6 +21,6 @@ module.exports = {
     const key = await ipfs.key.rm(name, {
       timeout
     })
-    print(`${key.id} ${key.name}`)
+    print(`${key.id} ${stripControlCharacters(key.name)}`)
   }
 }

@@ -7,6 +7,8 @@ const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
 const byteman = require('byteman')
 const IPFS = require('ipfs-core')
+const CID = require('cids')
+const { cidToString } = require('ipfs-core-utils/src/cid')
 
 const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
@@ -37,8 +39,10 @@ const print = (msg, includeNewline = true, isError = false) => {
     if (msg === undefined) {
       msg = ''
     }
+    msg = msg.toString()
     msg = includeNewline ? msg + '\n' : msg
     const outStream = isError ? process.stderr : process.stdout
+
     outStream.write(msg)
   }
 }
@@ -191,6 +195,93 @@ const coerceMtimeNsecs = (value) => {
   return value
 }
 
+/**
+ * Strip control characters from a string
+ *
+ * @param {string} str - a string to strip control characters from
+ * @returns {string}
+ */
+const stripControlCharacters = (str) => {
+  return (str || '')
+    .split('')
+    .filter((c) => c.charCodeAt(0) > 31)
+    .join('')
+}
+
+/**
+ * Escape control characters in a string
+ *
+ * @param {string} str - a string to escape control characters in
+ * @returns {string}
+ */
+const escapeControlCharacters = (str) => {
+  const escapes = {
+    '00': '\\0',
+    '08': '\\b',
+    '09': '\\t',
+    '0A': '\\n',
+    '0B': '\\v',
+    '0C': '\\f',
+    '0D': '\\r'
+  }
+
+  return (str || '')
+    .split('')
+    .map((c) => {
+      if (c.charCodeAt(0) > 31) {
+        return c
+      }
+
+      const hex = Number(c).toString(16).padStart(2, '0')
+
+      return escapes[hex] || `\\x${hex}`
+    })
+    .join('')
+}
+
+/**
+ * Removes control characters from all key/values and stringifies
+ * CID properties
+ *
+ * @param {object} obj - a string to strip control characters from
+ * @param {string} cidBase - a string to strip control characters from
+ * @returns {object}
+ */
+const makeEntriesPrintable = (obj, cidBase = 'base58btc') => {
+  if (CID.isCID(obj)) {
+    return { '/': cidToString(obj, { base: cidBase }) }
+  }
+
+  if (typeof obj === 'string') {
+    return stripControlCharacters(obj)
+  }
+
+  if (typeof obj === 'number' || obj == null || obj === true || obj === false) {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    const output = []
+
+    for (const key of obj) {
+      output.push(makeEntriesPrintable(key, cidBase))
+    }
+
+    return output
+  }
+
+  const output = {}
+
+  Object.entries(obj)
+    .forEach(([key, value]) => {
+      const outputKey = stripControlCharacters(key)
+
+      output[outputKey] = makeEntriesPrintable(value, cidBase)
+    })
+
+  return output
+}
+
 module.exports = {
   getIpfs,
   isDaemonOn,
@@ -204,5 +295,8 @@ module.exports = {
   asOctal,
   asMtimeFromSeconds,
   coerceMtime,
-  coerceMtimeNsecs
+  coerceMtimeNsecs,
+  stripControlCharacters,
+  escapeControlCharacters,
+  makeEntriesPrintable
 }

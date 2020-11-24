@@ -202,4 +202,29 @@ describe('ls', () => {
       '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n'
     )
   })
+
+  it('removes control characters from paths', async () => {
+    ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', defaultOptions).returns([{
+      mode: 0o755,
+      mtime: null,
+      cid: new CID('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
+      type: 'dir',
+      name: 'bl\nock\bs',
+      depth: 0
+    }, {
+      mode: 0o644,
+      mtime: null,
+      cid: new CID('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
+      type: 'file',
+      name: 'co\r\tnfig',
+      size: 3928,
+      depth: 0
+    }])
+
+    const out = await cli('ls Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', { ipfs })
+    expect(out).to.eql(
+      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
+      '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n'
+    )
+  })
 })

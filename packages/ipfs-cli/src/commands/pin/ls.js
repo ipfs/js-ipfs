@@ -4,6 +4,9 @@ const multibase = require('multibase')
 const all = require('it-all')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const parseDuration = require('parse-duration').default
+const {
+  makeEntriesPrintable
+} = require('../../utils')
 
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
@@ -48,8 +51,8 @@ module.exports = {
       if (!quiet) {
         line += ` ${res.type}`
 
-        if (res.comments) {
-          line += ` ${res.comments}`
+        if (res.metadata) {
+          line += ` ${JSON.stringify(makeEntriesPrintable(res.metadata))}`
         }
       }
       print(line)
