@@ -53,7 +53,7 @@
     "ipfs-http-client": "^48.1.2",
     "ipfs-interop": "^3.0.0",
     "ipfs-utils": "^5.0.0",
-    "ipfsd-ctl": "git://github.com/ipfs/js-ipfsd-ctl#chore/without-init",
+    "ipfsd-ctl": "git://github.com/ipfs/js-ipfsd-ctl",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.20.1",
     "merge-options": "^2.0.0",

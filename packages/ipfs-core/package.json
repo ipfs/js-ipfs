@@ -122,7 +122,7 @@
     "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.142.2",
-    "ipfsd-ctl": "git://github.com/ipfs/js-ipfsd-ctl#chore/without-init",
+    "ipfsd-ctl": "git://github.com/ipfs/js-ipfsd-ctl",
     "ipld-git": "^0.6.1",
     "iso-url": "^1.0.0",
     "nanoid": "^3.1.12",
