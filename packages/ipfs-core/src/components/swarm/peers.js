@@ -1,6 +1,6 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({ libp2p }) => {
   return withTimeoutOption(async function peers (options = {}) { // eslint-disable-line require-await

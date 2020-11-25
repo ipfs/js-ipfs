@@ -1,7 +1,7 @@
 'use strict'
 
 const { DAGNode } = require('ipld-dag-pb')
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayConcat = require('uint8arrays/concat')
 
 module.exports = ({ ipld, gcLock, preload }) => {

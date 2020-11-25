@@ -59,8 +59,19 @@ describe('add', () => {
     }])
 
     const out = await cli('add --progress false README.md', { ipfs })
-    expect(out)
-      .to.equal(`added ${cid} README.md\n`)
+    expect(out).to.equal(`added ${cid} README.md\n`)
+  })
+
+  it('should strip control characters from paths when add a file', async () => {
+    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
+      cid: new CID(cid),
+      path: 'R\b\n\tEADME.md'
+    }])
+
+    const out = await cli('add --progress false README.md', { ipfs })
+    expect(out).to.equal(`added ${cid} README.md\n`)
   })
 
   it('adds a file path with progress', async () => {
@@ -101,7 +112,8 @@ describe('add', () => {
 
     ipfs.addAll.withArgs(matchIterable(), {
       ...defaultOptions,
-      cidVersion: 1
+      cidVersion: 1,
+      rawLeaves: true
     }).returns([{
       cid,
       path: 'README.md'
@@ -243,7 +255,7 @@ describe('add', () => {
     }])
 
     const out = await cli('add --silent README.md', { ipfs })
-    expect(out).to.equal('')
+    expect(out).to.be.empty()
   })
 
   it('add --only-hash outputs correct hash', async () => {

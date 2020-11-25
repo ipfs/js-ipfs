@@ -1,7 +1,7 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

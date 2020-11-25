@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.5.0",
+  "version": "0.5.3",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
@@ -33,24 +33,29 @@
     "build": "npm run build:js && npm run build:types",
     "build:js": "aegir build",
     "build:types": "tsc --build",
-    "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i typescript -i rimraf"
   },
   "license": "MIT",
   "dependencies": {
-    "blob-to-it": "0.0.2",
-    "browser-readablestream-to-it": "0.0.2",
+    "any-signal": "^2.0.0",
+    "blob-to-it": "^1.0.1",
+    "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.0.0",
     "err-code": "^2.0.3",
-    "ipfs-utils": "^4.0.0",
+    "ipfs-utils": "^5.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
-    "it-peekable": "0.0.1",
+    "it-peekable": "^1.0.1",
+    "multiaddr": "^8.0.0",
+    "multiaddr-to-uri": "^6.0.0",
+    "parse-duration": "^0.4.4",
+    "timeout-abort-controller": "^1.1.1",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
-    "delay": "^4.4.0",
-    "typescript": "^4.0.3"
+    "aegir": "^28.2.0",
+    "rimraf": "^3.0.2",
+    "typescript": "4.0.x"
   }
 }

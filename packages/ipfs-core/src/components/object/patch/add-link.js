@@ -1,6 +1,6 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({ ipld, gcLock, preload }) => {
   const get = require('../get')({ ipld, preload })

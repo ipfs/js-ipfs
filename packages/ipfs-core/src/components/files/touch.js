@@ -12,7 +12,7 @@ const updateMfsRoot = require('./utils/update-mfs-root')
 const { DAGNode } = require('ipld-dag-pb')
 const mc = require('multicodec')
 const mh = require('multihashing-async').multihash
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   /** @type {UnixTime|undefined} */

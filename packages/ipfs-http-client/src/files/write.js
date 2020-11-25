@@ -1,7 +1,7 @@
 'use strict'
 
 const modeToString = require('../lib/mode-to-string')
-const mtimeToObject = require('../lib/mtime-to-object')
+const { mtimeToObject } = require('ipfs-core-utils/src/files/normalise-input/utils')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')

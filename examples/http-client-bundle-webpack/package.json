@@ -4,7 +4,7 @@
   "description": "Bundle js-ipfs-http-client with Webpack",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "webpack",
     "start": "node server.js",
     "test": "test-ipfs-example"
@@ -13,7 +13,7 @@
   "license": "MIT",
   "keywords": [],
   "dependencies": {
-    "ipfs-http-client": "^48.0.0",
+    "ipfs-http-client": "^48.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
@@ -24,9 +24,10 @@
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.4",
     "execa": "^4.0.3",
-    "ipfs": "^0.51.0",
+    "ipfs": "^0.52.1",
     "ipfsd-ctl": "^7.0.2",
     "react-hot-loader": "^4.12.21",
+    "rimraf": "^3.0.2",
     "test-ipfs-example": "^2.0.3",
     "webpack": "^4.43.0",
     "webpack-dev-server": "^3.11.0"

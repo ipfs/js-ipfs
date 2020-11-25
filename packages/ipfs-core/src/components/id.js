@@ -2,7 +2,7 @@
 
 const pkgversion = require('../../package.json').version
 const multiaddr = require('multiaddr')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**

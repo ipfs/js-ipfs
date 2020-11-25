@@ -2,7 +2,6 @@
 
 const debug = require('debug')
 const errcode = require('err-code')
-/** @type {typeof Object.assign} */
 const mergeOptions = require('merge-options')
 const CID = require('cids')
 const isDomain = require('is-domain-name')
@@ -11,7 +10,8 @@ const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')
 })
 
-const { OFFLINE_ERROR, withTimeoutOption } = require('../../utils')
+const { OFFLINE_ERROR } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  *
@@ -61,7 +61,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
     const { offline } = constructorOptions
 
     // TODO: params related logic should be in the core implementation
-    if (offline && options.nocache) {
+    if (offline && options && options.nocache) {
       throw errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE')
     }
 

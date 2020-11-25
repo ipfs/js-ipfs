@@ -9,13 +9,16 @@
   ],
   "references": [
     {
-      "path": "../ipfs-core-utils"
-    },
-    {
       "path": "../ipfs-core"
     },
     {
+      "path": "../ipfs-core-utils"
+    },
+    {
       "path": "../ipfs-http-client"
+    },
+    {
+      "path": "../ipfs-http-gateway"
     },
     {
       "path": "../ipfs-http-server"

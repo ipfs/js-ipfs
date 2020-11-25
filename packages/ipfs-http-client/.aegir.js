@@ -1,8 +1,6 @@
 'use strict'
 
 const { createServer } = require('ipfsd-ctl')
-const EchoServer = require('aegir/utils/echo-server')
-
 
 const server = createServer({
   host: '127.0.0.1',
@@ -13,50 +11,15 @@ const server = createServer({
   ipfsBin: require('go-ipfs').path()
 })
 
-let echoServer = new EchoServer()
-
 module.exports = {
-  bundlesize: { maxSize: '81kB' },
-  karma: {
-    files: [{
-      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-      watched: false,
-      served: true,
-      included: false
-    }],
-    browserNoActivityTimeout: 210 * 1000,
-    singleRun: true
-  },
+  bundlesize: { maxSize: '83kB' },
   hooks: {
-    node: {
-      pre: async () => {
-        await echoServer.start()
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
-      },
-      post: () => echoServer.stop()
-    },
     browser: {
       pre: async () => {
-
-        await  Promise.all([
-          server.start(),
-          echoServer.start()
-        ])
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
+        await server.start()
       },
-      post: () => {
-        return Promise.all([
-          server.stop(),
-          echoServer.stop()
-        ])
+      post: async () => {
+        await server.stop()
       }
     }
   }

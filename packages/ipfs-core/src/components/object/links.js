@@ -3,7 +3,7 @@
 const dagPB = require('ipld-dag-pb')
 const DAGLink = dagPB.DAGLink
 const CID = require('cids')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 function findLinks (node, links = []) {
   for (const key in node) {

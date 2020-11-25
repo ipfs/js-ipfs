@@ -2,7 +2,8 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
+const { normalizeCidPath, mapFile } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

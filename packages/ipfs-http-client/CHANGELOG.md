@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [48.1.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.1.1...ipfs-http-client@48.1.2) (2020-11-25)
+
+**Note:** Version bump only for package ipfs-http-client
+
+
+
+
+
+## [48.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.1.0...ipfs-http-client@48.1.1) (2020-11-16)
+
+
+### Bug Fixes
+
+* report ipfs.add progress over http ([#3310](https://github.com/ipfs/js-ipfs/issues/3310)) ([39cad4b](https://github.com/ipfs/js-ipfs/commit/39cad4b76b950ea6a76477fd01f8631b8bd9aa1e))
+
+
+
+
+
+# [48.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.0.0...ipfs-http-client@48.1.0) (2020-11-09)
+
+
+### Bug Fixes
+
+* typedef resolution & add examples that use types ([#3359](https://github.com/ipfs/js-ipfs/issues/3359)) ([dc2795a](https://github.com/ipfs/js-ipfs/commit/dc2795a4f3b515683d09967ce611bf87d5e67f86)), closes [#3356](https://github.com/ipfs/js-ipfs/issues/3356) [#3358](https://github.com/ipfs/js-ipfs/issues/3358)
+
+
+### Features
+
+* pass file name to add/addAll progress handler ([#3372](https://github.com/ipfs/js-ipfs/issues/3372)) ([69681a7](https://github.com/ipfs/js-ipfs/commit/69681a7d7a8434c11f6f10e370e324f5a3d31042)), closes [ipfs/js-ipfs-unixfs#87](https://github.com/ipfs/js-ipfs-unixfs/issues/87)
+
+
+
+
+
 # [48.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@47.0.1...ipfs-http-client@48.0.0) (2020-10-28)
 
 
