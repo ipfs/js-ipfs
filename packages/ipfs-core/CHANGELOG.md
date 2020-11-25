@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.2.1...ipfs-core@0.3.0) (2020-11-25)
+
+
+### Features
+
+* announce addresses via config ([#3409](https://github.com/ipfs/js-ipfs/issues/3409)) ([1529da9](https://github.com/ipfs/js-ipfs/commit/1529da9bb2f31eeb525584e67a3e0548b4445721))
+
+
+
+
+
 ## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.2.0...ipfs-core@0.2.1) (2020-11-16)
 
 
