@@ -76,6 +76,41 @@ export const defer = () => {
 
   return controller
 }
+
+/**
+ * @template T
+ * @param {(AsyncIterable<T> & { return?: () => {}}) | AsyncGenerator<T, any, any>} source
+ * @returns {ReadableStream<T>}
+ */
+export const toReadableStream = (source) => {
+  const iterator = source[Symbol.asyncIterator]()
+  return new ReadableStream({
+    /**
+     * @param {ReadableStreamDefaultController} controller 
+     */
+    async pull(controller) {
+      try {
+        const chunk = await iterator.next()
+        if (chunk.done) {
+          controller.close()
+        } else {
+          controller.enqueue(chunk.value)
+        }
+      } catch(error) {
+        controller.error(error)
+      }
+    },
+    /**
+     * @param {any} reason 
+     */
+    cancel(reason) {
+      if (source.return) {
+        source.return(reason)
+      }
+    }
+  })
+}
+
 /**
  * @template X,T
  * @typedef {Object} PromiseController

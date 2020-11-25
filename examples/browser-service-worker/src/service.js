@@ -1,7 +1,7 @@
 // @ts-check
 /* eslint-env browser, serviceworker */
 import IPFS from "ipfs-message-port-client"
-import { defer, selectClient } from "./service/util"
+import { defer, selectClient, toReadableStream } from "./service/util"
 
 /**
  * @param {LifecycleEvent} event 
@@ -147,22 +147,34 @@ const fetchIPFSContent = async ({ event, path }) => {
   // Obtains IPFS instance
   const ipfs = await createIPFSClient(event)
   try {
-    // Attempt to fetch the file for the path.
-    return await fetchIPFSFile(ipfs, path)
-  } catch ({ message }) {
-    // Above can fail because path might be for a directory, if so
-    // respond with diretory listing.
-    if (message.includes('dag node is a directory')) {
-      // Ensure ends with `/` so that generated file URLs would resolve properly
-      if (path.endsWith('/')) {
-        return fetchIPFSDirectory(ipfs, path)
-      } else {
-        return Response.redirect(`${event.request.url}/`)
+    const stat = await ipfs.files.stat(path)
+    switch (stat.type) {
+      case 'file': {
+        return await fetchIPFSFile(ipfs, path)
+      }
+      case 'directory': {
+        if (!path.endsWith('/')) {
+          return Response.redirect(`${event.request.url}/`)
+        } else {
+          // try index.html file in this directory if there is such file
+          // render it otherwise render directory
+          const index = `${path}index.html`
+          const stat = await ipfs.files.stat(index).catch(() => ({ type: null }))
+          return stat.type === 'file'
+            ? fetchIPFSFile(ipfs, index)
+            : fetchIPFSDirectory(ipfs, path)
+        }
+      }
+      default: {
+        // If non file redirect to ipld explorer
+        return Response.redirect(`https://explore.ipld.io/#/explore${path}`)
       }
     }
+  } catch ({ message }) {
+    console.error(message)
 
     // If such link does not exists respond with 404
-    if (message.startsWith('no link named')) {
+    if (message.startsWith('no link named') || message.includes('does not exist')) {
       return new Response(message, {
         statusText: message,
         status: 404
@@ -170,9 +182,7 @@ const fetchIPFSContent = async ({ event, path }) => {
     }
 
     // If problem with CID respond with 400
-    if (message.startsWith('multihash length inconsistent') || 
-        message.startsWith('Non-base58 character'))
-    {
+    if (message.includes('invalid')) {
       return new Response(message, {
         statusText: message,
         status: 400
@@ -193,43 +203,19 @@ const fetchIPFSContent = async ({ event, path }) => {
  */
 const fetchIPFSFile = async (ipfs, path) => {
   const content = ipfs.cat(path)
-  // We get back `AsyncIterable<Uint8Array>`, but if such file does not exists
-  // we will only know once we start reading. To respond with a stream that
-  // fails we attempt to read first chunk and only then produce a response
-  // instance. This ensures that we either error or return a Response that doesn't
-  // immediately fail.
-  const chunks = content[Symbol.asyncIterator]()
-  const head = await chunks.next()
-  const body = new ReadableStream({
-    /**
-     * @param {ReadableStreamDefaultController} controller 
-     */
-    start(controller) {
-      if (head.done) {
-        controller.close()
-      } else {
-        controller.enqueue(head.value)
-      }
-    },
-    /**
-     * @param {ReadableStreamDefaultController} controller 
-     */
-    async pull(controller) {
-      try {
-        const chunk = await chunks.next()
-        if (chunk.done) {
-          controller.close()
-        } else {
-          controller.enqueue(chunk.value)
-        }
-      } catch(error) {
-        controller.error(error)
-      }
-    }
-  })
+  const body = toReadableStream(content)
+  // Note: Browsers by default perform content sniffing to do a content type
+  // decetion https://developer.mozilla.org/en-US/docs/Mozilla/How_Mozilla_determines_MIME_Types
+  // but it is limited to web relevant content and seems to exclude svg.
+  // Here we fix svg support that otherwise breaks many pages doing proper content
+  // type detection is left as an excercise to the reader.
+  const contentType = path.endsWith('.svg') ? { 'content-type': 'image/svg+xml' } : null
 
   return new Response(body, {
-    status: 200
+    status: 200,
+    headers: {
+      ...contentType
+    }
   })
 }
 
@@ -238,48 +224,45 @@ const fetchIPFSFile = async (ipfs, path) => {
  * @param {string} path
  */
 const fetchIPFSDirectory = async (ipfs, path) => {
-  try {
-    // Collect directory entries. If happens to contain `index.html` create a
-    // response containing that file otherwise respond with a directory listing.
-    const entries = []
-    for await (const entry of ipfs.ls(path)) {
-      if (entry.name === 'index.html') {
-        return fetchIPFSFile(ipfs, entry.path)
-      }
-      entries.push(entry)
-    }
-    return new Response(renderDirectory(path, entries), {
-      headers: {
-        'content-type': 'text/html'
-      },
-      status: 404
-    })
-  } catch({message}) {
-    return new Response(message, {
-      statusText: message,
-      status: 500
-    })
-  }
+  return new Response(toReadableStream(renderDirectory(ipfs, path)), {
+    headers: {
+      'content-type': 'text/html'
+    },
+    status: 200
+  })
 }
 
 /**
+ * @param {IPFS} ipfs 
  * @param {string} path
- * @param {import('ipfs-message-port-client/src/core').LsEntry[]} entries 
+ * @param {number} [limit=174]
+ * @returns {AsyncIterable<Uint8Array>}
  */
-const renderDirectory = (path, entries) => `<html>
-  <h3>Index of ${path}<h3>
-  <ul>
-    ${entries.map(renderDirectoryEntry).join('\n')}
-  </ul>
-</html>`
+const renderDirectory = async function * (ipfs, path, limit = 64) {
+  const encoder = new TextEncoder()
+  yield encoder.encode(`<html><h3>Index of ${path}<h3><ul>`)
+  
+  for await (const entry of ipfs.ls(path)) {
+    yield encoder.encode(renderDirectoryEntry(path, entry))
+    if (--limit < 0) {
+      break
+    }
+  }
+
+  yield encoder.encode(`</ul>${limit < 0 ? PAGINATION_NOTE : ''}</html>`)
+}
+
+const PAGINATION_NOTE = '<h2>Directory has too many entries</h2><p><mark>Implementing a pagination is left as an excercise to the viewer</mark></p></h2>'
 
 /**
+ * @param {string} base
  * @param {import('ipfs-message-port-client/src/core').LsEntry} entry
  */
-const renderDirectoryEntry = (entry) =>
+const renderDirectoryEntry = (base, entry) =>
 `<li>
-  <div class="type-${entry.type}"><a href="${entry.path}">${entry.name}<a></div>
-  </div>${entry.cid.toString()}</div>
+  <div class="type-${entry.type}"><a href="/view${base}${entry.name}">${entry.name}<a></div>
+  <small>${entry.cid.toString()}</small>
+  <details><pre>${JSON.stringify(entry, null, 2)}</pre></details>
 </li>`
 
 
@@ -342,7 +325,7 @@ const requestIPFSPort = (client) => {
 }
 
 
-/** @type {Record<string, { promise: Promise<MessagePort>, resolve(port:MessagPort):void, reject(error:Error):void }>} */
+/** @type {Record<string, { promise: Promise<MessagePort>, resolve(port:MessagePort):void, reject(error:Error):void }>} */
 const portRequests = Object.create(null)
 
 /**
