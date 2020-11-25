@@ -6,6 +6,9 @@ const toIterable = require('stream-to-it')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../utils')
 
 module.exports = {
   command: 'get <ipfsPath>',
@@ -30,7 +33,7 @@ module.exports = {
   },
 
   async handler ({ ctx: { ipfs, print }, ipfsPath, output, force, timeout }) {
-    print(`Saving file(s) ${ipfsPath}`)
+    print(`Saving file(s) ${stripControlCharacters(ipfsPath)}`)
 
     for await (const file of ipfs.get(ipfsPath, {
       timeout

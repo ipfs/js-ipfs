@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../utils')
 
 module.exports = {
   command: 'dns <domain>',
@@ -25,6 +28,6 @@ module.exports = {
 
   async handler ({ ctx: { ipfs, print }, domain, recursive, format, timeout }) {
     const path = await ipfs.dns(domain, { recursive, format, timeout })
-    print(path)
+    print(stripControlCharacters(path))
   }
 }

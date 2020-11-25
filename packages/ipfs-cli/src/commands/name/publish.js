@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'publish <ipfsPath>',
@@ -45,6 +48,6 @@ module.exports = {
       ttl,
       timeout
     })
-    print(`Published to ${result.name}: ${result.value}`)
+    print(`Published to ${stripControlCharacters(result.name)}: ${result.value}`)
   }
 }

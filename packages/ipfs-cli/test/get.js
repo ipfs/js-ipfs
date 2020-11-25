@@ -183,4 +183,32 @@ describe('get', () => {
 
     await clean(dir)
   })
+
+  it('should strip control characters when getting a file', async function () {
+    if (process.platform === 'win32') {
+      // windows cannot write files with control characters in the path
+      return this.skip()
+    }
+
+    const ipfsPath = `${cid}/foo/bar`
+    const junkPath = `${cid}/foo\b/bar`
+
+    ipfs.get.withArgs(junkPath, defaultOptions).returns([{
+      path: junkPath,
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const outPath = `${process.cwd()}/${junkPath}`
+    await clean(outPath)
+
+    const out = await cli(`get ${junkPath}`, { ipfs })
+    expect(out)
+      .to.equal(`Saving file(s) ${ipfsPath}\n`)
+
+    expect(fs.readFileSync(outPath)).to.deep.equal(buf)
+
+    await clean(outPath)
+  })
 })

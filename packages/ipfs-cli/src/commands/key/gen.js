@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'gen <name>',
@@ -31,6 +34,6 @@ module.exports = {
       size,
       timeout
     })
-    print(`generated ${key.id} ${key.name}`)
+    print(`generated ${key.id} ${stripControlCharacters(key.name)}`)
   }
 }
