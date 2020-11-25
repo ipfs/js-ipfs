@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/it-all": "^1.0.0",
-    "aegir": "^28.2.0",
+    "aegir": "^29.0.1",
     "rimraf": "^3.0.2",
     "typescript": "4.0.x"
   },
