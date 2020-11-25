@@ -241,6 +241,44 @@ describe('dag', () => {
 
       expect(out).to.equal('{"lol":"ok"}\n')
     })
+
+    it('should strip control characters from dag-cbor string nodes', async () => {
+      const result = {
+        value: 'lo\nl'
+      }
+
+      ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${dagCborCid}`, { ipfs })
+
+      expect(out).to.equal('"lol"\n')
+    })
+
+    it('should strip control characters from dag-cbor array nodes', async () => {
+      const result = {
+        value: ['lo\nl']
+      }
+
+      ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${dagCborCid}`, { ipfs })
+
+      expect(out).to.equal('["lol"]\n')
+    })
+
+    it('should strip control characters from dag-cbor nested array nodes', async () => {
+      const result = {
+        value: {
+          'lo\nl': ['ok\t']
+        }
+      }
+
+      ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${dagCborCid}`, { ipfs })
+
+      expect(out).to.equal('{"lol":["ok"]}\n')
+    })
   })
 
   describe('resolve', () => {
