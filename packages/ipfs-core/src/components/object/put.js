@@ -5,7 +5,7 @@ const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 const mh = require('multihashing-async').multihash
 const multicodec = require('multicodec')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 

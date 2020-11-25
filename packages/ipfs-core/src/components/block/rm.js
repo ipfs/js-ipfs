@@ -6,7 +6,7 @@ const { parallelMap, filter } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
 const { PinTypes } = require('../pin/pin-manager')
 const { cleanCid } = require('./utils')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const BLOCK_RM_CONCURRENCY = 8
 

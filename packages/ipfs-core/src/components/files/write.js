@@ -18,7 +18,7 @@ const {
   MFS_MAX_CHUNK_SIZE
 } = require('../../utils')
 const last = require('it-last')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   offset: 0, // the offset in the file to begin writing

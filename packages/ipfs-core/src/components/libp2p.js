@@ -112,7 +112,9 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       }
     },
     addresses: {
-      listen: multiaddrs
+      listen: multiaddrs,
+      announce: get(options, 'addresses.announce',
+        get(config, 'Addresses.Announce', []))
     },
     connectionManager: get(options, 'connectionManager', {
       maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater',

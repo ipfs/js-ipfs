@@ -130,6 +130,20 @@ module.exports = (common, options) => {
       expect(accumProgress).to.equal(fixtures.emptyFile.data.length)
     })
 
+    it('should receive file name from progress event', async () => {
+      let receivedName
+      function handler (p, name) {
+        receivedName = name
+      }
+
+      await ipfs.add({
+        content: 'hello',
+        path: 'foo.txt'
+      }, { progress: handler })
+
+      expect(receivedName).to.equal('foo.txt')
+    })
+
     it('should add an empty file without progress enabled', async () => {
       const file = await ipfs.add(fixtures.emptyFile.data)
 

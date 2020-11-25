@@ -1,7 +1,6 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = {
   command: 'cat <ipfsPath>',
@@ -27,7 +26,7 @@ module.exports = {
 
   async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
     for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {
-      print.write(uint8ArrayToString(buf))
+      print.write(buf)
     }
   }
 }

@@ -32,10 +32,10 @@ describe('core', function () {
         await move(encodeCallback(callback, transfer), transfer)
       )
 
-      remote(54)
+      remote([54])
       expect(await receive()).to.be.equal(54)
 
-      remote({ hello: 'world' })
+      remote([{ hello: 'world' }])
 
       expect(await receive()).to.be.deep.equal({ hello: 'world' })
     })
@@ -55,11 +55,11 @@ describe('core', function () {
         await move(encodeCallback(callback, transfer), transfer)
       )
 
-      remote({ hello: uint8ArrayFromString('world') })
+      remote([{ hello: uint8ArrayFromString('world') }])
       expect(await receive()).to.be.deep.equal({ hello: uint8ArrayFromString('world') })
 
       const world = uint8ArrayFromString('world')
-      remote({ hello: world }, [world.buffer])
+      remote([{ hello: world }], [world.buffer])
 
       expect(await receive()).to.be.deep.equal({ hello: uint8ArrayFromString('world') })
       expect(world.buffer).property('byteLength', 0, 'buffer was cleared')

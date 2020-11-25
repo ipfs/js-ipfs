@@ -6,7 +6,7 @@ const { DAGNode } = require('ipld-dag-pb')
 const { normalizeCidPath } = require('../../utils')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const Format = {
   default: '<dst>',

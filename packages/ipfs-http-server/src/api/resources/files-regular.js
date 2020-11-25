@@ -260,7 +260,7 @@ exports.add = {
       multipart(request),
       async function * (source) {
         for await (const entry of source) {
-          currentFileName = entry.name || 'unknown'
+          currentFileName = entry.name || ''
 
           if (entry.type === 'file') {
             filesParsed = true

@@ -1,9 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+/** @type {(source:Source) => AsyncIterable<PinTarget>} */
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**

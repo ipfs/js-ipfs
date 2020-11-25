@@ -4,7 +4,8 @@
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 function toPin (type, cid, metadata) {
   const output = {

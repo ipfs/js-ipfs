@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.1...ipfs@0.52.2) (2020-11-25)
+
+**Note:** Version bump only for package ipfs
+
+
+
+
+
+## [0.52.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.0...ipfs@0.52.1) (2020-11-16)
+
+
+### Bug Fixes
+
+* report ipfs.add progress over http ([#3310](https://github.com/ipfs/js-ipfs/issues/3310)) ([39cad4b](https://github.com/ipfs/js-ipfs/commit/39cad4b76b950ea6a76477fd01f8631b8bd9aa1e))
+
+
+
+
+
+# [0.52.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.51.0...ipfs@0.52.0) (2020-11-09)
+
+
+### Bug Fixes
+
+* typedef resolution & add examples that use types ([#3359](https://github.com/ipfs/js-ipfs/issues/3359)) ([dc2795a](https://github.com/ipfs/js-ipfs/commit/dc2795a4f3b515683d09967ce611bf87d5e67f86)), closes [#3356](https://github.com/ipfs/js-ipfs/issues/3356) [#3358](https://github.com/ipfs/js-ipfs/issues/3358)
+
+
+### Features
+
+* remove all esoteric ipld formats ([#3360](https://github.com/ipfs/js-ipfs/issues/3360)) ([a542882](https://github.com/ipfs/js-ipfs/commit/a5428820a5b157fbb298b8eb49978e08157beca3)), closes [#3347](https://github.com/ipfs/js-ipfs/issues/3347)
+
+
+### BREAKING CHANGES
+
+* only dag-pb, dag-cbor and raw formats are supported out of the box, any others will need to be configured during node startup.
+
+
+
+
+
 # [0.51.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.50.2...ipfs@0.51.0) (2020-10-28)
 
 

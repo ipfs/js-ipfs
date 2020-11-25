@@ -3,7 +3,7 @@
 const PeerId = require('peer-id')
 /** @type {{success:true, time:0, text: ''}} */
 const basePacket = { success: true, time: 0, text: '' }
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

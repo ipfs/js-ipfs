@@ -13,6 +13,12 @@
     },
     {
       "path": "../ipfs-message-port-server"
+    },
+    {
+      "path": "../ipfs-core"
+    },
+    {
+      "path": "../ipfs-core-utils"
     }
   ]
 }

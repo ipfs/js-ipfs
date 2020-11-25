@@ -86,6 +86,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
     log('failed to load optional electron-webrtc dependency')
   }
   try {
+    // @ts-ignore - cant find type info
     wrtc = require('wrtc')
   } catch (err) {
     log('failed to load optional webrtc dependency')

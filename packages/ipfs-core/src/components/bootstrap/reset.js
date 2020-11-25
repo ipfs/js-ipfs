@@ -1,7 +1,7 @@
 'use strict'
 
 const defaultConfig = require('../../runtime/config-nodejs.js')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const Multiaddr = require('multiaddr')
 
 /**

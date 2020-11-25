@@ -91,4 +91,17 @@ describe('dns', () => {
     })
     expect(out).to.equal(`${path}\n`)
   })
+
+  it('strips control characters from response', async () => {
+    const domain = 'ipfs.io'
+    const path = 'path'
+    const junkPath = `${path}\n\b\t`
+
+    ipfs.dns.withArgs(domain, defaultOptions).returns(junkPath)
+
+    const out = await cli('dns ipfs.io', {
+      ipfs
+    })
+    expect(out).to.equal(`${path}\n`)
+  })
 })

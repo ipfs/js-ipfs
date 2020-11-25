@@ -149,4 +149,66 @@ describe('get', () => {
 
     await clean(outPath)
   })
+
+  it('should not get file with path traversal characters that result in leaving the output directory', async () => {
+    ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      path: '../foo.txt',
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const outPath = path.join(process.cwd(), 'derp')
+
+    await expect(cli(`get ${cid} --output ${outPath}`, { ipfs })).to.eventually.be.rejectedWith(/File prefix invalid/)
+  })
+
+  it('should get file with path traversal characters that result in leaving the output directory when forced', async () => {
+    ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      path: '../foo.txt',
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const dir = path.join(process.cwd(), 'derp')
+    const outPath = path.join(process.cwd(), 'derp', 'herp')
+    await clean(dir)
+
+    const out = await cli(`get ${cid} --output ${outPath} --force`, { ipfs })
+    expect(out)
+      .to.equal(`Saving file(s) ${cid}\n`)
+
+    expect(fs.readFileSync(path.join(dir, 'foo.txt'))).to.deep.equal(buf)
+
+    await clean(dir)
+  })
+
+  it('should strip control characters when getting a file', async function () {
+    if (process.platform === 'win32') {
+      // windows cannot write files with control characters in the path
+      return this.skip()
+    }
+
+    const ipfsPath = `${cid}/foo/bar`
+    const junkPath = `${cid}/foo\b/bar`
+
+    ipfs.get.withArgs(junkPath, defaultOptions).returns([{
+      path: junkPath,
+      content: function * () {
+        yield buf
+      }
+    }])
+
+    const outPath = `${process.cwd()}/${junkPath}`
+    await clean(outPath)
+
+    const out = await cli(`get ${junkPath}`, { ipfs })
+    expect(out)
+      .to.equal(`Saving file(s) ${ipfsPath}\n`)
+
+    expect(fs.readFileSync(outPath)).to.deep.equal(buf)
+
+    await clean(outPath)
+  })
 })

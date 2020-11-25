@@ -1,7 +1,8 @@
 'use strict'
 
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { PinTypes } = require('./pin-manager')
 
 /**

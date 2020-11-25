@@ -4,7 +4,6 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const loadFixture = require('aegir/fixtures')
 const all = require('it-all')
 const concat = require('it-concat')
 
@@ -13,13 +12,9 @@ const f = require('./utils/factory')()
 describe('.get (specific go-ipfs features)', function () {
   this.timeout(60 * 1000)
 
-  function fixture (path) {
-    return loadFixture(path, 'interface-ipfs-core')
-  }
-
   const smallFile = {
-    cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-    data: fixture('test/fixtures/testfile.txt')
+    cid: 'Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD',
+    data: 'hello world'
   }
 
   let ipfs

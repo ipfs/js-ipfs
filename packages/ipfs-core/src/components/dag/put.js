@@ -7,7 +7,7 @@ const multicodec = require('multicodec')
  * @returns {number}
  */
 const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

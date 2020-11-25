@@ -1,7 +1,7 @@
 'use strict'
 
 const { repoVersion } = require('ipfs-repo')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

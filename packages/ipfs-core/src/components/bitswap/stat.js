@@ -2,7 +2,7 @@
 
 const Big = require('bignumber.js').default
 const CID = require('cids')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

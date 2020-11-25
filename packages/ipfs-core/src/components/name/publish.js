@@ -9,7 +9,8 @@ const log = Object.assign(debug('ipfs:name:publish'), {
   error: debug('ipfs:name:publish:error')
 })
 
-const { OFFLINE_ERROR, normalizePath, withTimeoutOption } = require('../../utils')
+const { OFFLINE_ERROR, normalizePath } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { resolvePath } = require('./utils')
 
 /**

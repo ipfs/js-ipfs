@@ -212,7 +212,7 @@ describe('block', () => {
       }])
 
       const out = await cli('block rm --quiet QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp', { ipfs })
-      expect(out).to.eql('')
+      expect(out).to.be.empty()
     })
 
     it('rm force', async () => {

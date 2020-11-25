@@ -1,7 +1,7 @@
 'use strict'
 
 const multibase = require('multibase')
-const { rightpad } = require('../utils')
+const { rightpad, stripControlCharacters } = require('../utils')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const formatMode = require('ipfs-core-utils/src/files/format-mode')
 const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
@@ -65,6 +65,7 @@ module.exports = {
     }
 
     const printLink = (mode, mtime, cid, size, name, depth = 0) => {
+      name = stripControlCharacters(name)
       const widths = getMaxWidths(mode, mtime, cid, size, name)
       // todo: fix this by resolving https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24
       const padding = Math.max(depth - pathParts.length, 0)
@@ -82,7 +83,7 @@ module.exports = {
       const mtime = formatMtime(link.mtime)
       const cid = cidToString(link.cid, { base: cidBase })
       const size = link.size ? String(link.size) : '-'
-      const name = link.type === 'dir' ? `${link.name || ''}/` : link.name
+      const name = stripControlCharacters(link.type === 'dir' ? `${link.name || ''}/` : link.name)
 
       if (first) {
         first = false

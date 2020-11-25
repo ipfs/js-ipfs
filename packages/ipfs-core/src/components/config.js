@@ -1,7 +1,7 @@
 'use strict'
 
 const getDefaultConfig = require('../runtime/config-nodejs.js')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const log = require('debug')('ipfs:core:config')
 
 /**

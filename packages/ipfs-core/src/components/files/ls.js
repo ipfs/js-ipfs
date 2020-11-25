@@ -2,9 +2,7 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const toMfsPath = require('./utils/to-mfs-path')
-const {
-  withTimeoutOption
-} = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {*} fsEntry

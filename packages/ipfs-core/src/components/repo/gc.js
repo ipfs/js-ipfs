@@ -2,7 +2,8 @@
 
 const CID = require('cids')
 const log = require('debug')('ipfs:repo:gc')
-const { MFS_ROOT_KEY, withTimeoutOption } = require('../../utils')
+const { MFS_ROOT_KEY } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const { parallelMerge, transform, map } = require('streaming-iterables')

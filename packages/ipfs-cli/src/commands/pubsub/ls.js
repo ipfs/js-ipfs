@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'ls',
@@ -18,6 +21,6 @@ module.exports = {
     const subscriptions = await ipfs.pubsub.ls({
       timeout
     })
-    subscriptions.forEach(sub => print(sub))
+    subscriptions.forEach(sub => print(stripControlCharacters(sub)))
   }
 }

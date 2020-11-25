@@ -2,20 +2,13 @@
 
 const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
-const EchoServer = require('aegir/utils/echo-server')
-const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
 
-let preloadNode
-let echoServer = new EchoServer()
-
-// the second signalling server is needed for the inferface test 'should list peers only once even if they have multiple addresses'
-let sigServerA
-let sigServerB
+let preloadNode = MockPreloadNode.createNode()
 let ipfsdServer
 
 module.exports = {
-  bundlesize: { maxSize: '518kB' },
+  bundlesize: { maxSize: '524kB' },
   karma: {
     files: [{
       pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
@@ -37,44 +30,22 @@ module.exports = {
   hooks: {
     node: {
       pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
-
-        await preloadNode.start(),
-        await echoServer.start()
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
+        await preloadNode.start()
       },
       post: async () => {
-        await preloadNode.stop(),
-        await echoServer.stop()
+        await preloadNode.stop()
       }
     },
     browser: {
       pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
-
         await preloadNode.start()
-        await echoServer.start()
-        sigServerA = await webRTCStarSigServer.start({
-          host: '127.0.0.1',
-          port: 14579,
-          metrics: false
-        })
-        sigServerB = await webRTCStarSigServer.start({
-          host: '127.0.0.1',
-          port: 14578,
-          metrics: false
-        })
         ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: 57483
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
-          ipfsHttpModule: require('../ipfs-http-client'),
+          ipfsHttpModule: require(path.join(__dirname, '..', 'ipfs-http-client')),
           ipfsBin: path.resolve(path.join(__dirname, '..', 'ipfs', 'src', 'cli.js')),
           ipfsOptions: {
             libp2p: {
@@ -88,19 +59,10 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           }
         }).start()
-
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
       },
       post: async () => {
         await ipfsdServer.stop()
         await preloadNode.stop()
-        await echoServer.stop()
-        await sigServerA.stop()
-        await sigServerB.stop()
       }
     }
   }

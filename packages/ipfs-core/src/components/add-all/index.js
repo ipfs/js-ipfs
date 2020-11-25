@@ -4,7 +4,7 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
@@ -41,15 +41,38 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
       opts.strategy = 'trickle'
     }
 
+    if (opts.strategy === 'trickle') {
+      opts.leafType = 'raw'
+      opts.reduceSingleLeafToSelf = false
+    }
+
+    if (opts.cidVersion > 0 && opts.rawLeaves === undefined) {
+      // if the cid version is 1 or above, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
+    if (opts.hashAlg !== undefined && opts.rawLeaves === undefined) {
+      // if a non-default hash alg has been specified, use raw leaves as this is
+      // what go does.
+      opts.rawLeaves = true
+    }
+
     delete opts.trickle
 
+    const totals = {}
+
     if (opts.progress) {
-      let total = 0
       const prog = opts.progress
 
-      opts.progress = (bytes) => {
-        total += bytes
-        prog(total)
+      opts.progress = (bytes, path) => {
+        if (!totals[path]) {
+          totals[path] = 0
+        }
+
+        totals[path] += bytes
+
+        prog(totals[path], path)
       }
     }
 
@@ -67,7 +90,12 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
     const releaseLock = await gcLock.readLock()
 
     try {
-      yield * iterator
+      for await (const added of iterator) {
+        // do not keep file totals around forever
+        delete totals[added.path]
+
+        yield added
+      }
     } finally {
       releaseLock()
     }
@@ -162,8 +190,7 @@ function pinFile (pin, opts) {
  * @property {boolean} [onlyHash=false] - If true, will not add blocks to the
  * blockstore.
  * @property {boolean} [pin=true] - Pin this object when adding.
- * @property {(bytes:number) => void} [progress] - A function that will be
- * called with the byte length of chunks as a file is added to ipfs.
+ * @property {(bytes:number, path:string) => void} [progress] - a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added
  * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
  * file data and not be wrapped in a protobuf.
  * @property {number} [shardSplitThreshold=1000] - Directories with more than this

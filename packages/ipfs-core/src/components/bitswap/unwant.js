@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config

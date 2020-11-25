@@ -31,19 +31,19 @@ describe('config', function () {
 
     expect(res.Peers).to.not.be.empty()
 
-    const onlyWss = res.Peers.reduce((acc, curr) => {
+    const onlyWssOrResolvableAddr = res.Peers.reduce((acc, curr) => {
       if (!acc) {
         return acc
       }
 
       const ma = multiaddr(curr)
-      return ma.protos().some(proto => proto.name === 'wss')
+      return ma.protos().some(proto => proto.name === 'wss' || proto.resolvable)
     }, true)
 
     if (isBrowser || isWebWorker) {
-      expect(onlyWss).to.be.true()
+      expect(onlyWssOrResolvableAddr).to.be.true()
     } else {
-      expect(onlyWss).to.be.false()
+      expect(onlyWssOrResolvableAddr).to.be.false()
     }
   })
 })

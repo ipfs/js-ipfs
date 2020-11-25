@@ -1,7 +1,8 @@
 'use strict'
 
 const { getPubsubRouting } = require('./utils')
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
 /**
  * @param {Object} config
  * @param {import('.').IPNS} config.ipns

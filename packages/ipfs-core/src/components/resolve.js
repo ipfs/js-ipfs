@@ -3,7 +3,7 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
