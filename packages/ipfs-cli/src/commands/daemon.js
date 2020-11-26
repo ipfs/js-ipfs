@@ -65,7 +65,7 @@ module.exports = {
     }
 
     // Required inline to reduce startup time
-    const Daemon = require('../../src/daemon')
+    const Daemon = require('ipfs-daemon')
     const daemon = new Daemon({
       config,
       silent: argv.silent,

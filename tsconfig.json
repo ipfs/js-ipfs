@@ -41,6 +41,9 @@
       "ipfs-core-utils/*": [
         "ipfs-core-utils/*"
       ],
+      "ipfs-daemon/*": [
+        "ipfs-daemon/*"
+      ],
       "ipfs-http-client/*": [
         "ipfs-http-client/*"
       ],

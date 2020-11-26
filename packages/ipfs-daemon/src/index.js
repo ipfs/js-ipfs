@@ -12,6 +12,7 @@ const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
+const { isElectron } = require('ipfs-utils/src/env')
 
 class Daemon {
   constructor (options = {}) {
@@ -51,7 +52,7 @@ class Daemon {
     const httpGateway = new HttpGateway(ipfs, ipfsOpts)
     this._httpGateway = await httpGateway.start()
 
-    // for the CLI to know the where abouts of the API
+    // for the CLI to know the whereabouts of the API
     // @ts-ignore - _apiServers is possibly undefined
     if (this._httpApi._apiServers.length) {
       // @ts-ignore - _apiServers is possibly undefined
@@ -79,17 +80,23 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   // Attempt to use any of the WebRTC versions available globally
   let electronWebRTC
   let wrtc
-  try {
-    // @ts-ignore - cant find type info
-    electronWebRTC = require('electron-webrtc')()
-  } catch (err) {
-    log('failed to load optional electron-webrtc dependency')
+
+  if (isElectron) {
+    try {
+      // @ts-ignore - cant find type info
+      electronWebRTC = require('electron-webrtc')()
+    } catch (err) {
+      log('failed to load optional electron-webrtc dependency')
+    }
   }
-  try {
-    // @ts-ignore - cant find type info
-    wrtc = require('wrtc')
-  } catch (err) {
-    log('failed to load optional webrtc dependency')
+
+  if (!electronWebRTC) {
+    try {
+      // @ts-ignore - cant find type info
+      wrtc = require('wrtc')
+    } catch (err) {
+      log('failed to load optional webrtc dependency')
+    }
   }
 
   if (wrtc || electronWebRTC) {
