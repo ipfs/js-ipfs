@@ -7,15 +7,15 @@ const parseDuration = require('parse-duration').default
 const { TimeoutError } = require('./errors')
 
 /**
- * @template {any[]} ARGS
+ * @template {any[]} Args
  * @template {Promise<any> | AsyncIterable<any>} R - The return type of `fn`
- * @param {Fn<ARGS, R>} fn
+ * @param {(...args:Args) => R} fn
  * @param {number} [optionsArgIndex]
- * @returns {Fn<ARGS, R>}
+ * @returns {(...args:Args) => R}
  */
 function withTimeoutOption (fn, optionsArgIndex) {
   // eslint-disable-next-line
-  return /** @returns {R} */(/** @type {ARGS} */...args) => {
+  return /** @returns {R} */(/** @type {Args} */...args) => {
     const options = args[optionsArgIndex == null ? args.length - 1 : optionsArgIndex]
     if (!options || !options.timeout) return fn(...args)
 
