@@ -61,7 +61,7 @@ const loadRepo = async (repo, options) => {
     return { ...await configureRepo(repo, options), isNew: false }
   } else if (openError.code === ERR_REPO_NOT_INITIALIZED) {
     if (options.allowNew === false) {
-      throw new NotEnabledError('new repo initialization is not enabled')
+      throw new NotEnabledError('Initialization of new repos disabled by config, pass `config.init.isNew: true` to enable it')
     } else {
       // If failed to open, because repo isn't initilaized and initalizing a
       // new repo allowed, init repo:
