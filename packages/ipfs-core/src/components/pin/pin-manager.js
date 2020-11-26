@@ -65,7 +65,7 @@ class PinManager {
   /**
    * @private
    * @param {CID} cid
-   * @param {Object} [options]
+   * @param {Object} options
    * @param {boolean} [options.preload]
    */
   async * _walkDag (cid, { preload = false }) {

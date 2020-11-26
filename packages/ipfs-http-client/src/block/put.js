@@ -66,7 +66,7 @@ module.exports = configure(api => {
       throw err
     }
 
-    return new Block(data, new CID(res.Key))
+    return new Block(/** @type {Uint8Array} */(data), new CID(res.Key))
   }
 
   return put

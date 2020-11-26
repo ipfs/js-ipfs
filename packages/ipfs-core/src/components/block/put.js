@@ -21,9 +21,6 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
    * don't need to pass options, as the block instance will carry the CID
    * value as a property.
    *
-   * @param {IPLDBlock} block - The block or data to store
-   * @param {PutOptions & AbortOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
-   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
    * @example
    * ```js
    * // Defaults
@@ -53,6 +50,10 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
    * // Logs:
    * // the CID of the object
    * ```
+   *
+   * @param {IPLDBlock|Uint8Array} block - The block or data to store
+   * @param {PutOptions & AbortOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
+   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
    */
   async function put (block, options = {}) {
     if (Array.isArray(block)) {
@@ -60,8 +61,11 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
     }
 
     if (!Block.isBlock(block)) {
+      /** @type {Uint8Array} */
+      const bytes = (block)
       if (options.cid && isIPFS.cid(options.cid)) {
-        block = new Block(block, CID.isCID(options.cid) ? options.cid : new CID(options.cid))
+        const cid = CID.isCID(options.cid) ? options.cid : new CID(options.cid)
+        block = new Block(bytes, cid)
       } else {
         const mhtype = options.mhtype || 'sha2-256'
         const format = options.format || 'dag-pb'
@@ -81,7 +85,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
         const multihash = await multihashing(block, mhtype)
         const cid = new CID(cidVersion, format, multihash)
 
-        block = new Block(block, cid)
+        block = new Block(bytes, cid)
       }
     }
 

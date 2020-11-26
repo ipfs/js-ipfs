@@ -4,6 +4,7 @@ const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
 const { NotEnabledError } = require('../errors')
+const get = require('dlv')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**

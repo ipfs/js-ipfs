@@ -28,4 +28,8 @@ module.exports = KeyAPI
 /**
  * @typedef {import('..').Keychain} Keychain
  * @typedef {import('..').AbortOptions} AbortOptions
+ *
+ * @typedef {Object} Key
+ * @property {string} name
+ * @property {string} id
  */
