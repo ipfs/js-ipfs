@@ -59,6 +59,9 @@ module.exports = () => {
       pubsub: {
         enabled: true,
         emitSelf: true
+      },
+      nat: {
+        enabled: false
       }
     },
     metrics: {

@@ -76,7 +76,7 @@ async function listProfiles (_options) { // eslint-disable-line require-await
 
 const profiles = {
   server: {
-    description: 'Recommended for nodes with public IPv4 address (servers, VPSes, etc.), disables host and content discovery in local networks.',
+    description: 'Recommended for nodes with public IPv4 address (servers, VPSes, etc.), disables host and content discovery and UPnP in local networks.',
     /**
      * @param {IPFSConfig} config
      * @returns {IPFSConfig}
@@ -84,12 +84,16 @@ const profiles = {
     transform: (config) => {
       config.Discovery.MDNS.Enabled = false
       config.Discovery.webRTCStar.Enabled = false
+      config.Swarm = {
+        ...(config.Swarm || {}),
+        DisableNatPortMap: true
+      }
 
       return config
     }
   },
   'local-discovery': {
-    description: 'Sets default values to fields affected by `server` profile, enables discovery in local networks.',
+    description: 'Sets default values to fields affected by `server` profile, enables discovery and UPnP in local networks.',
     /**
      * @param {IPFSConfig} config
      * @returns {IPFSConfig}
@@ -97,6 +101,10 @@ const profiles = {
     transform: (config) => {
       config.Discovery.MDNS.Enabled = true
       config.Discovery.webRTCStar.Enabled = true
+      config.Swarm = {
+        ...(config.Swarm || {}),
+        DisableNatPortMap: false
+      }
 
       return config
     }
@@ -117,6 +125,10 @@ const profiles = {
       config.Bootstrap = []
       config.Discovery.MDNS.Enabled = false
       config.Discovery.webRTCStar.Enabled = false
+      config.Swarm = {
+        ...(config.Swarm || {}),
+        DisableNatPortMap: true
+      }
 
       return config
     }
@@ -137,6 +149,10 @@ const profiles = {
       config.Bootstrap = defaultConfig.Bootstrap
       config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
       config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
+      config.Swarm = {
+        ...(config.Swarm || {}),
+        DisableNatPortMap: false
+      }
 
       return config
     }
@@ -453,6 +469,7 @@ module.exports.profiles = profiles
  * @typedef {Object} SwarmConfig
  * Options for configuring the swarm.
  * @property {ConnMgrConfig} [ConnMgr]
+ * @property {boolean} [DisableNatPortMap]
  *
  * @typedef {Object} ConnMgrConfig
  * The connection manager determines which and how many connections to keep and

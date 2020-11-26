@@ -93,7 +93,10 @@ module.exports = ({
 
       await libp2p.start()
 
-      libp2p.transportManager.getAddrs().forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`))
+      Array.from(new Set([
+        ...libp2p.transportManager.getAddrs().map(ma => ma.toString()),
+        ...libp2p.addressManager.getAnnounceAddrs().map(ma => ma.toString())
+      ])).forEach(ma => print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`))
 
       const ipnsRouting = routingConfig({ libp2p, repo, peerId, options: constructorOptions })
       const ipns = new IPNS(ipnsRouting, repo.datastore, peerId, keychain, { pass: initOptions.pass })
