@@ -212,9 +212,12 @@ exports.Server = class Server {
     if (!query.signal.aborted) {
       try {
         const value = await query.result
+        const transfer = [...new Set(value.transfer || [])]
+        delete value.transfer
+
         port.postMessage(
           { type: 'result', id, result: { ok: true, value } },
-          value.transfer || []
+          transfer
         )
       } catch (error) {
         port.postMessage({
