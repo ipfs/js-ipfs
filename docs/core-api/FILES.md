@@ -460,8 +460,9 @@ Each yielded object is of the form:
 
 ```js
 {
-  path: string,
-  content: <AsyncIterable<Uint8Array>>,
+  type: string, // 'file' or 'dir'
+  path: string, // a deeply nested path within the directory structure
+  content?: <AsyncIterable<Uint8Array>>, // only present if `type` is 'file'
   mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
   mtime?: { secs: Number, nsecs: Number }
 }
@@ -475,19 +476,23 @@ Here, each `path` corresponds to the name of a file, and `content` is an async i
 const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
 for await (const file of ipfs.get(cid)) {
-  console.log(file.path)
+  console.log(file.type, file.path)
 
   if (!file.content) continue;
 
   const content = []
 
-for await (const chunk of file.content) {
+  for await (const chunk of file.content) {
     content.push(chunk)
   }
 
   console.log(content)
 }
 ```
+
+When invoking this method via the HTTP API client, the response arrives as a stream containing either the entire contents of the file (if the passed [CID][] resolves to a file) or recursive directory tree and all files contained therein (if the passed [CID][] resolves to a directory).
+
+If you are iterating over a directory, in order to proceed to the next entry in the stream, you must consume the `content` field of the current entry if it is present.
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/get.js) can be found in the tests for this API.
 

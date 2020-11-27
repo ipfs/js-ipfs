@@ -9,6 +9,7 @@ const CID = require('cids')
 const all = require('it-all')
 const drain = require('it-drain')
 const last = require('it-last')
+const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const importer = require('ipfs-unixfs-importer')
@@ -155,6 +156,53 @@ module.exports = (common, options) => {
         fixtures.directory.files['holmes.txt'].toString(),
         fixtures.directory.files['jungle.txt'].toString(),
         fixtures.directory.files['pp.txt'].toString()
+      ])
+    })
+
+    it('should get a nested directory', async function () {
+      const content = (name, path) => ({
+        path: `test-folder/${path}`,
+        content: fixtures.directory.files[name]
+      })
+
+      const dirs = [
+        content('pp.txt', 'pp.txt'),
+        content('holmes.txt', 'foo/holmes.txt'),
+        content('jungle.txt', 'foo/bar/jungle.txt')
+      ]
+
+      const res = await all(importer(dirs, ipfs.block))
+      const root = res[res.length - 1]
+      expect(root.path).to.equal('test-folder')
+      expect(root.cid.toString()).to.equal('QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g')
+
+      let files = await all(
+        map(ipfs.get(root.cid), async ({ path, content }) => {
+          content = content ? uint8ArrayToString(uint8ArrayConcat(await all(content))) : null
+          return { path, content }
+        })
+      )
+
+      files = files.sort((a, b) => {
+        if (a.path > b.path) return 1
+        if (a.path < b.path) return -1
+        return 0
+      })
+
+      // Check paths
+      const paths = files.map((file) => { return file.path })
+      expect(paths).to.include.members([
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/pp.txt',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/foo/holmes.txt',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/foo/bar/jungle.txt'
+      ])
+
+      // Check contents
+      expect(files.map(f => f.content)).to.include.members([
+        fixtures.directory.files['pp.txt'].toString(),
+        fixtures.directory.files['holmes.txt'].toString(),
+        fixtures.directory.files['jungle.txt'].toString()
       ])
     })
 
