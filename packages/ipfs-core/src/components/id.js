@@ -29,7 +29,7 @@ module.exports = ({ peerId, libp2p }) => {
 
     if (libp2p) {
       // only available while the node is running
-      addresses = libp2p.transportManager.getAddrs()
+      addresses = libp2p.multiaddrs
       protocols = Array.from(libp2p.upgrader.protocols.keys())
     }
 
