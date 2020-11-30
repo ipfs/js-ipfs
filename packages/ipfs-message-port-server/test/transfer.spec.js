@@ -2,21 +2,21 @@
 
 /* eslint-env mocha */
 const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { expect } = require('aegir/utils/chai')
+const globalThis = require('ipfs-utils/src/globalthis')
 
 const CID = require('cids')
-const { Query, Server } = require('../src/server')
+const { Server } = require('../src/server')
 const { IPFSService } = require('../src/index')
 
 describe('Server', function () {
   this.timeout(10 * 1000)
 
   it('should be able to transfer multiple of the same CID instances', () => {
-    const cid = new CID("QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D")
+    const cid = new CID('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     return new Promise((resolve, reject) => {
       const channel = process.browser
-        ? new MessageChannel()
+        ? new globalThis.MessageChannel()
         : new (require('worker_threads').MessageChannel)()
 
       channel.port1.onmessageerror = reject
@@ -31,10 +31,10 @@ describe('Server', function () {
 
       server.run = a => a
       server.handleQuery(
-        "",
+        '',
         {
           result: {
-            value: [ encodeCID(cid, transfer), encodeCID(cid, transfer) ],
+            value: [encodeCID(cid, transfer), encodeCID(cid, transfer)],
             transfer: transfer
           },
           signal: { aborted: false }
