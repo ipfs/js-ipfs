@@ -8,6 +8,7 @@ const GossipSub = require('libp2p-gossipsub')
 const Multiplex = require('libp2p-mplex')
 const { NOISE } = require('libp2p-noise')
 const ipnsUtils = require('../ipns/routing/utils')
+const os = require('os')
 
 module.exports = () => {
   return {
@@ -65,7 +66,8 @@ module.exports = () => {
         emitSelf: true
       },
       nat: {
-        enabled: true
+        enabled: true,
+        description: `ipfs@${os.hostname()}`
       }
     },
     metrics: {
