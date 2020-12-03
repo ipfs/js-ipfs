@@ -35,7 +35,7 @@
     "cids": "^1.0.0",
     "debug": "^4.1.1",
     "err-code": "^2.0.3",
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "get-folder-size": "^2.0.1",
     "ipfs-core": "^0.3.0",
     "ipfs-core-utils": "^0.5.3",
