@@ -52,7 +52,7 @@
     "ipfs-core": "^0.3.0",
     "ipfs-message-port-server": "^0.4.2",
     "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "typescript": "4.1.x"
   },
   "engines": {
     "node": ">=10.3.0",

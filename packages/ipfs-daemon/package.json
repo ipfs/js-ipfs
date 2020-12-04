@@ -46,7 +46,7 @@
   "devDependencies": {
     "aegir": "^29.2.2",
     "node-fetch": "^2.6.1",
-    "typescript": "4.0.x"
+    "typescript": "4.1.x"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",
