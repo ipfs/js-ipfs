@@ -42,7 +42,7 @@ class Daemon {
       : this._options.repo
 
     // start the daemon
-    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p: getLibp2p }, this._options, { repo })
+    const ipfsOpts = Object.assign({}, { start: true, libp2p: getLibp2p }, this._options, { repo })
     const ipfs = this._ipfs = await IPFS.create(ipfsOpts)
 
     // start HTTP servers (if API or Gateway is enabled in options)

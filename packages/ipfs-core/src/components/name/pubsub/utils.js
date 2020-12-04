@@ -3,9 +3,14 @@
 const IpnsPubsubDatastore = require('../../../ipns/routing/pubsub-datastore')
 const errcode = require('err-code')
 
-// Get pubsub from IPNS routing
+/**
+ * Get pubsub from IPNS routing
+ *
+ * @param {import('.').IPNS} ipns
+ * @param {PubSubRoutingOptions} [options]
+ */
 exports.getPubsubRouting = (ipns, options) => {
-  if (!ipns || !(options.EXPERIMENTAL && options.EXPERIMENTAL.ipnsPubsub)) {
+  if (!ipns || !(options && options.ipnsPubsub)) {
     throw errcode(new Error('IPNS pubsub subsystem is not enabled'), 'ERR_IPNS_PUBSUB_NOT_ENABLED')
   }
 
@@ -23,3 +28,8 @@ exports.getPubsubRouting = (ipns, options) => {
 
   return pubsub
 }
+
+/**
+ * @typedef {Object} PubSubRoutingOptions
+ * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
+ */

@@ -5,9 +5,10 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBlockService} config.blockService
- * @param {import('..').Preload} config.preload
+ * @param {import('.').BlockService} config.blockService
+ * @param {import('.').Preload} config.preload
  */
+
 module.exports = ({ blockService, preload }) => {
   /**
   /**
@@ -50,7 +51,6 @@ module.exports = ({ blockService, preload }) => {
  * @typedef {Object} StatOptions
  * @property {boolean} [preload]
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('..').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
  */

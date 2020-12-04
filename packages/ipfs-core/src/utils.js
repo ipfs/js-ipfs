@@ -6,6 +6,11 @@ const CID = require('cids')
 const Key = require('interface-datastore').Key
 const errCode = require('err-code')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+/** @type {typeof Object.assign} */
+const mergeOptions = require('merge-options')
+
+exports.mergeOptions = mergeOptions
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 
@@ -63,7 +68,7 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('./components').DAG} dag - The IPFS dag api
+ * @param {import('./components').DagReader} dag
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
@@ -213,7 +218,19 @@ const mapFile = (file, options = {}) => {
  * @template {Record<string, any>} ExtraOptions
  */
 
+const withTimeout = withTimeoutOption(
+  /**
+   * @template T
+   * @param {Promise<T>|T} promise
+   * @param {AbortOptions} [_options]
+   * @returns {Promise<T>}
+   */
+  async (promise, _options) => await promise
+)
+
 exports.normalizePath = normalizePath
 exports.normalizeCidPath = normalizeCidPath
 exports.resolvePath = resolvePath
 exports.mapFile = mapFile
+exports.withTimeoutOption = withTimeoutOption
+exports.withTimeout = withTimeout

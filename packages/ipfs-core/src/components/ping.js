@@ -7,9 +7,9 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('libp2p')} config.libp2p
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ libp2p }) => {
+module.exports = ({ network }) => {
   /**
    * Send echo request packets to IPFS hosts.
    *
@@ -28,6 +28,7 @@ module.exports = ({ libp2p }) => {
    * ```
    */
   async function * ping (peerId, options = {}) {
+    const { libp2p } = await network.use()
     options.count = options.count || 10
 
     if (!PeerId.isPeerId(peerId)) {
@@ -92,5 +93,5 @@ module.exports = ({ libp2p }) => {
  * @typedef {Object} PingSettings
  * @property {number} [count=10] - The number of ping messages to send
  *
- * @typedef {import('../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

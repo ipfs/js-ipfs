@@ -10,13 +10,12 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**
- *
  * @param {Object} config
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').DAG} config.dag
- * @param {import('./pin-manager')} config.pinManager
+ * @param {import('.').GCLock} config.gcLock
+ * @param {import('.').DagReader} config.dagReader
+ * @param {import('.').PinManager} config.pinManager
  */
-module.exports = ({ pinManager, gcLock, dag }) => {
+module.exports = ({ pinManager, gcLock, dagReader }) => {
   /**
    * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
    * repo. pinset is the set of hashes currently pinned (not gc'able)
@@ -40,7 +39,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
      */
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
-        const cid = await resolvePath(dag, path)
+        const cid = await resolvePath(dagReader, path)
 
         // verify that each hash can be pinned
         const { reason } = await pinManager.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])
@@ -90,9 +89,9 @@ module.exports = ({ pinManager, gcLock, dag }) => {
  * @typedef {Object} AddSettings
  * @property {boolean} [lock]
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  *
- * @typedef {import('..').CID} CID
+ * @typedef {import('.').CID} CID
  */
 
 /**

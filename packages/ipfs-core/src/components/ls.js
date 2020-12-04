@@ -7,8 +7,8 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @param {import('./root').IPLD} config.ipld
+ * @param {import('./root').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
   /**

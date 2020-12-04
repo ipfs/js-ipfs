@@ -27,7 +27,8 @@ module.exports = {
         type: 'number',
         alias: 'b',
         default: '2048',
-        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)'
+        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)',
+        coerce: Number
       })
       .option('empty-repo', {
         alias: 'e',
@@ -69,22 +70,20 @@ module.exports = {
     const IPFS = require('ipfs-core')
     const Repo = require('ipfs-repo')
 
-    const node = await IPFS.create({
-      repo: new Repo(repoPath),
-      init: false,
-      start: false,
-      config
-    })
-
     try {
-      await node.init({
-        algorithm: argv.algorithm,
-        bits: argv.bits,
-        privateKey: argv.privateKey,
-        emptyRepo: argv.emptyRepo,
-        profiles: argv.profile,
-        pass: argv.pass,
-        log: print
+      await IPFS.create({
+        repo: new Repo(repoPath),
+        init: {
+          algorithm: argv.algorithm,
+          bits: argv.bits,
+          privateKey: argv.privateKey,
+          emptyRepo: argv.emptyRepo,
+          profiles: argv.profile,
+          pass: argv.pass
+        },
+        start: false,
+        // @ts-ignore - Expects more than {}
+        config
       })
     } catch (err) {
       if (err.code === 'EACCES') {
