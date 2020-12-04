@@ -77,7 +77,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "go-ipfs": "^0.7.0",
     "ipfs-core": "^0.3.0",
     "ipfsd-ctl": "^7.0.2",
