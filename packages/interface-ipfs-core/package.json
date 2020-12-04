@@ -30,7 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",

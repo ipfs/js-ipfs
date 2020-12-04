@@ -46,7 +46,7 @@
     "ipfs-message-port-protocol": "^0.4.2"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "interface-ipfs-core": "^0.142.2",
     "ipfs": "^0.52.2",
     "ipfs-core": "^0.3.0",

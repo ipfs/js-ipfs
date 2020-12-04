@@ -45,7 +45,7 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.7.0",

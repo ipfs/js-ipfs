@@ -197,7 +197,7 @@ const decodeCallback = ({ port }) => {
    * @returns {void}
    */
   const callback = (args, transfer = []) => {
-    port.postMessage(args, transfer)
+    port.postMessage(args, [...new Set(transfer)])
   }
 
   return callback
