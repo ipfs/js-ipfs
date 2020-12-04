@@ -118,7 +118,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
     "interface-ipfs-core": "^0.142.2",

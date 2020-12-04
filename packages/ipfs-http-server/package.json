@@ -65,7 +65,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "form-data": "^3.0.0",
     "ipfs-http-client": "^48.1.2",
     "iso-random-stream": "^1.1.1",
