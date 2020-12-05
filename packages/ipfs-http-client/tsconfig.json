@@ -13,6 +13,9 @@
     },
     {
       "path": "../ipfs-core"
+    },
+    {
+      "path": "../interface-ipfs-core"
     }
   ]
 }
