@@ -16,7 +16,7 @@ module.exports = ({ network }) => {
    */
   async function disconnect (addr, options) {
     const { libp2p } = await network.use(options)
-    return libp2p.hangUp(addr, options)
+    return libp2p.hangUp(addr)
   }
 
   return withTimeoutOption(disconnect)

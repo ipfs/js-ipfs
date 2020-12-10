@@ -16,7 +16,7 @@ module.exports = ({ network }) => {
    */
   async function connect (addr, options) {
     const { libp2p } = await network.use(options)
-    return libp2p.dial(addr, options)
+    await libp2p.dial(addr, options)
   }
 
   return withTimeoutOption(connect)

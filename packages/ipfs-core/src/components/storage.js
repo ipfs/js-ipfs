@@ -43,6 +43,8 @@ class Storage {
 
     const { peerId, keychain, isNew } = await loadRepo(repo, options)
 
+    // TODO: throw error?
+    // @ts-ignore On start, keychain will always be available
     return new Storage(peerId, keychain, repo, print, isNew)
   }
 }
@@ -52,7 +54,7 @@ module.exports = Storage
  *
  * @param {Repo} repo
  * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain:Keychain, isNew:boolean }>}
+ * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined, isNew:boolean }>}
  */
 const loadRepo = async (repo, options) => {
   const openError = await openRepo(repo)
@@ -96,7 +98,7 @@ const openRepo = async (repo) => {
 /**
  * @param {Repo} repo
  * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain:Keychain}>}
+ * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined}>}
  */
 const initRepo = async (repo, options) => {
   // 1. Verify that repo does not exist yet (if it does and we could not
@@ -197,7 +199,7 @@ const peerIdToIdentity = (peerId) => ({
  *
  * @param {Repo} repo
  * @param {ConfigureOptions} options
- * @returns {Promise<{peerId: PeerId, keychain:Keychain}>}
+ * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined}>}
  */
 const configureRepo = async (repo, { config, profiles, pass }) => {
   const original = await repo.config.getAll()
@@ -297,5 +299,5 @@ const applyProfiles = (config, profiles) => {
  * @typedef {import('.').IPFSConfig} IPFSConfig
  * @typedef {import('../interface/repo').Repo<IPFSConfig>} Repo
  * @typedef {import('libp2p-crypto').KeyType} KeyType
- * @typedef {import('libp2p').LibP2PKeychain} Keychain
+ * @typedef {import('libp2p/src/keychain')} Keychain
  */

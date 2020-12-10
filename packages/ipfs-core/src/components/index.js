@@ -70,6 +70,8 @@ class IPFS {
     })
     const dns = createDNSAPI()
     const isOnline = createIsOnlineAPI({ network })
+    // @ts-ignore This type check fails as options.
+    // libp2p can be a function, while IPNS router config expects libp2p config
     const ipns = new IPNSAPI(options)
     const dagReader = DagAPI.reader({ ipld, preload })
 
