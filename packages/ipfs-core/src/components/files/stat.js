@@ -5,7 +5,7 @@ const toMfsPath = require('./utils/to-mfs-path')
 const exporter = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   withLocal: false,

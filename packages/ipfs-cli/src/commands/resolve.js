@@ -2,6 +2,9 @@
 
 const multibase = require('multibase')
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../utils')
 
 module.exports = {
   command: 'resolve <name>',
@@ -25,8 +28,8 @@ module.exports = {
     }
   },
 
-  async handler ({ ctx: { ipfs }, name, recursive, cidBase, timeout }) {
+  async handler ({ ctx: { print, ipfs }, name, recursive, cidBase, timeout }) {
     const res = await ipfs.resolve(name, { recursive, cidBase, timeout })
-    return res
+    print(stripControlCharacters(res))
   }
 }

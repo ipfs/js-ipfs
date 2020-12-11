@@ -3,9 +3,16 @@
 const PeerId = require('peer-id')
 const CID = require('cids')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../utils')
+const { NotEnabledError } = require('../errors')
+const get = require('dlv')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ libp2p, repo }) => {
+/**
+ * @param {Object} config
+ * @param {import('.').NetworkService} config.network
+ * @param {import('.').Repo} config.repo
+ */
+module.exports = ({ network, repo }) => {
   const { get, put, findProvs, findPeer, provide, query } = {
     /**
      * Given a key, query the DHT for its best value.
@@ -14,7 +21,8 @@ module.exports = ({ libp2p, repo }) => {
      * @param {AbortOptions} [options] - The key associated with the value to find
      * @returns {Promise<Uint8Array>}
      */
-    async get (key, options = {}) { // eslint-disable-line require-await
+    async get (key, options = {}) {
+      const { libp2p } = await use(network, options)
       return libp2p._dht.get(normalizeCID(key), options)
     },
 
@@ -30,8 +38,9 @@ module.exports = ({ libp2p, repo }) => {
      * @param {AbortOptions} [options]
      * @returns {AsyncIterable<QueryEvent>}
      */
-    put (key, value, options) {
-      return libp2p._dht.put(normalizeCID(key), value)
+    async * put (key, value, options) {
+      const { libp2p } = await use(network, options)
+      yield * libp2p._dht.put(normalizeCID(key), value)
     },
 
     /**
@@ -50,6 +59,7 @@ module.exports = ({ libp2p, repo }) => {
      * ```
      */
     async * findProvs (cid, options = {}) {
+      const { libp2p } = await use(network, options)
       if (options.numProviders) {
         options.maxNumProviders = options.numProviders
       }
@@ -83,7 +93,8 @@ module.exports = ({ libp2p, repo }) => {
      * // '/ip4/147.75.94.115/tcp/4001'
      * ```
      */
-    async findPeer (peerId, options) { // eslint-disable-line require-await
+    async findPeer (peerId, options) {
+      const { libp2p } = await use(network, options)
       if (typeof peerId === 'string') {
         peerId = PeerId.createFromCID(peerId)
       }
@@ -104,6 +115,7 @@ module.exports = ({ libp2p, repo }) => {
      * @returns {AsyncIterable<QueryEvent>}
      */
     async * provide (cids, options = {}) {
+      const { libp2p } = await use(network, options)
       cids = Array.isArray(cids) ? cids : [cids]
 
       for (var i in cids) {
@@ -142,6 +154,7 @@ module.exports = ({ libp2p, repo }) => {
      * @returns {AsyncIterable<{ id: CID, addrs: Multiaddr[] }>}
      */
     async * query (peerId, options) {
+      const { libp2p } = await use(network, options)
       if (typeof peerId === 'string') {
         peerId = PeerId.createFromCID(peerId)
       }
@@ -191,6 +204,18 @@ const parseCID = cid => {
 const normalizeCID = cid =>
   cid instanceof Uint8Array ? cid : parseCID(cid)
 
+/**
+ * @param {import('.').NetworkService} network
+ * @param {AbortOptions} [options]
+ */
+const use = async (network, options) => {
+  const net = await network.use(options)
+  if (get(net.libp2p, '_config.dht.enabled', false)) {
+    return net
+  } else {
+    throw new NotEnabledError('dht not enabled')
+  }
+}
 /**
  * @typedef {Object} QueryEvent
  * @property {PeerId} id

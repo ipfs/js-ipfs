@@ -4,7 +4,7 @@ const importer = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
@@ -13,10 +13,10 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
  * @param {import('..').GCLock} config.gcLock
  * @param {import('..').Preload} config.preload
  * @param {import('..').Pin} config.pin
- * @param {import('../init').ConstructorOptions<any, boolean>} config.options
+ * @param {ShardingOptions} [config.options]
  */
-module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
-  const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
+module.exports = ({ block, gcLock, preload, pin, options }) => {
+  const isShardingEnabled = options && options.sharding
   /**
    * Import multiple files and data into IPFS.
    *
@@ -205,4 +205,7 @@ function pinFile (pin, opts) {
  * @typedef {import('../../utils').MTime} MTime
  * @typedef {import('../../utils').AbortOptions} AbortOptions
  * @typedef {import('..').CID} CID
+ *
+ * @typedef {Object} ShardingOptions
+ * @property {boolean} [sharding]
  */

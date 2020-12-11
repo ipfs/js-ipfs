@@ -1,6 +1,6 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const first = require('it-first')
 const last = require('it-last')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
@@ -14,12 +14,8 @@ module.exports = ({ ipld, preload }) => {
   /**
    * Retrieve an IPLD format node
    *
-   * @param {CID} ipfsPath - A DAG node that follows one of the supported IPLD formats
-   * @param {GetOptions & AbortOptions} [options] - An optional configration
-   * @returns {Promise<DagEntry>}
    * @example
    * ```js
-   * ```JavaScript
    * // example obj
    * const obj = {
    *   a: 1,
@@ -58,6 +54,10 @@ module.exports = ({ ipld, preload }) => {
    * // Logs:
    * // 6
    * ```
+   *
+   * @param {CID|string} ipfsPath - A DAG node that follows one of the supported IPLD formats
+   * @param {GetOptions & AbortOptions} [options] - An optional configration
+   * @returns {Promise<DagEntry>}
    */
   const get = async function get (ipfsPath, options = {}) {
     const {
@@ -74,11 +74,11 @@ module.exports = ({ ipld, preload }) => {
     }
 
     if (options.path) {
-      const result = options.localResolve
-      /** @type {DagEntry} - first will return undefined if empty */
-        ? (await first(ipld.resolve(cid, options.path)))
-      /** @type {DagEntry} - last will return undefined if empty */
-        : (await last(ipld.resolve(cid, options.path)))
+      const entry = options.localResolve
+        ? await first(ipld.resolve(cid, options.path))
+        : await last(ipld.resolve(cid, options.path))
+      /** @type {DagEntry} - first and last will return undefined when empty */
+      const result = (entry)
       return result
     }
 
@@ -102,6 +102,6 @@ module.exports = ({ ipld, preload }) => {
  * @property {Object} value
  * @property {string} remainderPath
  *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

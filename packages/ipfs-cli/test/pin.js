@@ -308,5 +308,18 @@ describe('pin', () => {
       const out = await cli('pin ls --timeout=1s', { ipfs })
       expect(out).to.equal(`${pins.root} recursive\n`)
     })
+
+    it('strips control characters from metadata', async () => {
+      ipfs.pin.ls.withArgs(defaultOptions).returns([{
+        cid: new CID(pins.root),
+        type: 'recursive',
+        metadata: {
+          'herp\n\t': 'de\brp'
+        }
+      }])
+
+      const out = await cli('pin ls', { ipfs })
+      expect(out).to.equal(`${pins.root} recursive {"herp":"derp"}\n`)
+    })
   })
 })

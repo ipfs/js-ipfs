@@ -2,7 +2,7 @@
 
 const debug = require('debug')
 const errcode = require('err-code')
-const mergeOptions = require('merge-options')
+const { mergeOptions } = require('../../utils')
 const CID = require('cids')
 const isDomain = require('is-domain-name')
 
@@ -10,7 +10,8 @@ const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')
 })
 
-const { OFFLINE_ERROR, withTimeoutOption } = require('../../utils')
+const { OFFLINE_ERROR } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  *
@@ -27,18 +28,18 @@ const appendRemainder = (result, remainder) =>
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('../index').DNS} config.dns
- * @param {import('../../ipns')} config.ipns
- * @param {import('peer-id')} config.peerId
- * @param {import('../index').IsOnline} config.isOnline
- * @param {{offline?:boolean}} config.options
+ * @param {import('.').DNS} config.dns
+ * @param {import('.').IPNS} config.ipns
+ * @param {import('.').PeerId} config.peerId
+ * @param {import('.').IsOnline} config.isOnline
+ * @param {ResolveOptions} config.options
  */
-module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) => {
+module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
   /**
    * Given a key, query the DHT for its best value.
    *
    * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
-   * @param {ResolveOptions} [options]
+   * @param {Options & AbortOptions} [options]
    * @returns {AsyncIterable<string>}
    * @example
    * ```js
@@ -56,8 +57,6 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
       nocache: false,
       recursive: true
     }, options)
-
-    const { offline } = constructorOptions
 
     // TODO: params related logic should be in the core implementation
     if (offline && options && options.nocache) {
@@ -103,11 +102,12 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
 /**
  * IPFS resolve options.
  *
- * @typedef {ResolveSettings & AbortOptions} ResolveOptions
- *
- * @typedef {Object} ResolveSettings
+ * @typedef {Object} Options
  * @property {boolean} [options.nocache=false] - do not use cached entries.
  * @property {boolean} [options.recursive=true] - resolve until the result is not an IPNS name.
  *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {Object} ResolveOptions
+ * @property {boolean} [offline]
+ *
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

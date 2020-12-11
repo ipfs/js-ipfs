@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -38,23 +38,21 @@
     "build:bundle": "aegir build",
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
-    "clean": "rm -rf ./dist",
-    "dep-check": "aegir dep-check"
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.0.0",
-    "ipfs-message-port-protocol": "^0.4.0"
+    "ipfs-message-port-protocol": "^0.4.2"
   },
   "devDependencies": {
-    "aegir": "^28.0.0",
-    "cross-env": "^7.0.0",
-    "interface-ipfs-core": "^0.142.0",
-    "ipfs": "^0.52.0",
-    "ipfs-core": "^0.2.0",
-    "ipfs-message-port-server": "^0.4.0",
-    "ipld-dag-pb": "^0.20.0",
-    "typescript": "^4.0.3"
+    "aegir": "^29.2.2",
+    "interface-ipfs-core": "^0.142.2",
+    "ipfs": "^0.52.2",
+    "ipfs-core": "^0.3.0",
+    "ipfs-message-port-server": "^0.4.2",
+    "rimraf": "^3.0.2",
+    "typescript": "4.0.x"
   },
   "engines": {
     "node": ">=10.3.0",

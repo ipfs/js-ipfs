@@ -2,12 +2,13 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
+const { normalizeCidPath, mapFile } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @param {import('./root').IPLD} config.ipld
+ * @param {import('./root').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
   /**
@@ -33,7 +34,8 @@ module.exports = function ({ ipld, preload }) {
     }
 
     if (file.unixfs.type === 'file') {
-      return mapFile(file, options)
+      yield mapFile(file, options)
+      return
     }
 
     if (file.unixfs.type.includes('dir')) {

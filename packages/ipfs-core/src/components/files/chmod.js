@@ -19,7 +19,7 @@ const last = require('it-last')
 const cp = require('./cp')
 const rm = require('./rm')
 const persist = require('ipfs-unixfs-importer/src/utils/persist')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   flush: true,

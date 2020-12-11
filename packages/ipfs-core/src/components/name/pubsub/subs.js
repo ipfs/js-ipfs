@@ -1,13 +1,18 @@
 'use strict'
 
 const { getPubsubRouting } = require('./utils')
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ ipns, options: constructorOptions }) => {
+/**
+ * @param {Object} config
+ * @param {import('.').IPNS} config.ipns
+ * @param {import('.').Options} [config.options]
+ */
+module.exports = ({ ipns, options: routingOptions }) => {
   /**
    * Show current name subscriptions.
    *
-   * @param {AbortOptions} [options]
+   * @param {import('.').AbortOptions} [options]
    * @returns {Promise<string[]>}
    * @example
    * ```js
@@ -17,13 +22,9 @@ module.exports = ({ ipns, options: constructorOptions }) => {
    * ```
    */
   async function subs (options) { // eslint-disable-line require-await
-    const pubsub = getPubsubRouting(ipns, constructorOptions)
+    const pubsub = getPubsubRouting(ipns, routingOptions)
     return pubsub.getSubscriptions(options)
   }
 
   return withTimeoutOption(subs)
 }
-
-/**
- * @typedef {import('../../../utils').AbortOptions} AbortOptions
- */

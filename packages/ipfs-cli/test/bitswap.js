@@ -57,7 +57,7 @@ describe('bitswap', () => {
       ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).resolves([])
 
       const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
-      expect(out).to.eql('')
+      expect(out).to.be.empty()
     })
 
     it('wantlist with a timeout', async () => {
@@ -67,7 +67,7 @@ describe('bitswap', () => {
       }).resolves([])
 
       const out = await cli('bitswap wantlist --timeout=1s', { ipfs })
-      expect(out).to.eql('')
+      expect(out).to.be.empty()
     })
 
     it('wantlist for peer with a timeout', async () => {
@@ -77,7 +77,7 @@ describe('bitswap', () => {
       }).resolves([])
 
       const out = await cli(`bitswap wantlist ${peerId} --timeout=1s`, { ipfs })
-      expect(out).to.eql('')
+      expect(out).to.be.empty()
     })
   })
 

@@ -1,19 +1,15 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBitSwap} config.bitswap
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ bitswap }) => {
+module.exports = ({ network }) => {
   /**
    * Returns the wantlist for a connected peer
-   *
-   * @param {PeerId | CID | string | Uint8Array} peerId - A peer ID to return the wantlist for\
-   * @param {AbortOptions} [options]
-   * @returns {Promise<CID[]>} - An array of CIDs currently in the wantlist
    *
    * @example
    * ```js
@@ -21,8 +17,14 @@ module.exports = ({ bitswap }) => {
    * console.log(list)
    * // [ CID('QmHash') ]
    * ```
+   *
+   * @param {PeerId | CID | string | Uint8Array} peerId - A peer ID to return the wantlist for\
+   * @param {AbortOptions} [options]
+   * @returns {Promise<CID[]>} - An array of CIDs currently in the wantlist
+   *
    */
-  async function wantlistForPeer (peerId, options = {}) { // eslint-disable-line require-await
+  async function wantlistForPeer (peerId, options = {}) {
+    const { bitswap } = await network.use(options)
     const list = bitswap.wantlistForPeer(PeerId.createFromCID(peerId), options)
 
     return Array.from(list).map(e => e[1].cid)
@@ -32,9 +34,9 @@ module.exports = ({ bitswap }) => {
 }
 
 /**
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').PeerId} PeerId
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').PeerId} PeerId
  */
 
 /**

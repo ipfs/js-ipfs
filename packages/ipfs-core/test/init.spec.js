@@ -21,20 +21,22 @@ describe('init', function () {
   let repo
   let cleanup
 
-  beforeEach(async () => {
+  const init = async (options) => {
     const res = await createNode({
-      init: false,
+      init: options,
       start: false
     })
+
     ipfs = res.ipfs
     repo = res.repo
     cleanup = res.cleanup
-  })
 
+    return ipfs
+  }
   afterEach(() => cleanup())
 
   it('should init successfully', async () => {
-    await ipfs.init({ bits: 512 })
+    await init({ bits: 512 })
 
     const res = await repo.exists()
     expect(res).to.equal(true)
@@ -46,7 +48,7 @@ describe('init', function () {
   })
 
   it('should init successfully with a keychain pass', async () => {
-    await ipfs.init({ bits: 512, pass: nanoid() })
+    await init({ bits: 512, pass: nanoid() })
 
     const res = await repo.exists()
     expect(res).to.equal(true)
@@ -60,7 +62,7 @@ describe('init', function () {
   })
 
   it('should init with a key algorithm (ed25519)', async () => {
-    await ipfs.init({ algorithm: 'ed25519' })
+    await init({ algorithm: 'ed25519' })
 
     const config = await repo.config.getAll()
     const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
@@ -68,7 +70,7 @@ describe('init', function () {
   })
 
   it('should init with a key algorithm (secp256k1)', async () => {
-    await ipfs.init({ algorithm: 'secp256k1' })
+    await init({ algorithm: 'secp256k1' })
 
     const config = await repo.config.getAll()
     const peerId = await PeerId.createFromPrivKey(config.Identity.PrivKey)
@@ -78,35 +80,35 @@ describe('init', function () {
   it('should set # of bits in key', async function () {
     this.timeout(120 * 1000)
 
-    await ipfs.init({ bits: 1024 })
+    await init({ bits: 1024 })
 
     const config = await repo.config.getAll()
     expect(config.Identity.PrivKey.length).is.above(256)
   })
 
   it('should allow a pregenerated key to be used', async () => {
-    await ipfs.init({ privateKey })
+    await init({ privateKey })
 
     const config = await repo.config.getAll()
     expect(config.Identity.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
   it('should allow a pregenerated ed25519 key to be used', async () => {
-    await ipfs.init({ privateKey: edPrivateKey })
+    await init({ privateKey: edPrivateKey })
 
     const config = await repo.config.getAll()
     expect(config.Identity.PeerID).is.equal('12D3KooWRm8J3iL796zPFi2EtGGtUJn58AG67gcqzMFHZnnsTzqD')
   })
 
   it('should allow a pregenerated secp256k1 key to be used', async () => {
-    await ipfs.init({ privateKey: secpPrivateKey })
+    await init({ privateKey: secpPrivateKey })
 
     const config = await repo.config.getAll()
     expect(config.Identity.PeerID).is.equal('16Uiu2HAm5qw8UyXP2RLxQUx5KvtSN8DsTKz8quRGqGNC3SYiaB8E')
   })
 
   it('should write init docs', async () => {
-    await ipfs.init({ bits: 512 })
+    await init({ bits: 512 })
     const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
 
     const node = await ipfs.object.get(multihash, { enc: 'base58' })
@@ -114,7 +116,7 @@ describe('init', function () {
   })
 
   it('should allow init with an empty repo', async () => {
-    await ipfs.init({ bits: 512, emptyRepo: true })
+    await init({ bits: 512, emptyRepo: true })
 
     // Should not have default assets
     const multihash = uint8ArrayFromString('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'base16')
@@ -122,14 +124,14 @@ describe('init', function () {
   })
 
   it('should apply one profile', async () => {
-    await ipfs.init({ bits: 512, profiles: ['test'] })
+    await init({ bits: 512, profiles: ['test'] })
 
     const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()
   })
 
   it('should apply multiple profiles', async () => {
-    await ipfs.init({ bits: 512, profiles: ['test', 'local-discovery'] })
+    await init({ bits: 512, profiles: ['test', 'local-discovery'] })
 
     const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()

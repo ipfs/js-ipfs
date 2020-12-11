@@ -1,9 +1,16 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {Object} config
+ * @param {import('.').Repo} config.repo
+ */
 module.exports = ({ repo }) => {
-  return withTimeoutOption(async function stat (options) {
+  /**
+   * @param {import('.').AbortOptions} [options]
+   */
+  async function stat (options) {
     const stats = await repo.stat(options)
 
     return {
@@ -13,5 +20,7 @@ module.exports = ({ repo }) => {
       version: stats.version.toString(),
       storageMax: stats.storageMax
     }
-  })
+  }
+
+  return withTimeoutOption(stat)
 }

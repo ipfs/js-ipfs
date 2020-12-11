@@ -218,5 +218,72 @@ module.exports = (common, options) => {
       expect(output).to.have.lengthOf(1)
       expect(output[0]).to.have.property('path', `${path}/${subfile}`)
     })
+
+    it('should ls single file', async () => {
+      const dir = randomName('DIR')
+      const file = randomName('F0')
+
+      const input = { path: `${dir}/${file}`, content: randomName('D1') }
+
+      const res = await ipfs.add(input)
+      const path = `${res.cid}/${file}`
+      const output = await all(ipfs.ls(path))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.have.property('path', path)
+    })
+
+    it('should ls single file with metadata', async () => {
+      const dir = randomName('DIR')
+      const file = randomName('F0')
+
+      const input = {
+        path: `${dir}/${file}`,
+        content: randomName('D1'),
+        mode: 0o631,
+        mtime: {
+          secs: 5000,
+          nsecs: 100
+        }
+      }
+
+      const res = await ipfs.add(input)
+      const path = `${res.cid}/${file}`
+      const output = await all(ipfs.ls(res.cid))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.have.property('path', path)
+      expect(output[0]).to.have.property('mode', input.mode)
+      expect(output[0]).to.have.deep.property('mtime', input.mtime)
+    })
+
+    it('should ls single file without containing directory', async () => {
+      const input = { content: randomName('D1') }
+
+      const res = await ipfs.add(input)
+      const output = await all(ipfs.ls(res.cid))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.have.property('path', res.cid.toString())
+    })
+
+    it('should ls single file without containing directory with metadata', async () => {
+      const input = {
+        content: randomName('D1'),
+        mode: 0o631,
+        mtime: {
+          secs: 5000,
+          nsecs: 100
+        }
+      }
+
+      const res = await ipfs.add(input)
+      const output = await all(ipfs.ls(res.cid))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.have.property('path', res.cid.toString())
+      expect(output[0]).to.have.property('mode', input.mode)
+      expect(output[0]).to.have.deep.property('mtime', input.mtime)
+    })
   })
 }

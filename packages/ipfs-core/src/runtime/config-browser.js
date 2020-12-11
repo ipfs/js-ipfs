@@ -4,6 +4,7 @@ module.exports = () => ({
   Addresses: {
     Swarm: [
     ],
+    Announce: [],
     API: '',
     Gateway: '',
     Delegates: [

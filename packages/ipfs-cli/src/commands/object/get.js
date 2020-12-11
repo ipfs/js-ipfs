@@ -4,6 +4,9 @@ const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const parseDuration = require('parse-duration').default
 const uint8ArrayToString = require('uint8arrays/to-string')
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'get <key>',
@@ -52,7 +55,7 @@ module.exports = {
       Size: node.Size,
       Links: node.Links.map((l) => {
         return {
-          Name: l.Name,
+          Name: stripControlCharacters(l.Name),
           Size: l.Tsize,
           Hash: cidToString(l.Hash, { base: cidBase, upgrade: false })
         }

@@ -2,10 +2,10 @@
   "name": "types-use-ipfs-from-typed-js",
   "private": true,
   "dependencies": {
-    "ipfs": "^0.52.0"
+    "ipfs": "^0.52.1"
   },
   "devDependencies": {
-    "typescript": "^4.0.3"
+    "typescript": "4.0.x"
   },
   "scripts": {
     "test": "tsc --noEmit"

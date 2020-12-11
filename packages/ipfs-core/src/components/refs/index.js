@@ -6,15 +6,28 @@ const { DAGNode } = require('ipld-dag-pb')
 const { normalizeCidPath } = require('../../utils')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const Format = {
   default: '<dst>',
   edges: '<src> -> <dst>'
 }
 
+/**
+ * @param {Object} config
+ * @param {import('..').IPLD} config.ipld
+ * @param {import('..').Resolve} config.resolve
+ * @param {import('..').Preload} config.preload
+ */
 module.exports = function ({ ipld, resolve, preload }) {
-  return withTimeoutOption(async function * refs (ipfsPath, options = {}) { // eslint-disable-line require-await
+  /**
+   * Get links (references) from an object
+   *
+   * @param {CID|string} ipfsPath - The object to search for references
+   * @param {RefsOptions & AbortOptions} [options]
+   * @returns {AsyncIterable<RefResult>}
+   */
+  async function * refs (ipfsPath, options = {}) {
     if (options.maxDepth === 0) {
       return
     }
@@ -29,13 +42,17 @@ module.exports = function ({ ipld, resolve, preload }) {
       options.maxDepth = options.recursive ? Infinity : 1
     }
 
+    /** @type {(string|CID)[]} */
     const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
+
     const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {
       yield * refsStream(resolve, ipld, path, options)
     }
-  })
+  }
+
+  return withTimeoutOption(refs)
 }
 
 module.exports.Format = Format
@@ -160,3 +177,17 @@ function getNodeLinks (node, path = '') {
   }
   return links
 }
+
+/**
+ * @typedef {Object} RefsOptions
+ * @property {boolean} [recursive=false] - Recursively list references of child nodes
+ * @property {boolean} [unique=false] - Omit duplicate references from output
+ * @property {string} [format='<dst>'] - Output edges with given format. Available tokens: `<src>`, `<dst>`, `<linkname>`
+ * @property {boolean} [edges=false] - output references in edge format: `"<src> -> <dst>"`
+ * @property {number} [maxDepth=1] - only for recursive refs, limits fetch and listing to the given depth
+ *
+ * @typedef {{ref:string, err?:null}|{ref?:undefined, err:Error}} RefResult
+ *
+ * @typedef {import('..').AbortOptions} AbortOptions
+ * @typedef {import('..').Repo} Repo
+ */

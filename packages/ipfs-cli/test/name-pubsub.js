@@ -117,5 +117,17 @@ describe('name pubsub', () => {
 
       expect(out).to.equal(`${subName}\n`)
     })
+
+    it('should strip control characters when listing subscriptions', async () => {
+      const junkSubname = `${subName}\n\b`
+
+      ipfs.name.pubsub.subs.withArgs(defaultOptions).resolves([
+        junkSubname
+      ])
+
+      const out = await cli('name pubsub subs', { ipfs })
+
+      expect(out).to.equal(`${subName}\n`)
+    })
   })
 })

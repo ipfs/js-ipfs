@@ -278,5 +278,20 @@ describe('name', () => {
       const out = await cli(`name publish ${name} --timeout=1s`, { ipfs })
       expect(out).to.equal(`Published to ${name}: ${value}\n`)
     })
+
+    it('should strip control characters when publishing names', async () => {
+      const name = 'name'
+      const junkName = `${name}\b`
+      const value = 'data'
+
+      ipfs.name.publish.withArgs(junkName, defaultOptions)
+        .resolves({
+          name: junkName,
+          value
+        })
+
+      const out = await cli(`name publish ${junkName}`, { ipfs })
+      expect(out).to.equal(`Published to ${name}: ${value}\n`)
+    })
   })
 })

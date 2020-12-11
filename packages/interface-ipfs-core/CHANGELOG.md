@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.142.2](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.142.1...interface-ipfs-core@0.142.2) (2020-11-25)
+
+**Note:** Version bump only for package interface-ipfs-core
+
+
+
+
+
+## [0.142.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.142.0...interface-ipfs-core@0.142.1) (2020-11-16)
+
+
+### Bug Fixes
+
+* align behaviour between go and js for content without paths ([#3385](https://github.com/ipfs/js-ipfs/issues/3385)) ([334873d](https://github.com/ipfs/js-ipfs/commit/334873d3784e2baa2b19f8f69b5aade36715ba03))
+* ensure correct progress is reported ([#3384](https://github.com/ipfs/js-ipfs/issues/3384)) ([633d870](https://github.com/ipfs/js-ipfs/commit/633d8704f74534542f54536bc6960528214339a2))
+* report ipfs.add progress over http ([#3310](https://github.com/ipfs/js-ipfs/issues/3310)) ([39cad4b](https://github.com/ipfs/js-ipfs/commit/39cad4b76b950ea6a76477fd01f8631b8bd9aa1e))
+
+
+
+
+
 # [0.142.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.141.0...interface-ipfs-core@0.142.0) (2020-11-09)
 
 

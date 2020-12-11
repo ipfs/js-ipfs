@@ -6,6 +6,9 @@ const toIterable = require('stream-to-it')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../utils')
 
 module.exports = {
   command: 'get <ipfsPath>',
@@ -18,19 +21,28 @@ module.exports = {
       type: 'string',
       default: process.cwd()
     },
+    force: {
+      alias: 'f',
+      type: 'boolean',
+      default: false
+    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, ipfsPath, output, timeout }) {
-    print(`Saving file(s) ${ipfsPath}`)
+  async handler ({ ctx: { ipfs, print }, ipfsPath, output, force, timeout }) {
+    print(`Saving file(s) ${stripControlCharacters(ipfsPath)}`)
 
     for await (const file of ipfs.get(ipfsPath, {
       timeout
     })) {
       const fullFilePath = path.join(output, file.path)
+
+      if (fullFilePath.substring(0, output.length) !== output && !force) {
+        throw new Error(`File prefix invalid, would write to files outside of ${output}, pass --force to override`)
+      }
 
       if (file.content) {
         await fs.promises.mkdir(path.join(output, path.dirname(file.path)), { recursive: true })

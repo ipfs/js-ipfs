@@ -1,0 +1,37 @@
+{
+  "name": "example-browser-service-worker",
+  "description": "IPFS with service worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "webpack",
+    "start": "webpack-dev-server",
+    "test": "test-ipfs-example"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.4",
+    "test-ipfs-example": "^2.0.3",
+    "webpack": "5.4.0",
+    "webpack-cli": "4.1.0",
+    "webpack-dev-server": "3.11.0"
+  },
+  "dependencies": {
+    "ipfs": "^0.51.0",
+    "ipfs-message-port-client": "^0.3.0",
+    "ipfs-message-port-protocol": "^0.3.0",
+    "ipfs-message-port-server": "^0.3.0",
+    "process": "0.11.10"
+  },
+  "browserslist": [
+    ">1%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

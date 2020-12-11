@@ -1,19 +1,19 @@
 'use strict'
 
 const { getPubsubRouting } = require('./utils')
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('../../../ipns')} config.ipns
- * @param {import('../../init').ConstructorOptions<any, any>} config.options
+ * @param {import('.').IPNS} config.ipns
+ * @param {import('.').Options} [config.options]
  */
-module.exports = ({ ipns, options: constructorOptions }) => {
+module.exports = ({ ipns, options: routingOptions }) => {
   /**
    * Cancel a name subscription.
    *
    * @param {string} name - The name of the subscription to cancel.
-   * @param {AbortOptions} [options]
+   * @param {import('.').AbortOptions} [options]
    * @returns {Promise<{ canceled: boolean }>}
    * @example
    * ```js
@@ -24,13 +24,9 @@ module.exports = ({ ipns, options: constructorOptions }) => {
    * ```
    */
   async function cancel (name, options) { // eslint-disable-line require-await
-    const pubsub = getPubsubRouting(ipns, constructorOptions)
+    const pubsub = getPubsubRouting(ipns, routingOptions)
     return pubsub.cancel(name, options)
   }
 
   return withTimeoutOption(cancel)
 }
-
-/**
- * @typedef {import('../../../utils').AbortOptions} AbortOptions
- */

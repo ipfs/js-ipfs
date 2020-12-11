@@ -159,7 +159,7 @@ The returned object contains the following keys:
 
 - `provideBufLen` is an integer.
 - `wantlist` (array of [CID][cid]s)
-- `peers` (array of peer IDs as Strings)
+- `peers` (array of peer IDs represented by CIDs)
 - `blocksReceived` is a [BigNumber Int][1]
 - `dataReceived` is a [BigNumber Int][1]
 - `blocksSent` is a [BigNumber Int][1]

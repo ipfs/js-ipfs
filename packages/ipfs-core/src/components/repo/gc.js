@@ -2,7 +2,8 @@
 
 const CID = require('cids')
 const log = require('debug')('ipfs:repo:gc')
-const { MFS_ROOT_KEY, withTimeoutOption } = require('../../utils')
+const { MFS_ROOT_KEY } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const { parallelMerge, transform, map } = require('streaming-iterables')
@@ -15,10 +16,10 @@ const BLOCK_RM_CONCURRENCY = 256
  * Perform mark and sweep garbage collection
  *
  * @param {Object} config
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').Pin} config.pin
- * @param {import('..').Refs} config.refs
- * @param {import('..').IPFSRepo} config.repo
+ * @param {import('.').GCLock} config.gcLock
+ * @param {import('.').Pin} config.pin
+ * @param {import('.').Refs} config.refs
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
   /**
@@ -35,6 +36,7 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
       // Mark all blocks that are being used
       const markedSet = await createMarkedSet({ pin, refs, repo })
       // Get all blocks keys from the blockstore
+      // @ts-ignore - TS is not aware of keysOnly overload
       const blockKeys = repo.blocks.query({ keysOnly: true })
 
       // Delete blocks that are not being used

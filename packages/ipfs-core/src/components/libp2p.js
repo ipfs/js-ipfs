@@ -7,13 +7,13 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 /**
  * @param {Object} config
- * @param {import('.').IPFSRepo} config.repo
- * @param {Object} [config.options]
- * @param {import('.').PeerId} [config.peerId]
- * @param {string[]} [config.multiaddrs]
- * @param {{pass?:string}} [config.keychainConfig]
- * @param {import('.').LibP2PConfig} [config.config]
- * @returns {import('.').LibP2PService}
+ * @param {Repo} config.repo
+ * @param {IPFSOptions|undefined} config.options
+ * @param {PeerId} config.peerId
+ * @param {Multiaddr[]|undefined} config.multiaddrs
+ * @param {KeychainConfig|undefined} config.keychainConfig
+ * @param {Partial<IPFSConfig>|undefined} config.config
+ * @returns {LibP2P}
  */
 module.exports = ({
   options = {},
@@ -45,6 +45,17 @@ module.exports = ({
   return new Libp2p(libp2pOptions)
 }
 
+/**
+ * @param {Object} input
+ * @param {IPFSOptions} input.options
+ * @param {Partial<IPFSConfig>} input.config
+ * @param {Repo['datastore']} input.datastore
+ * @param {Repo['keys']} input.keys
+ * @param {KeychainConfig} input.keychainConfig
+ * @param {PeerId} input.peerId
+ * @param {Multiaddr[]} input.multiaddrs
+ * @returns {Options}
+ */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
@@ -101,7 +112,9 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       }
     },
     addresses: {
-      listen: multiaddrs
+      listen: multiaddrs,
+      announce: get(options, 'addresses.announce',
+        get(config, 'Addresses.Announce', []))
     },
     connectionManager: get(options, 'connectionManager', {
       maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater',
@@ -141,3 +154,16 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 
   return libp2pConfig
 }
+
+/**
+ * @typedef {Object} KeychainConfig
+ * @property {string} [pass]
+ *
+ * @typedef {import('.').Repo} Repo
+ * @typedef {import('.').Multiaddr} Multiaddr
+ * @typedef {import('.').PeerId} PeerId
+ * @typedef {import('.').Options} IPFSOptions
+ * @typedef {import('libp2p')} LibP2P
+ * @typedef {import('libp2p').Options} Options
+ * @typedef {import('.').IPFSConfig} IPFSConfig
+ */

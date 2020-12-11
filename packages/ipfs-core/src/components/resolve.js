@@ -3,12 +3,12 @@
 const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const { withTimeoutOption } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld - An instance of IPLD
- * @param {import('.').Name} [config.name] - An IPFS core interface name API
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Name} config.name - An IPFS core interface name API
  */
 module.exports = ({ ipld, name }) => {
   /**
@@ -102,5 +102,5 @@ module.exports = ({ ipld, name }) => {
  * @property {boolean} [recursive=true] - Resolve until result is an IPFS name.
  * @property {string} [cidBase='base58btc'] - Multibase codec name the CID in the resolved path will be encoded with.
  *
- * @typedef {import('../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

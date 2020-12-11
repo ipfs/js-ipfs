@@ -1,11 +1,12 @@
 'use strict'
 
 const defaultConfig = require('../../runtime/config-nodejs.js')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const Multiaddr = require('multiaddr')
 
 /**
- * @param {import('..').IPFSRepo} repo
+ * @param {Object} config
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ repo }) => {
   /**
@@ -25,7 +26,7 @@ module.exports = ({ repo }) => {
     const config = await repo.config.getAll(options)
     config.Bootstrap = defaultConfig().Bootstrap
 
-    await repo.config.set(config)
+    await repo.config.replace(config)
 
     return {
       Peers: defaultConfig().Bootstrap.map(ma => new Multiaddr(ma))
@@ -36,8 +37,6 @@ module.exports = ({ repo }) => {
 }
 
 /**
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  * @typedef {import('./utils').Peers} Peers
- * @typedef {import('..').CID} CID
- * @typedef {import('..').Multiaddr} Multiaddr
  */

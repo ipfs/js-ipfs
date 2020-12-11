@@ -4,10 +4,20 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const multicodec = require('multicodec')
 const Unixfs = require('ipfs-unixfs')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {Object} config
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
+ */
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function _new (options = {}) {
+  /**
+   *
+   * @param {NewOptions & AbortOptions} options
+   * @returns {Promise<CID>}
+   */
+  async function _new (options = {}) {
     let data
 
     if (options.template) {
@@ -33,5 +43,19 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return cid
-  })
+  }
+
+  return withTimeoutOption(_new)
 }
+
+/**
+ * @typedef {Object} NewOptions
+ * @property {string} [template]
+ * @property {boolean} [recursive]
+ * @property {boolean} [nocache]
+ * @property {boolean} [preload]
+ * @property {string} [enc]
+ *
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
+ */

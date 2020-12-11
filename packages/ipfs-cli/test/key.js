@@ -80,6 +80,18 @@ describe('key', () => {
       const out = await cli(`key gen ${name} --timeout=1s`, { ipfs })
       expect(out).to.equal(`generated ${id} ${name}\n`)
     })
+
+    it('gen strips control characters', async () => {
+      const junkName = `${name}\b\b\b`
+
+      ipfs.key.gen.withArgs(junkName, defaultOptions).resolves({
+        id,
+        name: junkName
+      })
+
+      const out = await cli(`key gen ${junkName}`, { ipfs })
+      expect(out).to.equal(`generated ${id} ${name}\n`)
+    })
   })
 
   describe('list', () => {
@@ -107,6 +119,18 @@ describe('key', () => {
         name
       }])
       const out = await cli('key list --timeout=1s', { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
+    })
+
+    it('list strips control characters', async () => {
+      const junkName = `${name}\b\b\b`
+
+      ipfs.key.list.withArgs(defaultOptions).resolves([{
+        id,
+        name: junkName
+      }])
+
+      const out = await cli('key list', { ipfs })
       expect(out).to.equal(`${id} ${name}\n`)
     })
   })
@@ -139,6 +163,18 @@ describe('key', () => {
       const out = await cli(`key rename ${name} ${newName} --timeout=1s`, { ipfs })
       expect(out).to.equal(`renamed to ${id} ${newName}\n`)
     })
+
+    it('rename strips control characters', async () => {
+      const junkName = `${name}\b\b\b`
+
+      ipfs.key.rename.withArgs(name, junkName, defaultOptions).resolves({
+        id,
+        now: junkName
+      })
+
+      const out = await cli(`key rename ${name} ${junkName}`, { ipfs })
+      expect(out).to.equal(`renamed to ${id} ${name}\n`)
+    })
   })
 
   describe('rm', () => {
@@ -168,6 +204,18 @@ describe('key', () => {
       })
 
       const out = await cli(`key rm ${name} --timeout=1s`, { ipfs })
+      expect(out).to.equal(`${id} ${name}\n`)
+    })
+
+    it('remove strips control characters', async () => {
+      const junkName = `${name}\b\b\b`
+
+      ipfs.key.rm.withArgs(junkName, defaultOptions).resolves({
+        id,
+        name: junkName
+      })
+
+      const out = await cli(`key rm ${junkName}`, { ipfs })
       expect(out).to.equal(`${id} ${name}\n`)
     })
   })

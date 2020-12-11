@@ -3,7 +3,7 @@
 const toSources = require('./utils/to-sources')
 const cp = require('./cp')
 const rm = require('./rm')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 const defaultOptions = {
   parents: false,

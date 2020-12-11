@@ -1,6 +1,9 @@
 'use strict'
 
 const parseDuration = require('parse-duration').default
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'rename <name> <newName>',
@@ -18,6 +21,6 @@ module.exports = {
     const res = await ipfs.key.rename(name, newName, {
       timeout
     })
-    print(`renamed to ${res.id} ${res.now}`)
+    print(`renamed to ${res.id} ${stripControlCharacters(res.now)}`)
   }
 }

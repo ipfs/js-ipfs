@@ -16,10 +16,7 @@ const log = Object.assign(
 )
 
 /**
- * @param {Object} [options]
- * @param {boolean} [options.enabled = false] - Whether to preload anything
- * @param {string[]} [options.addresses = []] - Which preload servers to use
- * @param {number} [options.cache = 1000] - How many CIDs to cache
+ * @param {Options & AbortOptions} [options]
  */
 const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
@@ -111,3 +108,15 @@ const createPreloader = (options = {}) => {
 }
 
 module.exports = createPreloader
+
+/**
+ * @typedef {ReturnType<typeof createPreloader>} Preload
+ *
+ * @typedef {object} Options
+ * @property {boolean} [enabled = false] - Whether to preload anything
+ * @property {number} [cache = 1000] - How many CIDs to cache
+ * @property {string[]} [addresses = []] - Which preload servers to use.
+ * **NOTE:** nodes specified here should also be added to your node's bootstrap address list at `config.Boostrap`.
+ *
+ * @typedef {import('./components').AbortOptions} AbortOptions
+ */

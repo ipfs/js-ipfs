@@ -6,6 +6,7 @@ module.exports = () => ({
       '/ip4/0.0.0.0/tcp/4002',
       '/ip4/127.0.0.1/tcp/4003/ws'
     ],
+    Announce: [],
     API: '/ip4/127.0.0.1/tcp/5002',
     Gateway: '/ip4/127.0.0.1/tcp/9090',
     Delegates: [
@@ -37,7 +38,8 @@ module.exports = () => ({
     '/dns4/node3.preload.ipfs.io/tcp/443/wss/p2p/QmY7JB6MQXhxHvq7dBDh4HpbH29v4yE9JRadAVpndvzySN'
   ],
   Pubsub: {
-    Router: 'gossipsub',
+    /** @type {'gossipsub'} */
+    Router: ('gossipsub'),
     Enabled: true
   },
   Swarm: {

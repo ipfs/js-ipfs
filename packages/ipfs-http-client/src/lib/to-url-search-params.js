@@ -1,7 +1,7 @@
 'use strict'
 
 const modeToString = require('./mode-to-string')
-const mtimeToObject = require('./mtime-to-object')
+const { mtimeToObject } = require('ipfs-core-utils/src/files/normalise-input/utils')
 
 /**
  * @param {*} params

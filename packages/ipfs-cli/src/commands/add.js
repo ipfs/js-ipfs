@@ -9,7 +9,8 @@ const multibase = require('multibase')
 const {
   createProgressBar,
   coerceMtime,
-  coerceMtimeNsecs
+  coerceMtimeNsecs,
+  stripControlCharacters
 } = require('../utils')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
@@ -79,8 +80,7 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      describe: 'Use raw blocks for leaf nodes. (experimental)',
-      default: false
+      describe: 'Use raw blocks for leaf nodes. (experimental)'
     },
     'cid-version': {
       type: 'integer',
@@ -241,6 +241,10 @@ module.exports = {
       }
     }
 
+    if (options.rawLeaves == null) {
+      options.rawLeaves = cidVersion > 0
+    }
+
     const source = file
       ? globSource(file, {
         recursive,
@@ -259,28 +263,29 @@ module.exports = {
     let finalCid
 
     try {
-      for await (const added of ipfs.addAll(source, options)) {
+      for await (const { cid, path } of ipfs.addAll(source, options)) {
         if (silent) {
           continue
         }
 
         if (quieter) {
-          finalCid = added.cid
+          finalCid = cid
           continue
         }
 
-        const cid = cidToString(added.cid, { base: cidBase })
-        let message = cid
+        const pathStr = stripControlCharacters(path)
+        const cidStr = cidToString(cid, { base: cidBase })
+        let message = cidStr
 
         if (!quiet) {
           // print the hash twice if we are piping from stdin
-          message = `added ${cid} ${file ? added.path || '' : cid}`.trim()
+          message = `added ${cidStr} ${file ? pathStr || '' : cidStr}`.trim()
         }
 
         log(message)
       }
     } catch (err) {
-      // Tweak the error message and add more relevant infor for the CLI
+      // Tweak the error message and add more relevant info for the CLI
       if (err.code === 'ERR_DIR_NON_RECURSIVE') {
         err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
       }
