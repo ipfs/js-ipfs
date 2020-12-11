@@ -16,7 +16,8 @@ export interface API {
   /**
    * List registered remote pinning services.
    */
-  ls(options:ListOptions & AbortOptions):Promise<RemotePinService[]>
+  ls(options: { stat: true } & AbortOptions): Promise<RemotePinServiceWithStat[]>
+  ls(options?: AbortOptions):Promise<RemotePinService[]>
 }
 
 export interface Credentials {
@@ -41,20 +42,13 @@ export interface RemotePinService {
   endpoint: URL
 }
 
+export interface RemotePinServiceWithStat extends RemotePinService {
   /**
    * Pin count on the remote service. It is fetched from the remote service and
    * is done only if `pinCount` option is used. Furthermore it may not be
    * present if service was unreachable.
    */
-  stat?: Stat
-}
-
-export interface ListOptions {
-  /**
-   * If `true` will try to fetch and include current pin count on the remote
-   * service.
-   */
-  stat?: boolean
+  stat: Stat
 }
 
 export type Stat = ValidStat | InvalidStat

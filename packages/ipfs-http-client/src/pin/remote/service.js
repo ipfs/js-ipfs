@@ -9,8 +9,8 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
  * @typedef {import('interface-ipfs-core/type/basic').AbortOptions} AbortOptions
  * @typedef {import('interface-ipfs-core/type/pin/remote/service').API} API
  * @typedef {import('interface-ipfs-core/type/pin/remote/service').Credentials} Credentials
- * @typedef {import('interface-ipfs-core/type/pin/remote/service').ListOptions} ListOptions
  * @typedef {import('interface-ipfs-core/type/pin/remote/service').RemotePinService} RemotePinService
+ * @typedef {import('interface-ipfs-core/type/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
  * @implements {API}
  */
 class Service {
@@ -56,8 +56,9 @@ class Service {
   }
 
   /**
+   * @template {true} Stat
    * @param {Client} client
-   * @param {ListOptions & AbortOptions & HttpOptions} [options]
+   * @param {{ stat?: Stat } & AbortOptions & HttpOptions} [options]
    */
   static async ls (client, { stat, timeout, signal, headers } = {}) {
     const response = await client.post('pin/remote/service/ls', {
@@ -68,24 +69,26 @@ class Service {
     })
     /** @type {{RemoteServices: Object[]}} */
     const { RemoteServices } = await response.json()
-    return RemoteServices.map(Service.decodeRemoteService)
+
+    /** @type {Stat extends true ? RemotePinServiceWithStat[] : RemotePinService []} */
+    return (RemoteServices.map(Service.decodeRemoteService))
   }
 
   /**
    * @param {Object} json
-   * @returns {import('interface-ipfs-core/type/pin/remote/service').RemotePinService}
+   * @returns {RemotePinServiceWithStat}
    */
   static decodeRemoteService (json) {
     return {
       service: json.Service,
       endpoint: new URL(json.ApiEndpoint),
-      stat: Service.decodeStat(json.stat)
+      stat: json.stat && Service.decodeStat(json.stat)
     }
   }
 
   /**
    * @param {Object} json
-   * @returns {import('interface-ipfs-core/type/pin/remote/service').Stat|undefined}
+   * @returns {import('interface-ipfs-core/type/pin/remote/service').Stat}
    */
   static decodeStat (json) {
     switch (json.Status) {
@@ -98,8 +101,9 @@ class Service {
       case 'invalid': {
         return { status: 'invalid' }
       }
-      default:
-        return undefined
+      default: {
+        return { status: json.Status }
+      }
     }
   }
 
@@ -128,7 +132,7 @@ class Service {
   /**
    * List registered remote pinning services.
    *
-   * @param {ListOptions & AbortOptions & HttpOptions} [options]
+   * @param {{ stat?: true } & AbortOptions & HttpOptions} [options]
    */
   ls (options) {
     return Service.ls(this.client, options)
