@@ -401,11 +401,14 @@ exports.ls = {
 
     const mapLink = link => {
       const output = {
-        Name: link.name,
         Hash: cidToString(link.cid, { base: cidBase }),
         Size: link.size,
         Type: toTypeCode(link.type),
         Depth: link.depth
+      }
+
+      if (link.name) {
+        output.Name = link.name
       }
 
       if (link.mode != null) {
