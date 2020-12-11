@@ -36,10 +36,11 @@ module.exports = ({ formats = [], loadFormat = noop } = {}) => {
   /**
    * Attempts to load an IPLD format for the passed CID
    *
-   * @param {string} codec - The code to load the format for
+   * @param {import('multicodec').CodecName} codec - The code to load the format for
    * @returns {Promise<object>} - An IPLD format
    */
   const loadResolver = async (codec) => {
+    // @ts-ignore - codec is a string and not a CodecName
     const number = multicodec.getNumber(codec)
     const format = configuredFormats[number] || await loadFormat(codec)
 
