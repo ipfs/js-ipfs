@@ -105,11 +105,10 @@ class Remote {
    * @param {Query & { all?: boolean }} query
    * @returns {URLSearchParams}
    */
-  static encodeQuery ({ service, cid, name, match, status, all }) {
+  static encodeQuery ({ service, cid, name, status, all }) {
     return toUrlSearchParams({
       service,
       name,
-      match,
       status,
       force: all ? true : undefined,
       cid: cid && cid.map(String)
