@@ -218,5 +218,18 @@ module.exports = (common, options) => {
       expect(output).to.have.lengthOf(1)
       expect(output[0]).to.have.property('path', `${path}/${subfile}`)
     })
+
+    it('should ls single file', async () => {
+      const file = randomName('F0')
+
+      const input = { path: file, content: randomName('D1') }
+
+      const res = await ipfs.add(input, { wrapWithDirectory: true })
+      const path = `${res.cid}/${file}`
+      const output = await all(ipfs.ls(path))
+
+      expect(output).to.have.lengthOf(1)
+      expect(output[0]).to.have.property('path', path)
+    })
   })
 }
