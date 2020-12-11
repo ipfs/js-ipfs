@@ -4,7 +4,6 @@
     "outDir": "dist"
   },
   "include": [
-    "src",
     "type",
     "package.json",
   ]
