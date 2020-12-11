@@ -34,7 +34,8 @@ module.exports = function ({ ipld, preload }) {
     }
 
     if (file.unixfs.type === 'file') {
-      return mapFile(file, options)
+      yield mapFile(file, options)
+      return
     }
 
     if (file.unixfs.type.includes('dir')) {
