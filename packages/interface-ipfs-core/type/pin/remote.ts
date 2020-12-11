@@ -69,12 +69,6 @@ export interface Query extends RemoteServiceOptions {
   name?: string
 
   /**
-   * Customize the text matching strategy applied when name filter is present.
-   * Uses "exact" if omitted.
-   */
-  match?: TextMatchingStrategy
-
-  /**
    * Return pin objects for pins that have one of the specified status values.
    * If omitted treated as ["pinned"]
    */
@@ -94,11 +88,6 @@ export interface Pin {
   name?: string
 }
 
-export type TextMatchingStrategy =
-  | 'exact'
-  | 'iexact'
-  | 'partial'
-  | 'ipartial'
 export type Status =
   | 'queued'
   | 'pinning'
