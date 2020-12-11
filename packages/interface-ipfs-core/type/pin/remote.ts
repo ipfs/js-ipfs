@@ -10,7 +10,7 @@ export interface API {
   service: Service
 
   /**
-   * Stores an IPFS object(s) from a given path to a remote pinning service.
+   * Pin a content with a given CID to a remote pinning service.
    */
   add(cid:CID, options:AddOptions & AbortOptions):Promise<Pin>
 
@@ -47,7 +47,7 @@ export interface AddOptions extends RemoteServiceOptions {
 
   /**
    * If true, will add to the queue on the remote service and return
-   * RequestID immediately. If false or amitted will wait until pinned on the
+   * immediately. If false or omitted will wait until pinned on the
    * remote service.
    */
   background?: boolean
