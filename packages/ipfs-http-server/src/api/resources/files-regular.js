@@ -423,6 +423,20 @@ exports.ls = {
       return output
     }
 
+    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`)
+
+    if (stat.type === 'file') {
+      // return single object with metadata
+      return h.response({
+        Objects: [{
+          ...mapLink(stat),
+          Hash: path,
+          Depth: 1,
+          Links: []
+        }]
+      })
+    }
+
     if (!stream) {
       try {
         const links = await all(ipfs.ls(path, {

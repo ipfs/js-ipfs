@@ -3,14 +3,54 @@
 const CID = require('cids')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
+const stat = require('./files/stat')
 
-module.exports = configure(api => {
+module.exports = configure((api, opts) => {
   return async function * ls (path, options = {}) {
+    const pathStr = `${path instanceof Uint8Array ? new CID(path) : path}`
+
+    async function mapLink (link) {
+      let hash = link.Hash
+
+      if (hash.includes('/')) {
+        // the hash is a path, but we need the CID
+        const ipfsPath = hash.startsWith('/ipfs/') ? hash : `/ipfs/${hash}`
+        const stats = await stat(opts)(ipfsPath)
+
+        hash = stats.cid
+      }
+
+      const entry = {
+        name: link.Name,
+        path: pathStr + (link.Name ? `/${link.Name}` : ''),
+        size: link.Size,
+        cid: new CID(hash),
+        type: typeOf(link),
+        depth: link.Depth || 1
+      }
+
+      if (link.Mode) {
+        entry.mode = parseInt(link.Mode, 8)
+      }
+
+      if (link.Mtime !== undefined && link.Mtime !== null) {
+        entry.mtime = {
+          secs: link.Mtime
+        }
+
+        if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {
+          entry.mtime.nsecs = link.MtimeNsecs
+        }
+      }
+
+      return entry
+    }
+
     const res = await api.post('ls', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${path instanceof Uint8Array ? new CID(path) : path}`,
+        arg: pathStr,
         ...options
       }),
       headers: options.headers
@@ -28,37 +68,19 @@ module.exports = configure(api => {
         throw new Error('expected one array in results.Objects')
       }
 
-      result = result.Links
-      if (!Array.isArray(result)) {
+      const links = result.Links
+      if (!Array.isArray(links)) {
         throw new Error('expected one array in results.Objects[0].Links')
       }
 
-      for (const link of result) {
-        const entry = {
-          name: link.Name,
-          path: path + '/' + link.Name,
-          size: link.Size,
-          cid: new CID(link.Hash),
-          type: typeOf(link),
-          depth: link.Depth || 1
-        }
+      if (!links.length) {
+        // no links, this is a file, yield a single result
+        yield mapLink(result)
 
-        if (link.Mode) {
-          entry.mode = parseInt(link.Mode, 8)
-        }
-
-        if (link.Mtime !== undefined && link.Mtime !== null) {
-          entry.mtime = {
-            secs: link.Mtime
-          }
-
-          if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {
-            entry.mtime.nsecs = link.MtimeNsecs
-          }
-        }
-
-        yield entry
+        return
       }
+
+      yield * links.map(mapLink)
     }
   }
 })
