@@ -220,11 +220,12 @@ module.exports = (common, options) => {
     })
 
     it('should ls single file', async () => {
+      const dir = randomName('DIR')
       const file = randomName('F0')
 
-      const input = { path: file, content: randomName('D1') }
+      const input = { path: `${dir}/${file}`, content: randomName('D1') }
 
-      const res = await ipfs.add(input, { wrapWithDirectory: true })
+      const res = await ipfs.add(input)
       const path = `${res.cid}/${file}`
       const output = await all(ipfs.ls(path))
 
