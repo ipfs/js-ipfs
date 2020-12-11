@@ -42,7 +42,7 @@
     "dep-check": "aegir dep-check -i typescript -i rimraf"
   },
   "dependencies": {
-    "cids": "git://github.com/multiformats/js-cid#multicodec-210",
+    "cids": "^1.0.0",
     "ipld-block": "^0.11.0"
   },
   "devDependencies": {

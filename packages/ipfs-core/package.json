@@ -57,7 +57,7 @@
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
     "cbor": "^5.1.0",
-    "cids": "git://github.com/multiformats/js-cid#multicodec-210",
+    "cids": "^1.0.0",
     "class-is": "^1.1.0",
     "dag-cbor-links": "^2.0.0",
     "datastore-core": "^2.0.0",
