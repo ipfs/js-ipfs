@@ -54,7 +54,7 @@ module.exports = Storage
  *
  * @param {Repo} repo
  * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined, isNew:boolean }>}
+ * @returns {Promise<{peerId: PeerId, keychain?: Keychain, isNew:boolean }>}
  */
 const loadRepo = async (repo, options) => {
   const openError = await openRepo(repo)
@@ -98,7 +98,7 @@ const openRepo = async (repo) => {
 /**
  * @param {Repo} repo
  * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined}>}
+ * @returns {Promise<{peerId: PeerId, keychain?: Keychain}>}
  */
 const initRepo = async (repo, options) => {
   // 1. Verify that repo does not exist yet (if it does and we could not
@@ -199,7 +199,7 @@ const peerIdToIdentity = (peerId) => ({
  *
  * @param {Repo} repo
  * @param {ConfigureOptions} options
- * @returns {Promise<{peerId: PeerId, keychain: Keychain | undefined}>}
+ * @returns {Promise<{peerId: PeerId, keychain?: Keychain}>}
  */
 const configureRepo = async (repo, { config, profiles, pass }) => {
   const original = await repo.config.getAll()

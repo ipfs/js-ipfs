@@ -88,7 +88,7 @@
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
     "it-pipe": "^1.1.0",
-    "libp2p": "libp2p/js-libp2p#fix/types-with-dist",
+    "libp2p": "libp2p/js-libp2p#fix/types",
     "libp2p-bootstrap": "^0.12.1",
     "libp2p-crypto": "^0.18.0",
     "libp2p-floodsub": "^0.24.0",
