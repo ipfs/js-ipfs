@@ -21,9 +21,9 @@ export interface API {
 
 export interface Credentials {
   /**
-   * Service URL
+   * Service endpoint
    */
-  url: URL
+  endpoint: URL
   /**
    * Service key
    */
@@ -36,9 +36,11 @@ export interface RemotePinService {
    */
   service: string
   /**
-   * Service URL
+   * Service endpoint URL
    */
-  url: URL
+  endpoint: URL
+}
+
   /**
    * Pin count on the remote service. It is fetched from the remote service and
    * is done only if `pinCount` option is used. Furthermore it may not be

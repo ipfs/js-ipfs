@@ -28,12 +28,12 @@ class Service {
    * @param {Credentials & AbortOptions & HttpOptions} options
    */
   static async add (client, name, options) {
-    const { url, key, headers, timeout, signal } = options
+    const { endpoint, key, headers, timeout, signal } = options
     await client.post('pin/remote/servire/rm', {
       timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: [name, url, key]
+        arg: [name, endpoint, key]
       }),
       headers
     })
@@ -78,7 +78,7 @@ class Service {
   static decodeRemoteService (json) {
     return {
       service: json.Service,
-      url: new URL(json.ApiEndpoint),
+      endpoint: new URL(json.ApiEndpoint),
       stat: Service.decodeStat(json.stat)
     }
   }
