@@ -29,14 +29,27 @@ class Service {
    */
   static async add (client, name, options) {
     const { endpoint, key, headers, timeout, signal } = options
-    await client.post('pin/remote/servire/rm', {
+    await client.post('pin/remote/service/add', {
       timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: [name, endpoint, key]
+        arg: [name, Service.encodeEndpoint(endpoint), key]
       }),
       headers
     })
+  }
+
+  /**
+   * @param {URL} url
+   */
+  static encodeEndpoint (url) {
+    const href = String(url)
+    if (href === 'undefined') {
+      throw Error('endpoint is required')
+    }
+    // Workaround trailing `/` issue in go-ipfs
+    // @see https://github.com/ipfs/go-ipfs/issues/7826
+    return href[href.length - 1] === '/' ? href.slice(0, -1) : href
   }
 
   /**
@@ -45,7 +58,7 @@ class Service {
    * @param {AbortOptions & HttpOptions} [options]
    */
   static async rm (client, name, { timeout, signal, headers } = {}) {
-    await client.post('pin/remote/add', {
+    await client.post('pin/remote/service/rm', {
       timeout,
       signal,
       headers,
@@ -67,6 +80,7 @@ class Service {
       signal,
       headers
     })
+
     /** @type {{RemoteServices: Object[]}} */
     const { RemoteServices } = await response.json()
 
@@ -82,7 +96,7 @@ class Service {
     return {
       service: json.Service,
       endpoint: new URL(json.ApiEndpoint),
-      stat: json.stat && Service.decodeStat(json.stat)
+      ...(json.Stat && { stat: Service.decodeStat(json.Stat) })
     }
   }
 
@@ -93,9 +107,15 @@ class Service {
   static decodeStat (json) {
     switch (json.Status) {
       case 'valid': {
+        const { Pinning, Pinned, Queued, Failed } = json.PinCount
         return {
           status: 'valid',
-          pinCount: json.PinCount
+          pinCount: {
+            queued: Queued,
+            pinning: Pinning,
+            pinned: Pinned,
+            failed: Failed
+          }
         }
       }
       case 'invalid': {

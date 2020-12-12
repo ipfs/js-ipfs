@@ -41,6 +41,11 @@ const clearPins = async (ipfs) => {
   await drain(ipfs.pin.rmAll(map(ipfs.pin.ls({ type: pinTypes.direct }), ({ cid }) => cid)))
 }
 
+const clearServices = async (ipfs) => {
+  const services = await ipfs.pin.remote.service.ls()
+  await Promise.all(services.map(({ service }) => ipfs.pin.remote.service.rm(service)))
+}
+
 const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
   if (typeof type === 'boolean') {
     pinned = type
@@ -69,6 +74,7 @@ async function isPinnedWithType (ipfs, cid, type) {
 module.exports = {
   fixtures,
   clearPins,
+  clearServices,
   expectPinned,
   expectNotPinned,
   isPinnedWithType,
