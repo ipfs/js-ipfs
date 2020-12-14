@@ -1,14 +1,12 @@
 'use strict'
 
-const IPFS = require('ipfs-core')
+module.exports = require('ipfs-core')
 
 /**
  * Export IPFS instance type
  *
- * This will overlap onto the default export
+ * This will result in `export default …`
  * in the generated `d.ts` file
- *
- * @typedef {import('ipfs-core').default} IPFS
  */
-
-module.exports = IPFS
+// @ts-ignore duplicate identifier
+/** @typedef {import('ipfs-core').default} default */
