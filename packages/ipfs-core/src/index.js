@@ -13,6 +13,10 @@ const multihash = multihashing.multihash
 const CID = require('cids')
 const IPFS = require('./components')
 
+/**
+ * @typedef {import('./components')} default
+ */
+
 module.exports = {
   create: IPFS.create,
   crypto,
