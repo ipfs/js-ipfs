@@ -9,4 +9,4 @@ module.exports = require('ipfs-core')
  * in the generated `d.ts` file
  */
 // @ts-ignore duplicate identifier
-/** @typedef {import('ipfs-core').default} default */
+/** @typedef {import('ipfs-core/src/components')} default */
