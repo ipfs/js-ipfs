@@ -126,8 +126,7 @@ module.exports = (common, options) => {
         ]
       }
 
-      const configA = getConfig(addresses)
-      const configB = getConfig(isBrowser && common.opts.type !== 'go' ? [
+      const config = getConfig(isBrowser && common.opts.type !== 'go' ? [
         '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
         '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
       ] : [
@@ -135,11 +134,11 @@ module.exports = (common, options) => {
         '/ip4/127.0.0.1/tcp/26546/ws'
       ])
 
-      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions: { config: configA, ...ipfsOptions } })).api
+      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       const nodeB = (await common.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
-          config: configB
+          config
         }
       })).api
 
