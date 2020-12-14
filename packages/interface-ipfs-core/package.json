@@ -55,6 +55,7 @@
     "it-map": "^1.0.4",
     "it-pushable": "^1.4.0",
     "libp2p-crypto": "^0.18.0",
+    "libp2p-websockets": "^0.15.0",
     "multiaddr": "^8.0.0",
     "multibase": "^3.0.0",
     "multihashing-async": "^2.0.1",

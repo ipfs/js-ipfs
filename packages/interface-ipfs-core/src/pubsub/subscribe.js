@@ -11,6 +11,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const AbortController = require('native-abort-controller')
 const { isWebWorker, isNode } = require('ipfs-utils/src/env')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -18,6 +19,7 @@ const { isWebWorker, isNode } = require('ipfs-utils/src/env')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -30,7 +32,7 @@ module.exports = (common, options) => {
     let subscribedTopics = []
 
     before(async () => {
-      ipfs1 = (await common.spawn()).api
+      ipfs1 = (await common.spawn({ type: 'proc', ipfsOptions })).api
       // TODO 'multiple connected nodes' tests fails with go in Firefox
       // and JS is flaky everywhere
 

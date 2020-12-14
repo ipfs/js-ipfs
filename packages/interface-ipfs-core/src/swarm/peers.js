@@ -7,6 +7,7 @@ const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -14,6 +15,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -24,7 +26,7 @@ module.exports = (common, options) => {
     let ipfsB
 
     before(async () => {
-      ipfsA = (await common.spawn()).api
+      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
       /* TODO: Seen if we still need this after this is fixed
@@ -94,7 +96,7 @@ module.exports = (common, options) => {
     }
 
     it('should list peers only once', async () => {
-      const nodeA = (await common.spawn()).api
+      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       const nodeB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await nodeA.swarm.connect(nodeB.peerId.addresses[0])
       await delay(1000)
@@ -133,7 +135,7 @@ module.exports = (common, options) => {
         '/ip4/127.0.0.1/tcp/26546/ws'
       ])
 
-      const nodeA = (await common.spawn({ ipfsOptions: { config: configA } })).api
+      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions: { config: configA, ...ipfsOptions } })).api
       const nodeB = (await common.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
