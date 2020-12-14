@@ -14,6 +14,11 @@ const CID = require('cids')
 const { create } = require('./components')
 
 /**
+ * Export IPFS instance type
+ *
+ * This will result in `export default import("./components")`
+ * in the generated `d.ts` file
+ *
  * @typedef {import('./components')} default
  */
 
