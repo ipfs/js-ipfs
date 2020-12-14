@@ -11,14 +11,14 @@ const multicodec = require('multicodec')
 const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash
 const CID = require('cids')
-const IPFS = require('./components')
+const { create } = require('./components')
 
 /**
  * @typedef {import('./components')} default
  */
 
 module.exports = {
-  create: IPFS.create,
+  create,
   crypto,
   isIPFS,
   CID,
