@@ -59,6 +59,18 @@ const clearRemotePins = async (ipfs) => {
   }
 }
 
+const addRemotePins = async (ipfs, service, pins) => {
+  const requests = []
+  for (const [name, cid] of Object.entries(pins)) {
+    requests.push(ipfs.pin.remote.add(cid, {
+      name,
+      service,
+      background: true
+    }))
+  }
+  await Promise.all(requests)
+}
+
 const clearServices = async (ipfs) => {
   const services = await ipfs.pin.remote.service.ls()
   await Promise.all(services.map(({ service }) => ipfs.pin.remote.service.rm(service)))
@@ -94,6 +106,7 @@ module.exports = {
   clearPins,
   clearServices,
   clearRemotePins,
+  addRemotePins,
   expectPinned,
   expectNotPinned,
   isPinnedWithType,

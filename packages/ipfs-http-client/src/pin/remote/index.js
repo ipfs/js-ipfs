@@ -13,6 +13,7 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
  * @typedef {import('interface-ipfs-core/types/pin/remote').Pin} Pin
  * @typedef {import('interface-ipfs-core/types/pin/remote').AddOptions} AddOptions
  * @typedef {import('interface-ipfs-core/types/pin/remote').Query} Query
+ * @typedef {import('interface-ipfs-core/types/pin/remote').Status} Status
  *
  * @implements {API}
  */
@@ -46,24 +47,16 @@ class Remote {
   static async add (client, cid, { timeout, signal, headers, ...options }) {
     const { name, origins, background, service } = options
 
-    if (!CID.isCID(cid)) {
-      throw new TypeError(`CID instance expected instead of ${cid}`)
-    }
-
-    if (typeof service !== 'string') {
-      throw new TypeError('service name must be passed')
-    }
-
     const response = await client.post('pin/remote/add', {
       timeout,
       signal,
       headers,
       searchParams: toUrlSearchParams({
-        arg: cid.toString(),
-        service,
+        arg: encodeCID(cid),
+        service: encodeService(service),
         name,
         origins,
-        background
+        background: background ? true : undefined
       })
     })
 
@@ -72,6 +65,9 @@ class Remote {
 
   /**
    * @param {Object} json
+   * @param {string} json.Name
+   * @param {string} json.Cid
+   * @param {Status} json.Status
    * @returns {Pin}
    */
   static decodePin ({ Name: name, Status: status, Cid: cid }) {
@@ -116,11 +112,11 @@ class Remote {
    */
   static encodeQuery ({ service, cid, name, status, all }) {
     return toUrlSearchParams({
-      service,
+      service: encodeService(service),
       name,
       status,
       force: all ? true : undefined,
-      cid: cid && cid.map(String)
+      cid: cid && cid.map(encodeCID)
     })
   }
 
@@ -157,6 +153,30 @@ class Remote {
       headers,
       searchParams: Remote.encodeQuery(query)
     })
+  }
+}
+
+/**
+ * @param {any} service
+ * @returns {string}
+ */
+const encodeService = (service) => {
+  if (typeof service === 'string' && service !== '') {
+    return service
+  } else {
+    throw new TypeError('service name must be passed')
+  }
+}
+
+/**
+ * @param {any} cid
+ * @returns {string}
+ */
+const encodeCID = (cid) => {
+  if (CID.isCID(cid)) {
+    return cid.toString()
+  } else {
+    throw new TypeError(`CID instance expected instead of ${cid}`)
   }
 }
 
