@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "ipfs-cli": "^0.2.2",
+    "ipfs-daemon": "^0.3.1",
     "ipfs-core": "^0.3.0",
     "ipfs-http-client": "^48.1.2",
     "multicodec": "^2.0.1",

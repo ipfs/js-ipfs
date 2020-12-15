@@ -13,7 +13,7 @@ table.baseTable = {
 }
 
 // now require modules as usual
-const IPFSDaemon = require('ipfs-cli/src/daemon')
+const IPFSDaemon = require('ipfs-daemon')
 const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash
 const multicodec = require('multicodec')
