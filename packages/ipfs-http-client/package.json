@@ -52,7 +52,7 @@
   "dependencies": {
     "any-signal": "^2.0.0",
     "bignumber.js": "^9.0.0",
-    "cids": "1.0.2",
+    "cids": "1.1.4",
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.5.3",

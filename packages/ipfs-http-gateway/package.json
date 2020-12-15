@@ -32,7 +32,7 @@
     "@hapi/ammo": "^5.0.1",
     "@hapi/boom": "^9.1.0",
     "@hapi/hapi": "^20.0.0",
-    "cids": "1.0.2",
+    "cids": "1.1.4",
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
     "ipfs-core-utils": "^0.5.3",

@@ -34,7 +34,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
-    "cids": "1.0.2",
+    "cids": "1.1.4",
     "delay": "^4.4.0",
     "dirty-chai": "^2.0.1",
     "err-code": "^2.0.3",
