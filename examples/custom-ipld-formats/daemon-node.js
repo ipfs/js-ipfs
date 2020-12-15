@@ -5,7 +5,7 @@
 const codecName = 'dag-test'
 const codecNumber = 392091
 
-const baseTable = require('multicodec/src/base-table.json')
+const { baseTable } = require('multicodec/src/base-table')
 baseTable[codecName] = codecNumber
 
 // now require modules as usual
