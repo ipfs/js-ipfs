@@ -85,7 +85,7 @@ export interface RemoteServiceOptions {
 export interface Pin {
   status: Status
   cid: CID
-  name?: string
+  name: string
 }
 
 export type Status =

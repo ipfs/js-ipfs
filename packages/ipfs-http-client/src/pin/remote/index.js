@@ -45,6 +45,15 @@ class Remote {
    */
   static async add (client, cid, { timeout, signal, headers, ...options }) {
     const { name, origins, background, service } = options
+
+    if (!CID.isCID(cid)) {
+      throw new TypeError(`CID instance expected instead of ${cid}`)
+    }
+
+    if (typeof service !== 'string') {
+      throw new TypeError('service name must be passed')
+    }
+
     const response = await client.post('pin/remote/add', {
       timeout,
       signal,

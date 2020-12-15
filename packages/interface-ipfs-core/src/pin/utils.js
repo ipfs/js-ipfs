@@ -41,6 +41,24 @@ const clearPins = async (ipfs) => {
   await drain(ipfs.pin.rmAll(map(ipfs.pin.ls({ type: pinTypes.direct }), ({ cid }) => cid)))
 }
 
+const clearRemotePins = async (ipfs) => {
+  for (const { service } of await ipfs.pin.remote.service.ls()) {
+    const cids = []
+    const status = ['queued', 'pinning', 'pinned', 'failed']
+    for await (const pin of ipfs.pin.remote.ls({ status, service })) {
+      cids.push(pin.cid)
+    }
+
+    if (cids.length > 0) {
+      await ipfs.pin.remote.rmAll({
+        cid: cids,
+        status,
+        service
+      })
+    }
+  }
+}
+
 const clearServices = async (ipfs) => {
   const services = await ipfs.pin.remote.service.ls()
   await Promise.all(services.map(({ service }) => ipfs.pin.remote.service.rm(service)))
@@ -75,6 +93,7 @@ module.exports = {
   fixtures,
   clearPins,
   clearServices,
+  clearRemotePins,
   expectPinned,
   expectNotPinned,
   isPinnedWithType,
