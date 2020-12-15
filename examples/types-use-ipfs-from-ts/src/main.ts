@@ -1,7 +1,8 @@
-import IPFS from 'ipfs'
+import { IPFS, create } from 'ipfs'
+import CID from 'cids'
 
-export default async function main () {
-  const node = await IPFS.create()
+export default async function main() {
+  const node = await create()
   const version = await node.version()
 
   console.log('Version:', version.version)
@@ -13,16 +14,23 @@ export default async function main () {
 
   console.log('Added file:', file.path, file.cid.toString())
   try {
+    // @ts-expect-error CID has no toUpperCase method
     file.cid.toUpperCase()
-  } catch(error) {
+  } catch (error) {
 
   }
 
-  const decoder = new TextDecoder()
-  let content = ''
-  for await (const chunk of node.cat(file.cid)) {
-    content += decoder.decode(chunk)  
-  }
+  const content = await readFile(node, file.cid)
 
   console.log('Added file contents:', content)
+}
+
+const readFile = async (ipfs: IPFS, cid: CID): Promise<string> => {
+  const decoder = new TextDecoder()
+  let content = ''
+  for await (const chunk of ipfs.cat(cid)) {
+    content += decoder.decode(chunk)
+  }
+
+  return content
 }
