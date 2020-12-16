@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * @param {import('ipfs-interface/src/files').MTime} mtime
+ * @param {import('ipfs-core-types/src/files').MTime} mtime
  * @returns {string}
  */
 function formatMtime (mtime) {

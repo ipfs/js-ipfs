@@ -16,9 +16,9 @@ module.exports = function ({ ipld, preload }) {
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path.
    *
-   * @param {import('ipfs-interface/src/root').IPFSPath} ipfsPath
-   * @param {import('ipfs-interface/src/root').ListOptions} [options]
-   * @returns {AsyncIterable<import('ipfs-interface/src/files').IPFSEntry>}
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').ListOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').IPFSEntry>}
    */
   async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)

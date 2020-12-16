@@ -22,7 +22,7 @@ function isBlob (obj) {
  * An object with a path or content property
  *
  * @param {any} obj
- * @returns {obj is import('ipfs-interface/src/files').ToEntry}
+ * @returns {obj is import('ipfs-core-types/src/files').ToEntry}
  */
 function isFileObject (obj) {
   return typeof obj === 'object' && (obj.path || obj.content)

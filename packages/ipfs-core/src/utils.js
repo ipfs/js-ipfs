@@ -97,10 +97,10 @@ const resolvePath = async function (dag, ipfsPath, options = {}) {
 }
 
 /**
- * @typedef {import('ipfs-interface/src/files').InputFile} InputFile
- * @typedef {import('ipfs-interface/src/files').UnixFSFile} UnixFSFile
- * @typedef {import('ipfs-interface/src/files').IPFSEntry} IPFSEntry
- * @typedef {import('ipfs-interface').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/files').InputFile} InputFile
+ * @typedef {import('ipfs-core-types/src/files').UnixFSFile} UnixFSFile
+ * @typedef {import('ipfs-core-types/src/files').IPFSEntry} IPFSEntry
+ * @typedef {import('ipfs-core-types/src').AbortOptions} AbortOptions
  *
  * @param {InputFile|UnixFSFile} file
  * @param {Object} [options]

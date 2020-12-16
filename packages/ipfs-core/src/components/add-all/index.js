@@ -13,7 +13,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
  * @property {import('..').GCLock} gcLock
  * @property {import('..').Preload} preload
  * @property {import('..').Pin} pin
- * @property {import('ipfs-interface/src/root').ShardingOptions} [options]
+ * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
  *
  * @param {Context} context
  */
@@ -23,9 +23,9 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
   /**
    * Import multiple files and data into IPFS.
    *
-   * @param {import('ipfs-interface/src/files').ImportSource} source
-   * @param {import('ipfs-interface/src/root').AddAllOptions} [options]
-   * @returns {AsyncIterable<import('ipfs-interface/src/files').UnixFSEntry>}
+   * @param {import('ipfs-core-types/src/files').ImportSource} source
+   * @param {import('ipfs-core-types/src/root').AddAllOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').UnixFSEntry>}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({

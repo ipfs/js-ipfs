@@ -16,13 +16,13 @@ const {
 // eslint-disable-next-line complexity
 
 /**
- * @typedef {import('ipfs-interface/src/files').ToContent} ToContent
+ * @typedef {import('ipfs-core-types/src/files').ToContent} ToContent
  */
 /**
  * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {import('ipfs-interface/src/files').ImportSource} input
+ * @param {import('ipfs-core-types/src/files').ImportSource} input
  * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {AsyncIterable<import('ipfs-interface/src/files').Entry<Content>>}
+ * @returns {AsyncIterable<import('ipfs-core-types/src/files').Entry<Content>>}
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
@@ -103,9 +103,9 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 
 /**
  * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {import('ipfs-interface/src/files').ToEntry} input
+ * @param {import('ipfs-core-types/src/files').ToEntry} input
  * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {Promise<import('ipfs-interface/src/files').Entry<Content>>}
+ * @returns {Promise<import('ipfs-core-types/src/files').Entry<Content>>}
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types

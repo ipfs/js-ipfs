@@ -1,4 +1,4 @@
-# ipfs-interface <!-- omit in toc -->
+# ipfs-core-types <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
@@ -33,18 +33,18 @@ It offers set of typescript interface definitions that implementations can claim
 In JavaScript land:
 
 ```console
-$ npm install ipfs-interface
+$ npm install ipfs-core-types
 ```
 
 ## Usage
 
-Install `ipfs-interface` as one of the dependencies of your project and use it to ensure your implementations API compatibility:
+Install `ipfs-core-types` as one of the dependencies of your project and use it to ensure your implementations API compatibility:
 
 ### In [JSDoc syntax](https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html)
 
 ```js
 /**
- * @implements {import('ipfs-interface').RootAPI}
+ * @implements {import('ipfs-core-types').RootAPI}
  */
 class Root {
   // your implementation goes here
@@ -54,7 +54,7 @@ class Root {
 ### In Typescript
 
 ```ts
-import { RootAPI } from 'ipfs-interface'
+import { RootAPI } from 'ipfs-core-types'
 class Root implements RootAPI {
   // your implementation goes here
 }
@@ -79,4 +79,4 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
 
-[![](https://github.com/ipfs/js-ipfs/raw/master/packages/ipfs-interface/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-interface)
+[![](https://github.com/ipfs/js-ipfs/raw/master/ipfs-core-types/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/ipfs-core-types)

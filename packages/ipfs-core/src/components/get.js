@@ -17,9 +17,9 @@ module.exports = function ({ ipld, preload }) {
    * Fetch a file or an entire directory tree from IPFS that is addressed by a
    * valid IPFS Path.
    *
-   * @param {import('ipfs-interface/src/root').IPFSPath} ipfsPath
-   * @param {import('ipfs-interface/src/root').GetOptions} [options]
-   * @returns {AsyncIterable<import('ipfs-interface/src/files').IPFSEntry>}
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').GetOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').IPFSEntry>}
    */
   async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {

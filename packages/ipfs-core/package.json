@@ -71,7 +71,7 @@
     "ipfs-bitswap": "^4.0.0",
     "ipfs-block-service": "^0.18.0",
     "ipfs-core-utils": "^0.5.4",
-    "ipfs-interface": "^0.1.0",
+    "ipfs-core-types": "^0.1.0",
     "ipfs-repo": "^7.0.0",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",

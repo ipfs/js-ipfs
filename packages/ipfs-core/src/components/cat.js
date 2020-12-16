@@ -15,8 +15,8 @@ module.exports = function ({ ipld, preload }) {
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID.
    *
-   * @param {import('ipfs-interface/src/root').IPFSPath} ipfsPath
-   * @param {import('ipfs-interface/src/root').CatOptions} [options]
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').CatOptions} [options]
    * @returns {AsyncIterable<Uint8Array>}
    */
   async function * cat (ipfsPath, options = {}) {

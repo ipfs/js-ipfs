@@ -161,7 +161,7 @@ class CoreClient extends Client {
  * Decodes values yield by `ipfs.add`.
  *
  * @param {AddedEntry} data
- * @returns {import('ipfs-interface/src/files').UnixFSEntry}
+ * @returns {import('ipfs-core-types/src/files').UnixFSEntry}
  */
 const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
   return {

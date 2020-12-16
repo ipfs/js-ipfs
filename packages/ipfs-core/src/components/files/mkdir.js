@@ -151,8 +151,8 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
  *
  * @typedef {import('cids')} CID
  * @typedef {import('cids').CIDVersion} CIDVersion
- * @typedef {import('ipfs-interface/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-interface/src/files').MTime} Mtime
- * @typedef {import('ipfs-interface/src/files').ToMTime} ToMTime
- * @typedef {import('ipfs-interface/src/files').ToMode} ToMode
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/files').MTime} Mtime
+ * @typedef {import('ipfs-core-types/src/files').ToMTime} ToMTime
+ * @typedef {import('ipfs-core-types/src/files').ToMode} ToMode
  */

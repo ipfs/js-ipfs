@@ -26,7 +26,7 @@ function checkPermission (mode, perm, type, output) {
 
 /**
  *
- * @param {import('ipfs-interface/src/files').Mode} mode
+ * @param {import('ipfs-core-types/src/files').Mode} mode
  * @param {boolean} isDirectory
  * @returns {string}
  */

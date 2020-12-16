@@ -98,7 +98,7 @@ const createOnUploadPrgress = (size, parts, progress) => {
 
 /**
  * @param {any} input
- * @returns {import('ipfs-interface/src/files').UnixFSEntry}
+ * @returns {import('ipfs-core-types/src/files').UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   const output = {

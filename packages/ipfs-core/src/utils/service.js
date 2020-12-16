@@ -212,7 +212,7 @@ module.exports = Service
 
 /**
  * @template T
- * @typedef {import('ipfs-interface/src/basic').Await<T>} Await
+ * @typedef {import('ipfs-core-types/src/basic').Await<T>} Await
  */
 /**
  * @template {(options:any) => any} T

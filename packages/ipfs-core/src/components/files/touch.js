@@ -127,6 +127,6 @@ module.exports = (context) => {
  * @property {import('cids').CIDVersion} [cidVersion] - The CID version to use for any updated entries
  *
  * @typedef {import('cids')} CID
- * @typedef {import('ipfs-interface/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-interface/src/files').ToMTime} ToMTime
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/files').ToMTime} ToMTime
  */

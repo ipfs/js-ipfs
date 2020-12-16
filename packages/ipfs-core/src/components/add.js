@@ -12,12 +12,12 @@ module.exports = ({ addAll }) => {
   /**
    * Import a file or data into IPFS.
    *
-   * @param {import('ipfs-interface/src/files').ToEntry} entry
-   * @param {import('ipfs-interface/src/root').AddAllOptions} [options]
-   * @returns {Promise<import('ipfs-interface/src/files').UnixFSEntry>}
+   * @param {import('ipfs-core-types/src/files').ToEntry} entry
+   * @param {import('ipfs-core-types/src/root').AddAllOptions} [options]
+   * @returns {Promise<import('ipfs-core-types/src/files').UnixFSEntry>}
    */
   async function add (entry, options) {
-    /** @type {import('ipfs-interface/src/files').ImportSource} */
+    /** @type {import('ipfs-core-types/src/files').ImportSource} */
     const source = (entry)
     const result = await last(addAll(source, options))
     // Note this should never happen as `addAll` should yield at least one item

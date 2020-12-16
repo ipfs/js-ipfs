@@ -1,5 +1,5 @@
 {
-  "name": "ipfs-interface",
+  "name": "ipfs-core-types",
   "version": "0.1.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",

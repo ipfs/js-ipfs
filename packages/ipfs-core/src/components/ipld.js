@@ -15,9 +15,9 @@ const createIPLD = ({ blockService, print, options }) =>
 module.exports = createIPLD
 
 /**
- * @typedef {import('ipfs-interface/src/ipld').IPLD} IPLD
- * @typedef {import('ipfs-interface/src/ipld').Options} Options
- * @typedef {import('ipfs-interface/src/block-service').BlockService} BlockService
- * @typedef {import('ipfs-interface/src/block-service').Block} Block
+ * @typedef {import('ipfs-core-types/src/ipld').IPLD} IPLD
+ * @typedef {import('ipfs-core-types/src/ipld').Options} Options
+ * @typedef {import('ipfs-core-types/src/block-service').BlockService} BlockService
+ * @typedef {import('ipfs-core-types/src/block-service').Block} Block
  * @typedef {import('.').Print} Print
  */
