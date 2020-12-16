@@ -1,4 +1,6 @@
-import { CID, Block, ToJSON, Await, AbortOptions } from './basic'
+import CID from 'cids'
+import { Block } from './block-service'
+import { ToJSON, Await, AbortOptions } from './basic'
 import { DataStore, Key } from './datastore'
 import {
   ValueStore, StoreReader, Resource, StoreLookup,

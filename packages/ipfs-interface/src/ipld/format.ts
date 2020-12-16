@@ -1,5 +1,6 @@
 
-import { Await, CID } from './basic'
+import CID from 'cids'
+import { Await } from '../basic'
 
 export interface Format <T=any> {
   util: Util<T>

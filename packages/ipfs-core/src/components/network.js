@@ -117,7 +117,7 @@ const WEBSOCKET_STAR_PROTO_CODE = 479
  * @typedef {import('.').Repo} Repo
  * @typedef {import('.').Print} Print
  * @typedef {import('.').LibP2P} LibP2P
- * @typedef {import('../interface/bitswap').Bitswap} BitSwap
+ * @typedef {import('ipfs-interface/src/bitswap').Bitswap} BitSwap
  * @typedef {import('.').PeerId} PeerId
  * @typedef {import('.').AbortOptions} AbortOptions
  */

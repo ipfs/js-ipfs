@@ -32,6 +32,6 @@ module.exports = (options = {}) => {
 }
 
 /**
- * @typedef {import('../interface/repo').Repo<IPFSConfig>} Repo
+ * @typedef {import('ipfs-interface/src/repo').Repo<IPFSConfig>} Repo
  * @typedef {import('../components/config').IPFSConfig} IPFSConfig
  */
