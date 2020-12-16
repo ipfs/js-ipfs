@@ -143,14 +143,16 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
 /**
  * @typedef {Object} MkdirOptions
  * @property {boolean} [parents=false] - If true, create intermediate directories
- * @property {number} [mode] - An integer that represents the file mode
- * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
+ * @property {ToMode} [mode] - An integer that represents the file mode
+ * @property {ToMTime} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
  * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
- * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
+ * @property {CIDVersion} [cidVersion=0] - The CID version to use for any updated entries
  *
  * @typedef {import('cids')} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('../../utils').Mtime} Mtime
- * @typedef {import('../../utils').Hrtime} Hrtime
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('ipfs-interface/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-interface/src/files').MTime} Mtime
+ * @typedef {import('ipfs-interface/src/files').ToMTime} ToMTime
+ * @typedef {import('ipfs-interface/src/files').ToMode} ToMode
  */

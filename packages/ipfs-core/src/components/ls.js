@@ -7,17 +7,11 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('./root').IPLD} config.ipld
- * @param {import('./root').Preload} config.preload
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
-  /**
-   * Lists a directory from IPFS that is addressed by a valid IPFS Path.
-   *
-   * @param {string|CID} ipfsPath - An IPFS path or CID to list
-   * @param {Options} options
-   * @returns {AsyncIterable<LSEntry>}
-   */
+  /** @type {import('ipfs-interface/src/root').List} */
   async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)
     const recursive = options.recursive
@@ -66,18 +60,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(ls)
 }
-
-/**
- * @typedef {import('../utils').IPFSEntry} LSEntry
- *
- * @typedef {LSOptions & AbortOptions} Options
- *
- * @typedef {Object} LSOptions
- * @property {boolean} [recursive]
- * @property {boolean} [preload]
- * @property {boolean} [includeContent]
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('.').CID} CID
- */

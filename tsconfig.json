@@ -24,7 +24,7 @@
     "stripInternal": true,
     "resolveJsonModule": true,
     "incremental": true,
-    "baseUrl": "packages",
+    "baseUrl": ".",
     "paths": {
       "interface-ipfs-core/*": [
         "interface-ipfs-core/*"

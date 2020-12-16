@@ -11,13 +11,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @param {import('.').Preload} config.preload
  */
 module.exports = function ({ ipld, preload }) {
-  /**
-   * Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
-   *
-   * @param {CID|string} ipfsPath - An IPFS path or CID to export
-   * @param {Options} [options]
-   * @returns {AsyncIterable<IPFSEntry>}
-   */
+  /** @type {import('ipfs-interface/src/root').Get} */
   async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {
       let pathComponents
@@ -41,14 +35,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(get)
 }
-
-/**
- * @typedef {GetOptions & AbortOptions} Options
- *
- * @typedef {Object} GetOptions
- * @property {boolean} [preload]
- *
- * @typedef {import('.').CID} CID
- * @typedef {import('../utils').AbortOptions} AbortOptions
- * @typedef {import('../utils').IPFSEntry} IPFSEntry
- */

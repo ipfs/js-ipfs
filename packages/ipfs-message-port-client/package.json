@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "ipfs-message-port-protocol": "^0.4.2"
+    "ipfs-message-port-protocol": "^0.4.2",
+    "ipfs-interface": "^0.1.0"
   },
   "devDependencies": {
     "aegir": "^29.2.2",

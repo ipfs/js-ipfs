@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * @param {MTime} mtime
+ * @param {import('ipfs-interface/src/files').MTime} mtime
  * @returns {string}
  */
 function formatMtime (mtime) {
@@ -21,13 +21,5 @@ function formatMtime (mtime) {
     timeZoneName: 'short'
   })
 }
-
-/**
- * @typedef {object} MTime
- * @property {number} secs - the number of seconds since (positive) or before
- * (negative) the Unix Epoch began
- * @property {number} nsecs - the number of nanoseconds since the last full
- * second.
- */
 
 module.exports = formatMtime

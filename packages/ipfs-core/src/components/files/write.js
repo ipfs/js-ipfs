@@ -299,13 +299,11 @@ const countBytesStreamed = async function * (source, notify) {
  * @property {boolean} [parents=false] - Create intermediate MFS paths if they do not exist
  * @property {boolean} [truncate=false] - Truncate the file at the MFS path if it would have been larger than the passed content
  * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw file data and not be wrapped in a protobuf
- * @property {number} [mode] - An integer that represents the file mode
- * @property {Mtime|Hrtime|Date} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
+ * @property {import('ipfs-interface/src/files').ToMode} [mode] - An integer that represents the file mode
+ * @property {import('ipfs-interface/src/files').ToMTime} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
  * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
  * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
  * @property {0|1} [cidVersion=0] - The CID version to use for any updated entries
  *
  * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('../../utils').Mtime} Mtime
- * @typedef {import('../../utils').Hrtime} Hrtime
  */

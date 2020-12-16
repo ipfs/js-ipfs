@@ -180,8 +180,8 @@ const statters = {
  * @property {number} [sizeLocal] - An integer indicating the cumulative size of
  * the data present locally.
  * @property {number} [mode] - File mode
- * @property {import('../add-all').MTime} [mtime] - Modification time
+ * @property {import('ipfs-interface/src/files').MTime} [mtime] - Modification time
  *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-interface/src/basic').AbortOptions} AbortOptions
  */
