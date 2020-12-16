@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.4.2...ipfs-message-port-server@0.4.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* regressions introduced by new releases of CID & multicodec ([#3442](https://github.com/ipfs/js-ipfs/issues/3442)) ([b5152d8](https://github.com/ipfs/js-ipfs/commit/b5152d8cc93ecc8d39fc353ea66d7eaf1661e3c0)), closes [/github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb#diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26](https://github.com//github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb/issues/diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26)
+* transfer unique set over message prort ([#3421](https://github.com/ipfs/js-ipfs/issues/3421)) ([da7bc55](https://github.com/ipfs/js-ipfs/commit/da7bc55e8dfbdc200ef43ccbf774bbc24af07785))
+
+
+
+
+
 ## [0.4.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.4.1...ipfs-message-port-server@0.4.2) (2020-11-25)
 
 **Note:** Version bump only for package ipfs-message-port-server
