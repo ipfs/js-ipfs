@@ -6,12 +6,20 @@ const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('.').IPLD} ipld
+ * @property {import('.').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
-  /** @type {import('ipfs-interface/src/root').List} */
+  /**
+   * Lists a directory from IPFS that is addressed by a valid IPFS Path.
+   *
+   * @param {import('ipfs-interface/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-interface/src/root').ListOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-interface/src/files').IPFSEntry>}
+   */
   async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)
     const recursive = options.recursive

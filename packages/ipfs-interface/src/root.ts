@@ -4,17 +4,12 @@ import { ImportSource, IPFSEntry, ToEntry, UnixFSEntry } from './files'
 import CID, { CIDVersion } from 'cids'
 
 export interface RootAPI {
-  add: Add
-  addAll: AddAll
-  cat: Cat
-  get: Get
-}
+  add(entry: ToEntry, options?: AddOptions): Promise<UnixFSEntry>
+  addAll(source: ImportSource, options?: AddAllOptions & AbortOptions): AsyncIterable<UnixFSEntry>
+  cat(ipfsPath: IPFSPath, options?: CatOptions): AsyncIterable<Uint8Array>
+  get(ipfsPath: IPFSPath, options?: GetOptions): AsyncIterable<IPFSEntry>
 
-/**
- * Import a file or data into IPFS.
- */
-export interface Add {
-  (entry: ToEntry, options?: AddOptions): Promise<UnixFSEntry>
+  ls(ipfsPath: IPFSPath, options?: ListOptions): AsyncIterable<IPFSEntry>
 }
 
 export interface AddOptions extends AbortOptions {
@@ -70,13 +65,6 @@ export interface AddOptions extends AbortOptions {
 
 }
 
-/**
- * Import multiple files and data into IPFS.
- */
-export interface AddAll {
-  (source: ImportSource, options?: AddAllOptions & AbortOptions): AsyncIterable<UnixFSEntry>
-}
-
 export interface AddAllOptions extends AddOptions {
 
   /**
@@ -97,13 +85,6 @@ export interface ShardingOptions {
   sharding?: boolean
 }
 
-/**
- * Returns content of the file addressed by a valid IPFS Path or CID.
- */
-export interface Cat {
-  (ipfsPath: IPFSPath, options?:CatOptions): AsyncIterable<Uint8Array>
-}
-
 export interface CatOptions extends AbortOptions, PreloadOptions {
   /**
    * An offset to start reading the file from
@@ -115,22 +96,7 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
   length?: number
 }
 
-/**
- * Fetch a file or an entire directory tree from IPFS that is addressed by a
- * valid IPFS Path.
- */
-export interface Get {
-  (ipfsPath: IPFSPath, options?: GetOptions): AsyncIterable<IPFSEntry>
-}
-
 export interface GetOptions extends AbortOptions, PreloadOptions {}
-
-export interface List {
-  /**
-   * Lists a directory from IPFS that is addressed by a valid IPFS Path.
-   */
-  (ipfsPath: IPFSPath, options?: ListOptions): AsyncIterable<IPFSEntry>
-}
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
   recursive?: boolean,

@@ -8,17 +8,25 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
- * @param {Object} config
- * @param {import('..').Block} config.block
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').Preload} config.preload
- * @param {import('..').Pin} config.pin
- * @param {import('ipfs-interface/src/root').ShardingOptions} [config.options]
+ * @typedef {Object} Context
+ * @property {import('..').Block} block
+ * @property {import('..').GCLock} gcLock
+ * @property {import('..').Preload} preload
+ * @property {import('..').Pin} pin
+ * @property {import('ipfs-interface/src/root').ShardingOptions} [options]
+ *
+ * @param {Context} context
  */
 module.exports = ({ block, gcLock, preload, pin, options }) => {
   const isShardingEnabled = options && options.sharding
 
-  /** @type {import('ipfs-interface/src/root').AddAll} */
+  /**
+   * Import multiple files and data into IPFS.
+   *
+   * @param {import('ipfs-interface/src/files').ImportSource} source
+   * @param {import('ipfs-interface/src/root').AddAllOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-interface/src/files').UnixFSEntry>}
+   */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
       shardSplitThreshold: isShardingEnabled ? 1000 : Infinity,

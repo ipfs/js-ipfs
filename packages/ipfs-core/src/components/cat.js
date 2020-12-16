@@ -5,12 +5,20 @@ const { normalizeCidPath } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('.').IPLD} ipld
+ * @property {import('.').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
-  /** @type {import('ipfs-interface/src/root').Cat} */
+  /**
+   * Returns content of the file addressed by a valid IPFS Path or CID.
+   *
+   * @param {import('ipfs-interface/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-interface/src/root').CatOptions} [options]
+   * @returns {AsyncIterable<Uint8Array>}
+   */
   async function * cat (ipfsPath, options = {}) {
     ipfsPath = normalizeCidPath(ipfsPath)
 
