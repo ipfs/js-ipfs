@@ -14,7 +14,6 @@ export default async function main() {
 
   console.log('Added file:', file.path, file.cid.toString())
   try {
-    // @ts-expect-error CID has no toUpperCase method
     file.cid.toUpperCase()
   } catch (error) {
 

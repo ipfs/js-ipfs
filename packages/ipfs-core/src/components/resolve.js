@@ -100,7 +100,7 @@ module.exports = ({ ipld, name }) => {
  *
  * @typedef {Object} ResolveSettings
  * @property {boolean} [recursive=true] - Resolve until result is an IPFS name.
- * @property {string} [cidBase='base58btc'] - Multibase codec name the CID in the resolved path will be encoded with.
+ * @property {import('cids').BaseNameOrCode} [cidBase='base58btc'] - Multibase codec name the CID in the resolved path will be encoded with.
  *
  * @typedef {import('.').AbortOptions} AbortOptions
  */

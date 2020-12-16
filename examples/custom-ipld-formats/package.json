@@ -11,10 +11,10 @@
     "test-ipfs-example": "^2.0.3"
   },
   "dependencies": {
-    "cids": "1.0.2",
-    "ipfs-cli": "^0.1.0",
-    "ipfs-core": "^0.2.1",
-    "ipfs-http-client": "^48.1.1",
+    "cids": "^1.0.0",
+    "ipfs-daemon": "^0.3.1",
+    "ipfs-core": "^0.3.0",
+    "ipfs-http-client": "^48.1.2",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
     "uint8arrays": "^1.1.0"
