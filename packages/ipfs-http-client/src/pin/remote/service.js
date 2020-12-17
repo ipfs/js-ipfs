@@ -6,11 +6,11 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
 /**
  * @typedef {import('../../lib/core').ClientOptions} ClientOptions
  * @typedef {import('../..').HttpOptions} HttpOptions
- * @typedef {import('interface-ipfs-core/types/basic').AbortOptions} AbortOptions
- * @typedef {import('interface-ipfs-core/types/pin/remote/service').API} API
- * @typedef {import('interface-ipfs-core/types/pin/remote/service').Credentials} Credentials
- * @typedef {import('interface-ipfs-core/types/pin/remote/service').RemotePinService} RemotePinService
- * @typedef {import('interface-ipfs-core/types/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').API} API
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
  * @implements {API}
  */
 class Service {
@@ -102,7 +102,7 @@ class Service {
 
   /**
    * @param {Object} json
-   * @returns {import('interface-ipfs-core/types/pin/remote/service').Stat}
+   * @returns {import('ipfs-core-types/src/pin/remote/service').Stat}
    */
   static decodeStat (json) {
     switch (json.Status) {

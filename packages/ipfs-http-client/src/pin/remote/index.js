@@ -8,12 +8,12 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
 /**
  * @typedef {import('../..').HttpOptions} HttpOptions
  * @typedef {import('../../lib/core').ClientOptions} ClientOptions
- * @typedef {import('interface-ipfs-core/types/basic').AbortOptions} AbortOptions
- * @typedef {import('interface-ipfs-core/types/pin/remote').API} API
- * @typedef {import('interface-ipfs-core/types/pin/remote').Pin} Pin
- * @typedef {import('interface-ipfs-core/types/pin/remote').AddOptions} AddOptions
- * @typedef {import('interface-ipfs-core/types/pin/remote').Query} Query
- * @typedef {import('interface-ipfs-core/types/pin/remote').Status} Status
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote').API} API
+ * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
+ * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query
+ * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status
  *
  * @implements {API}
  */
