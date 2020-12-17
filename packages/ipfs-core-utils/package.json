@@ -34,7 +34,7 @@
     "build:js": "aegir build",
     "build:types": "tsc --build",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i rimraf"
+    "dep-check": "aegir dep-check -i typescript -i rimraf -i ipfs-core-types"
   },
   "license": "MIT",
   "dependencies": {
