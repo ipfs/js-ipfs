@@ -318,7 +318,7 @@ module.exports = (common, options) => {
     })
 
     describe('list pins by cid', () => {
-      it('should pins with matching cid', async () => {
+      it('should list pins with matching cid', async () => {
         await addRemotePins(ipfs, SERVICE, {
           a: cid1,
           b: cid2,
@@ -341,7 +341,7 @@ module.exports = (common, options) => {
         ])
       })
 
-      it('should pins with matching cid', async () => {
+      it('should list pins with any matching cid', async () => {
         await addRemotePins(ipfs, SERVICE, {
           a: cid1,
           b: cid2,
@@ -355,7 +355,7 @@ module.exports = (common, options) => {
           service: SERVICE
         }))
 
-        expect(list).to.deep.equal([
+        expect(list.sort(byCID)).to.deep.equal([
           {
             status: 'queued',
             cid: cid1,
@@ -366,10 +366,10 @@ module.exports = (common, options) => {
             cid: cid3,
             name: 'c'
           }
-        ])
+        ].sort(byCID))
       })
 
-      it('should pins with matching cid+status', async () => {
+      it('should list pins with matching cid+status', async () => {
         await addRemotePins(ipfs, SERVICE, {
           'pinned-a': cid1,
           'failed-b': cid2,
@@ -383,7 +383,7 @@ module.exports = (common, options) => {
           service: SERVICE
         }))
 
-        expect(list).to.deep.equal([
+        expect(list.sort(byCID)).to.deep.equal([
           {
             status: 'pinned',
             cid: cid1,
@@ -394,10 +394,10 @@ module.exports = (common, options) => {
             cid: cid2,
             name: 'failed-b'
           }
-        ])
+        ].sort(byCID))
       })
 
-      it('should pins with matching cid+status+name', async () => {
+      it('should list pins with matching cid+status+name', async () => {
         await addRemotePins(ipfs, SERVICE, {
           'pinned-a': cid1,
           'failed-b': cid2,
