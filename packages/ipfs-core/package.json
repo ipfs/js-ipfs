@@ -100,7 +100,7 @@
     "libp2p-record": "^0.9.0",
     "libp2p-tcp": "^0.15.1",
     "libp2p-webrtc-star": "^0.20.1",
-    "libp2p-websockets": "^0.14.0",
+    "libp2p-websockets": "^0.15.0",
     "mafmt": "^8.0.0",
     "merge-options": "^2.0.0",
     "mortice": "^2.0.0",
