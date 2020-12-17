@@ -8,8 +8,7 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
     "lint": "aegir lint",
-    "test": "aegir ts -p check",
-    "dep-check": "aegir dep-check"
+    "test": "aegir ts -p check"
   },
   "types": "src/index.ts",
   "files": [
