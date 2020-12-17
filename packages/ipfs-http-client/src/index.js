@@ -10,7 +10,7 @@ const globSource = require('ipfs-utils/src/files/glob-source')
 const urlSource = require('ipfs-utils/src/files/url-source')
 
 /**
- * @param {import("./lib/core").ClientOptions} options
+ * @param {import("./lib/core").ClientOptions|URL|multiaddr|string} options
  */
 function ipfsClient (options = {}) {
   return {
