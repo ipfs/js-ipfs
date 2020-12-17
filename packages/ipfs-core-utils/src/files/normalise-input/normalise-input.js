@@ -16,10 +16,13 @@ const {
 // eslint-disable-next-line complexity
 
 /**
+ * @typedef {import('ipfs-core-types/src/files').ToContent} ToContent
+ */
+/**
  * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {Source} input
+ * @param {import('ipfs-core-types/src/files').ImportSource} input
  * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {AsyncIterable<Entry<Content>>}
+ * @returns {AsyncIterable<import('ipfs-core-types/src/files').Entry<Content>>}
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
@@ -100,9 +103,9 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 
 /**
  * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {ToFile} input
+ * @param {import('ipfs-core-types/src/files').ToEntry} input
  * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {Promise<Entry<Content>>}
+ * @returns {Promise<import('ipfs-core-types/src/files').Entry<Content>>}
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
@@ -119,42 +122,3 @@ async function toFileObject (input, normaliseContent) {
 
   return file
 }
-
-/**
- * @typedef {import('../format-mtime').MTime} MTime
- * @typedef {import('../format-mode').Mode} Mode
- * @typedef {Object} Directory
- * @property {string} path
- * @property {Mode} [mode]
- * @property {MTime} [mtime]
- * @property {undefined} [content]
- *
- * @typedef {Object} FileInput
- * @property {string} [path]
- * @property {ToContent} [content]
- * @property {number | string} [mode]
- * @property {UnixTime} [mtime]
- *
- * @typedef {Date | MTime | HRTime} UnixTime
- *
- * Time representation as tuple of two integers, as per the output of
- * [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
- * @typedef {[number, number]} HRTime
- *
- * @typedef {string|InstanceType<typeof window.String>|ArrayBufferView|ArrayBuffer|Blob|Iterable<Uint8Array> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} ToContent
- * @typedef {ToContent|FileInput} ToFile
- * @typedef {Iterable<ToFile> | AsyncIterable<ToFile> | ReadableStream<ToFile>} Source
- */
-/**
- * @template {AsyncIterable<Uint8Array>|Blob} Content
- * @typedef {Object} File
- * @property {string} path
- * @property {Mode} [mode]
- * @property {MTime} [mtime]
- * @property {Content} [content]
- */
-
-/**
- * @template {AsyncIterable<Uint8Array>|Blob} Content
- * @typedef {File<Content>|Directory} Entry
- */

@@ -1,7 +1,8 @@
 import { BlockService } from './block-service'
-import { Await, CID, AwaitIterable, AbortOptions } from './basic'
+import CID from 'cids'
+import { Await, AwaitIterable, AbortOptions } from './basic'
 import { StoreReader, StoreExporter, StoreEraser } from './store'
-import { ResolveResult, Format } from './format'
+import { ResolveResult, Format } from './ipld/format'
 
 export interface IPLD<T = any> extends
   StoreReader<CID, T>,

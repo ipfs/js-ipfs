@@ -5,11 +5,15 @@
 const codecName = 'dag-test'
 const codecNumber = 392091
 
-const baseTable = require('multicodec/src/base-table.json')
-baseTable[codecName] = codecNumber
+const table = require('multicodec/src/base-table')
+// @ts-ignore
+table.baseTable = {
+  ...table.baseTable,
+  [codecName]: codecNumber
+}
 
 // now require modules as usual
-const IPFSDaemon = require('ipfs-cli/src/daemon')
+const IPFSDaemon = require('ipfs-daemon')
 const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash
 const multicodec = require('multicodec')

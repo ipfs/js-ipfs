@@ -505,6 +505,6 @@ module.exports.profiles = profiles
  * @typedef {Object} RoutingConfig
  * @property {string} [Type]
  *
- * @typedef {import('../interface/basic').ToJSON} ToJSON
+ * @typedef {import('ipfs-core-types/src/basic').ToJSON} ToJSON
  * @typedef {import('.').AbortOptions} AbortOptions
  */

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.3](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.2...ipfs@0.52.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* export IPFS type ([#3447](https://github.com/ipfs/js-ipfs/issues/3447)) ([cacbfc6](https://github.com/ipfs/js-ipfs/commit/cacbfc6e87eabee0e2a6df2056ac5cc993690a0d)), closes [#3439](https://github.com/ipfs/js-ipfs/issues/3439)
+* fix ipfs.ls() for a single file object ([#3440](https://github.com/ipfs/js-ipfs/issues/3440)) ([f243dd1](https://github.com/ipfs/js-ipfs/commit/f243dd1c37fcb9786d77d129cd9b238457d18a15))
+
+
+
+
+
 ## [0.52.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.1...ipfs@0.52.2) (2020-11-25)
 
 **Note:** Version bump only for package ipfs

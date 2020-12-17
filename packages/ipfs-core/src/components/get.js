@@ -6,17 +6,20 @@ const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('.').IPLD} ipld
+ * @property {import('.').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
   /**
-   * Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
+   * Fetch a file or an entire directory tree from IPFS that is addressed by a
+   * valid IPFS Path.
    *
-   * @param {CID|string} ipfsPath - An IPFS path or CID to export
-   * @param {Options} [options]
-   * @returns {AsyncIterable<IPFSEntry>}
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').GetOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').IPFSEntry>}
    */
   async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {
@@ -41,14 +44,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(get)
 }
-
-/**
- * @typedef {GetOptions & AbortOptions} Options
- *
- * @typedef {Object} GetOptions
- * @property {boolean} [preload]
- *
- * @typedef {import('.').CID} CID
- * @typedef {import('../utils').AbortOptions} AbortOptions
- * @typedef {import('../utils').IPFSEntry} IPFSEntry
- */

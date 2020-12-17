@@ -28,6 +28,7 @@ module.exports = configure((api, opts) => {
       const cid = new CID(options.cid)
       encodingOptions = {
         ...options,
+        // @ts-expect-error - https://github.com/multiformats/js-cid/pull/138
         format: multicodec.getName(cid.code),
         hashAlg: multihash.decode(cid.multihash).name
       }

@@ -6,17 +6,19 @@ const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {Object} config
- * @param {import('./root').IPLD} config.ipld
- * @param {import('./root').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('.').IPLD} ipld
+ * @property {import('.').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path.
    *
-   * @param {string|CID} ipfsPath - An IPFS path or CID to list
-   * @param {Options} options
-   * @returns {AsyncIterable<LSEntry>}
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').ListOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').IPFSEntry>}
    */
   async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)
@@ -66,18 +68,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(ls)
 }
-
-/**
- * @typedef {import('../utils').IPFSEntry} LSEntry
- *
- * @typedef {LSOptions & AbortOptions} Options
- *
- * @typedef {Object} LSOptions
- * @property {boolean} [recursive]
- * @property {boolean} [preload]
- * @property {boolean} [includeContent]
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('.').CID} CID
- */

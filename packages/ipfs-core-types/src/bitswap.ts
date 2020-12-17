@@ -1,5 +1,9 @@
-import { PeerId, CID, Block, Await, BigInteger, AbortOptions } from './basic'
-import { MovingAverage } from './moving-avarage'
+import BigInteger from 'bignumber.js'
+import PeerId from 'peer-id'
+import CID from 'cids'
+import { Block } from './block-service'
+import { AbortOptions, Await } from './basic'
+import { MovingAverage } from './bitswap/moving-avarage'
 import { StoreReader, StoreExporter, StoreImporter } from './store'
 
 export interface Bitswap extends

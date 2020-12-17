@@ -1,8 +1,8 @@
 {
-  "name": "types-use-ipfs-from-ts",
+  "name": "example-types-use-ipfs-from-ts",
   "private": true,
   "dependencies": {
-    "ipfs": "^0.52.1"
+    "ipfs": "^0.52.2"
   },
   "devDependencies": {
     "typescript": "4.0.x"
