@@ -1,0 +1,49 @@
+{
+  "name": "ipfs-client",
+  "version": "0.1.0",
+  "description": "A client library to talk to local IPFS daemons",
+  "keywords": [
+    "ipfs"
+  ],
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-client#readme",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "license": "(Apache-2.0 OR MIT)",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "main": "src/index.js",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*",
+        "dist/*/index"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "scripts": {
+    "test": "aegir test",
+    "lint": "aegir lint",
+    "build": "npm run build:js && npm run build:types",
+    "build:js": "aegir build",
+    "build:types": "tsc --build",
+    "coverage": "npx nyc -r html npm run test:node -- --bail",
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i aegir -i typescript -i rimraf"
+  },
+  "dependencies": {
+    "ipfs-grpc-client": "0.0.0",
+    "ipfs-http-client": "^48.1.0",
+    "merge-options": "^2.0.0"
+  },
+  "devDependencies": {
+    "aegir": "^29.2.2",
+    "rimraf": "^3.0.2",
+    "typescript": "4.0.x"
+  }
+}

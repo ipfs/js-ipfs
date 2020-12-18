@@ -32,6 +32,7 @@
     "debug": "^4.1.1",
     "dlv": "^1.1.3",
     "ipfs-core": "^0.3.1",
+    "ipfs-grpc-server": "0.0.0",
     "ipfs-http-client": "^48.1.3",
     "ipfs-http-gateway": "^0.1.4",
     "ipfs-http-server": "^0.1.4",
@@ -46,7 +47,8 @@
   "devDependencies": {
     "aegir": "^29.2.2",
     "node-fetch": "^2.6.1",
-    "typescript": "4.0.x"
+    "typescript": "4.0.x",
+    "ws": "^7.3.1"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",

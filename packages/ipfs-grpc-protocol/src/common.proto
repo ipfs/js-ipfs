@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package ipfs;
+
+enum FileType {
+    DIRECTORY = 0;
+    FILE = 1;
+}

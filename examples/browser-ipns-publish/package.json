@@ -27,7 +27,7 @@
   "devDependencies": {
     "delay": "^4.4.0",
     "execa": "^4.0.3",
-    "ipfsd-ctl": "^7.1.1",
+    "ipfsd-ctl": "^7.2.0",
     "go-ipfs": "^0.7.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
