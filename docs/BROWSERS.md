@@ -36,9 +36,7 @@ Save time and get familiar with common caveats and limitations of the browser co
 
 We provide a few additional components useful for running JS IPFS in the browser:
 
-- [libp2p-websocket-star](https://github.com/libp2p/js-libp2p-websocket-star/) - incorporates both a transport and a discovery service that is facilitated by the custom rendezvous server available in the repo.
-  - Instructions on enabling `websocket-star` in js-ipfs config can be found [here](https://github.com/ipfs/js-ipfs#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality).
-  - Make sure to [run your own rendezvous server](https://github.com/libp2p/js-libp2p-websocket-star/#usage-1).
+
 - [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) - incorporates both a transport and a discovery service that is facilitated by the custom rendezvous server available in the repo
   - Instructions on enabling `webrtc-star` in js-ipfs config can be found [here](https://github.com/ipfs/js-ipfs#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser).
   - Make sure to [run your own rendezvous server](https://github.com/libp2p/js-libp2p-webrtc-star#rendezvous-server-aka-signalling-server).
