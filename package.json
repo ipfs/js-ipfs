@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "JavaScript implementation of the IPFS specification",
   "scripts": {
-    "postinstall": "lerna bootstrap",
+    "postinstall": "lerna bootstrap && npm run build -- --scope=ipfs-grpc-protocol",
     "link": "lerna link",
     "reset": "lerna run clean && rimraf packages/*/node_modules node_modules",
     "test": "lerna run test",
@@ -16,6 +16,7 @@
     "test:external": "lerna run test:external",
     "test:cli": "lerna run test:cli",
     "test:interop": "lerna run test:interop",
+    "test:interface:client": "lerna run test:interface:client",
     "test:interface:core": "lerna run test:interface:core",
     "test:interface:http-go": "lerna run test:interface:http-go",
     "test:interface:http-js": "lerna run test:interface:http-js",

@@ -7,6 +7,7 @@ module.exports = () => ({
     Announce: [],
     API: '',
     Gateway: '',
+    RPC: '',
     Delegates: [
       '/dns4/node0.delegate.ipfs.io/tcp/443/https',
       '/dns4/node1.delegate.ipfs.io/tcp/443/https',

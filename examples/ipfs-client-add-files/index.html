@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JS IPFS Client example</title>
+    <style>
+      .hidden {
+        opacity: 0;
+      }
+
+      form {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>ipfs-client</h1>
+    <form id="connect-to-api">
+      <h3>Enter IPFS API details</h3>
+      <label for="grpc-input">
+        GRPC:
+        <input id="grpc-input" name="grpc-input" type="text" value="/ip4/127.0.0.1/tcp/5003" required>
+      </label>
+      <label for="http-input">
+        HTTP:
+        <input id="http-input" name="text" type="text" value="/ip4/127.0.0.1/tcp/5001" required>
+      </label>
+      <button id="connect-submit" type="submit">Connect</button>
+    </form>
+    <div id="output">
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>

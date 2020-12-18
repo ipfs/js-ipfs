@@ -4,6 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
 const fetch = require('node-fetch')
+const WebSocket = require('ws')
 
 describe('daemon', () => {
   let daemon
@@ -42,6 +43,41 @@ describe('daemon', () => {
     })).text()
 
     expect(result).to.include('Index of /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/')
+
+    await daemon.stop()
+  })
+
+  it('should start a gRPC server', async () => {
+    daemon = new Daemon({})
+
+    await daemon.start()
+
+    const {
+      uri
+    } = daemon._grpcServer.info
+
+    const socket = new WebSocket(`${uri}/ipfs.Root/id`)
+    let received = Buffer.alloc(0)
+
+    await new Promise((resolve) => {
+      socket.on('open', () => {
+        socket.send(Buffer.from('Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9ncnBjLXdlYitwcm90bw0KeC1ncnBjLXdlYjogMQ0K', 'base64'))
+        socket.send(Buffer.from('AAAAAAAA', 'base64'))
+      })
+
+      socket.on('message', (data) => {
+        received = Buffer.concat([received, data], received.byteLength + data.byteLength)
+      })
+
+      socket.on('close', () => {
+        resolve()
+      })
+    })
+
+    const apiId = await daemon._ipfs.id()
+
+    // don't try to decode protobuf, just look for embedded string
+    expect(received.toString('utf8')).to.include(apiId.id)
 
     await daemon.stop()
   })

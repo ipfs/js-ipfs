@@ -422,6 +422,22 @@ module.exports = (common, options) => {
       expect(files[0].size).to.equal(18)
     })
 
+    it('should add directories with metadata', async () => {
+      const files = await all(ipfs.addAll([{
+        path: '/foo',
+        mode: 0o123,
+        mtime: {
+          secs: 1000,
+          nsecs: 0
+        }
+      }]))
+
+      expect(files.length).to.equal(1)
+      expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
+      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].size).to.equal(11)
+    })
+
     it('should support bidirectional streaming', async function () {
       let progressInvoked
 

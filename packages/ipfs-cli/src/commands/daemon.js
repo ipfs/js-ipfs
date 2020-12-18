@@ -83,15 +83,17 @@ module.exports = {
 
     try {
       await daemon.start()
-      // @ts-ignore - _httpApi is possibly undefined
+      // @ts-ignore - _apiServers is possibly undefined
       daemon._httpApi._apiServers.forEach(apiServer => {
-        print(`API listening on ${apiServer.info.ma}`)
+        print(`HTTP API listening on ${apiServer.info.ma}`)
       })
+      // @ts-ignore - _grpcServer is possibly undefined
+      print(`gRPC listening on ${daemon._grpcServer.multiaddr}`)
       // @ts-ignore - _httpGateway is possibly undefined
       daemon._httpGateway._gatewayServers.forEach(gatewayServer => {
         print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
       })
-      // @ts-ignore - _httpApi is possibly undefined
+      // @ts-ignore - _apiServers is possibly undefined
       daemon._httpApi._apiServers.forEach(apiServer => {
         print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
       })
