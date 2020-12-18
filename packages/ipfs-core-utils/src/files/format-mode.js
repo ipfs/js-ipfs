@@ -26,7 +26,7 @@ function checkPermission (mode, perm, type, output) {
 
 /**
  *
- * @param {Mode} mode
+ * @param {import('ipfs-core-types/src/files').Mode} mode
  * @param {boolean} isDirectory
  * @returns {string}
  */
@@ -70,7 +70,3 @@ function formatMode (mode, isDirectory) {
 }
 
 module.exports = formatMode
-
-/**
- * @typedef {number} Mode
- */

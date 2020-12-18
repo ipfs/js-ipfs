@@ -51,7 +51,7 @@
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i interface-ipfs-core"
+    "dep-check": "aegir dep-check -i typescript -i interface-ipfs-core -i ipfs-core-types"
   },
   "dependencies": {
     "array-shuffle": "^1.0.1",
@@ -71,6 +71,7 @@
     "ipfs-bitswap": "^4.0.0",
     "ipfs-block-service": "^0.18.0",
     "ipfs-core-utils": "^0.5.4",
+    "ipfs-core-types": "^0.1.0",
     "ipfs-repo": "^7.0.0",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",

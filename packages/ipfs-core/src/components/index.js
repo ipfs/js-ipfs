@@ -362,8 +362,8 @@ const getDefaultOptions = () => ({
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('./libp2p').LibP2P} LibP2P
  * @typedef {import('./pin/pin-manager')} PinManager
- * @typedef {import('../interface/block-service').BlockService} BlockService
- * @typedef {import('../interface/bitswap').Bitswap} BitSwap
+ * @typedef {import('ipfs-core-types/src/block-service').BlockService} BlockService
+ * @typedef {import('ipfs-core-types/src/bitswap').Bitswap} BitSwap
  * @typedef {import('./ipld').IPLD} IPLD
  * @typedef {import('./gc-lock').GCLock} GCLock
  * @typedef {import('../preload').Preload} Preload

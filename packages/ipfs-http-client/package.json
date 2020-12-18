@@ -47,7 +47,7 @@
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf"
+    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
     "any-signal": "^2.0.0",
@@ -57,6 +57,7 @@
     "form-data": "^3.0.0",
     "ipfs-core-utils": "^0.5.4",
     "ipfs-utils": "^5.0.0",
+    "ipfs-core-types": "^0.1.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",

@@ -5,16 +5,18 @@ const { normalizeCidPath } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('.').IPLD} ipld
+ * @property {import('.').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID.
    *
-   * @param {CID|string} ipfsPath - An IPFS path or CID to export
-   * @param {Options} [options]
+   * @param {import('ipfs-core-types/src/root').IPFSPath} ipfsPath
+   * @param {import('ipfs-core-types/src/root').CatOptions} [options]
    * @returns {AsyncIterable<Uint8Array>}
    */
   async function * cat (ipfsPath, options = {}) {
@@ -41,16 +43,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(cat)
 }
-
-/**
- * @typedef {CatOptions & AbortOptions} Options
- *
- * @typedef {Object} CatOptions
- * @property {number} [offset] - An offset to start reading the file from
- * @property {number} [length] - An optional max length to read from the file
- * @property {boolean} [preload]
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('.').CID} CID
- */

@@ -295,7 +295,7 @@ const applyProfiles = (config, profiles) => {
  * @typedef {import('.').IPLDOptions} IPLDOptions
  * @typedef {import('.').Print} Print
  * @typedef {import('.').IPFSConfig} IPFSConfig
- * @typedef {import('../interface/repo').Repo<IPFSConfig>} Repo
+ * @typedef {import('ipfs-core-types/src/repo').Repo<IPFSConfig>} Repo
  * @typedef {import('libp2p-crypto').KeyType} KeyType
  * @typedef {import('libp2p').LibP2PKeychain} Keychain
  */

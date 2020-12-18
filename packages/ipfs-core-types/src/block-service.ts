@@ -1,4 +1,5 @@
-import { Block, CID, Await, AbortOptions } from './basic'
+import CID from 'cids'
+import { Await, AbortOptions } from './basic'
 import { StoreReader, StoreImporter, StoreExporter, StoreEraser } from './store'
 import { Bitswap } from './bitswap'
 
@@ -17,4 +18,9 @@ export interface BlockService extends
    * Put a block to the underlying datastore.
    */
   put(block: Block, options?:AbortOptions): Await<Block>
+}
+
+export interface Block {
+  cid: CID
+  data: Uint8Array
 }

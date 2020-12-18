@@ -39,11 +39,12 @@
     "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf"
+    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "ipfs-message-port-protocol": "^0.4.3"
+    "ipfs-message-port-protocol": "^0.4.3",
+    "ipfs-core-types": "^0.1.0"
   },
   "devDependencies": {
     "aegir": "^29.2.2",
