@@ -50,9 +50,6 @@
       "ipfs-grpc-client/*": [
         "ipfs-grpc-client/*"
       ],
-      "ipfs-grpc-protocol/*": [
-        "ipfs-grpc-protocol/*"
-      ],
       "ipfs-grpc-server/*": [
         "ipfs-grpc-server/*"
       ],

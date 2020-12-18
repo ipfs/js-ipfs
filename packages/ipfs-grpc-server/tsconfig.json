@@ -6,10 +6,5 @@
   "include": [
     "src",
     "package.json"
-  ],
-  "references": [
-    {
-      "path": "../ipfs-grpc-protocol"
-    }
   ]
 }
