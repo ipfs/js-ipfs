@@ -3,6 +3,7 @@
 // @ts-ignore
 const pushable = require('it-pushable')
 const { pipe } = require('it-pipe')
+const encodeMtime = require('../utils/encode-mtime')
 
 module.exports = function grpcAdd (ipfs, options = {}) {
   async function add (source, sink, metadata) {
@@ -90,18 +91,11 @@ module.exports = function grpcAdd (ipfs, options = {}) {
       },
       async function (source) {
         for await (const result of ipfs.addAll(source, opts)) {
-          result.cid = result.cid.toString()
-
-          if (!result.mtime) {
-            delete result.mtime
-          } else {
-            result.mtime_nsecs = result.mtime.nsecs
-            result.mtime = result.mtime.secs
-          }
-
           sink.push({
+            ...result,
             type: 'RESULT',
-            ...result
+            cid: result.cid.toString(),
+            ...encodeMtime(result.mtime)
           })
         }
 

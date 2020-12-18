@@ -3,6 +3,10 @@
 const bidiToDuplex = require('./bidi-to-duplex')
 
 /**
+ * Server stream methods are one-to-many operations so this
+ * function accepts a client message and returns a source
+ * from which multiple server messages can be read.
+ *
  * @param {object} grpc - an @improbable-eng/grpc-web instance
  * @param {object} service - an @improbable-eng/grpc-web service
  * @param {object} request - a request object
@@ -17,7 +21,7 @@ module.exports = function serverStreamToIterator (grpc, service, request, option
     source, sink
   } = bidiToDuplex(grpc, service, options)
 
-  source.push(request)
+  sink.push(request)
 
-  return sink
+  return source
 }

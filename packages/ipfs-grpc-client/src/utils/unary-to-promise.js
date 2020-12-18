@@ -4,6 +4,10 @@ const first = require('it-first')
 const bidiToDuplex = require('./bidi-to-duplex')
 
 /**
+ * Unary calls are one-to-one operations so this function
+ * takes a client message and returns a promise that resolves
+ * to the server response.
+ *
  * @param {object} grpc - an @improbable-eng/grpc-web instance
  * @param {object} service - an @improbable-eng/grpc-web service
  * @param {object} request - a request object
@@ -18,7 +22,7 @@ module.exports = function unaryToPromise (grpc, service, request, options) {
     source, sink
   } = bidiToDuplex(grpc, service, options)
 
-  source.push(request)
+  sink.push(request)
 
-  return first(sink)
+  return first(source)
 }

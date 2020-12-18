@@ -28,7 +28,7 @@ describe('utils', () => {
       }
 
       const {
-        sink
+        source
       } = bidiToDuplex(grpc, service, options)
 
       expect(client.start.calledWith(options.metadata)).to.be.true()
@@ -37,7 +37,7 @@ describe('utils', () => {
       client.onMessage.getCall(0).args[0]('world')
       client.onEnd.getCall(0).args[0]()
 
-      await expect(all(sink)).to.eventually.deep.equal(['hello', 'world'])
+      await expect(all(source)).to.eventually.deep.equal(['hello', 'world'])
     })
 
     it('should propagate client errors', async () => {
@@ -59,14 +59,14 @@ describe('utils', () => {
       }
 
       const {
-        sink
+        source
       } = bidiToDuplex(grpc, service, options)
 
       expect(client.start.calledWith(options.metadata)).to.be.true()
 
       client.onEnd.getCall(0).args[0](1, 'Erp!', { get: () => [] })
 
-      await expect(all(sink)).to.eventually.be.rejectedWith(/Erp!/)
+      await expect(all(source)).to.eventually.be.rejectedWith(/Erp!/)
     })
   })
 

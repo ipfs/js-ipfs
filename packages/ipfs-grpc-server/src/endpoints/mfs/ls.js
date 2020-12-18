@@ -1,5 +1,7 @@
 'use strict'
 
+const encodeMtime = require('../../utils/encode-mtime')
+
 module.exports = function grpcMfsLs (ipfs, options = {}) {
   async function mfsLs (request, sink, metadata) {
     const opts = {
@@ -7,17 +9,12 @@ module.exports = function grpcMfsLs (ipfs, options = {}) {
     }
 
     for await (const result of ipfs.files.ls(request.path, opts)) {
-      result.cid = result.cid.toString()
-      result.type = result.type.toUpperCase()
-
-      if (!result.mtime) {
-        delete result.mtime
-      } else {
-        result.mtime_nsecs = result.mtime.nsecs
-        result.mtime = result.mtime.secs
-      }
-
-      sink.push(result)
+      sink.push({
+        ...result,
+        cid: result.cid.toString(),
+        type: result.type.toUpperCase(),
+        ...encodeMtime(result.mtime)
+      })
     }
 
     sink.end()

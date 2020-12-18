@@ -5,8 +5,6 @@ const serverStreamToIterator = require('../../utils/server-stream-to-iterator')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = function grpcMfsLs (grpc, service, opts = {}) {
-  opts = opts || {}
-
   async function * mfsLs (path, options = {}) {
     const request = {
       path

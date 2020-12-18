@@ -13,16 +13,19 @@ const protocols = {
   'wss://': 'https://'
 }
 
-module.exports = function createClient (opts = {}) {
-  opts = opts || {}
-  opts.url = toUrlString(opts.url)
-
-  // @improbable-eng/grpc-web requires http:// protocol URLs, not ws://
+function normaliseUrls (opts) {
   Object.keys(protocols).forEach(protocol => {
     if (opts.url.startsWith(protocol)) {
       opts.url = protocols[protocol] + opts.url.substring(protocol.length)
     }
   })
+}
+
+module.exports = function createClient (opts = {}) {
+  opts.url = toUrlString(opts.url)
+
+  // @improbable-eng/grpc-web requires http:// protocol URLs, not ws://
+  normaliseUrls(opts)
 
   const client = {
     addAll: require('./core-api/add-all')(grpc, service.Root.add, opts),

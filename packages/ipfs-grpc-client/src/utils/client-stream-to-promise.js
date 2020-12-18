@@ -4,6 +4,10 @@ const first = require('it-first')
 const bidiToDuplex = require('./bidi-to-duplex')
 
 /**
+ * Client streaming methods are a many-to-one operation so this
+ * function takes a source that can emit multiple messages and
+ * returns a promise that resolves to the server response.
+ *
  * @param {object} grpc - an @improbable-eng/grpc-web instance
  * @param {object} service - an @improbable-eng/grpc-web service
  * @param {AsyncIterable<object>} source - a source of objects to send
@@ -19,10 +23,10 @@ module.exports = async function clientStreamToPromise (grpc, service, source, op
   } = bidiToDuplex(grpc, service, options)
 
   for await (const obj of source) {
-    serverSource.push(obj)
+    sink.push(obj)
   }
 
-  serverSource.end()
+  sink.end()
 
-  return first(sink)
+  return first(serverSource)
 }

@@ -5,7 +5,7 @@ const CID = require('cids')
 const bidiToDuplex = require('../utils/bidi-to-duplex')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-function sendDirectory (index, source, path, mode, mtime) {
+function sendDirectory (index, sink, path, mode, mtime) {
   const message = {
     index,
     type: 'DIRECTORY',
@@ -21,10 +21,10 @@ function sendDirectory (index, source, path, mode, mtime) {
     message.mode = mode
   }
 
-  source.push(message)
+  sink.push(message)
 }
 
-async function sendFile (index, source, content, path, mode, mtime) {
+async function sendFile (index, sink, content, path, mode, mtime) {
   for await (const buf of content) {
     const message = {
       index,
@@ -43,7 +43,7 @@ async function sendFile (index, source, content, path, mode, mtime) {
 
     message.content = new Uint8Array(buf, buf.byteOffset, buf.byteLength)
 
-    source.push(message)
+    sink.push(message)
   }
 
   // signal that the file data has finished
@@ -53,10 +53,10 @@ async function sendFile (index, source, content, path, mode, mtime) {
     path
   }
 
-  source.push(message)
+  sink.push(message)
 }
 
-async function sendFiles (stream, source, options) {
+async function sendFiles (stream, sink) {
   let i = 1
 
   for await (const { path, content, mode, mtime } of normaliseInput(stream)) {
@@ -64,16 +64,14 @@ async function sendFiles (stream, source, options) {
     i++
 
     if (content) {
-      await sendFile(index, source, content, path, mode, mtime)
+      await sendFile(index, sink, content, path, mode, mtime)
     } else {
-      sendDirectory(index, source, path, mode, mtime)
+      sendDirectory(index, sink, path, mode, mtime)
     }
   }
 }
 
 module.exports = function grpcAddAll (grpc, service, opts = {}) {
-  opts = opts || {}
-
   async function * addAll (stream, options = {}) {
     const {
       source,
@@ -84,17 +82,15 @@ module.exports = function grpcAddAll (grpc, service, opts = {}) {
       metadata: options
     })
 
-    setTimeout(() => {
-      sendFiles(stream, source, options)
-        .catch(err => {
-          source.end(err)
-        })
-        .finally(() => {
-          source.end()
-        })
-    }, 0)
+    sendFiles(stream, sink)
+      .catch(err => {
+        sink.end(err)
+      })
+      .finally(() => {
+        sink.end()
+      })
 
-    for await (const result of sink) {
+    for await (const result of source) {
       // received progress result
       if (result.type === 'PROGRESS') {
         if (options.progress) {

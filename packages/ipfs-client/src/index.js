@@ -5,8 +5,6 @@ const grpcClient = require('ipfs-grpc-client')
 const mergeOptions = require('merge-options')
 
 module.exports = function createClient (opts = {}) {
-  opts = opts || {}
-
   const clients = []
 
   if (opts.http) {

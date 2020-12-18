@@ -5,22 +5,20 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
 const { mtimeToObject, modeToNumber } = require('ipfs-core-utils/src/files/normalise-input/utils')
 
-module.exports = function grpcMfsWrite (grpc, service, opts = {}) {
-  opts = opts || {}
-
-  async function mfsWrite (path, content, options = {}) {
-    const stream = async function * () {
-      for await (const { content: bufs } of normaliseInput(content)) {
-        if (!bufs) {
-          return
-        }
-
-        for await (const content of bufs) {
-          yield { path, content }
-        }
-      }
+async function * stream (path, content) {
+  for await (const { content: bufs } of normaliseInput(content)) {
+    if (!bufs) {
+      return
     }
 
+    for await (const content of bufs) {
+      yield { path, content }
+    }
+  }
+}
+
+module.exports = function grpcMfsWrite (grpc, service, opts = {}) {
+  async function mfsWrite (path, content, options = {}) {
     const mtime = mtimeToObject(options.mtime)
 
     if (mtime != null) {
@@ -37,7 +35,7 @@ module.exports = function grpcMfsWrite (grpc, service, opts = {}) {
       options.mode = mode
     }
 
-    await clientStreamToPromise(grpc, service, stream(), {
+    await clientStreamToPromise(grpc, service, stream(path, content), {
       host: opts.url,
       debug: Boolean(process.env.DEBUG),
       metadata: options

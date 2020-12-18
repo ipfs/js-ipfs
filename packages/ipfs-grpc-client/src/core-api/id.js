@@ -6,8 +6,6 @@ const unaryToPromise = require('../utils/unary-to-promise')
 const multiaddr = require('multiaddr')
 
 module.exports = function grpcId (grpc, service, opts = {}) {
-  opts = opts || {}
-
   async function id (options = {}) {
     const request = {}
 

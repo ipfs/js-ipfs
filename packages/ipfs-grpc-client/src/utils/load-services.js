@@ -7,12 +7,19 @@ const { Service } = protobuf
 
 const CONVERSION_OPTS = {
   keepCase: false,
-  // longs: String, // long.js is required
+  longs: String, // long.js is required
   enums: String,
   defaults: false,
   oneofs: true
 }
 
+/**
+ * Converts protobufjs service definitions into the format expected
+ * by @improbable-eng/grpc-web.  This is to let us use the same
+ * service definition on both the server and the client.
+ *
+ * @returns {object}
+ */
 module.exports = function loadServices () {
   const root = protobuf.Root.fromJSON(protocol)
   const output = {}

@@ -122,7 +122,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 
 ### Server streaming
 
-Where the server sends repeated messages.  `sink` is an [it-pushable][].
+Where the server sends multiple messages.  `sink` is an [it-pushable][].
 
 ```javascript
 module.exports = function grpcFunction (ipfs, options = {}) {
@@ -139,7 +139,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 
 ### Client streaming
 
-Where the client sends repeated messages.  `source` is an [AsyncIterator][].
+Where the client sends multiple messages.  `source` is an [AsyncIterator][].
 
 ```javascript
 module.exports = function grpcFunction (ipfs, options = {}) {
@@ -161,7 +161,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 
 ### Bidirectional streaming
 
-The simplest case, one request message and one response message.  `source` is an [AsyncIterator][] and `sink` is an [it-pushable][].
+Where the client and the server both send multiple messages.  `source` is an [AsyncIterator][] and `sink` is an [it-pushable][].
 
 ```javascript
 module.exports = function grpcFunction (ipfs, options = {}) {

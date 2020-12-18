@@ -7,7 +7,7 @@ const { Service } = protobuf
 
 const CONVERSION_OPTS = {
   keepCase: false,
-  // longs: String, // long.js is required
+  longs: String, // long.js is required
   enums: String,
   defaults: false,
   oneofs: true
