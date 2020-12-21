@@ -47,7 +47,7 @@
     "ipfs-core-types": "^0.1.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.2.0",
     "interface-ipfs-core": "^0.142.3",
     "ipfs": "^0.52.3",
     "ipfs-core": "^0.3.1",
