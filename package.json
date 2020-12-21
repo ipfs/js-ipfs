@@ -52,7 +52,7 @@
     "ipfs": "^0.52.0",
     "ipfsd-ctl": "^7.0.0",
     "it-all": "^1.0.1",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "contributors": [
     "Vasco Santos <vasco.santos@moxy.studio>",
