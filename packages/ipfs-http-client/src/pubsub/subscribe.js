@@ -50,7 +50,7 @@ module.exports = configure((api, options) => {
             return
           }
 
-          readMessages(response.ndjson(), {
+          readMessages(response, {
             onMessage: handler,
             onEnd: () => subsTracker.unsubscribe(topic, handler),
             onError: options.onError
@@ -64,11 +64,11 @@ module.exports = configure((api, options) => {
   }
 })
 
-async function readMessages (msgStream, { onMessage, onEnd, onError }) {
+async function readMessages (response, { onMessage, onEnd, onError }) {
   onError = onError || log
 
   try {
-    for await (const msg of msgStream) {
+    for await (const msg of response.ndjson()) {
       try {
         if (!msg.from) {
           continue
@@ -85,6 +85,10 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
         onError(err, false, msg) // Not fatal
       }
     }
+    // Connection for active pubsub subscribtion should not be closed unless
+    // subscribtion is aborted (which will never reach this code path).
+    // Workaround for https://github.com/node-fetch/node-fetch/issues/1055
+    throw Error('Response stream for active subscribtion was closed')
   } catch (err) {
     // FIXME: In testing with Chrome, err.type is undefined (should not be!)
     // Temporarily use the name property instead.

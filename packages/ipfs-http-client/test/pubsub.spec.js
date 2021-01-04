@@ -2,9 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const { describe, Promise, console } = require('ipfs-utils/src/globalthis')
-const all = require('it-all')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const AbortController = require('native-abort-controller')
 
 const f = require('./utils/factory')()
 
@@ -30,13 +28,9 @@ describe('.pubsub', function () {
       const topic = 'gossipboom'
       const messages = []
       let onError
+      const error = new Promise(resolve => { onError = resolve })
 
-      // eslint-disable-next-line promise/param-names
-      const error = new Promise((_, reject) => {
-        onError = reject
-      })
-
-      ipfs.pubsub.subscribe(topic, message => {
+      await ipfs.pubsub.subscribe(topic, message => {
         messages.push(message)
       }, {
         onError
@@ -44,11 +38,46 @@ describe('.pubsub', function () {
 
       await ipfs.pubsub.publish(topic, 'hello')
       await ipfs.pubsub.publish(topic, 'bye')
+
       // Stop the daemon
       await ctl.stop()
 
-      await expect(error).to.eventually.be.rejectedWith(/network/ig)
+      await expect(error).to.eventually.be.fulfilled().and.to.be.instanceOf(Error)
       expect(messages).property('length').equal(2)
+    })
+
+    it('does not call onError when aborted', async () => {
+      const controller = new AbortController()
+      const topic = 'gossipabort'
+      const messages = []
+      let onError
+      let onReceived
+
+      const received = new Promise(resolve => { onReceived = resolve })
+      const error = new Promise(resolve => { onError = resolve })
+
+      await ipfs.pubsub.subscribe(topic, message => {
+        messages.push(message)
+        if (messages.length === 2) {
+          onReceived()
+        }
+      }, {
+        onError,
+        signal: controller.signal
+      })
+
+      await ipfs.pubsub.publish(topic, 'hello')
+      await ipfs.pubsub.publish(topic, 'bye')
+
+      await received
+      controller.abort()
+
+      // Stop the daemon
+      await ctl.stop()
+      // Just to make sure no error is caused by above line
+      setTimeout(onError, 200, 'aborted')
+
+      await expect(error).to.eventually.be.fulfilled().and.to.equal('aborted')
     })
   })
 })
