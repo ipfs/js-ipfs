@@ -12,7 +12,7 @@ describe('.pubsub', function () {
     let ipfs
     let ctl
 
-    before(async function () {
+    beforeEach(async function () {
       this.timeout(30 * 1000) // slow CI
 
       ctl = await await f.spawn({
@@ -22,7 +22,7 @@ describe('.pubsub', function () {
       ipfs = ctl.api
     })
 
-    after(() => f.clean())
+    afterEach(() => f.clean())
 
     it('.onError when connection is closed', async () => {
       const topic = 'gossipboom'
@@ -76,6 +76,8 @@ describe('.pubsub', function () {
       await ctl.stop()
       // Just to make sure no error is caused by above line
       setTimeout(onError, 200, 'aborted')
+
+      console.log(await error.catch(e => e.type))
 
       await expect(error).to.eventually.be.fulfilled().and.to.equal('aborted')
     })

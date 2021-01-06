@@ -90,12 +90,28 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
     // Workaround for https://github.com/node-fetch/node-fetch/issues/1055
     throw Error('Response stream for active subscribtion was closed')
   } catch (err) {
-    // FIXME: In testing with Chrome, err.type is undefined (should not be!)
-    // Temporarily use the name property instead.
-    if (err.type !== 'aborted' && err.name !== 'AbortError') {
+    if (!isAbortError(err)) {
       onError(err, true) // Fatal
     }
   } finally {
     onEnd()
+  }
+}
+
+/**
+ * @param {Error & {type?:string}} error
+ * @returns {boolean}
+ */
+const isAbortError = error => {
+  switch (error.type) {
+    case 'aborted':
+      return true
+    // It is `abort` in Electron instead of `aborted`
+    case 'abort':
+      return true
+    default:
+      // FIXME: In testing with Chrome, err.type is undefined (should not be!)
+      // Temporarily use the name property instead.
+      return error.name === 'AbortError'
   }
 }
