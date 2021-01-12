@@ -1,12 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { isNode } = require('ipfs-utils/src/env')
 const { expect } = require('aegir/utils/chai')
 const ipfsClient = require('../../src')
 const delay = require('delay')
-
-const PORT = 29832
 
 function startServer (handler) {
   return new Promise((resolve) => {
@@ -22,8 +19,9 @@ function startServer (handler) {
       })
     })
 
-    server.listen(PORT, () => {
+    server.listen(0, () => {
       resolve({
+        port: server.address().port,
         close: () => server.close()
       })
     })
@@ -31,12 +29,6 @@ function startServer (handler) {
 }
 
 describe('agent', function () {
-  // do not test in browser
-  if (!isNode) {
-    return
-  }
-
-  let ipfs
   let agent
 
   before(() => {
@@ -44,11 +36,6 @@ describe('agent', function () {
 
     agent = new Agent({
       maxSockets: 2
-    })
-
-    ipfs = ipfsClient({
-      url: `http://localhost:${PORT}`,
-      agent
     })
   })
 
@@ -61,6 +48,11 @@ describe('agent', function () {
       })
 
       return p
+    })
+
+    const ipfs = ipfsClient({
+      url: `http://localhost:${server.port}`,
+      agent
     })
 
     // make three requests
