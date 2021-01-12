@@ -6,7 +6,10 @@ const Daemon = require('../')
 const fetch = require('node-fetch')
 const WebSocket = require('ws')
 
-describe('daemon', () => {
+describe('daemon', function () {
+  // slow ci is slow
+  this.timeout(60 * 1000)
+
   let daemon
 
   it('should start a http api server', async () => {
