@@ -99,6 +99,7 @@ All core API methods take _additional_ `options` specific to the HTTP API:
 
 * `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
 * `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+* `agent` - A node [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used to configure connection persistence and reuse (only supported in node.js)
 
 ### Instance Utils
 
