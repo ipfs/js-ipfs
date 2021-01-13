@@ -5,6 +5,27 @@ const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
 const fetch = require('node-fetch')
 const WebSocket = require('ws')
+const os = require('os')
+
+function createDaemon () {
+  return new Daemon({
+    init: {
+      bits: 512
+    },
+    repo: `${os.tmpdir()}/ipfs-test-${Math.random()}`,
+    config: {
+      Addresses: {
+        Swarm: [
+          '/ip4/0.0.0.0/tcp/0',
+          '/ip4/127.0.0.1/tcp/0/ws'
+        ],
+        API: '/ip4/127.0.0.1/tcp/0',
+        Gateway: '/ip4/127.0.0.1/tcp/0',
+        RPC: '/ip4/127.0.0.1/tcp/0'
+      }
+    }
+  })
+}
 
 describe('daemon', function () {
   // slow ci is slow
@@ -13,7 +34,7 @@ describe('daemon', function () {
   let daemon
 
   it('should start a http api server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
     console.info('daemon started') // eslint-disable-line no-console
@@ -38,7 +59,7 @@ describe('daemon', function () {
   })
 
   it('should start a http gateway server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
 
@@ -56,7 +77,7 @@ describe('daemon', function () {
   })
 
   it('should start a gRPC server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
 
@@ -91,7 +112,7 @@ describe('daemon', function () {
   })
 
   it('should stop', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
     await daemon.stop()
