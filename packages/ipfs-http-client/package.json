@@ -18,7 +18,8 @@
     "./src/lib/multipart-request.js": "./src/lib/multipart-request.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs": false,
-    "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
+    "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js",
+    "http": false
   },
   "typesVersions": {
     "*": {
@@ -79,6 +80,7 @@
   },
   "devDependencies": {
     "aegir": "^29.2.2",
+    "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
     "ipfs-core": "^0.3.1",
     "ipfsd-ctl": "^7.2.0",
