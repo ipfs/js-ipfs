@@ -51,7 +51,7 @@ describe('daemon', function () {
 
     await delay(5000)
 
-    console.info('fetch', `${uri}/api/v0/id`)
+    console.info('fetch', `${uri}/api/v0/id`) // eslint-disable-line no-console
 
     const httpId = await fetch(`${uri}/api/v0/id`, {
       method: 'POST'
