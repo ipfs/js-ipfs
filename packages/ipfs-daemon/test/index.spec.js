@@ -51,6 +51,8 @@ describe('daemon', function () {
 
     await delay(5000)
 
+    console.info('fetch', `${uri}/api/v0/id`)
+
     const httpId = await fetch(`${uri}/api/v0/id`, {
       method: 'POST'
     })
