@@ -1,14 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-process.env.DEBUG = 'ipfs*'
-
 const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
 const fetch = require('node-fetch')
 const WebSocket = require('ws')
 const os = require('os')
-const createClient = require('ipfs-http-client')
 
 function createDaemon () {
   return new Daemon({
@@ -40,33 +37,20 @@ describe('daemon', function () {
     daemon = createDaemon()
 
     await daemon.start()
-    console.info('daemon started') // eslint-disable-line no-console
 
     const {
       uri
     } = daemon._httpApi._apiServers[0].info
 
     const idFromCore = await daemon._ipfs.id()
-    console.info('got daemon id by core') // eslint-disable-line no-console
-
-    const client = createClient(uri)
-
-    console.info('client from http api')
-
-    console.info(await client.id())
-
-    console.info('fetch', `${uri}/api/v0/id`) // eslint-disable-line no-console
 
     const httpId = await fetch(`${uri}/api/v0/id`, {
       method: 'POST'
     })
-    console.info('daemon http response received') // eslint-disable-line no-console
 
     await expect(httpId.json()).to.eventually.have.property('PublicKey', idFromCore.publicKey)
-    console.info('got daemon id by http') // eslint-disable-line no-console
 
     await daemon.stop()
-    console.info('daemon stopped') // eslint-disable-line no-console
   })
 
   it('should start a http gateway server', async () => {
