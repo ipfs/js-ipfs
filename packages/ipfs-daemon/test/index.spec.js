@@ -22,14 +22,15 @@ describe('daemon', function () {
       uri
     } = daemon._httpApi._apiServers[0].info
 
-    const httpId = (await fetch(`${uri}/api/v0/id`, {
-      method: 'POST'
-    })).json()
-
     const apiId = await daemon._ipfs.id()
     console.info('got daemon id by api') // eslint-disable-line no-console
 
-    await expect(httpId).to.eventually.have.property('PublicKey', apiId.publicKey)
+    const httpId = await fetch(`${uri}/api/v0/id`, {
+      method: 'POST'
+    })
+    console.info('daemon http response received') // eslint-disable-line no-console
+
+    await expect(httpId.json()).to.eventually.have.property('PublicKey', apiId.publicKey)
     console.info('got daemon id by http') // eslint-disable-line no-console
 
     await daemon.stop()

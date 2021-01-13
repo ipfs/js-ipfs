@@ -33,7 +33,7 @@ class Daemon {
   /**
    * Starts the IPFS HTTP server
    *
-   * @returns {Promise<Daemon>}
+   * @returns {Promise<Daemon>} - A promise that resolves to a Daemon instance
    */
   async start () {
     log('starting')
