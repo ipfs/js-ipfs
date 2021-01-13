@@ -8,7 +8,7 @@ const Daemon = require('../')
 const fetch = require('node-fetch')
 const WebSocket = require('ws')
 const os = require('os')
-const delay = require('delay')
+const createClient = require('ipfs-http-client')
 
 function createDaemon () {
   return new Daemon({
@@ -36,7 +36,7 @@ describe('daemon', function () {
 
   let daemon
 
-  it('should start a http api server', async () => {
+  it.only('should start a http api server', async () => {
     daemon = createDaemon()
 
     await daemon.start()
@@ -49,7 +49,11 @@ describe('daemon', function () {
     const idFromCore = await daemon._ipfs.id()
     console.info('got daemon id by core') // eslint-disable-line no-console
 
-    await delay(5000)
+    const client = createClient(uri)
+
+    console.info('client from http api')
+
+    console.info(await client.id())
 
     console.info('fetch', `${uri}/api/v0/id`) // eslint-disable-line no-console
 
@@ -74,11 +78,11 @@ describe('daemon', function () {
       uri
     } = daemon._httpGateway._gatewayServers[0].info
 
-    const result = await (await fetch(`${uri}/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn`, {
+    const result = await fetch(`${uri}/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn`, {
       method: 'POST'
-    })).text()
+    })
 
-    expect(result).to.include('Index of /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/')
+    await expect(result.text()).to.eventually.include('Index of /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/')
 
     await daemon.stop()
   })
