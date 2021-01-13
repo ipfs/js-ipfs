@@ -16,6 +16,7 @@ describe('daemon', function () {
     daemon = new Daemon({})
 
     await daemon.start()
+    console.info('daemon started') // eslint-disable-line no-console
 
     const {
       uri
@@ -26,10 +27,13 @@ describe('daemon', function () {
     })).json()
 
     const apiId = await daemon._ipfs.id()
+    console.info('got daemon id by api') // eslint-disable-line no-console
 
     await expect(httpId).to.eventually.have.property('PublicKey', apiId.publicKey)
+    console.info('got daemon id by http') // eslint-disable-line no-console
 
     await daemon.stop()
+    console.info('daemon stopped') // eslint-disable-line no-console
   })
 
   it('should start a http gateway server', async () => {
