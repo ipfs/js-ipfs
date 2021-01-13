@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
+process.env.DEBUG = 'ipfs*'
+
 const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
 const fetch = require('node-fetch')
