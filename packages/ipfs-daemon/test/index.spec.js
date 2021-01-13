@@ -33,7 +33,7 @@ describe('daemon', function () {
 
   let daemon
 
-  it.only('should start a http api server', async () => {
+  it('should start a http api server', async () => {
     daemon = createDaemon()
 
     await daemon.start()
