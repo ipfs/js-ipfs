@@ -54,7 +54,7 @@
     "dep-check": "aegir dep-check -i typescript -i interface-ipfs-core -i ipfs-core-types"
   },
   "dependencies": {
-    "array-shuffle": "^1.0.1",
+    "array-shuffle": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "cbor": "^5.1.0",
     "cids": "^1.1.5",
