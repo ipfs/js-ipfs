@@ -13,7 +13,8 @@ module.exports = function grpcMfsLs (grpc, service, opts = {}) {
     for await (const result of serverStreamToIterator(grpc, service, request, {
       host: opts.url,
       debug: Boolean(process.env.DEBUG),
-      metadata: options
+      metadata: options,
+      agent: opts.agent
     })) {
       yield {
         name: result.name,

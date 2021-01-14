@@ -13,12 +13,32 @@ const WebsocketSignal = {
 
 const finishSendFrame = new Uint8Array([1])
 
-function WebsocketTransport () {
-  return (opts) => {
-    return websocketRequest(opts)
+/**
+ * @param {object} options
+ * @param {import('http').Agent} [options.agent] - http.Agent used to control HTTP client behaviour
+ */
+function WebsocketTransport (options) {
+  /**
+   * @param {import('@improbable-eng/grpc-web').grpc.TransportOptions} opts
+   */
+  const websocketTransportFactory = (opts) => {
+    return websocketRequest({
+      ...options,
+      ...opts
+    })
   }
+
+  return websocketTransportFactory
 }
 
+/**
+ * @typedef {object} NodeTransportOptions
+ * @property {import('http').Agent} [options.agent]
+ *
+ * @typedef {NodeTransportOptions & import('@improbable-eng/grpc-web').grpc.TransportOptions} WebSocketTransportOptions
+ *
+ * @param {WebSocketTransportOptions} options
+ */
 function websocketRequest (options) {
   const webSocketAddress = constructWebSocketAddress(options.url)
 
@@ -54,7 +74,7 @@ function websocketRequest (options) {
       }
     },
     start: (metadata) => {
-      ws = new WebSocket(webSocketAddress, ['grpc-websockets'])
+      ws = new WebSocket(webSocketAddress, ['grpc-websockets'], options)
       ws.binaryType = 'arraybuffer'
       ws.onopen = function () {
         options.debug && debug('websocketRequest.onopen')
@@ -93,7 +113,8 @@ function constructWebSocketAddress (url) {
   } else if (url.substr(0, 7) === 'http://') {
     return `ws://${url.substr(7)}`
   }
-  throw new Error('Websocket transport constructed with non-https:// or http:// host.')
+
+  throw new Error('Websocket transport url must start with ws:// or wss:// or http:// or https://')
 }
 
 function headersToBytes (headers) {

@@ -3,6 +3,7 @@
 const pushable = require('it-pushable')
 const errCode = require('err-code')
 const toHeaders = require('./to-headers')
+const transport = require('../grpc/transport')
 
 async function sendMessages (service, client, source) {
   for await (const obj of source) {
@@ -23,6 +24,7 @@ async function sendMessages (service, client, source) {
  * @param {string} options.host - The remote host
  * @param {boolean} [options.debug] - Whether to print debug messages
  * @param {object} [options.metadata] - Metadata sent as headers
+ * @param {import('http').Agent} [options.agent] - http.Agent used to control HTTP client behaviour (node.js only)
  * @returns {{ source: AsyncIterable<object>, sink: { push: Function, end: Function } }}
  **/
 module.exports = function bidiToDuplex (grpc, service, options) {
@@ -32,7 +34,12 @@ module.exports = function bidiToDuplex (grpc, service, options) {
   // @ts-ignore
   const sink = pushable()
 
-  const client = grpc.client(service, options)
+  const client = grpc.client(service, {
+    ...options,
+    transport: transport({
+      agent: options.agent
+    })
+  })
   client.onMessage(message => {
     sink.push(message)
   })

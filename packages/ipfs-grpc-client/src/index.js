@@ -1,10 +1,8 @@
 'use strict'
 
-const transport = require('./grpc/transport')
 const toUrlString = require('ipfs-core-utils/src/to-url-string')
 const loadServices = require('./utils/load-services')
 const { grpc } = require('@improbable-eng/grpc-web')
-grpc.setDefaultTransport(transport())
 
 const service = loadServices()
 
@@ -21,7 +19,12 @@ function normaliseUrls (opts) {
   })
 }
 
-module.exports = function createClient (opts = {}) {
+/**
+ * @param {object} opts
+ * @param {string} opts.url - The URL to connect to as a URL or Multiaddr
+ * @param {import('http').Agent} [opts.agent] - http.Agent used to control HTTP client behaviour (node.js only)
+ */
+module.exports = function createClient (opts = { url: '' }) {
   opts.url = toUrlString(opts.url)
 
   // @improbable-eng/grpc-web requires http:// protocol URLs, not ws://

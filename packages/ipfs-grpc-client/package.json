@@ -42,7 +42,7 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.13.0",
     "change-case": "^4.1.1",
-    "cids": "^1.0.0",
+    "cids": "^1.1.5",
     "debug": "^4.1.1",
     "err-code": "^2.0.3",
     "ipfs-core-utils": "^0.5.0",
