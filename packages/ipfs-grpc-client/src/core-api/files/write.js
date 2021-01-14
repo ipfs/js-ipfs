@@ -38,7 +38,8 @@ module.exports = function grpcMfsWrite (grpc, service, opts = {}) {
     await clientStreamToPromise(grpc, service, stream(path, content), {
       host: opts.url,
       debug: Boolean(process.env.DEBUG),
-      metadata: options
+      metadata: options,
+      agent: opts.agent
     })
   }
 

@@ -82,6 +82,11 @@ describe('agent', function () {
 
         break
       }
+
+      if (i === 4) {
+        // should have first two responses by now
+        expect(responses).to.have.lengthOf(2)
+      }
     }
 
     // wait for the final request to arrive

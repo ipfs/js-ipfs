@@ -14,6 +14,7 @@ const bidiToDuplex = require('./bidi-to-duplex')
  * @param {string} options.host - The remote host
  * @param {boolean} [options.debug] - Whether to print debug messages
  * @param {object} [options.metadata] - Metadata sent as headers
+ * @param {import('http').Agent} [options.agent] - http.Agent used to control HTTP client behaviour (node.js only)
  * @returns {AsyncIterable<object>}
  **/
 module.exports = function serverStreamToIterator (grpc, service, request, options) {
