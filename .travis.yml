@@ -347,14 +347,14 @@ jobs:
       if: branch = master AND type = push AND fork = false
       name: external - orbit-db
       script:
-        - npm run test:external -- -- -- https://github.com/orbitdb/orbit-db.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/orbitdb/orbit-db.git --deps=orbit-db-test-utils@next
 
     - stage: test-external
       # only run on changes to master
       if: branch = master AND type = push AND fork = false
       name: external - ipfs-log
       script:
-        - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
+        - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=orbit-db-test-utils@next
 
     - stage: test-external
       # only run on changes to master
