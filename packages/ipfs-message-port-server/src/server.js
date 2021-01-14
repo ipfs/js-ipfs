@@ -3,6 +3,7 @@
 /* eslint-env browser */
 
 const { encodeError } = require('ipfs-message-port-protocol/src/error')
+const { ensureUniqueBuffers } = require('ipfs-message-port-protocol/src/buffer')
 
 /**
  * @typedef {import('ipfs-message-port-protocol/src/data').EncodedError} EncodedError
@@ -212,11 +213,14 @@ exports.Server = class Server {
     if (!query.signal.aborted) {
       try {
         const value = await query.result
-        const transfer = [...new Set(value.transfer || [])]
+        const transfer = ensureUniqueBuffers(value.transfer || [])
+
+        // Don't need the transfer value in the result
         delete value.transfer
 
         port.postMessage(
           { type: 'result', id, result: { ok: true, value } },
+          // @ts-expect-error - Typescript expects the transfer list to be an Array, but it can actually be any iterable.
           transfer
         )
       } catch (error) {

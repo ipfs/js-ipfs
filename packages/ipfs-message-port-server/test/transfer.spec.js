@@ -15,7 +15,7 @@ describe('Server', function () {
     const cid = new CID('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     return new Promise((resolve, reject) => {
-      const channel = process.browser
+      const channel = globalThis.MessageChannel
         ? new globalThis.MessageChannel()
         : new (require('worker_threads').MessageChannel)()
 

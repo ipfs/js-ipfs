@@ -2,6 +2,7 @@
 
 /* eslint-env browser */
 const { encodeError, decodeError } = require('./error')
+const { ensureUniqueBuffers } = require('./buffer')
 
 /**
  * @template T
@@ -100,8 +101,6 @@ exports.decodeIterable = decodeIterable
  */
 const encodeIterable = (iterable, encode, transfer) => {
   const { port1: port, port2: remote } = new MessageChannel()
-  /** @type {Transferable[]} */
-  const itemTransfer = []
   /** @type {Iterator<I>|AsyncIterator<I>} */
   const iterator = toIterator(iterable)
 
@@ -114,14 +113,18 @@ const encodeIterable = (iterable, encode, transfer) => {
             port.postMessage({ type: 'next', done: true })
             port.close()
           } else {
-            itemTransfer.length = 0
+            /** @type {Transferable[]} */
+            const itemTransfer = []
+            const encodedValue = encode(value, itemTransfer)
+
             port.postMessage(
               {
                 type: 'next',
                 done: false,
-                value: encode(value, itemTransfer)
+                value: encodedValue
               },
-              itemTransfer
+              // @ts-expect-error - Typescript expects the transfer list to be an Array, but it can actually be any iterable.
+              ensureUniqueBuffers(itemTransfer)
             )
           }
         } catch (error) {
@@ -197,7 +200,8 @@ const decodeCallback = ({ port }) => {
    * @returns {void}
    */
   const callback = (args, transfer = []) => {
-    port.postMessage(args, [...new Set(transfer)])
+    // @ts-expect-error - Typescript expects the transfer list to be an Array, but it can actually be any iterable.
+    port.postMessage(args, new Set(transfer))
   }
 
   return callback
