@@ -10,5 +10,5 @@ module.exports = ({ network }) =>
    */
   () => {
     const net = network.try()
-    return net != null && net.libp2p.isStarted()
+    return net != null && Boolean(net.libp2p.isStarted())
   }

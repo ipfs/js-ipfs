@@ -2,6 +2,10 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const WS = require('libp2p-websockets')
+const filters = require('libp2p-websockets/src/filters')
+const transportKey = WS.prototype[Symbol.toStringTag]
+
 const all = require('it-all')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -59,6 +63,18 @@ async function start () {
         },
         // If you want to connect to the public bootstrap nodes, remove the next line
         Bootstrap: []
+      },
+      libp2p: {
+        config: {
+          transport: {
+            // This is added for local demo!
+            // In a production environment the default filter should be used
+            // where only DNS + WSS addresses will be dialed by websockets in the browser.
+            [transportKey]: {
+              filter: filters.all
+            }
+          }
+        }
       }
     })
 

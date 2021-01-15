@@ -41,6 +41,7 @@ module.exports = ({ network, config }) => {
    */
   async function subscribe (topic, handler, options) {
     const { libp2p } = await network.use(options)
+    // @ts-ignore Libp2p Pubsub is deprecating the handler, using the EventEmitter
     return libp2p.pubsub.subscribe(topic, handler, options)
   }
 
@@ -75,6 +76,7 @@ module.exports = ({ network, config }) => {
    */
   async function unsubscribe (topic, handler, options) {
     const { libp2p } = await network.use(options)
+    // @ts-ignore Libp2p Pubsub is deprecating the handler, using the EventEmitter
     libp2p.pubsub.unsubscribe(topic, handler, options)
   }
 
@@ -111,7 +113,7 @@ module.exports = ({ network, config }) => {
    */
   async function ls (options) {
     const { libp2p } = await network.use(options)
-    return libp2p.pubsub.getTopics(options)
+    return libp2p.pubsub.getTopics()
   }
 
   /**
@@ -131,7 +133,7 @@ module.exports = ({ network, config }) => {
    */
   async function peers (topic, options) {
     const { libp2p } = await network.use(options)
-    return libp2p.pubsub.getSubscribers(topic, options)
+    return libp2p.pubsub.getSubscribers(topic)
   }
 }
 

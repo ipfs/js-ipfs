@@ -9,10 +9,9 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 module.exports = ({ keychain }) => {
   /**
    * @param {string} name
-   * @param {AbortOptions} [options]
    * @returns {Promise<Key>}
    */
-  const info = (name, options = {}) => keychain.findKeyByName(name, options)
+  const info = (name) => keychain.findKeyByName(name)
 
   return withTimeoutOption(info)
 }

@@ -17,6 +17,7 @@
     "delay": "^4.4.0",
     "ipfs": "^0.52.2",
     "ipfs-pubsub-room": "^2.0.1",
+    "libp2p-websockets": "^0.15.0",
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {

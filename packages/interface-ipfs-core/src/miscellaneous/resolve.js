@@ -10,6 +10,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -17,6 +18,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -25,7 +27,7 @@ module.exports = (common, options) => {
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await common.spawn({ type: 'proc', ipfsOptions })).api
     })
 
     after(() => common.clean())

@@ -21,11 +21,10 @@ module.exports = ({ keychain }) => {
    * @param {string} name - The name of the key to import
    * @param {string} pem - The PEM encoded key
    * @param {string} password - The password that protects the PEM key
-   * @param {import('.').AbortOptions} options
    * @returns {Promise<import('.').Key>} - An object that describes the new key
    */
-  const importKey = (name, pem, password, options) => {
-    return keychain.importKey(name, pem, password, options)
+  const importKey = (name, pem, password) => {
+    return keychain.importKey(name, pem, password)
   }
 
   return withTimeoutOption(importKey)

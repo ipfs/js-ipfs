@@ -22,11 +22,11 @@ module.exports = ({ keychain }) => {
    * ```
    * @param {string} oldName - The current key name
    * @param {string} newName - The desired key name
-   * @param {AbortOptions} [options]
    * @returns {Promise<RenamedKey>}
    */
-  const rename = async (oldName, newName, options = {}) => {
-    const key = await keychain.renameKey(oldName, newName, options)
+  const rename = async (oldName, newName) => {
+    const key = await keychain.renameKey(oldName, newName)
+
     return {
       was: oldName,
       now: key.name,
