@@ -16,11 +16,7 @@ stages:
 
 node_js:
   - 'lts/*'
-# node 15.5.1 broke Hapi - https://github.com/hapijs/hapi/issues/4208
-# The change has been reverted - https://github.com/nodejs/node/pull/36647
-# Will be released in 15.6.x - https://github.com/nodejs/node/pull/36889
-# Disable testing on node 15.x.x until that is released
-#  - 'node'
+  - 'node'
 
 os:
   - linux
