@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "cids": "^1.1.5",
-    "ipfs-daemon": "^0.3.1",
-    "ipfs-core": "^0.3.0",
-    "ipfs-http-client": "^48.1.2",
+    "ipfs-daemon": "^0.4.0",
+    "ipfs-core": "^0.4.0",
+    "ipfs-http-client": "^48.2.0",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
     "uint8arrays": "^1.1.0"
