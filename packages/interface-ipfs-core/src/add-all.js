@@ -355,11 +355,11 @@ module.exports = (common, options) => {
     it('should add a file from the file system', async function () {
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, '..', 'test', 'fixtures', 'testfile.txt')
+      const filePath = path.join(__dirname, 'add-all.js')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('testfile.txt')
+      expect(result[0].path).to.equal('add-all.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
