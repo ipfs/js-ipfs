@@ -3,7 +3,6 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
-const loadFixture = require('aegir/fixtures')
 const { nanoid } = require('nanoid')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -39,7 +38,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve an IPFS hash', async () => {
-      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = uint8ArrayFromString('Hello world')
 
       const { cid } = await ipfs.add(content)
       const path = await ipfs.resolve(`/ipfs/${cid}`)
@@ -57,7 +56,7 @@ module.exports = (common, options) => {
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash
     it('should resolve an IPFS path link', async () => {
       const path = 'path/to/testfile.txt'
-      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = uint8ArrayFromString('Hello world')
       const [{ cid: fileCid }, , , { cid: rootCid }] = await all(ipfs.addAll([{ path, content }], { wrapWithDirectory: true }))
       const resolve = await ipfs.resolve(`/ipfs/${rootCid}/${path}`)
 
