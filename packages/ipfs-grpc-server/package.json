@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-server",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A server library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -38,16 +38,16 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
-    "protobufjs": "^6.10.2",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
     "debug": "^4.1.1",
-    "ipfs-grpc-protocol": "0.0.0",
+    "ipfs-grpc-protocol": "^0.1.0",
     "it-first": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.0",
+    "protobufjs": "^6.10.2",
     "ws": "^7.3.1"
   },
   "devDependencies": {
