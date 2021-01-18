@@ -34,7 +34,11 @@ module.exports = configure((api, options) => {
           arg: topic,
           ...options
         }),
-        headers: options.headers
+        headers: options.headers,
+        // Enables text streaming support for React Native when using @react-native-community/fetch
+        reactNative: {
+          textStreaming: true
+        }
       })
         .catch((err) => {
           // Initial subscribe fail, ensure we clean up
