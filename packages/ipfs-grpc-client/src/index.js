@@ -22,7 +22,7 @@ function normaliseUrls (opts) {
 /**
  * @param {object} opts
  * @param {string} opts.url - The URL to connect to as a URL or Multiaddr
- * @param {import('http').Agent} [opts.agent] - http.Agent used to control HTTP client behaviour (node.js only)
+ * @property {Agent | function(string):Agent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) or a function that returns an agent, used to control connection persistence and reuse for HTTP clients (only supported in node.js)
  */
 module.exports = function createClient (opts = { url: '' }) {
   opts.url = toUrlString(opts.url)

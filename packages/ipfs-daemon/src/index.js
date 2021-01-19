@@ -14,6 +14,17 @@ const HttpGateway = require('ipfs-http-gateway')
 const gRPCServer = require('ipfs-grpc-server')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 const { isElectron } = require('ipfs-utils/src/env')
+const http = require('http')
+const https = require('https')
+
+const httpAgent = new http.Agent({
+  keepAlive: true,
+  maxSockets: 6
+})
+const httpsAgent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 6
+})
 
 class Daemon {
   constructor (options = {}) {
@@ -123,7 +134,15 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
       // port is a string atm, so we need to convert for the check
       // @ts-ignore - parseInt(input:string) => number
       protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
-      port: delegateAddr.port
+      port: delegateAddr.port,
+      agent: function (parsedURL) {
+        // return an agent that allows redirection from http to https
+        if (parsedURL.protocol === 'http:') {
+          return httpAgent
+        } else {
+          return httpsAgent
+        }
+      }
     }
 
     const delegateHttpClient = ipfsHttpClient(delegateApiOptions)

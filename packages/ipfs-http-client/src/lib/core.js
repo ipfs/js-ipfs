@@ -129,7 +129,7 @@ const parseTimeout = (value) => {
  * @property {object} [ipld]
  * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
  * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
- * @property {Agent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used to control connection persistence and reuse for HTTP clients (only supported in node.js)
+ * @property {Agent | function(string):Agent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) or a function that returns an agent, used to control connection persistence and reuse for HTTP clients (only supported in node.js)
  */
 class Client extends HTTP {
   /**
