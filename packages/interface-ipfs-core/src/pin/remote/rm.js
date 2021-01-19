@@ -25,7 +25,7 @@ module.exports = (common, options) => {
   const cid3 = new CID('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
   const cid4 = new CID('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
 
-  describe('.pin.remote.rm(All)', function () {
+  describe('.pin.remote.rm()', function () {
     this.timeout(50 * 1000)
 
     let ipfs
@@ -136,7 +136,9 @@ module.exports = (common, options) => {
         status: ['queued', 'pinning', 'pinned', 'failed'],
         service: SERVICE
       })
-      await expect(result).to.eventually.be.rejectedWith(/service name must be passed/)
+      await expect(result).to.eventually.be.rejectedWith(
+        /multiple remote pins are matching this query/
+      );
 
       const list = await all(ipfs.pin.remote.ls({
         status: ['queued', 'pinning', 'pinned', 'failed'],
