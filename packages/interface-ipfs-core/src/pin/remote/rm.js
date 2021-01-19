@@ -136,9 +136,10 @@ module.exports = (common, options) => {
         status: ['queued', 'pinning', 'pinned', 'failed'],
         service: SERVICE
       })
+
       await expect(result).to.eventually.be.rejectedWith(
         /multiple remote pins are matching this query/
-      );
+      )
 
       const list = await all(ipfs.pin.remote.ls({
         status: ['queued', 'pinning', 'pinned', 'failed'],
