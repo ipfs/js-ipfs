@@ -20,10 +20,9 @@ module.exports = ({ keychain }) => {
    * ```
    *
    * @param {string} name - The name of the key to remove
-   * @param {import('.').AbortOptions} options
    * @returns {Promise<RemovedKey>} - An object that describes the removed key
    */
-  const rm = (name, options) => keychain.removeKey(name, options)
+  const rm = (name) => keychain.removeKey(name)
 
   return withTimeoutOption(rm)
 }

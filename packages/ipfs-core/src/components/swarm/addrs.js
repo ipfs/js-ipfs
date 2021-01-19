@@ -16,7 +16,7 @@ module.exports = ({ network }) => {
   async function addrs (options) { // eslint-disable-line require-await
     const peers = []
     const { libp2p } = await network.use(options)
-    for (const [peerId, peer] of libp2p.peerStore.peers.entries(options)) {
+    for (const [peerId, peer] of libp2p.peerStore.peers.entries()) {
       peers.push({
         id: peerId,
         addrs: peer.addresses.map((mi) => mi.multiaddr)

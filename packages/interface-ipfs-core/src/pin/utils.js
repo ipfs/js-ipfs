@@ -5,6 +5,7 @@ const loadFixture = require('aegir/fixtures')
 const CID = require('cids')
 const drain = require('it-drain')
 const map = require('it-map')
+const fromString = require('uint8arrays/from-string')
 
 const pinTypes = {
   direct: 'direct',
@@ -28,7 +29,7 @@ const fixtures = Object.freeze({
     })])
   }),
   files: Object.freeze([Object.freeze({
-    data: loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core'),
+    data: fromString('Plz add me!\n'),
     cid: new CID('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
   }), Object.freeze({
     data: loadFixture('test/fixtures/test-folder/files/hello.txt', 'interface-ipfs-core'),

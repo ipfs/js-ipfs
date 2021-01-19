@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "48.1.3",
+  "version": "48.2.0",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -18,7 +18,8 @@
     "./src/lib/multipart-request.js": "./src/lib/multipart-request.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs": false,
-    "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js"
+    "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js",
+    "http": false
   },
   "typesVersions": {
     "*": {
@@ -52,12 +53,12 @@
   "dependencies": {
     "any-signal": "^2.0.0",
     "bignumber.js": "^9.0.0",
-    "cids": "^1.0.0",
+    "cids": "^1.1.5",
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
-    "ipfs-core-utils": "^0.5.4",
+    "ipfs-core-types": "^0.2.0",
+    "ipfs-core-utils": "^0.6.0",
     "ipfs-utils": "^5.0.0",
-    "ipfs-core-types": "^0.1.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
@@ -79,8 +80,9 @@
   },
   "devDependencies": {
     "aegir": "^29.2.2",
+    "delay": "^4.4.0",
     "go-ipfs": "0.8.0-rc1",
-    "ipfs-core": "^0.3.1",
+    "ipfs-core": "^0.4.0",
     "ipfsd-ctl": "^7.2.0",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",

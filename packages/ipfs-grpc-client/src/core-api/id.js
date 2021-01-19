@@ -11,7 +11,8 @@ module.exports = function grpcId (grpc, service, opts = {}) {
 
     const res = await unaryToPromise(grpc, service, request, {
       host: opts.url,
-      metadata: toHeaders(options)
+      metadata: toHeaders(options),
+      agent: opts.agent
     })
 
     return {

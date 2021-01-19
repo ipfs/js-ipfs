@@ -148,9 +148,7 @@ describe('libp2p customization', function () {
         },
         pubsub: {
           enabled: true,
-          emitSelf: true,
-          signMessages: true,
-          strictSigning: true
+          emitSelf: true
         }
       })
       const transports = Array.from(libp2p.transportManager.getTransports())

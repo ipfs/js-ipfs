@@ -11,7 +11,7 @@
     "test": "test-ipfs-example"
   },
   "dependencies": {
-    "ipfs-client": "^0.1.0"
+    "ipfs-client": "^0.2.0"
   },
   "devDependencies": {
     "execa": "^4.0.3",

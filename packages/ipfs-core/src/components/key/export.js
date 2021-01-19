@@ -23,11 +23,10 @@ module.exports = ({ keychain }) => {
    * ```
    * @param {string} name - The name of the key to export
    * @param {string} password - Password to set on the PEM output
-   * @param {import('.').AbortOptions} options
    * @returns {Promise<string>} - The string representation of the key
    */
-  const exportKey = (name, password, options) =>
-    keychain.exportKey(name, password, options)
+  const exportKey = (name, password) =>
+    keychain.exportKey(name, password)
 
   return withTimeoutOption(exportKey)
 }

@@ -35,21 +35,28 @@ module.exports = ({ network }) => {
       peerId = PeerId.createFromCID(peerId)
     }
 
-    let peer = libp2p.peerStore.get(peerId)
+    const storedPeer = libp2p.peerStore.get(peerId)
+    let id = storedPeer && storedPeer.id
 
-    if (!peer) {
+    if (!id) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      peer = await libp2p.peerRouting.findPeer(peerId)
+      const remotePeer = await libp2p.peerRouting.findPeer(peerId)
+
+      id = remotePeer && remotePeer.id
     }
 
-    yield { ...basePacket, text: `PING ${peer.id.toB58String()}` }
+    if (!id) {
+      throw new Error('Peer was not found')
+    }
+
+    yield { ...basePacket, text: `PING ${id.toB58String()}` }
 
     let packetCount = 0
     let totalTime = 0
 
     for (let i = 0; i < options.count; i++) {
       try {
-        const time = await libp2p.ping(peer.id)
+        const time = await libp2p.ping(id)
         totalTime += time
         packetCount++
         yield { ...basePacket, time }

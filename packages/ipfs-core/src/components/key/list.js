@@ -23,18 +23,9 @@ module.exports = ({ keychain }) => {
    * // ]
    * ```
    *
-   * @param {AbortOptions} [options]
-   * @returns {Promise<KeyEntry[]>}
+   * @returns {Promise<import('libp2p/src/keychain').KeyInfo[]>}
    */
-  const list = (options = {}) => keychain.listKeys(options)
+  const list = () => keychain.listKeys()
 
   return withTimeoutOption(list)
 }
-
-/**
- * @typedef {Object} KeyEntry
- * @property {string} name - The name of the key
- * @property {string} hash -  The hash of the key
- *
- * @typedef {import('.').AbortOptions} AbortOptions
- */
