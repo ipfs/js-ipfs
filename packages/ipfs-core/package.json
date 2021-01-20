@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -121,7 +121,7 @@
     "aegir": "^29.2.2",
     "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
-    "interface-ipfs-core": "^0.143.0",
+    "interface-ipfs-core": "^0.143.1",
     "ipfsd-ctl": "^7.2.0",
     "ipld-git": "^0.6.1",
     "iso-url": "^1.0.0",

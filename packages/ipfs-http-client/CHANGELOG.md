@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [48.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.2.0...ipfs-http-client@48.2.1) (2021-01-20)
+
+
+### Bug Fixes
+
+* use https agent for https requests ([#3490](https://github.com/ipfs/js-ipfs/issues/3490)) ([ac4bb48](https://github.com/ipfs/js-ipfs/commit/ac4bb4841ce7c191408e1b2bb906284ae0dbd975)), closes [#3474](https://github.com/ipfs/js-ipfs/issues/3474)
+
+
+
+
+
 # [48.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.1.3...ipfs-http-client@48.2.0) (2021-01-15)
 
 

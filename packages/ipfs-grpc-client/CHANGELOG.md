@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.1.0...ipfs-grpc-client@0.1.1) (2021-01-20)
+
+
+### Bug Fixes
+
+* use https agent for https requests ([#3490](https://github.com/ipfs/js-ipfs/issues/3490)) ([ac4bb48](https://github.com/ipfs/js-ipfs/commit/ac4bb4841ce7c191408e1b2bb906284ae0dbd975)), closes [#3474](https://github.com/ipfs/js-ipfs/issues/3474)
+
+
+
+
+
 # 0.1.0 (2021-01-15)
 
 

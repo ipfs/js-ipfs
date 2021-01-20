@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "48.2.0",
+  "version": "48.2.1",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -83,7 +83,7 @@
     "aegir": "^29.2.2",
     "delay": "^4.4.0",
     "go-ipfs": "^0.7.0",
-    "ipfs-core": "^0.4.0",
+    "ipfs-core": "^0.4.1",
     "ipfsd-ctl": "^7.2.0",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
