@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.3.0",
-    "ipfs-core": "^0.4.0",
+    "ipfs-cli": "^0.3.1",
+    "ipfs-core": "^0.4.1",
     "ipfs-repo": "^7.0.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
@@ -50,9 +50,9 @@
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.8.0-rc1",
-    "interface-ipfs-core": "^0.143.0",
-    "ipfs-client": "^0.2.0",
-    "ipfs-http-client": "^48.2.0",
+    "interface-ipfs-core": "^0.143.1",
+    "ipfs-client": "^0.2.1",
+    "ipfs-http-client": "^48.2.1",
     "ipfs-interop": "^4.0.1",
     "ipfs-utils": "^5.0.0",
     "ipfsd-ctl": "^7.2.0",
@@ -62,7 +62,7 @@
     "rimraf": "^3.0.2",
     "typescript": "4.0.x",
     "wrtc": "^0.4.6",
-    "mock-ipfs-pinning-service": "git://github.com/ipfs-shipyard/js-mock-ipfs-pinning-service"
+    "mock-ipfs-pinning-service": "^0.1.2"
   },
   "typesVersions": {
     "*": {

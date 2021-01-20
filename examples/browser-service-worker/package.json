@@ -22,7 +22,7 @@
     "webpack-dev-server": "3.11.0"
   },
   "dependencies": {
-    "ipfs": "^0.52.0",
+    "ipfs": "^0.53.0",
     "ipfs-message-port-client": "^0.4.4",
     "ipfs-message-port-protocol": "^0.5.0",
     "ipfs-message-port-server": "^0.5.0",

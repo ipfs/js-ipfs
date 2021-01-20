@@ -7,6 +7,11 @@
 const WebSocket = require('ws')
 const debug = require('debug')('ipfs:grpc-client:websocket-transport')
 
+/**
+ * @typedef {import('http').Agent} HttpAgent
+ * @typedef {import('https').Agent} HttpsAgent
+ */
+
 const WebsocketSignal = {
   FINISH_SEND: 1
 }
@@ -15,7 +20,7 @@ const finishSendFrame = new Uint8Array([1])
 
 /**
  * @param {object} options
- * @param {import('http').Agent} [options.agent] - http.Agent used to control HTTP client behaviour
+ * @param {HttpAgent|HttpsAgent} [options.agent] - http.Agent used to control HTTP client behaviour
  */
 function WebsocketTransport (options) {
   /**
@@ -33,7 +38,7 @@ function WebsocketTransport (options) {
 
 /**
  * @typedef {object} NodeTransportOptions
- * @property {import('http').Agent} [options.agent]
+ * @property {HttpAgent|HttpsAgent} [options.agent]
  *
  * @typedef {NodeTransportOptions & import('@improbable-eng/grpc-web').grpc.TransportOptions} WebSocketTransportOptions
  *

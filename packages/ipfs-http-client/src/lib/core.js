@@ -8,6 +8,7 @@ const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
 const toUrlString = require('ipfs-core-utils/src/to-url-string')
 const http = require('http')
+const https = require('https')
 
 const DEFAULT_PROTOCOL = isBrowser || isWebWorker ? location.protocol : 'http'
 const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
@@ -49,7 +50,9 @@ const normalizeOptions = (options = {}) => {
   }
 
   if (isNode) {
-    agent = opts.agent || new http.Agent({
+    const Agent = url.protocol.startsWith('https') ? https.Agent : http.Agent
+
+    agent = opts.agent || new Agent({
       keepAlive: true,
       // Similar to browsers which limit connections to six per host
       maxSockets: 6
@@ -116,7 +119,8 @@ const parseTimeout = (value) => {
 }
 
 /**
- * @typedef {import('http').Agent} Agent
+ * @typedef {import('http').Agent} HttpAgent
+ * @typedef {import('https').Agent} HttpsAgent
  *
  * @typedef {Object} ClientOptions
  * @property {string} [host]
@@ -129,7 +133,7 @@ const parseTimeout = (value) => {
  * @property {object} [ipld]
  * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
  * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
- * @property {Agent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used to control connection persistence and reuse for HTTP clients (only supported in node.js)
+ * @property {HttpAgent|HttpsAgent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used to control connection persistence and reuse for HTTP clients (only supported in node.js)
  */
 class Client extends HTTP {
   /**
