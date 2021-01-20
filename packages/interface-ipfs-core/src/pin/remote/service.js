@@ -24,8 +24,8 @@ module.exports = (common, options) => {
       ipfs = (await common.spawn()).api
     })
 
-    after(() => {
-      common.clean()
+    after(async () => {
+      await common.clean()
     })
     afterEach(() => clearServices(ipfs))
 
