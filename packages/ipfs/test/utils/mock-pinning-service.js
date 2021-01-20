@@ -26,7 +26,15 @@ class PinningService {
    * @returns {Promise<void>}
    */
   static stop (service) {
-    return new Promise(resolve => service.server.close(resolve))
+    return new Promise((resolve, reject) => {
+      service.server.close((error) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve()
+        }
+      })
+    })
   }
 
   constructor ({ server, host, port, token }) {
