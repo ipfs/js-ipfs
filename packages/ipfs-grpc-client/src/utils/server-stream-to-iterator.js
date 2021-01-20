@@ -3,6 +3,11 @@
 const bidiToDuplex = require('./bidi-to-duplex')
 
 /**
+ * @typedef {import('http').Agent} HttpAgent
+ * @typedef {import('https').Agent} HttpsAgent
+ */
+
+/**
  * Server stream methods are one-to-many operations so this
  * function accepts a client message and returns a source
  * from which multiple server messages can be read.
@@ -14,7 +19,7 @@ const bidiToDuplex = require('./bidi-to-duplex')
  * @param {string} options.host - The remote host
  * @param {boolean} [options.debug] - Whether to print debug messages
  * @param {object} [options.metadata] - Metadata sent as headers
- * @param {import('http').Agent} [options.agent] - http.Agent used to control HTTP client behaviour (node.js only)
+ * @param {HttpAgent|HttpsAgent} [options.agent] - http.Agent used to control HTTP client behaviour (node.js only)
  * @returns {AsyncIterable<object>}
  **/
 module.exports = function serverStreamToIterator (grpc, service, request, options) {

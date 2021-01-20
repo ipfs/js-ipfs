@@ -19,7 +19,8 @@
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs": false,
     "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js",
-    "http": false
+    "http": false,
+    "https": false
   },
   "typesVersions": {
     "*": {
