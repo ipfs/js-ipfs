@@ -176,7 +176,7 @@ port2.onmessage = async ({data}) => {
 
 ### Callback
 
-Primitive callbacks that take single parameter supported by [structured cloning algorithm][] like progress callback used across IPFS APIs can be encoded / decoded. Unilke most encoders `transfer` argument is required (because value is encoded to a [MessagePort][] that can only be transferred)
+Primitive callbacks that take single parameter supported by [structured cloning algorithm][] like progress callback used across IPFS APIs can be encoded / decoded. Unlike most encoders `transfer` argument is required (because value is encoded to a [MessagePort][] that can only be transferred)
 
 ```js
 const { encodeCallback, decodeCallback } = require('ipfs-message-port-protocol/src/core')
@@ -217,4 +217,3 @@ Check out our [contributing document](https://github.com/ipfs/community/blob/mas
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
-
