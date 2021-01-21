@@ -14,6 +14,7 @@ export interface IPFS extends Core {
   dag: DAG
   files: Files
   block: BlockService
+  pin: PinService
 }
 
 export interface IPFSFactory {
@@ -62,6 +63,10 @@ export interface Core {
   ls: (ipfsPath: CID | string, options: CoreLsOptions) => AsyncIterable<LsEntry>
 }
 
+export interface PinService {
+  add(path: string | CID, options?: AddPinOptions): Promise<CID>
+}
+
 export interface AddOptions extends AbortOptions {
   chunker?: string
   cidVersion?: number
@@ -76,7 +81,11 @@ export interface AddOptions extends AbortOptions {
   wrapWithDirectory?: boolean
 }
 
-export interface FileInput {
+export interface AddPinOptions extends AbortOptions {
+  recursive?: boolean
+}
+
+export interface FileInput = {
   path?: string
   content?: FileContent
   mode?: string | number | undefined

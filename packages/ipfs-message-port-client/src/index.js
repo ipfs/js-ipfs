@@ -6,6 +6,7 @@ const BlockClient = require('./block')
 const DAGClient = require('./dag')
 const CoreClient = require('./core')
 const FilesClient = require('./files')
+const PinClient = require('./pin')
 
 /**
  * @typedef {Object} ClientOptions
@@ -19,9 +20,10 @@ class IPFSClient extends CoreClient {
   constructor (transport) {
     super(transport)
     this.transport = transport
+    this.block = new BlockClient(this.transport)
     this.dag = new DAGClient(this.transport)
     this.files = new FilesClient(this.transport)
-    this.block = new BlockClient(this.transport)
+    this.pin = new PinClient(this.transport)
   }
 
   /**

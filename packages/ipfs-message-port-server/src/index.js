@@ -16,5 +16,8 @@ exports.BlockService = BlockService
 const { IPFSService } = require('./service')
 exports.IPFSService = IPFSService
 
+const { PinService } = require('./pin')
+exports.PinService = PinService
+
 const { Server } = require('./server')
 exports.Server = Server
