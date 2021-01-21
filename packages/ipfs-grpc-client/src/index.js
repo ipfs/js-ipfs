@@ -23,9 +23,11 @@ function normaliseUrls (opts) {
  * @typedef {import('http').Agent} HttpAgent
  * @typedef {import('https').Agent} HttpsAgent
  *
- * @param {object} opts
- * @param {string} opts.url - The URL to connect to as a URL or Multiaddr
- * @param {HttpAgent|HttpsAgent} [opts.agent] - http.Agent used to control HTTP client behaviour (node.js only)
+ * @typedef {Object} Options
+ * @property {string} url - The URL to connect to as a URL or Multiaddr
+ * @property {HttpAgent|HttpsAgent} [agent] - http.Agent used to control HTTP client behaviour (node.js only)
+ * 
+ * @param {Options} [opts]
  */
 module.exports = function createClient (opts = { url: '' }) {
   opts.url = toUrlString(opts.url)
