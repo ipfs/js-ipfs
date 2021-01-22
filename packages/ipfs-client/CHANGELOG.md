@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.1...ipfs-client@0.2.2) (2021-01-22)
+
+
+### Bug Fixes
+
+* issue with isolateModules flag ([#3495](https://github.com/ipfs/js-ipfs/issues/3495)) ([839e190](https://github.com/ipfs/js-ipfs/commit/839e1908f3c050b45af176883a7e450fb339bef0)), closes [#3494](https://github.com/ipfs/js-ipfs/issues/3494) [#3498](https://github.com/ipfs/js-ipfs/issues/3498) [/github.com/ipfs-shipyard/ipfs-webui/pull/1655#issuecomment-763846124](https://github.com//github.com/ipfs-shipyard/ipfs-webui/pull/1655/issues/issuecomment-763846124)
+
+
+
+
+
 ## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.0...ipfs-client@0.2.1) (2021-01-20)
 
 **Note:** Version bump only for package ipfs-client
