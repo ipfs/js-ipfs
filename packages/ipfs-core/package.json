@@ -67,7 +67,7 @@
     "err-code": "^2.0.3",
     "hamt-sharding": "^1.0.0",
     "hashlru": "^2.3.0",
-    "interface-datastore": "^2.0.0",
+    "interface-datastore": "^3.0.1",
     "ipfs-bitswap": "^4.0.0",
     "ipfs-block-service": "^0.18.0",
     "ipfs-core-types": "^0.2.1",
