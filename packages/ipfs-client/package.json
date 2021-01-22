@@ -22,6 +22,9 @@
       ]
     }
   },
+  "eslintConfig": {
+    "extends": "ipfs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
