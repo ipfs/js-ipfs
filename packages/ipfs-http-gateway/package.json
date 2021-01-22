@@ -42,7 +42,7 @@
     "it-to-stream": "^0.1.2",
     "joi": "^17.2.1",
     "multibase": "^3.0.0",
-    "uint8arrays": "^1.1.0",
+    "uint8arrays": "^2.0.5",
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {

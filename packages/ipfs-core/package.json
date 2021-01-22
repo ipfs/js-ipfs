@@ -115,7 +115,7 @@
     "parse-duration": "^0.4.4",
     "peer-id": "^0.14.1",
     "streaming-iterables": "^5.0.2",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "devDependencies": {
     "aegir": "^29.2.2",

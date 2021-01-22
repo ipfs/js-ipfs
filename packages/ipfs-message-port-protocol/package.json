@@ -49,7 +49,7 @@
     "aegir": "^29.2.2",
     "rimraf": "^3.0.2",
     "typescript": "4.0.x",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "engines": {
     "node": ">=10.3.0",

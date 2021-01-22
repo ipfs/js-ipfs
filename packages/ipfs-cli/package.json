@@ -63,7 +63,7 @@
     "progress": "^2.0.3",
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^5.0.2",
-    "uint8arrays": "^1.1.0",
+    "uint8arrays": "^2.0.5",
     "yargs": "^16.0.3"
   },
   "devDependencies": {
