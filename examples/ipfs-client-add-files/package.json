@@ -11,11 +11,11 @@
     "test": "test-ipfs-example"
   },
   "dependencies": {
-    "ipfs-client": "^0.2.0"
+    "ipfs-client": "^0.2.2"
   },
   "devDependencies": {
     "execa": "^4.0.3",
-    "ipfs": "^0.53.0",
+    "ipfs": "^0.53.2",
     "ipfsd-ctl": "^7.2.0",
     "parcel-bundler": "^1.12.4",
     "rimraf": "^3.0.2",
