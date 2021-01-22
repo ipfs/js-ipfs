@@ -46,6 +46,7 @@
     "release:post:remove-hoisted-modules": "json -I -f ./lerna.json -e \"delete this.command.bootstrap.nohoist\"",
     "release:post:remove-examples": "json -I -f ./lerna.json -e \"this.packages = this.packages.filter(p => !p.includes('examples'))\"",
     "release:post:revert-ignore-changes-to-lerna-config": "git update-index --no-assume-unchanged ./lerna.json",
+    "release:post:update-example-dependencies": "node scripts/update-example-deps.js && git add examples && git commit -m 'chore: updated example dependencies' && git push",
     "release:rc": "run-s release:pre:* release:canary release:post:*",
     "release:canary": "lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
     "docker:rc": "run-s docker:rc:*",
