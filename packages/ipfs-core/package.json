@@ -56,7 +56,7 @@
   "dependencies": {
     "array-shuffle": "^1.0.1",
     "bignumber.js": "^9.0.0",
-    "cbor": "^5.1.0",
+    "cbor": "^6.0.1",
     "cids": "^1.1.5",
     "class-is": "^1.1.0",
     "dag-cbor-links": "^2.0.0",
