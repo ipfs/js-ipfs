@@ -64,7 +64,7 @@ module.exports = ({ network, repo }) => {
         options.maxNumProviders = options.numProviders
       }
 
-      for await (const peer of libp2p._dht.findProviders(normalizeCID(cid), options)) {
+      for await (const peer of libp2p._dht.findProviders(new CID(normalizeCID(cid)), options)) {
         yield {
           id: peer.id.toB58String(),
           addrs: peer.addrs
