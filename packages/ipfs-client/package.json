@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -22,6 +22,9 @@
       ]
     }
   },
+  "eslintConfig": {
+    "extends": "ipfs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -37,8 +40,8 @@
     "dep-check": "aegir dep-check -i aegir -i typescript -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "^0.1.1",
-    "ipfs-http-client": "^48.2.1",
+    "ipfs-grpc-client": "^0.1.2",
+    "ipfs-http-client": "^48.2.2",
     "merge-options": "^2.0.0"
   },
   "devDependencies": {
