@@ -164,6 +164,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
  * @typedef {import('.').PeerId} PeerId
  * @typedef {import('.').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Libp2pOptions} Options
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
  * @typedef {import('.').IPFSConfig} IPFSConfig
  */
