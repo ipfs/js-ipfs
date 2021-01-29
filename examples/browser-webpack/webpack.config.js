@@ -3,6 +3,7 @@
 var path = require('path')
 var webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 module.exports = {
   devtool: 'eval',
@@ -18,12 +19,24 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }, {
-      from: 'img',
-      to: 'static/img'
-    }])
+    new CopyWebpackPlugin({
+        patterns: [{
+        from: 'index.html'
+      }, {
+        from: 'img',
+        to: 'static/img'
+      }]
+    }),
+    // fixes Module not found: Error: Can't resolve 'stream' in '.../node_modules/nofilter/lib'
+    new NodePolyfillPlugin(),
+    // Note: stream-browserify has assumption about `Buffer` global in its
+    // dependencies causing runtime errors. This is a workaround to provide
+    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
+    // is fixed.
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser'
+    })
   ],
   module: {
     rules: [
@@ -38,10 +51,5 @@ module.exports = {
         }
       }
     ]
-  },
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
   }
 }
