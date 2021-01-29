@@ -33,7 +33,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 
   // String
   if (typeof input === 'string' || input instanceof String) {
-    yield toFileObject(input, normaliseContent)
+    yield toFileObject(input.toString(), normaliseContent)
     return
   }
 

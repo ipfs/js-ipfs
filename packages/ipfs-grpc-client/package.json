@@ -32,12 +32,10 @@
   "scripts": {
     "test": "aegir test",
     "lint": "aegir lint",
-    "build": "npm run build:js && npm run build:types",
-    "build:js": "aegir build",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i aegir -i typescript -i rimraf -i ipfs-grpc-protocol"
+    "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.13.0",
@@ -55,11 +53,10 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.3.0",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
-    "sinon": "^9.0.3",
-    "typescript": "4.0.x"
+    "sinon": "^9.0.3"
   },
   "eslintConfig": {
     "extends": "ipfs"

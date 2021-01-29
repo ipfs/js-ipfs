@@ -1,7 +1,7 @@
 'use strict'
 
 const JSONDiff = require('jsondiffpatch')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'apply <profile>',

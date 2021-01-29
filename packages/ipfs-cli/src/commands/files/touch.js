@@ -6,7 +6,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'touch [path]',

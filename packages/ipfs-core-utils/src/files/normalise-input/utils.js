@@ -1,6 +1,6 @@
 'use strict'
 
-const { Blob } = require('ipfs-utils/src/globalthis')
+const { Blob } = globalThis
 
 /**
  * @param {any} obj

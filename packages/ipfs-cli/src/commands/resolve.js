@@ -1,7 +1,7 @@
 'use strict'
 
 const multibase = require('multibase')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const {
   stripControlCharacters
 } = require('../utils')

@@ -1,6 +1,6 @@
 export type Procedure<T> = T extends (arg: infer I) => infer O
   ? (query: I & QueryOptions) => Return<O>
-  : void
+  : undefined
 
 export type Remote<T extends Record<string, unknown>> = {
   [K in keyof T]: Procedure<T[K]>
@@ -10,21 +10,21 @@ type Return<T> = T extends Promise<infer U>
   ? Promise<U & TransferOptions>
   : Promise<T & TransferOptions>
 
-export type QueryOptions = {
+export interface QueryOptions {
   signal?: AbortSignal
   timeout?: number
   transfer?: Transferable[]
 }
 
-export type TransferOptions = {
+export interface TransferOptions {
   transfer?: Transferable[]
 }
 
 export type NonUndefined<A> = A extends undefined ? never : A
 
-export type ProcedureNames<T extends Record<string, unknown>> = {
+export type ProcedureNames<T extends Record<string, unknown>> = Array<{
   [K in keyof T]-?: NonUndefined<T[K]> extends Function ? K : never // eslint-disable-line @typescript-eslint/ban-types
-}[keyof T][]
+}[keyof T]>
 
 /**
  * Any method name of the associated with RPC service.
@@ -43,27 +43,27 @@ export type Inn<T extends Record<string, unknown>> = ServiceQuery<T>['input']
 export type Out<T extends Record<string, unknown>> = ServiceQuery<T>['result']
 
 export type RPCQuery<T extends Record<string, unknown>> = Pick<
-  ServiceQuery<T>,
-  'method' | 'namespace' | 'input' | 'timeout' | 'signal'
+ServiceQuery<T>,
+'method' | 'namespace' | 'input' | 'timeout' | 'signal'
 >
 
 export type ServiceQuery<T> = Values<
-  {
-    [NS in keyof T]: NamespacedQuery<T[NS], NS>
-  }
+{
+  [NS in keyof T]: NamespacedQuery<T[NS], NS>
+}
 >
 
 export type NamespacedQuery<S, NS> = Values<
-  {
-    [M in keyof S]-?: S[M] extends (input: infer I) => infer O
-      ? {
-          namespace: NS
-          method: M
-          input: I & QueryOptions
-          result: R<O>
-        } & QueryOptions
-      : never
-  }
+{
+  [M in keyof S]-?: S[M] extends (input: infer I) => infer O
+    ? {
+      namespace: NS
+      method: M
+      input: I & QueryOptions
+      result: R<O>
+    } & QueryOptions
+    : never
+}
 >
 
 type R<O> = O extends Promise<infer T>
@@ -73,13 +73,13 @@ type R<O> = O extends Promise<infer T>
 type WithTransferOptions<O> = O extends Record<string, unknown> ? O & TransferOptions : O
 
 export type MultiService <T> = {
-  [NS in keyof T]: NamespacedService<NS, T[NS]>
+  [NS in keyof T]: NamespacedService<T[NS]>
 }
 
-type NamespacedService<NS, S> = {
-  [M in keyof S]: NamespacedMethod<NS, S, S[M]>
+type NamespacedService<S> = {
+  [M in keyof S]: NamespacedMethod<S[M]>
 }
 
-export type NamespacedMethod<NS, M, T> = T extends (arg: infer I) => infer O
+export type NamespacedMethod<T> = T extends (arg: infer I) => infer O
   ? (query: I & QueryOptions) => Return<O>
   : never

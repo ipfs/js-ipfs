@@ -13,7 +13,6 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 module.exports = configure(api => {
   return async (obj, options = {}) => {
     let tmpObj = {
-      Data: null,
       Links: []
     }
 
@@ -52,6 +51,7 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = anySignal([controller.signal, options.signal])
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('object/put', {
       timeout: options.timeout,
       signal,

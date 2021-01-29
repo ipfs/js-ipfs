@@ -6,6 +6,7 @@ const CID = require('cids')
 const drain = require('it-drain')
 const map = require('it-map')
 const fromString = require('uint8arrays/from-string')
+const first = require('it-first')
 
 const pinTypes = {
   direct: 'direct',
@@ -93,10 +94,9 @@ const expectNotPinned = (ipfs, cid, type = pinTypes.all) => {
 
 async function isPinnedWithType (ipfs, cid, type) {
   try {
-    for await (const _ of ipfs.pin.ls({ paths: cid, type })) { // eslint-disable-line no-unused-vars
-      return true
-    }
-    return false
+    const res = await first(ipfs.pin.ls({ paths: cid, type }))
+
+    return Boolean(res)
   } catch (err) {
     return false
   }

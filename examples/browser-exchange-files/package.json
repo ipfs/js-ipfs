@@ -15,7 +15,7 @@
     "execa": "^4.0.3",
     "http-server": "^0.12.3",
     "ipfs-http-client": "^48.2.2",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "dependencies": {
     "ipfs": "^0.53.2",

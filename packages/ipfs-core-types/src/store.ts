@@ -2,8 +2,8 @@
 import { Await, AwaitIterable, AbortOptions } from './basic'
 
 export interface ValueStore<T> {
-  get(options?:AbortOptions): Await<T>
-  set(value: T): Await<void>
+  get: (options?: AbortOptions) => Await<T>
+  set: (value: T) => Await<void>
 }
 
 export interface KeyValueStore<Key, Value, Entry> extends
@@ -22,64 +22,64 @@ export interface StoreReader<Key, Value> {
   /**
    * The key retrieve the value for.
    */
-  get(key: Key, options?: AbortOptions): Await<Value>
+  get: (key: Key, options?: AbortOptions) => Await<Value>
 }
 
 export interface StoreLookup<Key> {
   /**
    * Check for the existence of a given key
    */
-  has(key: Key, options?: AbortOptions): Await<boolean>
+  has: (key: Key, options?: AbortOptions) => Await<boolean>
 }
 
 export interface StoreExporter<Key, Value> {
   /**
    * Retrieve a stream of values stored under the given keys.
    */
-  getMany(keys: AwaitIterable<Key>, options?: AbortOptions): AwaitIterable<Value>
+  getMany: (keys: AwaitIterable<Key>, options?: AbortOptions) => AwaitIterable<Value>
 }
 
 export interface StoreSelector<Entry> {
   /**
    * Search the store for some values.
    */
-  query(query: Query<Entry>, options?: AbortOptions): AwaitIterable<Entry>
+  query: (query: Query<Entry>, options?: AbortOptions) => AwaitIterable<Entry>
 }
 
 export interface StoreWriter<Key, Value> {
   /**
    * Store a value with the given key.
    */
-  put(key: Key, value: Value, options?: AbortOptions): Await<void>
+  put: (key: Key, value: Value, options?: AbortOptions) => Await<void>
 }
 
 export interface StoreImporter<Entry> {
   /**
    * Store many key-value pairs.
    */
-  putMany(entries: AwaitIterable<Entry>, options?: AbortOptions): AwaitIterable<Entry>
+  putMany: (entries: AwaitIterable<Entry>, options?: AbortOptions) => AwaitIterable<Entry>
 }
 
 export interface StoreEraser<Key> {
   /**
    * Delete the content stored under the given key.
    */
-  delete(key: Key, options?: AbortOptions): Await<void>
+  delete: (key: Key, options?: AbortOptions) => Await<void>
   /**
    * Delete the content stored under the given keys.
    */
-  deleteMany(keys: AwaitIterable<Key>, options?: AbortOptions): AwaitIterable<Key>
+  deleteMany: (keys: AwaitIterable<Key>, options?: AbortOptions) => AwaitIterable<Key>
 
 }
 export interface StoreBatch<Key, Value> {
-  batch(): Batch<Key, Value>
+  batch: () => Batch<Key, Value>
 }
 
 export interface Batch<Key, Value> {
-  put(key: Key, value: Value): void
-  delete(key: Key): void
+  put: (key: Key, value: Value) => void
+  delete: (key: Key) => void
 
-  commit(options?: AbortOptions): Await<void>
+  commit: (options?: AbortOptions) => Await<void>
 }
 
 export interface Resource {
@@ -87,12 +87,12 @@ export interface Resource {
    * Opens the datastore, this is only needed if the store was closed before,
    * otherwise this is taken care of by the constructor.
    */
-  open(): Await<void>
+  open: () => Await<void>
   /**
    * Close the datastore, this should always be called to ensure resources
    * are cleaned up.
    */
-  close(): Await<void>
+  close: () => Await<void>
 }
 
 export interface Query<Entry, Options = any> {

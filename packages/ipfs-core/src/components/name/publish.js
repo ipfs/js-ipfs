@@ -1,7 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('bignumber.js').default
+const { default: Big } = require('bignumber.js')
 const CID = require('cids')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 

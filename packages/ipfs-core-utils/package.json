@@ -30,11 +30,9 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "build": "npm run build:js && npm run build:types",
-    "build:js": "aegir build",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "license": "MIT",
   "dependencies": {
@@ -44,7 +42,7 @@
     "cids": "^1.1.5",
     "err-code": "^2.0.3",
     "ipfs-core-types": "^0.2.1",
-    "ipfs-utils": "^5.0.0",
+    "ipfs-utils": "^6.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
@@ -52,11 +50,10 @@
     "multiaddr-to-uri": "^6.0.0",
     "parse-duration": "^0.4.4",
     "timeout-abort-controller": "^1.1.1",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
-    "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "aegir": "^30.3.0",
+    "rimraf": "^3.0.2"
   }
 }

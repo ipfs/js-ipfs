@@ -6,7 +6,7 @@ const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
-const { Blob, ReadableStream } = require('ipfs-utils/src/globalthis')
+const { Blob, ReadableStream } = globalThis
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
 let normalise = require('../../src/files/normalise-input')

@@ -604,17 +604,16 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       args: ['--enable-pubsub-experiment']
     }
   }), {
-    skip: isWindows ? [
-      // pubsub.subscribe
-      {
-        name: 'should send/receive 100 messages',
-        reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-      },
-      {
-        name: 'should receive multiple messages',
-        reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-      }
-    ] : null
+    skip: isWindows
+      ? [{
+          name: 'should send/receive 100 messages',
+          reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
+        },
+        {
+          name: 'should receive multiple messages',
+          reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
+        }]
+      : null
   })
 
   tests.repo(commonFactory)

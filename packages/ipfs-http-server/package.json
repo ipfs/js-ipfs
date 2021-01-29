@@ -20,13 +20,12 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "npm run build:types",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-http-client -i rimraf"
+    "dep-check": "aegir dep-check -i ipfs-http-client -i rimraf"
   },
   "dependencies": {
     "@hapi/boom": "^9.1.0",
@@ -61,11 +60,11 @@
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^5.0.2",
-    "uint8arrays": "^1.1.0",
+    "uint8arrays": "^2.0.5",
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.3.0",
     "form-data": "^3.0.0",
     "ipfs-http-client": "^48.2.2",
     "iso-random-stream": "^1.1.1",
@@ -73,8 +72,7 @@
     "qs": "^6.9.4",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3",
-    "stream-to-promise": "^3.0.0",
-    "typescript": "4.0.x"
+    "stream-to-promise": "^3.0.0"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0"

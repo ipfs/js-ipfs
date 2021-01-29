@@ -3,8 +3,7 @@ export interface DataStore extends
   KeyValueStore<Key, Value, Entry>,
   StoreSelector<Entry>,
   StoreBatch<Key, Value>,
-  Resource
-{
+  Resource {
 }
 
 export interface Key {
@@ -19,7 +18,7 @@ export interface Key {
    * // 'JohnCleese'
    * ```
    */
-  name(): string
+  name: () => string
 
   /**
    * Returns the "type" of this key (value of last namespace).
@@ -32,12 +31,12 @@ export interface Key {
    * // 'Actor'
    * ```
    */
-  type(): string
+  type: () => string
 
   /**
    * Returns the `namespaces` making up this `Key`.
    */
-  namespaces(): string[]
+  namespaces: () => string[]
 
   /**
    * Returns the "base" namespace of this key.
@@ -49,7 +48,7 @@ export interface Key {
    * key.baseNamespace()
    * // 'Actor:JohnCleese'
    */
-  baseNamespace(): string
+  baseNamespace: () => string
 
   /**
    * Returns an "instance" of this type key (appends value to namespace).
@@ -62,7 +61,7 @@ export interface Key {
    * // '/Comedy/MontyPython/Actor:JohnCleese'
    * ```
    */
-  instance(): Key
+  instance: () => Key
 
   /**
    * Returns the "path" of this key (parent + type).
@@ -75,7 +74,7 @@ export interface Key {
    * // '/Comedy/MontyPython/Actor'
    * ```
    */
-  path(): Key
+  path: () => Key
 
   /**
    * Returns the `parent` Key of this Key.
@@ -88,7 +87,7 @@ export interface Key {
    * // "/Comedy/MontyPython"
    * ```
    */
-  parent(): Key
+  parent: () => Key
 
   /**
    * Returns the `child` Key of this Key.
@@ -103,12 +102,12 @@ export interface Key {
    * '/Comedy/MontyPython/Actor:JohnCleese'
    * ```
    */
-  child(key: Key): Key
+  child: (key: Key) => Key
 
   /**
    * Check if the given key is sorted lower than this.
    */
-  less(key: Key): boolean
+  less: (key: Key) => boolean
 
   /**
    * Returns whether this key is a prefix of `other`
@@ -123,7 +122,7 @@ export interface Key {
    * // true
    * ```
    */
-  isAncestorOf(other: Key): boolean
+  isAncestorOf: (other: Key) => boolean
 
   /**
    * Returns whether this key is a contains `other` as prefix.
@@ -136,12 +135,12 @@ export interface Key {
    * // true
    * ```
    */
-  isDecendantOf(other: Key): boolean
+  isDecendantOf: (other: Key) => boolean
 
   /**
    * Returns wether this key has only one namespace.
    */
-  isTopLevel(): boolean
+  isTopLevel: () => boolean
 
   /**
    * Returns the key with all parts in reversed order.
@@ -155,12 +154,12 @@ export interface Key {
    * new Key('/Comedy/MontyPython/Actor:JohnCleese').reverse()
    * ```
    */
-  reverse(): Key
+  reverse: () => Key
 
   /**
    * Concats one or more Keys into one new Key.
    */
-  concat(...keys: Key[]): Key
+  concat: (...keys: Key[]) => Key
 
   /**
    * Returns the array representation of this key.
@@ -173,13 +172,13 @@ export interface Key {
    * // ['Comedy', 'MontyPythong', 'Actor:JohnCleese']
    * ```
    */
-  list(): string[]
-  toString(): string
+  list: () => string[]
+  toString: () => string
 }
 
 export type Value = Uint8Array
 
 export interface Entry {
-  key: Key,
+  key: Key
   value: Value
 }

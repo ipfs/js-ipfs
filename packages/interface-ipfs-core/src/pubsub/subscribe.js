@@ -12,6 +12,7 @@ const delay = require('delay')
 const AbortController = require('native-abort-controller')
 const { isWebWorker, isNode } = require('ipfs-utils/src/env')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+const first = require('it-first')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -68,14 +69,12 @@ module.exports = (common, options) => {
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hi'))
 
-        for await (const msg of msgStream) {
-          expect(uint8ArrayToString(msg.data)).to.equal('hi')
-          expect(msg).to.have.property('seqno')
-          expect(msg.seqno).to.be.an.instanceof(Uint8Array)
-          expect(msg.topicIDs[0]).to.eq(topic)
-          expect(msg).to.have.property('from', ipfs1.peerId.id)
-          break
-        }
+        const msg = await first(msgStream)
+        expect(uint8ArrayToString(msg.data)).to.equal('hi')
+        expect(msg).to.have.property('seqno')
+        expect(msg.seqno).to.be.an.instanceof(Uint8Array)
+        expect(msg.topicIDs[0]).to.eq(topic)
+        expect(msg).to.have.property('from', ipfs1.peerId.id)
       })
 
       it('should subscribe to one topic with options', async () => {

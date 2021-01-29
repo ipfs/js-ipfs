@@ -1,7 +1,7 @@
 'use strict'
 
-const Big = require('bignumber.js').default
-const parseDuration = require('parse-duration').default
+const { default: Big } = require('bignumber.js')
+const { default: parseDuration } = require('parse-duration')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 

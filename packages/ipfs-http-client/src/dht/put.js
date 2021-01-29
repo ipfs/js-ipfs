@@ -17,6 +17,7 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = anySignal([controller.signal, options.signal])
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dht/put', {
       timeout: options.timeout,
       signal,

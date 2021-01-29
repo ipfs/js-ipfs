@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = {
