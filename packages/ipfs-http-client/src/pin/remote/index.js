@@ -45,19 +45,11 @@ class Remote {
    * @param {AddOptions & AbortOptions & HttpOptions} options
    */
   static async add (client, cid, { timeout, signal, headers, ...options }) {
-    const { name, origins, background, service } = options
-
     const response = await client.post('pin/remote/add', {
       timeout,
       signal,
       headers,
-      searchParams: toUrlSearchParams({
-        arg: encodeCID(cid),
-        service: encodeService(service),
-        name,
-        origins,
-        background: background ? true : undefined
-      })
+      searchParams: encodeAddParams({ cid, ...options })
     })
 
     return Remote.decodePin(await response.json())
@@ -98,26 +90,12 @@ class Remote {
       signal,
       timeout,
       headers,
-      searchParams: Remote.encodeQuery(query)
+      searchParams: encodeQuery(query)
     })
 
     for await (const pin of response.ndjson()) {
       yield Remote.decodePin(pin)
     }
-  }
-
-  /**
-   * @param {Query & { all?: boolean }} query
-   * @returns {URLSearchParams}
-   */
-  static encodeQuery ({ service, cid, name, status, all }) {
-    return toUrlSearchParams({
-      service: encodeService(service),
-      name,
-      status,
-      force: all ? true : undefined,
-      cid: cid && cid.map(encodeCID)
-    })
   }
 
   /**
@@ -151,7 +129,7 @@ class Remote {
       timeout,
       signal,
       headers,
-      searchParams: Remote.encodeQuery(query)
+      searchParams: encodeQuery(query)
     })
   }
 }
@@ -178,6 +156,53 @@ const encodeCID = (cid) => {
   } else {
     throw new TypeError(`CID instance expected instead of ${cid}`)
   }
+}
+
+/**
+ * @param {Query & { all?: boolean }} query
+ * @returns {URLSearchParams}
+ */
+const encodeQuery = ({ service, cid, name, status, all }) => {
+  const query = toUrlSearchParams({
+    service: encodeService(service),
+    name,
+    force: all ? true : undefined
+  })
+
+  if (cid) {
+    for (const value of cid) {
+      query.append('cid', encodeCID(value))
+    }
+  }
+
+  if (status) {
+    for (const value of status) {
+      query.append('status', value)
+    }
+  }
+
+  return query
+}
+
+/**
+ * @param {AddOptions & {cid:CID}} options
+ * @returns {URLSearchParams}
+ */
+const encodeAddParams = ({ cid, service, background, name, origins }) => {
+  const params = toUrlSearchParams({
+    arg: encodeCID(cid),
+    service: encodeService(service),
+    name,
+    background: background ? true : undefined
+  })
+
+  if (origins) {
+    for (const origin of origins) {
+      params.append('origin', origin.toString())
+    }
+  }
+
+  return params
 }
 
 module.exports = Remote
