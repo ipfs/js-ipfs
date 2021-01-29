@@ -49,7 +49,7 @@
     "aegir": "^29.2.2",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.8.0-rc1",
+    "go-ipfs": "0.8.0-rc2",
     "interface-ipfs-core": "^0.143.1",
     "ipfs-client": "^0.2.2",
     "ipfs-http-client": "^48.2.2",
