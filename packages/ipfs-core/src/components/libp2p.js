@@ -54,7 +54,6 @@ module.exports = ({
  * @param {KeychainConfig} input.keychainConfig
  * @param {PeerId} input.peerId
  * @param {Multiaddr[]} input.multiaddrs
- * @returns {Options}
  */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
