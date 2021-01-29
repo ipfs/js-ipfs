@@ -5,10 +5,17 @@ const parseDuration = require('parse-duration').default
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {LibP2P} libp2p
+ * @param {BWOptions} opts
+ * @returns {BandwidthInfo}
+ */
 function getBandwidthStats (libp2p, opts) {
   let stats
 
-  if (opts.peer) {
+  if (!libp2p.metrics) {
+    stats = undefined
+  } else if (opts.peer) {
     stats = libp2p.metrics.forPeer(opts.peer)
   } else if (opts.proto) {
     stats = libp2p.metrics.forProtocol(opts.proto)
@@ -35,17 +42,30 @@ function getBandwidthStats (libp2p, opts) {
   }
 }
 
-module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function * (options = {}) {
+/**
+ * @param {Object} config
+ * @param {import('.').NetworkService} config.network
+ */
+module.exports = ({ network }) => {
+  /**
+   * Get IPFS bandwidth information
+   *
+   * @param {BWOptions & AbortOptions} options
+   * @returns {AsyncIterable<BandwidthInfo>}
+   */
+  const bw = async function * (options = {}) {
+    const { libp2p } = await network.use(options)
+
     if (!options.poll) {
       yield getBandwidthStats(libp2p, options)
       return
     }
 
-    let interval = options.interval || 1000
+    const interval = options.interval || 1000
+    let ms = -1
     try {
-      interval = typeof interval === 'string' ? parseDuration(interval) : interval
-      if (!interval || interval < 0) throw new Error('invalid duration')
+      ms = typeof interval === 'string' ? parseDuration(interval) || -1 : interval
+      if (!ms || ms < 0) throw new Error('invalid duration')
     } catch (err) {
       throw errCode(err, 'ERR_INVALID_POLL_INTERVAL')
     }
@@ -55,10 +75,31 @@ module.exports = ({ libp2p }) => {
       while (true) {
         yield getBandwidthStats(libp2p, options)
         // eslint-disable-next-line no-loop-func
-        await new Promise(resolve => { timeoutId = setTimeout(resolve, interval) })
+        await new Promise(resolve => { timeoutId = setTimeout(resolve, ms) })
       }
     } finally {
       clearTimeout(timeoutId)
     }
-  })
+  }
+
+  return withTimeoutOption(bw)
 }
+
+/**
+ * @typedef {Object} BWOptions
+ * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
+ * @property {string} [proto] - Specifies a protocol to print bandwidth for
+ * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
+ * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
+ *
+ * @typedef {Object} BandwidthInfo
+ * @property {Big} totalIn
+ * @property {Big} totalOut
+ * @property {Big} rateIn
+ * @property {Big} rateOut
+ *
+ * @typedef {import('.').LibP2P} LibP2P
+ * @typedef {import('.').PeerId} PeerId
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
+ */

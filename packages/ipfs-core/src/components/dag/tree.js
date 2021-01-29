@@ -5,8 +5,8 @@ const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**
  * @param {Object} config
- * @param {import('..').IPLD} config.ipld
- * @param {import("..").Preload} config.preload
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
  */
 module.exports = ({ ipld, preload }) => {
   /**
@@ -77,6 +77,6 @@ module.exports = ({ ipld, preload }) => {
  * @property {string} remainderPath - The path to the end of the IPFS path
  * inside the node referenced by the CID
  *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').CID} CID
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

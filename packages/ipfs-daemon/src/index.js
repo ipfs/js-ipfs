@@ -11,6 +11,7 @@ const ipfsHttpClient = require('ipfs-http-client')
 const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
+const gRPCServer = require('ipfs-grpc-server')
 const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 const { isElectron } = require('ipfs-utils/src/env')
 
@@ -32,7 +33,7 @@ class Daemon {
   /**
    * Starts the IPFS HTTP server
    *
-   * @returns {Promise<Daemon>}
+   * @returns {Promise<Daemon>} - A promise that resolves to a Daemon instance
    */
   async start () {
     log('starting')
@@ -42,7 +43,7 @@ class Daemon {
       : this._options.repo
 
     // start the daemon
-    const ipfsOpts = Object.assign({}, { init: true, start: true, libp2p: getLibp2p }, this._options, { repo })
+    const ipfsOpts = Object.assign({}, { start: true, libp2p: getLibp2p }, this._options, { repo })
     const ipfs = this._ipfs = await IPFS.create(ipfsOpts)
 
     // start HTTP servers (if API or Gateway is enabled in options)
@@ -59,6 +60,8 @@ class Daemon {
       await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
     }
 
+    this._grpcServer = await gRPCServer(ipfs, ipfsOpts)
+
     log('started')
     return this
   }
@@ -68,6 +71,7 @@ class Daemon {
     await Promise.all([
       this._httpApi && this._httpApi.stop(),
       this._httpGateway && this._httpGateway.stop(),
+      this._grpcServer && this._grpcServer.stop(),
       // @ts-ignore - may not have stop if init was false
       this._ipfs && this._ipfs.stop()
     ])

@@ -102,7 +102,7 @@ values instead of copying.
 
 > **Note:** Transferring data will empty it on the sender side which can lead to
 > errors if that data is used again later. To avoid these errors transfer option
-> was added so user can explicitily give up reference when it is safe to do so.
+> was added so user can explicitly give up reference when it is safe to do so.
 
 ```js
 /**
@@ -115,7 +115,7 @@ const example = async (data) => {
 }
 ```
 
-It is however recommended to prefer web native [Blob][] / [File][] intances as
+It is however recommended to prefer web native [Blob][] / [File][] instances as
 most web APIs provide them as option & can be send across without copying
 underlying memory.
 

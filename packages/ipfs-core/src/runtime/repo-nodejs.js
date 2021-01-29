@@ -9,6 +9,7 @@ const path = require('path')
  * @param {string} [options.path]
  * @param {boolean} [options.silent]
  * @param {boolean} [options.autoMigrate]
+ * @returns {Repo}
  */
 module.exports = (options = {}) => {
   const repoPath = options.path || path.join(os.homedir(), '.jsipfs')
@@ -29,3 +30,8 @@ module.exports = (options = {}) => {
     onMigrationProgress: options.silent ? null : onMigrationProgress
   })
 }
+
+/**
+ * @typedef {import('ipfs-core-types/src/repo').Repo<IPFSConfig>} Repo
+ * @typedef {import('../components/config').IPFSConfig} IPFSConfig
+ */

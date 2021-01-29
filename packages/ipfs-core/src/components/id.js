@@ -7,15 +7,15 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @param {Object} config
- * @param {import('peer-id')} config.peerId
- * @param {import('libp2p')} [config.libp2p]
+ * @param {import('.').PeerId} config.peerId
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ peerId, libp2p }) => {
+module.exports = ({ peerId, network }) => {
   /**
    * Returns the identity of the Peer
    *
    * @param {import('../utils').AbortOptions} [_options]
-   * @returns {Promise<PeerId>}
+   * @returns {Promise<ID>}
    * @example
    * ```js
    * const identity = await ipfs.id()
@@ -27,7 +27,10 @@ module.exports = ({ peerId, libp2p }) => {
     let addresses = []
     let protocols = []
 
-    if (libp2p) {
+    const net = network.try()
+
+    if (net) {
+      const { libp2p } = net
       // only available while the node is running
       addresses = libp2p.multiaddrs
       protocols = Array.from(libp2p.upgrader.protocols.keys())
@@ -59,7 +62,7 @@ module.exports = ({ peerId, libp2p }) => {
 }
 
 /**
- * @typedef {object} PeerId
+ * @typedef {object} ID
  * The Peer identity
  * @property {string} id - the Peer ID
  * @property {string} publicKey - the public key of the peer as a base64 encoded string

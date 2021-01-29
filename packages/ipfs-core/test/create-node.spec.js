@@ -87,9 +87,8 @@ describe('create node', function () {
     expect(ipfs.isOnline()).to.be.false()
   })
 
-  it('should create but not initialize and not start', async () => {
+  it('should create but not start', async () => {
     const ipfs = await IPFS.create({
-      init: false,
       start: false,
       repo: tempRepo,
       config: { Addresses: { Swarm: [] } }

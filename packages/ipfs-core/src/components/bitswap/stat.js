@@ -6,15 +6,12 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSBitSwap} config.bitswap
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ bitswap }) => {
+module.exports = ({ network }) => {
   /**
    * Show diagnostic information on the bitswap agent.
    * Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
-   *
-   * @param {import('../../utils').AbortOptions} [_options]
-   * @returns {Promise<BitswapStats>}
    *
    * @example
    * ```js
@@ -35,8 +32,11 @@ module.exports = ({ bitswap }) => {
    * //   dupDataReceived: 0
    * // }
    * ```
+   * @param {import('.').AbortOptions} [options]
+   * @returns {Promise<BitswapStats>}
    */
-  async function stat (_options) { // eslint-disable-line require-await
+  async function stat (options) {
+    const { bitswap } = await network.use(options)
     const snapshot = bitswap.stat().snapshot
 
     return {
@@ -59,13 +59,11 @@ module.exports = ({ bitswap }) => {
  * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
  * @property {number} provideBufLen - an integer
  * @property {CID[]} wantlist
- * @property {string[]} peers - array of peer IDs as Strings
+ * @property {CID[]} peers - array of peer IDs
  * @property {Big} blocksReceived
  * @property {Big} dataReceived
  * @property {Big} blocksSent
  * @property {Big} dataSent
  * @property {Big} dupBlksReceived
  * @property {Big} dupDataReceived
- *
- * @typedef {import('..').CID} CID
  */

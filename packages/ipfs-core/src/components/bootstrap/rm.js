@@ -4,7 +4,8 @@ const { isValidMultiaddr } = require('./utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {import('..').IPFSRepo} repo
+ * @param {Object} config
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ repo }) => {
   /**
@@ -29,7 +30,7 @@ module.exports = ({ repo }) => {
     const config = await repo.config.getAll(options)
     config.Bootstrap = (config.Bootstrap || []).filter(ma => ma.toString() !== multiaddr.toString())
 
-    await repo.config.set(config)
+    await repo.config.replace(config)
 
     return { Peers: [multiaddr] }
   }
@@ -38,8 +39,7 @@ module.exports = ({ repo }) => {
 }
 
 /**
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('.').Multiaddr} Multiaddr
  * @typedef {import('./utils').Peers} Peers
- * @typedef {import('..').CID} CID
- * @typedef {import('..').Multiaddr} Multiaddr
  */

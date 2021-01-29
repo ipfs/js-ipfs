@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.5.3",
+  "version": "0.6.1",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
@@ -34,15 +34,16 @@
     "build:js": "aegir build",
     "build:types": "tsc --build",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i rimraf"
+    "dep-check": "aegir dep-check -i typescript -i rimraf -i ipfs-core-types"
   },
   "license": "MIT",
   "dependencies": {
     "any-signal": "^2.0.0",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.0.0",
+    "cids": "^1.1.5",
     "err-code": "^2.0.3",
+    "ipfs-core-types": "^0.2.1",
     "ipfs-utils": "^5.0.0",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
@@ -54,7 +55,7 @@
     "uint8arrays": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "rimraf": "^3.0.2",
     "typescript": "4.0.x"
   }

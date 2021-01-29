@@ -2,6 +2,9 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const WS = require('libp2p-websockets')
+const filters = require('libp2p-websockets/src/filters')
+const transportKey = WS.prototype[Symbol.toStringTag]
 const Helpers = require('./helpers')
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -38,6 +41,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
     config: {
       Bootstrap: []
+    },
+    libp2p: {
+      config: {
+        transport: {
+          // This is added for local demo!
+          // In a production environment the default filter should be used
+          // where only DNS + WSS addresses will be dialed by websockets in the browser.
+          [transportKey]: {
+            filter: filters.all
+          }
+        }
+      }
     }
   })
 

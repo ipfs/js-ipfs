@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.3.1...ipfs-cli@0.3.2) (2021-01-22)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.3.0...ipfs-cli@0.3.1) (2021-01-20)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.2.3...ipfs-cli@0.3.0) (2021-01-15)
+
+
+### Features
+
+* add grpc server and client ([#3403](https://github.com/ipfs/js-ipfs/issues/3403)) ([a9027e0](https://github.com/ipfs/js-ipfs/commit/a9027e0ec0cea9a4f34b4f2f52e09abb35237384)), closes [#2519](https://github.com/ipfs/js-ipfs/issues/2519) [#2838](https://github.com/ipfs/js-ipfs/issues/2838) [#2943](https://github.com/ipfs/js-ipfs/issues/2943) [#2854](https://github.com/ipfs/js-ipfs/issues/2854) [#2864](https://github.com/ipfs/js-ipfs/issues/2864)
+* allow passing a http.Agent to the grpc client ([#3477](https://github.com/ipfs/js-ipfs/issues/3477)) ([c5f0bc5](https://github.com/ipfs/js-ipfs/commit/c5f0bc5eeee15369b7d02901035b04184a8608d2)), closes [#3474](https://github.com/ipfs/js-ipfs/issues/3474)
+
+
+
+
+
+## [0.2.3](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.2.2...ipfs-cli@0.2.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* regressions introduced by new releases of CID & multicodec ([#3442](https://github.com/ipfs/js-ipfs/issues/3442)) ([b5152d8](https://github.com/ipfs/js-ipfs/commit/b5152d8cc93ecc8d39fc353ea66d7eaf1661e3c0)), closes [/github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb#diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26](https://github.com//github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb/issues/diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26)
+
+
+
+
+
 ## [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.2.1...ipfs-cli@0.2.2) (2020-11-25)
 
 

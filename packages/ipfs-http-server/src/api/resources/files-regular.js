@@ -401,11 +401,14 @@ exports.ls = {
 
     const mapLink = link => {
       const output = {
-        Name: link.name,
         Hash: cidToString(link.cid, { base: cidBase }),
         Size: link.size,
         Type: toTypeCode(link.type),
         Depth: link.depth
+      }
+
+      if (link.name) {
+        output.Name = link.name
       }
 
       if (link.mode != null) {
@@ -421,6 +424,20 @@ exports.ls = {
       }
 
       return output
+    }
+
+    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`)
+
+    if (stat.type === 'file') {
+      // return single object with metadata
+      return h.response({
+        Objects: [{
+          ...mapLink(stat),
+          Hash: path,
+          Depth: 1,
+          Links: []
+        }]
+      })
     }
 
     if (!stream) {

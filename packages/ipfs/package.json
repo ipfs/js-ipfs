@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.52.2",
+  "version": "0.53.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -28,6 +28,7 @@
     "build:types": "tsc --build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
+    "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
@@ -38,22 +39,23 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.2.2",
-    "ipfs-core": "^0.3.0",
+    "ipfs-cli": "^0.3.2",
+    "ipfs-core": "^0.4.2",
     "ipfs-repo": "^7.0.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^28.2.0",
+    "aegir": "^29.2.2",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.7.0",
-    "interface-ipfs-core": "^0.142.2",
-    "ipfs-http-client": "^48.1.2",
-    "ipfs-interop": "^3.0.0",
+    "interface-ipfs-core": "^0.143.1",
+    "ipfs-client": "^0.2.2",
+    "ipfs-http-client": "^48.2.2",
+    "ipfs-interop": "^4.0.1",
     "ipfs-utils": "^5.0.0",
-    "ipfsd-ctl": "^7.0.2",
+    "ipfsd-ctl": "^7.2.0",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.20.1",
     "merge-options": "^2.0.0",

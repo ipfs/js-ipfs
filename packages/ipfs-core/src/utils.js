@@ -6,6 +6,11 @@ const CID = require('cids')
 const Key = require('interface-datastore').Key
 const errCode = require('err-code')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+/** @type {typeof Object.assign} */
+const mergeOptions = require('merge-options')
+
+exports.mergeOptions = mergeOptions
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 
@@ -63,7 +68,7 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('./components').DAG} dag - The IPFS dag api
+ * @param {import('./components').DagReader} dag
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
@@ -92,6 +97,11 @@ const resolvePath = async function (dag, ipfsPath, options = {}) {
 }
 
 /**
+ * @typedef {import('ipfs-core-types/src/files').InputFile} InputFile
+ * @typedef {import('ipfs-core-types/src/files').UnixFSFile} UnixFSFile
+ * @typedef {import('ipfs-core-types/src/files').IPFSEntry} IPFSEntry
+ * @typedef {import('ipfs-core-types/src').AbortOptions} AbortOptions
+ *
  * @param {InputFile|UnixFSFile} file
  * @param {Object} [options]
  * @param {boolean} [options.includeContent]
@@ -116,6 +126,7 @@ const mapFile = (file, options = {}) => {
       output.size = file.unixfs.fileSize()
 
       if (options.includeContent) {
+        // @ts-expect-error - content is readonly
         output.content = file.content()
       }
     }
@@ -127,93 +138,19 @@ const mapFile = (file, options = {}) => {
   return output
 }
 
-/**
- * @typedef {Object} File
- * @property {'file'} type
- * @property {CID} cid
- * @property {string} name
- * @property {string} path - File path
- * @property {AsyncIterable<Uint8Array>} [content] - File content
- * @property {number} [mode]
- * @property {MTime} [mtime]
- * @property {number} size
- * @property {number} depth
- *
- * @typedef {Object} Directory
- * @property {'dir'} type
- * @property {CID} cid
- * @property {string} name
- * @property {string} path - Directory path
- * @property {number} [mode]
- * @property {MTime} [mtime]
- * @property {number} size
- * @property {number} depth
- *
- * @typedef {File|Directory} IPFSEntry
- *
- * @typedef {Object} BaseFile
- * @property {CID} cid
- * @property {string} path
- * @property {string} name
- *
- * @typedef {Object} InputFileExt
- * @property {undefined} [unixfs]
- *
- * @typedef {BaseFile & InputFileExt} InputFile
- *
- * @typedef {Object} UnixFSeExt
- * @property {() => AsyncIterable<Uint8Array>} content
- * @property {UnixFS} unixfs
- *
- * @typedef {BaseFile & UnixFSeExt} UnixFSFile
- *
- *
- * @typedef {Object} UnixFS
- * @property {'directory'|'file'|'dir'} type
- * @property {() => number} fileSize
- * @property {() => AsyncIterable<Uint8Array>} content
- * @property {number} mode
- * @property {MTime} mtime
- *
- * @typedef {object} MTime
- * @property {number} secs - the number of seconds since (positive) or before
- * (negative) the Unix Epoch began
- * @property {number} [nsecs] - the number of nanoseconds since the last full
- * second.
- */
-
-/**
- * @template {any[]} ARGS
- * @template R
- * @typedef {(...args: ARGS) => R} Fn
- */
-
-/**
- * @typedef {object} AbortOptions
- * @property {number} [timeout] - A timeout in ms
- * @property {AbortSignal} [signal] - Can be used to cancel any long running requests started as a result of this call
- */
-
-/**
- * @typedef {Object} Mtime
- * @property {number} [secs]
- * @property {number} [nsecs]
- */
-
-/**
- * @typedef {[number, number]} Hrtime
- */
-
-/**
- * @typedef {Object} PreloadOptions
- * @property {boolean} [preload=true]
- */
-
-/**
- * @template {Record<string, any>} ExtraOptions
- */
+const withTimeout = withTimeoutOption(
+  /**
+   * @template T
+   * @param {Promise<T>|T} promise
+   * @param {AbortOptions} [_options]
+   * @returns {Promise<T>}
+   */
+  async (promise, _options) => await promise
+)
 
 exports.normalizePath = normalizePath
 exports.normalizeCidPath = normalizeCidPath
 exports.resolvePath = resolvePath
 exports.mapFile = mapFile
+exports.withTimeoutOption = withTimeoutOption
+exports.withTimeout = withTimeout

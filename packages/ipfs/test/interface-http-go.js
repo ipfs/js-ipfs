@@ -47,7 +47,19 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
+        name: 'should ls single file with metadata',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should ls single file without containing directory with metadata',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
         name: 'should override raw leaves when file is smaller than one block and metadata is present',
+        reason: 'TODO not implemented in go-ipfs yet'
+      },
+      {
+        name: 'should add directories with metadata',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {

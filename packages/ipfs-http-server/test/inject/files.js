@@ -30,7 +30,10 @@ describe('/files', () => {
       cat: sinon.stub(),
       get: sinon.stub(),
       ls: sinon.stub(),
-      refs: sinon.stub()
+      refs: sinon.stub(),
+      files: {
+        stat: sinon.stub()
+      }
     }
 
     ipfs.refs.local = sinon.stub()
@@ -352,6 +355,9 @@ describe('/files', () => {
     })
 
     it('should list directory contents', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
+        type: 'directory'
+      })
       ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
         name: 'link',
         cid,
@@ -380,7 +386,36 @@ describe('/files', () => {
       })
     })
 
+    it('should list a file', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}/derp`).returns({
+        cid,
+        size: 10,
+        type: 'file',
+        depth: 1,
+        mode: 0o420
+      })
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/ls?arg=${cid}/derp`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.nested.property('result.Objects[0]', {
+        Hash: `${cid}/derp`,
+        Depth: 1,
+        Mode: '0420',
+        Size: 10,
+        Type: 2,
+        Links: []
+      })
+      expect(ipfs.ls.called).to.be.false()
+    })
+
     it('should list directory contents without unixfs v1.5 fields', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
+        type: 'directory'
+      })
       ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([{
         name: 'link',
         cid,
@@ -408,6 +443,9 @@ describe('/files', () => {
     })
 
     it('should list directory contents recursively', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
+        type: 'directory'
+      })
       ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         recursive: true
@@ -456,6 +494,9 @@ describe('/files', () => {
     })
 
     it('accepts a timeout', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
+        type: 'directory'
+      })
       ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
@@ -477,6 +518,9 @@ describe('/files', () => {
     })
 
     it('accepts a timeout when streaming', async () => {
+      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
+        type: 'directory'
+      })
       ipfs.ls.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000

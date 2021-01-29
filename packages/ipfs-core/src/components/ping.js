@@ -7,9 +7,9 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('libp2p')} config.libp2p
+ * @param {import('.').NetworkService} config.network
  */
-module.exports = ({ libp2p }) => {
+module.exports = ({ network }) => {
   /**
    * Send echo request packets to IPFS hosts.
    *
@@ -28,27 +28,35 @@ module.exports = ({ libp2p }) => {
    * ```
    */
   async function * ping (peerId, options = {}) {
+    const { libp2p } = await network.use()
     options.count = options.count || 10
 
     if (!PeerId.isPeerId(peerId)) {
       peerId = PeerId.createFromCID(peerId)
     }
 
-    let peer = libp2p.peerStore.get(peerId)
+    const storedPeer = libp2p.peerStore.get(peerId)
+    let id = storedPeer && storedPeer.id
 
-    if (!peer) {
+    if (!id) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      peer = await libp2p.peerRouting.findPeer(peerId)
+      const remotePeer = await libp2p.peerRouting.findPeer(peerId)
+
+      id = remotePeer && remotePeer.id
     }
 
-    yield { ...basePacket, text: `PING ${peer.id.toB58String()}` }
+    if (!id) {
+      throw new Error('Peer was not found')
+    }
+
+    yield { ...basePacket, text: `PING ${id.toB58String()}` }
 
     let packetCount = 0
     let totalTime = 0
 
     for (let i = 0; i < options.count; i++) {
       try {
-        const time = await libp2p.ping(peer.id)
+        const time = await libp2p.ping(id)
         totalTime += time
         packetCount++
         yield { ...basePacket, time }
@@ -92,5 +100,5 @@ module.exports = ({ libp2p }) => {
  * @typedef {Object} PingSettings
  * @property {number} [count=10] - The number of ping messages to send
  *
- * @typedef {import('../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  */

@@ -39,16 +39,21 @@
   - [Install](#install)
   - [Next Steps](#next-steps)
 - [Usage](#usage)
+    - [`ipfsHttpClient([options])`](#ipfshttpclientoptions)
+    - [Parameters](#parameters)
+    - [Options](#options)
+    - [Returns](#returns)
+    - [Example](#example)
   - [API](#api)
   - [Additional Options](#additional-options)
   - [Instance Utils](#instance-utils)
   - [Static Types and Utils](#static-types-and-utils)
     - [Glob source](#glob-source)
       - [`globSource(path, [options])`](#globsourcepath-options)
-      - [Example](#example)
+      - [Example](#example-1)
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
-      - [Example](#example-1)
+      - [Example](#example-2)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [In a web browser](#in-a-web-browser)
@@ -86,6 +91,53 @@ Both the Current and Active LTS versions of Node.js are supported. Please see [n
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
 
 ## Usage
+
+#### `ipfsHttpClient([options])`
+
+> create an instance of the HTTP API client
+
+#### Parameters
+
+None
+
+#### Options
+
+`options` can be a `String`, a `URL` or a `Multiaddr` which will be interpreted as the address of the IPFS node we wish to use the API of.
+
+Alternatively it can be an object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| url | `String` or `URL` or `Multiaddr` | `'http://localhost:5001/api/v0'` | A URL that resolves to a running instance of the IPFS HTTP API |
+| protocol | `String` | `'http'` | The protocol to used (ignored if url is specified) |
+| host | `String` | `'localhost'` | The host to used (ignored if url is specified) |
+| port | `number` | `5001` | The port to used (ignored if url is specified) |
+| path | `String` | `'api/v0'` | The path to used (ignored if url is specified) |
+| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `http.Agent({ keepAlive: true, maxSockets: 6 })` | An `http.Agent` used to control client behaviour (node.js only) |
+
+#### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)  |
+
+#### Example
+
+```JavaScript
+const createClient = require('ipfs-http-client')
+
+// connect to the default API address http://localhost:5001
+const client = createClient()
+
+// connect to a different API
+const client = createClient('http://127.0.0.1:5002')
+
+// connect using a URL
+const client = createClient(new URL('http://127.0.0.1:5002'))
+
+// call Core API methods
+const { cid } = await client.add('Hello world!')
+```
 
 ### API
 

@@ -5,6 +5,11 @@ const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
+/**
+ * @param {string|Uint8Array|CID} multihash
+ * @param {string} [enc]
+ * @returns {string|Uint8Array}
+ */
 function normalizeMultihash (multihash, enc) {
   if (typeof multihash === 'string') {
     if (enc === 'base58' || !enc) {
@@ -19,8 +24,18 @@ function normalizeMultihash (multihash, enc) {
   throw new Error('unsupported multihash')
 }
 
+/**
+ * @param {Object} config
+ * @param {import('.').IPLD} config.ipld
+ * @param {import('.').Preload} config.preload
+ */
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function get (multihash, options = {}) { // eslint-disable-line require-await
+  /**
+   *
+   * @param {CID} multihash
+   * @param {GetOptions & AbortOptions} [options]
+   */
+  async function get (multihash, options = {}) { // eslint-disable-line require-await
     let mh, cid
 
     try {
@@ -44,5 +59,16 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return ipld.get(cid, { signal: options.signal })
-  })
+  }
+
+  return withTimeoutOption(get)
 }
+
+/**
+ * @typedef {Object} GetOptions
+ * @property {boolean} [preload]
+ * @property {number} [cidVersion]
+ * @property {string} [enc]
+ *
+ * @typedef {import('.').AbortOptions} AbortOptions
+ */

@@ -10,8 +10,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ipfs": "^0.52.1",
-    "libp2p": "libp2p/js-libp2p#feat/add-upnp-nat-manager",
+    "ipfs": "^0.53.2",
+    "libp2p": "^0.30.6",
     "libp2p-bootstrap": "^0.12.1",
     "libp2p-kad-dht": "^0.20.1",
     "libp2p-mdns": "^0.15.0",

@@ -24,7 +24,8 @@
     "stripInternal": true,
     "resolveJsonModule": true,
     "incremental": true,
-    "baseUrl": "packages",
+    "isolatedModules": true,
+    "baseUrl": ".",
     "paths": {
       "interface-ipfs-core/*": [
         "interface-ipfs-core/*"
@@ -35,6 +36,9 @@
       "ipfs-cli/*": [
         "ipfs-cli/*"
       ],
+      "ipfs-client/*": [
+        "ipfs-client/*"
+      ],
       "ipfs-core/*": [
         "ipfs-core/*"
       ],
@@ -43,6 +47,12 @@
       ],
       "ipfs-daemon/*": [
         "ipfs-daemon/*"
+      ],
+      "ipfs-grpc-client/*": [
+        "ipfs-grpc-client/*"
+      ],
+      "ipfs-grpc-server/*": [
+        "ipfs-grpc-server/*"
       ],
       "ipfs-http-client/*": [
         "ipfs-http-client/*"

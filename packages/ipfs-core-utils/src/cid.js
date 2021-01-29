@@ -12,7 +12,7 @@ const CID = require('cids')
  *
  * @param {CID|Uint8Array|string} input - The CID to encode
  * @param {Object} [options] - Optional options
- * @param {string} [options.base] - Name of multibase codec to encode the CID with
+ * @param {import('cids').BaseNameOrCode} [options.base] - Name of multibase codec to encode the CID with
  * @param {boolean} [options.upgrade] - Automatically upgrade v0 CIDs to v1 when
  * necessary. Default: true.
  * @returns {string} - CID in string representation

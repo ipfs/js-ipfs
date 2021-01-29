@@ -8,21 +8,24 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
- * @param {Object} config
- * @param {import('..').Block} config.block
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').Preload} config.preload
- * @param {import('..').Pin} config.pin
- * @param {import('../init').ConstructorOptions<any, boolean>} config.options
+ * @typedef {Object} Context
+ * @property {import('..').Block} block
+ * @property {import('..').GCLock} gcLock
+ * @property {import('..').Preload} preload
+ * @property {import('..').Pin} pin
+ * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
+ *
+ * @param {Context} context
  */
-module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
-  const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
+module.exports = ({ block, gcLock, preload, pin, options }) => {
+  const isShardingEnabled = options && options.sharding
+
   /**
    * Import multiple files and data into IPFS.
    *
-   * @param {FileStream} source
-   * @param {AddAllOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<UnixFSEntry>}
+   * @param {import('ipfs-core-types/src/files').ImportSource} source
+   * @param {import('ipfs-core-types/src/root').AddAllOptions} [options]
+   * @returns {AsyncIterable<import('ipfs-core-types/src/files').UnixFSEntry>}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
@@ -169,40 +172,3 @@ function pinFile (pin, opts) {
     }
   }
 }
-
-/**
- * @typedef {object} UnixFSEntry
- * @property {string} path
- * @property {CID} cid
- * @property {number} [mode]
- * @property {MTime} [mtime]
- * @property {number} size
- *
- * @typedef {Object} AddAllOptions
- * @property {string} [chunker='size-262144'] - Chunking algorithm used to build
- * ipfs DAGs.
- * @property {0|1} [cidVersion=0] - The CID version to use when storing the data.
- * @property {boolean} [enableShardingExperiment=false] - Allows to create
- * directories with an unlimited number of entries currently size of unixfs
- * directories is limited by the maximum block size. **Note** that this is an
- * experimental feature.
- * @property {string} [hashAlg='sha2-256'] - Multihash hashing algorithm to use.
- * @property {boolean} [onlyHash=false] - If true, will not add blocks to the
- * blockstore.
- * @property {boolean} [pin=true] - Pin this object when adding.
- * @property {(bytes:number, path:string) => void} [progress] - a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added
- * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
- * file data and not be wrapped in a protobuf.
- * @property {number} [shardSplitThreshold=1000] - Directories with more than this
- * number of files will be created as HAMT-sharded directories.
- * @property {boolean} [trickle=false] - If true will use the
- * [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle)
- * format for DAG generation.
- * @property {boolean} [wrapWithDirectory=false] - Adds a wrapping node around
- * the content.
- *
- * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').Source} FileStream
- * @typedef {import('../../utils').MTime} MTime
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- */

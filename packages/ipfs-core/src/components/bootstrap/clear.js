@@ -5,7 +5,7 @@ const Multiaddr = require('multiaddr')
 
 /**
  * @param {Object} config
- * @param {import('..').IPFSRepo} config.repo
+ * @param {import('.').Repo} config.repo
  */
 module.exports = ({ repo }) => {
   /**
@@ -26,7 +26,7 @@ module.exports = ({ repo }) => {
     const removed = config.Bootstrap || []
     config.Bootstrap = []
 
-    await repo.config.set(config)
+    await repo.config.replace(config)
 
     return { Peers: removed.map(ma => new Multiaddr(ma)) }
   }
@@ -35,8 +35,6 @@ module.exports = ({ repo }) => {
 }
 
 /**
- * @typedef {import('../../utils').AbortOptions} AbortOptions
+ * @typedef {import('.').AbortOptions} AbortOptions
  * @typedef {import('./utils').Peers} Peers
- * @typedef {import('..').CID} CID
- * @typedef {import('..').Multiaddr} Multiaddr
  */

@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.6](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.4.5...ipfs-message-port-client@0.4.6) (2021-01-22)
+
+**Note:** Version bump only for package ipfs-message-port-client
+
+
+
+
+
+## [0.4.5](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.4.4...ipfs-message-port-client@0.4.5) (2021-01-20)
+
+**Note:** Version bump only for package ipfs-message-port-client
+
+
+
+
+
+## [0.4.4](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.4.3...ipfs-message-port-client@0.4.4) (2021-01-15)
+
+**Note:** Version bump only for package ipfs-message-port-client
+
+
+
+
+
+## [0.4.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.4.2...ipfs-message-port-client@0.4.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* transfer unique set over message prort ([#3421](https://github.com/ipfs/js-ipfs/issues/3421)) ([da7bc55](https://github.com/ipfs/js-ipfs/commit/da7bc55e8dfbdc200ef43ccbf774bbc24af07785))
+
+
+
+
+
 ## [0.4.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.4.1...ipfs-message-port-client@0.4.2) (2020-11-25)
 
 **Note:** Version bump only for package ipfs-message-port-client

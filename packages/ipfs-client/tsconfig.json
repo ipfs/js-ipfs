@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "references": [
+    {
+      "path": "../ipfs-http-client"
+    },
+    {
+      "path": "../ipfs-grpc-client"
+    }
+  ],
+  "include": [
+    "src",
+    "package.json"
+  ]
+}
