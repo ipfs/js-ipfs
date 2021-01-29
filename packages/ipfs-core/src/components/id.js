@@ -32,7 +32,7 @@ module.exports = ({ peerId, network }) => {
     if (net) {
       const { libp2p } = net
       // only available while the node is running
-      addresses = libp2p.transportManager.getAddrs()
+      addresses = libp2p.multiaddrs
       protocols = Array.from(libp2p.upgrader.protocols.keys())
     }
 

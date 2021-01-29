@@ -42,7 +42,8 @@ module.exports = () => ({
     ConnMgr: {
       LowWater: 200,
       HighWater: 500
-    }
+    },
+    DisableNatPortMap: true
   },
   Routing: {
     Type: 'none'

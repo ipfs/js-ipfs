@@ -26,6 +26,7 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`Enabled`](#enabled)
 - [`Swarm`](#swarm-1)
   - [`ConnMgr`](#connmgr)
+  - [`DisableNatPortMap`](#disablenatportmap)
   - [Example](#example)
 - [`API`](#api-1)
   - [`HTTPHeaders`](#httpheaders)
@@ -269,6 +270,12 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
 1. Keeping all connections until `HighWater` connections is reached.
 2. Once `HighWater` is reached, it closes connections until `LowWater` is reached.
 
+### `DisableNatPortMap`
+
+By default when running under nodejs, libp2p will try to use [UPnP](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) to open a random high port on your router for any TCP connections you have configured.
+
+Set `DisableNatPortMap` to `false` to disable this behaviour.
+
 ### Example
 
 ```json
@@ -278,7 +285,8 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
       "LowWater": 100,
       "HighWater": 200,
     }
-  }
+  },
+  "DisableNatPortMap": false
 }
 ```
 

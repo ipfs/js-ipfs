@@ -44,7 +44,7 @@ class Network {
 
     await libp2p.start()
 
-    for (const ma of libp2p.transportManager.getAddrs()) {
+    for (const ma of libp2p.multiaddrs) {
       print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`)
     }
 
