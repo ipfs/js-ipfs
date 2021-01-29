@@ -83,7 +83,7 @@ module.exports = function grpcAdd (ipfs, options = {}) {
             fileInputStream.end(err)
           } finally {
             // clean up any open streams
-            streams.filter(Boolean).forEach(stream => stream.end())
+            streams.forEach(stream => stream && stream.end())
           }
         }, 0)
 
