@@ -42,7 +42,7 @@
     "ipfs-daemon": "^0.4.2",
     "ipfs-http-client": "^48.2.2",
     "ipfs-repo": "^7.0.0",
-    "ipfs-utils": "^5.0.0",
+    "ipfs-utils": "^6.0.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
     "it-all": "^1.0.4",
