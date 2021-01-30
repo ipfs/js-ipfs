@@ -68,7 +68,7 @@
     "it-map": "^1.0.4",
     "it-tar": "^1.2.2",
     "it-to-stream": "^0.1.2",
-    "merge-options": "^2.0.0",
+    "merge-options": "^3.0.4",
     "multiaddr": "^8.0.0",
     "multibase": "^3.0.0",
     "multicodec": "^2.0.1",

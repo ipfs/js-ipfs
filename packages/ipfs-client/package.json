@@ -42,7 +42,7 @@
   "dependencies": {
     "ipfs-grpc-client": "^0.1.2",
     "ipfs-http-client": "^48.2.2",
-    "merge-options": "^2.0.0"
+    "merge-options": "^3.0.4"
   },
   "devDependencies": {
     "aegir": "^29.2.2",
