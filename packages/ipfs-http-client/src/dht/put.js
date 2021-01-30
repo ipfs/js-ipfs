@@ -5,6 +5,7 @@ const multiaddr = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const multipartRequest = require('../lib/multipart-request')
 const { anySignal } = require('any-signal')
 const AbortController = require('native-abort-controller')
@@ -21,7 +22,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: key,
+        arg: key instanceof Uint8Array ? uint8ArrayToString(key) : key,
         ...options
       }),
       ...(

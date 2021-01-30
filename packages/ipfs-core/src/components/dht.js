@@ -33,7 +33,7 @@ module.exports = ({ network, repo }) => {
      * form, this will write that value to the DHT with
      * that key.
      *
-     * @param {Uint8Array} key
+     * @param {Uint8Array|string} key
      * @param {Uint8Array} value
      * @param {AbortOptions} [options]
      * @returns {AsyncIterable<QueryEvent>}
