@@ -46,7 +46,7 @@
     "release:post:remove-hoisted-modules": "json -I -f ./lerna.json -e \"delete this.command.bootstrap.nohoist\"",
     "release:post:remove-examples": "json -I -f ./lerna.json -e \"this.packages = this.packages.filter(p => !p.includes('examples'))\"",
     "release:post:revert-ignore-changes-to-lerna-config": "git update-index --no-assume-unchanged ./lerna.json",
-    "release:post:update-example-dependencies": "node scripts/update-example-deps.js && git add examples && git commit -m 'chore: updated example dependencies' && git push",
+    "release:post:update-example-dependencies": "node scripts/update-example-deps.js",
     "release:rc": "run-s release:pre:* release:canary release:post:*",
     "release:canary": "lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
     "docker:rc": "run-s docker:rc:*",
@@ -57,6 +57,7 @@
     "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
   },
   "devDependencies": {
+    "execa": "^5.0.0",
     "json": "^10.0.0",
     "lerna": "^3.22.0",
     "npm-run-all": "^4.1.5",

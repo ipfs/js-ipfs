@@ -2,6 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
+const execa = require('execa')
 
 // Where an example depends on `"ipfs": "^0.51.0"` and we've just released `ipfs@0.52.0`,
 // go through all of the examples and update the version to `"ipfs": "^0.52.0"` - do
@@ -12,6 +13,22 @@ const EXAMPLES_DIR = path.resolve(__dirname, '../examples')
 const DEP_TYPES = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
 
 async function main () {
+  const {
+    stdout: branch
+  } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+
+  if (branch !== 'master') {
+    console.info(`Not running on branch ${branch}`)
+    return
+  }
+
+  if (process.env.CI) {
+    console.info('Not running in CI')
+    return
+  }
+
+  console.info('Running on branch', branch)
+
   for (const dir of fs.readdirSync(PACKAGES_DIR)) {
     const projectPkgPath = path.resolve(PACKAGES_DIR, dir, 'package.json')
 
@@ -45,6 +62,23 @@ async function main () {
       }
     }
   }
+
+  await execa('git', ['add', 'examples'])
+
+  const {
+    stdout: updated
+  } = await execa('git', ['status', '--porcelain'])
+
+  console.info(updated)
+
+  if (!updated.match(/^M\s+examples/g)) {
+    console.info('No examples were updated')
+    return
+  }
+
+  console.info('Pushing updated dependencies')
+  await execa('git', ['commit', '-m', '"chore: updated example dependencies"'])
+  await execa('git', ['push'])
 }
 
 main().catch(err => {
