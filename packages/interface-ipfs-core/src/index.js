@@ -20,6 +20,7 @@ exports.block = require('./block')
 exports.dag = require('./dag')
 exports.object = require('./object')
 exports.pin = require('./pin')
+exports.pin.remote = require('./pin/remote')
 
 exports.bootstrap = require('./bootstrap')
 exports.dht = require('./dht')

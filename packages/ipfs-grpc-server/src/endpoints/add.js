@@ -56,7 +56,6 @@ module.exports = function grpcAdd (ipfs, options = {}) {
 
               if (!stream) {
                 // start of new file
-                // @ts-ignore
                 stream = streams[index] = pushable()
 
                 fileInputStream.push({
