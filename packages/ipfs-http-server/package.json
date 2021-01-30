@@ -74,7 +74,7 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3",
     "stream-to-promise": "^3.0.0",
-    "typescript": "4.0.x"
+    "typescript": "4.1.x"
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0"
