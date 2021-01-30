@@ -45,7 +45,7 @@
     "multiaddr": "^8.0.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.3.0",
     "node-fetch": "^2.6.1",
     "typescript": "4.0.x",
     "ws": "^7.3.1"

@@ -33,7 +33,7 @@
     "peer-id": "^0.14.1"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.3.0",
     "typescript": "4.0.x"
   },
   "contributors": [
