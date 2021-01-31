@@ -26,7 +26,7 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "configure-examples": "run-s release:pre:add-examples release:pre:add-hoisted-modules release:pre:reinstall",
+    "configure-examples": "run-s release:pre:add-examples release:pre:add-hoisted-modules release:pre:reinstall && npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*}",
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false",

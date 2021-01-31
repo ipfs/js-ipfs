@@ -271,9 +271,8 @@ jobs:
     - stage: test
       name: examples
       script:
-        # Travis lets scripts continue even if previous steps fail: https://github.com/travis-ci/travis-ci/issues/1066
-        - npm run build -- --scope={ipfs-core,ipfs,ipfs-http-client,ipfs-message-port-*} &&
-          npm run configure-examples &&
+        # Travis lets scripts continue even if previous steps fail so need to use &&: https://github.com/travis-ci/travis-ci/issues/1066
+        - npm run configure-examples &&
           npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
