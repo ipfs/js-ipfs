@@ -36,7 +36,6 @@ module.exports = ({ network }) => {
 /**
  * @typedef {import('.').AbortOptions} AbortOptions
  * @typedef {import('.').CID} CID
- * @typedef {import('.').PeerId} PeerId
  */
 
 /**

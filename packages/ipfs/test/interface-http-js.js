@@ -24,16 +24,18 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
         name: 'should error during add-all stream',
         reason: 'Not supported by http'
       }]
-      .concat(isNode ? [{
-        name: 'should fail when passed invalid input',
-        reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-      }, {
-        name: 'should not add from an invalid url',
-        reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-      }] : [{
-        name: 'should add with mtime as hrtime',
-        reason: 'Not designed to run in the browser'
-      }])
+      .concat(isNode
+        ? [{
+            name: 'should fail when passed invalid input',
+            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
+          }, {
+            name: 'should not add from an invalid url',
+            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
+          }]
+        : [{
+            name: 'should add with mtime as hrtime',
+            reason: 'Not designed to run in the browser'
+          }])
   })
 
   tests.bitswap(commonFactory)
@@ -61,16 +63,18 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   })
 
   tests.files(commonFactory, {
-    skip: isBrowser || isWebWorker ? [{
-      name: 'should make directory and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should write file and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should set mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }] : []
+    skip: isBrowser || isWebWorker
+      ? [{
+          name: 'should make directory and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should write file and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should set mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }]
+      : []
   })
 
   tests.key(commonFactory)

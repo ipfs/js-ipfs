@@ -15,7 +15,7 @@ export interface FileEntry <Content extends AsyncIterable<Uint8Array>|Blob> exte
 }
 
 export interface DirectoryEntry extends BaseEntry {
-  content?: void
+  content?: undefined
 }
 
 export type ImportSource =
@@ -34,7 +34,7 @@ export interface ToFile extends ToFileMetadata {
 
 export interface ToDirectory extends ToFileMetadata {
   path: string
-  content?: void
+  content?: undefined
 }
 
 export interface ToFileMetadata {
@@ -89,7 +89,7 @@ export interface File {
 }
 
 export interface Directory {
-  type: 'dir',
+  type: 'dir'
   cid: CID
   name: string
   /**
@@ -111,11 +111,11 @@ export interface BaseFile {
 }
 
 export interface InputFile extends BaseFile {
-  unixfs: void
+  unixfs: undefined
 }
 
 export interface UnixFSFile extends BaseFile {
-  content(): AsyncIterable<Uint8Array>
+  content: () => AsyncIterable<Uint8Array>
   unixfs: UnixFS
 }
 
@@ -158,8 +158,8 @@ interface UnixFS {
   readonly mode: Mode
   readonly mtime: MTime
 
-  fileSize(): number
-  content(): AsyncIterable<Uint8Array>
+  fileSize: () => number
+  content: () => AsyncIterable<Uint8Array>
 }
 
 /**

@@ -2,7 +2,6 @@
 
 /* eslint-env mocha */
 const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
-const globalThis = require('ipfs-utils/src/globalthis')
 
 const CID = require('cids')
 const { Server } = require('../src/server')

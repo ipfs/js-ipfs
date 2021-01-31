@@ -6,8 +6,12 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /**
+ * @typedef {import('multibase/src/types').BaseName} BaseName
+ */
+
+/**
  * @param {string|Uint8Array|CID} multihash
- * @param {string} [enc]
+ * @param {BaseName | 'utf8' | 'utf-8' | 'ascii' | 'base58'} [enc]
  * @returns {string|Uint8Array}
  */
 function normalizeMultihash (multihash, enc) {
@@ -68,7 +72,7 @@ module.exports = ({ ipld, preload }) => {
  * @typedef {Object} GetOptions
  * @property {boolean} [preload]
  * @property {number} [cidVersion]
- * @property {string} [enc]
+ * @property {BaseName | 'utf8' | 'utf-8' | 'ascii' | 'base58'} [enc]
  *
  * @typedef {import('.').AbortOptions} AbortOptions
  */

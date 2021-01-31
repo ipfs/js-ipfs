@@ -17,6 +17,6 @@ module.exports = configure(api => {
     })
     const data = await res.arrayBuffer()
 
-    return new Uint8Array(data, data.byteOffset, data.byteLength)
+    return new Uint8Array(data, 0, data.byteLength)
   }
 })

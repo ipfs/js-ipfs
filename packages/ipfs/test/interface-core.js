@@ -11,10 +11,12 @@ describe('interface-ipfs-core tests', function () {
   const commonFactory = factory()
 
   tests.root(commonFactory, {
-    skip: isNode ? [] : [{
-      name: 'should add with mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }]
+    skip: isNode
+      ? []
+      : [{
+          name: 'should add with mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }]
   })
 
   tests.bitswap(commonFactory)
@@ -34,16 +36,18 @@ describe('interface-ipfs-core tests', function () {
   })
 
   tests.files(factory(), {
-    skip: isNode ? null : [{
-      name: 'should make directory and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should set mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should write file and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }]
+    skip: isNode
+      ? null
+      : [{
+          name: 'should make directory and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should set mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should write file and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }]
   })
 
   tests.key(commonFactory)
@@ -83,23 +87,25 @@ describe('interface-ipfs-core tests', function () {
     }
   }), {
     skip: [
-      ...(isNode ? [] : [
-        {
-          name: 'should receive messages from a different node',
-          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-        },
-        {
-          name: 'should round trip a non-utf8 binary buffer',
-          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-        },
-        {
-          name: 'should receive multiple messages',
-          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-        },
-        {
-          name: 'should send/receive 100 messages',
-          reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
-        }])
+      ...(isNode
+        ? []
+        : [
+            {
+              name: 'should receive messages from a different node',
+              reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+            },
+            {
+              name: 'should round trip a non-utf8 binary buffer',
+              reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+            },
+            {
+              name: 'should receive multiple messages',
+              reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+            },
+            {
+              name: 'should send/receive 100 messages',
+              reason: 'https://github.com/ipfs/js-ipfs/issues/2662'
+            }])
     ]
   })
 

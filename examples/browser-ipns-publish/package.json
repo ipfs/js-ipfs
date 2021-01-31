@@ -15,11 +15,11 @@
     "human-crypto-keys": "^0.1.4",
     "ipfs": "^0.53.2",
     "ipfs-http-client": "^48.2.2",
-    "ipfs-utils": "^5.0.0",
+    "ipfs-utils": "^6.0.0",
     "ipns": "^0.8.0",
     "it-last": "^1.0.4",
     "p-retry": "^4.2.0",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"

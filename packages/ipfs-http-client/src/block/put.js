@@ -45,6 +45,7 @@ module.exports = configure(api => {
 
     let res
     try {
+      // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
       const response = await api.post('block/put', {
         timeout: options.timeout,
         signal: signal,

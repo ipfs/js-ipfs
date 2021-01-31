@@ -26,14 +26,14 @@ module.exports = (repoPath, opts) => {
   const exec = (args, options) => {
     const opts = Object.assign({}, config, options)
 
-    return execa.command(`${path.resolve(`${__dirname}/../../src/bin.js`)} ${args}`, opts)
+    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
   }
   const execRaw = (args, options) => {
     const opts = Object.assign({}, config, options, {
       encoding: null
     })
 
-    return execa.command(`${path.resolve(`${__dirname}/../../src/bin.js`)} ${args}`, opts)
+    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
   }
 
   const execute = (exec, args, options) => {

@@ -21,25 +21,31 @@ const commonOptions = {
 
 const commonOverrides = {
   js: {
-    ...(isNode ? {
-      ipfsBin: require.resolve('../../src/cli.js')
-    } : {}),
-    ...(isBrowser ? {
-      remote: true
-    } : {})
+    ...(isNode
+      ? {
+          ipfsBin: require.resolve('../../src/cli.js')
+        }
+      : {}),
+    ...(isBrowser
+      ? {
+          remote: true
+        }
+      : {})
   },
   proc: {
-    ...(isBrowser ? {
-      ipfsOptions: {
-        config: {
-          Addresses: {
-            Swarm: [
-              '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
-            ]
+    ...(isBrowser
+      ? {
+          ipfsOptions: {
+            config: {
+              Addresses: {
+                Swarm: [
+                  '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+                ]
+              }
+            }
           }
         }
-      }
-    } : {})
+      : {})
   },
   go: {
     ipfsBin: isNode ? require('go-ipfs').path() : undefined

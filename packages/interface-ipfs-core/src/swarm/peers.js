@@ -108,13 +108,15 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const config = getConfig(isBrowser && common.opts.type !== 'go' ? [
-        '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
-        '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
-      ] : [
-        '/ip4/127.0.0.1/tcp/26545/ws',
-        '/ip4/127.0.0.1/tcp/26546/ws'
-      ])
+      const config = getConfig(isBrowser && common.opts.type !== 'go'
+        ? [
+            '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
+            '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+          ]
+        : [
+            '/ip4/127.0.0.1/tcp/26545/ws',
+            '/ip4/127.0.0.1/tcp/26546/ws'
+          ])
 
       const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       const nodeB = (await common.spawn({

@@ -2,7 +2,7 @@
 
 const Joi = require('joi')
 const CID = require('cids')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const multiaddr = require('multiaddr')
 const multibase = require('multibase')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')

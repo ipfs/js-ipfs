@@ -118,7 +118,7 @@ module.exports = ({ network, repo }) => {
       const { libp2p } = await use(network, options)
       cids = Array.isArray(cids) ? cids : [cids]
 
-      for (var i in cids) {
+      for (const i in cids) {
         if (typeof cids[i] === 'string') {
           try {
             cids[i] = new CID(cids[i])

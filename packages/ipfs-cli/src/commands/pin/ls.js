@@ -3,7 +3,7 @@
 const multibase = require('multibase')
 const all = require('it-all')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const {
   makeEntriesPrintable
 } = require('../../utils')

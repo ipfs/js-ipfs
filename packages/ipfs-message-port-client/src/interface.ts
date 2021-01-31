@@ -13,46 +13,45 @@
  */
 // This is typed in TS file because otherwise TS unifies on the first parameter
 // regardless of number of parameters function has.
-export type APIWithExtraOptions<API extends (...args: any[]) => any, Extra> =
-  (...args: WithExtendedOptions<Parameters<API>, Extra>) => ReturnType<API>
+export interface APIWithExtraOptions<API extends (...args: any[]) => any, Extra> { (...args: WithExtendedOptions<Parameters<API>, Extra>): ReturnType<API> }
 
 type End = never[]
 type WithExtendedOptions<Params, Ext> = Params extends [...End]
   ? []
   // (options?: Options) -> (options?: Options & Ext)
   : Params extends [options?: infer Options, ...end: End]
-  ? [options?: Options & Ext]
+    ? [options?: Options & Ext]
   // (a: A1, options?: Options) -> (a1: A1, options?: Options & Ext)
-  : Params extends [a1: infer A1, options?: infer Options, ...end: End]
-  ? [a1: A1, options?: Options & Ext]
-  // (a1?: A1, options?: Options) -> (a1?: A1, options?: Options & Ext)
-  : Params extends [a1?: infer A1, options?: infer Options, ...end: End]
-  ? [a1?: A1, options?: Options & Ext]
-  // (a1: A1, a2: A2, options?: Options) -> (a1: A1, a2: A2 options?: Options & Ext)
-  : Params extends [a1: infer A1, a2: infer A2, options?: infer Options, ...end: End]
-  ? [a1: A1, a2: A2, options?: Options & Ext]
-  // (a1: A1, a2?: A2, options?: Options) -> (a1: A1, a2?: A2 options?: Options & Ext)
-  : Params extends [a1: infer A1, a2?: infer A2, options?: infer Options, ...end: End]
-  ? [a1: A1, a2?: A2, options?: Options & Ext]
-  // (a1: A1, a2?: A2, options?: Options) -> (a1: A1, a2?: A2 options?: Options & Ext)
-  : Params extends [a1?: infer A1, a2?: infer A2, options?: infer Options, ...end: End]
-  ? [a1?: A1, a2?: A2, options?: Options & Ext]
-  // (a1: A1, a2: A2, a3:A3 options?: Options) -> (a1: A1, a2: A2, a3:A3, options?: Options & Ext)
-  : Params extends [a1: infer A1, a2: infer A2, a3:infer A3, options?: infer Options, ...end: End]
-  ? [a1: A1, a2: A2, a3: A3, options?: Options & Ext]
-  // (a1: A1, a2: A2, a3?:A3 options?: Options) -> (a1: A1, a2: A2, a3?:A3, options?: Options & Ext)
-  : Params extends [a1: infer A1, a2:infer A2, a3?: infer A3, options?: infer Options, ...end: End]
-  ? [a1: A1, a2: A2, a3?: A3, options?: Options & Ext]
-  // (a1: A1, a2?: A2, a3?:A3 options?: Options) -> (a1: A1, a2?: A2, a3?:A3, options?: Options & Ext)
-  : Params extends [a1: infer A1, a2?: infer A2, a3?: infer A3, options?: infer Options, ...end: End]
-  ? [a1: A1, a2?: A2, a3?: A3, options?: Options & Ext]
-  // (a1?: A1, a2?: A2, a3?:A3 options?: Options) -> (a1?: A1, a2?: A2, a3?:A3, options?: Options & Ext)
-  : Params extends [a1?: infer A1, a2?: infer A2, a3?: infer A3, options?: infer Options, ...end: End]
-  ? [a1?: A1, a2?: A2, a3?: A3, options?: Options & Ext]
-  : never
+    : Params extends [a1: infer A1, options?: infer Options, ...end: End]
+      ? [a1: A1, options?: Options & Ext]
+    // (a1?: A1, options?: Options) -> (a1?: A1, options?: Options & Ext)
+      : Params extends [a1?: infer A1, options?: infer Options, ...end: End]
+        ? [a1?: A1, options?: Options & Ext]
+      // (a1: A1, a2: A2, options?: Options) -> (a1: A1, a2: A2 options?: Options & Ext)
+        : Params extends [a1: infer A1, a2: infer A2, options?: infer Options, ...end: End]
+          ? [a1: A1, a2: A2, options?: Options & Ext]
+        // (a1: A1, a2?: A2, options?: Options) -> (a1: A1, a2?: A2 options?: Options & Ext)
+          : Params extends [a1: infer A1, a2?: infer A2, options?: infer Options, ...end: End]
+            ? [a1: A1, a2?: A2, options?: Options & Ext]
+          // (a1: A1, a2?: A2, options?: Options) -> (a1: A1, a2?: A2 options?: Options & Ext)
+            : Params extends [a1?: infer A1, a2?: infer A2, options?: infer Options, ...end: End]
+              ? [a1?: A1, a2?: A2, options?: Options & Ext]
+            // (a1: A1, a2: A2, a3:A3 options?: Options) -> (a1: A1, a2: A2, a3:A3, options?: Options & Ext)
+              : Params extends [a1: infer A1, a2: infer A2, a3:infer A3, options?: infer Options, ...end: End]
+                ? [a1: A1, a2: A2, a3: A3, options?: Options & Ext]
+              // (a1: A1, a2: A2, a3?:A3 options?: Options) -> (a1: A1, a2: A2, a3?:A3, options?: Options & Ext)
+                : Params extends [a1: infer A1, a2:infer A2, a3?: infer A3, options?: infer Options, ...end: End]
+                  ? [a1: A1, a2: A2, a3?: A3, options?: Options & Ext]
+                // (a1: A1, a2?: A2, a3?:A3 options?: Options) -> (a1: A1, a2?: A2, a3?:A3, options?: Options & Ext)
+                  : Params extends [a1: infer A1, a2?: infer A2, a3?: infer A3, options?: infer Options, ...end: End]
+                    ? [a1: A1, a2?: A2, a3?: A3, options?: Options & Ext]
+                  // (a1?: A1, a2?: A2, a3?:A3 options?: Options) -> (a1?: A1, a2?: A2, a3?:A3, options?: Options & Ext)
+                    : Params extends [a1?: infer A1, a2?: infer A2, a3?: infer A3, options?: infer Options, ...end: End]
+                      ? [a1?: A1, a2?: A2, a3?: A3, options?: Options & Ext]
+                      : never
 
 export type APIMethodWithExtraOptions <
   API,
   Key extends keyof API,
   Extra
-  > = API[Key] extends (...args: any[]) => any ? APIWithExtraOptions<API[Key], Extra> : never
+> = API[Key] extends (...args: any[]) => any ? APIWithExtraOptions<API[Key], Extra> : never

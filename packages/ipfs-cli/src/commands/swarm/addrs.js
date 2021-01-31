@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'addrs',
@@ -25,7 +25,7 @@ module.exports = {
       const count = peer.addrs.length
       const peerAddrs = [`${peer.id} (${count})`]
 
-      peer.addrs.map((addr) => {
+      peer.addrs.forEach((addr) => {
         let res
         try {
           res = addr.decapsulate('ipfs').toString()

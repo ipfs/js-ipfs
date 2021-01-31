@@ -4,13 +4,15 @@ import { ImportSource, IPFSEntry, ToEntry, UnixFSEntry } from './files'
 import CID, { CIDVersion } from 'cids'
 
 export interface RootAPI {
-  add(entry: ToEntry, options?: AddOptions): Promise<UnixFSEntry>
-  addAll(source: ImportSource, options?: AddAllOptions & AbortOptions): AsyncIterable<UnixFSEntry>
-  cat(ipfsPath: IPFSPath, options?: CatOptions): AsyncIterable<Uint8Array>
-  get(ipfsPath: IPFSPath, options?: GetOptions): AsyncIterable<IPFSEntry>
+  add: (entry: ToEntry, options?: AddOptions) => Promise<UnixFSEntry>
+  addAll: (source: ImportSource, options?: AddAllOptions & AbortOptions) => AsyncIterable<UnixFSEntry>
+  cat: (ipfsPath: IPFSPath, options?: CatOptions) => AsyncIterable<Uint8Array>
+  get: (ipfsPath: IPFSPath, options?: GetOptions) => AsyncIterable<IPFSEntry>
 
-  ls(ipfsPath: IPFSPath, options?: ListOptions): AsyncIterable<IPFSEntry>
+  ls: (ipfsPath: IPFSPath, options?: ListOptions) => AsyncIterable<IPFSEntry>
 }
+
+export interface AddProgressFn { (bytes: number, path: string): void }
 
 export interface AddOptions extends AbortOptions {
   /**
@@ -43,7 +45,7 @@ export interface AddOptions extends AbortOptions {
    *
    * **Note** It will not be called for directory entries.
    */
-  progress?: (bytes: number, path: string) => void
+  progress?: AddProgressFn
 
   /**
    * If true, DAG leaves will contain raw file data and not be wrapped in a
@@ -99,7 +101,7 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
 export interface GetOptions extends AbortOptions, PreloadOptions {}
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
-  recursive?: boolean,
+  recursive?: boolean
   includeContent?: boolean
 }
 

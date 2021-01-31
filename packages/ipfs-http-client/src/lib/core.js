@@ -2,7 +2,7 @@
 /* eslint-env browser */
 const Multiaddr = require('multiaddr')
 const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
 const merge = require('merge-options')
@@ -87,6 +87,7 @@ const errorHandler = async (response) => {
     msg = err.message
   }
 
+  /** @type {Error} */
   let error = new HTTP.HTTPError(response)
 
   // This is what go-ipfs returns where there's a timeout
@@ -160,7 +161,7 @@ class Client extends HTTP {
             out.append(kebabCase(key), value)
           }
 
-          // server timeouts are strings
+          // @ts-ignore server timeouts are strings
           if (key === 'timeout' && !isNaN(value)) {
             out.append(kebabCase(key), value)
           }
@@ -168,17 +169,26 @@ class Client extends HTTP {
 
         return out
       },
+      // @ts-ignore this can be a https agent or a http agent
       agent: opts.agent
     })
 
+    // @ts-ignore
     delete this.get
+    // @ts-ignore
     delete this.put
+    // @ts-ignore
     delete this.delete
+    // @ts-ignore
     delete this.options
 
     const fetch = this.fetch
 
     this.fetch = (resource, options = {}) => {
+      if (typeof resource === 'string' && !resource.startsWith('/')) {
+        resource = `${opts.url}/${resource}`
+      }
+
       return fetch.call(this, resource, merge(options, {
         method: 'POST'
       }))

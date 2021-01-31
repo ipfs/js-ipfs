@@ -5,7 +5,7 @@
     "ipfs": "^0.53.2"
   },
   "devDependencies": {
-    "typescript": "4.0.x"
+    "typescript": "4.1.x"
   },
   "scripts": {
     "test": "tsc --noEmit"

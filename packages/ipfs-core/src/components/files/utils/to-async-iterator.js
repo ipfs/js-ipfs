@@ -15,7 +15,7 @@ const toAsyncIterator = (content) => {
   if (typeof content === 'string' || content instanceof String) {
     log('Content was a string')
 
-    content = uint8ArrayFromString(content)
+    content = uint8ArrayFromString(content.toString())
   }
 
   if (content.length) {

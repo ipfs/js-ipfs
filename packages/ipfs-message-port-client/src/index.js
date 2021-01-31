@@ -8,8 +8,6 @@ const CoreClient = require('./core')
 const FilesClient = require('./files')
 
 /**
- * @typedef {import('./client').MessageTransport} MessageTransport
- *
  * @typedef {Object} ClientOptions
  * @property {MessagePort} port
  */

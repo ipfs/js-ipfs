@@ -452,7 +452,7 @@ module.exports = (common, options) => {
 
       const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(fileName)))
 
-      for (var i = 0; i < newDataStream.length; i++) {
+      for (let i = 0; i < newDataStream.length; i++) {
         if (newDataStream[i] !== actualBytes[i]) {
           if (initialStream[i] === actualBytes[i]) {
             throw new Error(`Bytes at index ${i} were not overwritten - expected ${newDataStream[i]} actual ${initialStream[i]}`)

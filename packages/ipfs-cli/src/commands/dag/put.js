@@ -7,7 +7,7 @@ const dagPB = require('ipld-dag-pb')
 const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 const inputDecoders = {
