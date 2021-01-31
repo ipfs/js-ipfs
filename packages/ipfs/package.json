@@ -52,7 +52,7 @@
     "interface-ipfs-core": "^0.143.1",
     "ipfs-client": "^0.2.2",
     "ipfs-http-client": "^48.2.2",
-    "ipfs-interop": "ipfs/interop#chore/update-deps",
+    "ipfs-interop": "^4.0.2",
     "ipfs-utils": "^6.0.0",
     "ipfsd-ctl": "^7.2.0",
     "iso-url": "^1.0.0",
