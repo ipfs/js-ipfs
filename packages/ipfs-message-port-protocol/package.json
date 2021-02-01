@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"

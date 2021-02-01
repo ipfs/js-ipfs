@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.2.1...ipfs-http-gateway@0.3.0) (2021-02-01)
+
+
+### chore
+
+* update deps ([#3514](https://github.com/ipfs/js-ipfs/issues/3514)) ([061d77c](https://github.com/ipfs/js-ipfs/commit/061d77cc03f40af5a3bc3590481e1e5836e7f0d8))
+
+
+### BREAKING CHANGES
+
+* ipfs-repo upgrade requires repo migration to v10
+
+
+
+
+
 ## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.2.0...ipfs-http-gateway@0.2.1) (2021-01-22)
 
 **Note:** Version bump only for package ipfs-http-gateway
