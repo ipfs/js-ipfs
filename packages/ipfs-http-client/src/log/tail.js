@@ -9,7 +9,10 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
-      headers: options.headers
+      headers: options.headers,
+      reactNative: {
+        textStreaming: true
+      }
     })
 
     yield * res.ndjson()

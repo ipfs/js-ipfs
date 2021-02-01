@@ -11,16 +11,18 @@ const server = createServer({
   ipfsBin: require('go-ipfs').path()
 })
 
-module.exports = {
-  bundlesize: { maxSize: '83kB' },
-  hooks: {
-    browser: {
-      pre: async () => {
-        await server.start()
-      },
-      post: async () => {
-        await server.stop()
-      }
-    }
-  }
-}
+server.start()
+
+// module.exports = {
+//   bundlesize: { maxSize: '83kB' },
+//   hooks: {
+//     browser: {
+//       pre: async () => {
+//         await server.start()
+//       },
+//       post: async () => {
+//         await server.stop()
+//       }
+//     }
+//   }
+// }
