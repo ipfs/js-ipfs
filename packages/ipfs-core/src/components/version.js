@@ -3,9 +3,6 @@
 const pkg = require('../../package.json')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-// gitHead is defined in published versions
-const meta = { gitHead: '', ...pkg }
-
 /**
  * @param {Object} config
  * @param {import('.').Repo} config.repo
@@ -26,10 +23,12 @@ module.exports = ({ repo }) => {
     const repoVersion = await repo.version.get(options)
 
     return {
-      version: meta.version,
+      version: pkg.version,
       repo: repoVersion,
-      commit: meta.gitHead,
-      'interface-ipfs-core': meta.devDependencies['interface-ipfs-core']
+
+      // @ts-ignore gitHead is defined in published versions
+      commit: pkg.gitHead || '',
+      'interface-ipfs-core': pkg.devDependencies['interface-ipfs-core']
     }
   }
 
