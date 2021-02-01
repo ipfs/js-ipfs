@@ -11,6 +11,8 @@ const CID = require('cids')
 const f = require('./utils/factory')()
 const ipfsHttpClient = require('../src')
 
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative'
+
 let ipfs
 
 describe('.dag', function () {
@@ -21,7 +23,12 @@ describe('.dag', function () {
 
   after(() => f.clean())
 
-  it('should be able to put and get a DAG node with format dag-pb', async () => {
+  it('should be able to put and get a DAG node with format dag-pb', async function () {
+    if (isReactNative) {
+      // React Native does not support constructing Blobs out of arrays
+      return this.skip()
+    }
+
     const data = uint8ArrayFromString('some data')
     const node = new DAGNode(data)
 
@@ -36,7 +43,12 @@ describe('.dag', function () {
     expect(result.value.Data).to.deep.equal(data)
   })
 
-  it('should be able to put and get a DAG node with format dag-cbor', async () => {
+  it('should be able to put and get a DAG node with format dag-cbor', async function () {
+    if (isReactNative) {
+      // React Native does not support constructing Blobs out of arrays
+      return this.skip()
+    }
+
     const cbor = { foo: 'dag-cbor-bar' }
     let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 
@@ -50,7 +62,9 @@ describe('.dag', function () {
   })
 
   it('should be able to put and get a DAG node with format raw', async () => {
-    const node = uint8ArrayFromString('some data')
+    const textData = 'some data'
+    const rawData = uint8ArrayFromString(textData)
+    const node = isReactNative ? textData : rawData
     let cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
 
     expect(cid.codec).to.equal('raw')
@@ -59,7 +73,7 @@ describe('.dag', function () {
 
     const result = await ipfs.dag.get(cid)
 
-    expect(result.value).to.deep.equal(node)
+    expect(result.value).to.deep.equal(rawData)
   })
 
   it('should error when missing DAG resolver for multicodec from requested CID', async () => {
@@ -100,7 +114,12 @@ describe('.dag', function () {
     expect(askedToLoadFormat).to.be.true()
   })
 
-  it('should allow formats to be specified without overwriting others', async () => {
+  it('should allow formats to be specified without overwriting others', async function () {
+    if (isReactNative) {
+      // React Native does not support constructing Blobs out of arrays
+      return this.skip()
+    }
+
     const ipfs2 = ipfsHttpClient({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {

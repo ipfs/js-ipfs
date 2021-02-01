@@ -10,6 +10,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers,
+      // Enables text streaming support for React Native when using https://github.com/react-native-community/fetch
       reactNative: {
         textStreaming: true
       }

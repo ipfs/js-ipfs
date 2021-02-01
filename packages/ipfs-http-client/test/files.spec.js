@@ -6,6 +6,8 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const f = require('./utils/factory')()
 
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative'
+
 describe('.add', function () {
   this.timeout(20 * 1000)
 
@@ -18,7 +20,8 @@ describe('.add', function () {
   after(() => f.clean())
 
   it('should ignore metadata until https://github.com/ipfs/go-ipfs/issues/6920 is implemented', async () => {
-    const data = uint8ArrayFromString('some data')
+    const textData = 'some data'
+    const data = isReactNative ? textData : uint8ArrayFromString(textData)
     const result = await ipfs.add(data, {
       mode: 0o600,
       mtime: {

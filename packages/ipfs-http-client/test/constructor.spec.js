@@ -7,11 +7,13 @@ const f = require('./utils/factory')()
 const ipfsClient = require('../src/index.js')
 const { isBrowser } = require('ipfs-utils/src/env')
 
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative'
+
 describe('ipfs-http-client constructor tests', () => {
   describe('parameter permuations', () => {
     it('none', () => {
       const ipfs = ipfsClient()
-      if (typeof self !== 'undefined') {
+      if (typeof self !== 'undefined' && !isReactNative) {
         const { hostname, port } = self.location
         expectConfig(ipfs, { host: hostname, port })
       } else {

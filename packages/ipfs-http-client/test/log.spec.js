@@ -7,6 +7,8 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const f = require('./utils/factory')()
 const first = require('it-first')
 
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative'
+
 describe('.log', function () {
   this.timeout(100 * 1000)
 
@@ -21,7 +23,8 @@ describe('.log', function () {
   it('.log.tail', async () => {
     const i = setInterval(async () => {
       try {
-        await ipfs.add(uint8ArrayFromString('just adding some data to generate logs'))
+        const textData = 'just adding some data to generate logs'
+        await ipfs.add(isReactNative ? textData : uint8ArrayFromString(textData))
       } catch (_) {
         // this can error if the test has finished and we're shutting down the node
       }

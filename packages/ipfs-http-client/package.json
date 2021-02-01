@@ -44,6 +44,8 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
+    "test:react-native:android": "aegir test -t react-native-android",
+    "test:react-native:ios": "aegir test -t react-native-ios",
     "lint": "aegir lint",
     "prepare": "aegir build --no-bundle",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
@@ -76,6 +78,7 @@
     "nanoid": "^3.1.12",
     "native-abort-controller": "^1.0.3",
     "parse-duration": "^0.4.4",
+    "react-native-fetch-api": "^1.0.2",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.0.5"
   },
@@ -89,7 +92,11 @@
     "it-concat": "^1.0.1",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",
-    "rimraf": "^3.0.2"
+    "react-native-polyfill-globals": "^3.0.0",
+    "react-native-test-runner": "^3.0.2",
+    "rimraf": "^3.0.2",
+    "text-encoding": "^0.7.0",
+    "typescript": "4.0.x"
   },
   "engines": {
     "node": ">=10.3.0",
