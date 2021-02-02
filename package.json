@@ -32,7 +32,7 @@
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false",
-    "release:pre:reinstall": "npm run reset && npm i",
+    "release:pre:reinstall": "npm run reset && npm i && rimraf package-lock.json packages/*/package-lock.json",
     "release:pre:build": "NODE_ENV=production npm run build -- --scope={ipfs,ipfs-core,ipfs-*client,ipfs-message-port-*}",
     "release:publish": "lerna publish",
     "docker:release": "run-s docker:release:*",
