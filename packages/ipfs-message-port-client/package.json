@@ -34,6 +34,7 @@
     "test:interface:message-port-client": "npm run prepare && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "prepare": "aegir build --no-bundle && aegir build -- --config ./test/util/webpack.config.js",
+    "build": "aegir build && aegir build -- --config ./test/util/webpack.config.js",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
