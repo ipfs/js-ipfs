@@ -24,7 +24,7 @@
   "scripts": {
     "lint": "aegir lint",
     "prepare": "aegir build --no-bundle",
-    "build": "aegir build",
+    "prepublishOnly": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",

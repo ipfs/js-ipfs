@@ -40,7 +40,7 @@
   "scripts": {
     "lint": "aegir lint",
     "prepare": "aegir build --no-bundle",
-    "build": "aegir build",
+    "prepublishOnly": "aegir build",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",

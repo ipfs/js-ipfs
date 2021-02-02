@@ -33,7 +33,7 @@
     "test": "aegir test",
     "lint": "aegir lint",
     "prepare": "aegir build --no-bundle",
-    "build": "aegir build",
+    "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol"
