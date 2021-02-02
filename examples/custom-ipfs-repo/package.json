@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "datastore-fs": "^2.0.0",
-    "ipfs": "^0.53.2",
+    "ipfs": "^0.54.1",
     "ipfs-repo": "^8.0.0",
     "it-all": "^1.0.4"
   },
