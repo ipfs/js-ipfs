@@ -7,7 +7,7 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const { AbortController } = require('native-abort-controller')
 module.exports = configure(api => {
   /**
    * @type {import('..').ImplementsMethod<'put', import('ipfs-core/src/components/dht')>}
