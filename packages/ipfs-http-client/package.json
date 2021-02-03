@@ -51,6 +51,7 @@
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "any-signal": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "cids": "^1.1.5",
@@ -73,7 +74,7 @@
     "multicodec": "^2.0.1",
     "multihashes": "^3.0.1",
     "nanoid": "^3.1.12",
-    "native-abort-controller": "^1.0.0",
+    "native-abort-controller": "^1.0.3",
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.0.5"
