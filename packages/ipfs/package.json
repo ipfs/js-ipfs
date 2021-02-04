@@ -45,7 +45,7 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.8.0-rc2",

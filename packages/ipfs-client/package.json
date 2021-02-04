@@ -44,7 +44,7 @@
     "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "rimraf": "^3.0.2"
   }
 }

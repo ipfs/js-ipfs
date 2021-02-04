@@ -45,10 +45,10 @@
     "ipfs-message-port-protocol": "^0.6.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
     "interface-ipfs-core": "^0.144.1",
     "ipfs": "^0.54.2",
     "ipfs-core": "^0.5.2",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "ipfs-message-port-server": "^0.6.1",
     "rimraf": "^3.0.2"
   },

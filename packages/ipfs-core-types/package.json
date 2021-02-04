@@ -33,7 +33,7 @@
     "peer-id": "^0.14.1"
   },
   "devDependencies": {
-    "aegir": "^30.3.0"
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

@@ -1,9 +1,10 @@
 'use strict'
 
 const { expect } = require('../utils/mocha')
+const { BigNumber } = require('bignumber.js')
 
 const isBigInt = (n) => {
-  return n.constructor.name === 'BigNumber'
+  return n instanceof BigNumber
 }
 
 exports.expectIsBitswap = (err, stats) => {

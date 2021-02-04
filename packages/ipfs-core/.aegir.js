@@ -7,25 +7,32 @@ const path = require('path')
 let preloadNode = MockPreloadNode.createNode()
 let ipfsdServer
 
-module.exports = {
-  bundlesize: { maxSize: '545kB' },
-  karma: {
-    files: [{
-      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-      watched: false,
-      served: true,
-      included: false
-    }],
-    browserNoActivityTimeout: 600 * 1000
-  },
-  webpack: {
-    node: {
-      // required by the nofilter module
-      stream: true,
-
-      // required by the core-util-is module
-      Buffer: true
+const esbuild = {
+  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
+  plugins: [
+    {
+      name: 'node built ins',
+      setup (build) {
+        build.onResolve({ filter: /^stream$/ }, () => {
+          return { path: require.resolve('readable-stream') }
+        })
+      }
     }
+  ]
+}
+
+module.exports = {
+  test: {
+    browser :{
+      config: {
+        assets: '..',
+        buildConfig: esbuild
+      }
+    }
+  },
+  build: {
+    bundlesizeMax: '545kB',
+    config: esbuild
   },
   hooks: {
     node: {

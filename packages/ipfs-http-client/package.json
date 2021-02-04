@@ -80,7 +80,7 @@
     "uint8arrays": "^2.0.5"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "delay": "^4.4.0",
     "go-ipfs": "0.8.0-rc2",
     "ipfs-core": "^0.5.2",

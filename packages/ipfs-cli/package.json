@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^16.0.0",
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "nanoid": "^3.1.12",
     "ncp": "^2.0.0",
     "rimraf": "^3.0.2",

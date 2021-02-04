@@ -44,7 +44,7 @@
     "ipld-block": "^0.11.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "rimraf": "^3.0.2",
     "uint8arrays": "^2.0.5"
   },

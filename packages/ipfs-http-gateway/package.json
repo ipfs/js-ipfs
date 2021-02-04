@@ -45,7 +45,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "file-type": "^16.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3"

@@ -31,7 +31,8 @@
   "license": "MIT",
   "dependencies": {
     "abort-controller": "^3.0.0",
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
@@ -57,7 +58,7 @@
     "it-map": "^1.0.4",
     "it-pushable": "^1.4.0",
     "libp2p-crypto": "^0.19.0",
-    "libp2p-websockets": "^0.15.0",
+    "libp2p-websockets": "libp2p/js-libp2p-websockets#fix/esbuild-compat",
     "multiaddr": "^8.0.0",
     "multibase": "^3.0.0",
     "multihashing-async": "^2.0.1",

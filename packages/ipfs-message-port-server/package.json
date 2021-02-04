@@ -16,7 +16,9 @@
     "dist"
   ],
   "main": "src/index.js",
-  "browser": {},
+  "browser": {
+    "worker_threads": false
+  },
   "typesVersions": {
     "*": {
       "*": [
@@ -47,7 +49,7 @@
     "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
     "cids": "^1.1.5",
     "rimraf": "^3.0.2"
   },

@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  bundlesize: {
-    maxSize: '112kB'
+  build: {
+    bundlesizeMax: '112kB',
   }
 }
