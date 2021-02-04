@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "JavaScript implementation of the IPFS specification",
   "scripts": {
+    "postinstall": "lerna bootstrap",
     "link": "lerna link",
     "reset": "lerna run clean && rimraf packages/*/node_modules node_modules",
     "test": "lerna run test",
