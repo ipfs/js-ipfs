@@ -34,7 +34,7 @@ jobs:
           path: |
             node_modules
             */*/node_modules
-          key: ${{ matrix.node-version }}-${{ runner.os }}-build-${{ hashFiles('package.json') }}
+          key: ${{ matrix.node-version }}-${{ runner.os }}-build-${{ hashFiles('**/package.json') }}
       - name: Install dependencies
         run: npm install
       - name: Typecheck ${{ matrix.project }}
