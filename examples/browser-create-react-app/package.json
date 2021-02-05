@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

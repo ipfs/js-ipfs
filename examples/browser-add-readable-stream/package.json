@@ -13,6 +13,6 @@
   "license": "MIT",
   "devDependencies": {
     "ipfs": "^0.54.1",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   }
 }

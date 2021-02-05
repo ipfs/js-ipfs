@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "execa": "^4.0.3",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   }
 }
