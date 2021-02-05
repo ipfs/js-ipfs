@@ -1,6 +1,6 @@
 'use strict'
 
-const pkg = require('../../package.json')
+const pkg = require('../../../ipfs/package.json')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
