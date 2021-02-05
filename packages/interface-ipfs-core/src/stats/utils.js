@@ -4,7 +4,7 @@ const { expect } = require('../utils/mocha')
 const { BigNumber } = require('bignumber.js')
 
 const isBigInt = (n) => {
-  return n instanceof BigNumber
+  return BigNumber.isBigNumber(n)
 }
 
 exports.expectIsBitswap = (err, stats) => {
