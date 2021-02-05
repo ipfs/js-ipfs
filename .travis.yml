@@ -273,8 +273,6 @@ jobs:
       script:
         # Travis lets scripts continue even if previous steps fail so need to use &&: https://github.com/travis-ci/travis-ci/issues/1066
         - npm run configure-examples &&
-          cat lerna.json &&
-          npx lerna ls &&
           npm run test -- --scope=example* --concurrency=1
 
     - stage: release-rc
