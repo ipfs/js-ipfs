@@ -15,7 +15,6 @@ jobs:
           - packages/ipfs-core
           - packages/ipfs-http-client
           - packages/ipfs
-          - packages/ipfs-message-port-protocol
           - packages/ipfs-message-port-client
     steps:
       - uses: actions/checkout@v2
