@@ -37,7 +37,7 @@
     "cids": "^1.1.5",
     "delay": "^4.4.0",
     "dirty-chai": "^2.0.1",
-    "err-code": "^2.0.3",
+    "err-code": "^3.0.0",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-importer": "^5.0.0",
     "ipfs-utils": "^6.0.0",

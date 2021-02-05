@@ -33,7 +33,7 @@
     "cid-tool": "^1.0.0",
     "cids": "^1.1.5",
     "debug": "^4.1.1",
-    "err-code": "^2.0.3",
+    "err-code": "^3.0.0",
     "execa": "^5.0.0",
     "get-folder-size": "^2.0.1",
     "ipfs-core": "^0.5.1",

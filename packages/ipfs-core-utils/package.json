@@ -40,7 +40,7 @@
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.1.5",
-    "err-code": "^2.0.3",
+    "err-code": "^3.0.0",
     "ipfs-core-types": "^0.3.0",
     "ipfs-utils": "^6.0.0",
     "it-all": "^1.0.4",

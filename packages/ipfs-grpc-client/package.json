@@ -43,7 +43,7 @@
     "change-case": "^4.1.1",
     "cids": "^1.1.5",
     "debug": "^4.1.1",
-    "err-code": "^2.0.3",
+    "err-code": "^3.0.0",
     "ipfs-core-utils": "^0.7.0",
     "ipfs-grpc-protocol": "^0.2.0",
     "it-first": "^1.0.4",
