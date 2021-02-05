@@ -44,7 +44,7 @@
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
-    "test:webworker": "aegir test -t webworker -- --timeout 10000",
+    "test:webworker": "aegir test -t webworker",
     "test:electron-main": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
