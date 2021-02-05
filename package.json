@@ -51,7 +51,9 @@
     "docker:rc:push-next": "docker push ipfs/js-ipfs:next",
     "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "eslintConfig": {
     "extends": "ipfs"
   },

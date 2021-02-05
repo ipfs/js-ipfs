@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.8.0-rc2",
@@ -60,6 +61,7 @@
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.1.2",
     "rimraf": "^3.0.2",
+    "url": "^0.11.0",
     "wrtc": "^0.4.6"
   },
   "typesVersions": {
