@@ -5,7 +5,7 @@ const echoServer = new EchoServer()
 
 module.exports = {
   build: {
-    bundlesizeMax: '13kB',
+    bundlesizeMax: '14kB',
   },
   karma: {
     files: [
