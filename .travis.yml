@@ -1,4 +1,5 @@
 language: node_js
+dist: bionic
 
 services:
   - xvfb
@@ -31,14 +32,27 @@ env:
 addons:
   apt:
     packages:
-      # Fixes error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
-      # https://github.com/electron/electron/issues/1518
-      - libgconf-2-4
-      # Ensure chrome is the latest version
-      # https://stackoverflow.com/questions/57903415/travis-ci-chrome-62-instead-of-77
-      - dpkg
-  chrome: stable
-  firefox: latest
+      # These are required to run webkit
+    - libwoff1
+    - libopus0
+    - libwebp6
+    - libwebpdemux2
+    - libenchant1c2a
+    - libgudev-1.0-0
+    - libsecret-1-0
+    - libhyphen0
+    - libgdk-pixbuf2.0-0
+    - libegl1
+    - libgles2
+    - libevent-2.1-6
+    - libnotify4
+    - libxslt1.1
+    - libvpx5
+    # This is required to run chromium
+    - libgbm1
+    # Fixes error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
+    # https://github.com/electron/electron/issues/1518
+    # - libgconf-2-4
 
 before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
