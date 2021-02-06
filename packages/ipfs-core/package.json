@@ -101,7 +101,7 @@
     "libp2p-record": "^0.9.0",
     "libp2p-tcp": "^0.15.1",
     "libp2p-webrtc-star": "^0.21.0",
-    "libp2p-websockets": "libp2p/js-libp2p-websockets#fix/esbuild-compat",
+    "libp2p-websockets": "^0.15.1",
     "mafmt": "^8.0.0",
     "merge-options": "^3.0.4",
     "mortice": "^2.0.0",

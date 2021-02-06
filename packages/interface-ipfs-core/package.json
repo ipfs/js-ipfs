@@ -58,7 +58,7 @@
     "it-map": "^1.0.4",
     "it-pushable": "^1.4.0",
     "libp2p-crypto": "^0.19.0",
-    "libp2p-websockets": "libp2p/js-libp2p-websockets#fix/esbuild-compat",
+    "libp2p-websockets": "^0.15.1",
     "multiaddr": "^8.0.0",
     "multibase": "^3.0.0",
     "multihashing-async": "^2.0.1",

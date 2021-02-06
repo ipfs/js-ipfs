@@ -20,7 +20,7 @@
   "dependencies": {
     "ipfs": "^0.54.2",
     "it-all": "^1.0.4",
-    "libp2p-websockets": "libp2p/js-libp2p-websockets#fix/esbuild-compat",
+    "libp2p-websockets": "^0.15.1",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   },
