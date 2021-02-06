@@ -91,7 +91,7 @@ jobs:
     - stage: test
       name: firefox
       script:
-        - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
+        - npm run test:browser -- $RUN_SINCE -- -- --bail -- --browsers firefox
 
     - stage: test
       name: firefox webworker
