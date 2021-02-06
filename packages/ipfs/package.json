@@ -23,7 +23,6 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "prepare": "aegir build --no-bundle",
     "prepublishOnly": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",

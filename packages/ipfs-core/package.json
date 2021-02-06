@@ -39,7 +39,6 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "prepare": "aegir build --no-bundle",
     "prepublishOnly": "aegir build",
     "test": "aegir test",
     "test:node": "aegir test -t node",

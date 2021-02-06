@@ -34,7 +34,6 @@
     "test:interface:message-port-client": "npm run build:worker && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "build:worker": "aegir build -- --config ./test/util/webpack.config.js",
-    "prepare": "aegir build --no-bundle",
     "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
