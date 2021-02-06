@@ -172,12 +172,12 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - firefox
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - firefox webworker
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - electron main
@@ -207,12 +207,12 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - ipfs-client - firefox
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - firefox webworker
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - electron main
@@ -242,12 +242,12 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
@@ -267,12 +267,12 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
@@ -292,7 +292,7 @@ jobs:
     - stage: test
       name: ipfs-message-port-client interface tests - firefox
       script:
-        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: examples
