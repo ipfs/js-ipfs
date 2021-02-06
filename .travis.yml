@@ -91,12 +91,12 @@ jobs:
     - stage: test
       name: firefox
       script:
-        - npm run test:browser -- $RUN_SINCE -- -- --bail -- --browsers firefox
+        - npm run test:browser -- $RUN_SINCE -- -- --bail -- --browser firefox
 
     - stage: test
       name: firefox webworker
       script:
-        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless --timeout 60000
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --timeout 60000 -- --browser firefox
 
     - stage: test
       name: electron-main
