@@ -31,7 +31,7 @@
     "go-ipfs": "0.8.0-rc2",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "repository": {
     "type": "git",

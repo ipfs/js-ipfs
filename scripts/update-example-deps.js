@@ -29,6 +29,9 @@ async function main () {
 
   console.info('Running on branch', branch)
 
+  // list all of the package.json files we may have just updated
+  const potentiallyUpdatedProjects = []
+
   for (const dir of fs.readdirSync(PACKAGES_DIR)) {
     const projectPkgPath = path.resolve(PACKAGES_DIR, dir, 'package.json')
 
@@ -36,9 +39,17 @@ async function main () {
       continue
     }
 
+    potentiallyUpdatedProjects.push(projectPkgPath)
+  }
+
+  // add the example test runner
+  potentiallyUpdatedProjects.push(path.resolve(EXAMPLES_DIR, 'test-ipfs-example', 'package.json'))
+
+  for (const projectPkgPath of potentiallyUpdatedProjects) {
     const projectPkg = JSON.parse(fs.readFileSync(projectPkgPath, { encoding: 'utf8' }))
     const projectDepVersion = `^${projectPkg.version}`
 
+    // look through all the example projects and update their deps
     for (const dir of fs.readdirSync(EXAMPLES_DIR)) {
       const examplePkgPath = path.resolve(EXAMPLES_DIR, dir, 'package.json')
 

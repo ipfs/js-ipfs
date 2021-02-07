@@ -27,7 +27,7 @@
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
     "configure-examples": "run-s configure-examples:* release:pre:reinstall release:pre:bundle",
-    "configure-examples:pre:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
+    "configure-examples:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
     "configure-examples:add-hoisted-modules": "json -I -f ./lerna.json -e \"this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']; this.command.bootstrap.nohoist = [...new Set(this.command.bootstrap.nohoist)]\"",
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",

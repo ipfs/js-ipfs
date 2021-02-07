@@ -14,6 +14,6 @@
     "ipfs-http-client": "^49.0.1",
     "ipfsd-ctl": "^7.2.0",
     "ipld-ethereum": "^5.0.1",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   }
 }
