@@ -20,7 +20,7 @@
     "http-server": "^0.12.3",
     "ipfs": "^0.54.1",
     "rimraf": "^3.0.2",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "browser": {
     "ipfs": "ipfs/dist/index.min.js"
