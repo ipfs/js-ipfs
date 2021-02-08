@@ -50,7 +50,7 @@
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",

@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "aegir lint",
     "test": "echo 'No tests here'",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i abort-controller"
   },
   "files": [
     "src/",
