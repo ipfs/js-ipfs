@@ -24,8 +24,8 @@
     "worker-plugin": "4.0.3"
   },
   "dependencies": {
-    "ipfs": "^0.54.1",
-    "ipfs-message-port-client": "^0.5.1",
+    "ipfs": "^0.54.2",
+    "ipfs-message-port-client": "^0.5.2",
     "ipfs-message-port-server": "^0.6.1"
   },
   "browserslist": [
