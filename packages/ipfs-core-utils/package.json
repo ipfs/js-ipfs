@@ -36,7 +36,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "any-signal": "^2.0.0",
+    "any-signal": "^2.1.2",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.1.5",
