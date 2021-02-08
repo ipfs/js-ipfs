@@ -39,7 +39,7 @@
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol"
   },
   "dependencies": {
-    "@improbable-eng/grpc-web": "^0.13.0",
+    "@improbable-eng/grpc-web": "^0.14.0",
     "change-case": "^4.1.1",
     "cids": "^1.1.5",
     "debug": "^4.1.1",
