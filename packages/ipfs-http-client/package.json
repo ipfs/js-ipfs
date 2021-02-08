@@ -48,17 +48,18 @@
     "prepare": "aegir build --no-bundle",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
-    "any-signal": "^2.0.0",
+    "abort-controller": "^3.0.0",
+    "any-signal": "^2.1.2",
     "bignumber.js": "^9.0.0",
     "cids": "^1.1.5",
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
     "ipfs-core-types": "^0.3.0",
     "ipfs-core-utils": "^0.7.0",
-    "ipfs-utils": "^6.0.0",
+    "ipfs-utils": "^6.0.1",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
@@ -73,7 +74,7 @@
     "multicodec": "^2.0.1",
     "multihashes": "^3.0.1",
     "nanoid": "^3.1.12",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "^1.0.3",
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.0.5"

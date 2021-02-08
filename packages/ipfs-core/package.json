@@ -50,9 +50,10 @@
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "array-shuffle": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "cbor": "^6.0.1",
@@ -75,7 +76,7 @@
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-exporter": "^3.0.4",
     "ipfs-unixfs-importer": "^5.0.0",
-    "ipfs-utils": "^6.0.0",
+    "ipfs-utils": "^6.0.1",
     "ipld": "^0.28.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
@@ -109,7 +110,7 @@
     "multibase": "^3.0.0",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",
     "parse-duration": "^0.4.4",
     "peer-id": "^0.14.1",

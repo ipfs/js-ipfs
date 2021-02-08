@@ -15,7 +15,7 @@
     "human-crypto-keys": "^0.1.4",
     "ipfs": "^0.54.1",
     "ipfs-http-client": "^49.0.1",
-    "ipfs-utils": "^6.0.0",
+    "ipfs-utils": "^6.0.1",
     "ipns": "^0.8.0",
     "it-last": "^1.0.4",
     "p-retry": "^4.2.0",

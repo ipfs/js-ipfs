@@ -5,8 +5,8 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('./lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
 
 /**
  * @typedef {import('ipfs-utils/src/types').ProgressFn} IPFSUtilsHttpUploadProgressFn
@@ -20,7 +20,7 @@ module.exports = configure((api) => {
   async function * addAll (source, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
     const { headers, body, total, parts } =
       await multipartRequest(source, controller, options.headers)
 

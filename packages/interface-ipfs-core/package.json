@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "aegir lint",
     "test": "echo 'No tests here'",
-    "dep-check": "aegir dep-check"
+    "dep-check": "aegir dep-check -i abort-controller"
   },
   "files": [
     "src/",
@@ -30,6 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "aegir": "^30.3.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -40,7 +41,7 @@
     "err-code": "^2.0.3",
     "ipfs-unixfs": "^2.0.3",
     "ipfs-unixfs-importer": "^5.0.0",
-    "ipfs-utils": "^6.0.0",
+    "ipfs-utils": "^6.0.1",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
@@ -61,7 +62,7 @@
     "multibase": "^3.0.0",
     "multihashing-async": "^2.0.1",
     "nanoid": "^3.1.12",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
     "peer-id": "^0.14.1",
     "readable-stream": "^3.4.0",
