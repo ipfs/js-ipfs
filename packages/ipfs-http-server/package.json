@@ -56,7 +56,7 @@
     "multibase": "^3.0.0",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "~1.0.3",
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^5.0.2",

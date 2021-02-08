@@ -73,7 +73,7 @@
     "multicodec": "^2.0.1",
     "multihashes": "^3.0.1",
     "nanoid": "^3.1.12",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "~1.0.3",
     "parse-duration": "^0.4.4",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.0.5"

@@ -109,7 +109,7 @@
     "multibase": "^3.0.0",
     "multicodec": "^2.0.1",
     "multihashing-async": "^2.0.1",
-    "native-abort-controller": "~0.0.3",
+    "native-abort-controller": "~1.0.3",
     "p-queue": "^6.6.1",
     "parse-duration": "^0.4.4",
     "peer-id": "^0.14.1",
