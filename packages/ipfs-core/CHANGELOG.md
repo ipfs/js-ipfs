@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.5.1...ipfs-core@0.5.2) (2021-02-08)
+
+
+### Bug Fixes
+
+* ts types after multihashing-async release ([#3529](https://github.com/ipfs/js-ipfs/issues/3529)) ([95b891f](https://github.com/ipfs/js-ipfs/commit/95b891f10e0661f508e8641a1c5d41ea9194c630)), closes [#3527](https://github.com/ipfs/js-ipfs/issues/3527)
+
+
+
+
+
 ## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.5.0...ipfs-core@0.5.1) (2021-02-02)
 
 **Note:** Version bump only for package ipfs-core
