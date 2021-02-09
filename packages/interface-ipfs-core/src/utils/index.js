@@ -3,7 +3,7 @@
 const fromString = require('uint8arrays/from-string')
 const loadFixture = require('aegir/fixtures')
 
-const ONE_MEG = Math.pow(2, 20)
+// const ONE_MEG = Math.pow(2, 20)
 
 exports.fixtures = Object.freeze({
   directory: Object.freeze({
@@ -23,7 +23,9 @@ exports.fixtures = Object.freeze({
   }),
   bigFile: Object.freeze({
     cid: 'QmcKEs7mbxbGPPc2zo77E6CPwgaSbY4SmD2MFh16AqaR9e',
-    data: Uint8Array.from(new Array(ONE_MEG * 15).fill(0))
+    data: loadFixture('test/fixtures/test-folder/holmes.txt', 'interface-ipfs-core')
+    // TODO check https://github.com/ipfs/js-ipfs/issues/3542
+    // data: Uint8Array.from(new Array(ONE_MEG * 15).fill(0))
   }),
   emptyFile: Object.freeze({
     cid: 'QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH',
