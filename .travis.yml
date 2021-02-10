@@ -55,6 +55,7 @@ addons:
     - gstreamer1.0-plugins-bad
     # This is required to run chromium
     - libgbm1
+  chrome: stable
 
 before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
@@ -113,16 +114,6 @@ jobs:
       name: firefox webworker
       script:
         - npm run test:webworker -- $RUN_SINCE -- -- --bail --timeout 60000 -- --browser firefox
-
-    - stage: test
-      name: webkit
-      script:
-        - npm run test:browser -- $RUN_SINCE -- -- --bail -- --browser webkit
-
-    - stage: test
-      name: webkit webworker
-      script:
-        - npm run test:webworker -- $RUN_SINCE -- -- --bail --timeout 60000 -- --browser webkit
 
     - stage: test
       name: electron-main
