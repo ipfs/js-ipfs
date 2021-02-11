@@ -1,11 +1,13 @@
 'use strict'
 
+const getPort = require('aegir/utils/get-port')
 const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const PinningService = require('./test/utils/mock-pinning-service')
 const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
+const { get } = require('ipfs-utils/src/http')
 
 let preloadNode
 let pinningService
@@ -72,19 +74,22 @@ module.exports = {
 
         await preloadNode.start()
         await echoServer.start()
+        const ipfsdPort = await getPort()
+        const signalAPort = await getPort()
+        const signalBPort = await getPort()
         sigServerA = await webRTCStarSigServer.start({
           host: '127.0.0.1',
-          port: 14579,
+          port: signalAPort,
           metrics: false
         })
         sigServerB = await webRTCStarSigServer.start({
           host: '127.0.0.1',
-          port: 14578,
+          port: signalBPort,
           metrics: false
         })
         ipfsdServer = await createServer({
           host: '127.0.0.1',
-          port: 57483
+          port: ipfsdPort
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
@@ -110,7 +115,9 @@ module.exports = {
           env: {
             PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
             PINNING_SERVIEC_KEY: pinningService.token,
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`,
+            IPFSD_SERVER: `http://127.0.0.1:${ipfsdPort}`,
+            SIGNALA_SERVER: `/ip4/127.0.0.1/tcp/${signalAPort}/ws/p2p-webrtc-star`
           }
         }
       },

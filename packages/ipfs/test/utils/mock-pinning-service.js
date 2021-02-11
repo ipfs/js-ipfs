@@ -2,6 +2,7 @@
 
 const http = require('http')
 const { setup } = require('mock-ipfs-pinning-service')
+const getPort = require('aegir/utils/get-port')
 
 const defaultPort = 1139
 const defaultToken = 'secret'
@@ -16,9 +17,11 @@ class PinningService {
   static async start ({ port = defaultPort, token = defaultToken } = {}) {
     const service = await setup({ token })
     const server = http.createServer(service)
-    await new Promise(resolve => server.listen(port, resolve))
+    const host = '127.0.0.1'
+    port = await getPort(port)
+    await new Promise(resolve => server.listen(port, host, resolve))
 
-    return new PinningService({ server, host: '127.0.0.1', port, token })
+    return new PinningService({ server, host, port, token })
   }
 
   /**
