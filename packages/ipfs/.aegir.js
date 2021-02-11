@@ -7,7 +7,6 @@ const PinningService = require('./test/utils/mock-pinning-service')
 const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
-const { get } = require('ipfs-utils/src/http')
 
 let preloadNode
 let pinningService
