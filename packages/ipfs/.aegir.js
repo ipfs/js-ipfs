@@ -116,7 +116,8 @@ module.exports = {
             PINNING_SERVIEC_KEY: pinningService.token,
             ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`,
             IPFSD_SERVER: `http://127.0.0.1:${ipfsdPort}`,
-            SIGNALA_SERVER: `/ip4/127.0.0.1/tcp/${signalAPort}/ws/p2p-webrtc-star`
+            SIGNALA_SERVER: `/ip4/127.0.0.1/tcp/${signalAPort}/ws/p2p-webrtc-star`,
+            SIGNALB_SERVER: `/ip4/127.0.0.1/tcp/${signalBPort}/ws/p2p-webrtc-star`
           }
         }
       },
