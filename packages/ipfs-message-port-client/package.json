@@ -36,7 +36,7 @@
     "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
