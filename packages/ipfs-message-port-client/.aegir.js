@@ -20,7 +20,7 @@ const buildConfig = {
 
 module.exports = {
   build: {
-    bundlesizeMax: '14kB',
+    bundlesizeMax: '23kB',
     config: buildConfig
   },
   test: {
