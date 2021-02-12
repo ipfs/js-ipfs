@@ -1,43 +1,45 @@
 'use strict'
-
+const path = require('path')
+const esbuild = require('esbuild')
 const EchoServer = require('aegir/utils/echo-server')
 const echoServer = new EchoServer()
+
+const buildConfig = {
+  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
+  plugins: [
+    {
+      name: 'node built ins',
+      setup (build) {
+        build.onResolve({ filter: /^stream$/ }, () => {
+          return { path: require.resolve('readable-stream') }
+        })
+      }
+    }
+  ]
+}
 
 module.exports = {
   build: {
     bundlesizeMax: '14kB',
+    config: buildConfig
   },
-  karma: {
-    files: [
-      {
-        pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-        watched: false,
-        served: true,
-        included: false
-      },
-      {
-        pattern: 'dist/**/*',
-        watched: true,
-        served: true,
-        included: false
+  test: {
+    browser :{
+      config: {
+        assets: '..',
+        buildConfig
       }
-    ],
-    browserNoActivityTimeout: 210 * 1000,
-    singleRun: true,
-    captureConsole: true,
-    logLevel: 'LOG_DEBUG',
-    mocha: {
-      bail: true
     }
   },
   hooks: {
     browser: {
       pre: async () => {
+        await buildWorker()
         await echoServer.start()
 
         return {
           env: {
-            IPFS_WORKER_URL: `/base/dist/worker.bundle.js`,
+            IPFS_WORKER_URL: `/ipfs-message-port-client/dist/worker.bundle.js`,
             ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
           }
         }
@@ -47,4 +49,21 @@ module.exports = {
       }
     }
   }
+}
+
+const buildWorker = async () => {
+  await esbuild.build(
+    {
+      entryPoints: [path.join(__dirname, 'test/util/worker.js')],
+      bundle: true,
+      mainFields: ['browser', 'module', 'main'],
+      sourcemap: 'inline',
+      outfile: path.join(__dirname, 'dist/worker.bundle.js'),
+      define: {
+        global: 'globalThis',
+        'process.env.NODE_ENV': '"production"'
+      },
+      ...buildConfig
+    }
+  )
 }

@@ -66,7 +66,7 @@ before_install:
   - npm install -g node-pre-gyp
 
 script:
-  - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
+  - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
 jobs:
   allow_failures:
@@ -148,7 +148,7 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - node
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: js-ipfs interface tests - chrome
@@ -183,7 +183,7 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - ipfs-client - node
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - chrome
@@ -218,7 +218,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - node
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - chrome
@@ -243,7 +243,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome

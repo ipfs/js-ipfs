@@ -31,9 +31,8 @@
   },
   "scripts": {
     "test": "echo 'Only interface tests live here'",
-    "test:interface:message-port-client": "npm run build:worker && aegir test -t browser -f ./test/interface-message-port-client.js",
+    "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
-    "build:worker": "aegir build -- --config ./test/util/webpack.config.js",
     "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
