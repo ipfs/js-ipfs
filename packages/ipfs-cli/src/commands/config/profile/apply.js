@@ -20,6 +20,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../../types').Context} argv.ctx
+   * @param {string} argv.profile
+   * @param {boolean} argv.dryRun
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, profile, dryRun, timeout }) {
     const { print, ipfs, isDaemon } = ctx
     const diff = await ipfs.config.profiles.apply(profile, {

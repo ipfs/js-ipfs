@@ -2,11 +2,11 @@
   "name": "example-ipfs-client-add-files",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.html",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "parcel build index.html --public-url '.'",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html -p 8888",
     "test": "test-ipfs-example"
   },
@@ -16,8 +16,8 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "ipfs": "^0.54.4",
-    "ipfsd-ctl": "^7.2.0",
-    "parcel-bundler": "^1.12.4",
+    "ipfsd-ctl": "^8.0.0",
+    "parcel": "next",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   },

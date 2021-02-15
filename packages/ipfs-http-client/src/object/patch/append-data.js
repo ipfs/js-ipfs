@@ -7,8 +7,16 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
 const abortSignal = require('../../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
 
+/**
+ * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/object/patch').API<HTTPClientExtraOptions>} ObjectPatchAPI
+ */
+
 module.exports = configure(api => {
-  return async (cid, data, options = {}) => {
+  /**
+   * @type {ObjectPatchAPI["appendData"]}
+   */
+  async function appendData (cid, data, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
@@ -30,4 +38,5 @@ module.exports = configure(api => {
 
     return new CID(Hash)
   }
+  return appendData
 })

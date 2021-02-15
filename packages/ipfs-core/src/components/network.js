@@ -5,11 +5,32 @@ const createLibP2P = require('./libp2p')
 const Multiaddr = require('multiaddr')
 const errCode = require('err-code')
 
+/**
+ * @typedef {Object} Online
+ * @property {libp2p} libp2p
+ * @property {Bitswap} bitswap
+ *
+ * @typedef {Object} Options
+ * @property {PeerId} options.peerId
+ * @property {Repo} options.repo
+ * @property {Print} options.print
+ * @property {IPFSOptions} options.options
+ *
+ * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ * @typedef {import('../types').Options} IPFSOptions
+ * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('../types').Print} Print
+ * @typedef {import('libp2p')} libp2p
+ * @typedef {import('ipfs-bitswap')} Bitswap
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ */
+
 class Network {
   /**
    * @param {PeerId} peerId
-   * @param {LibP2P} libp2p
-   * @param {BitSwap} bitswap
+   * @param {libp2p} libp2p
+   * @param {Bitswap} bitswap
    */
   constructor (peerId, libp2p, bitswap) {
     this.peerId = peerId
@@ -33,7 +54,9 @@ class Network {
       options,
       repo,
       peerId,
+      // @ts-ignore - TODO move config types into ipfs-repo
       multiaddrs: readAddrs(peerId, config),
+      // @ts-ignore - TODO move config types into ipfs-repo
       config,
       keychainConfig: undefined
     })
@@ -101,23 +124,3 @@ const readAddrs = (peerId, config) => {
 }
 
 const WEBSOCKET_STAR_PROTO_CODE = 479
-/**
- * @typedef {Object} Online
- * @property {LibP2P} libp2p
- * @property {BitSwap} bitswap
- *
- * @typedef {Object} Options
- * @property {PeerId} options.peerId
- * @property {Repo} options.repo
- * @property {Print} options.print
- * @property {IPFSOptions} options.options
- *
- * @typedef {import('.').IPFSConfig} IPFSConfig
- * @typedef {import('.').Options} IPFSOptions
- * @typedef {import('.').Repo} Repo
- * @typedef {import('.').Print} Print
- * @typedef {import('.').LibP2P} LibP2P
- * @typedef {import('ipfs-core-types/src/bitswap').Bitswap} BitSwap
- * @typedef {import('.').PeerId} PeerId
- * @typedef {import('.').AbortOptions} AbortOptions
- */

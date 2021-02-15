@@ -4,25 +4,11 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').Keychain} config.keychain
+ * @param {import('libp2p/src/keychain')} config.keychain
  */
 module.exports = ({ keychain }) => {
   /**
-   * Rename a key
-   *
-   * @example
-   * ```js
-   * const key = await ipfs.key.rename('my-key', 'my-new-key')
-   *
-   * console.log(key)
-   * // { id: 'Qmd4xC46Um6s24MradViGLFtMitvrR4SVexKUgPgFjMNzg',
-   * //   was: 'my-key',
-   * //   now: 'my-new-key',
-   * //   overwrite: false }
-   * ```
-   * @param {string} oldName - The current key name
-   * @param {string} newName - The desired key name
-   * @returns {Promise<RenamedKey>}
+   * @type {import('ipfs-core-types/src/key').API["rename"]}
    */
   const rename = async (oldName, newName) => {
     const key = await keychain.renameKey(oldName, newName)
@@ -37,13 +23,3 @@ module.exports = ({ keychain }) => {
 
   return withTimeoutOption(rename)
 }
-
-/**
- * @typedef {Object} RenamedKey
- * @property {string} was - The name of the key
- * @property {string} now -  The hash of the key
- * @property {string} id
- * @property {boolean} overwrite
- *
- * @typedef {import('.').AbortOptions} AbortOptions
- */

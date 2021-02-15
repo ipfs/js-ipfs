@@ -5,9 +5,14 @@ const multiaddr = require('multiaddr')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
+/**
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/id')>}
+   * @type {RootAPI["id"]}
    */
   async function id (options = {}) {
     const res = await api.post('id', {
@@ -18,12 +23,15 @@ module.exports = configure(api => {
     })
     const data = await res.json()
 
-    const output = toCamel(data)
-
-    if (output.addresses) {
-      output.addresses = output.addresses.map(ma => multiaddr(ma))
+    const output = {
+      ...toCamel(data)
     }
 
+    if (output.addresses) {
+      output.addresses = output.addresses.map((/** @type {string} */ ma) => multiaddr(ma))
+    }
+
+    // @ts-ignore server output is not typed
     return output
   }
   return id

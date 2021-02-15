@@ -4,6 +4,10 @@ const parser = require('./parser')
 const commandAlias = require('./command-alias')
 const errCode = require('err-code')
 
+/**
+ * @param {string[]} command
+ * @param {import('yargs').MiddlewareFunction} ctxMiddleware
+ */
 module.exports = (command, ctxMiddleware) => {
   // Apply command aliasing (eg `refs local` -> `refs-local`)
   command = commandAlias(command)

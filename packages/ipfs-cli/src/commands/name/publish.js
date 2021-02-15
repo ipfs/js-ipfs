@@ -11,6 +11,9 @@ module.exports = {
   describe: 'Publish IPNS names.',
 
   builder: {
+    ipfsPath: {
+      type: 'string'
+    },
     resolve: {
       alias: 'r',
       describe: 'Resolve given path before publishing. Default: true.',
@@ -40,6 +43,16 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('cids')} argv.ipfsPath
+   * @param {boolean} argv.resolve
+   * @param {string} argv.lifetime
+   * @param {string} argv.key
+   * @param {string} argv.ttl
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, resolve, lifetime, key, ttl, timeout }) {
     const result = await ipfs.name.publish(ipfsPath, {
       resolve,

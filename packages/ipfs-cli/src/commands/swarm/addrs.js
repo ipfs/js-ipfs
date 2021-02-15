@@ -7,6 +7,9 @@ module.exports = {
 
   describe: '',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs
       .commandDir('addrs')
@@ -16,6 +19,11 @@ module.exports = {
       })
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const res = await ipfs.swarm.addrs({
       timeout

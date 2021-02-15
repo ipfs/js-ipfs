@@ -31,7 +31,7 @@ describe('utils', () => {
         source
       } = bidiToDuplex(grpc, service, options)
 
-      expect(client.start.calledWith(options.metadata)).to.be.true()
+      expect(client.start.calledWith(toHeaders(options.metadata))).to.be.true()
 
       client.onMessage.getCall(0).args[0]('hello')
       client.onMessage.getCall(0).args[0]('world')
@@ -62,7 +62,7 @@ describe('utils', () => {
         source
       } = bidiToDuplex(grpc, service, options)
 
-      expect(client.start.calledWith(options.metadata)).to.be.true()
+      expect(client.start.calledWith(toHeaders(options.metadata))).to.be.true()
 
       client.onEnd.getCall(0).args[0](1, 'Erp!', { get: () => [] })
 
@@ -78,8 +78,8 @@ describe('utils', () => {
 
       const output = toHeaders(input)
 
-      expect(output.propSimple).to.be.undefined()
-      expect(output['prop-simple']).to.equal(input.propSimple)
+      expect(output.get('propSimple')).to.be.empty()
+      expect(output.get('prop-simple')).to.deep.equal([input.propSimple])
     })
 
     it('should remove function fields', () => {
@@ -89,8 +89,8 @@ describe('utils', () => {
 
       const output = toHeaders(input)
 
-      expect(output.funcProp).to.be.undefined()
-      expect(output['func-prop']).to.be.undefined()
+      expect(output.get('funcProp')).to.be.empty()
+      expect(output.get('funcProp')).to.be.empty()
     })
   })
 })

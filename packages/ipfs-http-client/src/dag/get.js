@@ -4,13 +4,18 @@ const configure = require('../lib/configure')
 const multicodec = require('multicodec')
 const loadFormat = require('../lib/ipld-formats')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
+ */
+
 module.exports = configure((api, opts) => {
   const getBlock = require('../block/get')(opts)
   const dagResolve = require('./resolve')(opts)
   const load = loadFormat(opts.ipld)
 
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/dag/get')>}
+   * @type {DAGAPI["get"]}
    */
   const get = async (cid, options = {}) => {
     const resolved = await dagResolve(cid, options)
@@ -23,7 +28,7 @@ module.exports = configure((api, opts) => {
       resolved.remainderPath = '/'
     }
 
-    return format.resolver.resolve(block.data, resolved.remainderPath)
+    return format.resolver.resolve(block.data, resolved.remainderPath || '')
   }
 
   return get

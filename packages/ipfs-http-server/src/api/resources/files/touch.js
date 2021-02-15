@@ -42,6 +42,11 @@ const mfsTouch = {
         })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       ipfs

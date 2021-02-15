@@ -1,6 +1,7 @@
 'use strict'
 
-const { encodeCID, decodeCID, CID } = require('./cid')
+const CID = require('cids')
+const { encodeCID, decodeCID } = require('./cid')
 
 /**
  * @typedef {import('./data').JSONValue} JSONValue
@@ -12,12 +13,7 @@ const { encodeCID, decodeCID, CID } = require('./cid')
  */
 
 /**
- * @typedef {Object} EncodedCID
- * @property {string} codec
- * @property {Uint8Array} multihash
- * @property {number} version
  * @typedef {JSONValue} DAGNode
- *
  * @typedef {Object} EncodedDAGNode
  * @property {DAGNode} dagNode
  * @property {CID[]} cids

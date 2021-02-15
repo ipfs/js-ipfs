@@ -1,28 +1,28 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
+const {
+  DAGNode
+} = require('ipld-dag-pb')
 const multicodec = require('multicodec')
-const Unixfs = require('ipfs-unixfs')
+const mh = require('multihashing-async').multihash
+const { UnixFS } = require('ipfs-unixfs')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @param {import('ipld')} config.ipld
+ * @param {import('../../types').Preload} config.preload
  */
 module.exports = ({ ipld, preload }) => {
   /**
-   *
-   * @param {NewOptions & AbortOptions} options
-   * @returns {Promise<CID>}
+   * @type {import('ipfs-core-types/src/object').API["new"]}
    */
   async function _new (options = {}) {
     let data
 
     if (options.template) {
       if (options.template === 'unixfs-dir') {
-        data = (new Unixfs('directory')).marshal()
+        data = (new UnixFS({ type: 'directory' })).marshal()
       } else {
         throw new Error('unknown template')
       }
@@ -34,7 +34,7 @@ module.exports = ({ ipld, preload }) => {
 
     const cid = await ipld.put(node, multicodec.DAG_PB, {
       cidVersion: 0,
-      hashAlg: multicodec.SHA2_256,
+      hashAlg: mh.names['sha2-256'],
       signal: options.signal
     })
 
@@ -47,15 +47,3 @@ module.exports = ({ ipld, preload }) => {
 
   return withTimeoutOption(_new)
 }
-
-/**
- * @typedef {Object} NewOptions
- * @property {string} [template]
- * @property {boolean} [recursive]
- * @property {boolean} [nocache]
- * @property {boolean} [preload]
- * @property {string} [enc]
- *
- * @typedef {import('.').CID} CID
- * @typedef {import('.').AbortOptions} AbortOptions
- */

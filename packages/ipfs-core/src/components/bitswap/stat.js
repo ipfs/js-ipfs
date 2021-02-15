@@ -6,37 +6,15 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Show diagnostic information on the bitswap agent.
-   * Note: `bitswap.stat` and `stats.bitswap` can be used interchangeably.
-   *
-   * @example
-   * ```js
-   * const stats = await ipfs.bitswap.stat()
-   * console.log(stats)
-   * // {
-   * //   provideBufLen: 0,
-   * //   wantlist: [ CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM') ],
-   * //   peers:
-   * //    [ 'QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
-   * //      'QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
-   * //      'QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd' ],
-   * //   blocksReceived: 0,
-   * //   dataReceived: 0,
-   * //   blocksSent: 0,
-   * //   dataSent: 0,
-   * //   dupBlksReceived: 0,
-   * //   dupDataReceived: 0
-   * // }
-   * ```
-   * @param {import('.').AbortOptions} [options]
-   * @returns {Promise<BitswapStats>}
+   * @type {import('ipfs-core-types/src/bitswap').API["stat"]}
    */
-  async function stat (options) {
-    const { bitswap } = await network.use(options)
+  async function stat (options = {}) {
+    /** @type {import('ipfs-bitswap')} */
+    const bitswap = (await network.use(options)).bitswap
     const snapshot = bitswap.stat().snapshot
 
     return {
@@ -54,16 +32,3 @@ module.exports = ({ network }) => {
 
   return withTimeoutOption(stat)
 }
-
-/**
- * @typedef {object} BitswapStats - An object that contains information about the bitswap agent
- * @property {number} provideBufLen - an integer
- * @property {CID[]} wantlist
- * @property {CID[]} peers - array of peer IDs
- * @property {Big} blocksReceived
- * @property {Big} dataReceived
- * @property {Big} blocksSent
- * @property {Big} dataSent
- * @property {Big} dupBlksReceived
- * @property {Big} dupDataReceived
- */

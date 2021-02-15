@@ -6,29 +6,22 @@ const map = require('it-map')
 const { pipe } = require('it-pipe')
 const streamResponse = require('../../../utils/stream-response')
 
+/**
+ * @param {*} entry
+ * @param {{ cidBase?: string, long?: boolean }} options
+ */
 const mapEntry = (entry, options = {}) => {
   const type = entry.type === 'file' ? 0 : 1
 
-  const output = {
+  return {
     Name: entry.name,
     Type: options.long ? type : 0,
     Size: options.long ? entry.size || 0 : 0,
-    Hash: entry.cid.toString(options.cidBase)
+    Hash: entry.cid.toString(options.cidBase),
+    Mtime: entry.mtime ? entry.mtime.secs : undefined,
+    MtimeNsecs: entry.mtime ? entry.mtime.nsecs : undefined,
+    Mode: entry.mode != null ? entry.mode.toString(8).padStart(4, '0') : undefined
   }
-
-  if (entry.mtime) {
-    output.Mtime = entry.mtime.secs
-
-    if (entry.mtime.nsecs != null) {
-      output.MtimeNsecs = entry.mtime.nsecs
-    }
-  }
-
-  if (entry.mode != null) {
-    output.Mode = entry.mode.toString(8).padStart(4, '0')
-  }
-
-  return output
 }
 
 const mfsLs = {
@@ -51,6 +44,11 @@ const mfsLs = {
         })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

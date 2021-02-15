@@ -23,12 +23,18 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {boolean} argv.multihash
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout, multihash }) {
     for await (const { ref, err } of ipfs.refs.local({
       timeout
     })) {
       if (err) {
-        print(err, true, true)
+        print(err.toString(), true, true)
       } else {
         if (multihash) {
           print(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))

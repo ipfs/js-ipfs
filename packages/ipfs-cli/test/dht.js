@@ -5,6 +5,10 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const CID = require('cids')
+const PeerId = require('peer-id')
 
 describe('dht', () => {
   let ipfs
@@ -34,7 +38,7 @@ describe('dht', () => {
       await cli(`dht put ${key} ${value}`, {
         ipfs
       })
-      expect(ipfs.dht.put.calledWith(key, value, defaultOptions)).to.be.true()
+      expect(ipfs.dht.put.calledWith(uint8ArrayFromString(key), uint8ArrayFromString(value), defaultOptions)).to.be.true()
     })
 
     it('should be able to put a value to the dht with a timeout', async () => {
@@ -44,7 +48,7 @@ describe('dht', () => {
       await cli(`dht put ${key} ${value} --timeout=1s`, {
         ipfs
       })
-      expect(ipfs.dht.put.calledWith(key, value, {
+      expect(ipfs.dht.put.calledWith(uint8ArrayFromString(key), uint8ArrayFromString(value), {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()
@@ -57,22 +61,22 @@ describe('dht', () => {
     }
 
     it('should be able to get a value from the dht', async () => {
-      const key = 'testkey'
-      const value = 'testvalue'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const value = uint8ArrayFromString('testvalue')
 
-      ipfs.dht.get.withArgs(key, defaultOptions).resolves(value)
+      ipfs.dht.get.withArgs(key.bytes, defaultOptions).resolves(value)
 
       const out = await cli(`dht get ${key}`, {
         ipfs
       })
-      expect(out).to.equal(`${value}\n`)
+      expect(out).to.equal(`${uint8ArrayToString(value, 'base58btc')}\n`)
     })
 
     it('should be able to get a value from the dht with a timeout', async () => {
-      const key = 'testkey'
-      const value = 'testvalue'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const value = uint8ArrayFromString('testvalue')
 
-      ipfs.dht.get.withArgs(key, {
+      ipfs.dht.get.withArgs(key.bytes, {
         ...defaultOptions,
         timeout: 1000
       }).resolves(value)
@@ -80,7 +84,7 @@ describe('dht', () => {
       const out = await cli(`dht get ${key} --timeout=1s`, {
         ipfs
       })
-      expect(out).to.equal(`${value}\n`)
+      expect(out).to.equal(`${uint8ArrayToString(value, 'base58btc')}\n`)
     })
   })
 
@@ -91,7 +95,7 @@ describe('dht', () => {
     }
 
     it('should be able to provide data', async () => {
-      const key = 'testkey'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key}`, {
         ipfs
@@ -100,7 +104,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data recursively', async () => {
-      const key = 'testkey'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} --recursive`, {
         ipfs
@@ -112,7 +116,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data recursively (short option)', async () => {
-      const key = 'testkey'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} -r`, {
         ipfs
@@ -124,7 +128,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data with a timeout', async () => {
-      const key = 'testkey'
+      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} --timeout=1s`, {
         ipfs
@@ -141,7 +145,7 @@ describe('dht', () => {
       numProviders: 20,
       timeout: undefined
     }
-    const key = 'testkey'
+    const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const prov = {
       id: 'prov-id'
     }
@@ -184,7 +188,7 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = 'peerId'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const peer = {
       addrs: [
         'addr'
@@ -192,14 +196,17 @@ describe('dht', () => {
     }
 
     it('should find a peer', async () => {
-      ipfs.dht.findPeer.withArgs(peerId, defaultOptions).returns(peer)
+      // https://github.com/libp2p/js-peer-id/issues/141
+      ipfs.dht.findPeer.withArgs(PeerId.createFromB58String(peerId.toString()), defaultOptions).returns(peer)
 
       const out = await cli(`dht findpeer ${peerId}`, { ipfs })
+
       expect(out).to.equal(`${peer.addrs[0]}\n`)
     })
 
     it('should find a peer with a timeout', async () => {
-      ipfs.dht.findPeer.withArgs(peerId, {
+      // https://github.com/libp2p/js-peer-id/issues/141
+      ipfs.dht.findPeer.withArgs(PeerId.createFromB58String(peerId.toString()), {
         ...defaultOptions,
         timeout: 1000
       }).returns(peer)
@@ -213,13 +220,14 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = 'peerId'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const peer = {
       id: peerId
     }
 
     it('should query the DHT', async () => {
-      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([
+      // https://github.com/libp2p/js-peer-id/issues/141
+      ipfs.dht.query.withArgs(PeerId.createFromB58String(peerId.toString()), defaultOptions).returns([
         peer
       ])
 
@@ -228,7 +236,8 @@ describe('dht', () => {
     })
 
     it('should query the DHT with a timeout', async () => {
-      ipfs.dht.query.withArgs(peerId, {
+      // https://github.com/libp2p/js-peer-id/issues/141
+      ipfs.dht.query.withArgs(PeerId.createFromB58String(peerId.toString()), {
         ...defaultOptions,
         timeout: 1000
       }).returns([

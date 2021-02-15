@@ -21,6 +21,11 @@ exports.wantlist = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -77,6 +82,11 @@ exports.stat = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -98,14 +108,12 @@ exports.stat = {
       timeout
     })
 
-    stats.wantlist = stats.wantlist.map(cid => ({
-      '/': cidToString(cid, { base: cidBase, upgrade: false })
-    }))
-
     return h.response({
       ProvideBufLen: stats.provideBufLen,
       BlocksReceived: stats.blocksReceived,
-      Wantlist: stats.wantlist,
+      Wantlist: stats.wantlist.map(cid => ({
+        '/': cidToString(cid, { base: cidBase, upgrade: false })
+      })),
       Peers: stats.peers,
       DupBlksReceived: stats.dupBlksReceived,
       DupDataReceived: stats.dupDataReceived,
@@ -138,7 +146,11 @@ exports.unwant = {
         })
     }
   },
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

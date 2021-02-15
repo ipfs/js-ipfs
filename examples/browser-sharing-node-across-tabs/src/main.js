@@ -2,10 +2,9 @@
 
 import IPFSClient from "ipfs-message-port-client"
 
-
 const main = async () => {
   // connect / spawn shared ipfs worker & create a client.
-  const worker = new SharedWorker('./worker.js', { type: 'module' })
+  const worker = new SharedWorker(new URL('./worker.js', import.meta.url), { type: 'module' })
   const ipfs = IPFSClient.from(worker.port)
 
   const path = location.hash.slice(1)

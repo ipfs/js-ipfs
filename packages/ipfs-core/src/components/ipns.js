@@ -6,17 +6,34 @@ const OfflineDatastore = require('../ipns/routing/offline-datastore')
 const { NotInitializedError, AlreadyInitializedError } = require('../errors')
 const log = require('debug')('ipfs:components:ipns')
 
+/**
+ * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ *
+ * @typedef {Object} ExperimentalOptions
+ * @property {boolean} [ipnsPubsub]
+ *
+ * @typedef {Object} LibP2POptions
+ * @property {DHTConfig} [config]
+ *
+ * @typedef {Object} DHTConfig
+ * @property {boolean} [enabled]
+ */
+
 class IPNSAPI {
   /**
    * @param {Object} options
-   * @param {string} [options.pass]
+   * @param {string} options.pass
    * @param {boolean} [options.offline]
    * @param {LibP2POptions} [options.libp2p]
    * @param {ExperimentalOptions} [options.EXPERIMENTAL]
    */
-  constructor (options = {}) {
+  constructor (options = { pass: '' }) {
     this.options = options
+
+    /** @type {IPNS | null} */
     this.offline = null
+
+    /** @type {IPNS | null} */
     this.online = null
   }
 
@@ -41,9 +58,9 @@ class IPNSAPI {
    * initializeKeyspace feature.
    *
    * @param {Object} config
-   * @param {import('.').Repo} config.repo
-   * @param {import('.').PeerId} config.peerId
-   * @param {import('.').Keychain} config.keychain
+   * @param {import('ipfs-repo')} config.repo
+   * @param {import('peer-id')} config.peerId
+   * @param {import('libp2p/src/keychain')} config.keychain
    */
   startOffline ({ repo, peerId, keychain }) {
     if (this.offline != null) {
@@ -60,10 +77,10 @@ class IPNSAPI {
 
   /**
    * @param {Object} config
-   * @param {import('.').LibP2P} config.libp2p
-   * @param {import('.').Repo} config.repo
-   * @param {import('.').PeerId} config.peerId
-   * @param {import('.').Keychain} config.keychain
+   * @param {import('libp2p')} config.libp2p
+   * @param {import('ipfs-repo')} config.repo
+   * @param {import('peer-id')} config.peerId
+   * @param {import('libp2p/src/keychain')} config.keychain
    */
   async startOnline ({ libp2p, repo, peerId, keychain }) {
     if (this.online != null) {
@@ -71,6 +88,7 @@ class IPNSAPI {
     }
     const routing = routingConfig({ libp2p, repo, peerId, options: this.options })
 
+    // @ts-ignore routing is a TieredDatastore which wants keys to be Keys, IPNS needs keys to be Uint8Arrays
     const ipns = new IPNS(routing, repo.datastore, peerId, keychain, this.options)
     await ipns.republisher.start()
     this.online = ipns
@@ -84,27 +102,30 @@ class IPNSAPI {
     }
   }
 
+  /**
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   * @param {number} lifetime
+   */
   publish (privKey, value, lifetime) {
     return this.getIPNS().publish(privKey, value, lifetime)
   }
 
+  /**
+   *
+   * @param {string} name
+   * @param {*} [options]
+   */
   resolve (name, options) {
     return this.getIPNS().resolve(name, options)
   }
 
+  /**
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   */
   initializeKeyspace (privKey, value) {
     return this.getIPNS().initializeKeyspace(privKey, value)
   }
 }
 module.exports = IPNSAPI
-
-/**
- * @typedef {Object} ExperimentalOptions
- * @property {boolean} [ipnsPubsub]
- *
- * @typedef {Object} LibP2POptions
- * @property {DHTConfig} [config]
- *
- * @typedef {Object} DHTConfig
- * @property {boolean} [enabled]
- */

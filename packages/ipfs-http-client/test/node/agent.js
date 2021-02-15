@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const ipfsClient = require('../../src')
+const ipfsClient = require('../../src').create
 const delay = require('delay')
 
 function startServer (handler) {

@@ -4,15 +4,28 @@ const addAll = require('./add-all')
 const last = require('it-last')
 const configure = require('../lib/configure')
 
-module.exports = (options) => {
-  const all = addAll(options)
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
+ */
+
+/**
+ * @param {import('../types').Options} config
+ */
+module.exports = (config) => {
+  const all = addAll(config)
 
   return configure(() => {
-    return async function add (path, options = {}) { // eslint-disable-line require-await
-      return last(all({
+    /**
+     * @type {PinAPI["add"]}
+     */
+    async function add (path, options = {}) {
+      // @ts-ignore last can return undefined
+      return last(all([{
         path,
         ...options
-      }, options))
+      }], options))
     }
-  })(options)
+    return add
+  })(config)
 }

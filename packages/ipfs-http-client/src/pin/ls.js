@@ -4,7 +4,18 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
+ */
+
+/**
+ * @param {string} type
+ * @param {string} cid
+ * @param {Record<string, string>} metadata
+ */
 function toPin (type, cid, metadata) {
+  /** @type {import('ipfs-core-types/src/pin').LsResult} */
   const pin = {
     type,
     cid: new CID(cid)
@@ -18,9 +29,15 @@ function toPin (type, cid, metadata) {
 }
 
 module.exports = configure(api => {
-  return async function * ls (options = {}) {
+  /**
+   * @type {PinAPI["ls"]}
+   */
+  async function * ls (options = {}) {
+    /** @type {any[]} */
+    let paths = []
+
     if (options.paths) {
-      options.paths = Array.isArray(options.paths) ? options.paths : [options.paths]
+      paths = Array.isArray(options.paths) ? options.paths : [options.paths]
     }
 
     const res = await api.post('pin/ls', {
@@ -28,7 +45,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,
-        arg: (options.paths || []).map(path => `${path}`),
+        arg: paths.map(path => `${path}`),
         stream: true
       }),
       headers: options.headers
@@ -45,4 +62,5 @@ module.exports = configure(api => {
       yield toPin(pin.Type, pin.Cid, pin.Metadata)
     }
   }
+  return ls
 })

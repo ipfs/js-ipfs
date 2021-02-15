@@ -14,6 +14,10 @@ module.exports = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {

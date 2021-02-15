@@ -5,6 +5,7 @@ const fs = require('fs')
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
+const { coerceCID } = require('../../../utils')
 
 module.exports = {
   command: 'append-data <root> [data]',
@@ -12,6 +13,10 @@ module.exports = {
   describe: 'Append data to the data segment of a dag node',
 
   builder: {
+    root: {
+      type: 'string',
+      coerce: coerceCID
+    },
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
@@ -23,15 +28,24 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../../types').Context} argv.ctx
+   * @param {import('cids')} argv.root
+   * @param {string} argv.data
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print, getStdin }, root, data, cidBase, timeout }) {
+    let buf
+
     if (data) {
-      data = fs.readFileSync(data)
+      buf = fs.readFileSync(data)
     } else {
-      data = (await concat(getStdin())).slice()
+      buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
 
-    const cid = await ipfs.object.patch.appendData(root, data, {
-      enc: 'base58',
+    const cid = await ipfs.object.patch.appendData(root, buf, {
       timeout
     })
 

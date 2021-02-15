@@ -11,9 +11,22 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
+  "types": "dist/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "src/*": [
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/": [
+        "dist/src/index"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -24,7 +37,8 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "build": "aegir build --no-bundle"
   },
   "dependencies": {
     "@hapi/ammo": "^5.0.1",
@@ -35,7 +49,7 @@
     "hapi-pino": "^8.3.0",
     "ipfs-core-utils": "^0.7.2",
     "ipfs-http-response": "^0.6.0",
-    "is-ipfs": "^2.0.0",
+    "is-ipfs": "^4.0.0",
     "it-last": "^1.0.4",
     "it-to-stream": "^0.1.2",
     "joi": "^17.2.1",
@@ -44,8 +58,11 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "^31.0.0",
+    "@types/hapi__hapi": "^20.0.5",
+    "@types/hapi-pino": "^8.0.1",
+    "aegir": "^32.1.0",
     "file-type": "^16.0.0",
+    "ipfs-core-types": "^0.3.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3"
   }

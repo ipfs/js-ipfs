@@ -8,7 +8,7 @@
     "ipfs-css": "^0.13.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "^3.2.0",
+    "react-scripts": "^4.0.3",
     "tachyons": "^4.11.1"
   },
   "devDependencies": {
@@ -26,9 +26,6 @@
     "extends": "react-app"
   },
   "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
+    "last 2 versions and not dead and > 2%"
   ]
 }

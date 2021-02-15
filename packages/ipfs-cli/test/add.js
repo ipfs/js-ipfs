@@ -158,9 +158,11 @@ describe('add', () => {
   it('add from pipe', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.addAll.withArgs(sinon.match({
-      content: matchIterable()
-    }), defaultOptions).returns([{
+    ipfs.addAll.withArgs(sinon.match([{
+      content: matchIterable(),
+      mtime: undefined,
+      mode: undefined
+    }]), defaultOptions).returns([{
       cid,
       path: 'README.md'
     }])
@@ -179,10 +181,11 @@ describe('add', () => {
   it('add from pipe with mtime=100', async () => {
     const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
-    ipfs.addAll.withArgs(sinon.match({
+    ipfs.addAll.withArgs(sinon.match([{
       content: matchIterable(),
-      mtime: { secs: 100 }
-    }), defaultOptions).returns([{
+      mtime: { secs: 100, nsecs: undefined },
+      mode: undefined
+    }]), defaultOptions).returns([{
       cid,
       path: 'README.md'
     }])

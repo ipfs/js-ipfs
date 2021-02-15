@@ -52,7 +52,7 @@ describe('dag', () => {
           Links: [{
             Hash: dagCborCid,
             Name: 'foo',
-            Size: 10
+            Tsize: 10
           }]
         }
       }
@@ -71,7 +71,7 @@ describe('dag', () => {
           Links: [{
             Hash: dagCborCid,
             Name: 'foo',
-            Size: 10
+            Tsize: 10
           }]
         }
       }
@@ -90,7 +90,7 @@ describe('dag', () => {
           Links: [{
             Hash: dagCborCid,
             Name: 'foo',
-            Size: 10
+            Tsize: 10
           }]
         }
       }
@@ -216,7 +216,7 @@ describe('dag', () => {
           Links: [{
             Hash: dagPbCid,
             Name: 'foo\b\n\t.txt',
-            Size: 9000
+            Tsize: 9000
           }]
         }
       }
@@ -340,7 +340,7 @@ describe('dag', () => {
 
       const out = await cli('dag put', {
         getStdin: function * () {
-          yield uint8ArrayFromString('{}')
+          yield Buffer.from('{}')
         },
         ipfs
       })

@@ -7,9 +7,16 @@ const log = Object.assign(debug('ipfs:mfs-preload'), {
 })
 
 /**
+ * @typedef {PreloadOptions & MFSPreloadOptions} Options
+ * @typedef {Object} MFSPreloadOptions
+ * @property {number} [interval]
+ * @typedef {import('./types').PreloadOptions} PreloadOptions
+ */
+
+/**
  * @param {Object} config
- * @param {import('./components').Preload} config.preload
- * @param {import('./components').Files} config.files
+ * @param {import('./types').Preload} config.preload
+ * @param {import('ipfs-core-types/src/files').API} config.files
  * @param {Options} [config.options]
  */
 module.exports = ({ preload, files, options = {} }) => {
@@ -21,7 +28,9 @@ module.exports = ({ preload, files, options = {} }) => {
     return { start: noop, stop: noop }
   }
 
-  let rootCid, timeoutId
+  let rootCid = ''
+  /** @type {any} */
+  let timeoutId
 
   const preloadMfs = async () => {
     try {
@@ -58,11 +67,3 @@ module.exports = ({ preload, files, options = {} }) => {
     }
   }
 }
-
-/**
- * @typedef {ReturnType<typeof module.exports>} MFSPreload
- * @typedef {PreloadOptions & MFSPreloadOptions} Options
- * @typedef {Object} MFSPreloadOptions
- * @property {number} [interval]
- * @typedef {import('./components').PreloadOptions} PreloadOptions
- */

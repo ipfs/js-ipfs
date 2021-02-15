@@ -4,9 +4,14 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/flush')>}
+   * @type {FilesAPI["flush"]}
    */
   async function flush (path, options = {}) {
     if (!path || typeof path !== 'string') {
@@ -26,6 +31,5 @@ module.exports = configure(api => {
 
     return new CID(data.Cid)
   }
-
   return flush
 })

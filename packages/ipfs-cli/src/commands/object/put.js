@@ -27,14 +27,24 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.data
+   * @param {import('ipfs-core-types/src/object').PutEncoding} argv.inputEnc
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputEnc, cidBase, timeout }) {
+    let buf
+
     if (data) {
-      data = fs.readFileSync(data)
+      buf = fs.readFileSync(data)
     } else {
-      data = (await concat(getStdin())).slice()
+      buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
 
-    const cid = await ipfs.object.put(data, { enc: inputEnc, timeout })
+    const cid = await ipfs.object.put(buf, { enc: inputEnc, timeout })
     print(`added ${cidToString(cid, { base: cidBase, upgrade: false })}`)
   }
 }

@@ -15,12 +15,13 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.2.3",
-    "@vue/cli-plugin-eslint": "^4.2.3",
-    "@vue/cli-service": "^4.2.3",
+    "@vue/cli-plugin-babel": "5.0.0-alpha.8",
+    "@vue/cli-plugin-eslint": "5.0.0-alpha.8",
+    "@vue/cli-service": "5.0.0-alpha.8",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^6.2.1",
+    "eslint": "^7.22.0",
+    "eslint-plugin-vue": "^7.8.0",
+    "node-polyfill-webpack-plugin": "^1.0.3",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0",
     "vue-template-compiler": "^2.6.11"
@@ -45,7 +46,6 @@
     }
   },
   "browserslist": [
-    "> 1%",
-    "last 2 versions"
+    "last 2 versions and not dead and > 2%"
   ]
 }

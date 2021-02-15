@@ -9,14 +9,14 @@ const {
 } = require('ipfs-message-port-protocol/src/block')
 
 /**
- * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('cids')} CID
  * @typedef {import('ipfs-message-port-protocol/src/error').EncodedError} EncodedError
  * @typedef {import('ipfs-message-port-protocol/src/block').Block} Block
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/block').EncodedBlock} EncodedBlock
- * @typedef {RmEntry} Rm
- * @typedef {StatResult} Stat
+ * @typedef {import('ipfs-message-port-protocol/src/block').EncodedRmResult} EncodedRmResult
+ * @typedef {import('ipfs-core-types/src/block').PutOptions} PutOptions
  */
 
 exports.BlockService = class BlockService {
@@ -56,17 +56,10 @@ exports.BlockService = class BlockService {
    * @typedef {Object} PutQuery
    * @property {EncodedBlock|Uint8Array} block
    * @property {EncodedCID|undefined} [cid]
-   * @property {string} [format]
-   * @property {string} [mhtype]
-   * @property {number} [mhlen]
-   * @property {number} [version]
-   * @property {boolean} [pin]
-   * @property {number} [timeout]
-   * @property {AbortSignal} [signal]
    *
    * Stores input as an IPFS block.
    *
-   * @param {PutQuery} query
+   * @param {PutOptions & PutQuery} query
    * @returns {Promise<PutResult>}
    */
   async put (query) {
@@ -99,15 +92,9 @@ exports.BlockService = class BlockService {
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
-   * @typedef {RmEntry[]} RmResult
-   *
-   * @typedef {Object} RmEntry
-   * @property {EncodedCID} cid
-   * @property {EncodedError|undefined} [error]
-   *
    * Remove one or more IPFS block(s).
    * @param {RmQuery} query
-   * @returns {Promise<RmResult>}
+   * @returns {Promise<EncodedRmResult[]>}
    */
   async rm (query) {
     /** @type {Transferable[]} */
@@ -125,14 +112,14 @@ exports.BlockService = class BlockService {
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
-   * @typedef {Object} StatResult
+   * @typedef {Object} EncodedStatResult
    * @property {EncodedCID} cid
    * @property {number} size
    *
    * Gets information of a raw IPFS block.
    *
    * @param {StatQuery} query
-   * @returns {Promise<StatResult>}
+   * @returns {Promise<EncodedStatResult>}
    */
   async stat (query) {
     const cid = decodeCID(query.cid)
@@ -146,7 +133,6 @@ exports.BlockService = class BlockService {
  * @param {CID} entry.cid
  * @param {Error|void} [entry.error]
  * @param {Transferable[]} transfer
- * @returns {RmEntry}
  */
 const encodeRmEntry = (entry, transfer) => {
   const cid = encodeCID(entry.cid, transfer)

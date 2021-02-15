@@ -12,7 +12,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 
-const UnixFS = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

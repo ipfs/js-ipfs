@@ -5,8 +5,16 @@ const configure = require('../lib/configure')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
+ */
+
 module.exports = configure(api => {
-  return async function * rmAll (source, options = {}) {
+  /**
+   * @type {PinAPI["rmAll"]}
+   */
+  async function * rmAll (source, options = {}) {
     for await (const { path, recursive } of normaliseInput(source)) {
       const searchParams = new URLSearchParams(options.searchParams)
       searchParams.append('arg', `${path}`)
@@ -26,11 +34,12 @@ module.exports = configure(api => {
 
       for await (const pin of res.ndjson()) {
         if (pin.Pins) { // non-streaming response
-          yield * pin.Pins.map(cid => new CID(cid))
+          yield * pin.Pins.map((/** @type {string} */ cid) => new CID(cid))
           continue
         }
         yield new CID(pin)
       }
     }
   }
+  return rmAll
 })

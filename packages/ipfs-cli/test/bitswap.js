@@ -6,9 +6,10 @@ const CID = require('cids')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const Big = require('bignumber.js')
+const PeerId = require('peer-id')
 
 describe('bitswap', () => {
-  const peerId = 'peer'
+  const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA'
   const key0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
   const key1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
 
@@ -54,7 +55,7 @@ describe('bitswap', () => {
     })
 
     it('wantlist peerid', async () => {
-      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).resolves([])
+      ipfs.bitswap.wantlistForPeer.withArgs(PeerId.createFromB58String(peerId), defaultOptions).resolves([])
 
       const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
       expect(out).to.be.empty()
@@ -71,7 +72,7 @@ describe('bitswap', () => {
     })
 
     it('wantlist for peer with a timeout', async () => {
-      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
+      ipfs.bitswap.wantlistForPeer.withArgs(PeerId.createFromB58String(peerId), {
         ...defaultOptions,
         timeout: 1000
       }).resolves([])
@@ -221,7 +222,7 @@ describe('bitswap', () => {
       const out = await cli(`bitswap unwant ${key0} --timeout=1s`, { ipfs })
       expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
       expect(ipfs.bitswap.unwant.called).to.be.true()
-      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([key0, {
+      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([new CID(key0), {
         ...defaultOptions,
         timeout: 1000
       }])

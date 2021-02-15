@@ -4,8 +4,16 @@ const { BigNumber } = require('bignumber.js')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/stats').API<HTTPClientExtraOptions>} StatsAPI
+ */
+
 module.exports = configure(api => {
-  return async function * bw (options = {}) {
+  /**
+   * @type {StatsAPI["bw"]}
+   */
+  async function * bw (options = {}) {
     const res = await api.post('stats/bw', {
       timeout: options.timeout,
       signal: options.signal,
@@ -21,4 +29,5 @@ module.exports = configure(api => {
 
     yield * res.ndjson()
   }
+  return bw
 })

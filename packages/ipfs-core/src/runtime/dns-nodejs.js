@@ -7,18 +7,29 @@ const { promisify } = require('util')
 
 const MAX_RECURSIVE_DEPTH = 32
 
+/**
+ * @param {string} domain
+ * @param {object} opts
+ * @param {boolean} [opts.recursive]
+ */
 module.exports = (domain, opts) => {
   // recursive is true by default, it's set to false only if explicitly passed as argument in opts
-  const recursive = opts.recursive == null ? true : Boolean(opts.recursive)
+  const nonRecursive = !opts.recursive
 
-  let depth
-  if (recursive) {
-    depth = MAX_RECURSIVE_DEPTH
+  /** @type {number | undefined} */
+  let depth = MAX_RECURSIVE_DEPTH
+  if (nonRecursive) {
+    depth = undefined
   }
 
   return recursiveResolveDnslink(domain, depth)
 }
 
+/**
+ * @param {string} domain
+ * @param {number} [depth]
+ * @returns {Promise<string>}
+ */
 async function recursiveResolveDnslink (domain, depth) {
   if (depth === 0) {
     throw errcode(new Error('recursion limit exceeded'), 'ERR_DNSLINK_RECURSION_LIMIT')
@@ -57,6 +68,9 @@ async function recursiveResolveDnslink (domain, depth) {
   return recursiveResolveDnslink(domainOrCID, depth - 1)
 }
 
+/**
+ * @param {string} domain
+ */
 async function resolveDnslink (domain) {
   const DNSLINK_REGEX = /^dnslink=.+$/
   const records = await promisify(dns.resolveTxt)(domain)

@@ -7,8 +7,8 @@ const createSubsAPI = require('./subs')
 class PubSubAPI {
   /**
    * @param {Object} config
-   * @param {IPNS} config.ipns
-   * @param {Options} [config.options]
+   * @param {import('../../ipns')} config.ipns
+   * @param {import('../../../types').Options} config.options
    */
   constructor ({ ipns, options }) {
     this.cancel = createCancelAPI({ ipns, options })
@@ -17,9 +17,3 @@ class PubSubAPI {
   }
 }
 module.exports = PubSubAPI
-
-/**
- * @typedef {import('..').IPNS} IPNS
- * @typedef {import('./utils').PubSubRoutingOptions} Options
- * @typedef {import('..').AbortOptions} AbortOptions
- */

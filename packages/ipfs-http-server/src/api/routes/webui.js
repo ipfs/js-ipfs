@@ -21,6 +21,10 @@ module.exports = [
   {
     method: 'GET',
     path: '/webui/{slug?}', // optional slug makes it work with and without slash
+    /**
+     * @param {import('../../types').Request} _request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     handler (_request, h) {
       return h.redirect(`/ipfs/${webuiCid}/`)
     }

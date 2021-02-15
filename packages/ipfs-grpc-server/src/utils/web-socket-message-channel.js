@@ -1,6 +1,5 @@
 'use strict'
 
-// @ts-ignore
 const pushable = require('it-pushable')
 const { paramCase } = require('change-case')
 
@@ -13,10 +12,11 @@ const HEADER_SIZE = 5
 const TRAILER_BYTES = 0x80
 
 /**
- * @param {object} object - key/value pairs to turn into HTTP headers
+ * @param {Record<string, any>} object - key/value pairs to turn into HTTP headers
  * @returns {Uint8Array} - HTTP headers
  **/
 const objectToHeaders = (object) => {
+  /** @type {Record<string, any>} */
   const output = {}
 
   Object.keys(object).forEach(key => {
@@ -28,7 +28,7 @@ const objectToHeaders = (object) => {
   })
 
   return Buffer.from(
-    Object.entries(object)
+    Object.entries(output)
       .filter(([, value]) => value != null)
       .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
       .join('\r\n')
@@ -36,21 +36,35 @@ const objectToHeaders = (object) => {
 }
 
 class WebsocketMessageChannel {
+  /**
+   * @param {import('ws')} ws
+   */
   constructor (ws) {
     this._ws = ws
 
     this.handler = {
+      /**
+       * @param {Uint8Array} buf
+       */
       deserialize: (buf) => ({}),
+      /**
+       * @param {any} message
+       */
       serialize: (message) => Buffer.from([])
     }
 
-    // @ts-ignore
     this.source = pushable()
-
-    // @ts-ignore
     this.sink = pushable()
 
     ws.on('message', (buf) => {
+      if (!(buf instanceof Uint8Array)) {
+        this.source.end(new Error(`Incorrect message type received - expected Uint8Array, got ${typeof buf}`))
+        this.sink.end()
+        ws.terminate()
+
+        return
+      }
+
       const flag = buf[0]
 
       if (flag === WebsocketSignal.FINISH_SEND) {
@@ -66,7 +80,7 @@ class WebsocketMessageChannel {
       }
 
       const header = buf.slice(offset, HEADER_SIZE + offset)
-      const length = header.readUInt32BE(1, 4)
+      const length = header.readUInt32BE(1)
       offset += HEADER_SIZE
 
       if (buf.length < (length + offset)) {
@@ -84,13 +98,15 @@ class WebsocketMessageChannel {
     })
   }
 
+  /**
+   * @param {Record<string, any>} metadata
+   */
   sendMetadata (metadata) {
     this._ws.send(objectToHeaders(metadata))
   }
 
   /**
    * @param {object} message - A message object to send to the client
-   * @returns {void}
    */
   sendMessage (message) {
     const response = this.handler.serialize(message)
@@ -108,6 +124,9 @@ class WebsocketMessageChannel {
     this.sendTrailer()
   }
 
+  /**
+   * @param {Error & { code?: string }} [err]
+   */
   sendTrailer (err) {
     const trailerBuffer = objectToHeaders({
       'grpc-status': err ? 1 : 0,
@@ -128,6 +147,9 @@ class WebsocketMessageChannel {
     )
   }
 
+  /**
+   * @param {Error} [err]
+   */
   end (err) {
     this.sendTrailer(err)
     this.source.end()

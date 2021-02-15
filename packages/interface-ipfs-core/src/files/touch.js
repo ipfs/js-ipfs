@@ -33,7 +33,7 @@ module.exports = (common, options) => {
       })
 
       const stat2 = await ipfs.files.stat(testPath)
-      expect(stat2).to.have.nested.deep.property('mtime', expectedMtime)
+      expect(stat2).to.have.deep.nested.property('mtime', expectedMtime)
     }
 
     before(async () => { ipfs = (await common.spawn()).api })

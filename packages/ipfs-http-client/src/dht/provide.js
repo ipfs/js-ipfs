@@ -6,11 +6,16 @@ const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'provide', import('ipfs-core/src/components/dht')>}
+   * @type {DHTAPI["provide"]}
    */
-  async function * provide (cids, options = {}) {
+  async function * provide (cids, options = { recursive: false }) {
     cids = Array.isArray(cids) ? cids : [cids]
 
     const res = await api.post('dht/provide', {
@@ -27,9 +32,9 @@ module.exports = configure(api => {
       message = toCamel(message)
       message.id = new CID(message.id)
       if (message.responses) {
-        message.responses = message.responses.map(({ ID, Addrs }) => ({
+        message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,
-          addrs: (Addrs || []).map(a => multiaddr(a))
+          addrs: (Addrs || []).map((/** @type {string} **/ a) => multiaddr(a))
         }))
       } else {
         message.responses = []

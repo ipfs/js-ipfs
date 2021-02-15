@@ -18,7 +18,6 @@ const defaultOptions = {
   cidVersion: 0,
   hashAlg: 'sha2-256',
   parents: false,
-  progress: undefined,
   strategy: 'trickle',
   flush: true,
   shardSplitThreshold: 1000,

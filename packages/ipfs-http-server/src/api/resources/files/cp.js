@@ -40,6 +40,11 @@ const mfsCp = {
         })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -61,7 +66,9 @@ const mfsCp = {
       }
     } = request
 
-    const args = paths.concat({
+    const dest = paths.pop()
+
+    await ipfs.files.cp(paths, dest, {
       parents,
       flush,
       hashAlg,
@@ -70,8 +77,6 @@ const mfsCp = {
       signal,
       timeout
     })
-
-    await ipfs.files.cp.apply(null, args)
 
     return h.response()
   }

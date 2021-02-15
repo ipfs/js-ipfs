@@ -4,6 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
+const PeerId = require('peer-id')
 
 const defaultOptions = {
   count: 10,
@@ -20,10 +21,11 @@ describe('ping', function () {
   })
 
   it('ping host', async () => {
-    const peerId = 'peer-id'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
-    ipfs.ping.withArgs(peerId, defaultOptions).returns([{
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(PeerId.createFromB58String(peerId.toString()), defaultOptions).returns([{
       success: true,
       time
     }])
@@ -33,10 +35,11 @@ describe('ping', function () {
   })
 
   it('ping host with --n option', async () => {
-    const peerId = 'peer-id'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
-    ipfs.ping.withArgs(peerId, {
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(PeerId.createFromB58String(peerId.toString()), {
       ...defaultOptions,
       count: 1
     }).returns([{
@@ -49,10 +52,11 @@ describe('ping', function () {
   })
 
   it('ping host with --count option', async () => {
-    const peerId = 'peer-id'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
-    ipfs.ping.withArgs(peerId, {
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(PeerId.createFromB58String(peerId.toString()), {
       ...defaultOptions,
       count: 1
     }).returns([{
@@ -65,10 +69,11 @@ describe('ping', function () {
   })
 
   it('ping host with timeout', async () => {
-    const peerId = 'peer-id'
+    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
-    ipfs.ping.withArgs(peerId, {
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(PeerId.createFromB58String(peerId.toString()), {
       ...defaultOptions,
       timeout: 1000
     }).returns([{

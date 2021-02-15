@@ -1,11 +1,14 @@
 'use strict'
 
+/**
+ * @param {number | string | undefined} mode
+ */
 module.exports = (mode) => {
-  if (mode === undefined || mode === null) {
+  if (mode == null) {
     return undefined
   }
 
-  if (typeof mode === 'string' || mode instanceof String) {
+  if (typeof mode === 'string') {
     return mode
   }
 

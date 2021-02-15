@@ -11,7 +11,7 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const CID = require('cids')
-const UnixFS = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 const { AbortSignal } = require('native-abort-controller')
 const {
   DAGNode,
@@ -166,7 +166,6 @@ describe('/object', () => {
 
   describe('/get', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -516,7 +515,6 @@ describe('/object', () => {
 
   describe('/data', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -555,7 +553,7 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data)
+      expect(res).to.have.deep.property('rawPayload', emptyDirectoryNode.Data)
     })
 
     it('accepts a timeout', async () => {
@@ -570,13 +568,12 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.property('result', emptyDirectoryNode.Data)
+      expect(res).to.have.deep.property('rawPayload', emptyDirectoryNode.Data)
     })
   })
 
   describe('/links', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -677,7 +674,6 @@ describe('/object', () => {
 
   describe('/patch/append-data', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -825,7 +821,6 @@ describe('/object', () => {
 
   describe('/patch/set-data', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -969,7 +964,6 @@ describe('/object', () => {
 
   describe('/patch/add-link', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -1095,7 +1089,6 @@ describe('/object', () => {
 
   describe('/patch/rm-link', () => {
     const defaultOptions = {
-      enc: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -1149,9 +1142,8 @@ describe('/object', () => {
     it('returns value', async () => {
       const name = 'name'
 
-      ipfs.object.patch.rmLink.withArgs(cid, {
-        ...defaultOptions,
-        name
+      ipfs.object.patch.rmLink.withArgs(cid, name, {
+        ...defaultOptions
       }).returns(cid2)
       ipfs.object.get.withArgs(cid2).returns(emptyDirectoryNode)
 
@@ -1190,9 +1182,8 @@ describe('/object', () => {
     it('accepts a timeout', async () => {
       const name = 'name'
 
-      ipfs.object.patch.rmLink.withArgs(cid, {
+      ipfs.object.patch.rmLink.withArgs(cid, name, {
         ...defaultOptions,
-        name,
         timeout: 1000
       }).returns(cid2)
       ipfs.object.get.withArgs(cid2).returns(emptyDirectoryNode)

@@ -4,8 +4,16 @@ const { BigNumber } = require('bignumber.js')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/repo').API<HTTPClientExtraOptions>} RepoAPI
+ */
+
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {RepoAPI["stat"]}
+   */
+  async function stat (options = {}) {
     const res = await api.post('repo/stat', {
       timeout: options.timeout,
       signal: options.signal,
@@ -22,4 +30,5 @@ module.exports = configure(api => {
       storageMax: new BigNumber(data.StorageMax)
     }
   }
+  return stat
 })

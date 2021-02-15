@@ -1,7 +1,7 @@
 'use strict'
 
 const modeToString = require('./mode-to-string')
-const { mtimeToObject } = require('ipfs-core-utils/src/files/normalise-input/utils')
+const { parseMtime } = require('ipfs-unixfs')
 
 /**
  * @param {*} params
@@ -20,7 +20,7 @@ module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) 
   }
 
   if (mtime != null) {
-    mtime = mtimeToObject(mtime)
+    mtime = parseMtime(mtime)
 
     options.mtime = mtime.secs
     options.mtimeNsecs = mtime.nsecs
@@ -43,7 +43,7 @@ module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) 
 
   const urlSearchParams = new URLSearchParams(options)
 
-  arg.forEach(arg => urlSearchParams.append('arg', arg))
+  arg.forEach((/** @type {any} */ arg) => urlSearchParams.append('arg', arg))
 
   return urlSearchParams
 }

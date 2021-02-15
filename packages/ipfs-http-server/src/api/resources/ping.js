@@ -3,6 +3,7 @@
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
@@ -28,6 +29,10 @@ module.exports = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {

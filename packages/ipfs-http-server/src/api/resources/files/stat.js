@@ -19,6 +19,11 @@ const mfsStat = {
       })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       ipfs
@@ -48,19 +53,10 @@ const mfsStat = {
       CumulativeSize: stats.cumulativeSize,
       WithLocality: stats.withLocality,
       Local: stats.local,
-      SizeLocal: stats.sizeLocal
-    }
-
-    if (stats.mtime) {
-      output.Mtime = stats.mtime.secs
-
-      if (stats.mtime.nsecs) {
-        output.MtimeNsecs = stats.mtime.nsecs
-      }
-    }
-
-    if (stats.mode != null) {
-      output.Mode = stats.mode.toString(8).padStart(4, '0')
+      SizeLocal: stats.sizeLocal,
+      Mtime: stats.mtime ? stats.mtime.secs : undefined,
+      MtimeNsecs: stats.mtime ? stats.mtime.nsecs : undefined,
+      Mode: stats.mode != null ? stats.mode.toString(8).padStart(4, '0') : undefined
     }
 
     return h.response(output)

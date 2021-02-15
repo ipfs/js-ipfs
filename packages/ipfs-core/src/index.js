@@ -15,6 +15,7 @@ const { create } = require('./components')
 
 /**
  * @typedef {import('./components')} IPFS
+ * @typedef {import('./types').Options} Options
  */
 
 module.exports = {

@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const ipfsClient = require('../../src/index.js')
+const ipfsClient = require('../../src').create
 
 describe('\'deal with HTTP weirdness\' tests', () => {
   it('does not crash if no content-type header is provided', async function () {

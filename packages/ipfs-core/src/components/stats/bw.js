@@ -6,7 +6,26 @@ const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {LibP2P} libp2p
+ * @typedef {Object} BWOptions
+ * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
+ * @property {string} [proto] - Specifies a protocol to print bandwidth for
+ * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
+ * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
+ *
+ * @typedef {Object} BandwidthInfo
+ * @property {Big} totalIn
+ * @property {Big} totalOut
+ * @property {Big} rateIn
+ * @property {Big} rateOut
+ *
+ * @typedef {import('libp2p')} libp2p
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ */
+
+/**
+ * @param {libp2p} libp2p
  * @param {BWOptions} opts
  * @returns {BandwidthInfo}
  */
@@ -44,14 +63,11 @@ function getBandwidthStats (libp2p, opts) {
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Get IPFS bandwidth information
-   *
-   * @param {BWOptions & AbortOptions} options
-   * @returns {AsyncIterable<BandwidthInfo>}
+   * @type {import('ipfs-core-types/src/stats').API["bw"]}
    */
   const bw = async function * (options = {}) {
     const { libp2p } = await network.use(options)
@@ -84,22 +100,3 @@ module.exports = ({ network }) => {
 
   return withTimeoutOption(bw)
 }
-
-/**
- * @typedef {Object} BWOptions
- * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
- * @property {string} [proto] - Specifies a protocol to print bandwidth for
- * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
- * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
- *
- * @typedef {Object} BandwidthInfo
- * @property {Big} totalIn
- * @property {Big} totalOut
- * @property {Big} rateIn
- * @property {Big} rateOut
- *
- * @typedef {import('.').LibP2P} LibP2P
- * @typedef {import('.').PeerId} PeerId
- * @typedef {import('.').CID} CID
- * @typedef {import('.').AbortOptions} AbortOptions
- */

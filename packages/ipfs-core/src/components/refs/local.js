@@ -4,12 +4,11 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').Repo} config.repo
+ * @param {import('ipfs-repo')} config.repo
  */
 module.exports = function ({ repo }) {
   /**
-   * @param {import('.').AbortOptions} [options]
-   * @returns {AsyncIterable<{ref: string}>}
+   * @type {import('ipfs-core-types/src/refs').API["local"]}
    */
   async function * refsLocal (options = {}) {
     // @ts-ignore - TS is not aware of keysOnly

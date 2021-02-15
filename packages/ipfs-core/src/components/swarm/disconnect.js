@@ -4,17 +4,13 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Close a connection on a given address.
-   *
-   * @param {import('.').Multiaddr} addr
-   * @param {import('.').AbortOptions} [options]
-   * @returns {Promise<void>}
+   * @type {import('ipfs-core-types/src/swarm').API["disconnect"]}
    */
-  async function disconnect (addr, options) {
+  async function disconnect (addr, options = {}) {
     const { libp2p } = await network.use(options)
     await libp2p.hangUp(addr)
   }

@@ -16,7 +16,6 @@ const defaultOptions = {
   cidVersion: 0,
   hashAlg: 'sha2-256',
   parents: false,
-  progress: undefined,
   strategy: 'balanced',
   flush: true,
   shardSplitThreshold: 1000,
@@ -411,7 +410,8 @@ describe('write', () => {
       stdin, {
         ...defaultOptions,
         mtime: {
-          secs: 11
+          secs: 11,
+          nsecs: undefined
         }
       }
     ])

@@ -1,7 +1,10 @@
 'use strict'
 
+// @ts-ignore - no types
 const WS = require('libp2p-websockets')
+// @ts-ignore - no types
 const WebRTCStar = require('libp2p-webrtc-star')
+// @ts-ignore - no types
 const Multiplex = require('libp2p-mplex')
 const { NOISE } = require('libp2p-noise')
 const KadDHT = require('libp2p-kad-dht')

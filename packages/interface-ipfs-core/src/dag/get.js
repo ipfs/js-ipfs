@@ -5,8 +5,8 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
-const importer = require('ipfs-unixfs-importer')
-const Unixfs = require('ipfs-unixfs')
+const { importer } = require('ipfs-unixfs-importer')
+const { UnixFS } = require('ipfs-unixfs')
 const all = require('it-all')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -193,7 +193,7 @@ module.exports = (common, options) => {
       const cidv0 = cidv1.toV0()
 
       const output = await ipfs.dag.get(cidv0)
-      expect(Unixfs.unmarshal(output.value.Data).data).to.eql(input)
+      expect(UnixFS.unmarshal(output.value.Data).data).to.eql(input)
     })
 
     it('should be able to get part of a dag-cbor node', async () => {

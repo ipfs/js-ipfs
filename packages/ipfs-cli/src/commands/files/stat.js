@@ -55,6 +55,17 @@ Mtime: <mtime>`,
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {string} argv.format
+   * @param {boolean} argv.hash
+   * @param {boolean} argv.size
+   * @param {boolean} argv.withLocal
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs, print },
     path,
@@ -75,17 +86,17 @@ Mtime: <mtime>`,
         }
 
         if (size) {
-          return print(stats.size)
+          return print(`${stats.size}`)
         }
 
         print(format
           .replace('<hash>', stats.cid.toString(cidBase))
-          .replace('<size>', stats.size)
-          .replace('<cumulsize>', stats.cumulativeSize)
-          .replace('<childs>', stats.blocks)
+          .replace('<size>', `${stats.size}`)
+          .replace('<cumulsize>', `${stats.cumulativeSize}`)
+          .replace('<childs>', `${stats.blocks}`)
           .replace('<type>', stats.type)
-          .replace('<mode>', formatMode(stats.mode, stats.type === 'directory'))
-          .replace('<mtime>', formatMtime(stats.mtime))
+          .replace('<mode>', stats.mode ? formatMode(stats.mode, stats.type === 'directory') : '')
+          .replace('<mtime>', stats.mtime ? formatMtime(stats.mtime) : '')
         )
       })
   }

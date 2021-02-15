@@ -29,14 +29,19 @@ module.exports = {
       describe: 'Metadata to add to the pin',
       type: 'string',
       alias: 'm',
+      /**
+       * @param {*} val
+       * @returns {Record<string, any> | undefined}
+       */
       coerce: (val) => {
         if (!val) {
           return
         }
 
+        /** @type {Record<string, any>} */
         const output = {}
 
-        val.split(',').forEach(line => {
+        val.split(',').forEach((/** @type {string} */ line) => {
           const parts = line.split('=')
           output[parts[0]] = parts[1]
         })
@@ -51,6 +56,16 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string[]} argv.ipfsPath
+   * @param {boolean} argv.recursive
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   * @param {Record<string, any>} argv.metadata
+   * @param {Record<string, any>} argv.metadataJson
+   */
   async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, metadata, metadataJson }) {
     const { ipfs, print } = ctx
     const type = recursive ? 'recursive' : 'direct'

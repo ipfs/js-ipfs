@@ -2,14 +2,15 @@
 
 const pushable = require('it-pushable')
 const errCode = require('err-code')
+const toUrlString = require('ipfs-core-utils/src/to-url-string')
 const toHeaders = require('./to-headers')
 const transport = require('../grpc/transport')
 
 /**
- * @typedef {import('http').Agent} HttpAgent
- * @typedef {import('https').Agent} HttpsAgent
+ * @param {*} service
+ * @param {import('@improbable-eng/grpc-web').grpc.Client<any, any>} client
+ * @param {AsyncIterable<any>} source
  */
-
 async function sendMessages (service, client, source) {
   for await (const obj of source) {
     client.send({
@@ -23,24 +24,18 @@ async function sendMessages (service, client, source) {
  * for the caller to write client messages into and a source to read
  * server messages from.
  *
- * @param {object} grpc - an @improbable-eng/grpc-web instance
- * @param {object} service - an @improbable-eng/grpc-web service
- * @param {object} options - RPC options
- * @param {string} options.host - The remote host
- * @param {boolean} [options.debug] - Whether to print debug messages
- * @param {object} [options.metadata] - Metadata sent as headers
- * @param {HttpAgent|HttpsAgent} [options.agent] - http.Agent used to control HTTP client behaviour (node.js only)
- * @returns {{ source: AsyncIterable<object>, sink: { push: Function, end: Function } }}
+ * @param {import('@improbable-eng/grpc-web').grpc} grpc - an @improbable-eng/grpc-web instance
+ * @param {*} service - an @improbable-eng/grpc-web service
+ * @param {import('../types').RPCOptions<any>} options
+ * @returns {{ source: AsyncIterable<any>, sink: import('it-pushable').Pushable<any> }}
  **/
 module.exports = function bidiToDuplex (grpc, service, options) {
-  // @ts-ignore
   const source = pushable()
-
-  // @ts-ignore
   const sink = pushable()
 
   const client = grpc.client(service, {
     ...options,
+    host: toUrlString(options.host),
     transport: transport({
       agent: options.agent
     })
@@ -58,7 +53,10 @@ module.exports = function bidiToDuplex (grpc, service, options) {
         status
       })
 
-      err.stack = trailers.get('grpc-stack')[0] || error.stack
+      let stack = trailers.get('grpc-stack')[0]
+      stack = stack && stack.replace(/\\n/g, '\n')
+
+      err.stack = stack || error.stack
     }
 
     sink.end(err)

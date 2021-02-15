@@ -9,6 +9,7 @@ const { cidToString } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
@@ -34,7 +35,10 @@ exports.get = {
     }
   },
 
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -76,6 +80,10 @@ exports.put = {
     },
     pre: [{
       assign: 'args',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
       method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("File argument 'data' is required")
@@ -83,7 +91,7 @@ exports.put = {
 
         let data
 
-        for await (const part of multipart(request)) {
+        for await (const part of multipart(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -118,6 +126,11 @@ exports.put = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -190,6 +203,11 @@ exports.rm = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -244,7 +262,11 @@ exports.stat = {
         })
     }
   },
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

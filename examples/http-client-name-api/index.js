@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 'use strict'
 
-const ipfsHttp = require('ipfs-http-client')
+const { create: ipfsHttp } = require('ipfs-http-client')
 let ipfs
 
 const DOM = {

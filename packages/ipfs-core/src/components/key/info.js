@@ -4,19 +4,13 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').Keychain} config.keychain
+ * @param {import('libp2p/src/keychain')} config.keychain
  */
 module.exports = ({ keychain }) => {
   /**
-   * @param {string} name
-   * @returns {Promise<Key>}
+   * @type {import('ipfs-core-types/src/key').API["info"]}
    */
   const info = (name) => keychain.findKeyByName(name)
 
   return withTimeoutOption(info)
 }
-
-/**
- * @typedef {import('.').Key} Key
- * @typedef {import('.').AbortOptions} AbortOptions
- */

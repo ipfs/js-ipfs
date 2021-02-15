@@ -65,7 +65,7 @@ module.exports = (common, options) => {
         create: true
       })
       await ipfs.files.mkdir(parent)
-      await expect(ipfs.files.cp(src1, src2, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
+      await expect(ipfs.files.cp([src1, src2], `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/destination did not exist/)
     })
 
@@ -80,6 +80,7 @@ module.exports = (common, options) => {
       await ipfs.files.write(src1, [], {
         create: true
       })
+
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/"identity"/)
     })
@@ -194,7 +195,7 @@ module.exports = (common, options) => {
         })
       }
 
-      await ipfs.files.cp(sources[0].path, sources[1].path, destination, {
+      await ipfs.files.cp([sources[0].path, sources[1].path], destination, {
         parents: true
       })
 

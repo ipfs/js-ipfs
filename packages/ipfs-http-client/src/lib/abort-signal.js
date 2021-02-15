@@ -3,13 +3,10 @@
 const { anySignal } = require('any-signal')
 
 /**
- * @typedef {AbortSignal | undefined} MaybeSignal
- *
- * @param  {MaybeSignal[]} signals
+ * @param {any[]} signals
  * @returns {AbortSignal[]}
  */
 function filter (signals) {
-  // @ts-ignore
   return signals.filter(Boolean)
 }
 

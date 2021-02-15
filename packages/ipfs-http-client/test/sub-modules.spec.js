@@ -63,7 +63,7 @@ describe('submodules', () => {
   })
 
   it('ping', () => {
-    const ping = require('../src')().ping
+    const ping = require('../src').create().ping
 
     expect(ping).to.be.a('function')
   })
@@ -157,7 +157,7 @@ describe('submodules', () => {
   })
 
   it('files regular API', () => {
-    const filesRegular = require('../src')()
+    const filesRegular = require('../src').create()
 
     expect(filesRegular.add).to.be.a('function')
     expect(filesRegular.get).to.be.a('function')
