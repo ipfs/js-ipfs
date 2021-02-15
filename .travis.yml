@@ -14,6 +14,10 @@ os:
   - linux
   - osx
 
+before_install:
+  # modules with pre-built binaries may not have deployed versions for bleeding-edge node so this lets us fall back to building from source
+  - npm install -g node-pre-gyp
+
 script: npx nyc -s npm run test:node -- --bail
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
