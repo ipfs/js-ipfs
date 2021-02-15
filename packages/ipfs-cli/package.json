@@ -47,7 +47,7 @@
     "it-all": "^1.0.4",
     "it-concat": "^1.0.1",
     "it-first": "^1.0.4",
-    "it-glob": "0.0.10",
+    "it-glob": "0.0.11",
     "it-pipe": "^1.1.0",
     "jsondiffpatch": "^0.4.1",
     "libp2p-crypto": "^0.19.0",
