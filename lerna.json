@@ -14,7 +14,8 @@
     "publish": {
       "message": "chore: publish",
       "createRelease": "github",
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "verifyAccess": false
     },
     "version": {
       "private": false
