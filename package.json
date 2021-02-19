@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "JavaScript implementation of the IPFS specification",
   "scripts": {
-    "postinstall": "lerna bootstrap",
     "link": "lerna link",
     "reset": "lerna run clean && rimraf packages/*/node_modules examples/*/node_modules node_modules",
     "test": "lerna run test",
@@ -22,17 +21,17 @@
     "test:interface:http-js": "lerna run test:interface:http-js",
     "test:interface:message-port-client": "lerna run test:interface:message-port-client",
     "coverage": "lerna run coverage",
-    "build": "lerna run build",
+    "build": "lerna run prepublishOnly",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "configure-examples": "run-s configure-examples:* release:pre:reinstall release:pre:bundle",
-    "configure-examples:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
-    "configure-examples:add-hoisted-modules": "json -I -f ./lerna.json -e \"this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']; this.command.bootstrap.nohoist = [...new Set(this.command.bootstrap.nohoist)]\"",
+    "configure-examples": "run-s configure-examples:* release:pre:reinstall build",
+    "configure-examples:add-examples-lerna": "npx json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
+    "configure-examples:add-examples-npm": "npx json -I -f ./package.json -e \"this.workspaces.push('examples/*'); this.workspaces = [...new Set(this.workspaces)]\"",
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false --types=false",
-    "release:pre:reinstall": "npm run reset && npm i && rimraf package-lock.json packages/*/package-lock.json",
+    "release:pre:reinstall": "npm run reset && npm i && rimraf package-lock.json packages/*/package-lock.json examples/*/package-lock.json",
     "release:pre:bundle": "NODE_ENV=production npm run build -- --scope={ipfs,ipfs-core,ipfs-*client,ipfs-grpc-protocol,ipfs-message-port-*}",
     "release:publish": "lerna publish",
     "docker:release": "run-s docker:release:*",
@@ -69,6 +68,12 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "npm": ">=7.0.0"
+  },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
     "achingbrain <alex@achingbrain.net>",

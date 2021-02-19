@@ -17,7 +17,7 @@ const pkg = require("./package.json");
 
 async function testUI(url, apiAddr, peerAddr, topic) {
   const proc = execa(
-    require.resolve("test-ipfs-example/node_modules/.bin/nightwatch"),
+    require.resolve('nightwatch/bin/nightwatch'),
     [
       "--config",
       require.resolve("test-ipfs-example/nightwatch.conf.js"),

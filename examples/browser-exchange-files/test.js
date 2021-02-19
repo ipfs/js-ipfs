@@ -24,7 +24,7 @@ const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const FILE_CONTENT = 'A file with some content'
 
 async function testUI (env) {
-  const proc = execa(require.resolve('test-ipfs-example/node_modules/.bin/nightwatch'), [ '--config', require.resolve('test-ipfs-example/nightwatch.conf.js'),  path.join(__dirname, 'test.js') ], {
+  const proc = execa(require.resolve('nightwatch/bin/nightwatch'), [ '--config', require.resolve('test-ipfs-example/nightwatch.conf.js'),  path.join(__dirname, 'test.js') ], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,

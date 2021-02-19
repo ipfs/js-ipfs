@@ -1,5 +1,5 @@
 {
-  "name": "browser-ipns-publish",
+  "name": "example-browser-ipns-publish",
   "version": "1.0.0",
   "description": "An example demonstrating publishing to IPNS in the browser",
   "private": true,

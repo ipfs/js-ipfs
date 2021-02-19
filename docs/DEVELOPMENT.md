@@ -2,6 +2,7 @@
 
 > Getting started with development on IPFS
 
+- [Install npm@7](#install-npm7)
 - [Clone and install dependencies](#clone-and-install-dependencies)
 - [Run tests](#run-tests)
 - [Lint](#lint)
@@ -13,6 +14,14 @@
   - [HTTP API](#http-api)
   - [Core](#core)
   - [Non-Core](#non-core)
+
+## Install npm@7
+
+This project uses a [workspace](https://docs.npmjs.com/cli/v7/using-npm/workspaces) structure so requires npm@7 or above.  If you are running node 15 or later you already have it, if not run:
+
+```sh
+$ npm install -g npm@latest
+```
 
 ## Clone and install dependencies
 

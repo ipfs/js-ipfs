@@ -14,7 +14,7 @@ const {
 const pkg = require('./package.json')
 
 async function testUI (url, api, id) {
-  const proc = execa(require.resolve('test-ipfs-example/node_modules/.bin/nightwatch'), ['--config', require.resolve('test-ipfs-example/nightwatch.conf.js'), path.join(__dirname, 'test.js')], {
+  const proc = execa(require.resolve('nightwatch/bin/nightwatch'), ['--config', require.resolve('test-ipfs-example/nightwatch.conf.js'), path.join(__dirname, 'test.js')], {
     cwd: path.resolve(__dirname, '../'),
     env: {
       ...process.env,

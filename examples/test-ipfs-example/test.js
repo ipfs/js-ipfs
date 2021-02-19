@@ -3,7 +3,7 @@
 'use strict'
 
 process.env.NODE_ENV = 'test'
-process.env.CI = true // needed for some "clever" build tools
+process.env.CI = 'true' // needed for some "clever" build tools
 
 const fs = require('fs-extra')
 const path = require('path')
@@ -65,6 +65,11 @@ async function build (dir) {
     cwd: dir,
     all: true
   })
+
+  if (!proc || !proc.all) {
+    throw new Error('Expected process object')
+  }
+
   proc.all.on('data', (data) => {
     process.stdout.write(data)
   })
@@ -79,7 +84,7 @@ async function runBrowserTest (dir) {
 
   console.info('Running tests at', server.url)
 
-  const proc = execa(path.resolve(__dirname, 'node_modules/.bin/nightwatch'), [ path.join(dir, 'test.js'), '--config', path.resolve(__dirname, 'nightwatch.conf.js') ], {
+  const proc = execa(require.resolve('nightwatch/bin/nightwatch'), [ path.join(dir, 'test.js'), '--config', path.resolve(__dirname, 'nightwatch.conf.js') ], {
     cwd: __dirname,
     env: {
       ...process.env,
@@ -87,6 +92,11 @@ async function runBrowserTest (dir) {
     },
     all: true
   })
+
+  if (!proc || !proc.all) {
+    throw new Error('Expected process object')
+  }
+
   proc.all.on('data', (data) => {
     process.stdout.write(data)
   })

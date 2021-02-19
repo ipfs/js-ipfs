@@ -12,10 +12,15 @@ async function startServer(dir) {
       let output = ''
       const port = ephemeralPort()
 
-      const proc = execa.command(`${path.resolve(__dirname, 'node_modules/.bin/http-server')} ${appDir} -a 127.0.0.1 -p ${port}`, {
+      const proc = execa.command(`${require.resolve('http-server/bin/http-server')} ${appDir} -a 127.0.0.1 -p ${port}`, {
         cwd: __dirname,
         all: true
       })
+
+      if (!proc || !proc.all) {
+        throw new Error('Expected process object')
+      }
+
       proc.all.on('data', (data) => {
         process.stdout.write(data)
 
@@ -118,15 +123,19 @@ async function waitForOutput(expectedOutput, command, args = [], opts = {}) {
       );
 
       setTimeout(() => {
-        proc.kill();
-      }, 100);
-    }, time);
+        proc.kill()
+      }, 100)
+    }, time)
 
     cancelTimeout = () => {
-      clearTimeout(timeout);
-      resolve();
-    };
-  });
+      clearTimeout(timeout)
+      resolve(null)
+    }
+  })
+
+  if (!proc || !proc.all) {
+    throw new Error('Expected process object')
+  }
 
   proc.all.on('data', (data) => {
     process.stdout.write(data)
@@ -134,8 +143,8 @@ async function waitForOutput(expectedOutput, command, args = [], opts = {}) {
 
     if (output.includes(expectedOutput)) {
       foundExpectedOutput = true;
-      proc.kill();
-      cancelTimeout();
+      proc.kill()
+      cancelTimeout()
     }
   });
 
