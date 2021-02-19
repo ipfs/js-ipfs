@@ -10,30 +10,26 @@ module.exports = {
   },
   test: {
     async before (options) {
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
-        const port = await getPort()
-        const server = createServer({
-          host: '127.0.0.1',
-          port: port
-        }, {
-          type: 'go',
-          ipfsHttpModule: require('./'),
-          ipfsBin: require('go-ipfs').path()
-        })
+      const port = await getPort()
+      const server = createServer({
+        host: '127.0.0.1',
+        port: port
+      }, {
+        type: 'go',
+        ipfsHttpModule: require('./'),
+        ipfsBin: require('go-ipfs').path()
+      })
 
-        await server.start()
-        return {
-          server,
-          env: {
-            IPFSD_SERVER: `http://${server.host}:${server.port}`
-          }
+      await server.start()
+      return {
+        server,
+        env: {
+          IPFSD_SERVER: `http://${server.host}:${server.port}`
         }
       }
     },
     async after (options, before) {
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
-        await before.server.stop()
-      }
+      await before.server.stop()
     }
   }
 }
