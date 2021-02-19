@@ -40,7 +40,7 @@ module.exports = {
       await preloadNode.start()
       await echoServer.start()
 
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+      if (options.runner !== 'node') {
         const ipfsdPort = await getPort()
         const signalAPort = await getPort()
         const signalBPort = await getPort()
@@ -110,7 +110,7 @@ module.exports = {
       await beforeResult.echoServer.stop()
       await beforeResult.preloadNode.stop()
       await PinningService.stop(beforeResult.pinningService)
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+      if (options.runner !== 'node') {
         await beforeResult.ipfsdServer.stop()
         await beforeResult.sigServerA.stop()
         await beforeResult.sigServerB.stop()

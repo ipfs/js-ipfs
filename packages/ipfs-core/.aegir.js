@@ -31,7 +31,7 @@ module.exports = {
     async before (options) {
       const preloadNode = MockPreloadNode.createNode()
       await preloadNode.start()
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+      if (options.runner !== 'node') {
         const ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: 57483
@@ -64,7 +64,7 @@ module.exports = {
     },
     async after (options, before) {
       await before.preloadNode.stop()
-      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+      if (options.runner !== 'node') {
         await before.ipfsdServer.stop()
       }
     }
