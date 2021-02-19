@@ -1,7 +1,7 @@
 'use strict'
 
 const fromString = require('uint8arrays/from-string')
-const loadFixture = require('aegir/fixtures')
+const loadFixture = require('aegir/utils/fixtures')
 
 // const ONE_MEG = Math.pow(2, 20)
 

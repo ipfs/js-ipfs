@@ -8,15 +8,7 @@ const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
 
-let preloadNode
-let pinningService
-let echoServer = new EchoServer()
-
-// the second signalling server is needed for the interface test 'should list peers only once even if they have multiple addresses'
-let sigServerA
-let sigServerB
-let ipfsdServer
-
+/** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
   inject: [path.join(__dirname, '../../scripts/node-globals.js')],
   plugins: [
@@ -31,62 +23,39 @@ const esbuild = {
   ]
 }
 
+/** @type {import('aegir').PartialOptions} */
 module.exports = {
   test: {
-    browser :{
+    browser: {
       config: {
         assets: '..',
         buildConfig: esbuild
       }
-    }
-  },
-  build: {
-    bundlesizeMax: '610kB',
-    config: esbuild
-  },
-  hooks: {
-    node: {
-      pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
-        pinningService = await PinningService.start()
-
-        await preloadNode.start(),
-        await echoServer.start()
-        return {
-          env: {
-            PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
-            PINNING_SERVIEC_KEY: pinningService.token,
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
-      },
-      post: async () => {
-        await preloadNode.stop()
-        await PinningService.stop(pinningService)
-        await echoServer.stop()
-      }
     },
-    browser: {
-      pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
-        pinningService = await PinningService.start()
+    before: async (options) => {
+      const echoServer = new EchoServer()
+      const preloadNode = MockPreloadNode.createNode()
+      const pinningService = await PinningService.start()
 
-        await preloadNode.start()
-        await echoServer.start()
+      await preloadNode.start()
+      await echoServer.start()
+
+      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
         const ipfsdPort = await getPort()
         const signalAPort = await getPort()
         const signalBPort = await getPort()
-        sigServerA = await webRTCStarSigServer.start({
+        const sigServerA = await webRTCStarSigServer.start({
           host: '127.0.0.1',
           port: signalAPort,
           metrics: false
         })
-        sigServerB = await webRTCStarSigServer.start({
+        // the second signalling server is needed for the interface test 'should list peers only once even if they have multiple addresses'
+        const sigServerB = await webRTCStarSigServer.start({
           host: '127.0.0.1',
           port: signalBPort,
           metrics: false
         })
-        ipfsdServer = await createServer({
+        const ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: ipfsdPort
         }, {
@@ -109,7 +78,6 @@ module.exports = {
             ipfsClientModule: require('ipfs-client')
           }
         }).start()
-
         return {
           env: {
             PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
@@ -118,17 +86,50 @@ module.exports = {
             IPFSD_SERVER: `http://127.0.0.1:${ipfsdPort}`,
             SIGNALA_SERVER: `/ip4/127.0.0.1/tcp/${signalAPort}/ws/p2p-webrtc-star`,
             SIGNALB_SERVER: `/ip4/127.0.0.1/tcp/${signalBPort}/ws/p2p-webrtc-star`
-          }
+          },
+          echoServer,
+          preloadNode,
+          pinningService,
+          ipfsdServer,
+          sigServerA,
+          sigServerB
         }
-      },
-      post: async () => {
-        await ipfsdServer.stop()
-        await preloadNode.stop()
-        await PinningService.stop(pinningService)
-        await echoServer.stop()
-        await sigServerA.stop()
-        await sigServerB.stop()
+      }
+      return {
+        env: {
+          PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
+          PINNING_SERVIEC_KEY: pinningService.token,
+          ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
+        },
+        echoServer,
+        preloadNode,
+        pinningService
+      }
+    },
+    after: async (options, beforeResult) => {
+      await beforeResult.echoServer.stop()
+      await beforeResult.preloadNode.stop()
+      await PinningService.stop(beforeResult.pinningService)
+      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+        await beforeResult.ipfsdServer.stop()
+        await beforeResult.sigServerA.stop()
+        await beforeResult.sigServerB.stop()
       }
     }
+  },
+  build: {
+    bundlesizeMax: '610kB',
+    config: esbuild
+  },
+  dependencyCheck: {
+    ignore: [
+      'assert',
+      'cross-env',
+      'rimraf',
+      'url',
+      'wrtc',
+      'electron-webrtc',
+      'ipfs-interop'
+    ]
   }
 }

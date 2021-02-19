@@ -24,7 +24,7 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i @types/yargs -i cid-tool"
+    "dep-check": "aegir dep-check -i cid-tool"
   },
   "dependencies": {
     "bignumber.js": "^9.0.0",

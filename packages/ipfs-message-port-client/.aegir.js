@@ -2,8 +2,8 @@
 const path = require('path')
 const esbuild = require('esbuild')
 const EchoServer = require('aegir/utils/echo-server')
-const echoServer = new EchoServer()
 
+/** @type {import('aegir').Options["build"]["config"]} */
 const buildConfig = {
   inject: [path.join(__dirname, '../../scripts/node-globals.js')],
   plugins: [
@@ -18,40 +18,39 @@ const buildConfig = {
   ]
 }
 
+/** @type {import('aegir').PartialOptions} */
 module.exports = {
   build: {
     bundlesizeMax: '23kB',
     config: buildConfig
   },
   test: {
-    browser :{
+    browser: {
       config: {
         assets: '..',
         buildConfig
       }
-    }
-  },
-  hooks: {
-    browser: {
-      pre: async () => {
-        await buildWorker()
-        await echoServer.start()
+    },
+    async before () {
+      await buildWorker()
+      const echoServer = new EchoServer()
+      await echoServer.start()
 
-        return {
-          env: {
-            IPFS_WORKER_URL: `/ipfs-message-port-client/dist/worker.bundle.js`,
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
+      return {
+        echoServer,
+        env: {
+          IPFS_WORKER_URL: '/ipfs-message-port-client/dist/worker.bundle.js',
+          ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
         }
-      },
-      post: async () => {
-        await echoServer.stop()
       }
+    },
+    async after (options, before) {
+      await before.server.stop()
     }
   }
 }
 
-const buildWorker = async () => {
+const buildWorker = async () => {
   await esbuild.build(
     {
       entryPoints: [path.join(__dirname, 'test/util/worker.js')],

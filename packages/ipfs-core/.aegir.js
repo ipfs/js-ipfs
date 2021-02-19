@@ -4,9 +4,7 @@ const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const path = require('path')
 
-let preloadNode = MockPreloadNode.createNode()
-let ipfsdServer
-
+/** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
   inject: [path.join(__dirname, '../../scripts/node-globals.js')],
   plugins: [
@@ -21,32 +19,20 @@ const esbuild = {
   ]
 }
 
+/** @type {import('aegir').PartialOptions} */
 module.exports = {
   test: {
-    browser :{
+    browser: {
       config: {
         assets: '..',
         buildConfig: esbuild
       }
-    }
-  },
-  build: {
-    bundlesizeMax: '610kB',
-    config: esbuild
-  },
-  hooks: {
-    node: {
-      pre: async () => {
-        await preloadNode.start()
-      },
-      post: async () => {
-        await preloadNode.stop()
-      }
     },
-    browser: {
-      pre: async () => {
-        await preloadNode.start()
-        ipfsdServer = await createServer({
+    async before (options) {
+      const preloadNode = MockPreloadNode.createNode()
+      await preloadNode.start()
+      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+        const ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: 57483
         }, {
@@ -66,11 +52,25 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           }
         }).start()
-      },
-      post: async () => {
-        await ipfsdServer.stop()
-        await preloadNode.stop()
+        return {
+          ipfsdServer,
+          preloadNode
+        }
+      }
+
+      return {
+        preloadNode
+      }
+    },
+    async after (options, before) {
+      await before.preloadNode.stop()
+      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+        await before.ipfsdServer.stop()
       }
     }
+  },
+  build: {
+    bundlesizeMax: '610kB',
+    config: esbuild
   }
 }

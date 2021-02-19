@@ -52,7 +52,10 @@
     "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
   },
   "eslintConfig": {
-    "extends": "ipfs"
+    "extends": "ipfs",
+    "ignorePatterns": [
+      "!.aegir.js"
+    ]
   },
   "devDependencies": {
     "execa": "^5.0.0",

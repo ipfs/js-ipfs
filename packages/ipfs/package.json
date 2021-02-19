@@ -33,7 +33,7 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i ipfs-interop -i electron-webrtc -i wrtc -i rimraf -i url -i assert"
+    "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "debug": "^4.1.1",
