@@ -15,7 +15,7 @@ module.exports = (common, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe.skip('.pin.ls', function () {
+  describe('.pin.ls', function () {
     this.timeout(50 * 1000)
 
     let ipfs

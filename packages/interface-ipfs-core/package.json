@@ -29,6 +29,12 @@
     "IPFS"
   ],
   "license": "MIT",
+  "eslintConfig": {
+    "extends": "ipfs",
+    "ignorePatterns": [
+      "test/fixtures/*"
+    ]
+  },
   "dependencies": {
     "abort-controller": "^3.0.0",
     "aegir": "ipfs/aegir#feat/remove-webpack-karma",
