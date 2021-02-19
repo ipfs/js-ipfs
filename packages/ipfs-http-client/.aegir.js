@@ -31,7 +31,9 @@ module.exports = {
       }
     },
     async after (options, before) {
-      await before.server.stop()
+      if (['browser', 'electron-renderer', 'webworker'].includes(options.runner)) {
+        await before.server.stop()
+      }
     }
   }
 }
