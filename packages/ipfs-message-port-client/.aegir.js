@@ -45,7 +45,7 @@ module.exports = {
       }
     },
     async after (options, before) {
-      await before.server.stop()
+      await before.echoServer.stop()
     }
   }
 }
