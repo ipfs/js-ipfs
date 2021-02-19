@@ -66,7 +66,7 @@ module.exports = (common, options) => {
       expect(cid).to.deep.equal(fixtures.files[0].cid)
     })
 
-    it('should add recursively', async () => {
+    it.skip('should add recursively', async () => {
       await ipfs.pin.add(fixtures.directory.cid)
       await expectPinned(ipfs, fixtures.directory.cid, pinTypes.recursive)
 
@@ -74,7 +74,7 @@ module.exports = (common, options) => {
       return Promise.all(pinChecks)
     })
 
-    it('should add directly', async () => {
+    it.skip('should add directly', async () => {
       await ipfs.pin.add(fixtures.directory.cid, {
         recursive: false
       })
@@ -83,7 +83,7 @@ module.exports = (common, options) => {
       await expectNotPinned(ipfs, fixtures.directory.files[0].cid)
     })
 
-    it('should recursively pin parent of direct pin', async () => {
+    it.skip('should recursively pin parent of direct pin', async () => {
       await ipfs.pin.add(fixtures.directory.files[0].cid, {
         recursive: false
       })
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
       await expectPinned(ipfs, fixtures.directory.files[0].cid, pinTypes.indirect)
     })
 
-    it('should fail to directly pin a recursive pin', async () => {
+    it.skip('should fail to directly pin a recursive pin', async () => {
       await ipfs.pin.add(fixtures.directory.cid)
       return expect(ipfs.pin.add(fixtures.directory.cid, {
         recursive: false
