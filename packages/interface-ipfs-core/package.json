@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
-    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "aegir": "^31.0.0",
     "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

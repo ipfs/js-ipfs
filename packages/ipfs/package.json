@@ -44,7 +44,7 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "aegir": "^31.0.0",
     "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",

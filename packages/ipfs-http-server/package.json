@@ -64,7 +64,7 @@
     "uri-to-multiaddr": "^4.0.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "aegir": "^31.0.0",
     "form-data": "^3.0.0",
     "ipfs-http-client": "^49.0.2",
     "iso-random-stream": "^1.1.1",

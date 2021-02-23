@@ -43,7 +43,7 @@
     "multiaddr": "^8.0.0"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "aegir": "^31.0.0",
     "node-fetch": "^2.6.1",
     "ws": "^7.3.1"
   },

@@ -53,7 +53,7 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "ipfs/aegir#feat/remove-webpack-karma",
+    "aegir": "^31.0.0",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3"
