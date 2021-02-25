@@ -38,7 +38,7 @@ We provide a few additional components useful for running JS IPFS in the browser
 
 
 - [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-webrtc-star) - incorporates both a transport and a discovery service that is facilitated by the custom rendezvous server available in the repo
-  - Instructions on enabling `webrtc-star` in js-ipfs config can be found [here](https://github.com/ipfs/js-ipfs#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser).
+  - Instructions on enabling `webrtc-star` in js-ipfs config can be found [here](https://github.com/ipfs/js-ipfs/blob/master/docs/FAQ.md#how-to-enable-webrtc-support-for-js-ipfs-in-the-browser).
   - Make sure to [run your own rendezvous server](https://github.com/libp2p/js-libp2p-webrtc-star#rendezvous-server-aka-signalling-server).
 - [libp2p-webrtc-direct](https://github.com/libp2p/js-libp2p-webrtc-direct) - a WebRTC transport that doesn't require the set up a signalling server.
   - Caveat: you can only establish Browser to Node.js and Node.js to Node.js connections.
