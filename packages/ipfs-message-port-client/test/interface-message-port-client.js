@@ -165,51 +165,6 @@ describe('interface-ipfs-core tests', () => {
 
   tests.pin(factory, {
     skip: [
-      // pin.add
-      {
-        name: 'should add a CID and return the added CID',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should add a pin with options and return the added CID',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should add recursively',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should add directly',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should recursively pin parent of direct pin',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should fail to directly pin a recursive pin',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should fail to pin a hash not in datastore',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'needs all children in datastore to pin recursively',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should pin dag-cbor',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should pin raw',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should pin dag-cbor with dag-pb child',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
       // pin.addAll
       {
         name: 'should add an array of CIDs',
@@ -239,63 +194,6 @@ describe('interface-ipfs-core tests', () => {
         name: 'should respect timeout option when pinning a block',
         reason: 'ipfs.pin.addAll is not implemented'
       },
-      // pin.ls
-      {
-        name: 'should respect timeout option when listing pins',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list all recursive pins',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list all indirect pins',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list all types of pins',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list all direct pins',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list pins for a specific hash',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should throw an error on missing direct pins for existing path',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should throw an error on missing link for a specific path',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list indirect pins for a specific path',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list recursive pins for a specific hash',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list pins for multiple CIDs',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should throw error for invalid non-string pin type option',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should throw error for invalid string pin type option',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
-      {
-        name: 'should list pins with metadata',
-        reason: 'ipfs.pin.ls is not implemented'
-      },
       // pin.rm
       {
         name: 'should respect timeout option when unpinning a block',
@@ -316,15 +214,6 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should fail when an item is not pinned',
         reason: 'ipfs.pin.rm is not implemented'
-      },
-      // pin.rmAll
-      {
-        name: 'should respect timeout option when unpinning a block',
-        reason: 'ipfs.pin.rmAll is not implemented'
-      },
-      {
-        name: 'should pipe the output of ls to rm',
-        reason: 'ipfs.pin.rmAll is not implemented'
       },
     ]
   })

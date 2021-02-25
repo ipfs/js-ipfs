@@ -1,4 +1,5 @@
 import { DAGNode } from 'ipfs-message-port-protocol/src/dag'
+import * as pin from 'ipfs-message-port-protocol/src/pin'
 import CID from 'cids'
 import {
   FileType,
@@ -65,6 +66,8 @@ export interface Core {
 
 export interface PinService {
   add(path: string | CID, options?: AddPinOptions): Promise<CID>
+  ls(options: pin.LsOptions): AsyncIterable<pin.LsEntry>
+  rmAll(source: pin.Source, options?: AbortOptions): AsyncIterable<CID>
 }
 
 export interface AddOptions extends AbortOptions {
@@ -85,7 +88,7 @@ export interface AddPinOptions extends AbortOptions {
   recursive?: boolean
 }
 
-export interface FileInput = {
+export interface FileInput {
   path?: string
   content?: FileContent
   mode?: string | number | undefined

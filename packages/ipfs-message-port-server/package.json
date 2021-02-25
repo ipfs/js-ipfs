@@ -43,7 +43,7 @@
     "dep-check": "aegir dep-check -i rimraf"
   },
   "dependencies": {
-    "ipfs-message-port-protocol": "^0.6.0",
+    "ipfs-message-port-protocol": "file:../ipfs-message-port-protocol",
     "it-all": "^1.0.4"
   },
   "devDependencies": {
