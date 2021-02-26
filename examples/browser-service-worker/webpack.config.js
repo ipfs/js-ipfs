@@ -20,20 +20,6 @@ module.exports = {
     port: 3000,
     historyApiFallback: true
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      }
-    ]
-  },
   resolve: {
     fallback: {
       "stream": require.resolve("stream-browserify")

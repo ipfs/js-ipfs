@@ -12,9 +12,6 @@
   "license": "MIT",
   "keywords": [],
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
-    "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.4",
     "test-ipfs-example": "^3.0.0",
     "webpack": "5.4.0",
