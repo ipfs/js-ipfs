@@ -6,18 +6,18 @@ export type Remote<T extends Record<string, unknown>> = {
   [K in keyof T]: Procedure<T[K]>
 }
 
-type Return<T> = T extends Promise<infer U>
+export type Return<T> = T extends Promise<infer U>
   ? Promise<U & TransferOptions>
   : Promise<T & TransferOptions>
 
 export type QueryOptions = {
   signal?: AbortSignal
   timeout?: number
-  transfer?: Transferable[]
+  transfer?: Set<Transferable>
 }
 
 export type TransferOptions = {
-  transfer?: Transferable[]
+  transfer?: Set<Transferable>
 }
 
 export type NonUndefined<A> = A extends undefined ? never : A

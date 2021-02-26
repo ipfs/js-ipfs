@@ -30,7 +30,7 @@ describe('block (browser)', function () {
       const data = uint8ArrayFromString('hello')
       const blockIn = new Block(data, cid)
 
-      const transfer = []
+      const transfer = new Set()
 
       const blockOut = decodeBlock(
         await move(encodeBlock(blockIn, transfer), transfer)

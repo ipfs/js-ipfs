@@ -3,7 +3,6 @@
 /* eslint-env browser */
 
 const { encodeError } = require('ipfs-message-port-protocol/src/error')
-const { ensureUniqueBuffers } = require('ipfs-message-port-protocol/src/buffer')
 
 /**
  * @typedef {import('ipfs-message-port-protocol/src/data').EncodedError} EncodedError
@@ -32,6 +31,11 @@ const { ensureUniqueBuffers } = require('ipfs-message-port-protocol/src/buffer')
 /**
  * @template T
  * @typedef {import('ipfs-message-port-protocol/src/rpc').ServiceQuery<T>} ServiceQuery
+ */
+
+/**
+ * @template T
+ * @typedef {import('ipfs-message-port-protocol/src/rpc').Return<T>} Return
  */
 
 /**
@@ -67,7 +71,7 @@ const { ensureUniqueBuffers } = require('ipfs-message-port-protocol/src/buffer')
 
 /**
  * @typedef {Object} TransferOptions
- * @property {Transferable[]} [transfer]
+ * @property {Set<Transferable>} [transfer]
  */
 
 /**
@@ -99,6 +103,7 @@ const Query = class Query {
    * @param {Inn<T>} input
    */
   constructor (namespace, method, input) {
+    /** @type {Return<any>} */
     this.result = new Promise((resolve, reject) => {
       this.succeed = resolve
       this.fail = reject
@@ -213,14 +218,13 @@ exports.Server = class Server {
     if (!query.signal.aborted) {
       try {
         const value = await query.result
-        const transfer = ensureUniqueBuffers(value.transfer || [])
+        const transfer = value.transfer
 
         // Don't need the transfer value in the result
         delete value.transfer
 
         port.postMessage(
           { type: 'result', id, result: { ok: true, value } },
-          // @ts-expect-error - Typescript expects the transfer list to be an Array, but it can actually be any iterable.
           transfer
         )
       } catch (error) {

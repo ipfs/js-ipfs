@@ -17,13 +17,15 @@ const Block = require('ipld-block')
  * this block will be added to the transfer so they are moved across without
  * copy.
  *
- * @param {Block} block
- * @param {Transferable[]} [transfer]
+ * @param {Object} block
+ * @param {import('cids')} block.cid
+ * @param {Uint8Array} block.data
+ * @param {Set<Transferable>} [transfer]
  * @returns {EncodedBlock}
  */
 const encodeBlock = ({ cid, data }, transfer) => {
   if (transfer) {
-    transfer.push(data.buffer)
+    transfer.add(data.buffer)
   }
   return { cid: encodeCID(cid, transfer), data }
 }

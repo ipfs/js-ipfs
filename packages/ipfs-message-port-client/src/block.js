@@ -37,7 +37,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Block>}
    */
@@ -68,7 +68,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Block>}
    */
@@ -95,7 +95,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {AsyncIterable<RmEntry>}
    *
@@ -123,7 +123,7 @@ class BlockClient extends Client {
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long
    * running requests started as a result of this call
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * worker if passed.
    * @returns {Promise<Stat>}
    *

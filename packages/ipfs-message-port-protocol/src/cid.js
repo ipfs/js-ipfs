@@ -15,12 +15,12 @@ const CID = require('cids')
  * will be added for the transfer list.
  *
  * @param {CID} cid
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {EncodedCID}
  */
 const encodeCID = (cid, transfer) => {
   if (transfer) {
-    transfer.push(cid.multihash.buffer)
+    transfer.add(cid.multihash.buffer)
   }
   return cid
 }

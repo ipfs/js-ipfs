@@ -44,15 +44,15 @@ exports.FilesService = class FilesService {
    *
    * @typedef {Object} StatResult
    * @property {Stat} stat
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @param {StatQuery} input
    * @returns {Promise<StatResult>}
    */
   async stat (input) {
     const stat = await this.ipfs.files.stat(input.path, input)
-    /** @type {Transferable[]} */
-    const transfer = []
+    /** @type {Set<Transferable>} */
+    const transfer = new Set()
     return { stat: { ...stat, cid: encodeCID(stat.cid, transfer) }, transfer }
   }
 }

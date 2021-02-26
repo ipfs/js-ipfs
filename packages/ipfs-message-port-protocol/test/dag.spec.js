@@ -56,7 +56,7 @@ describe('dag', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
       const data = encodeNode(dagNode, transfer)
 
       expect(data.dagNode).to.be.equal(dagNode)
@@ -65,8 +65,8 @@ describe('dag', function () {
       expect(data.cids).to.include(cid1)
       expect(data.cids).to.include(cid2)
 
-      expect(transfer).to.be.an.instanceOf(Array)
-      expect(transfer).to.have.property('length', 3)
+      expect(transfer).to.be.an.instanceOf(Set)
+      expect(transfer).to.have.property('size', 3)
       expect(transfer).to.include(cid1.multihash.buffer)
       expect(transfer).to.include(cid2.multihash.buffer)
       expect(transfer).to.include(hi.buffer)
@@ -93,7 +93,7 @@ describe('dag', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
       const data = encodeNode(dagNode, transfer)
 
       expect(data.dagNode).to.be.equal(dagNode)
@@ -102,8 +102,8 @@ describe('dag', function () {
       expect(data.cids).to.include(cid1)
       expect(data.cids).to.include(cid2)
 
-      expect(transfer).to.be.an.instanceOf(Array)
-      expect(transfer).to.have.property('length', 3)
+      expect(transfer).to.be.an.instanceOf(Set)
+      expect(transfer).to.have.property('size', 3)
       expect(transfer).to.include(cid1.multihash.buffer)
       expect(transfer).to.include(cid2.multihash.buffer)
       expect(transfer).to.include(hi.buffer)

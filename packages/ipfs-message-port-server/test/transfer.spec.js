@@ -27,7 +27,7 @@ describe('Server', function () {
 
       const service = new IPFSService()
       const server = new Server(service)
-      const transfer = []
+      const transfer = new Set()
 
       server.run = a => a
       server.handleQuery(

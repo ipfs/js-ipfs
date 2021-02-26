@@ -15,7 +15,7 @@ const ipc = () => {
   /**
    * @template T
    * @param {T} data
-   * @param {Transferable[]} [transfer]
+   * @param {Iterable<Transferable>} [transfer]
    * @returns {Promise<T>}
    */
   const ipcMove = async (data, transfer = []) => {

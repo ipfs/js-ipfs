@@ -76,8 +76,7 @@ class CoreClient extends Client {
    * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all')>}
    */
   async * addAll (input, options = {}) {
-    const { timeout, signal } = options
-    const transfer = [...(options.transfer || [])]
+    const { timeout, signal, transfer } = options
     const progress = options.progress
       ? encodeCallback(options.progress, transfer)
       : undefined
@@ -103,8 +102,7 @@ class CoreClient extends Client {
    * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
    */
   async add (input, options = {}) {
-    const { timeout, signal } = options
-    const transfer = [...(options.transfer || [])]
+    const { timeout, signal, transfer } = options
     const progress = options.progress
       ? encodeCallback(options.progress, transfer)
       : undefined
@@ -200,7 +198,7 @@ const identity = (v) => v
  * given input.
  *
  * @param {AddInput} input
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedAddInput}
  */
 const encodeAddInput = (input, transfer) => {
@@ -254,7 +252,7 @@ const encodeAddInput = (input, transfer) => {
  * given input.
  *
  * @param {AddAllInput} input
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedAddAllInput}
  */
 const encodeAddAllInput = (input, transfer) => {
@@ -291,7 +289,7 @@ const encodeAddAllInput = (input, transfer) => {
  * effective strategy.
  *
  * @param {ArrayBuffer|ArrayBufferView|Blob|string|FileObject} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
  */
 const encodeAsyncIterableContent = (content, transfer) => {
@@ -315,7 +313,7 @@ const encodeAsyncIterableContent = (content, transfer) => {
 
 /**
  * @param {number|Bytes|Blob|string|FileObject|void} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {FileInput|ArrayBuffer|ArrayBufferView}
  */
 const encodeIterableContent = (content, transfer) => {
@@ -341,7 +339,7 @@ const encodeIterableContent = (content, transfer) => {
 
 /**
  * @param {FileObject} file
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {FileInput}
  */
 const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
@@ -356,7 +354,7 @@ const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
 /**
  *
  * @param {FileContent|undefined} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedFileContent}
  */
 const encodeFileContent = (content, transfer) => {

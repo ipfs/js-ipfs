@@ -28,7 +28,7 @@ describe('cid (browser)', function () {
 
     it('should decode CID and transfer bytes', async () => {
       const cidIn = new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
-      const transfer = []
+      const transfer = new Set()
       const cidDataIn = encodeCID(cidIn, transfer)
       const cidDataOut = await move(cidDataIn, transfer)
       const cidOut = decodeCID(cidDataOut)

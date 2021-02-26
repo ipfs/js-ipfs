@@ -106,7 +106,7 @@ exports.CoreService = class CoreService {
   /**
    * @typedef {Object} AddAllResult
    * @property {RemoteIterable<AddedEntry>} data
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @param {AddAllQuery} query
    * @returns {AddAllResult}
@@ -159,7 +159,7 @@ exports.CoreService = class CoreService {
   /**
    * @typedef {Object} AddResult
    * @property {AddedEntry} data
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @param {AddQuery} query
    * @returns {Promise<AddResult>}
@@ -219,7 +219,7 @@ exports.CoreService = class CoreService {
    *
    * @typedef {Object} CatResult
    * @property {RemoteIterable<Uint8Array>} data
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @param {CatQuery} query
    * @returns {CatResult}
@@ -241,7 +241,7 @@ exports.CoreService = class CoreService {
    *
    * @typedef {Object} LsResult
    * @property {RemoteIterable<EncodedLsEntry>} data
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @param {LsQuery} query
    * @returns {LsResult}
@@ -323,8 +323,8 @@ const matchInput = (input, decode) => {
  * @returns {AddAllResult}
  */
 const encodeAddAllResult = out => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return {
     data: encodeIterable(out, encodeFileOutput, transfer),
     transfer
@@ -336,8 +336,8 @@ const encodeAddAllResult = out => {
  * @returns {AddResult}
  */
 const encodeAddResult = out => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return {
     data: encodeFileOutput(out, transfer),
     transfer
@@ -350,8 +350,8 @@ const encodeAddResult = out => {
  * @returns {CatResult}
  */
 const encodeCatResult = content => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return { data: encodeIterable(content, moveBuffer, transfer), transfer }
 }
 
@@ -361,8 +361,8 @@ const encodeCatResult = content => {
  * @returns {LsResult}
  */
 const encodeLsResult = entries => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return { data: encodeIterable(entries, encodeLsEntry, transfer), transfer }
 }
 
@@ -386,18 +386,18 @@ const encodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => (
  * Adds underlying `ArrayBuffer` to the transfer list.
  *
  * @param {Uint8Array} buffer
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {Uint8Array}
  */
 const moveBuffer = (buffer, transfer) => {
-  transfer.push(buffer.buffer)
+  transfer.add(buffer.buffer)
   return buffer
 }
 
 /**
  *
  * @param {FileOutput} file
- * @param {Transferable[]} _transfer
+ * @param {Set<Transferable>} _transfer
  */
 
 const encodeFileOutput = (file, _transfer) => ({

@@ -30,7 +30,7 @@ exports.BlockService = class BlockService {
   /**
    * @typedef {Object} GetResult
    * @property {EncodedBlock} block
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @typedef {Object} GetQuery
    * @property {EncodedCID} cid
@@ -43,15 +43,15 @@ exports.BlockService = class BlockService {
   async get (query) {
     const cid = decodeCID(query.cid)
     const block = await this.ipfs.block.get(cid, query)
-    /** @type {Transferable[]} */
-    const transfer = []
+    /** @type {Set<Transferable>} */
+    const transfer = new Set()
     return { transfer, block: encodeBlock(block, transfer) }
   }
 
   /**
    * @typedef {Object} PutResult
    * @property {EncodedBlock} block
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    *
    * @typedef {Object} PutQuery
    * @property {EncodedBlock|Uint8Array} block
@@ -73,13 +73,15 @@ exports.BlockService = class BlockService {
     const input = query.block
     /** @type {Uint8Array|Block} */
     const block = input instanceof Uint8Array ? input : decodeBlock(input)
-    const result = await this.ipfs.block.put(block, {
+    // `ipfs.block` is typed to take `Uint8Array` even though it also accepts
+    // Block instances.
+    const result = await this.ipfs.block.put(/** @type {Uint8Array} */ (block), {
       ...query,
       cid: query.cid ? decodeCID(query.cid) : query.cid
     })
 
-    /** @type {Transferable[]} */
-    const transfer = []
+    /** @type {Set<Transferable>} */
+    const transfer = new Set()
     return { transfer, block: encodeBlock(result, transfer) }
   }
 
@@ -102,8 +104,8 @@ exports.BlockService = class BlockService {
    * @returns {Promise<RmResult>}
    */
   async rm (query) {
-    /** @type {Transferable[]} */
-    const transfer = []
+    /** @type {Set<Transferable>} */
+    const transfer = new Set()
     const result = await collect(
       this.ipfs.block.rm(query.cids.map(decodeCID), query)
     )
@@ -137,7 +139,7 @@ exports.BlockService = class BlockService {
  * @param {Object} entry
  * @param {CID} entry.cid
  * @param {Error|void} [entry.error]
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {RmEntry}
  */
 const encodeRmEntry = (entry, transfer) => {

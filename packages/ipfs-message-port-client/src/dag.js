@@ -34,7 +34,7 @@ class DAGClient extends Client {
    * @param {CID} [options.cid]
    * @param {boolean} [options.pin=false] - Pin this node when adding to the blockstore
    * @param {boolean} [options.preload=true]
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * @param {number} [options.timeout] - A timeout in ms
    * @param {AbortSignal} [options.signal] - Can be used to cancel any long running requests started as a result of this call.
    * @returns {Promise<CID>}
@@ -57,7 +57,7 @@ class DAGClient extends Client {
    * @param {string} [options.path]
    * @param {boolean} [options.localResolve]
    * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * @param {AbortSignal} [options.signal]
    * @returns {Promise<DAGEntry>}
    */
@@ -79,7 +79,7 @@ class DAGClient extends Client {
    * @param {Object} [options]
    * @param {string} [options.path]
    * @param {number} [options.timeout]
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * @param {AbortSignal} [options.signal]
    * @returns {Promise<ResolveResult>}
    */
@@ -99,7 +99,7 @@ class DAGClient extends Client {
    * @param {Object} [options]
    * @param {string} [options.path]
    * @param {boolean} [options.recursive]
-   * @param {Transferable[]} [options.transfer] - References to transfer to the
+   * @param {Set<Transferable>} [options.transfer] - References to transfer to the
    * @param {number} [options.timeout]
    * @param {AbortSignal} [options.signal]
    * @returns {AsyncIterable<string>}
@@ -116,7 +116,7 @@ class DAGClient extends Client {
 
 /**
  * @param {string|CID} input
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {string|EncodedCID}
  */
 const encodeCIDOrPath = (input, transfer) => {
