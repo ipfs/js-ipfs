@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.0...ipfs-core-utils@0.7.1) (2021-02-08)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.6.1...ipfs-core-utils@0.7.0) (2021-02-01)
+
+
+### chore
+
+* update deps ([#3514](https://github.com/ipfs/js-ipfs/issues/3514)) ([061d77c](https://github.com/ipfs/js-ipfs/commit/061d77cc03f40af5a3bc3590481e1e5836e7f0d8))
+
+
+### BREAKING CHANGES
+
+* ipfs-repo upgrade requires repo migration to v10
+
+
+
+
+
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.6.0...ipfs-core-utils@0.6.1) (2021-01-22)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.4...ipfs-core-utils@0.6.0) (2021-01-15)
+
+
+### Features
+
+* allow passing a http.Agent to the grpc client ([#3477](https://github.com/ipfs/js-ipfs/issues/3477)) ([c5f0bc5](https://github.com/ipfs/js-ipfs/commit/c5f0bc5eeee15369b7d02901035b04184a8608d2)), closes [#3474](https://github.com/ipfs/js-ipfs/issues/3474)
+
+
+
+
+
 ## [0.5.4](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.3...ipfs-core-utils@0.5.4) (2020-12-16)
 
 

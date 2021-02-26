@@ -6,7 +6,7 @@ const {
 } = require('../../utils')
 const formatMode = require('ipfs-core-utils/src/files/format-mode')
 const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'ls [path]',

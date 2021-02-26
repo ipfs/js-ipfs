@@ -18,6 +18,8 @@ module.exports = function preload (url, options = {}) {
 
   return httpQueue.add(async () => {
     const res = await HTTP.post(url, { signal: options.signal })
+
+    // @ts-ignore
     const reader = res.body.getReader()
 
     try {

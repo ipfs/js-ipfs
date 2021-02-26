@@ -5,12 +5,36 @@ const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
 const fetch = require('node-fetch')
 const WebSocket = require('ws')
+const os = require('os')
 
-describe('daemon', () => {
+function createDaemon () {
+  return new Daemon({
+    init: {
+      bits: 512
+    },
+    repo: `${os.tmpdir()}/ipfs-test-${Math.random()}`,
+    config: {
+      Addresses: {
+        Swarm: [
+          '/ip4/0.0.0.0/tcp/0',
+          '/ip4/127.0.0.1/tcp/0/ws'
+        ],
+        API: '/ip4/127.0.0.1/tcp/0',
+        Gateway: '/ip4/127.0.0.1/tcp/0',
+        RPC: '/ip4/127.0.0.1/tcp/0'
+      }
+    }
+  })
+}
+
+describe('daemon', function () {
+  // slow ci is slow
+  this.timeout(60 * 1000)
+
   let daemon
 
   it('should start a http api server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
 
@@ -18,19 +42,19 @@ describe('daemon', () => {
       uri
     } = daemon._httpApi._apiServers[0].info
 
-    const httpId = (await fetch(`${uri}/api/v0/id`, {
+    const idFromCore = await daemon._ipfs.id()
+
+    const httpId = await fetch(`${uri}/api/v0/id`, {
       method: 'POST'
-    })).json()
+    })
 
-    const apiId = await daemon._ipfs.id()
-
-    await expect(httpId).to.eventually.have.property('PublicKey', apiId.publicKey)
+    await expect(httpId.json()).to.eventually.have.property('PublicKey', idFromCore.publicKey)
 
     await daemon.stop()
   })
 
   it('should start a http gateway server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
 
@@ -38,17 +62,17 @@ describe('daemon', () => {
       uri
     } = daemon._httpGateway._gatewayServers[0].info
 
-    const result = await (await fetch(`${uri}/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn`, {
+    const result = await fetch(`${uri}/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn`, {
       method: 'POST'
-    })).text()
+    })
 
-    expect(result).to.include('Index of /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/')
+    await expect(result.text()).to.eventually.include('Index of /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/')
 
     await daemon.stop()
   })
 
   it('should start a gRPC server', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
 
@@ -83,7 +107,7 @@ describe('daemon', () => {
   })
 
   it('should stop', async () => {
-    daemon = new Daemon({})
+    daemon = createDaemon()
 
     await daemon.start()
     await daemon.stop()

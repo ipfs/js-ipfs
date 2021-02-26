@@ -5,8 +5,8 @@ const multihash = require('multihashes')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
 const multicodec = require('multicodec')
 const loadFormat = require('../lib/ipld-formats')
 
@@ -28,7 +28,6 @@ module.exports = configure((api, opts) => {
       const cid = new CID(options.cid)
       encodingOptions = {
         ...options,
-        // @ts-expect-error - https://github.com/multiformats/js-cid/pull/138
         format: multicodec.getName(cid.code),
         hashAlg: multihash.decode(cid.multihash).name
       }
@@ -49,8 +48,9 @@ module.exports = configure((api, opts) => {
 
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, settings.signal])
+    const signal = abortSignal(controller.signal, settings.signal)
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dag/put', {
       timeout: settings.timeout,
       signal,

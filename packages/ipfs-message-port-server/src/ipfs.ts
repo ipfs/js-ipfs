@@ -7,7 +7,6 @@ import {
   Time,
   CIDVersion
 } from 'ipfs-message-port-protocol/src/data'
-import { EncodedCID } from './block'
 import { ReadStream } from 'fs'
 
 type Mode = string | number
@@ -18,7 +17,7 @@ export interface IPFS extends Core {
 }
 
 export interface IPFSFactory {
-  create(): Promise<IPFS>
+  create: () => Promise<IPFS>
 }
 
 export interface AbortOptions {
@@ -27,15 +26,15 @@ export interface AbortOptions {
 }
 
 export interface PutOptions extends AbortOptions {
-  format?: string | void
-  hashAlg?: string | void
-  cid?: CID | void
+  format?: string | undefined
+  hashAlg?: string | undefined
+  cid?: CID | undefined
   preload?: boolean
   pin?: boolean
 }
 
 export interface GetOptions extends AbortOptions {
-  path?: string,
+  path?: string
   localResolve?: boolean
 }
 
@@ -44,23 +43,23 @@ export interface ResolveOptions extends AbortOptions {
 }
 
 export interface TreeOptions extends AbortOptions {
-  path?: string,
+  path?: string
   recursive?: boolean
 }
 
 export interface DAG {
-  put(dagNode: DAGNode, options: PutOptions): Promise<CID>
-  get(cid: CID, options: GetOptions): Promise<{ value: DAGNode; remainderPath: string }>
-  resolve(pathOrCID: string | CID, options: ResolveOptions): Promise<{ cid: CID, remainderPath: string }>
-  tree(cid: CID, options: TreeOptions): AsyncIterable<string>
+  put: (dagNode: DAGNode, options: PutOptions) => Promise<CID>
+  get: (cid: CID, options: GetOptions) => Promise<{ value: DAGNode, remainderPath: string }>
+  resolve: (pathOrCID: string | CID, options: ResolveOptions) => Promise<{ cid: CID, remainderPath: string }>
+  tree: (cid: CID, options: TreeOptions) => AsyncIterable<string>
 }
 
 export interface Core {
-  addAll(inputs: AddAllInput, options: AddOptions): AsyncIterable<FileOutput>
-  add(input: AddInput, options: AddOptions): Promise<FileOutput>
-  cat(ipfsPath: CID | string, options: CatOptions): AsyncIterable<Uint8Array>
+  addAll: (inputs: AddAllInput, options: AddOptions) => AsyncIterable<FileOutput>
+  add: (input: AddInput, options: AddOptions) => Promise<FileOutput>
+  cat: (ipfsPath: CID | string, options: CatOptions) => AsyncIterable<Uint8Array>
 
-  ls(ipfsPath: CID | string, options: CoreLsOptions): AsyncIterable<LsEntry>
+  ls: (ipfsPath: CID | string, options: CoreLsOptions) => AsyncIterable<LsEntry>
 }
 
 export interface AddOptions extends AbortOptions {
@@ -77,18 +76,18 @@ export interface AddOptions extends AbortOptions {
   wrapWithDirectory?: boolean
 }
 
-export type FileInput = {
+export interface FileInput {
   path?: string
   content?: FileContent
-  mode?: string | number | void
+  mode?: string | number | undefined
   mtime?: Time
 }
 
-export type FileOutput = {
+export interface FileOutput {
   path: string
   cid: CID
   mode: number
-  mtime: { secs: number; nsecs: number }
+  mtime: { secs: number, nsecs: number }
   size: number
 }
 
@@ -103,17 +102,17 @@ interface CoreLsOptions extends AbortOptions {
 }
 
 export interface Files {
-  chmod(path: string | CID, mode: Mode, options?: ChmodOptions): Promise<void>
+  chmod: (path: string | CID, mode: Mode, options?: ChmodOptions) => Promise<void>
 
-  write(
+  write: (
     path: string,
     content: WriteContent,
     options?: WriteOptions
-  ): Promise<WriteResult>
+  ) => Promise<WriteResult>
 
-  ls(path?: string, opitons?: LsOptions): AsyncIterable<LsEntry>
+  ls: (path?: string, opitons?: LsOptions) => AsyncIterable<LsEntry>
 
-  stat(path: string, options?: StatOptions): Promise<Stat>
+  stat: (path: string, options?: StatOptions) => Promise<Stat>
 }
 
 export interface ChmodOptions extends AbortOptions {
@@ -127,7 +126,7 @@ interface LsOptions extends AbortOptions {
   sort?: boolean
 }
 
-export type LsEntry = {
+export interface LsEntry {
   name: string
   path: string
   type: FileType
@@ -144,7 +143,7 @@ export interface StatOptions extends AbortOptions {
   withLocal?: boolean
 }
 
-export type Stat = {
+export interface Stat {
   cid: CID
   size: number
   cumulativeSize: number
@@ -174,7 +173,7 @@ export type AddAllInput =
   | Iterable<AddInput>
   | AsyncIterable<AddInput>
 
-export type FileObject = {
+export interface FileObject {
   path?: string
   content?: FileContent
   mode?: Mode
@@ -203,7 +202,7 @@ export interface WriteOptions extends AbortOptions {
   cidVersion?: CIDVersion
 }
 
-export type WriteResult = {
+export interface WriteResult {
   cid: CID
   size: number
 }
@@ -214,17 +213,16 @@ export interface Block {
 }
 
 export interface BlockService {
-  get(cid: CID, options?: GetBlockOptions): Promise<Block>
-  put(block: Block, options?: PutBlockOptions): Promise<Block>
-  put(buffer: Uint8Array, options?: PutBufferOptions): Promise<Block>
-  rm(
+  get: (cid: CID, options?: GetBlockOptions) => Promise<Block>
+  put: ((block: Uint8Array, options?: PutBufferOptions) => Promise<Block>) & ((buffer: Uint8Array, options?: PutBufferOptions) => Promise<Block>)
+  rm: (
     cid: CID | CID[],
     options?: RmBlockOptions
-  ): AsyncIterable<{ cid: CID; error?: Error }>
-  stat(
+  ) => AsyncIterable<{ cid: CID, error?: Error }>
+  stat: (
     cid: CID,
     options?: StatBlockOptions
-  ): Promise<{ cid: CID; size: number }>
+  ) => Promise<{ cid: CID, size: number }>
 }
 
 export interface GetBlockOptions extends AbortOptions { } // eslint-disable-line @typescript-eslint/no-empty-interface
@@ -236,7 +234,7 @@ export interface PutBlockOptions extends AbortOptions {
   pin?: boolean
 }
 export interface PutBufferOptions extends PutBlockOptions {
-  cid?: EncodedCID | void
+  cid?: CID | undefined
 }
 
 export interface RmBlockOptions extends AbortOptions {

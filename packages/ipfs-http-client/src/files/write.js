@@ -5,8 +5,8 @@ const { mtimeToObject } = require('ipfs-core-utils/src/files/normalise-input/uti
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
 
 module.exports = configure(api => {
   /**
@@ -15,8 +15,9 @@ module.exports = configure(api => {
   async function write (path, input, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('files/write', {
       timeout: options.timeout,
       signal,

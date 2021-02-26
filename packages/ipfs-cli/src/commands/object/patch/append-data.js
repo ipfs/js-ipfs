@@ -4,7 +4,7 @@ const concat = require('it-concat')
 const fs = require('fs')
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'append-data <root> [data]',

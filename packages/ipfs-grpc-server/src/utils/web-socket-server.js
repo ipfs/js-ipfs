@@ -1,7 +1,7 @@
 'use strict'
 
 const { Server: WebSocketServer } = require('ws')
-const EventEmitter = require('events').EventEmitter
+const { EventEmitter } = require('events')
 const WebSocketMessageChannel = require('./web-socket-message-channel')
 const debug = require('debug')('ipfs:grpc-server:utils:web-socket-server')
 const coerce = require('coercer')
@@ -53,12 +53,18 @@ class Messages extends EventEmitter {
     wss.on('error', error => this.emit('error', error))
   }
 
+  /**
+   * @returns {Promise<void>}
+   */
   stop () {
     return new Promise((resolve) => {
       this._wss.close(() => resolve())
     })
   }
 
+  /**
+   * @returns {Promise<Messages>}
+   */
   ready () {
     return new Promise((resolve) => {
       this._wss.on('listening', () => {

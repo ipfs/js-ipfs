@@ -79,7 +79,8 @@ module.exports = function grpcAddAll (grpc, service, opts = {}) {
     } = bidiToDuplex(grpc, service, {
       host: opts.url,
       debug: Boolean(process.env.DEBUG),
-      metadata: options
+      metadata: options,
+      agent: opts.agent
     })
 
     sendFiles(stream, sink)

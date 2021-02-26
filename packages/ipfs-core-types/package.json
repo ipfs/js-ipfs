@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "types": "src/index.ts",
@@ -10,7 +10,6 @@
     "lint": "aegir lint",
     "test": "aegir ts -p check"
   },
-  "types": "src/index.ts",
   "files": [
     "src"
   ],
@@ -29,13 +28,12 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
-    "cids": "^1.0.0",
+    "cids": "^1.1.5",
     "multiaddr": "^8.0.0",
     "peer-id": "^0.14.1"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
-    "typescript": "4.0.x"
+    "aegir": "^30.3.0"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

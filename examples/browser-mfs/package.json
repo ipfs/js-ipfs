@@ -17,12 +17,12 @@
     "http-server": "^0.12.3",
     "rimraf": "^3.0.2",
     "terser-webpack-plugin": "^1.2.1",
-    "test-ipfs-example": "^2.0.3",
+    "test-ipfs-example": "^3.0.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "ipfs": "^0.52.2",
+    "ipfs": "^0.54.2",
     "mime-sniffer": "~0.0.3"
   }
 }

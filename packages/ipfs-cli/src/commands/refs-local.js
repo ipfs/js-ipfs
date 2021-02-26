@@ -1,7 +1,7 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const multibase = require('multibase')
 
 module.exports = {

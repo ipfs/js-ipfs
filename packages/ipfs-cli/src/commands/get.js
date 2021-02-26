@@ -5,7 +5,7 @@ const path = require('path')
 const toIterable = require('stream-to-it')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const {
   stripControlCharacters
 } = require('../utils')

@@ -55,7 +55,7 @@ exports.BlockService = class BlockService {
    *
    * @typedef {Object} PutQuery
    * @property {EncodedBlock|Uint8Array} block
-   * @property {EncodedCID|void} [cid]
+   * @property {EncodedCID|undefined} [cid]
    * @property {string} [format]
    * @property {string} [mhtype]
    * @property {number} [mhlen]
@@ -71,14 +71,20 @@ exports.BlockService = class BlockService {
    */
   async put (query) {
     const input = query.block
+    let result
     /** @type {Uint8Array|Block} */
-    const block = input instanceof Uint8Array ? input : decodeBlock(input)
-    // `ipfs.block` is typed to take `Uint8Array` even though it also accepts
-    // Block instances.
-    const result = await this.ipfs.block.put(/** @type {Uint8Array} */ (block), {
-      ...query,
-      cid: query.cid ? decodeCID(query.cid) : query.cid
-    })
+    if (input instanceof Uint8Array) {
+      result = await this.ipfs.block.put(input, {
+        ...query,
+        cid: query.cid ? decodeCID(query.cid) : query.cid
+      })
+    } else {
+      const block = decodeBlock(input)
+      result = await this.ipfs.block.put(block, {
+        ...query,
+        cid: undefined
+      })
+    }
 
     /** @type {Set<Transferable>} */
     const transfer = new Set()

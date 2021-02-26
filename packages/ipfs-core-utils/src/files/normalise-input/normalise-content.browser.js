@@ -1,7 +1,6 @@
 'use strict'
 
 const errCode = require('err-code')
-const { Blob } = require('ipfs-utils/src/globalthis')
 const itPeekable = require('it-peekable')
 const browserStreamToIt = require('browser-readablestream-to-it')
 const all = require('it-all')
@@ -17,9 +16,14 @@ const {
  * @returns {Promise<Blob>}
  */
 async function toBlob (input) {
-  // Bytes | String
-  if (isBytes(input) || typeof input === 'string' || input instanceof String) {
+  // Bytes
+  if (isBytes(input)) {
     return new Blob([input])
+  }
+
+  // String
+  if (typeof input === 'string' || input instanceof String) {
+    return new Blob([input.toString()])
   }
 
   // Blob | File

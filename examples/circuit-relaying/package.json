@@ -15,18 +15,19 @@
   "license": "MIT",
   "dependencies": {
     "delay": "^4.4.0",
-    "ipfs": "^0.52.2",
+    "ipfs": "^0.54.2",
     "ipfs-pubsub-room": "^2.0.1",
-    "uint8arrays": "^1.1.0"
+    "libp2p-websockets": "^0.15.0",
+    "uint8arrays": "^2.0.5"
   },
   "devDependencies": {
     "execa": "^4.0.3",
     "ipfs-css": "^0.13.1",
-    "ipfs-http-client": "^48.1.2",
+    "ipfs-http-client": "^49.0.2",
     "parcel-bundler": "^1.12.4",
     "rimraf": "^3.0.2",
     "tachyons": "^4.11.1",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "browserslist": [
     ">1%",

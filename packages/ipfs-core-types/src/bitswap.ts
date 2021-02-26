@@ -9,54 +9,53 @@ import { StoreReader, StoreExporter, StoreImporter } from './store'
 export interface Bitswap extends
   StoreReader<CID, Block>,
   StoreExporter<CID, Block>,
-  StoreImporter<Block>
-{
+  StoreImporter<Block> {
 
   readonly peerId: PeerId
 
-  enableStats(): void
-  disableStats(): void
+  enableStats: () => void
+  disableStats: () => void
 
-  wantlistForPeer(peerId: PeerId, options?:AbortOptions): Map<string, WantListEntry>
-  ledgerForPeer(peerId: PeerId): Ledger
+  wantlistForPeer: (peerId: PeerId, options?: AbortOptions) => Map<string, WantListEntry>
+  ledgerForPeer: (peerId: PeerId) => Ledger
 
-  put(block: Block, options?: AbortOptions): Await<void>
+  put: (block: Block, options?: AbortOptions) => Await<void>
 
-  unwant(cids: Iterable<CID>, options?: AbortOptions): void
-  cancelWants(cids: Iterable<CID>): void
-  getWantlist(options?: AbortOptions): Iterable<[string, WantListEntry]>
-  peers(): PeerId[]
-  stat(): Stats
-  start(): void
-  stop(): void
+  unwant: (cids: Iterable<CID>, options?: AbortOptions) => void
+  cancelWants: (cids: Iterable<CID>) => void
+  getWantlist: (options?: AbortOptions) => Iterable<[string, WantListEntry]>
+  peers: () => PeerId[]
+  stat: () => Stats
+  start: () => void
+  stop: () => void
 }
 
 export interface Ledger {
-  sentBytes(n:number):void
-  receivedBytes(n:number):void
+  sentBytes: (n: number) => void
+  receivedBytes: (n: number) => void
 
-  wants(cid: CID, priority: number, wantType: WantType):void
-  cancelWant(cid: CID): void
-  wantlistContains(cid:CID): WantListEntry|void
+  wants: (cid: CID, priority: number, wantType: WantType) => void
+  cancelWant: (cid: CID) => void
+  wantlistContains: (cid: CID) => WantListEntry|undefined
 
-  debtRatio():number
+  debtRatio: () => number
 }
 
 export interface WantListEntry {
   readonly cid: CID
   priority: number
-  inc(): void
-  dec(): void
-  hasRefs(): boolean
-  equals(other: WantListEntry): boolean
+  inc: () => void
+  dec: () => void
+  hasRefs: () => boolean
+  equals: (other: WantListEntry) => boolean
 }
 
-export type WantList = {
+export interface WantList {
   entries: Entry[]
   full?: boolean
 }
 
-export type Entry = {
+export interface Entry {
   block: Uint8Array
   priority: number
   cancel: boolean
@@ -64,7 +63,7 @@ export type Entry = {
   sendDontHave?: boolean
 }
 
-export type BlockPresence = {
+export interface BlockPresence {
   cid: Uint8Array
   type: BlockPresenceType
 }
@@ -77,16 +76,16 @@ export type WantBlock = 0
 export type HaveBlock = 1
 export type WantType = WantBlock | HaveBlock
 
-export type BlockData = {
+export interface BlockData {
   prefix: Uint8Array
   data: Uint8Array
 }
 
 export interface Stats {
-  enable(): void
-  disable(): void
-  stop(): void
+  enable: () => void
+  disable: () => void
+  stop: () => void
   readonly snapshot: Record<string, BigInteger>
   readonly movingAverages: Record<string, Record<number, MovingAverage>>
-  push(counter: number, inc: number): void
+  push: (counter: number, inc: number) => void
 }

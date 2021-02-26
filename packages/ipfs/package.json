@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.52.3",
+  "version": "0.54.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -23,9 +23,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle",
+    "prepublishOnly": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
@@ -35,32 +34,32 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop -i electron-webrtc -i wrtc -i rimraf"
+    "dep-check": "aegir dep-check -i cross-env -i ipfs-interop -i electron-webrtc -i wrtc -i rimraf"
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.2.3",
-    "ipfs-core": "^0.3.1",
-    "ipfs-repo": "^7.0.0",
+    "ipfs-cli": "^0.4.2",
+    "ipfs-core": "^0.5.2",
+    "ipfs-repo": "^8.0.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "aegir": "^30.3.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "^0.7.0",
-    "interface-ipfs-core": "^0.142.3",
-    "ipfs-client": "^0.1.0",
-    "ipfs-http-client": "^48.1.3",
-    "ipfs-interop": "^3.0.0",
-    "ipfs-utils": "^5.0.0",
+    "go-ipfs": "0.8.0-rc2",
+    "interface-ipfs-core": "^0.144.1",
+    "ipfs-client": "^0.3.2",
+    "ipfs-http-client": "^49.0.2",
+    "ipfs-interop": "^4.0.2",
+    "ipfs-utils": "^6.0.1",
     "ipfsd-ctl": "^7.2.0",
     "iso-url": "^1.0.0",
-    "libp2p-webrtc-star": "^0.20.1",
-    "merge-options": "^2.0.0",
+    "libp2p-webrtc-star": "^0.21.0",
+    "merge-options": "^3.0.4",
+    "mock-ipfs-pinning-service": "^0.1.2",
     "rimraf": "^3.0.2",
-    "typescript": "4.0.x",
     "wrtc": "^0.4.6"
   },
   "typesVersions": {

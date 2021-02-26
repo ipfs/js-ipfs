@@ -14,7 +14,7 @@ const {
 } = require('../utils')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
@@ -255,10 +255,10 @@ module.exports = {
         mtime
       })
       : {
-        content: getStdin(),
-        mode,
-        mtime
-      } // Pipe to ipfs.add tagging with mode and mtime
+          content: getStdin(),
+          mode,
+          mtime
+        } // Pipe to ipfs.add tagging with mode and mtime
 
     let finalCid
 

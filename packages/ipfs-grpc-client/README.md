@@ -35,6 +35,7 @@ An optional object which may have the following keys:
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | url | `Multiaddr` or `string` or `URL` | `undefined` | The address of a [ipfs-grpc-server][] to connect to |
+| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `undefined` | A http.Agent used to control HTTP client behaviour (node.js only) |
 
 ### Returns
 

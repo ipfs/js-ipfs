@@ -1,7 +1,7 @@
 'use strict'
 
-const Big = require('bignumber.js').default
-const parseDuration = require('parse-duration').default
+const { default: Big } = require('bignumber.js')
+const { default: parseDuration } = require('parse-duration')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -13,7 +13,9 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 function getBandwidthStats (libp2p, opts) {
   let stats
 
-  if (opts.peer) {
+  if (!libp2p.metrics) {
+    stats = undefined
+  } else if (opts.peer) {
     stats = libp2p.metrics.forPeer(opts.peer)
   } else if (opts.proto) {
     stats = libp2p.metrics.forProtocol(opts.proto)
@@ -85,7 +87,7 @@ module.exports = ({ network }) => {
 
 /**
  * @typedef {Object} BWOptions
- * @property {PeerId|CID|string} [peer] - Specifies a peer to print bandwidth for
+ * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
  * @property {string} [proto] - Specifies a protocol to print bandwidth for
  * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
  * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.

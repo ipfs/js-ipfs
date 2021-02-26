@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -22,6 +22,9 @@
       ]
     }
   },
+  "eslintConfig": {
+    "extends": "ipfs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -29,21 +32,19 @@
   "scripts": {
     "test": "aegir test",
     "lint": "aegir lint",
-    "build": "npm run build:js && npm run build:types",
-    "build:js": "aegir build",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle",
+    "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i aegir -i typescript -i rimraf"
+    "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "0.0.0",
-    "ipfs-http-client": "^48.1.0",
-    "merge-options": "^2.0.0"
+    "ipfs-grpc-client": "^0.2.2",
+    "ipfs-http-client": "^49.0.2",
+    "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
-    "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "aegir": "^30.3.0",
+    "rimraf": "^3.0.2"
   }
 }

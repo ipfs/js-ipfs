@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.4.3",
+  "version": "0.5.2",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -31,35 +31,29 @@
   },
   "scripts": {
     "test": "echo 'Only interface tests live here'",
-    "test:interface:message-port-client": "npm run build:test-worker && aegir test -t browser -f ./test/interface-message-port-client.js",
+    "test:interface:message-port-client": "npm run prepare && aegir test -t browser -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
-    "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
-    "build:types": "tsc --build",
+    "prepare": "aegir build --no-bundle && aegir build -- --config ./test/util/webpack.config.js",
+    "prepublishOnly": "aegir build && aegir build -- --config ./test/util/webpack.config.js",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "ipfs-message-port-protocol": "^0.4.3",
-    "ipfs-core-types": "^0.1.0"
+    "ipfs-core-types": "^0.3.0",
+    "ipfs-message-port-protocol": "^0.6.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
-    "interface-ipfs-core": "^0.142.3",
-    "ipfs": "^0.52.3",
-    "ipfs-core": "^0.3.1",
-    "ipfs-message-port-server": "^0.4.3",
-    "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "aegir": "^30.3.0",
+    "interface-ipfs-core": "^0.144.1",
+    "ipfs": "^0.54.2",
+    "ipfs-core": "^0.5.2",
+    "ipfs-message-port-server": "^0.6.1",
+    "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=10.3.0",
     "npm": ">=3.0.0"
-  },
-  "contributors": [
-    "Irakli Gozalishvili <dev@gozala.io>"
-  ]
+  }
 }

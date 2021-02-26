@@ -346,7 +346,7 @@ module.exports = (common, options) => {
     })
 
     it('should not add from an invalid url', () => {
-      return expect(ipfs.add(urlSource('123http://invalid'))).to.eventually.be.rejected()
+      return expect(() => ipfs.add(urlSource('123http://invalid'))).to.throw()
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {

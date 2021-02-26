@@ -19,8 +19,13 @@ const {
  */
 async function * toAsyncIterable (input) {
   // Bytes | String
-  if (isBytes(input) || typeof input === 'string' || input instanceof String) {
+  if (isBytes(input)) {
     yield toBytes(input)
+    return
+  }
+
+  if (typeof input === 'string' || input instanceof String) {
+    yield toBytes(input.toString())
     return
   }
 
@@ -89,7 +94,7 @@ function toBytes (chunk) {
     return Uint8Array.from(chunk)
   }
 
-  return uint8ArrayFromString(chunk)
+  return uint8ArrayFromString(chunk.toString())
 }
 
 module.exports = toAsyncIterable

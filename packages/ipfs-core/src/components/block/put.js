@@ -82,7 +82,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
           cidVersion = options.version
         }
 
-        const multihash = await multihashing(block, mhtype)
+        const multihash = await multihashing(bytes, mhtype)
         const cid = new CID(cidVersion, format, multihash)
 
         block = new Block(bytes, cid)
@@ -120,7 +120,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
  * @typedef {Object} PutOptions
  * @property {CID} [cid] - A CID to store the block under (default: `undefined`)
  * @property {string} [format='dag-pb'] - The codec to use to create the CID (default: `'dag-pb'`)
- * @property {string} [mhtype='sha2-256'] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
+ * @property {import('multihashes').HashName} [mhtype='sha2-256'] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
  * @property {number} [mhlen]
  * @property {CIDVersion} [version=0] - The version to use to create the CID (default: `0`)
  * @property {boolean} [pin=false] - If true, pin added blocks recursively (default: `false`)

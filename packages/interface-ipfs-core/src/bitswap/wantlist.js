@@ -5,9 +5,10 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { waitForWantlistKey, waitForWantlistKeyToBeRemoved } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
-const AbortController = require('native-abort-controller')
+const { AbortController } = require('native-abort-controller')
 const CID = require('cids')
 const delay = require('delay')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -15,6 +16,7 @@ const delay = require('delay')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -26,7 +28,7 @@ module.exports = (common, options) => {
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await common.spawn()).api
+      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB

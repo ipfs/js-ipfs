@@ -4,8 +4,8 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
 
 module.exports = configure(api => {
   /**
@@ -14,8 +14,9 @@ module.exports = configure(api => {
   const replace = async (config, options = {}) => {
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('config/replace', {
       timeout: options.timeout,
       signal,
@@ -25,7 +26,7 @@ module.exports = configure(api => {
       )
     })
 
-    return res.text()
+    await res.text()
   }
 
   return replace

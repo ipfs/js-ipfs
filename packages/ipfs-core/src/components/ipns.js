@@ -107,6 +107,4 @@ module.exports = IPNSAPI
  *
  * @typedef {Object} DHTConfig
  * @property {boolean} [enabled]
- *
- * @typedef {import('../ipns')} IPNS
  */

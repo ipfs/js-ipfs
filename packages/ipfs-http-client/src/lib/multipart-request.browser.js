@@ -4,7 +4,6 @@
 // version and fail.
 const normaliseInput = require('ipfs-core-utils/src/files/normalise-input/index.browser')
 const modeToString = require('./mode-to-string')
-const { File, FormData } = require('ipfs-utils/src/globalthis')
 
 async function multipartRequest (source = '', abortController, headers = {}) {
   const parts = []

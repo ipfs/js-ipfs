@@ -10,11 +10,11 @@
   "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "dependencies": {
-    "ipfs": "^0.52.2",
+    "ipfs": "^0.54.2",
     "it-all": "^1.0.4",
-    "uint8arrays": "^1.1.0"
+    "uint8arrays": "^2.0.5"
   },
   "devDependencies": {
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   }
 }

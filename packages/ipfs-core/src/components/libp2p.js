@@ -54,7 +54,6 @@ module.exports = ({
  * @param {KeychainConfig} input.keychainConfig
  * @param {PeerId} input.peerId
  * @param {Multiaddr[]} input.multiaddrs
- * @returns {Options}
  */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
@@ -109,6 +108,16 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       pubsub: {
         enabled: get(options, 'config.Pubsub.Enabled',
           get(config, 'Pubsub.Enabled', true))
+      },
+      nat: {
+        enabled: get(options, 'nat.enabled', !get(config, 'Swarm.DisableNatPortMap', false)),
+        ttl: get(options, 'nat.ttl', 7200),
+        autoUpdate: get(options, 'nat.autoUpdate', true),
+        gateway: get(options, 'nat.gateway'),
+        externalIp: get(options, 'nat.externalIp'),
+        pmp: {
+          enabled: get(options, 'nat.pmp.enabled', false)
+        }
       }
     },
     addresses: {
@@ -164,6 +173,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
  * @typedef {import('.').PeerId} PeerId
  * @typedef {import('.').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Options} Options
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
  * @typedef {import('.').IPFSConfig} IPFSConfig
  */
