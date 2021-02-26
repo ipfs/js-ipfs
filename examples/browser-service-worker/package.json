@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "build": "webpack",
     "start": "webpack-dev-server",
     "test": "test-ipfs-example"
@@ -12,6 +12,7 @@
   "license": "MIT",
   "keywords": [],
   "devDependencies": {
+    "rimraf": "^3.0.2",
     "copy-webpack-plugin": "^5.0.4",
     "test-ipfs-example": "^3.0.0",
     "webpack": "5.4.0",
@@ -23,7 +24,8 @@
     "ipfs-message-port-client": "^0.5.2",
     "ipfs-message-port-protocol": "^0.6.0",
     "ipfs-message-port-server": "^0.6.1",
-    "process": "0.11.10"
+    "process": "0.11.10",
+    "stream-browserify": "3.0.0"
   },
   "browserslist": [
     ">1%",
