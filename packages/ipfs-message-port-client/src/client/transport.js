@@ -1,7 +1,6 @@
 'use strict'
 
 const { decodeError } = require('ipfs-message-port-protocol/src/error')
-const { ensureUniqueBuffers } = require('ipfs-message-port-protocol/src/buffer')
 const { DisconnectError, TimeoutError, AbortError } = require('./error')
 
 /**
@@ -178,8 +177,8 @@ module.exports = class MessageTransport {
         id,
         input: query.toJSON()
       },
-      // @ts-expect-error - TS seems to want second arg to postMessage to not be undefined
-      ensureUniqueBuffers(query.transfer() || [])
+      // @ts-expect-error - Type signature does not expert 2nd undefined arg
+      query.transfer()
     )
   }
 
