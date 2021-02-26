@@ -76,7 +76,8 @@ class CoreClient extends Client {
    * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all')>}
    */
   async * addAll (input, options = {}) {
-    const { timeout, signal, transfer } = options
+    const { timeout, signal } = options
+    const transfer = options.transfer || new Set()
     const progress = options.progress
       ? encodeCallback(options.progress, transfer)
       : undefined
@@ -102,7 +103,8 @@ class CoreClient extends Client {
    * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
    */
   async add (input, options = {}) {
-    const { timeout, signal, transfer } = options
+    const { timeout, signal } = options
+    const transfer = options.transfer || new Set()
     const progress = options.progress
       ? encodeCallback(options.progress, transfer)
       : undefined
