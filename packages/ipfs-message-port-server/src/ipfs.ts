@@ -1,5 +1,4 @@
 import { DAGNode } from 'ipfs-message-port-protocol/src/dag'
-import * as pin from 'ipfs-message-port-protocol/src/pin'
 import CID from 'cids'
 import {
   FileType,
@@ -9,6 +8,7 @@ import {
   CIDVersion
 } from 'ipfs-message-port-protocol/src/data'
 import { ReadStream } from 'fs'
+import { API as PinService } from 'ipfs-core-types/src/pin'
 
 type Mode = string | number
 export interface IPFS extends Core {
@@ -62,12 +62,6 @@ export interface Core {
   cat: (ipfsPath: CID | string, options: CatOptions) => AsyncIterable<Uint8Array>
 
   ls: (ipfsPath: CID | string, options: CoreLsOptions) => AsyncIterable<LsEntry>
-}
-
-export interface PinService {
-  add(path: string | CID, options?: AddPinOptions): Promise<CID>
-  ls(options: pin.LsOptions): AsyncIterable<pin.LsEntry>
-  rmAll(source: pin.Source, options?: AbortOptions): AsyncIterable<CID>
 }
 
 export interface AddOptions extends AbortOptions {

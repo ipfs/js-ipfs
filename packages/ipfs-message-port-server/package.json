@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "ipfs-message-port-protocol": "^0.6.0",
+    "ipfs-core-types": "^0.3.0",
     "it-all": "^1.0.4"
   },
   "devDependencies": {

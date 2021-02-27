@@ -172,6 +172,26 @@ const toIterator = iterable => {
 }
 
 /**
+ * @template {Iterable<any>} T
+ * @template U
+ * @param {T|U} value
+ * @returns {value is T}
+ */
+const isIterable = (value) =>
+  value && value[Symbol.iterator]
+exports.isIterable = isIterable
+
+/**
+ * @template {AsyncIterable<any>} T
+ * @template U
+ * @param {T|U} value
+ * @returns {value is T}
+ */
+const isAsyncIterable = value =>
+  value && value[Symbol.asyncIterator]
+exports.isAsyncIterable = isAsyncIterable
+
+/**
  * @param {Function} callback
  * @param {Transferable[]} transfer
  * @returns {RemoteCallback}

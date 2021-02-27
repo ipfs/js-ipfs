@@ -191,30 +191,14 @@ describe('interface-ipfs-core tests', () => {
         reason: 'ipfs.pin.addAll is not implemented'
       },
       {
-        name: 'should respect timeout option when pinning a block',
+        name: 'should respect timeout option when pinning a blocks',
         reason: 'ipfs.pin.addAll is not implemented'
       },
-      // pin.rm
+      // pin.rmAll
       {
-        name: 'should respect timeout option when unpinning a block',
-        reason: 'ipfs.pin.rm is not implemented'
-      },
-      {
-        name: 'should remove a recursive pin',
-        reason: 'ipfs.pin.rm is not implemented'
-      },
-      {
-        name: 'should remove a direct pin',
-        reason: 'ipfs.pin.rm is not implemented'
-      },
-      {
-        name: 'should fail to remove an indirect pin',
-        reason: 'ipfs.pin.rm is not implemented'
-      },
-      {
-        name: 'should fail when an item is not pinned',
-        reason: 'ipfs.pin.rm is not implemented'
-      },
+        name: 'should pin dag-cbor with dag-pb child',
+        reason: 'ipfs.dag API does not handle DAGNode classes'
+      }
     ]
   })
 })

@@ -26,8 +26,8 @@ const CID = require('cids')
  * AsyncIterable<{ path: CID|String, recursive:boolean, metadata }>
  * ```
  *
- * @param {Source} input
- * @returns {AsyncIterable<Pin>}
+ * @param {import('ipfs-core-types/src/pin').PinSource} input
+ * @returns {AsyncIterable<import('ipfs-core-types/src/pin').ToPinWithPath>}
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input) {
@@ -42,8 +42,10 @@ module.exports = async function * normaliseInput (input) {
     return
   }
 
-  if (input instanceof String || typeof input === 'string') {
-    yield toPin({ path: input })
+  if (typeof input === 'string' ||
+      // @ts-ignore - String instance is not typed
+      input instanceof String) {
+    yield toPin({ path: input.toString() })
     return
   }
 
@@ -112,8 +114,8 @@ module.exports = async function * normaliseInput (input) {
 }
 
 /**
- * @param {ToPinWithPath|ToPinWithCID} input
- * @returns {Pin}
+ * @param {import('ipfs-core-types/src/pin').ToPinWithPath|import('ipfs-core-types/src/pin').ToPinWithCID} input
+ * @returns {import('ipfs-core-types/src/pin').ToPinWithPath}
  */
 function toPin (input) {
   const pin = {
@@ -127,25 +129,3 @@ function toPin (input) {
 
   return pin
 }
-
-/**
- * @typedef {Object} ToPinWithPath
- * @property {string | InstanceType<typeof window.String> | CID} path
- * @property {undefined} [cid]
- * @property {boolean} [recursive]
- * @property {any} [metadata]
- *
- * @typedef {Object} ToPinWithCID
- * @property {undefined} [path]
- * @property {CID} cid
- * @property {boolean} [recursive]
- * @property {any} [metadata]
- *
- * @typedef {CID|string|InstanceType<typeof window.String>|ToPinWithPath|ToPinWithPath} ToPin
- * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
- *
- * @typedef {Object} Pin
- * @property {string|CID} path
- * @property {boolean} recursive
- * @property {any} [metadata]
- */

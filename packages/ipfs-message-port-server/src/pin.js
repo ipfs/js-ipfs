@@ -2,25 +2,16 @@
 
 /* eslint-env browser */
 
-const { CID, decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/src/core')
 
 /**
- * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedLsEntry} EncodedLsEntry
- * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedPin} EncodedPin
- * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedSource} EncodedSource
- * @typedef {import('ipfs-message-port-protocol/src/pin').LsEntry} LsEntry
- * @typedef {import('ipfs-message-port-protocol/src/pin').Pin} Pin
- * @typedef {import('ipfs-message-port-protocol/src/pin').PinType} PinType
- * @typedef {import('ipfs-message-port-protocol/src/pin').PinQueryType} PinQueryType
- * @typedef {import('ipfs-message-port-protocol/src/pin').Source} Source
+ * @typedef {import('ipfs-message-port-protocol/src/cid').CID} CID
+ * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/src/pin').Service} Service
  * @typedef {import('./ipfs').IPFS} IPFS
- */
-
-/**
- * @template T
- * @typedef {import('ipfs-message-port-protocol/src/core').RemoteIterable<T>} RemoteIterable
+ *
+ * @implements {Service}
  */
 
 exports.PinService = class PinService {
@@ -33,84 +24,59 @@ exports.PinService = class PinService {
   }
 
   /**
-   * @typedef {Object} PinQuery
-   * @property {string|EncodedCID} path
-   * @property {boolean} [recursive=true]
-   * @property {number} [timeout]
-   * @property {AbortSignal} [signal]
-   *
-   * @typedef {Object} PinResult
-   * @property {EncodedCID} cid
-   * @property {Transferable[]} transfer
-   *
-   * @param {PinQuery} input
-   * @returns {Promise<PinResult>}
+   * @param {import('ipfs-message-port-protocol/src/pin').AddQuery} query
    */
-  async add (input) {
-    const cid = await this.ipfs.pin.add(decodePathOrCID(input.path), input)
+  async add (query) {
+    const cid = await this.ipfs.pin.add(decodePathOrCID(query.path), query)
     /** @type {Transferable[]} */
     const transfer = []
     return { cid: encodeCID(cid, transfer), transfer }
   }
 
   /**
-   * @typedef {Object} LsQuery
-   * @property {Array<string|EncodedCID>|string|EncodedCID} [paths]
-   * @property {AbortSignal} [signal]
-   * @property {number} [timeout]
-   * @property {PinType} [type]
-   *
-   * @typedef {Object} LsResult
-   * @property {RemoteIterable<EncodedLsEntry>} data
-   * @property {Transferable[]} transfer
-   *
-   * @param {LsQuery} query
-   * @returns {LsResult}
+   * @param {import('ipfs-message-port-protocol/src/pin').ListQuery} query
    */
   ls (query) {
-    const { paths, signal, timeout, type } = query
-    let decodedPaths
+    const { paths } = query
+    const decodedPaths = paths === undefined
+      ? undefined
+      : paths.map(decodePathOrCID)
 
-    if (paths === undefined) {
-      decodedPaths = undefined
-    } else if (Array.isArray(paths)) {
-      decodedPaths = []
-      paths.forEach(path => decodedPaths.push(
-        typeof path === 'string' ? path : decodeCID(path)
-      ))
-    } else if (typeof paths === 'string') {
-      decodedPaths = paths
-    } else {
-      decodedPaths = decodeCID(paths)
-    }
+    const result = this.ipfs.pin.ls({ ...query, paths: decodedPaths })
 
-    const result = this.ipfs.pin.ls({ paths: decodedPaths, signal, timeout, type })
-    return encodeLsResult(result)
+    return encodeListResult(result)
   }
 
   /**
-   * @typedef {Object} RmAllQuery
-   * @property {EncodedSource} source
-   * @property {AbortSignal} [signal]
-   * @property {number} [timeout]
-   *
-   * @typedef {Object} RmAllResult
-   * @property {RemoteIterable<EncodedCID>} data
-   * @property {Transferable[]} transfer
-   *
-   * @param {RmAllQuery} query
-   * @returns {RmAllResult}
+   * @param {import('ipfs-message-port-protocol/src/pin').RemoveQuery} query
+   */
+  async rm (query) {
+    const result = await this.ipfs.pin.rm(decodePathOrCID(query.source), query)
+    const transfer = []
+    return { cid: encodeCID(result, transfer), transfer }
+  }
+
+  /**
+   * @param {import('ipfs-message-port-protocol/src/pin').RemoveAllQuery} query
    */
   rmAll (query) {
     const { signal, source, timeout } = query
-    const decodedSource = /** @type {RemoteIterable<EncodedPin>} */(source).port
-      ? decodeIterable(/** @type {RemoteIterable<EncodedPin>} */(source), decodePin)
-      : decodePin(/** @type {EncodedPin} */(source))
 
-    const result = this.ipfs.pin.rmAll(decodedSource, { signal, timeout })
+    const result = this.ipfs.pin.rmAll(decodeSource(source), {
+      signal,
+      timeout
+    })
     return encodeRmAllResult(result)
   }
 }
+
+/**
+ * @param {import('ipfs-message-port-protocol/src/pin').EncodedPinSource} source
+ */
+const decodeSource = (source) =>
+  source.type === 'RemoteIterable'
+    ? decodeIterable(source, decodePin)
+    : decodePin(source)
 
 /**
  *
@@ -118,12 +84,11 @@ exports.PinService = class PinService {
  * @returns {string|CID}
  */
 const decodePathOrCID = pathOrCID =>
-  typeof pathOrCID === "string" ? pathOrCID : decodeCID(pathOrCID)
+  typeof pathOrCID === 'string' ? pathOrCID : decodeCID(pathOrCID)
 
 /**
  *
- * @param {EncodedPin} pin
- * @returns {Pin}
+ * @param {import('ipfs-message-port-protocol/src/pin').EncodedPin} pin
  */
 const decodePin = pin => {
   return { ...pin, path: decodePathOrCID(pin.path) }
@@ -131,19 +96,19 @@ const decodePin = pin => {
 
 /**
  *
- * @param {AsyncIterable<LsEntry>} entries
- * @returns {LsResult}
+ * @param {AsyncIterable<import('ipfs-core-types/src/pin').PinEntry>} entries
+ * @returns {import('ipfs-message-port-protocol/src/pin').ListResult}
  */
-const encodeLsResult = entries => {
+const encodeListResult = entries => {
   /** @type {Transferable[]} */
   const transfer = []
-  return { data: encodeIterable(entries, encodeLsEntry, transfer), transfer }
+  return { data: encodeIterable(entries, encodePinEntry, transfer), transfer }
 }
 
 /**
  *
  * @param {AsyncIterable<CID>} entries
- * @returns {RmAllResult}
+ * @returns {import('ipfs-message-port-protocol/src/pin').RemoveAllResult}
  */
 const encodeRmAllResult = entries => {
   /** @type {Transferable[]} */
@@ -152,19 +117,15 @@ const encodeRmAllResult = entries => {
 }
 
 /**
- *
- * @param {LsEntry} entry
- * @returns {EncodedLsEntry}
+ * @param {import('ipfs-core-types/src/pin').PinEntry} entry
+ * @param {Transferable[]} _transfer
  */
-const encodeLsEntry = ({ cid, metadata, type }, transfer) => {
-  const entry = {
-    cid: encodeCID(cid, transfer),
-    type
+const encodePinEntry = (entry, _transfer) => {
+  // Important: Looks like pin.ls sometimes yields cid
+  // which is referenced once again later, which is why
+  // we MUST note transfer CID or it gets corrupt.
+  return {
+    ...entry,
+    cid: encodeCID(entry.cid)
   }
-
-  if (metadata) {
-    entry.metadata = metadata
-  }
-
-  return entry
 }

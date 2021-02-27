@@ -119,7 +119,7 @@ module.exports = (common, options) => {
       }())
     })
 
-    it('should respect timeout option when pinning a block', () => {
+    it('should respect timeout option when pinning a blocks', () => {
       return testTimeout(() => ipfs.pin.addAll([new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')], {
         timeout: 1
       }))

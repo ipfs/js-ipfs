@@ -51,8 +51,8 @@ const PinTypes = {
 class PinManager {
   /**
    * @param {Object} config
-   * @param {import('.').Repo} config.repo
-   * @param {import('.').DagReader} config.dagReader
+   * @param {import('..').Repo} config.repo
+   * @param {import('..').DagReader} config.dagReader
    */
   constructor ({ repo, dagReader }) {
     this.repo = repo
@@ -329,5 +329,5 @@ module.exports = PinManager
  * @typedef {Object} PreloadOptions
  * @property {boolean} [preload]
  *
- * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('..').AbortOptions} AbortOptions
  */
