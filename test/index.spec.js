@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 
-const loadFixture = require('aegir/fixtures')
+const loadFixture = require('aegir/utils/fixtures')
 const { createFactory } = require('ipfsd-ctl')
 const getStream = require('get-stream')
 const CID = require('cids')
