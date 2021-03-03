@@ -3,6 +3,6 @@
 /** @type {import('aegir').PartialOptions} */
 module.exports = {
   build: {
-    bundlesizeMax: '112kB'
+    bundlesizeMax: '135kB'
   }
 }
