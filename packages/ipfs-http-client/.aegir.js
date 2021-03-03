@@ -12,7 +12,7 @@ const server = createServer({
 })
 
 module.exports = {
-  bundlesize: { maxSize: '87kB' },
+  bundlesize: { maxSize: '88kB' },
   hooks: {
     browser: {
       pre: async () => {
