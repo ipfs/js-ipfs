@@ -1,1 +1,0 @@
-{"extends":"../../tsconfig.json","compilerOptions":{"outDir":"dist","noEmit":false,"emitDeclarationOnly":true},"include":["src","package.json"],"references":[{"path":"../ipfs-core-utils"},{"path":"../ipfs-core"},{"path":"../ipfs-http-gateway"}],"exclude":["test"]}
