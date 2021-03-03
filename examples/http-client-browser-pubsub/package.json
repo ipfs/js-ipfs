@@ -18,7 +18,7 @@
     "last 2 versions and not dead and > 2%"
   ],
   "devDependencies": {
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "go-ipfs": "0.8.0-rc2",
     "ipfs": "^0.54.2",
     "ipfsd-ctl": "^7.2.0",
