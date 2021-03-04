@@ -27,7 +27,7 @@
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-polyfill": "^6.26.0",
-    "parcel-bundler": "^1.12.4",
+    "parcel-bundler": "1.12.3",
     "rimraf": "^3.0.2",
     "standard": "^13.1.0",
     "test-ipfs-example": "^3.0.0"
