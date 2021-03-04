@@ -1,5 +1,5 @@
 
-import { Await, AwaitIterable, AbortOptions } from './basic'
+import type { Await, AwaitIterable, AbortOptions } from './basic'
 
 export interface ValueStore<T> {
   get: (options?: AbortOptions) => Await<T>

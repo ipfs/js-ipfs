@@ -1,7 +1,7 @@
-import CID from 'cids'
-import { Await, AbortOptions } from './basic'
-import { StoreReader, StoreImporter, StoreExporter, StoreEraser } from './store'
-import { Bitswap } from './bitswap'
+import type CID from 'cids'
+import type { Await, AbortOptions } from './basic'
+import type { StoreReader, StoreImporter, StoreExporter, StoreEraser } from './store'
+import type { Bitswap } from './bitswap'
 
 export interface BlockService extends
   StoreReader<CID, Block>,
