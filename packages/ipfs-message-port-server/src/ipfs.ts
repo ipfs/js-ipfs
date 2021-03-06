@@ -8,6 +8,7 @@ import {
   CIDVersion
 } from 'ipfs-message-port-protocol/src/data'
 import { ReadStream } from 'fs'
+import Block from 'ipld-block'
 
 type Mode = string | number
 export interface IPFS extends Core {
@@ -207,14 +208,9 @@ export interface WriteResult {
   size: number
 }
 
-export interface Block {
-  cid: CID
-  data: Uint8Array
-}
-
 export interface BlockService {
   get: (cid: CID, options?: GetBlockOptions) => Promise<Block>
-  put: ((block: Uint8Array, options?: PutBufferOptions) => Promise<Block>) & ((buffer: Uint8Array, options?: PutBufferOptions) => Promise<Block>)
+  put: ((block: Uint8Array | Block, options?: PutBufferOptions) => Promise<Block>) & ((buffer: Uint8Array, options?: PutBufferOptions) => Promise<Block>)
   rm: (
     cid: CID | CID[],
     options?: RmBlockOptions
