@@ -22,8 +22,8 @@ exports.fixtures = Object.freeze({
     data: fromString('Plz add me!\n')
   }),
   bigFile: Object.freeze({
-     cid: 'QmcKEs7mbxbGPPc2zo77E6CPwgaSbY4SmD2MFh16AqaR9e',
-     data: Uint8Array.from(new Array(ONE_MEG * 15).fill(0))
+    cid: 'QmcKEs7mbxbGPPc2zo77E6CPwgaSbY4SmD2MFh16AqaR9e',
+    data: Uint8Array.from(new Array(ONE_MEG * 15).fill(0))
   }),
   emptyFile: Object.freeze({
     cid: 'QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH',
