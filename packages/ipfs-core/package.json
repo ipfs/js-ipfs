@@ -119,7 +119,7 @@
   "devDependencies": {
     "aegir": "^31.0.0",
     "delay": "^4.4.0",
-    "go-ipfs": "0.8.0-rc2",
+    "go-ipfs": "0.8.0",
     "interface-ipfs-core": "^0.144.1",
     "ipfsd-ctl": "^7.2.0",
     "ipld-git": "^0.6.1",

@@ -19,7 +19,7 @@
   ],
   "devDependencies": {
     "execa": "^5.0.0",
-    "go-ipfs": "0.8.0-rc2",
+    "go-ipfs": "0.8.0",
     "ipfs": "^0.54.2",
     "ipfsd-ctl": "^7.2.0",
     "parcel-bundler": "^1.12.4",
