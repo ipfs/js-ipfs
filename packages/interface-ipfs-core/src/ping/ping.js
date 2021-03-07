@@ -49,16 +49,11 @@ module.exports = (common, options) => {
       expect(pongs.length).to.equal(count)
     })
 
-    it('should fail when pinging a peer that is not available', async () => {
+    it('should fail when pinging a peer that is not available', () => {
       const notAvailablePeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
       const count = 2
 
-      try {
-        await all(ipfsA.ping(notAvailablePeerId, { count }))
-        throw new Error('Should throw')
-      } catch (error) {
-        expect(error.message).to.not.eq('Should throw')
-      }
+      return expect(all(ipfsA.ping(notAvailablePeerId, { count }))).to.eventually.be.rejected()
     })
 
     it('should fail when pinging an invalid peer Id', () => {

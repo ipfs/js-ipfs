@@ -22,8 +22,9 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "prepare": "aegir build --no-bundle",
+    "build": "aegir build",
     "lint": "aegir lint",
-    "prepublishOnly": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",

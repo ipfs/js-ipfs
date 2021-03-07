@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - name: Bundlesize ${{ matrix.project }}
-        uses: ipfs/aegir/actions/bundle-size@master
+        uses: ipfs/aegir/actions/bundle-size@v31.0.4
         with:
           project: ${{ matrix.project }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

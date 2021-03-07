@@ -30,9 +30,10 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "prepare": "aegir build --no-bundle",
+    "build": "aegir build",
     "test": "aegir test",
     "lint": "aegir lint",
-    "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol"

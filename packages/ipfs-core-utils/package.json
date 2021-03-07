@@ -24,6 +24,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "prepare": "aegir build --no-bundle",
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
     "test:electron": "aegir test -t electron-main",
