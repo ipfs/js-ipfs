@@ -16,7 +16,7 @@ const commonOptions = {
       }
     }
   },
-  endpoint: 'http://localhost:57483'
+  endpoint: process.env.IPFSD_SERVER
 }
 
 const commonOverrides = {
@@ -39,7 +39,7 @@ const commonOverrides = {
             config: {
               Addresses: {
                 Swarm: [
-                  '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+                  process.env.SIGNALA_SERVER
                 ]
               }
             }

@@ -22,9 +22,9 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir lint",
     "prepare": "aegir build --no-bundle",
-    "prepublishOnly": "aegir build",
+    "build": "aegir build",
+    "lint": "aegir lint",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
@@ -34,7 +34,7 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i ipfs-interop -i electron-webrtc -i wrtc -i rimraf"
+    "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -45,21 +45,23 @@
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "^31.0.0",
+    "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.8.0-rc2",
+    "go-ipfs": "0.8.0",
     "interface-ipfs-core": "^0.144.1",
     "ipfs-client": "^0.3.2",
     "ipfs-http-client": "^49.0.2",
-    "ipfs-interop": "^4.0.2",
     "ipfs-utils": "^6.0.1",
+    "ipfs-interop": "^4.0.3",
     "ipfsd-ctl": "^7.2.0",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.21.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.1.2",
     "rimraf": "^3.0.2",
+    "url": "^0.11.0",
     "wrtc": "^0.4.6"
   },
   "typesVersions": {

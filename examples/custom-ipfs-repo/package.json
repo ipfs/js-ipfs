@@ -16,7 +16,7 @@
     "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "test-ipfs-example": "^3.0.0"
   }
 }

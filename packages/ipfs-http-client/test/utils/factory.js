@@ -8,7 +8,7 @@ const commonOptions = {
   test: true,
   type: 'go',
   ipfsHttpModule: require('../../src'),
-  endpoint: 'http://localhost:48372'
+  endpoint: process.env.IPFSD_SERVER
 }
 
 const commonOverrides = {

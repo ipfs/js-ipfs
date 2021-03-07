@@ -1,7 +1,7 @@
 'use strict'
 
 const multihash = require('multihashing-async').multihash
-const { baseTable: codecs } = require('multicodec/src/base-table')
+const { nameToCode: codecs } = require('multicodec')
 const multipart = require('../../utils/multipart-request-parser')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')

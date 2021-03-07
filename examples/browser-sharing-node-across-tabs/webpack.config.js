@@ -1,7 +1,7 @@
 'use strict'
 
-var path = require('path')
-var webpack = require('webpack')
+const path = require('path')
+const webpack = require('webpack')
 const WorkerPlugin = require('worker-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -35,7 +35,16 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }
+              ]
+            ]
           }
         }
       }

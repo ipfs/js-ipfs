@@ -20,7 +20,7 @@
     "libp2p-tcp": "^0.15.1"
   },
   "devDependencies": {
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "test-ipfs-example": "^3.0.0"
   }
 }

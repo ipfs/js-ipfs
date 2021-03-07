@@ -16,13 +16,10 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "concat-stream": "^2.0.0",
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "http-server": "^0.12.3",
     "ipfs": "^0.54.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
-  },
-  "browser": {
-    "ipfs": "ipfs/dist/index.min.js"
   }
 }

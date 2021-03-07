@@ -57,11 +57,11 @@ export type NamespacedQuery<S, NS> = Values<
 {
   [M in keyof S]-?: S[M] extends (input: infer I) => infer O
     ? {
-      namespace: NS
-      method: M
-      input: I & QueryOptions
-      result: R<O>
-    } & QueryOptions
+        namespace: NS
+        method: M
+        input: I & QueryOptions
+        result: R<O>
+      } & QueryOptions
     : never
 }
 >

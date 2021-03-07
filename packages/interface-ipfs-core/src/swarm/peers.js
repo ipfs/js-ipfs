@@ -110,8 +110,8 @@ module.exports = (common, options) => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
       const config = getConfig(isBrowser && common.opts.type !== 'go'
         ? [
-            '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
-            '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+            process.env.SIGNALA_SERVER,
+            process.env.SIGNALB_SERVER
           ]
         : [
             '/ip4/127.0.0.1/tcp/26545/ws',

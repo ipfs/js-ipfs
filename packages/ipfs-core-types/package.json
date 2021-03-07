@@ -33,7 +33,7 @@
     "peer-id": "^0.14.1"
   },
   "devDependencies": {
-    "aegir": "^30.3.0"
+    "aegir": "^31.0.0"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"
