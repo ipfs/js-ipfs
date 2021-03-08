@@ -1,7 +1,6 @@
-'use strict'
 
-var path = require('path')
-var webpack = require('webpack')
+const path = require('path')
+const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
@@ -20,7 +19,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin({
-        patterns: [{
+      patterns: [{
         from: 'index.html'
       }, {
         from: 'img',
@@ -46,7 +45,15 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react']
+            presets: [
+              ['@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }],
+              '@babel/preset-react'
+            ]
           }
         }
       }

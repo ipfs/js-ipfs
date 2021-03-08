@@ -17,11 +17,11 @@
     "delay": "^4.4.0",
     "ipfs": "^0.54.2",
     "ipfs-pubsub-room": "^2.0.1",
-    "libp2p-websockets": "^0.15.0",
-    "uint8arrays": "^2.0.5"
+    "libp2p-websockets": "^0.15.1",
+    "uint8arrays": "^2.1.3"
   },
   "devDependencies": {
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "ipfs-css": "^0.13.1",
     "ipfs-http-client": "^49.0.2",
     "parcel-bundler": "^1.12.4",

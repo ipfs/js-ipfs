@@ -20,12 +20,11 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "prepare": "aegir build --no-bundle",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i @types/yargs"
+    "dep-check": "aegir dep-check"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -44,7 +43,7 @@
     "multiaddr": "^8.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "^31.0.0",
     "node-fetch": "^2.6.1",
     "ws": "^7.3.1"
   },

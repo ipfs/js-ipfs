@@ -16,8 +16,8 @@
     "ipfs-http-client": "^49.0.2"
   },
   "devDependencies": {
-    "execa": "^4.0.3",
-    "go-ipfs": "0.8.0-rc2",
+    "execa": "^5.0.0",
+    "go-ipfs": "0.8.0",
     "ipfsd-ctl": "^7.2.0",
     "parcel-bundler": "^1.12.4",
     "rimraf": "^3.0.2",

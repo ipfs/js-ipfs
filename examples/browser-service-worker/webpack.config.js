@@ -5,7 +5,7 @@ const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-  mode: "development",
+  mode: 'development',
   devtool: 'source-map',
   entry: './src/main.js',
   output: {
@@ -28,7 +28,16 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }
+              ]
+            ]
           }
         }
       }
@@ -36,7 +45,7 @@ module.exports = {
   },
   resolve: {
     fallback: {
-      "stream": require.resolve("stream-browserify")
+      stream: require.resolve('stream-browserify')
     }
   },
   plugins: [

@@ -21,8 +21,9 @@
     "test:interface:http-go": "lerna run test:interface:http-go",
     "test:interface:http-js": "lerna run test:interface:http-js",
     "test:interface:message-port-client": "lerna run test:interface:message-port-client",
+    "prepare": "lerna run prepare",
     "coverage": "lerna run coverage",
-    "build": "lerna run prepublishOnly",
+    "build": "lerna run build",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
@@ -50,6 +51,12 @@
     "docker:rc:tag-rc": "docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`",
     "docker:rc:push-next": "docker push ipfs/js-ipfs:next",
     "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
+  },
+  "eslintConfig": {
+    "extends": "ipfs",
+    "ignorePatterns": [
+      "!.aegir.js"
+    ]
   },
   "devDependencies": {
     "execa": "^5.0.0",

@@ -19,16 +19,16 @@
     "ipns": "^0.8.0",
     "it-last": "^1.0.4",
     "p-retry": "^4.2.0",
-    "uint8arrays": "^2.0.5"
+    "uint8arrays": "^2.1.3"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"
   ],
   "devDependencies": {
     "delay": "^4.4.0",
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "ipfsd-ctl": "^7.2.0",
-    "go-ipfs": "0.8.0-rc2",
+    "go-ipfs": "0.8.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
     "test-ipfs-example": "^3.0.0"
