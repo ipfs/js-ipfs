@@ -1,4 +1,4 @@
-import { KeyValueStore, StoreBatch, StoreSelector, Resource } from './store'
+import type { KeyValueStore, StoreBatch, StoreSelector, Resource } from './store'
 export interface DataStore extends
   KeyValueStore<Key, Value, Entry>,
   StoreSelector<Entry>,

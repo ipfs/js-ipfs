@@ -1,10 +1,10 @@
-import BigInteger from 'bignumber.js'
-import PeerId from 'peer-id'
-import CID from 'cids'
-import { Block } from './block-service'
-import { AbortOptions, Await } from './basic'
-import { MovingAverage } from './bitswap/moving-avarage'
-import { StoreReader, StoreExporter, StoreImporter } from './store'
+import type BigInteger from 'bignumber.js'
+import type PeerId from 'peer-id'
+import type CID from 'cids'
+import type { Block } from './block-service'
+import type { AbortOptions, Await } from './basic'
+import type { MovingAverage } from './bitswap/moving-avarage'
+import type { StoreReader, StoreExporter, StoreImporter } from './store'
 
 export interface Bitswap extends
   StoreReader<CID, Block>,
@@ -17,17 +17,25 @@ export interface Bitswap extends
   disableStats: () => void
 
   wantlistForPeer: (peerId: PeerId, options?: AbortOptions) => Map<string, WantListEntry>
-  ledgerForPeer: (peerId: PeerId) => Ledger
+  ledgerForPeer: (peerId: PeerId) => null|LedgerForPeer
 
   put: (block: Block, options?: AbortOptions) => Await<void>
 
-  unwant: (cids: Iterable<CID>, options?: AbortOptions) => void
-  cancelWants: (cids: Iterable<CID>) => void
+  unwant: (cids: CID|CID[], options?: AbortOptions) => void
+  cancelWants: (cids: CID|CID[]) => void
   getWantlist: (options?: AbortOptions) => Iterable<[string, WantListEntry]>
   peers: () => PeerId[]
   stat: () => Stats
   start: () => void
   stop: () => void
+}
+
+export interface LedgerForPeer {
+  peer: string
+  value: number
+  sent: number
+  recv: number
+  exchanged: number
 }
 
 export interface Ledger {
@@ -87,5 +95,5 @@ export interface Stats {
   stop: () => void
   readonly snapshot: Record<string, BigInteger>
   readonly movingAverages: Record<string, Record<number, MovingAverage>>
-  push: (counter: number, inc: number) => void
+  push: (peer: string|null, counter: string, inc: number) => void
 }
