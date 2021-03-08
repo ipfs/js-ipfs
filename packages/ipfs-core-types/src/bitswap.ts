@@ -31,7 +31,7 @@ export interface Bitswap extends
 }
 
 export interface LedgerForPeer {
-  peer: string,
+  peer: string
   value: number
   sent: number
   recv: number
@@ -95,5 +95,5 @@ export interface Stats {
   stop: () => void
   readonly snapshot: Record<string, BigInteger>
   readonly movingAverages: Record<string, Record<number, MovingAverage>>
-  push: (peer:string|null, counter: string, inc: number) => void
+  push: (peer: string|null, counter: string, inc: number) => void
 }

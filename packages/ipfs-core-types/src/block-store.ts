@@ -1,6 +1,6 @@
-import type { AbortOptions, Await, AwaitIterable } from "./basic"
-import type { Block } from "./block-service"
-import type CID from "cids"
+import type { AbortOptions, Await, AwaitIterable } from './basic'
+import type { Block } from './block-service'
+import type CID from 'cids'
 
 export interface BlockStore {
   has: (cid: CID, options?: AbortOptions) => Await<boolean>
