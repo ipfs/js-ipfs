@@ -53,7 +53,7 @@
     "ipld-dag-cbor": "^0.17.0",
     "ipld-dag-pb": "^0.20.0",
     "ipns": "^0.8.0",
-    "is-ipfs": "^2.0.0",
+    "is-ipfs": "^4.0.0",
     "iso-random-stream": "^1.1.1",
     "it-all": "^1.0.4",
     "it-buffer-stream": "^1.0.5",

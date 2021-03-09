@@ -84,7 +84,7 @@
     "ipld-raw": "^6.0.0",
     "ipns": "^0.8.0",
     "is-domain-name": "^1.0.1",
-    "is-ipfs": "^2.0.0",
+    "is-ipfs": "^4.0.0",
     "it-all": "^1.0.4",
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
