@@ -12,7 +12,7 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "ipfs": "^0.54.2",
+    "ipfs": "^0.54.3",
     "test-ipfs-example": "^3.0.0"
   }
 }
