@@ -2,6 +2,7 @@
 
 const multiaddr = require('multiaddr')
 const PinningClient = require('js-ipfs-pinning-service-client')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * PinRemoteAPI provides an API for pinning content to remote services.
@@ -210,6 +211,11 @@ class PinRemoteServiceAPI {
       this.swarm = swarm
       this.peerId = peerId
       this.client = new PinningClient({name, endpoint, accessToken: key})
+
+      this.add = withTimeoutOption(this._add)
+      this.ls = withTimeoutOption(this._ls)
+      this.rm = withTimeoutOption(this._rm)
+      this.rmAll = withTimeoutOption(this._rmAll)
   }
 
   async info(includeStats=false) {
@@ -253,12 +259,10 @@ class PinRemoteServiceAPI {
    * 
    * @returns {Promise<RemotePin>}
    */
-  async add(cid, options) {
+  async _add(cid, options) {
       const {name, meta, background} = options
       const origins = await this._originAddresses()
       const response = await this.client.add({cid, name, meta, origins})
-
-      // TODO: implement timeout
       
       const {status, pin, delegates} = response
       this._connectToDelegates(delegates)
@@ -310,9 +314,7 @@ class PinRemoteServiceAPI {
    * 
    * @returns {AsyncGenerator<RemotePin>}
    */
-  async * ls(options) {
-      // TODO: implement timeout
-
+  async * _ls(options) {
       const {cid, name, status} = options
       for (const pinInfo of this.client.list({cid, name, status})) {
           const {status, pin} = pinInfo
@@ -336,9 +338,7 @@ class PinRemoteServiceAPI {
    * @param {?Array<PinStatus>} options.status only remove pins that have one of the specified statuses (queued, pinning, pinned, failed). Default: pinned
    * @param {?number} options.timeout request timeout (seconds)
    */
-  async rm(options) {
-      // TODO: implement timeout
-
+  async _rm(options) {
       // the pinning service API only supports deletion by requestid, so we need to lookup the pins first
       const {cid, status} = options
       const resp = await this.client.ls({cid, status})
@@ -359,8 +359,7 @@ class PinRemoteServiceAPI {
    * @param {?number} options.timeout request timeout (seconds)
    * @returns {Promise<void>}
    */
-  async rmAll(options) {
-      // TODO: implement timeout
+  async _rmAll(options) {
       const {cid, status} = options
       const requestIds = new Set()
       for (const result of this.client.list({cid, status})) {
