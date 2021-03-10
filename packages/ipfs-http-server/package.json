@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-server",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -66,7 +66,7 @@
   "devDependencies": {
     "aegir": "^31.0.0",
     "form-data": "^3.0.0",
-    "ipfs-http-client": "^49.0.3",
+    "ipfs-http-client": "^49.0.4",
     "iso-random-stream": "^1.1.1",
     "it-to-buffer": "^1.0.2",
     "qs": "^6.9.4",
