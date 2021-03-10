@@ -5,6 +5,7 @@ const createAddAll = require('./add-all')
 const createLs = require('./ls')
 const createRm = require('./rm')
 const createRmAll = require('./rm-all')
+const RemotePinAPI = require('./remote')
 
 class PinAPI {
   /**
@@ -21,6 +22,7 @@ class PinAPI {
     this.rmAll = rmAll
     this.rm = createRm({ rmAll })
     this.ls = createLs({ dagReader, pinManager })
+    this.remote = new RemotePinAPI()
   }
 }
 module.exports = PinAPI
