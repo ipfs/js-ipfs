@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "aegir": "^31.0.0",
-    "delay": "^4.4.0",
+    "delay": "^5.0.0",
     "go-ipfs": "0.8.0",
     "ipfs-core": "^0.5.4",
     "ipfsd-ctl": "^7.2.0",

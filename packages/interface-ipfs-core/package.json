@@ -43,7 +43,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
     "cids": "^1.1.5",
-    "delay": "^4.4.0",
+    "delay": "^5.0.0",
     "dirty-chai": "^2.0.1",
     "err-code": "^2.0.3",
     "ipfs-unixfs": "^2.0.3",
