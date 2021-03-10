@@ -38,7 +38,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "prepare": "aegir build --no-bundle",
+    "prepare": "npm run build",
     "build": "aegir build",
     "lint": "aegir lint",
     "test": "aegir test",

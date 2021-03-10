@@ -30,7 +30,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "prepare": "aegir build --no-bundle",
+    "prepare": "npm run build",
     "build": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
