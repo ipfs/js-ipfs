@@ -5,7 +5,6 @@ const createAddAll = require('./add-all')
 const createLs = require('./ls')
 const createRm = require('./rm')
 const createRmAll = require('./rm-all')
-const RemotePinAPI = require('./remote')
 
 class PinAPI {
   /**
@@ -13,8 +12,9 @@ class PinAPI {
    * @param {GCLock} config.gcLock
    * @param {DagReader} config.dagReader
    * @param {PinManager} config.pinManager
+   * @param {PinRemoteAPI} config.pinRemote
    */
-  constructor ({ gcLock, dagReader, pinManager }) {
+  constructor ({ gcLock, dagReader, pinManager, pinRemote }) {
     const addAll = createAddAll({ gcLock, dagReader, pinManager })
     this.addAll = addAll
     this.add = createAdd({ addAll })
@@ -22,7 +22,7 @@ class PinAPI {
     this.rmAll = rmAll
     this.rm = createRm({ rmAll })
     this.ls = createLs({ dagReader, pinManager })
-    this.remote = new RemotePinAPI()
+    this.remote = pinRemote
   }
 }
 module.exports = PinAPI
@@ -34,4 +34,5 @@ module.exports = PinAPI
  * @typedef {import('..').PinManager} PinManager
  * @typedef {import('..').AbortOptions} AbortOptions
  * @typedef {import('..').CID} CID
+ * @typedef {import('./remote')} PinRemoteAPI
  */

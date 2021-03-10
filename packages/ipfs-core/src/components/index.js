@@ -29,6 +29,7 @@ const createIDAPI = require('./id')
 const createConfigAPI = require('./config')
 const DagAPI = require('./dag')
 const PinManagerAPI = require('./pin/pin-manager')
+const PinRemoteAPI = require('./pin/remote')
 const createPreloadAPI = require('../preload')
 const createMfsPreloadAPI = require('../mfs-preload')
 const createFilesAPI = require('./files')
@@ -57,6 +58,8 @@ class IPFS {
   constructor ({ print, storage, options }) {
     const { peerId, repo, keychain } = storage
     const network = Service.create(Network)
+    const swarm = new SwarmAPI({ network })
+    const config = createConfigAPI({ repo })
 
     const preload = createPreloadAPI(options.preload)
 
@@ -86,7 +89,8 @@ class IPFS {
     })
     const resolve = createResolveAPI({ ipld, name })
     const pinManager = new PinManagerAPI({ repo, dagReader })
-    const pin = new PinAPI({ gcLock, pinManager, dagReader })
+    const pinRemote = new PinRemoteAPI({ swarm, config, peerId })
+    const pin = new PinAPI({ gcLock, pinManager, dagReader, pinRemote })
     const block = new BlockAPI({ blockService, preload, gcLock, pinManager, pin })
     const dag = new DagAPI({ ipld, preload, gcLock, pin, dagReader })
     const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
@@ -155,7 +159,7 @@ class IPFS {
     this.version = createVersionAPI({ repo })
     this.bitswap = new BitswapAPI({ network })
     this.bootstrap = new BootstrapAPI({ repo })
-    this.config = createConfigAPI({ repo })
+    this.config = config
     this.ping = createPingAPI({ network })
 
     this.add = add
@@ -170,7 +174,7 @@ class IPFS {
     this.object = new ObjectAPI({ ipld, preload, gcLock, dag })
     this.repo = new RepoAPI({ gcLock, pin, repo, refs })
     this.stats = new StatsAPI({ repo, network })
-    this.swarm = new SwarmAPI({ network })
+    this.swarm = swarm
 
     // For the backwards compatibility
     Object.defineProperty(this, 'libp2p', {
