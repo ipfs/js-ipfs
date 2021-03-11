@@ -410,9 +410,9 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * @typedef {import('cids')} CID
- * @typedef {import('../..').PeerId} PeerId
- * @typedef {import('../../swarm')} SwarmAPI
- * @typedef {import('../../config').Config} Config
+ * @typedef {import('..').PeerId} PeerId
+ * @typedef {import('../swarm')} SwarmAPI
+ * @typedef {import('../config').Config} Config
  *
  * @typedef {'queued'|'pinning'|'pinned'|'failed'} PinStatus
  * @typedef {'valid'|'invalid'} PinServiceStatus
