@@ -79,6 +79,8 @@ describe('interface-ipfs-core tests', function () {
 
   tests.pin(commonFactory)
 
+  tests.pin.remote(commonFactory)
+
   tests.ping(commonFactory)
 
   tests.pubsub(factory({}, {
