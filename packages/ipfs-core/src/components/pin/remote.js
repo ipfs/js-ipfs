@@ -1,6 +1,7 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
+const CID = require('cids')
 const PinningClient = require('js-ipfs-pinning-service-client')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const log = require('debug')('ipfs:components:pin:remote')
@@ -133,6 +134,14 @@ class PinRemoteServiceAPI {
       throw new Error('service already present: ' + name)
     }
 
+    if (!options.endpoint) {
+      throw new Error('option "endpoint" is required')
+    }
+
+    if (!options.key) {
+      throw new Error('option "key" is required')
+    }
+
     const svcOpts = Object.assign({ swarm: this.swarm, peerId: this.peerId }, options)
     this._services[name] = new RemotePinningService(name, svcOpts)
   }
@@ -175,6 +184,9 @@ class PinRemoteServiceAPI {
    * @returns {Promise<void>}
    */
   async rm (name) {
+    if (!name) {
+      throw new Error('parameter "name" is required')
+    }
     delete this._services[name]
   }
 
@@ -206,8 +218,8 @@ class RemotePinningService {
    * @param {PeerId} config.peerId - PeerId of the local IPFS node
    */
   constructor (name, { endpoint, key, swarm, peerId }) {
+    this.endpoint = new URL(endpoint.toString())
     this.name = name
-    this.endpoint = endpoint
     this.swarm = swarm
     this.peerId = peerId
     this.client = new PinningClient({ name, endpoint, accessToken: key })
@@ -219,12 +231,12 @@ class RemotePinningService {
   }
 
   async info (includeStats = false) {
-    let stat
-    if (includeStats) {
-      stat = await this.stat()
-    }
     const { name, endpoint } = this
-    return { name, endpoint, stat }
+    const info = { service: name, endpoint }
+    if (includeStats) {
+      info.stat = await this.stat()
+    }
+    return info
   }
 
   async stat () {
@@ -239,7 +251,7 @@ class RemotePinningService {
         pinCount: { queued, pinning, pinned, failed }
       }
     } catch (e) {
-      log('error getting stats: ', e)
+      log(`error getting stats for service ${this.name}: `, e)
       return {
         status: 'invalid'
       }
@@ -262,7 +274,8 @@ class RemotePinningService {
    * @returns {Promise<RemotePin>}
    */
   async _add (cid, options) {
-    const { name, meta, background } = options
+    const { meta, background } = options
+    const name = options.name || ''
     const origins = await this._originAddresses()
     const response = await this.client.add({ cid: cid.toString(), name, meta, origins })
 
@@ -273,15 +286,11 @@ class RemotePinningService {
       return this._awaitPinCompletion(response)
     }
 
-    return {
-      status,
-      name: pin.name,
-      meta: pin.meta
-    }
+    return this._formatPinResult(status, pin)
   }
 
   async _awaitPinCompletion (pinResponse) {
-    const pollIntervalMs = 500
+    const pollIntervalMs = 100
 
     let { status, requestid } = pinResponse
     while (status !== 'pinned') {
@@ -289,18 +298,22 @@ class RemotePinningService {
         throw new Error('pin failed: ' + JSON.stringify(pinResponse.info))
       }
 
-      log(`pin status for CID ${pinResponse.pin.cid} (request id ${requestid}): ${status}. Waiting ${pollIntervalMs}ms to refresh status.`)
       await delay(pollIntervalMs)
       pinResponse = await this.client.get(requestid)
       status = pinResponse.status
     }
 
-    const { pin } = pinResponse
-    return {
-      status,
-      name: pin.name,
-      meta: pin.meta
+    return this._formatPinResult(pinResponse.status, pinResponse.pin)
+  }
+
+  _formatPinResult(status, pin) {
+    const name = pin.name || ''
+    const cid = new CID(pin.cid)
+    const result = { status, name, cid }
+    if (pin.meta) {
+      result.meta = pin.meta
     }
+    return result
   }
 
   /**
@@ -315,16 +328,12 @@ class RemotePinningService {
    * @returns {AsyncGenerator<RemotePin>}
    */
   async * _ls (options) {
-    const { cid, name, status } = options
+    const cid = options.cid || []
+    const status = options.status || []
+    const name = options.name
     for await (const pinInfo of this.client.list({ cid, name, status })) {
       const { status, pin } = pinInfo
-      const { cid, name, meta } = pin
-      const result = {
-        status,
-        cid,
-        name,
-        meta
-      }
+      const result = this._formatPinResult(status, pin)
       yield result
     }
   }
@@ -342,6 +351,9 @@ class RemotePinningService {
     // the pinning service API only supports deletion by requestid, so we need to lookup the pins first
     const { cid, status } = options
     const resp = await this.client.ls({ cid, status })
+    if (resp.count == 0) {
+      return
+    }
     if (resp.count > 1) {
       throw new Error('multiple remote pins are matching this query')
     }
@@ -361,13 +373,13 @@ class RemotePinningService {
    */
   async _rmAll (options) {
     const { cid, status } = options
-    const requestIds = new Set()
-    for (const result of this.client.list({ cid, status })) {
-      requestIds.add(result.requestid)
+    const requestIds = []
+    for await (const result of this.client.list({ cid, status })) {
+      requestIds.push(result.requestid)
     }
 
     const promises = []
-    for (const requestid of requestIds.entries()) {
+    for (const requestid of requestIds) {
       promises.push(this.client.delete(requestid))
     }
     await Promise.all(promises)
@@ -409,7 +421,6 @@ class RemotePinningService {
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
- * @typedef {import('cids')} CID
  * @typedef {import('..').PeerId} PeerId
  * @typedef {import('../swarm')} SwarmAPI
  * @typedef {import('../config').Config} Config
@@ -418,7 +429,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
  * @typedef {'valid'|'invalid'} PinServiceStatus
  *
  * @typedef {object} RemotePin
- * @property {string} [cid]
+ * @property {string|CID} [cid]
  * @property {PinStatus} [status]
  * @property {?string} [name]
  * @property {?object} [meta]
