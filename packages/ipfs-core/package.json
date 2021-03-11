@@ -89,7 +89,7 @@
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
     "it-pipe": "^1.1.0",
-    "js-ipfs-pinning-service-client": "github:yusefnapora/js-ipfs-pinning-service-client#master",
+    "js-ipfs-pinning-service-client": "github:yusefnapora/js-ipfs-pinning-service-client#afe06981a07ece5841c33e0fd4ae7bcc37473a80",
     "libp2p": "^0.30.7",
     "libp2p-bootstrap": "^0.12.1",
     "libp2p-crypto": "^0.19.0",
