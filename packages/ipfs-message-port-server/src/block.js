@@ -45,6 +45,7 @@ exports.BlockService = class BlockService {
     const block = await this.ipfs.block.get(cid, query)
     /** @type {Transferable[]} */
     const transfer = []
+    // @ts-ignore TODO vmx 2021-03-12 fix this
     return { transfer, block: encodeBlock(block, transfer) }
   }
 
@@ -73,6 +74,7 @@ exports.BlockService = class BlockService {
       })
     } else {
       const block = decodeBlock(input)
+      // @ts-ignore TODO vmx 2021-03-12 fix this
       result = await this.ipfs.block.put(block, {
         ...query,
         cid: undefined
@@ -81,6 +83,7 @@ exports.BlockService = class BlockService {
 
     /** @type {Transferable[]} */
     const transfer = []
+    // @ts-ignore TODO vmx 2021-03-12 fix this
     return { transfer, block: encodeBlock(result, transfer) }
   }
 
