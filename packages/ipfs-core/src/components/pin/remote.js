@@ -306,7 +306,7 @@ class RemotePinningService {
     return this._formatPinResult(pinResponse.status, pinResponse.pin)
   }
 
-  _formatPinResult(status, pin) {
+  _formatPinResult (status, pin) {
     const name = pin.name || ''
     const cid = new CID(pin.cid)
     const result = { status, name, cid }
@@ -329,8 +329,11 @@ class RemotePinningService {
    */
   async * _ls (options) {
     const cid = options.cid || []
-    const status = options.status || []
     const name = options.name
+    let status = options.status || []
+    if (status.length === 0) {
+      status = ['pinned']
+    }
     for await (const pinInfo of this.client.list({ cid, name, status })) {
       const { status, pin } = pinInfo
       const result = this._formatPinResult(status, pin)
@@ -351,7 +354,7 @@ class RemotePinningService {
     // the pinning service API only supports deletion by requestid, so we need to lookup the pins first
     const { cid, status } = options
     const resp = await this.client.ls({ cid, status })
-    if (resp.count == 0) {
+    if (resp.count === 0) {
       return
     }
     if (resp.count > 1) {
