@@ -1,3 +1,12 @@
+## [0.6.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.1...v0.6.2) (2021-03-17)
+
+
+### Bug Fixes
+
+* add node dev deps ([#81](https://github.com/ipfs/js-ipfs-http-response/issues/81)) ([9fcc821](https://github.com/ipfs/js-ipfs-http-response/commit/9fcc8215d511e6e9071f0fb9fd927d9005a72670))
+
+
+
 ## [0.6.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.0...v0.6.1) (2020-12-22)
 
 
