@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir lint",
+    "build": "aegir build",
     "release": "aegir release --target node",
     "release-minor": "aegir release --type minor --target node",
     "test": "aegir test -t node",
@@ -14,10 +15,6 @@
   "browser": {
     "file-type": "file-type/browser"
   },
-  "pre-push": [
-    "lint",
-    "test"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs-http-response.git"
@@ -52,7 +49,9 @@
     "ipfs": "^0.54.2",
     "ipfsd-ctl": "^7.0.0",
     "it-all": "^1.0.1",
-    "uint8arrays": "^2.0.5"
+    "path": "^0.12.7",
+    "uint8arrays": "^2.0.5",
+    "util": "^0.12.3"
   },
   "contributors": [
     "Vasco Santos <vasco.santos@moxy.studio>",
