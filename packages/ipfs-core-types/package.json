@@ -28,6 +28,7 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
+    "bignumber.js": "^9.0.1",
     "cids": "^1.1.5",
     "multiaddr": "^8.0.0",
     "peer-id": "^0.14.1"
