@@ -2,17 +2,21 @@
 
 const CID = require('cids')
 const multiaddr = require('multiaddr')
+const HTTP = require('ipfs-utils/src/http')
 const log = require('debug')('ipfs:components:pin:remote:client')
 
-// TODO: replace this package with one built using ipfs-utils/src/http to reduce bundle size
-const PinningClient = require('js-ipfs-pinning-service-client')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 
 module.exports = ({ service, endpoint, key, swarm, peerId }) => {
 
-  // TODO: use HTTP requests directly
-  const client = new PinningClient({endpoint, accessToken: key})
+  const api = new HTTP({
+    base: endpoint,
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    }
+  })
 
   async function serviceInfo(includeStats = false) {
     if (includeStats) {
@@ -44,9 +48,15 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
     }
   }
 
+  /**
+   * @param {string} status 
+   * @returns {Promise<number>} - the number of remote pins with the given status
+   */
   async function countForStatus (status) {
-    const response = await client.ls({ status: [status], limit: 1 })
-    return response.count
+    const searchParams = new URLSearchParams({ status, limit: '1' })
+    const response = await api.get('/pins', {searchParams})
+    const body = await response.json()
+    return body.count
   }
 
   async function originAddresses () {
@@ -62,11 +72,6 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
 
       return `${str}/p2p/${peerId}`
     })
-  }
-
-  async function countForStatus (status) {
-    const response = await client.ls({ status: [status], limit: 1 })
-    return response.count
   }
 
   async function connectToDelegates (delegates) {
@@ -90,7 +95,8 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
       }
 
       await delay(pollIntervalMs)
-      pinResponse = await client.get(requestid)
+      const resp = await api.get(`/pins/${requestid}`)
+      pinResponse = await resp.json()
       status = pinResponse.status
     }
 
@@ -115,13 +121,15 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
       const { background } = options
       const name = options.name || ''
       const origins = await originAddresses()
-      const response = await client.add({ cid: cid.toString(), name, origins })
+      const addOpts = { cid: cid.toString(), name, origins }
+      const response = await api.post('/pins', { json: addOpts })
+      const responseBody = await response.json()
   
-      const { status, pin, delegates } = response
+      const { status, pin, delegates } = responseBody
       connectToDelegates(delegates)
   
       if (!background) {
-        return awaitPinCompletion(response)
+        return awaitPinCompletion(responseBody)
       }
   
       return formatPinResult(status, pin)
@@ -131,18 +139,59 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
    * List pins from the remote service that match the given criteria. If no criteria are provided, returns all pins with the status 'pinned'.
    *
    * @param {Query} options
-   * @returns {AsyncGenerator<Pin>}
+   * @returns {AsyncGenerator<PinDetails>}
    */
-  async function* ls (options) {
-    const cid = options.cid || []
-    const name = options.name
+  async function* _lsRaw (options) {
     let status = options.status || []
     if (status.length === 0) {
       status = ['pinned']
     }
-    for await (const pinInfo of client.list({ cid, name, status })) {
-      const { status, pin } = pinInfo
-      yield formatPinResult(status, pin)
+
+    const searchParams = new URLSearchParams()
+    if (options.name) {
+      searchParams.append('name', options.name)
+    }
+    for (const cid of (options.cid || []))  {
+      searchParams.append('cid', cid.toString())
+    }
+    for (const s of status) {
+      searchParams.append('status', s)
+    }
+
+    let resp = await api.get('/pins', { searchParams })
+    let body = await resp.json()
+    const total = body.count
+    let yielded = 0
+    while (true) {
+      if (body.results.length < 1) {
+        return
+      }
+      for (const result of body.results) {
+        yield result
+        yielded += 1
+      }
+
+      if (yielded == total) {
+        return
+      }
+
+      // if we've run out of results and haven't yielded everything, fetch a page of older results
+      const oldestResult = body.results[body.results.length - 1]
+      searchParams.set('before', oldestResult.created)
+      resp = await api.get('/pins', { searchParams })
+      body = await resp.json()
+    }
+  }
+
+  /**
+   * List pins from the remote service that match the given criteria. If no criteria are provided, returns all pins with the status 'pinned'.
+   *
+   * @param {Query} options
+   * @returns {AsyncGenerator<Pin>}
+   */
+  async function* ls(options) {
+    for await (const result of _lsRaw(options)) {
+      yield formatPinResult(result.status, result.pin)
     }
   }
 
@@ -155,17 +204,33 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
    */
      async function rm (options) {
       // the pinning service API only supports deletion by requestid, so we need to lookup the pins first
-      const { cid, status } = options
-      const resp = await client.ls({ cid, status })
-      if (resp.count === 0) {
+      const searchParams = new URLSearchParams()
+      if (options.name) {
+        searchParams.set('name', options.name)
+      }
+      for (const cid of (options.cid || [])) {
+        searchParams.append('cid', cid.toString())
+      }
+      for (const status of (options.status || [])) {
+        searchParams.append('status', status)
+      }
+      const resp = await api.get('/pins', { searchParams })
+      const body = await resp.json()
+      if (body.count === 0) {
         return
       }
-      if (resp.count > 1) {
+      if (body.count > 1) {
         throw new Error('multiple remote pins are matching this query')
       }
   
-      const requestid = resp.results[0].requestid
-      await client.delete(requestid)
+      const requestid = body.results[0].requestid
+      try {
+        await api.delete(`/pins/${requestid}`)
+      } catch (e) {
+        if (e.status !== 404) {
+          throw e
+        }
+      }
     }
 
 
@@ -176,15 +241,14 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
    * @returns {Promise<void>}
    */
      async function rmAll (options) {
-      const { cid, status } = options
       const requestIds = []
-      for await (const result of client.list({ cid, status })) {
+      for await (const result of _lsRaw(options)) {
         requestIds.push(result.requestid)
       }
   
       const promises = []
       for (const requestid of requestIds) {
-        promises.push(client.delete(requestid))
+        promises.push(api.delete(`/pins/${requestid}`))
       }
       await Promise.all(promises)
     }
@@ -210,13 +274,17 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
  * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query
  * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
  * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
- * @typedef {import('ipfs-core-types/src/pin/remote/service').API} API
  * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
  */
 
 /**
- * @typedef {Object} RemotePinClient
+ * @typedef {Object} PinDetails
+ * @property {string} requestid
+ * @property {string} created
+ * @property {Status} status
+ * @property {Pin} pin
+ * @property {Array<string>} delegates
  * 
  */
