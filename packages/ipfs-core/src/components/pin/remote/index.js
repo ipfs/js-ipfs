@@ -27,9 +27,7 @@ class PinRemoteAPI {
     this.rm = createRm({ remotePinServices })
     this.rmAll = createRmAll({ remotePinServices })
   }
-
 }
-
 
 /**
  * @typedef {import('../..').PeerId} PeerId

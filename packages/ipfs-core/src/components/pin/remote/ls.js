@@ -3,14 +3,13 @@
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 module.exports = ({ remotePinServices }) => {
-
   /**
    * List objects that are pinned by a remote service.
    *
    * @param {Query & AbortOptions} options
    * @returns {AsyncGenerator<Pin>}
    */
-   async function* ls (options) {
+  async function * ls (options) {
     const { service, ...lsOpts } = options
     if (!service) {
       throw new Error('service name must be passed')

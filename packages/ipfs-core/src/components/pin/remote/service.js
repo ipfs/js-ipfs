@@ -1,12 +1,14 @@
+'use strict'
+
 const createClient = require('./client')
 
 /**
  * RemotePinServiceAPI provides methods to add, remove, and list the configured
  * remote pinning services that are used by the remote pinning api.
- * 
+ *
  * @implements API
  */
- class PinRemoteServiceAPI {
+class PinRemoteServiceAPI {
   constructor ({ config, swarm, peerId }) {
     this.config = config
     this.swarm = swarm
@@ -35,10 +37,10 @@ const createClient = require('./client')
       throw new Error('option "key" is required')
     }
 
-    this._clients[name] = createClient({ 
-      swarm: this.swarm, 
-      peerId: this.peerId, 
-      service: name, 
+    this._clients[name] = createClient({
+      swarm: this.swarm,
+      peerId: this.peerId,
+      service: name,
       ...credentials
     })
   }
@@ -94,7 +96,7 @@ module.exports = PinRemoteServiceAPI
  * @typedef {import('../..').PeerId} PeerId
  * @typedef {import('../../swarm')} SwarmAPI
  * @typedef {import('../../config').Config} Config
- * 
+ *
  * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status
  * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query

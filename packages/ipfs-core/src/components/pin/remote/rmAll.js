@@ -9,7 +9,7 @@ module.exports = ({ remotePinServices }) => {
    * @param {Query & AbortOptions} options
    * @returns {Promise<void>}
    */
-   async function rmAll (options) {
+  async function rmAll (options) {
     const { service, ...rmOpts } = options
     if (!service) {
       throw new Error('service name must be passed')

@@ -2,14 +2,14 @@
 
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({remotePinServices}) => {
+module.exports = ({ remotePinServices }) => {
   /**
-  * Asks a remote pinning service to pin an IPFS object from a given path
-  *
-  * @param {string|CID} cid
-  * @param {AddOptions & AbortOptions} options
-  * @returns {Promise<Pin>}
-  */
+   * Asks a remote pinning service to pin an IPFS object from a given path
+   *
+   * @param {string|CID} cid
+   * @param {AddOptions & AbortOptions} options
+   * @returns {Promise<Pin>}
+   */
   async function add (cid, options) {
     const { service, ...addOpts } = options
     if (!service) {
