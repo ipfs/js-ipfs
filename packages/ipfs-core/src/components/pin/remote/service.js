@@ -1,117 +1,17 @@
-'use strict'
-
 const multiaddr = require('multiaddr')
 const CID = require('cids')
 const PinningClient = require('js-ipfs-pinning-service-client')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const log = require('debug')('ipfs:components:pin:remote')
 
-/**
- * PinRemoteAPI provides an API for pinning content to remote services.
- */
-class PinRemoteAPI {
-  /**
-   * @param {Object} opts
-   * @param {SwarmAPI} opts.swarm
-   * @param {Config} opts.config
-   * @param {PeerId} opts.peerId
-   */
-  constructor ({ swarm, config, peerId }) {
-    this.swarm = swarm
-    this.service = new PinRemoteServiceAPI({ config, swarm, peerId })
-  }
-
-  /**
-   * Asks a remote pinning service to pin an IPFS object from a given path
-   *
-   * @param {string|CID} cid
-   * @param {object} options
-   * @param {string} options.service - name of a configured remote pinning service
-   * @param {?string} options.name - optional descriptive name for pin
-   * @param {?Object<string, string>} options.meta - optional metadata to attach to pin
-   * @param {?number} options.timeout - request timeout (seconds)
-   * @param {?boolean} options.background - If true, add returns remote a pin object as soon as the remote service responds.
-   * The returned pin object may have a status of 'queued' or 'pinning'.
-   * If false, the add method will not resolve until the pin status is 'pinned' before returning.
-   * When background==false and the remote service returns a status of 'failed', an Error will be thrown.
-   * @returns {Promise<RemotePin>}
-   */
-  async add (cid, options) {
-    const { service, ...addOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
-    const svc = this.service.serviceNamed(service)
-    return svc.add(cid, addOpts)
-  }
-
-  /**
-   * List objects that are pinned by a remote service.
-   *
-   * @param {object} options
-   * @param {string} options.service - name of a configured remote pinning service
-   * @param {?Array<string|CID>} options.cid - return pins for the specified CID(s)
-   * @param {?string} options.name - return pins that contain the provided value (case-sensitive, exact match)
-   * @param {?Array<PinStatus>} options.status - return pins with the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
-   * @returns {AsyncGenerator<RemotePin>}
-   */
-  async * ls (options) {
-    const { service, ...lsOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
-    const svc = this.service.serviceNamed(service)
-    for await (const res of svc.ls(lsOpts)) {
-      yield res
-    }
-  }
-
-  /**
-   * Remove a single pin from a remote pinning service.
-   * Fails if multiple pins match the specified criteria. Use rmAll to remove all pins that match.
-   *
-   * @param {object} options
-   * @param {string} options.service - name of a configured remote pinning service
-   * @param {Array<string>} options.cid - CID(s) to remove from remote pinning service
-   * @param {?Array<PinStatus>} options.status - only remove pins that have one of the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
-   * @returns {Promise<void>}
-   */
-  async rm (options) {
-    const { service, ...rmOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
-    const svc = this.service.serviceNamed(service)
-    return svc.rm(rmOpts)
-  }
-
-  /**
-   * Remove all pins that match the given criteria from a remote pinning service.
-   *
-   * @param {object} options
-   * @param {string} options.service - name of a configured remote pinning service
-   * @param {Array<string>} options.cid - CID(s) to remove from remote pinning service
-   * @param {?Array<PinStatus>} options.status - only remove pins that have one of the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
-   * @returns {Promise<void>}
-   */
-  async rmAll (options) {
-    const { service, ...rmOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
-    const svc = this.service.serviceNamed(service)
-    return svc.rmAll(rmOpts)
-  }
-}
 
 /**
  * RemotePinServiceAPI provides methods to add, remove, and list the configured
  * remote pinning services that are used by the remote pinning api.
+ * 
+ * @implements API
  */
-class PinRemoteServiceAPI {
+ class PinRemoteServiceAPI {
   constructor ({ config, swarm, peerId }) {
     this.config = config
     this.swarm = swarm
@@ -149,22 +49,8 @@ class PinRemoteServiceAPI {
   /**
    * List the configured remote pinning services.
    *
-   * @typedef {object} PinCounts
-   * @property {number} queued
-   * @property {number} pinning
-   * @property {number} pinned
-   * @property {number} failed
-   *
-   * @typedef {object} RemotePinningServiceDescription
-   * @property {string} name
-   * @property {URL} endpoint
-   * @property {?object} stat
-   * @property {PinServiceStatus} stat.status
-   * @property {PinCounts} stat.pinCount
-   *
-   * @param {object} opts
-   * @param {?boolean} opts.stat - if true, include status info for each pinning service
-   * @returns {Promise<Array<RemotePinningServiceDescription>>}
+   * @param {{stat: ?boolean} & AbortOptions} opts
+   * @returns {Promise<Array<RemotePinService> | Array<RemotePinServiceWithStat>>} - a Promise resolving to an array of objects describing the configured remote pinning services. If stat==true, each object will include more detailed status info, including the number of pins for each pin status.
    */
   async ls (opts) {
     const { stat } = (opts || {})
@@ -262,22 +148,15 @@ class RemotePinningService {
    * Request that the remote service add a pin for the given CID.
    *
    * @param {CID|string} cid - CID to pin to remote service
-   * @param {object} options
-   * @param {?string} options.name - optional descriptive name for pin
-   * @param {?Object<string, string>} options.meta - optional metadata to attach to pin
-   * @param {?number} options.timeout - request timeout (seconds)
-   * @param {?boolean} options.background - If background==true, add returns remote a pin object as soon as the remote service responds.
-   * The returned pin object may have a status of 'queued' or 'pinning'.
-   * If background==false, the add method will not resolve until the pin status is 'pinned' before returning.
-   * When background==false and the remote service returns a status of 'failed', an Error will be thrown.
+   * @param {AddOptions} options
    *
-   * @returns {Promise<RemotePin>}
+   * @returns {Promise<Pin>}
    */
   async _add (cid, options) {
-    const { meta, background } = options
+    const { background } = options
     const name = options.name || ''
     const origins = await this._originAddresses()
-    const response = await this.client.add({ cid: cid.toString(), name, meta, origins })
+    const response = await this.client.add({ cid: cid.toString(), name, origins })
 
     const { status, pin, delegates } = response
     this._connectToDelegates(delegates)
@@ -309,23 +188,14 @@ class RemotePinningService {
   _formatPinResult (status, pin) {
     const name = pin.name || ''
     const cid = new CID(pin.cid)
-    const result = { status, name, cid }
-    if (pin.meta) {
-      result.meta = pin.meta
-    }
-    return result
+    return { status, name, cid }
   }
 
   /**
    * List pins from the remote service that match the given criteria. If no criteria are provided, returns all pins with the status 'pinned'.
    *
-   * @param {object} options
-   * @param {?Array<string|CID>} options.cid - return pins for the specified CID(s)
-   * @param {?string} options.name - return pins that contain the provided value (case-sensitive, exact match)
-   * @param {?Array<PinStatus>} options.status - return pins with the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
-   *
-   * @returns {AsyncGenerator<RemotePin>}
+   * @param {Query} options
+   * @returns {AsyncGenerator<Pin>}
    */
   async * _ls (options) {
     const cid = options.cid || []
@@ -345,10 +215,8 @@ class RemotePinningService {
    * Remove a single pin from a remote pinning service.
    * Fails if multiple pins match the specified criteria. Use rmAll to remove all pins that match.
    *
-   * @param {object} options
-   * @param {Array<string>} options.cid - CID(s) to remove from remote pinning service
-   * @param {?Array<PinStatus>} options.status - only remove pins that have one of the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
+   * @param {Query} options
+   * @returns {Promise<void>}
    */
   async _rm (options) {
     // the pinning service API only supports deletion by requestid, so we need to lookup the pins first
@@ -368,10 +236,7 @@ class RemotePinningService {
   /**
    * Remove all pins that match the given criteria from a remote pinning service.
    *
-   * @param {object} options
-   * @param {Array<string>} options.cid - CID(s) to remove from remote pinning service
-   * @param {?Array<PinStatus>} options.status - only remove pins that have one of the specified statuses (queued, pinning, pinned, failed). Default: pinned
-   * @param {?number} options.timeout - request timeout (seconds)
+   * @param {Query} options
    * @returns {Promise<void>}
    */
   async _rmAll (options) {
@@ -423,19 +288,21 @@ class RemotePinningService {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-/**
- * @typedef {import('..').PeerId} PeerId
- * @typedef {import('../swarm')} SwarmAPI
- * @typedef {import('../config').Config} Config
- *
- * @typedef {'queued'|'pinning'|'pinned'|'failed'} PinStatus
- * @typedef {'valid'|'invalid'} PinServiceStatus
- *
- * @typedef {object} RemotePin
- * @property {string|CID} [cid]
- * @property {PinStatus} [status]
- * @property {?string} [name]
- * @property {?object} [meta]
- */
+// TODO: refactor all the things
+module.exports = PinRemoteServiceAPI
 
-module.exports = PinRemoteAPI
+/**
+ * @typedef {import('../..').PeerId} PeerId
+ * @typedef {import('../../swarm')} SwarmAPI
+ * @typedef {import('../../config').Config} Config
+ * 
+ * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status
+ * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query
+ * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
+ * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').API} API
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
+ */
