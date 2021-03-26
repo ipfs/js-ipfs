@@ -53,11 +53,11 @@ class PinRemoteServiceAPI {
    */
   // @ts-ignore: The API type definition is polymorphic on the value of the stat field. I'm not sure how to represent that in jsdoc.
   async ls (opts) {
-    const { stat } = (opts || {})
+    opts = opts || { stat: false }
 
     const promises = []
     for (const svc of Object.values(this._clients)) {
-      promises.push(svc.info(stat))
+      promises.push(svc.info(opts))
     }
     return Promise.all(promises)
   }

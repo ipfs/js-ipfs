@@ -16,7 +16,7 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
     }
   })
 
-  async function serviceInfo (includeStats = false) {
+  async function info ({stat: includeStats}) {
     if (includeStats) {
       return {
         service,
@@ -251,7 +251,7 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
   }
 
   return {
-    info: serviceInfo,
+    info: withTimeoutOption(info),
     ls: withTimeoutOption(ls),
     add: withTimeoutOption(add),
     rm: withTimeoutOption(rm),
