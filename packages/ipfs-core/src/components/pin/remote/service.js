@@ -1,5 +1,8 @@
 'use strict'
 
+const { Errors } = require('interface-datastore')
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
 const createClient = require('./client')
 
 /**
@@ -9,13 +12,56 @@ const createClient = require('./client')
  * @implements API
  */
 class PinRemoteServiceAPI {
+  /**
+   * 
+   * @param {Object} options 
+   * @param {Config} options.config
+   * @param {SwarmAPI} options.swarm
+   * @param {PeerId} options.peerId
+   */
   constructor ({ config, swarm, peerId }) {
     this.config = config
     this.swarm = swarm
     this.peerId = peerId
 
-    // TODO: read service config from IPFS config to construct remote service at init
     this._clients = {}
+    this._configured = false
+  }
+
+  async _loadConfig() {
+    if (this._configured) {
+      return
+    }
+
+    try {
+      const pinConfig = /** @type {PinningConfig|null} */ (await this.config.get('Pinning'))
+      if (pinConfig == null || pinConfig.RemoteServices == null) {
+        this._configured = true
+        return
+      }
+
+      for (const [name, svcConfig] of Object.entries(pinConfig.RemoteServices)) {
+        if (svcConfig == null) {
+          continue
+        }
+        const { Endpoint: endpoint, Key: key } = svcConfig.API
+        if (!endpoint || !key) {
+          continue
+        }
+        this._clients[name] = createClient({
+          swarm: this.swarm,
+          peerId: this.peerId,
+          service: name,
+          endpoint,
+          key,
+        })
+      }
+      this._configured = true
+    } catch (e) {
+      if (e.code !== ERR_NOT_FOUND) {
+        throw e
+      }
+    }
   }
 
   /**
@@ -25,6 +71,8 @@ class PinRemoteServiceAPI {
    * @param {Credentials & AbortOptions} credentials
    */
   async add (name, credentials) {
+    await this._loadConfig()
+
     if (this._clients[name]) {
       throw new Error('service already present: ' + name)
     }
@@ -36,6 +84,13 @@ class PinRemoteServiceAPI {
     if (!credentials.key) {
       throw new Error('option "key" is required')
     }
+
+    await this.config.set(`Pinning.RemoteServices.${name}`, {
+      API: {
+        Endpoint: credentials.endpoint.toString(),
+        Key: credentials.key,
+      }
+    })
 
     this._clients[name] = createClient({
       swarm: this.swarm,
@@ -53,6 +108,8 @@ class PinRemoteServiceAPI {
    */
   // @ts-ignore: The API type definition is polymorphic on the value of the stat field. I'm not sure how to represent that in jsdoc.
   async ls (opts) {
+    await this._loadConfig()
+
     opts = opts || { stat: false }
 
     const promises = []
@@ -72,7 +129,11 @@ class PinRemoteServiceAPI {
     if (!name) {
       throw new Error('parameter "name" is required')
     }
+    await this._loadConfig()
     delete this._clients[name]
+    const services = (await this.config.get('Pinning.RemoteServices')) || {}
+    delete services[name]
+    await this.config.set(`Pinning.RemoteServices`, services)
   }
 
   /**
@@ -96,6 +157,7 @@ module.exports = PinRemoteServiceAPI
  * @typedef {import('../..').PeerId} PeerId
  * @typedef {import('../../swarm')} SwarmAPI
  * @typedef {import('../../config').Config} Config
+ * @typedef {import('../../config').PinningConfig} PinningConfig
  *
  * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status

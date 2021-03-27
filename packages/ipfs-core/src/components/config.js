@@ -328,6 +328,7 @@ module.exports.profiles = profiles
  * @property {PubsubConfig} [Pubsub]
  * @property {SwarmConfig} [Swarm]
  * @property {RoutingConfig} [Routing]
+ * @property {PinningConfig} [Pinning]
  *
  * @typedef {Object} AddressConfig
  * Contains information about various listener addresses to be used by this node.
@@ -524,4 +525,12 @@ module.exports.profiles = profiles
  *
  * @typedef {import('ipfs-core-types/src/basic').ToJSON} ToJSON
  * @typedef {import('.').AbortOptions} AbortOptions
+ * 
+ * @typedef {Object} PinningConfig
+ * @property {Object<string, RemotePinningServiceConfig>} [RemoteServices]
+ * 
+ * @typedef {Object} RemotePinningServiceConfig
+ * @property {Object} API
+ * @property {string} API.Endpoint
+ * @property {string} API.Key
  */
