@@ -11,7 +11,7 @@ const createClient = require('./client')
  * @param {Config} options.config
  * @param {SwarmAPI} options.swarm
  * @param {PeerId} options.peerId
- * @returns {API}
+ * @returns {{service: ServiceAPI, serviceRegistry: { serviceNamed: function }}}
  */
 module.exports = ({ config, swarm, peerId }) => {
   let configured = false
@@ -139,11 +139,16 @@ module.exports = ({ config, swarm, peerId }) => {
   }
 
   return {
-    add,
-    // @ts-ignore: The API type definition for the ls method is polymorphic on the value of the stat field. I'm not sure how to represent that in jsdoc.
-    ls,
-    rm,
-    serviceNamed
+    service: {
+      add,
+      rm,
+      // @ts-ignore: The API type definition for the ls method is polymorphic on the value of the stat field. I'm not sure how to represent that in jsdoc.
+      ls,
+    },
+
+    serviceRegistry: {
+      serviceNamed
+    }
   }
 }
 
@@ -154,7 +159,7 @@ module.exports = ({ config, swarm, peerId }) => {
  * @typedef {import('../../config').PinningConfig} PinningConfig
  *
  * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-core-types/src/pin/remote/service').API} API
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').API} ServiceAPI
  * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat

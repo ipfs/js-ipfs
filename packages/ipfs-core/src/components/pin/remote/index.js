@@ -17,9 +17,9 @@ class PinRemoteAPI {
    * @param {PeerId} opts.peerId
    */
   constructor ({ swarm, config, peerId }) {
-    const serviceRegistry = createServiceApi({ config, swarm, peerId })
+    const { service, serviceRegistry } = createServiceApi({ config, swarm, peerId })
 
-    this.service = serviceRegistry
+    this.service = service
     this.add = createAdd({ serviceRegistry })
     this.ls = createLs({ serviceRegistry })
     this.rm = createRm({ serviceRegistry })
