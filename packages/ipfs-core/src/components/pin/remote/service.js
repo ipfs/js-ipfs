@@ -154,10 +154,6 @@ module.exports = ({ config, swarm, peerId }) => {
  * @typedef {import('../../config').PinningConfig} PinningConfig
  *
  * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status
- * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query
- * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
- * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/pin/remote/service').API} API
  * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService

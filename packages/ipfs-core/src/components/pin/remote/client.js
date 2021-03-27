@@ -272,11 +272,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
  * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
  * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/pin/remote/service').Credentials} Credentials
- * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinService} RemotePinService
- * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
- */
-
-/**
+ *
  * @typedef {Object} PinDetails
  * @property {string} requestid
  * @property {string} created
