@@ -132,6 +132,9 @@ module.exports = ({ config, swarm, peerId }) => {
    * @returns {any}
    */
   function serviceNamed (name) {
+    if (!name) {
+      throw new Error('service name must be passed')
+    }
     if (!clients[name]) {
       throw new Error('no remote pinning service configured with name: ' + name)
     }

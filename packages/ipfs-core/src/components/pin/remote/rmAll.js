@@ -10,12 +10,9 @@ module.exports = ({ serviceRegistry }) => {
    * @returns {Promise<void>}
    */
   async function rmAll (options) {
-    const { service, ...rmOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
+    const { service } = options
     const svc = serviceRegistry.serviceNamed(service)
-    return svc.rmAll(rmOpts)
+    return svc.rmAll(options)
   }
 
   return withTimeoutOption(rmAll)

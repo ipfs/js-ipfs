@@ -10,12 +10,9 @@ module.exports = ({ serviceRegistry }) => {
    * @returns {AsyncGenerator<Pin>}
    */
   async function * ls (options) {
-    const { service, ...lsOpts } = options
-    if (!service) {
-      throw new Error('service name must be passed')
-    }
+    const { service } = options
     const svc = serviceRegistry.serviceNamed(service)
-    for await (const res of svc.ls(lsOpts)) {
+    for await (const res of svc.ls(options)) {
       yield res
     }
   }
