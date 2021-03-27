@@ -2,7 +2,7 @@
 
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ remotePinServices }) => {
+module.exports = ({ serviceRegistry }) => {
   /**
    * Asks a remote pinning service to pin an IPFS object from a given path
    *
@@ -15,7 +15,7 @@ module.exports = ({ remotePinServices }) => {
     if (!service) {
       throw new Error('service name must be passed')
     }
-    const svc = remotePinServices.serviceNamed(service)
+    const svc = serviceRegistry.serviceNamed(service)
     return svc.add(cid, addOpts)
   }
 

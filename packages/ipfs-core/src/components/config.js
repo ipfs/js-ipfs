@@ -525,10 +525,10 @@ module.exports.profiles = profiles
  *
  * @typedef {import('ipfs-core-types/src/basic').ToJSON} ToJSON
  * @typedef {import('.').AbortOptions} AbortOptions
- * 
+ *
  * @typedef {Object} PinningConfig
  * @property {Object<string, RemotePinningServiceConfig>} [RemoteServices]
- * 
+ *
  * @typedef {Object} RemotePinningServiceConfig
  * @property {Object} API
  * @property {string} API.Endpoint

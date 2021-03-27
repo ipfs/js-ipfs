@@ -2,7 +2,7 @@
 
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ remotePinServices }) => {
+module.exports = ({ serviceRegistry }) => {
   /**
    * Remove a single pin from a remote pinning service.
    * Fails if multiple pins match the specified query. Use rmAll to remove all pins that match.
@@ -15,7 +15,7 @@ module.exports = ({ remotePinServices }) => {
     if (!service) {
       throw new Error('service name must be passed')
     }
-    const svc = remotePinServices.serviceNamed(service)
+    const svc = serviceRegistry.serviceNamed(service)
     return svc.rm(rmOpts)
   }
 

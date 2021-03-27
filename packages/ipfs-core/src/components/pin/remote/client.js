@@ -16,7 +16,7 @@ module.exports = ({ service, endpoint, key, swarm, peerId }) => {
     }
   })
 
-  async function info ({stat: includeStats}) {
+  async function info ({ stat: includeStats }) {
     if (includeStats) {
       return {
         service,

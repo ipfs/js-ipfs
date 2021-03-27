@@ -1,6 +1,6 @@
 'use strict'
 
-const PinRemoteServiceAPI = require('./service')
+const createServiceApi = require('./service')
 const createAdd = require('./add')
 const createLs = require('./ls')
 const createRm = require('./rm')
@@ -17,15 +17,13 @@ class PinRemoteAPI {
    * @param {PeerId} opts.peerId
    */
   constructor ({ swarm, config, peerId }) {
-    this.swarm = swarm
-    this.service = new PinRemoteServiceAPI({ config, swarm, peerId })
+    const serviceRegistry = createServiceApi({ config, swarm, peerId })
 
-    // TODO: remove this.service & this.swarm once everything is refactored
-    const remotePinServices = this.service
-    this.add = createAdd({ remotePinServices })
-    this.ls = createLs({ remotePinServices })
-    this.rm = createRm({ remotePinServices })
-    this.rmAll = createRmAll({ remotePinServices })
+    this.service = serviceRegistry
+    this.add = createAdd({ serviceRegistry })
+    this.ls = createLs({ serviceRegistry })
+    this.rm = createRm({ serviceRegistry })
+    this.rmAll = createRmAll({ serviceRegistry })
   }
 }
 
