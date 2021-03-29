@@ -19,7 +19,7 @@ exports.bw = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.peerId(),
+        peer: Joi.cid(),
         proto: Joi.string(),
         poll: Joi.boolean().default(false),
         interval: Joi.string().default('1s'),

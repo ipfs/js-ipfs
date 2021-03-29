@@ -16,7 +16,7 @@ module.exports = {
       },
       query: Joi.object().keys({
         count: Joi.number().integer().greater(0).default(10),
-        peerId: Joi.peerId().required(),
+        peerId: Joi.cid().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {

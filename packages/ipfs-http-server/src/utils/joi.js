@@ -87,20 +87,6 @@ module.exports = Joi
     },
     (joi) => {
       return {
-        type: 'peerId',
-        base: joi.string(),
-        validate: requireIfRequired,
-        coerce (value, _helpers) {
-          if (!value) {
-            return
-          }
-
-          return { value: new CID(value).toString() }
-        }
-      }
-    },
-    (joi) => {
-      return {
         type: 'multiaddr',
         base: joi.string(),
         validate: requireIfRequired,

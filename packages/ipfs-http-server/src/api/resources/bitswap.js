@@ -11,7 +11,7 @@ exports.wantlist = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.peerId(),
+        peer: Joi.cid(),
         cidBase: Joi.cidBase(),
         timeout: Joi.timeout()
       })

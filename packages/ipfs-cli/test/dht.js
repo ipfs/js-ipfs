@@ -8,7 +8,6 @@ const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const CID = require('cids')
-const PeerId = require('peer-id')
 
 describe('dht', () => {
   let ipfs
@@ -188,7 +187,7 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const peer = {
       addrs: [
         'addr'
@@ -196,8 +195,7 @@ describe('dht', () => {
     }
 
     it('should find a peer', async () => {
-      // https://github.com/libp2p/js-peer-id/issues/141
-      ipfs.dht.findPeer.withArgs(PeerId.createFromB58String(peerId.toString()), defaultOptions).returns(peer)
+      ipfs.dht.findPeer.withArgs(peerId, defaultOptions).returns(peer)
 
       const out = await cli(`dht findpeer ${peerId}`, { ipfs })
 
@@ -205,8 +203,7 @@ describe('dht', () => {
     })
 
     it('should find a peer with a timeout', async () => {
-      // https://github.com/libp2p/js-peer-id/issues/141
-      ipfs.dht.findPeer.withArgs(PeerId.createFromB58String(peerId.toString()), {
+      ipfs.dht.findPeer.withArgs(peerId.toString(), {
         ...defaultOptions,
         timeout: 1000
       }).returns(peer)
@@ -220,14 +217,14 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = PeerId.createFromB58String('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const peer = {
       id: peerId
     }
 
     it('should query the DHT', async () => {
       // https://github.com/libp2p/js-peer-id/issues/141
-      ipfs.dht.query.withArgs(PeerId.createFromB58String(peerId.toString()), defaultOptions).returns([
+      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([
         peer
       ])
 
@@ -237,7 +234,7 @@ describe('dht', () => {
 
     it('should query the DHT with a timeout', async () => {
       // https://github.com/libp2p/js-peer-id/issues/141
-      ipfs.dht.query.withArgs(PeerId.createFromB58String(peerId.toString()), {
+      ipfs.dht.query.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).returns([

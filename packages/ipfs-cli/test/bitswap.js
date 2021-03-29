@@ -6,7 +6,6 @@ const CID = require('cids')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const Big = require('bignumber.js')
-const PeerId = require('peer-id')
 
 describe('bitswap', () => {
   const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA'
@@ -55,7 +54,7 @@ describe('bitswap', () => {
     })
 
     it('wantlist peerid', async () => {
-      ipfs.bitswap.wantlistForPeer.withArgs(PeerId.createFromB58String(peerId), defaultOptions).resolves([])
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).resolves([])
 
       const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
       expect(out).to.be.empty()
@@ -72,7 +71,7 @@ describe('bitswap', () => {
     })
 
     it('wantlist for peer with a timeout', async () => {
-      ipfs.bitswap.wantlistForPeer.withArgs(PeerId.createFromB58String(peerId), {
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).resolves([])
