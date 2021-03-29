@@ -31,7 +31,7 @@ module.exports = (factory, options) => {
   const it = getIt(options)
 
   describe('transfer blocks', function () {
-    this.timeout(360 * 1000)
+    this.timeout(60 * 1000)
 
     afterEach(() => factory.clean())
 
