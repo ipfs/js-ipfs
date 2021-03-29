@@ -1,5 +1,5 @@
 import CID from 'cids'
-import { AwaitIterable } from './basic'
+import { AwaitIterable } from './utils'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =

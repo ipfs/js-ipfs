@@ -10,7 +10,7 @@ const createSetData = require('./set-data')
  * @typedef {import('../../../types').Preload} Preload
  * @typedef {import('..').GCLock} GCLock
  * @typedef {import('cids')} CID
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 class ObjectPatchAPI {

@@ -4,7 +4,7 @@ const normaliseContent = require('./normalise-content')
 const normaliseInput = require('./normalise-input')
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
  */
 

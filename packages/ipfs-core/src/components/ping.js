@@ -84,5 +84,5 @@ module.exports = ({ network }) => {
  * @typedef {Object} PingSettings
  * @property {number} [count=10] - The number of ping messages to send
  *
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */

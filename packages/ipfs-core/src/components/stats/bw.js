@@ -21,7 +21,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('cids')} CID
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 /**

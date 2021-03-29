@@ -1,4 +1,4 @@
-import type { AbortOptions } from '../basic'
+import type { AbortOptions } from '../utils'
 import type Multiaddr from 'multiaddr'
 import type CID from 'cids'
 

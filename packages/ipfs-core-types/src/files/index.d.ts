@@ -1,4 +1,4 @@
-import { AbortOptions, IPFSPath } from '../basic'
+import { AbortOptions, IPFSPath } from '../utils'
 import { ToMTime } from './files'
 import CID, { CIDVersion } from 'cids'
 import { CodecName } from 'multicodec'

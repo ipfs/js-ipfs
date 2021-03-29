@@ -11,7 +11,7 @@ const mergeOptions = require('merge-options')
 const resolve = require('./components/dag/resolve')
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 exports.mergeOptions = mergeOptions

@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions, IPFSPath } from '../basic'
+import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
 import CID from 'cids'
 import { CodecName } from 'multicodec'
 import { HashName } from 'multihashes'

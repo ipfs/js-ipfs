@@ -1,4 +1,4 @@
-import type { AbortOptions } from '../basic'
+import type { AbortOptions } from '../utils'
 import { API as ProfilesAPI} from './profiles'
 
 export interface API<OptionExtension = {}> {

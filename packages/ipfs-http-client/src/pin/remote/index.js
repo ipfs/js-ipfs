@@ -7,7 +7,7 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
 
 /**
  * @typedef {import('../../types').Options} Options
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
  * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query

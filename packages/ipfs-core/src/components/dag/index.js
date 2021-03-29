@@ -14,7 +14,7 @@ const createPut = require('./put')
  * @typedef {import('../../types').Preload} Preload
  * @typedef {import('ipfs-core-types/src/pin').API} Pin
  * @typedef {import('../gc-lock').GCLock} GCLock
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 class DagAPI {

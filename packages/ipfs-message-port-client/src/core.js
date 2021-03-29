@@ -39,11 +39,11 @@ const {
  * @typedef {import('./interface').MessagePortClientOptions} MessagePortClientOptions
  * @typedef {import('ipfs-core-types/src/root').API<MessagePortClientOptions>} RootAPI
  *
- * @typedef {import('ipfs-core-types/src/basic').ToEntry} ToEntry
- * @typedef {import('ipfs-core-types/src/basic').ToFile} ToFile
- * @typedef {import('ipfs-core-types/src/basic').ToDirectory} ToDirectory
- * @typedef {import('ipfs-core-types/src/basic').ToContent} ToContent
- * @typedef {import('ipfs-core-types/src/basic').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ToFile} ToFile
+ * @typedef {import('ipfs-core-types/src/utils').ToDirectory} ToDirectory
+ * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
+ * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
  */
 
 /**

@@ -1,4 +1,4 @@
-import { AbortOptions } from '../../../basic'
+import { AbortOptions } from '../../../utils'
 
 export interface API<OptionExtension = {}> {
   /**

@@ -1,4 +1,4 @@
-import type { AbortOptions, AwaitIterable } from '../basic'
+import type { AbortOptions, AwaitIterable } from '../utils'
 import type CID from 'cids'
 import type { API as remote } from './remote'
 

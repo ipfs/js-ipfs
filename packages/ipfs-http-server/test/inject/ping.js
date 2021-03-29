@@ -8,6 +8,7 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const allNdjson = require('../utils/all-ndjson')
 const { AbortSignal } = require('native-abort-controller')
+const CID = require('cids')
 
 const defaultOptions = {
   count: 10,
@@ -48,7 +49,7 @@ describe('/ping', function () {
   })
 
   it('returns 500 for incorrect Peer Id', async () => {
-    ipfs.ping.withArgs(peerId).throws(new Error('derp'))
+    ipfs.ping.withArgs(new CID(peerId)).throws(new Error('derp'))
 
     const res = await http({
       method: 'POST',
@@ -59,7 +60,7 @@ describe('/ping', function () {
   })
 
   it('pings with a count', async () => {
-    ipfs.ping.withArgs(peerId, {
+    ipfs.ping.withArgs(new CID(peerId), {
       ...defaultOptions,
       count: 5
     }).returns([])
@@ -73,7 +74,7 @@ describe('/ping', function () {
   })
 
   it('pings with a count as n', async () => {
-    ipfs.ping.withArgs(peerId, {
+    ipfs.ping.withArgs(new CID(peerId), {
       ...defaultOptions,
       count: 5
     }).returns([])
@@ -87,7 +88,7 @@ describe('/ping', function () {
   })
 
   it('pings a remote peer', async () => {
-    ipfs.ping.withArgs(peerId, defaultOptions).returns([{
+    ipfs.ping.withArgs(new CID(peerId), defaultOptions).returns([{
       success: true,
       time: 1,
       text: 'hello'
@@ -115,7 +116,7 @@ describe('/ping', function () {
   })
 
   it('accepts a timeout', async () => {
-    ipfs.ping.withArgs(peerId, {
+    ipfs.ping.withArgs(new CID(peerId), {
       ...defaultOptions,
       timeout: 1000
     }).returns([])

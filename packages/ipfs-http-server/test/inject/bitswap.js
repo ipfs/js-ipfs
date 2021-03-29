@@ -96,7 +96,7 @@ describe('/bitswap', () => {
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).returns([
+      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), defaultOptions).returns([
         cid
       ])
 
@@ -112,7 +112,7 @@ describe('/bitswap', () => {
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D&timeout=1s', async () => {
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
+      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), {
         ...defaultOptions,
         timeout: 1000
       }).returns([

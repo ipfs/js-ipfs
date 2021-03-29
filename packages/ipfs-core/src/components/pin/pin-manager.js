@@ -30,7 +30,7 @@ const { Key } = require('interface-datastore')
  * @typedef {Object} PinOptions
  * @property {any} [metadata]
  *
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 // arbitrary limit to the number of concurrent dag operations

@@ -1,5 +1,5 @@
 import CID from 'cids';
-import type { AbortOptions, PreloadOptions } from '../basic'
+import type { AbortOptions, PreloadOptions } from '../utils'
 import type { DAGNode, DAGNodeLike, DAGLink } from 'ipld-dag-pb'
 import type { API as PatchAPI } from './patch'
 

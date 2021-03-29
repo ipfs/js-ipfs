@@ -1,4 +1,4 @@
-import type { AbortOptions } from '../basic'
+import type { AbortOptions } from '../utils'
 import type BigInteger from 'bignumber.js'
 import CID from 'cids'
 

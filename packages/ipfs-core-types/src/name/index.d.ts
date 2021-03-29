@@ -1,5 +1,5 @@
 import CID from 'cids';
-import type { AbortOptions } from '../basic'
+import type { AbortOptions } from '../utils'
 import type { API as PubsubAPI } from './pubsub'
 
 export interface API<OptionExtension = {}> {

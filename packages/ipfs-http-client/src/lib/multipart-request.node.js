@@ -8,8 +8,8 @@ const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').ImportSource} ImportSource
- * @typedef {import('ipfs-core-types/src/basic').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
  */
 
 /**

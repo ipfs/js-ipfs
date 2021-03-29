@@ -1,4 +1,4 @@
-import type { AbortOptions, PreloadOptions, IPFSPath } from '../basic'
+import type { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
 import type CID from 'cids'
 
 export type API<OptionExtension = {}> = {

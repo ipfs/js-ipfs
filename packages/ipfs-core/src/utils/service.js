@@ -5,7 +5,7 @@ const { withTimeout } = require('../utils')
 
 /**
  * @template T
- * @typedef {import('ipfs-core-types/src/basic').Await<T>} Await
+ * @typedef {import('ipfs-core-types/src/utils').Await<T>} Await
  */
 /**
  * @template {(options:any) => any} T
@@ -29,7 +29,7 @@ const { withTimeout } = require('../utils')
  */
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 /**

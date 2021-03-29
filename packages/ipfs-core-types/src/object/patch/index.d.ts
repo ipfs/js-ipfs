@@ -1,5 +1,5 @@
 import type CID from 'cids';
-import type { AbortOptions } from '../../basic'
+import type { AbortOptions } from '../../utils'
 import type { DAGLink } from 'ipld-dag-pb'
 
 export interface API<OptionExtension = {}> {

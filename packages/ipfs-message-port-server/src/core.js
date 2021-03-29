@@ -16,8 +16,8 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {import('ipfs-core-types/src/root').AddAllOptions} AddAllOptions
  * @typedef {import('ipfs-core-types/src/root').IPFSEntry} IPFSEntry
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-core-types/src/basic').ImportSource} ImportSource
- * @typedef {import('ipfs-core-types/src/basic').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
  * @typedef {import('ipfs-core-types/src/root').AddResult} AddResult
  * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddInput} EncodedAddInput
  * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddAllInput} EncodedAddAllInput

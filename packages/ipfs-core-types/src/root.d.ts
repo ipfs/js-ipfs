@@ -1,4 +1,4 @@
-import type { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './basic'
+import type { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
 import type CID, { CIDVersion } from 'cids'
 import type { Mtime } from 'ipfs-unixfs'
 import type Multiaddr from 'multiaddr'

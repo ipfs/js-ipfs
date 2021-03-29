@@ -23,7 +23,7 @@ const errCode = require('err-code')
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('ipfs-bitswap')} Bitswap
  * @typedef {import('peer-id')} PeerId
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 class Network {

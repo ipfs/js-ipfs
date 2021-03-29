@@ -86,7 +86,7 @@ async function sendFile (index, sink, content, path, mode, mtime) {
 }
 
 /**
- * @param {import('ipfs-core-types/src/basic').ImportSource} stream
+ * @param {import('ipfs-core-types/src/utils').ImportSource} stream
  * @param {import('it-pushable').Pushable<any>} sink
  */
 async function sendFiles (stream, sink) {

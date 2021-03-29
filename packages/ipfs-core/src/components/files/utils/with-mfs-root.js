@@ -20,7 +20,7 @@ const {
 
 /**
  * @param {MfsContext} context
- * @param {import('ipfs-core-types/src/basic').AbortOptions} [options]
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
 const loadMfsRoot = async (context, options) => {
   if (options && options.signal && options.signal.aborted) {

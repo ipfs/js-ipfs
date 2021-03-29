@@ -10,7 +10,7 @@ const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 /**
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Pin} PinTarget
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  * @typedef {import('cids')} CID
  */
 

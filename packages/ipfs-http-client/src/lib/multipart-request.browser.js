@@ -6,8 +6,8 @@ const normaliseInput = require('ipfs-core-utils/src/files/normalise-input/index.
 const modeToString = require('./mode-to-string')
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').ImportSource} ImportSource
- * @typedef {import('ipfs-core-types/src/basic').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
  */
 
 /**

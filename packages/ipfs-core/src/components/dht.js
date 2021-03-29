@@ -148,7 +148,7 @@ const normalizeCID = cid =>
 
 /**
  * @param {import('../types').NetworkService} network
- * @param {import('ipfs-core-types/src/basic').AbortOptions} [options]
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
 const use = async (network, options) => {
   const net = await network.use(options)

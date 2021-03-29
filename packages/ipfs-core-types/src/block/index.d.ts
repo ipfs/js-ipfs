@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions } from '../basic'
+import { AbortOptions, PreloadOptions } from '../utils'
 import CID, { CIDVersion } from 'cids'
 import Block from 'ipld-block'
 import { CodecName } from 'multicodec'

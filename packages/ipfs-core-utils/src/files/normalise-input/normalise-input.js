@@ -16,13 +16,13 @@ const {
 } = require('ipfs-unixfs')
 
 /**
- * @typedef {import('ipfs-core-types/src/basic').ToContent} ToContent
+ * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
- * @typedef {import('ipfs-core-types/src/basic').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
  */
 
 /**
- * @param {import('ipfs-core-types/src/basic').ImportSource} input
+ * @param {import('ipfs-core-types/src/utils').ImportSource} input
  * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
