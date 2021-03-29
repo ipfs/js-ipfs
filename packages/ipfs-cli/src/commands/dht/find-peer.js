@@ -1,7 +1,6 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
-const { coercePeerId } = require('../../utils')
 
 module.exports = {
   command: 'findpeer <peerId>',
@@ -10,8 +9,7 @@ module.exports = {
 
   builder: {
     peerId: {
-      type: 'string',
-      coerce: coercePeerId
+      type: 'string'
     },
     timeout: {
       type: 'string',
@@ -22,7 +20,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('peer-id')} argv.peerId
+   * @param {string} argv.peerId
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, peerId, timeout }) {

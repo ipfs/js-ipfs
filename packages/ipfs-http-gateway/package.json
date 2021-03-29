@@ -47,6 +47,7 @@
     "cids": "^1.1.5",
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
+    "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
     "ipfs-http-response": "^0.6.0",
     "is-ipfs": "^4.0.0",
@@ -62,7 +63,6 @@
     "@types/hapi-pino": "^8.0.1",
     "aegir": "^32.1.0",
     "file-type": "^16.0.0",
-    "ipfs-core-types": "^0.3.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3"
   }

@@ -1,5 +1,4 @@
 import type BigInteger from 'bignumber.js'
-import type PeerId from 'peer-id'
 import type CID from 'cids'
 import type { AbortOptions } from '../basic'
 
@@ -26,7 +25,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlistForPeer: (peerId, options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlistForPeer: (peerId: CID | string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
 
   /**
    * Removes one or more CIDs from the wantlist

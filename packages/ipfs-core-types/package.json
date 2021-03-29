@@ -28,10 +28,10 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
+    "bignumber.js": "^9.0.1",
     "cids": "^1.1.5",
     "multiaddr": "^8.0.0",
-    "multibase": "^4.0.2",
-    "peer-id": "^0.14.1"
+    "multibase": "^4.0.2"
   },
   "devDependencies": {
     "aegir": "^32.1.0"

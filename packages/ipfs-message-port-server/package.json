@@ -38,13 +38,13 @@
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
+    "ipfs-core-types": "^0.3.1",
     "ipfs-message-port-protocol": "^0.6.1",
     "it-all": "^1.0.4"
   },
   "devDependencies": {
     "aegir": "^32.1.0",
     "cids": "^1.1.5",
-    "ipfs-core-types": "^0.3.1",
     "rimraf": "^3.0.2"
   },
   "engines": {

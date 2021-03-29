@@ -1,7 +1,6 @@
 import type { AbortOptions } from '../basic'
 import { API as BitswapAPI } from '../bitswap'
 import { API as RepoAPI } from '../repo'
-import type PeerId from 'peer-id'
 import type CID from 'cid'
 import type BigInteger from 'bignumber.js'
 import type Multiaddr from 'multiaddr'

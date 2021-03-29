@@ -46,6 +46,7 @@
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.1.5",
     "err-code": "^3.0.1",
+    "ipfs-core-types": "^0.3.1",
     "ipfs-unixfs": "^4.0.1",
     "ipfs-utils": "^6.0.4",
     "it-all": "^1.0.4",
@@ -59,7 +60,6 @@
   },
   "devDependencies": {
     "aegir": "^32.1.0",
-    "ipfs-core-types": "^0.3.1",
     "rimraf": "^3.0.2"
   }
 }

@@ -9,7 +9,6 @@ const Progress = require('progress')
 const byteman = require('byteman')
 const IPFS = require('ipfs-core')
 const CID = require('cids')
-const PeerId = require('peer-id')
 const Multiaddr = require('multiaddr')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -248,17 +247,6 @@ const coerceCIDs = (values) => {
 }
 
 /**
- * @param {*} value
- */
-const coercePeerId = (value) => {
-  if (value == null) {
-    return undefined
-  }
-
-  return PeerId.createFromB58String(value)
-}
-
-/**
  * @param {string} value
  */
 const coerceMultiaddr = (value) => {
@@ -404,7 +392,6 @@ module.exports = {
   coerceCIDs,
   coerceMultiaddr,
   coerceMultiaddrs,
-  coercePeerId,
   coerceUint8Array,
   stripControlCharacters,
   escapeControlCharacters,

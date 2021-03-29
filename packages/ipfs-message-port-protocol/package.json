@@ -47,11 +47,11 @@
   },
   "dependencies": {
     "cids": "^1.1.5",
+    "ipfs-core-types": "^0.3.1",
     "ipld-block": "^0.11.0"
   },
   "devDependencies": {
     "aegir": "^32.1.0",
-    "ipfs-core-types": "^0.3.1",
     "rimraf": "^3.0.2",
     "uint8arrays": "^2.1.3"
   },

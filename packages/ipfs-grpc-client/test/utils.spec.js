@@ -78,8 +78,8 @@ describe('utils', () => {
 
       const output = toHeaders(input)
 
-      expect(output.get('propSimple')).to.be.empty()
-      expect(output.get('prop-simple')).to.deep.equal([input.propSimple])
+      expect(output.propSimple).to.be.undefined()
+      expect(output['prop-simple']).to.deep.equal(input.propSimple)
     })
 
     it('should remove function fields', () => {
@@ -89,8 +89,8 @@ describe('utils', () => {
 
       const output = toHeaders(input)
 
-      expect(output.get('funcProp')).to.be.empty()
-      expect(output.get('funcProp')).to.be.empty()
+      expect(output.funcProp).to.be.undefined()
+      expect(output.funcProp).to.be.undefined()
     })
   })
 })

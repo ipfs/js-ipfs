@@ -35,6 +35,7 @@
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.1.6",
+    "ipfs-core-types": "^0.3.1",
     "ipfs-message-port-protocol": "^0.6.1",
     "ipfs-unixfs": "^4.0.1"
   },
@@ -42,7 +43,6 @@
     "aegir": "^32.1.0",
     "interface-ipfs-core": "^0.144.2",
     "ipfs-core": "^0.5.4",
-    "ipfs-core-types": "^0.3.1",
     "ipfs-message-port-server": "^0.6.3",
     "rimraf": "^3.0.2"
   },

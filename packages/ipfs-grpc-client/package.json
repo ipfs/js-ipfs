@@ -37,6 +37,7 @@
     "cids": "^1.1.5",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
+    "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
     "ipfs-grpc-protocol": "^0.2.0",
     "ipfs-unixfs": "^4.0.1",
@@ -49,7 +50,6 @@
   },
   "devDependencies": {
     "aegir": "^32.1.0",
-    "ipfs-core-types": "^0.3.1",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3"

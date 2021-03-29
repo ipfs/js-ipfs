@@ -17,16 +17,14 @@ module.exports = ({ network }) => {
     const { libp2p } = await network.use()
     options.count = options.count || 10
 
-    if (!PeerId.isPeerId(peerId)) {
-      peerId = PeerId.createFromCID(peerId)
-    }
+    const peer = PeerId.createFromCID(peerId)
 
-    const storedPeer = libp2p.peerStore.get(peerId)
+    const storedPeer = libp2p.peerStore.get(peer)
     let id = storedPeer && storedPeer.id
 
     if (!id) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      const remotePeer = await libp2p.peerRouting.findPeer(peerId)
+      const remotePeer = await libp2p.peerRouting.findPeer(peer)
 
       id = remotePeer && remotePeer.id
     }

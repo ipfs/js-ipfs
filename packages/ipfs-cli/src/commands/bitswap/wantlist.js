@@ -3,7 +3,6 @@
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
-const { coercePeerId } = require('../../utils')
 
 module.exports = {
   command: 'wantlist [peer]',
@@ -14,8 +13,7 @@ module.exports = {
     peer: {
       alias: 'p',
       describe: 'Specify which peer to show wantlist for.',
-      type: 'string',
-      coerce: coercePeerId
+      type: 'string'
     },
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
@@ -31,7 +29,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('peer-id')} argv.peer
+   * @param {string} argv.peer
    * @param {import('multibase').BaseName} argv.cidBase
    * @param {number} argv.timeout
    */

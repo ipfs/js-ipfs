@@ -1,5 +1,4 @@
 import type { AbortOptions } from '../basic'
-import type PeerId from 'peer-id'
 import type Multiaddr from 'multiaddr'
 import type CID from 'cids'
 
@@ -22,7 +21,7 @@ export interface API<OptionExtension = {}> {
      * // '/ip4/147.75.94.115/tcp/4001'
      * ```
      */
-  findPeer: (peerId: PeerId, options?: AbortOptions & OptionExtension) => Promise<PeerResult>
+  findPeer: (peerId: CID | string, options?: AbortOptions & OptionExtension) => Promise<PeerResult>
 
   /**
      * Find peers in the DHT that can provide a specific value, given a CID.
@@ -60,7 +59,7 @@ export interface API<OptionExtension = {}> {
   /**
    * Find the closest peers to a given `PeerId`, by querying the DHT.
    */
-  query: (peerId: PeerId | CID, options?: AbortOptions & OptionExtension) => AsyncIterable<PeerResult>
+  query: (peerId: CID | string, options?: AbortOptions & OptionExtension) => AsyncIterable<PeerResult>
 }
 
 export interface PeerResult {

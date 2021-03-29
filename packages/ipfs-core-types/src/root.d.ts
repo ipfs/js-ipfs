@@ -1,7 +1,6 @@
 import type { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './basic'
 import type CID, { CIDVersion } from 'cids'
 import type { Mtime } from 'ipfs-unixfs'
-import type PeerId from 'peer-id'
 import type Multiaddr from 'multiaddr'
 import type { BaseName } from 'multibase'
 
@@ -83,7 +82,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: PeerId | CID, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping: (peerId: CID | string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS

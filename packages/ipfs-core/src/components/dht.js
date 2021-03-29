@@ -52,11 +52,7 @@ module.exports = ({ network, repo }) => {
      */
     async findPeer (peerId, options) {
       const { libp2p } = await use(network, options)
-      if (typeof peerId === 'string') {
-        peerId = PeerId.createFromCID(peerId)
-      }
-
-      const peer = await libp2p._dht.findPeer(peerId)
+      const peer = await libp2p._dht.findPeer(PeerId.createFromCID(peerId))
 
       return {
         id: peer.id.toB58String(),
@@ -104,11 +100,8 @@ module.exports = ({ network, repo }) => {
      */
     async * query (peerId, options) {
       const { libp2p } = await use(network, options)
-      if (typeof peerId === 'string' || CID.isCID(peerId)) {
-        peerId = PeerId.createFromCID(peerId)
-      }
 
-      for await (const closerPeerId of libp2p._dht.getClosestPeers(peerId.toBytes())) {
+      for await (const closerPeerId of libp2p._dht.getClosestPeers(PeerId.createFromCID(peerId).toBytes())) {
         yield {
           id: closerPeerId.toB58String(),
           addrs: [] // TODO: get addrs?
@@ -128,8 +121,8 @@ module.exports = ({ network, repo }) => {
 }
 
 /**
- * Turns given cid in some stringifyeable represenation, to Uint8Array
- * representation. Throws an error if given value isn't a vaild CID.
+ * Turns given cid in some stringifyable representation, to Uint8Array
+ * representation. Throws an error if given value isn't a valid CID.
  *
  * @param {any} cid
  * @returns {Uint8Array}
@@ -146,7 +139,7 @@ const parseCID = cid => {
 }
 
 /**
- * Turns given cid in some represenation to Uint8Array reperesentation.
+ * Turns given cid in some representation to Uint8Array representation
  *
  * @param {any} cid
  */
