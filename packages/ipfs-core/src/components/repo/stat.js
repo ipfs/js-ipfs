@@ -14,11 +14,11 @@ module.exports = ({ repo }) => {
     const stats = await repo.stat()
 
     return {
-      numObjects: stats.numObjects,
-      repoSize: stats.repoSize,
+      numObjects: BigInt(stats.numObjects.toString()),
+      repoSize: BigInt(stats.repoSize.toString()),
       repoPath: stats.repoPath,
       version: `${stats.version}`,
-      storageMax: stats.storageMax
+      storageMax: BigInt(stats.storageMax.toString())
     }
   }
 

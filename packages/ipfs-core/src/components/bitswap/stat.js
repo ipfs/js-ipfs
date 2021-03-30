@@ -1,6 +1,5 @@
 'use strict'
 
-const { default: Big } = require('bignumber.js')
 const CID = require('cids')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -19,14 +18,14 @@ module.exports = ({ network }) => {
 
     return {
       provideBufLen: parseInt(snapshot.providesBufferLength.toString()),
-      blocksReceived: new Big(snapshot.blocksReceived),
+      blocksReceived: BigInt(snapshot.blocksReceived.toString()),
       wantlist: Array.from(bitswap.getWantlist()).map(e => e[1].cid),
       peers: bitswap.peers().map(id => new CID(id.toB58String())),
-      dupBlksReceived: new Big(snapshot.dupBlksReceived),
-      dupDataReceived: new Big(snapshot.dupDataReceived),
-      dataReceived: new Big(snapshot.dataReceived),
-      blocksSent: new Big(snapshot.blocksSent),
-      dataSent: new Big(snapshot.dataSent)
+      dupBlksReceived: BigInt(snapshot.dupBlksReceived.toString()),
+      dupDataReceived: BigInt(snapshot.dupDataReceived.toString()),
+      dataReceived: BigInt(snapshot.dataReceived.toString()),
+      blocksSent: BigInt(snapshot.blocksSent.toString()),
+      dataSent: BigInt(snapshot.dataSent.toString())
     }
   }
 

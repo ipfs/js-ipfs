@@ -1,5 +1,4 @@
 import type { AbortOptions } from '../utils'
-import type BigInteger from 'bignumber.js'
 import CID from 'cids'
 
 export interface API<OptionExtension = {}> {
@@ -37,9 +36,9 @@ export interface GCSuccess {
 export type GCResult  = GCSuccess | GCError
 
 export interface StatResult {
-  numObjects: BigInteger
+  numObjects: BigInt
   repoPath: string
-  repoSize: BigInteger
+  repoSize: BigInt
   version: string
-  storageMax: BigInteger
+  storageMax: BigInt
 }

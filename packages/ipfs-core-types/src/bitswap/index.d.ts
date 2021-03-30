@@ -1,4 +1,3 @@
-import type BigInteger from 'bignumber.js'
 import type CID from 'cids'
 import type { AbortOptions } from '../utils'
 
@@ -62,10 +61,10 @@ export interface Stats {
   provideBufLen: number
   wantlist: CID[]
   peers: CID[]
-  blocksReceived: BigInteger
-  dataReceived: BigInteger
-  blocksSent: BigInteger
-  dataSent: BigInteger
-  dupBlksReceived: BigInteger
-  dupDataReceived: BigInteger
+  blocksReceived: BigInt
+  dataReceived: BigInt
+  blocksSent: BigInt
+  dataSent: BigInt
+  dupBlksReceived: BigInt
+  dupDataReceived: BigInt
 }

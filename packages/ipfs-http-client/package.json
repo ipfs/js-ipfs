@@ -46,7 +46,6 @@
   "dependencies": {
     "abort-controller": "^3.0.0",
     "any-signal": "^2.1.2",
-    "bignumber.js": "^9.0.1",
     "cids": "^1.1.5",
     "debug": "^4.1.1",
     "form-data": "^4.0.0",

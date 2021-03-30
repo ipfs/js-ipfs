@@ -4,7 +4,6 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const BigNumber = require('bignumber.js')
 const CID = require('cids')
 
 describe('repo', () => {
@@ -27,9 +26,9 @@ describe('repo', () => {
 
     it('get repo stats', async () => {
       ipfs.repo.stat.withArgs(defaultOptions).resolves({
-        numObjects: BigNumber(10),
-        repoSize: BigNumber(10),
-        storageMax: BigNumber(10),
+        numObjects: BigInt(10),
+        repoSize: BigInt(10),
+        storageMax: BigInt(10),
         repoPath: '/foo',
         version: 5
       })
@@ -44,9 +43,9 @@ describe('repo', () => {
 
     it('get repo stats with just size', async () => {
       ipfs.repo.stat.withArgs(defaultOptions).resolves({
-        numObjects: BigNumber(10),
-        repoSize: BigNumber(10),
-        storageMax: BigNumber(10),
+        numObjects: BigInt(10),
+        repoSize: BigInt(10),
+        storageMax: BigInt(10),
         repoPath: '/foo',
         version: 5
       })
@@ -61,9 +60,9 @@ describe('repo', () => {
 
     it('get human readable repo stats', async () => {
       ipfs.repo.stat.withArgs(defaultOptions).resolves({
-        numObjects: BigNumber(10),
-        repoSize: BigNumber(10),
-        storageMax: BigNumber(10),
+        numObjects: BigInt(10),
+        repoSize: BigInt(10),
+        storageMax: BigInt(10),
         repoPath: '/foo',
         version: 5
       })
@@ -81,9 +80,9 @@ describe('repo', () => {
         ...defaultOptions,
         timeout: 1000
       }).resolves({
-        numObjects: BigNumber(10),
-        repoSize: BigNumber(10),
-        storageMax: BigNumber(10),
+        numObjects: BigInt(10),
+        repoSize: BigInt(10),
+        storageMax: BigInt(10),
         repoPath: '/foo',
         version: 5
       })

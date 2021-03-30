@@ -46,12 +46,12 @@ module.exports = {
     }
 
     if (human) {
-      output.blocksReceived = stats.blocksReceived.toNumber()
-      output.blocksSent = stats.blocksSent.toNumber()
-      output.dataReceived = prettyBytes(stats.dataReceived.toNumber()).toUpperCase()
-      output.dataSent = prettyBytes(stats.dataSent.toNumber()).toUpperCase()
-      output.dupBlksReceived = stats.dupBlksReceived.toNumber()
-      output.dupDataReceived = prettyBytes(stats.dupDataReceived.toNumber()).toUpperCase()
+      output.blocksReceived = Number(stats.blocksReceived)
+      output.blocksSent = Number(stats.blocksSent)
+      output.dataReceived = prettyBytes(Number(stats.dataReceived)).toUpperCase()
+      output.dataSent = prettyBytes(Number(stats.dataSent)).toUpperCase()
+      output.dupBlksReceived = Number(stats.dupBlksReceived)
+      output.dupDataReceived = prettyBytes(Number(stats.dupDataReceived)).toUpperCase()
       output.wantlist = `[${stats.wantlist.length} keys]`
     } else {
       const wantlist = stats.wantlist.map(cid => cidToString(cid, { base: cidBase, upgrade: false }))

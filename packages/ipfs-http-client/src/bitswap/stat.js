@@ -1,6 +1,5 @@
 'use strict'
 
-const { BigNumber } = require('bignumber.js')
 const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -35,11 +34,11 @@ function toCoreInterface (res) {
     provideBufLen: res.ProvideBufLen,
     wantlist: (res.Wantlist || []).map((/** @type {{ '/': string }} */ k) => new CID(k['/'])),
     peers: (res.Peers || []),
-    blocksReceived: new BigNumber(res.BlocksReceived),
-    dataReceived: new BigNumber(res.DataReceived),
-    blocksSent: new BigNumber(res.BlocksSent),
-    dataSent: new BigNumber(res.DataSent),
-    dupBlksReceived: new BigNumber(res.DupBlksReceived),
-    dupDataReceived: new BigNumber(res.DupDataReceived)
+    blocksReceived: BigInt(res.BlocksReceived),
+    dataReceived: BigInt(res.DataReceived),
+    blocksSent: BigInt(res.BlocksSent),
+    dataSent: BigInt(res.DataSent),
+    dupBlksReceived: BigInt(res.DupBlksReceived),
+    dupDataReceived: BigInt(res.DupDataReceived)
   }
 }

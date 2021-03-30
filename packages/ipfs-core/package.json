@@ -59,7 +59,6 @@
   "dependencies": {
     "abort-controller": "^3.0.0",
     "array-shuffle": "^2.0.0",
-    "bignumber.js": "^9.0.1",
     "cborg": "^1.2.1",
     "cids": "^1.1.5",
     "dag-cbor-links": "^2.0.0",

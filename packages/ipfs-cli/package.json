@@ -30,7 +30,6 @@
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
-    "bignumber.js": "^9.0.1",
     "byteman": "^1.3.5",
     "cid-tool": "^1.0.0",
     "cids": "^1.1.5",

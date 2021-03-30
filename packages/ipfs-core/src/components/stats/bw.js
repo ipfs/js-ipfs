@@ -1,6 +1,5 @@
 'use strict'
 
-const { default: Big } = require('bignumber.js')
 const { default: parseDuration } = require('parse-duration')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
@@ -13,10 +12,10 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
  *
  * @typedef {Object} BandwidthInfo
- * @property {Big} totalIn
- * @property {Big} totalOut
- * @property {Big} rateIn
- * @property {Big} rateOut
+ * @property {BigInt} totalIn
+ * @property {BigInt} totalOut
+ * @property {BigInt} rateIn
+ * @property {BigInt} rateOut
  *
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('peer-id')} PeerId
@@ -44,10 +43,10 @@ function getBandwidthStats (libp2p, opts) {
 
   if (!stats) {
     return {
-      totalIn: new Big(0),
-      totalOut: new Big(0),
-      rateIn: new Big(0),
-      rateOut: new Big(0)
+      totalIn: BigInt(0),
+      totalOut: BigInt(0),
+      rateIn: BigInt(0),
+      rateOut: BigInt(0)
     }
   }
 
@@ -56,8 +55,8 @@ function getBandwidthStats (libp2p, opts) {
   return {
     totalIn: snapshot.dataReceived,
     totalOut: snapshot.dataSent,
-    rateIn: new Big(movingAverages.dataReceived[60000].movingAverage() / 60),
-    rateOut: new Big(movingAverages.dataSent[60000].movingAverage() / 60)
+    rateIn: BigInt(movingAverages.dataReceived[60000].movingAverage() / 60),
+    rateOut: BigInt(movingAverages.dataSent[60000].movingAverage() / 60)
   }
 }
 

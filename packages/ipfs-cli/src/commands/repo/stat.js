@@ -43,9 +43,9 @@ module.exports = {
     }
 
     if (human) {
-      output.numObjects = stats.numObjects.toNumber()
-      output.repoSize = prettyBytes(stats.repoSize.toNumber()).toUpperCase()
-      output.storageMax = prettyBytes(stats.storageMax.toNumber()).toUpperCase()
+      output.numObjects = Number(stats.numObjects)
+      output.repoSize = prettyBytes(Number(stats.repoSize)).toUpperCase()
+      output.storageMax = prettyBytes(Number(stats.storageMax)).toUpperCase()
     }
 
     if (sizeOnly) {

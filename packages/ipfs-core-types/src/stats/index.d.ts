@@ -2,7 +2,6 @@ import type { AbortOptions } from '../utils'
 import { API as BitswapAPI } from '../bitswap'
 import { API as RepoAPI } from '../repo'
 import type CID from 'cid'
-import type BigInteger from 'bignumber.js'
 
 export interface API<OptionExtension = {}> {
   bitswap: BitswapAPI<OptionExtension>["stat"]
@@ -22,8 +21,8 @@ export interface BWOptions extends AbortOptions {
 }
 
 export interface BWResult {
-  totalIn: BigInteger
-  totalOut: BigInteger
-  rateIn: BigInteger
-  rateOut: BigInteger
+  totalIn: BigInt
+  totalOut: BigInt
+  rateIn: BigInt
+  rateOut: BigInt
 }
