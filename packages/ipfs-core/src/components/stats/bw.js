@@ -53,8 +53,8 @@ function getBandwidthStats (libp2p, opts) {
   const { movingAverages, snapshot } = stats
 
   return {
-    totalIn: snapshot.dataReceived,
-    totalOut: snapshot.dataSent,
+    totalIn: BigInt(snapshot.dataReceived.toString()),
+    totalOut: BigInt(snapshot.dataSent.toString()),
     rateIn: BigInt(movingAverages.dataReceived[60000].movingAverage() / 60),
     rateOut: BigInt(movingAverages.dataSent[60000].movingAverage() / 60)
   }
