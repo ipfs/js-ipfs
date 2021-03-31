@@ -1,8 +1,9 @@
 'use strict'
 
-const {
-  DAGNode
-} = require('ipld-dag-pb')
+// @ts-ignore - TODO vmx 2021-03-31
+const dagPb = require('@ipld/dag-pb')
+const Block = require('multiformats/block')
+const { sha256 } = require('multiformats/hashes/sha2')
 const {
   Bucket,
   createHAMT
@@ -13,25 +14,24 @@ const DirSharded = require('ipfs-unixfs-importer/src/dir-sharded')
 const defaultImporterOptions = require('ipfs-unixfs-importer/src/options')
 const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
 const { UnixFS } = require('ipfs-unixfs')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
 const last = require('it-last')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGLink} DAGLink
  * @typedef {import('cids').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('../').MfsContext} MfsContext
+ * @typedef {import('../../../types').PbNode} PbNode
+ * @typedef {import('../../../types').PbLink} PbLink
  */
 
 /**
  * @param {MfsContext} context
- * @param {DAGLink[]} links
+ * @param {PbLink[]} links
  * @param {Bucket<any>} bucket
  * @param {object} options
- * @param {DAGNode} options.parent
+ * @param {PbNode} options.parent
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  * @param {HashName} options.hashAlg
@@ -51,23 +51,46 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     mtime: node.mtime
   })
 
-  const hashAlg = mh.names[options.hashAlg]
-  const parent = new DAGNode(dir.marshal(), links)
-  const cid = await context.ipld.put(parent, mc.DAG_PB, {
-    cidVersion: options.cidVersion,
-    hashAlg,
-    onlyHash: !options.flush
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    default:
+      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+  }
+
+  const parent = dagPb.prepare({
+    Data: dir.marshal(),
+    Links: links
   })
+  // TODO vmx 2021-03-04: Check if the CID version matters
+  const parentBlock = await Block.encode({
+    value: parent,
+    codec: dagPb,
+    hasher
+  })
+
+  if (options.flush) {
+    await context.blockStorage.put(parentBlock)
+  }
+
+  // TODO vmx 2021-03-30: Check if this is needed, or whether it's always a CIDv0 anyway
+  let cid = parentBlock.cid
+  if (options.cidVersion === 0) {
+    cid = cid.toV0()
+  }
 
   return {
     node: parent,
     cid,
-    size: parent.size
+    // TODO vmx 2021-03-04: double check that it is the size we want here
+    size: parentBlock.bytes.length
   }
 }
 
 /**
- * @param {DAGLink[]} links
+ * @param {PbLink[]} links
  * @param {Bucket<any>} rootBucket
  * @param {Bucket<any>} parentBucket
  * @param {number} positionAtParent
@@ -86,7 +109,7 @@ const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtPare
 }
 
 /**
- * @param {DAGLink[]} links
+ * @param {PbLink[]} links
  */
 const recreateInitialHamtLevel = async (links) => {
   const importerOptions = defaultImporterOptions()
@@ -101,7 +124,7 @@ const recreateInitialHamtLevel = async (links) => {
 }
 
 /**
- * @param {DAGLink[]} links
+ * @param {PbLink[]} links
  * @param {Bucket<any>} bucket
  * @param {Bucket<any>} rootBucket
  */
@@ -141,7 +164,7 @@ const toPrefix = (position) => {
 /**
  * @param {MfsContext} context
  * @param {string} fileName
- * @param {DAGNode} rootNode
+ * @param {PbNode} rootNode
  */
 const generatePath = async (context, fileName, rootNode) => {
   // start at the root bucket and descend, loading nodes as we go
@@ -149,7 +172,7 @@ const generatePath = async (context, fileName, rootNode) => {
   const position = await rootBucket._findNewBucketAndPos(fileName)
 
   // the path to the root bucket
-  /** @type {{ bucket: Bucket<any>, prefix: string, node?: DAGNode }[]} */
+  /** @type {{ bucket: Bucket<any>, prefix: string, node?: PbNode }[]} */
   const path = [{
     bucket: position.bucket,
     prefix: toPrefix(position.pos)
@@ -169,7 +192,7 @@ const generatePath = async (context, fileName, rootNode) => {
   path.reverse()
   path[0].node = rootNode
 
-  // load DAGNode for each path segment
+  // load PbNode for each path segment
   for (let i = 0; i < path.length; i++) {
     const segment = path[i]
 
@@ -200,7 +223,8 @@ const generatePath = async (context, fileName, rootNode) => {
 
     // found subshard
     log(`Found subshard ${segment.prefix}`)
-    const node = await context.ipld.get(link.Hash)
+    const block = await context.blockStorage.get(link.Hash)
+    const node = dagPb.decode(block.bytes)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[i + 1]) {
@@ -272,7 +296,7 @@ const createShard = async (context, contents, options = {}) => {
     })
   }
 
-  return last(shard.flush(context.block))
+  return last(shard.flush(context.blockStorage))
 }
 
 module.exports = {

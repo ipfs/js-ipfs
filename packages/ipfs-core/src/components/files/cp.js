@@ -161,6 +161,7 @@ const copyToFile = async (context, source, destination, destinationTrail, option
   }
 
   parent = await addSourceToParent(context, source, destination, parent, options)
+  debugger
 
   // update the tree with the new containing directory
   destinationTrail.push(parent)
@@ -204,14 +205,13 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
  * @returns {Promise<MfsTrail>}
  */
 const addSourceToParent = async (context, source, childName, parent, options) => {
-  const sourceBlock = await context.repo.blocks.get(source.cid)
-
+  const sourceBlock = await context.blockStorage.get(source.cid)
   const {
     node,
     cid
   } = await addLink(context, {
     parentCid: parent.cid,
-    size: sourceBlock.data.length,
+    size: sourceBlock.bytes.length,
     cid: source.cid,
     name: childName,
     hashAlg: options.hashAlg,

@@ -11,6 +11,7 @@ const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -65,7 +66,7 @@ module.exports = (common, options) => {
 
       const res = await all(importer([{ content: input }], ipfs.block))
 
-      const cidv0 = res[0].cid
+      const cidv0 = asLegacyCid(res[0].cid)
       expect(cidv0.version).to.equal(0)
 
       const cidv1 = cidv0.toV1()
@@ -79,7 +80,7 @@ module.exports = (common, options) => {
 
       const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
-      const cidv1 = res[0].cid
+      const cidv1 = asLegacyCid(res[0].cid)
       expect(cidv1.version).to.equal(1)
 
       const cidv0 = cidv1.toV0()
@@ -153,7 +154,7 @@ module.exports = (common, options) => {
 
       const dir = files[0]
 
-      const err = await expect(drain(ipfs.cat(dir.cid))).to.eventually.be.rejected()
+      const err = await expect(drain(ipfs.cat(asLegacyCid(dir.cid)))).to.eventually.be.rejected()
       expect(err.message).to.contain('this dag node is a directory')
     })
 

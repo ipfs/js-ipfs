@@ -13,10 +13,9 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
- * @typedef {import('ipld-dag-pb').DAGLink} DAGLink
+ * @typedef {import('../../types').PbNode} PbNode
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('cids').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
@@ -91,7 +90,7 @@ module.exports = (context) => {
       const subPath = `/ipfs/${root}/${subPathComponents.join('/')}`
 
       try {
-        parent = await exporter(subPath, context.ipld)
+        parent = await exporter(subPath, context.blockStorage)
 
         if (parent.type !== 'file' && parent.type !== 'directory') {
           throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
@@ -140,7 +139,7 @@ module.exports = (context) => {
  * @param {MfsContext} context
  * @param {string} childName
  * @param {{ cid: CID, node: { size: number }}} emptyDir
- * @param {{ cid?: CID, node?: DAGNode }} parent
+ * @param {{ cid?: CID, node?: PbNode }} parent
  * @param {{ name: string, cid: CID }[]} trail
  * @param {DefaultOptions} options
  */
@@ -150,7 +149,8 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
   const result = await addLink(context, {
     parent: parent.node,
     parentCid: parent.cid,
-    size: emptyDir.node.size,
+    // TODO vmx 2021-03-09: Remove the usage of size completely
+    size: 0,
     cid: emptyDir.cid,
     name: childName,
     hashAlg: options.hashAlg,

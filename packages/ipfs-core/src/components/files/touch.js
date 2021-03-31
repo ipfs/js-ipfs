@@ -9,9 +9,11 @@ const toTrail = require('./utils/to-trail')
 const addLink = require('./utils/add-link')
 const updateTree = require('./utils/update-tree')
 const updateMfsRoot = require('./utils/update-mfs-root')
-const { DAGNode } = require('ipld-dag-pb')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
+// @ts-ignore - TODO vmx 2021-03-31
+const dagPb = require('@ipld/dag-pb')
+const { CID } = require('multiformats/cid')
+const Block = require('multiformats/block')
+const { sha256 } = require('multiformats/hashes/sha2')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
@@ -60,8 +62,7 @@ module.exports = (context) => {
       exists
     } = await toMfsPath(context, path, settings)
 
-    let node
-    let updatedCid
+    let updatedBlock
 
     let cidVersion = settings.cidVersion
 
@@ -71,50 +72,68 @@ module.exports = (context) => {
         // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
         mtime: settings.mtime
       })
-      node = new DAGNode(metadata.marshal())
-      updatedCid = await context.ipld.put(node, mc.DAG_PB, {
-        cidVersion: settings.cidVersion,
-        hashAlg: mh.names['sha2-256'],
-        onlyHash: !settings.flush
+      const node = dagPb.prepare({ Data: metadata.marshal() })
+      updatedBlock = await Block.encode({
+        value: node,
+        codec: dagPb,
+        hasher: sha256
       })
+      if (settings.flush) {
+        await context.blockStorage.put(updatedBlock)
+      }
     } else {
-      if (cid.codec !== 'dag-pb') {
+      if (cid.code !== dagPb.code) {
         throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
       }
 
       cidVersion = cid.version
 
-      node = await context.ipld.get(cid)
+      const block = await context.blockStorage.get(cid)
+      const node = dagPb.decode(block.bytes)
 
       const metadata = UnixFS.unmarshal(node.Data)
 
       // @ts-ignore TODO: restore setting all date types as mtime - it's in the code, just not the signature
       metadata.mtime = settings.mtime
 
-      node = new DAGNode(metadata.marshal(), node.Links)
-
-      updatedCid = await context.ipld.put(node, mc.DAG_PB, {
-        cidVersion: cid.version,
-        hashAlg: mh.names['sha2-256'],
-        onlyHash: !settings.flush
+      const updatedNode = dagPb.prepare({
+          Data: metadata.marshal(),
+          Links: node.Links
       })
+
+      updatedBlock = await Block.encode({
+        value: updatedNode,
+        codec: dagPb,
+        hasher: sha256
+      })
+      if (settings.flush) {
+        await context.blockStorage.put(updatedBlock)
+      }
     }
 
     const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
-    const parentNode = await context.ipld.get(parent.cid)
+    // TODO vmx 2021-03-31 check if `toTrail()` should perhaps not return lagacy CIDs
+    const parentCid = CID.decode(parent.cid.bytes)
+    const parentBlock = await context.blockStorage.get(parentCid)
+    const parentNode = dagPb.decode(parentBlock.bytes)
 
     const result = await addLink(context, {
       parent: parentNode,
       name: name,
-      cid: updatedCid,
-      size: node.serialize().length,
+      //cid: asLegacyCid(updatedBlock.cid),
+      cid: updatedBlock.cid,
+      // TODO vmx 2021-03-31: Check if that's the correct size of whether we should just use no size at all
+      size: updatedBlock.bytes.length,
       flush: settings.flush,
       shardSplitThreshold: settings.shardSplitThreshold,
+      // TODO vmx 2021-02-23: Check if the hash alg is always hardcoded
       hashAlg: 'sha2-256',
       cidVersion
     })
 
+    // TODO vmx 2021-02-22: If there are errors about the CID version, do the
+    // conversion to the correct CID version here, based on `cidVersion`.
     parent.cid = result.cid
 
     // update the tree with the new child

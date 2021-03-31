@@ -11,6 +11,9 @@ import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-mi
 import type { Datastore } from 'interface-datastore'
 import type Network, { Options as NetworkOptions } from './components/network'
 import type Service from './utils/service'
+//import type LegacyCID from 'cids'
+// TODO vmx 2021-03-31: import this as CID and the legacy `cids` as LegacyCID, once `Preload` can deal with it
+import type { CID as NewCID } from 'multiformats/cid'
 
 export interface Options {
   /**
@@ -228,3 +231,21 @@ export interface MfsPreload {
 }
 
 export type NetworkService = Service<NetworkOptions, Network>
+
+// TODO vmx 2021-03-31: Just temporary until js-dag-pb has porper types
+export interface PbLink {
+ Name: string,
+ Tsize: number,
+ Hash: NewCID
+}
+
+export interface PbNode {
+ Data: Uint8Array,
+ Links: PbLink[]
+}
+
+export interface Block {
+ cid: NewCID,
+ bytes: Uint8Array
+}
+

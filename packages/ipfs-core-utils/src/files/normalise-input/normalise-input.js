@@ -13,11 +13,12 @@ const {
 const {
   parseMtime,
   parseMode
+// @ts-ignore - TODO vmx 2021-03-30 enable again
 } = require('ipfs-unixfs')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
- * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
+ * typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
  */
 
@@ -109,7 +110,8 @@ async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
 
-  /** @type {ImportCandidate} */
+  /* type {ImportCandidate} */
+  // @ts-ignore TODO vmx 2021-03-30 enable again
   const file = {
     path: path || '',
     mode: parseMode(mode),
@@ -117,6 +119,7 @@ async function toFileObject (input, normaliseContent) {
   }
 
   if (content) {
+  // @ts-ignore TODO vmx 2021-03-30 enable again
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop
     // @ts-ignore - input still can be different ToContent

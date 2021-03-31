@@ -51,7 +51,7 @@
     "form-data": "^4.0.0",
     "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
-    "ipfs-unixfs": "^4.0.1",
+    "ipfs-unixfs": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs",
     "ipfs-utils": "^6.0.4",
     "ipld": "^0.29.0",
     "ipld-block": "^0.11.0",

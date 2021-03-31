@@ -4,6 +4,7 @@ const { exporter } = require('ipfs-unixfs-exporter')
 const toMfsPath = require('./utils/to-mfs-path')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const map = require('it-map')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -16,7 +17,7 @@ const map = require('it-map')
 const toOutput = (fsEntry) => {
   /** @type {MFSEntry} */
   const output = {
-    cid: fsEntry.cid,
+    cid: asLegacyCid(fsEntry.cid),
     name: fsEntry.name,
     type: fsEntry.type === 'directory' ? 'directory' : 'file',
     size: fsEntry.size
@@ -31,7 +32,7 @@ const toOutput = (fsEntry) => {
 }
 
 /**
- * @param {MfsContext} context
+ * @param {MfsContext} context\b
  */
 module.exports = (context) => {
   /**
@@ -39,7 +40,7 @@ module.exports = (context) => {
    */
   async function * mfsLs (path, options = {}) {
     const mfsPath = await toMfsPath(context, path, options)
-    const fsEntry = await exporter(mfsPath.mfsPath, context.ipld)
+    const fsEntry = await exporter(mfsPath.mfsPath, context.blockStorage)
 
     // directory, perhaps sharded
     if (fsEntry.type === 'directory') {

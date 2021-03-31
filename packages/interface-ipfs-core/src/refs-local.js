@@ -9,6 +9,7 @@ const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
 const CID = require('cids')
 const uint8ArrayEquals = require('uint8arrays/equals')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -50,7 +51,7 @@ module.exports = (common, options) => {
       const imported = await all(importer(dirs, ipfs.block))
 
       // otherwise go-ipfs doesn't show them in the local refs
-      await drain(ipfs.pin.addAll(imported.map(i => i.cid)))
+      await drain(ipfs.pin.addAll(imported.map(i => asLegacyCid(i.cid))))
 
       const refs = await all(ipfs.refs.local())
       const cids = refs.map(r => r.ref)
@@ -59,7 +60,7 @@ module.exports = (common, options) => {
         cids.find(cid => {
           const multihash = new CID(cid).multihash
 
-          return uint8ArrayEquals(imported[0].cid.multihash, multihash)
+          return uint8ArrayEquals(asLegacyCid(imported[0].cid).multihash, multihash)
         })
       ).to.be.ok()
 
@@ -67,7 +68,7 @@ module.exports = (common, options) => {
         cids.find(cid => {
           const multihash = new CID(cid).multihash
 
-          return uint8ArrayEquals(imported[1].cid.multihash, multihash)
+          return uint8ArrayEquals(asLegacyCid(imported[1].cid).multihash, multihash)
         })
       ).to.be.ok()
     })

@@ -9,6 +9,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 /** @type {typeof Object.assign} */
 const mergeOptions = require('merge-options')
 const resolve = require('./components/dag/resolve')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
@@ -98,7 +99,7 @@ const resolvePath = async function (ipld, ipfsPath, options = {}) {
 const mapFile = (file, options = {}) => {
   /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
   const output = {
-    cid: file.cid,
+    cid: asLegacyCid(file.cid),
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,

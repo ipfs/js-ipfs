@@ -5,9 +5,8 @@ const isIpfs = require('is-ipfs')
 
 /**
  * @typedef {object} MfsContext
- * @property {import('ipld')} ipld
+ * @property {import('../../block-storage')} blockStorage
  * @property {import('ipfs-repo')} repo
- * @property {import('ipfs-core-types/src/block').API} block
  */
 
 /**
@@ -62,7 +61,6 @@ const wrap = ({
 
 const defaultOptions = {
   repoOwner: true,
-  ipld: null,
   repo: null
 }
 
@@ -75,7 +73,7 @@ function createMfs (options) {
   } = Object.assign({}, defaultOptions || {}, options)
 
   options.repo = {
-    blocks: options.blocks,
+    blocks: options.blockStorage,
     datastore: options.datastore
   }
 
@@ -114,19 +112,15 @@ function createMfs (options) {
 
 /**
  * @param {object} context
- * @param {import('ipld')} context.ipld
- * @param {import('ipfs-core-types/src/block').API} context.block
- * @param {import('ipfs-block-service')} context.blockService
+ * @param {import('../../block-storage')} context.blockStorage
  * @param {import('ipfs-repo')} context.repo
  * @param {import('../../types').Preload} context.preload
  * @param {import('..').Options} context.options
  * @returns {import('ipfs-core-types/src/files').API}
  */
-module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {
+module.exports = ({ blockStorage, repo, preload, options: constructorOptions }) => {
   const methods = createMfs({
-    ipld,
-    block,
-    blocks: blockService,
+    blockStorage,
     datastore: repo.root,
     repoOwner: constructorOptions.repoOwner
   })

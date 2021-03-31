@@ -13,6 +13,7 @@ const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -68,7 +69,7 @@ module.exports = (common, options) => {
 
       const cidv1 = cidv0.toV1()
 
-      const output = await all(ipfs.get(cidv1))
+      const output = await all(ipfs.get(asLegacyCid(cidv1)))
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 
@@ -82,7 +83,7 @@ module.exports = (common, options) => {
 
       const cidv0 = cidv1.toV0()
 
-      const output = await all(ipfs.get(cidv0))
+      const output = await all(ipfs.get(asLegacyCid(cidv0)))
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 
@@ -177,7 +178,7 @@ module.exports = (common, options) => {
       expect(root.cid.toString()).to.equal('QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g')
 
       let files = await all(
-        map(ipfs.get(root.cid), async ({ path, content }) => {
+        map(ipfs.get(asLegacyCid(root.cid)), async ({ path, content }) => {
           content = content ? uint8ArrayToString(uint8ArrayConcat(await all(content))) : null
           return { path, content }
         })

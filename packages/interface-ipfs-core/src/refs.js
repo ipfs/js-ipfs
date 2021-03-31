@@ -65,7 +65,6 @@ module.exports = (common, options) => {
         }
 
         const refs = await all(ipfs.refs(p, params))
-
         // Sort the refs not to lock-in the iteration order
         // Check there was no error and the refs match what was expected
         expect(refs.map(r => r.ref).sort()).to.eql(expected.sort())

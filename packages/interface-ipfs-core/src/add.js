@@ -12,6 +12,7 @@ const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIC
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const last = require('it-last')
+const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -219,6 +220,11 @@ module.exports = (common, options) => {
       const content = String(Math.random() + Date.now())
 
       const file = await ipfs.add(content, { onlyHash: true })
+
+      //let foo = await ipfs.object.get(new CID('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC'), { timeout: 4000 })
+      debugger
+      let foo = await ipfs.object.get(file.cid, { timeout: 4000 })
+      console.log('vmx: object: get:', foo)
 
       await expect(ipfs.object.get(file.cid, { timeout: 4000 }))
         .to.eventually.be.rejected()

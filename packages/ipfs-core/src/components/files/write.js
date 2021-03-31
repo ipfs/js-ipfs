@@ -2,6 +2,11 @@
 
 const log = require('debug')('ipfs:mfs:write')
 const { importer } = require('ipfs-unixfs-importer')
+const {
+  decode
+// @ts-ignore - TODO vmx 2021-03-31
+} = require('@ipld/dag-pb')
+const { sha256 } = require('multiformats/hashes/sha2')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
@@ -173,7 +178,8 @@ const updateOrImport = async (context, path, source, destination, options) => {
       throw errCode(new Error(`cannot write to ${parent.name}: Not a directory`), 'ERR_NOT_A_DIRECTORY')
     }
 
-    const parentNode = await context.ipld.get(parent.cid)
+    const parentBlock = await context.blockStorage.get(parent.cid)
+    const parentNode = decode(parentBlock.bytes)
 
     const result = await addLink(context, {
       parent: parentNode,
@@ -286,15 +292,24 @@ const write = async (context, source, destination, options) => {
     mtime = destination.unixfs.mtime
   }
 
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    default:
+      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+  }
+
   const result = await last(importer([{
     content: content,
 
     // persist mode & mtime if set previously
     mode,
     mtime
-  }], context.block, {
+  }], context.blockStorage, {
     progress: options.progress,
-    hashAlg: options.hashAlg,
+    hasher,
     cidVersion: options.cidVersion,
     strategy: options.strategy,
     rawLeaves: options.rawLeaves,

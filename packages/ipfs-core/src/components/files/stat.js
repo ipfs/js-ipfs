@@ -6,6 +6,7 @@ const { exporter } = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -29,7 +30,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+module.exports = ({ blockStorage, repo }) => {
   /**
    * @type {import('ipfs-core-types/src/files').API["stat"]}
    */
@@ -43,13 +44,13 @@ module.exports = (context) => {
       type,
       cid,
       mfsPath
-    } = await toMfsPath(context, path, options)
+    } = await toMfsPath({ blockStorage, repo }, path, options)
 
     const exportPath = type === 'ipfs' && cid ? cid : mfsPath
     let file
 
     try {
-      file = await exporter(exportPath, context.ipld)
+      file = await exporter(exportPath, blockStorage)
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error(`${path} does not exist`), 'ERR_NOT_FOUND')
@@ -75,7 +76,7 @@ const statters = {
    */
   raw: (file) => {
     return {
-      cid: file.cid,
+      cid: asLegacyCid(file.cid),
       size: file.node.length,
       cumulativeSize: file.node.length,
       blocks: 0,
@@ -91,7 +92,7 @@ const statters = {
   file: (file) => {
     /** @type {StatResult} */
     const stat = {
-      cid: file.cid,
+      cid: asLegacyCid(file.cid),
       type: 'file',
       size: file.unixfs.fileSize(),
       cumulativeSize: file.node.size,
@@ -114,7 +115,7 @@ const statters = {
   directory: (file) => {
     /** @type {StatResult} */
     const stat = {
-      cid: file.cid,
+      cid: asLegacyCid(file.cid),
       type: 'directory',
       size: 0,
       cumulativeSize: file.node.size,
@@ -137,7 +138,7 @@ const statters = {
   object: (file) => {
     /** @type {StatResult} */
     return {
-      cid: file.cid,
+      cid: asLegacyCid(file.cid),
       size: file.node.length,
       cumulativeSize: file.node.length,
       type: 'file', // for go compatibility
@@ -153,7 +154,7 @@ const statters = {
   identity: (file) => {
     /** @type {StatResult} */
     return {
-      cid: file.cid,
+      cid: asLegacyCid(file.cid),
       size: file.node.length,
       cumulativeSize: file.node.length,
       blocks: 0,

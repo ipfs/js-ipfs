@@ -6,12 +6,12 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @typedef {Object} Context
- * @property {import('ipld')} ipld
+ * @property {import('../block-storage')} blockStorage
  * @property {import('../types').Preload} preload
  *
  * @param {Context} context
  */
-module.exports = function ({ ipld, preload }) {
+module.exports = function ({ blockStorage, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["cat"]}
    */
@@ -23,7 +23,7 @@ module.exports = function ({ ipld, preload }) {
       preload(pathComponents[0])
     }
 
-    const file = await exporter(ipfsPath, ipld, options)
+    const file = await exporter(ipfsPath, blockStorage, options)
 
     // File may not have unixfs prop if small & imported with rawLeaves true
     if (file.type === 'directory') {

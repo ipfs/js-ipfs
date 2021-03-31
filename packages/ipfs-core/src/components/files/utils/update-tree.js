@@ -2,6 +2,10 @@
 
 const log = require('debug')('ipfs:mfs:utils:update-tree')
 const addLink = require('./add-link')
+const {
+  decode
+// @ts-ignore - TODO vmx 2021-03-31
+} = require('@ipld/dag-pb')
 
 const defaultOptions = {
   shardSplitThreshold: 1000
@@ -9,7 +13,7 @@ const defaultOptions = {
 
 /**
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('cids').CIDVersion} CIDVersion
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('./to-trail').MfsTrail} MfsTrail
@@ -35,7 +39,8 @@ const updateTree = async (context, trail, options) => {
   let index = 0
   let child
 
-  for await (const node of context.ipld.getMany(trail.map(node => node.cid))) {
+  for await (const block of context.blockStorage.getMany(trail.map(node => node.cid))) {
+    const node = decode(block.bytes)
     const cid = trail[index].cid
     const name = trail[index].name
     index++
@@ -44,7 +49,8 @@ const updateTree = async (context, trail, options) => {
       child = {
         cid,
         name,
-        size: node.size
+        // TODO vmx 2021-03-04: Check if the size should be 0 or the actual size
+        size: block.bytes.length
       }
 
       continue

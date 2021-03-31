@@ -1,9 +1,10 @@
 'use strict'
 
-const {
-  DAGLink
-} = require('ipld-dag-pb')
-const CID = require('cids')
+// @ts-ignore - TODO vmx 2021-03-31
+const dagPb = require('@ipld/dag-pb')
+const { CID } = require('multiformats/cid')
+const { sha256 } = require('multiformats/hashes/sha2')
+const Block = require('multiformats/block')
 const log = require('debug')('ipfs:mfs:core:utils:remove-link')
 const { UnixFS } = require('ipfs-unixfs')
 const {
@@ -11,15 +12,13 @@ const {
   updateHamtDirectory
 } = require('./hamt-utils')
 const errCode = require('err-code')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('cids').CIDVersion} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
+ * @typedef {import('../../../types').PbNode} PbNode
  *
  * @typedef {object} RemoveLinkOptions
  * @property {string} name
@@ -28,7 +27,7 @@ const mh = require('multihashing-async').multihash
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
  * @property {CID} [parentCid]
- * @property {DAGNode} [parent]
+ * @property {PbNode} [parent]
  *
  * @typedef {object} RemoveLinkOptionsInternal
  * @property {string} name
@@ -36,7 +35,7 @@ const mh = require('multihashing-async').multihash
  * @property {HashName} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
- * @property {DAGNode} parent
+ * @property {PbNode} parent
  */
 
 /**
@@ -47,12 +46,14 @@ const removeLink = async (context, options) => {
   let parent = options.parent
 
   if (options.parentCid) {
-    if (!CID.isCID(options.parentCid)) {
+    const parentCid = CID.asCID(options.parentCid)
+    if (parentCid === null) {
       throw errCode(new Error('Invalid CID passed to removeLink'), 'EINVALIDPARENTCID')
     }
 
-    log(`Loading parent node ${options.parentCid}`)
-    parent = await context.ipld.get(options.parentCid)
+    log(`Loading parent node ${parentCid}`)
+    const block = await context.blockStorage.get(parentCid)
+    parent = dagPb.decode(block.bytes)
   }
 
   if (!parent) {
@@ -87,14 +88,29 @@ const removeLink = async (context, options) => {
  * @param {RemoveLinkOptionsInternal} options
  */
 const removeFromDirectory = async (context, options) => {
-  const hashAlg = mh.names[options.hashAlg]
-
-  options.parent.rmLink(options.name)
-  const cid = await context.ipld.put(options.parent, mc.DAG_PB, {
-    cidVersion: options.cidVersion,
-    hashAlg
+  // Remove existing link if it exists
+  options.parent.Links = options.parent.Links.filter((link) => {
+    link.Name !== options.name
   })
 
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    default:
+      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+  }
+
+  // TODO vmx 2021-03-04: Check if the CID version matters
+  const parentBlock = await Block.encode({
+    value: options.parent,
+    codec: dagPb,
+    hasher
+  })
+  await context.blockStorage.put(parentBlock)
+
+  const cid = parentBlock.cid
   log(`Updated regular directory ${cid}`)
 
   return {
@@ -123,10 +139,10 @@ const removeFromShardedDirectory = async (context, options) => {
 
 /**
  * @param {MfsContext} context
- * @param {{ bucket: Bucket, prefix: string, node?: DAGNode }[]} positions
+ * @param {{ bucket: Bucket, prefix: string, node?: PbNode }[]} positions
  * @param {string} name
  * @param {RemoveLinkOptionsInternal} options
- * @returns {Promise<{ node: DAGNode, cid: CID, size: number }>}
+ * @returns {Promise<{ node: PbNode, cid: CID, size: number }>}
  */
 const updateShard = async (context, positions, name, options) => {
   const last = positions.pop()
@@ -155,11 +171,13 @@ const updateShard = async (context, positions, name, options) => {
   if (link.Name === `${prefix}${name}`) {
     log(`Removing existing link ${link.Name}`)
 
-    node.rmLink(link.Name)
+    const links = node.Links.filter((nodeLink) => {
+      return nodeLink.Name !== link.Name
+    })
 
     await bucket.del(name)
 
-    return updateHamtDirectory(context, node.Links, bucket, options)
+    return updateHamtDirectory(context, links, bucket, options)
   }
 
   log(`Descending into sub-shard ${link.Name} for ${prefix}${name}`)
@@ -189,7 +207,7 @@ const updateShard = async (context, positions, name, options) => {
 /**
  * @param {MfsContext} context
  * @param {Bucket} bucket
- * @param {DAGNode} parent
+ * @param {PbNode} parent
  * @param {string} oldName
  * @param {string} newName
  * @param {number} size
@@ -197,10 +215,17 @@ const updateShard = async (context, positions, name, options) => {
  * @param {RemoveLinkOptionsInternal} options
  */
 const updateShardParent = (context, bucket, parent, oldName, newName, size, cid, options) => {
-  parent.rmLink(oldName)
-  parent.addLink(new DAGLink(newName, size, cid))
+  // Remove existing link if it exists
+  const parentLinks = parent.Links.filter((link) => {
+    link.Name !== oldName
+  })
+  parentLinks.push({
+    Name: newName,
+    Tsize: size,
+    Hash: cid
+  })
 
-  return updateHamtDirectory(context, parent.Links, bucket, options)
+  return updateHamtDirectory(context, parentLinks, bucket, options)
 }
 
 module.exports = removeLink

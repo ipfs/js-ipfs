@@ -4,11 +4,16 @@ const { mergeOptions } = require('../utils')
 const { isTest } = require('ipfs-utils/src/env')
 const log = require('debug')('ipfs')
 const errCode = require('err-code')
-const { DAGNode } = require('ipld-dag-pb')
 const { UnixFS } = require('ipfs-unixfs')
+// @ts-ignore
+const dagPb = require('@ipld/dag-pb')
+const Block = require('multiformats/block')
+const { sha256 } = require('multiformats/hashes/sha2')
+
 const initAssets = require('../runtime/init-assets-nodejs')
 const { AlreadyInitializedError } = require('../errors')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 const createStartAPI = require('./start')
 const createStopAPI = require('./stop')
@@ -37,6 +42,7 @@ const ObjectAPI = require('./object')
 const RepoAPI = require('./repo')
 const StatsAPI = require('./stats')
 const BlockService = require('ipfs-block-service')
+const BlockStorage = require('../block-storage')
 const createIPLD = require('./ipld')
 const Storage = require('./storage')
 const Network = require('./network')
@@ -92,23 +98,21 @@ class IPFS {
     const pinManager = new PinManagerAPI({ repo, ipld })
     const pin = new PinAPI({ gcLock, pinManager, ipld })
     const block = new BlockAPI({ blockService, preload, gcLock, pinManager, pin })
+    const blockStorage = new BlockStorage({repo: storage.repo, preload, gcLock, pinManager, pin})
     const dag = new DagAPI({ ipld, preload, gcLock, pin })
-    const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
+    const refs = Object.assign(createRefsAPI({ blockStorage, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })
     const { add, addAll, cat, get, ls } = new RootAPI({
       gcLock,
       preload,
       pin,
-      block,
-      ipld,
+      blockStorage,
       options: options.EXPERIMENTAL
     })
 
     const files = createFilesAPI({
-      ipld,
-      block,
-      blockService,
+      blockStorage,
       repo,
       preload,
       options
@@ -120,6 +124,7 @@ class IPFS {
       options: options.preload
     })
 
+    this.blockStorage = blockStorage
     this.preload = preload
     this.name = name
     this.ipld = ipld
@@ -133,7 +138,7 @@ class IPFS {
       network,
       peerId,
       repo,
-      blockService,
+      blockStorage,
       preload,
       ipns,
       mfsPreload,
@@ -146,7 +151,7 @@ class IPFS {
       network,
       preload,
       mfsPreload,
-      blockService,
+      blockStorage,
       ipns,
       repo
     })
@@ -258,17 +263,17 @@ module.exports = IPFS
  * @param {IPFS} ipfs
  */
 const addEmptyDir = async (ipfs) => {
-  const node = new DAGNode(new UnixFS({ type: 'directory' }).marshal())
-  const cid = await ipfs.dag.put(node, {
-    version: 0,
-    format: 'dag-pb',
-    hashAlg: 'sha2-256',
-    preload: false
+  const node = dagPb.prepare({ Data: new UnixFS({ type: 'directory' }).marshal() })
+  const block = await Block.encode({
+    value: node,
+    codec: dagPb,
+    hasher: sha256
   })
+  await ipfs.blockStorage.put(block)
 
-  await ipfs.pin.add(cid)
+  await ipfs.pin.add(asLegacyCid(block.cid))
 
-  return cid
+  return block.cid
 }
 
 /**

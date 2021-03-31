@@ -1,11 +1,10 @@
 'use strict'
 
 const { UnixFS } = require('ipfs-unixfs')
-const {
-  DAGNode
-} = require('ipld-dag-pb')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
+// @ts-ignore - TODO vmx 2021-03-31
+const dagPb = require('@ipld/dag-pb')
+const Block = require('multiformats/block')
+const { sha256 } = require('multiformats/hashes/sha2')
 
 /**
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
@@ -24,7 +23,6 @@ const mh = require('multihashing-async').multihash
  * @param {number} [options.mode]
  */
 const createNode = async (context, type, options) => {
-  const hashAlg = mh.names[options.hashAlg]
   const metadata = new UnixFS({
     type,
     mode: options.mode,
@@ -32,15 +30,27 @@ const createNode = async (context, type, options) => {
     mtime: options.mtime
   })
 
-  const node = new DAGNode(metadata.marshal())
-  const cid = await context.ipld.put(node, mc.DAG_PB, {
-    cidVersion: options.cidVersion,
-    hashAlg,
-    onlyHash: !options.flush
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    default:
+      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+  }
+
+  const node = dagPb.prepare({ Data: metadata.marshal() })
+  const block = await Block.encode({
+    value: node,
+    codec: dagPb,
+    hasher
   })
+  if (options.flush) {
+    await context.blockStorage.put(block)
+  }
 
   return {
-    cid,
+    cid: block.cid,
     node
   }
 }

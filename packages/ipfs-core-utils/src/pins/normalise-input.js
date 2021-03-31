@@ -2,6 +2,8 @@
 
 const errCode = require('err-code')
 const CID = require('cids')
+//const CID = require('multiformats/cid')
+//const asLegacyCid = require('../as-legacy-cid')
 
 /**
  * @typedef {Object} Pinnable
@@ -58,6 +60,19 @@ module.exports = async function * normaliseInput (input) {
     return
   }
 
+  //// CID
+  //const cid = CID.asCID(input)
+  //if (cid !== null) {
+  //  yield toPin({ cid: asLegacyCid(cid) })
+  //  return
+  //}
+  //
+  //// LegacyCID
+  //if (LegacyCID.isCID(input) {
+  //
+  //}
+  //
+  //// String
   if (input instanceof String || typeof input === 'string') {
     yield toPin({ path: input })
     return

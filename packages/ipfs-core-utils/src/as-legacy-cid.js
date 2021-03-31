@@ -1,7 +1,7 @@
 'use strict'
 
 const LegacyCID = require('cids')
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 
 /**

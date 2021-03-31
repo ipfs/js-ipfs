@@ -7,7 +7,7 @@ const log = require('debug')('ipfs:mfs:utils:to-trail')
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {object} MfsTrail
  * @property {string} name
- * @property {import('cids')} cid
+ * @property {import('multiformats/cid').CID} cid
  * @property {number} [size]
  * @property {string} [type]
  *
@@ -24,7 +24,7 @@ const toTrail = async (context, path) => {
 
   const output = []
 
-  for await (const fsEntry of walkPath(path, context.ipld)) {
+  for await (const fsEntry of walkPath(path, context.blockStorage)) {
     let size
 
     // TODO: include `.size` property in unixfs-exporter output

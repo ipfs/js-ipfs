@@ -4,27 +4,37 @@ const { exporter, recursive } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const { CID } = require('multiformats/cid')
+const LegacyCID = require('cids')
 
 /**
  * @typedef {Object} Context
- * @property {import('ipld')} ipld
+ * @property {import('../block-storage')} blockStorage
  * @property {import('../types').Preload} preload
  *
  * @param {Context} context
  */
-module.exports = function ({ ipld, preload }) {
+module.exports = function ({ blockStorage, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["ls"]}
    */
   async function * ls (ipfsPath, options = {}) {
-    const path = normalizeCidPath(ipfsPath)
-    const pathComponents = path.split('/')
+    const legacyPath = normalizeCidPath(ipfsPath)
+    const pathComponents = legacyPath.split('/')
 
     if (options.preload !== false) {
       preload(pathComponents[0])
     }
 
-    const file = await exporter(ipfsPath, ipld, options)
+    // Make sure that the exporter doesn't get a legacy CID
+    let path
+    if (LegacyCID.isCID(legacyPath)) {
+      path = CID.decode(legacyPath.bytes)
+    } else {
+      path = legacyPath
+    }
+
+    const file = await exporter(path, blockStorage, options)
 
     if (file.type === 'file') {
       yield mapFile(file, options)
@@ -33,8 +43,8 @@ module.exports = function ({ ipld, preload }) {
 
     if (file.type === 'directory') {
       if (options.recursive) {
-        for await (const child of recursive(file.cid, ipld, options)) {
-          if (file.cid.toBaseEncodedString() === child.cid.toBaseEncodedString()) {
+        for await (const child of recursive(file.cid, blockStorage, options)) {
+          if (file.cid.toString() === child.cid.toString()) {
             continue
           }
 

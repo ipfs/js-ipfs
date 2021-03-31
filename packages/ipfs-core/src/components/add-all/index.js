@@ -6,6 +6,7 @@ const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
+const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @typedef {import('cids')} CID
@@ -14,7 +15,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
  * @typedef {Object} Context
- * @property {import('ipfs-core-types/src/block').API} block
+ * @property {import('../../block-storage')} blockStorage
  * @property {import('../gc-lock').GCLock} gcLock
  * @property {import('../../types').Preload} preload
  * @property {import('ipfs-core-types/src/pin').API} pin
@@ -22,7 +23,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
  *
  * @param {Context} context
  */
-module.exports = ({ block, gcLock, preload, pin, options }) => {
+module.exports = ({ blockStorage, gcLock, preload, pin, options }) => {
   const isShardingEnabled = options && options.sharding
 
   /**
@@ -90,7 +91,7 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
       /**
        * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
        */
-      source => importer(source, block, {
+      source => importer(source, blockStorage, {
         ...opts,
         pin: false
       }),
@@ -139,7 +140,7 @@ function transformFile (opts) {
 
       yield {
         path,
-        cid,
+        cid: asLegacyCid(cid),
         size: file.size,
         mode: file.unixfs && file.unixfs.mode,
         mtime: file.unixfs && file.unixfs.mtime
@@ -167,7 +168,7 @@ function preloadFile (preload, opts) {
       const shouldPreload = isRootFile && !opts.onlyHash && opts.preload !== false
 
       if (shouldPreload) {
-        preload(file.cid)
+        preload(asLegacyCid(file.cid))
       }
 
       yield file
@@ -195,7 +196,7 @@ function pinFile (pin, opts) {
       if (shouldPin) {
         // Note: addAsyncIterator() has already taken a GC lock, so tell
         // pin.add() not to take a (second) GC lock
-        await pin.add(file.cid, {
+        await pin.add(asLegacyCid(file.cid), {
           preload: false,
           lock: false
         })

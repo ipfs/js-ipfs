@@ -57,6 +57,7 @@
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
+    "@ipld/dag-pb": "0.0.1",
     "abort-controller": "^3.0.0",
     "array-shuffle": "^2.0.0",
     "cborg": "^1.2.1",
@@ -75,9 +76,9 @@
     "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
     "ipfs-repo": "^9.0.0",
-    "ipfs-unixfs": "^4.0.1",
-    "ipfs-unixfs-exporter": "^5.0.1",
-    "ipfs-unixfs-importer": "^7.0.1",
+    "ipfs-unixfs": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs",
+    "ipfs-unixfs-exporter": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs-exporter",
+    "ipfs-unixfs-importer": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs-importer",
     "ipfs-utils": "^6.0.4",
     "ipld": "^0.29.0",
     "ipld-block": "^0.11.0",
@@ -113,6 +114,7 @@
     "multiaddr-to-uri": "^6.0.0",
     "multibase": "^4.0.2",
     "multicodec": "^3.0.1",
+    "multiformats": "/home/vmx/src/pl/js-multiformats/dist",
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",
