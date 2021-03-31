@@ -12,10 +12,10 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
  *
  * @typedef {Object} BandwidthInfo
- * @property {BigInt} totalIn
- * @property {BigInt} totalOut
- * @property {BigInt} rateIn
- * @property {BigInt} rateOut
+ * @property {bigint} totalIn
+ * @property {bigint} totalOut
+ * @property {bigint} rateIn
+ * @property {bigint} rateOut
  *
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('peer-id')} PeerId
