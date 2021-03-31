@@ -1,7 +1,11 @@
 'use strict'
 
+/**
+ * @param {number | undefined} secs
+ * @param {number | undefined} nsecs
+ */
 module.exports = (secs, nsecs) => {
-  if ((secs === undefined || secs === null) && (nsecs === undefined || nsecs === null)) {
+  if (secs == null && nsecs == null) {
     return
   }
 

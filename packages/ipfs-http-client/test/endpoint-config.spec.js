@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const ipfsClient = require('../src')
+const ipfsClient = require('../src').create
 
 describe('.getEndpointConfig', () => {
   it('should return the endpoint configuration', function () {

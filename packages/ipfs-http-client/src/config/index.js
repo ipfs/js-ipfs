@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @param {import('../types').Options} config
+ */
 module.exports = config => ({
   getAll: require('./getAll')(config),
   get: require('./get')(config),

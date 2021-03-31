@@ -12,7 +12,7 @@ const last = require('it-last')
 const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

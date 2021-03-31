@@ -16,13 +16,26 @@ const ttl = 60 * 1000
 // we don't want preload calls to exhaust the limit (~6)
 const httpQueue = new PQueue({ concurrency: 4 })
 
+/**
+ * @param {{ Path: string, Message: string }} response
+ */
 const ipfsPath = (response) => {
   if (response.Path) return response.Path
   throw new Error(response.Message)
 }
 
+/**
+ * @param {string} fqdn
+ * @param {object} opts
+ */
 module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
+  /**
+   * @param {string} fqdn
+   * @param {object} opts
+   * @param {boolean} [opts.nocache]
+   */
   const resolveDnslink = async (fqdn, opts = {}) => {
+    // @ts-ignore - URLSearchParams does not take boolean options, only strings
     const searchParams = new URLSearchParams(opts)
     searchParams.set('arg', fqdn)
 

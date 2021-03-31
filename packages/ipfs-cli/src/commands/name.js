@@ -11,6 +11,9 @@ module.exports = {
 
   description: 'Publish and resolve IPNS names.',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs.commandDir('name')
   }

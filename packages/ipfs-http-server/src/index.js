@@ -4,6 +4,7 @@ const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
 const multiaddr = require('multiaddr')
+// @ts-ignore no types
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
 const { AbortController } = require('native-abort-controller')
@@ -11,6 +12,17 @@ const errorHandler = require('./error-handler')
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
 
+/**
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
+ * @typedef {import('./types').Server} Server
+ * @typedef {import('ipld')} IPLD
+ * @typedef {import('libp2p')} libp2p
+ * @typedef {IPFS & { ipld: IPLD, libp2p: libp2p }} JSIPFS
+ */
+
+/**
+ * @param {import('@hapi/hapi').ServerInfo} info
+ */
 function hapiInfoToMultiaddr (info) {
   let hostname = info.host
   let uri = info.uri
@@ -24,11 +36,18 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
+/**
+ * @param {string | string[]} serverAddrs
+ * @param {(host: string, port: string, ipfs: JSIPFS, cors: Record<string, any>) => Promise<Server>} createServer
+ * @param {JSIPFS} ipfs
+ * @param {Record<string, any>} cors
+ */
 async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
 
+  /** @type {Server[]} */
   const servers = []
   for (const address of serverAddrs) {
     const addrParts = address.split('/')
@@ -41,11 +60,16 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
 }
 
 class HttpApi {
-  constructor (ipfs, options = {}) {
+  /**
+   * @param {JSIPFS} ipfs
+   */
+  constructor (ipfs) {
     this._ipfs = ipfs
     this._log = Object.assign(debug(LOG), {
       error: debug(LOG_ERROR)
     })
+    /** @type {Server[]} */
+    this._apiServers = []
   }
 
   /**
@@ -59,20 +83,24 @@ class HttpApi {
     const ipfs = this._ipfs
 
     const config = await ipfs.config.getAll()
-    config.Addresses = config.Addresses || {}
-    config.API = config.API || {}
-    config.API.HTTPHeaders = config.API.HTTPHeaders || {}
+    const headers = (config.API && config.API.HTTPHeaders) || {}
+    const apiAddrs = (config.Addresses && config.Addresses.API) || []
 
-    const apiAddrs = config.Addresses.API
     this._apiServers = await serverCreator(apiAddrs, this._createApiServer, ipfs, {
-      origin: config.API.HTTPHeaders['Access-Control-Allow-Origin'] || [],
-      credentials: Boolean(config.API.HTTPHeaders['Access-Control-Allow-Credentials'])
+      origin: headers['Access-Control-Allow-Origin'] || [],
+      credentials: Boolean(headers['Access-Control-Allow-Credentials'])
     })
 
     this._log('started')
     return this
   }
 
+  /**
+   * @param {string} host
+   * @param {string} port
+   * @param {JSIPFS} ipfs
+   * @param {Record<string, any>} cors
+   */
   async _createApiServer (host, port, ipfs, cors) {
     cors = {
       ...cors,
@@ -80,15 +108,13 @@ class HttpApi {
       additionalExposedHeaders: ['X-Stream-Output', 'X-Chunked-Output', 'X-Content-Length']
     }
 
-    if (!cors.origin || !cors.origin.length) {
-      cors = false
-    }
+    const enableCors = Boolean(cors.origin?.length)
 
     const server = Hapi.server({
       host,
       port,
       routes: {
-        cors,
+        cors: enableCors ? cors : false,
         response: {
           emptyStatusCode: 200
         }
@@ -130,7 +156,7 @@ class HttpApi {
     server.ext('onPreResponse', (request, h) => {
       const { response } = request
 
-      if (response.isBoom && response.output && response.output.statusCode === 405) {
+      if (Boom.isBoom(response) && response.output && response.output.statusCode === 405) {
         response.output.headers.Allow = 'OPTIONS, POST'
       }
 
@@ -207,12 +233,14 @@ class HttpApi {
 
   async stop () {
     this._log('stopping')
+    /**
+     * @param {Server[]} servers
+     */
     const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
       stopServers(this._apiServers)
     ])
     this._log('stopped')
-    return this
   }
 }
 

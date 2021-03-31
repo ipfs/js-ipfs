@@ -15,7 +15,6 @@ const {
 
 /**
  * @param {import('./normalise-input').ToContent} input
- * @returns {AsyncIterable<Uint8Array>}
  */
 async function * toAsyncIterable (input) {
   // Bytes | String
@@ -41,7 +40,7 @@ async function * toAsyncIterable (input) {
   }
 
   // (Async)Iterator<?>
-  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+  if (Symbol.iterator in input || Symbol.asyncIterator in input) {
     /** @type {any} peekable */
     const peekable = itPeekable(input)
 
@@ -73,9 +72,7 @@ async function * toAsyncIterable (input) {
 }
 
 /**
- *
  * @param {ArrayBuffer | ArrayBufferView | string | InstanceType<typeof window.String> | number[]} chunk
- * @returns {Uint8Array}
  */
 function toBytes (chunk) {
   if (chunk instanceof Uint8Array) {

@@ -30,6 +30,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {boolean} argv.long
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({
     ctx: { ipfs, print },
     path,
@@ -37,11 +45,14 @@ module.exports = {
     cidBase,
     timeout
   }) {
+    /**
+     * @param {import('ipfs-core-types/src/files').MFSEntry} file
+     */
     const printListing = file => {
       const name = stripControlCharacters(file.name)
 
       if (long) {
-        print(`${formatMode(file.mode, file.type === 1)}\t${formatMtime(file.mtime)}\t${name}\t${file.cid.toString(cidBase)}\t${file.size}`)
+        print(`${file.mode ? formatMode(file.mode, file.type === 'directory') : ''}\t${file.mtime ? formatMtime(file.mtime) : ''}\t${name}\t${file.cid.toString(cidBase)}\t${file.size}`)
       } else {
         print(name)
       }

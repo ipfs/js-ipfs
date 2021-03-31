@@ -12,12 +12,22 @@ const configService = require('./config')
 const { NotEnabledError } = require('../errors')
 const createLibP2P = require('./libp2p')
 
+/**
+ * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('../types').Options} IPFSOptions
+ * @typedef {import('../types').InitOptions} InitOptions
+ * @typedef {import('../types').Print} Print
+ * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ * @typedef {import('libp2p-crypto').KeyType} KeyType
+ * @typedef {import('libp2p/src/keychain')} Keychain
+ */
+
 class Storage {
   /**
    * @private
    * @param {PeerId} peerId
    * @param {Keychain} keychain
-   * @param {Repo} repo
+   * @param {IPFSRepo} repo
    * @param {Print} print
    * @param {boolean} isNew
    */
@@ -31,17 +41,17 @@ class Storage {
   }
 
   /**
-   *
-   * @param {Options} options
+   * @param {Print} print
+   * @param {IPFSOptions} options
    */
-  static async start (options) {
-    const { repoAutoMigrate: autoMigrate, repo: inputRepo, print, silent } = options
+  static async start (print, options) {
+    const { repoAutoMigrate, repo: inputRepo } = options
 
     const repo = (typeof inputRepo === 'string' || inputRepo == null)
-      ? createRepo({ path: inputRepo, autoMigrate, silent })
+      ? createRepo(print, { path: inputRepo, autoMigrate: Boolean(repoAutoMigrate) })
       : inputRepo
 
-    const { peerId, keychain, isNew } = await loadRepo(repo, options)
+    const { peerId, keychain, isNew } = await loadRepo(print, repo, options)
 
     // TODO: throw error?
     // @ts-ignore On start, keychain will always be available
@@ -51,58 +61,42 @@ class Storage {
 module.exports = Storage
 
 /**
- *
- * @param {Repo} repo
- * @param {RepoOptions & InitOptions} options
- * @returns {Promise<{peerId: PeerId, keychain?: Keychain, isNew:boolean }>}
+ * @param {Print} print
+ * @param {IPFSRepo} repo
+ * @param {IPFSOptions} options
  */
-const loadRepo = async (repo, options) => {
-  const openError = await openRepo(repo)
-  if (openError == null) {
-    // If opened successfully configure repo
+const loadRepo = async (print, repo, options) => {
+  if (!repo.closed) {
     return { ...await configureRepo(repo, options), isNew: false }
-  } else if (openError.code === ERR_REPO_NOT_INITIALIZED) {
-    if (options.allowNew === false) {
+  }
+
+  try {
+    await repo.open()
+
+    return { ...await configureRepo(repo, options), isNew: false }
+  } catch (err) {
+    if (err.code !== ERR_REPO_NOT_INITIALIZED) {
+      throw err
+    }
+
+    if (options.init && options.init.allowNew === false) {
       throw new NotEnabledError('Initialization of new repos disabled by config, pass `config.init.isNew: true` to enable it')
-    } else {
-      // If failed to open, because repo isn't initilaized and initalizing a
-      // new repo allowed, init repo:
-      return { ...await initRepo(repo, options), isNew: true }
     }
-  } else {
-    throw openError
+
+    return { ...await initRepo(print, repo, options), isNew: true }
   }
 }
 
 /**
- * Attempts to open given repo unless it is already open and returns result
- * containing repo or an error if failed.
- *
- * @param {Repo} repo
- * @returns {Promise<(Error & { code: number }) | null>}
- */
-const openRepo = async (repo) => {
-  // If repo is closed attempt to open it.
-  if (repo.closed) {
-    try {
-      await repo.open()
-      return null
-    } catch (error) {
-      return error
-    }
-  } else {
-    return null
-  }
-}
-
-/**
- * @param {Repo} repo
- * @param {RepoOptions & InitOptions} options
+ * @param {Print} print
+ * @param {IPFSRepo} repo
+ * @param {IPFSOptions} options
  * @returns {Promise<{peerId: PeerId, keychain?: Keychain}>}
  */
-const initRepo = async (repo, options) => {
-  // 1. Verify that repo does not exist yet (if it does and we could not
-  // open it we give up)
+const initRepo = async (print, repo, options) => {
+  const initOptions = options.init || {}
+
+  // 1. Verify that repo does not exist yet (if it does and we could not open it we give up)
   const exists = await repo.exists()
   log('repo exists?', exists)
 
@@ -110,20 +104,18 @@ const initRepo = async (repo, options) => {
     throw new Error('repo already exists')
   }
 
-  // 2. Restore `peerId` from a given `.privateKey` or init new using
-  // provide options.
-  const peerId = options.privateKey
-    ? await decodePeerId(options.privateKey)
-    : await initPeerId(options)
+  // 2. Restore `peerId` from a given `.privateKey` or init new using provided options.
+  const peerId = initOptions.privateKey
+    ? await decodePeerId(initOptions.privateKey)
+    : await initPeerId(print, initOptions)
 
   const identity = peerIdToIdentity(peerId)
 
   log('peer identity: %s', identity.PeerID)
 
-  // 3. Init new repo with provided `.config` and restored / initalized
-  // peerd identity.
+  // 3. Init new repo with provided `.config` and restored / initialized `peerId`
   const config = {
-    ...mergeOptions(applyProfiles(getDefaultConfig(), options.profiles), options.config),
+    ...mergeOptions(applyProfiles(getDefaultConfig(), initOptions.profiles), options.config),
     Identity: identity
   }
   await repo.init(config)
@@ -171,15 +163,15 @@ const decodePeerId = (peerId) => {
 }
 
 /**
- * Initializes new PeerId by generting an underlying keypair.
+ * Initializes new PeerId by generating an underlying keypair.
  *
+ * @param {Print} print
  * @param {Object} options
  * @param {KeyType} [options.algorithm='RSA']
  * @param {number} [options.bits=2048]
- * @param {Print} options.print
  * @returns {Promise<PeerId>}
  */
-const initPeerId = ({ print, algorithm = 'RSA', bits = 2048 }) => {
+const initPeerId = (print, { algorithm = 'RSA', bits = 2048 }) => {
   // Generate peer identity keypair + transform to desired format + add to config.
   print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
   return PeerId.create({ keyType: algorithm, bits })
@@ -195,14 +187,18 @@ const peerIdToIdentity = (peerId) => ({
 })
 
 /**
- * Applies passed `profiles` and a `config`  to an open repo.
+ * Applies passed `profiles` and a `config` to an open repo.
  *
- * @param {Repo} repo
- * @param {ConfigureOptions} options
+ * @param {IPFSRepo} repo
+ * @param {IPFSOptions} options
  * @returns {Promise<{peerId: PeerId, keychain?: Keychain}>}
  */
-const configureRepo = async (repo, { config, profiles, pass }) => {
+const configureRepo = async (repo, options) => {
+  const config = options.config
+  const profiles = (options.init && options.init.profiles) || []
+  const pass = options.pass
   const original = await repo.config.getAll()
+  // @ts-ignore TODO: move config types to repo
   const changed = mergeConfigs(applyProfiles(original, profiles), config)
 
   if (original !== changed) {
@@ -253,51 +249,3 @@ const applyProfiles = (config, profiles) => {
     return profile.transform(config)
   }, config)
 }
-
-/**
- * @typedef {StorageOptions & RepoOptions & InitOptions} Options
- *
- * @typedef {Object} StorageOptions
- * @property {Repo|string} [repo='~/.jsipfs'] - The file path at which to store the
- * IPFS node’s data. Alternatively, you can set up a customized storage system
- * by providing an Repo implementation. (In browser default is 'ipfs').
- * @property {boolean} [repoAutoMigrate=true] - js-ipfs comes bundled with a tool
- * that automatically migrates your IPFS repository when a new version is
- * available.
- * @property {boolean} [repoOwner]
- * @property {IPLDOptions} [ipld]
- *
- *
- * @typedef {Object} RepoOptions
- * @property {Print} print
- * @property {IPFSConfig} [config]
- * @property {boolean} [silent]
- *
- * @typedef {Object} ConfigureOptions
- * @property {IPFSConfig} [options.config]
- * @property {string[]} [options.profiles]
- * @property {string} [options.pass]
- *
- * @typedef {Object} InitOptions - On Frist run js-ipfs will initalize a repo
- * which can be customized through this settings.
- * @property {boolean} [emptyRepo=false] - Whether to remove built-in assets,
- * like the instructional tour and empty mutable file system, from the repo.
- * @property {KeyType} [algorithm='RSA'] - The type of key to use.
- * @property {number} [bits=2048] - Number of bits to use in the generated key
- * pair (rsa only).
- * @property {PeerId|string} [privateKey] - A pre-generated private key to use.
- * **NOTE: This overrides `bits`.**
- * @property {string} [pass] - A passphrase to encrypt keys. You should
- * generally use the top-level `pass` option instead of the `init.pass`
- * option (this one will take its value from the top-level option if not set).
- * @property {string[]} [profiles] - Apply profile settings to config.
- * @property {boolean} [allowNew=true] - Set to `false` to disallow
- * initialization if the repo does not already exist.
- *
- * @typedef {import('.').IPLDOptions} IPLDOptions
- * @typedef {import('.').Print} Print
- * @typedef {import('.').IPFSConfig} IPFSConfig
- * @typedef {import('ipfs-core-types/src/repo').Repo<IPFSConfig>} Repo
- * @typedef {import('libp2p-crypto').KeyType} KeyType
- * @typedef {import('libp2p/src/keychain')} Keychain
- */

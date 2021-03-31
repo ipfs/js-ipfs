@@ -19,7 +19,14 @@ exports.getOrSet = {
     },
     pre: [{
       assign: 'args',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
       method: (request, _h) => {
+        /**
+         * @param {{ key: string, value: any }} args
+         */
         const parseValue = (args) => {
           if (request.query.bool) {
             args.value = args.value === 'true'
@@ -70,6 +77,11 @@ exports.getOrSet = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -154,6 +166,11 @@ exports.get = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -197,6 +214,11 @@ exports.show = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -234,6 +256,10 @@ exports.replace = {
     },
     pre: [{
       assign: 'args',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
       method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("Argument 'file' is required")
@@ -241,7 +267,7 @@ exports.replace = {
 
         let file
 
-        for await (const part of multipart(request)) {
+        for await (const part of multipart(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -270,6 +296,11 @@ exports.replace = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -326,6 +357,11 @@ exports.profiles = {
           })
       }
     },
+
+    /**
+     * @param {import('../../types').Request} request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     handler: async function (request, h) {
       const {
         app: {
@@ -368,6 +404,11 @@ exports.profiles = {
         })
       }
     },
+
+    /**
+     * @param {import('../../types').Request} request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     handler: async function (request, h) {
       const {
         app: {

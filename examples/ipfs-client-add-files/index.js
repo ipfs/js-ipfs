@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 'use strict'
 
-const ipfsClient = require('ipfs-client')
+const { create: ipfsClient } = require('ipfs-client')
 let ipfs
 
 const COLORS = {

@@ -1,40 +1,37 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-exporter')
+const { exporter } = require('ipfs-unixfs-exporter')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @typedef {import('./').MfsContext} MfsContext
+ * @typedef {object} DefaultOptions
+ * @property {number} offset
+ * @property {number} length
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ */
+
+/**
+ * @type {DefaultOptions}
+ */
 const defaultOptions = {
   offset: 0,
-  length: Infinity,
-  signal: undefined
+  length: Infinity
 }
 
 /**
- * @param {any} context
+ * @param {MfsContext} context
  */
 module.exports = (context) => {
   /**
-   * Read a file
-   *
-   * @param {string | CID} path - An MFS path, IPFS Path or CID to read
-   * @param {ReadOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<Uint8Array>}
-   * @example
-   * ```js
-   * const chunks = []
-   *
-   * for await (const chunk of ipfs.files.read('/hello-world')) {
-   *   chunks.push(chunk)
-   * }
-   *
-   * console.log(uint8ArrayConcat(chunks).toString())
-   * // Hello, World!
-   * ```
+   * @type {import('ipfs-core-types/src/files').API["read"]}
    */
   function mfsRead (path, options = {}) {
+    /** @type {DefaultOptions} */
     options = mergeOptions(defaultOptions, options)
 
     return {
@@ -42,7 +39,7 @@ module.exports = (context) => {
         const mfsPath = await toMfsPath(context, path, options)
         const result = await exporter(mfsPath.mfsPath, context.ipld)
 
-        if (result.unixfs.type !== 'file') {
+        if (result.type !== 'file') {
           throw errCode(new Error(`${path} was not a file`), 'ERR_NOT_FILE')
         }
 
@@ -62,12 +59,3 @@ module.exports = (context) => {
 
   return withTimeoutOption(mfsRead)
 }
-
-/**
- * @typedef {Object} ReadOptions
- * @property {number} [offset] - An offset to start reading the file from
- * @property {number} [length] - An optional max length to read from the file
- *
- * @typedef {import('cids')} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- */

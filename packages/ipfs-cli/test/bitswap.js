@@ -5,10 +5,9 @@ const { expect } = require('aegir/utils/chai')
 const CID = require('cids')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const Big = require('bignumber.js')
 
 describe('bitswap', () => {
-  const peerId = 'peer'
+  const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA'
   const key0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
   const key1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
 
@@ -88,13 +87,13 @@ describe('bitswap', () => {
 
     it('should return bitswap stats', async () => {
       ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
-        provideBufLen: Big(10),
-        blocksReceived: Big(10),
-        blocksSent: Big(10),
-        dataReceived: Big(10),
-        dupBlksReceived: Big(10),
-        dupDataReceived: Big(10),
-        dataSent: Big(10),
+        provideBufLen: BigInt(10),
+        blocksReceived: BigInt(10),
+        blocksSent: BigInt(10),
+        dataReceived: BigInt(10),
+        dupBlksReceived: BigInt(10),
+        dupDataReceived: BigInt(10),
+        dataSent: BigInt(10),
         wantlist: [
           new CID(key0),
           new CID(key1)
@@ -120,13 +119,13 @@ describe('bitswap', () => {
 
     it('stat --human', async () => {
       ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
-        provideBufLen: Big(10),
-        blocksReceived: Big(10),
-        blocksSent: Big(10),
-        dataReceived: Big(10),
-        dupBlksReceived: Big(10),
-        dupDataReceived: Big(10),
-        dataSent: Big(10),
+        provideBufLen: BigInt(10),
+        blocksReceived: BigInt(10),
+        blocksSent: BigInt(10),
+        dataReceived: BigInt(10),
+        dupBlksReceived: BigInt(10),
+        dupDataReceived: BigInt(10),
+        dataSent: BigInt(10),
         wantlist: [
           new CID(key0),
           new CID(key1)
@@ -152,13 +151,13 @@ describe('bitswap', () => {
 
     it('should get stats with wantlist CIDs encoded in specified base', async () => {
       ipfs.bitswap.stat.withArgs(defaultOptions).resolves({
-        provideBufLen: Big(10),
-        blocksReceived: Big(10),
-        blocksSent: Big(10),
-        dataReceived: Big(10),
-        dupBlksReceived: Big(10),
-        dupDataReceived: Big(10),
-        dataSent: Big(10),
+        provideBufLen: BigInt(10),
+        blocksReceived: BigInt(10),
+        blocksSent: BigInt(10),
+        dataReceived: BigInt(10),
+        dupBlksReceived: BigInt(10),
+        dupDataReceived: BigInt(10),
+        dataSent: BigInt(10),
         wantlist: [
           new CID(key0),
           new CID(key1)
@@ -175,13 +174,13 @@ describe('bitswap', () => {
         ...defaultOptions,
         timeout: 1000
       }).resolves({
-        provideBufLen: Big(10),
-        blocksReceived: Big(10),
-        blocksSent: Big(10),
-        dataReceived: Big(10),
-        dupBlksReceived: Big(10),
-        dupDataReceived: Big(10),
-        dataSent: Big(10),
+        provideBufLen: BigInt(10),
+        blocksReceived: BigInt(10),
+        blocksSent: BigInt(10),
+        dataReceived: BigInt(10),
+        dupBlksReceived: BigInt(10),
+        dupDataReceived: BigInt(10),
+        dataSent: BigInt(10),
         wantlist: [
           new CID(key0),
           new CID(key1)
@@ -221,7 +220,7 @@ describe('bitswap', () => {
       const out = await cli(`bitswap unwant ${key0} --timeout=1s`, { ipfs })
       expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
       expect(ipfs.bitswap.unwant.called).to.be.true()
-      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([key0, {
+      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([new CID(key0), {
         ...defaultOptions,
         timeout: 1000
       }])

@@ -13,26 +13,19 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
+  "types": "dist/src/index.d.ts",
   "browser": {
     "worker_threads": false
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
-      ]
-    }
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "prepare": "npm run build",
     "build": "aegir build",
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
@@ -42,14 +35,15 @@
     "lint": "aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
+    "ipfs-core-types": "^0.3.1",
     "ipfs-message-port-protocol": "^0.6.1",
     "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "aegir": "^31.0.0",
+    "aegir": "^32.1.0",
     "cids": "^1.1.5",
     "rimraf": "^3.0.2"
   },

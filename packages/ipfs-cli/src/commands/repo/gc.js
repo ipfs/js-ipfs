@@ -25,13 +25,23 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {boolean} argv.quiet
+   * @param {boolean} argv.streamErrors
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, quiet, streamErrors, timeout }) {
     for await (const r of ipfs.repo.gc({
       timeout
     })) {
-      if (r.err) {
+      // @ts-ignore cannot derive type
+      if (r.err != null) {
+        // @ts-ignore cannot derive type
         streamErrors && print(r.err.message, true, true)
       } else {
+        // @ts-ignore cannot derive type
         print((quiet ? '' : 'removed ') + r.cid)
       }
     }

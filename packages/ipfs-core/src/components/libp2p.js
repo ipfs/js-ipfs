@@ -6,6 +6,19 @@ const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 
 /**
+ * @typedef {Object} KeychainConfig
+ * @property {string} [pass]
+ *
+ * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('multiaddr')} Multiaddr
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('../types').Options} IPFSOptions
+ * @typedef {import('libp2p')} LibP2P
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
+ * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ */
+
+/**
  * @param {Object} config
  * @param {Repo} config.repo
  * @param {IPFSOptions|undefined} config.options
@@ -13,7 +26,6 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @param {Multiaddr[]|undefined} config.multiaddrs
  * @param {KeychainConfig|undefined} config.keychainConfig
  * @param {Partial<IPFSConfig>|undefined} config.config
- * @returns {LibP2P}
  */
 module.exports = ({
   options = {},
@@ -59,10 +71,12 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
+    // @ts-ignore - `router` value is not constrained
     if (!PubsubRouters[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
     }
 
+    // @ts-ignore - `router` value is not constrained
     return PubsubRouters[router]
   }
 
@@ -163,16 +177,3 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 
   return libp2pConfig
 }
-
-/**
- * @typedef {Object} KeychainConfig
- * @property {string} [pass]
- *
- * @typedef {import('.').Repo} Repo
- * @typedef {import('.').Multiaddr} Multiaddr
- * @typedef {import('.').PeerId} PeerId
- * @typedef {import('.').Options} IPFSOptions
- * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
- * @typedef {import('.').IPFSConfig} IPFSConfig
- */

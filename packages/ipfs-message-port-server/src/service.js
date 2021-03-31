@@ -8,12 +8,11 @@ const { FilesService } = require('./files')
 const { BlockService } = require('./block')
 
 /**
- * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  */
 
 exports.IPFSService = class IPFSService {
   /**
-   *
    * @param {IPFS} ipfs
    */
   constructor (ipfs) {

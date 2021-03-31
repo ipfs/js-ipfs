@@ -7,24 +7,18 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @param {Object} config
- * @param {import('.').PeerId} config.peerId
- * @param {import('.').NetworkService} config.network
+ * @param {import('peer-id')} config.peerId
+ * @param {import('../types').NetworkService} config.network
  */
 module.exports = ({ peerId, network }) => {
   /**
-   * Returns the identity of the Peer
-   *
-   * @param {import('../utils').AbortOptions} [_options]
-   * @returns {Promise<ID>}
-   * @example
-   * ```js
-   * const identity = await ipfs.id()
-   * console.log(identity)
-   * ```
+   * @type {import('ipfs-core-types/src/root').API["id"]}
    */
-  async function id (_options) { // eslint-disable-line require-await
+  async function id (_options = {}) { // eslint-disable-line require-await
     const id = peerId.toB58String()
+    /** @type {import('multiaddr')[]} */
     let addresses = []
+    /** @type {string[]} */
     let protocols = []
 
     const net = network.try()

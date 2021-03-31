@@ -1,5 +1,6 @@
 'use strict'
 
+// @ts-ignore - no types
 const mortice = require('mortice')
 
 /**

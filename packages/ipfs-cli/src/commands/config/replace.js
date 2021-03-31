@@ -16,6 +16,12 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.file
+   * @param {number} argv.timeout
+   */
   handler ({ ctx: { ipfs, isDaemon }, file, timeout }) {
     const filePath = path.resolve(process.cwd(), file)
 

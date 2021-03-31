@@ -11,18 +11,24 @@ const {
   MFS
 } = loadServices()
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {import('./types').Options} options
+ */
 module.exports = async function createServer (ipfs, options = {}) {
   options = options || {}
 
   const server = new grpc.Server()
   server.addService(Root, {
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     add: require('./endpoints/add')(ipfs, options),
-    // @ts-ignore
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     id: require('./endpoints/id')(ipfs, options)
   })
   server.addService(MFS, {
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     ls: require('./endpoints/mfs/ls')(ipfs, options),
-    // @ts-ignore
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     write: require('./endpoints/mfs/write')(ipfs, options)
   })
 
@@ -31,7 +37,7 @@ module.exports = async function createServer (ipfs, options = {}) {
   socket.on('error', (error) => debug(error))
 
   socket.on('data', async ({ path, metadata, channel }) => {
-    // @ts-ignore
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     const handler = server.handlers.get(path)
 
     if (!handler) {
@@ -44,6 +50,7 @@ module.exports = async function createServer (ipfs, options = {}) {
     switch (handler.type) {
       case 'bidi':
         handler.func(channel.source, channel.sink, metadata)
+          // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
           .catch(err => {
             channel.end(err)
           })
@@ -58,6 +65,7 @@ module.exports = async function createServer (ipfs, options = {}) {
 
         break
       case 'unary':
+        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(await first(channel.source), metadata, (err, value, metadata, flags) => {
           if (err) {
             return channel.end(err)
@@ -73,6 +81,7 @@ module.exports = async function createServer (ipfs, options = {}) {
         })
         break
       case 'clientStream':
+        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(channel.source, metadata, (err, value, metadata, flags) => {
           if (err) {
             return channel.end(err)
@@ -88,7 +97,9 @@ module.exports = async function createServer (ipfs, options = {}) {
         })
         break
       case 'serverStream':
+        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(await first(channel.source), channel.sink, metadata)
+          // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
           .catch(err => {
             channel.end(err)
           })

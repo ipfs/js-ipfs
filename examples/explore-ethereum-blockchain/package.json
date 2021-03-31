@@ -12,7 +12,7 @@
   "devDependencies": {
     "ipfs": "^0.54.4",
     "ipfs-http-client": "^49.0.4",
-    "ipfsd-ctl": "^7.2.0",
+    "ipfsd-ctl": "^8.0.0",
     "ipld-ethereum": "^5.0.1",
     "test-ipfs-example": "^3.0.0"
   }

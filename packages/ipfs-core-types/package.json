@@ -3,7 +3,7 @@
   "version": "0.3.1",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "types": "src/index.ts",
+  "types": "src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
@@ -30,10 +30,10 @@
   "dependencies": {
     "cids": "^1.1.5",
     "multiaddr": "^8.0.0",
-    "peer-id": "^0.14.1"
+    "multibase": "^4.0.2"
   },
   "devDependencies": {
-    "aegir": "^31.0.0"
+    "aegir": "^32.1.0"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

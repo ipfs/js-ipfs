@@ -6,6 +6,15 @@ const {
 } = require('../../../utils')
 const errCode = require('err-code')
 
+/**
+ * @typedef {import('../').MfsContext} MfsContext
+ */
+
+/**
+ * @param {MfsContext} context
+ * @param {import('cids')} cid
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} options
+ */
 const updateMfsRoot = async (context, cid, options) => {
   if (options && options.signal && options.signal.aborted) {
     throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })

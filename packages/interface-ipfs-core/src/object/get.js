@@ -5,7 +5,7 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const UnixFs = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 const randomBytes = require('iso-random-stream/src/random')
 const { asDAGLink } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
@@ -147,7 +147,7 @@ module.exports = (common, options) => {
       })
 
       const node = await ipfs.object.get(result.cid)
-      const meta = UnixFs.unmarshal(node.Data)
+      const meta = UnixFS.unmarshal(node.Data)
 
       expect(meta.fileSize()).to.equal(data.length)
     })

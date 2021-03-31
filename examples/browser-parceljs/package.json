@@ -2,16 +2,16 @@
   "name": "example-browser-parceljs",
   "description": "",
   "version": "1.0.2",
-  "main": "index.js",
+  "main": "dist/index.html",
   "private": true,
   "browserslist": [
-    "last 2 Chrome versions"
+    "last 2 versions and not dead and > 2%"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
     "lint": "standard public/**/*.js",
     "start": "parcel public/index.html",
-    "build": "parcel build public/index.html --public-url ./",
+    "build": "parcel build public/index.html --no-scope-hoist",
     "test": "test-ipfs-example"
   },
   "keywords": [],
@@ -21,15 +21,9 @@
     "ipfs": "^0.54.4"
   },
   "devDependencies": {
-    "@babel/cli": "7.13.0",
-    "@babel/core": "7.13.0",
-    "@babel/preset-env": "7.13.0",
-    "babel-plugin-syntax-async-functions": "^6.13.0",
-    "babel-plugin-transform-regenerator": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "parcel-bundler": "^1.12.4",
+    "parcel": "next",
     "rimraf": "^3.0.2",
-    "standard": "^13.1.0",
+    "standard": "^16.0.3",
     "test-ipfs-example": "^3.0.0"
   }
 }

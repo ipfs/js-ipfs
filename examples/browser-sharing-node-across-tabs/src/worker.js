@@ -4,6 +4,7 @@ import IPFS from 'ipfs'
 import { Server, IPFSService } from 'ipfs-message-port-server'
 
 const main = async () => {
+  console.info('heelo')
   // start listening to all the incoming connections (browsing contexts that
   // which run new SharedWorker...)
   // Note: It is important to start listening before we do any await to ensure
@@ -30,7 +31,7 @@ const main = async () => {
  * the given event `type`. It is like `target.addEventListener(type, listener, options)`
  * but instead of passing listener you get `AsyncIterable<Event>` instead.
  * @param {EventTarget} target
- * @param {string} type 
+ * @param {string} type
  * @param {AddEventListenerOptions} options
  */
 const listen = function (target, type, options) {

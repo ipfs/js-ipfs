@@ -97,7 +97,7 @@ describe('HTTP Gateway', function () {
     expect(res.rawPayload).to.eql(uint8ArrayFromString('hello world' + '\n'))
     expect(res.payload).to.equal('hello world' + '\n')
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(12)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString()).to.equal('12')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers.etag).to.equal('"QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o"')
     expect(res.headers['x-ipfs-path']).to.equal('/ipfs/QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
@@ -256,7 +256,7 @@ describe('HTTP Gateway', function () {
 
     expect(res).to.have.property('statusCode', 200)
     expect(res.rawPayload).to.eql(content)
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(15000000)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString()).to.equal('15000000')
     expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${cid}`)
     expect(res.headers['etag']).to.equal(`"${cid}"`)
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
@@ -294,7 +294,7 @@ describe('HTTP Gateway', function () {
     expect(resFull.headers['accept-ranges']).to.equal('bytes')
     expect(resFull.headers['etag']).to.equal(`"${cid}"`)
     expect(resFull.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
-    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length).to.equal(fileLength)
+    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length.toString()).to.equal(fileLength.toString())
 
     // extract expected chunk of interest
     const rangeValue = `bytes=${range.from}-`
@@ -313,7 +313,7 @@ describe('HTTP Gateway', function () {
     // range headers
     expect(resRange.statusCode).to.equal(206)
     expect(resRange.headers['content-range']).to.equal(`bytes ${range.from}-${range.length}/${fileLength}`)
-    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length).to.equal(range.length)
+    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length.toString()).to.equal(range.length.toString())
     expect(resRange.headers['accept-ranges']).to.equal(undefined)
     expect(resRange.rawPayload).to.deep.equal(expectedChunk)
     // regular headers that should also be present
@@ -354,7 +354,7 @@ describe('HTTP Gateway', function () {
     expect(resFull.headers['accept-ranges']).to.equal('bytes')
     expect(resFull.headers['etag']).to.equal(`"${cid}"`)
     expect(resFull.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
-    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length).to.equal(fileLength)
+    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length.toString()).to.equal(fileLength.toString())
 
     // extract expected chunk of interest
     const rangeValue = `bytes=${range.from}-${range.to}`
@@ -373,7 +373,7 @@ describe('HTTP Gateway', function () {
     // range headers
     expect(resRange.statusCode).to.equal(206)
     expect(resRange.headers['content-range']).to.equal(`bytes ${range.from}-${range.to}/${fileLength}`)
-    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length).to.equal(range.length)
+    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length.toString()).to.equal(range.length.toString())
     expect(resRange.headers['accept-ranges']).to.equal(undefined)
     expect(resRange.rawPayload).to.deep.equal(expectedChunk)
     // regular headers that should also be present
@@ -417,7 +417,7 @@ describe('HTTP Gateway', function () {
     expect(resFull.headers['accept-ranges']).to.equal('bytes')
     expect(resFull.headers['etag']).to.equal(`"${cid}"`)
     expect(resFull.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
-    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length).to.equal(fileLength)
+    expect(resFull.headers['content-length']).to.equal(resFull.rawPayload.length.toString()).to.equal(fileLength.toString())
 
     // extract expected chunk of interest
     const rangeValue = `bytes=-${range.tail}`
@@ -436,7 +436,7 @@ describe('HTTP Gateway', function () {
     // range headers
     expect(resRange.statusCode).to.equal(206)
     expect(resRange.headers['content-range']).to.equal(`bytes ${range.from}-${range.to}/${fileLength}`)
-    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length).to.equal(range.length)
+    expect(resRange.headers['content-length']).to.equal(resRange.rawPayload.length.toString()).to.equal(range.length.toString())
     expect(resRange.headers['accept-ranges']).to.equal(undefined)
     expect(resRange.rawPayload).to.deep.equal(expectedChunk)
     // regular headers that should also be present
@@ -500,7 +500,7 @@ describe('HTTP Gateway', function () {
 
     expect(res).to.have.property('statusCode', 200)
     expect(res.headers['content-type']).to.equal('image/jpeg')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(content.length)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString()).to.equal(content.length.toString())
     expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${dirCid}/cat.jpg`)
     expect(res.headers['etag']).to.equal(`"${fileCid}"`)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
@@ -633,7 +633,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${dirCid}/index.html`)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
     expect(res.rawPayload).to.deep.equal(content)
@@ -667,7 +667,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${dirCid}/nested-folder/nested.html`)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
     expect(res.rawPayload).to.deep.equal(content)
@@ -759,7 +759,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['x-ipfs-path']).to.equal(`/ipfs/${dirCid}/`)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
     expect(res.rawPayload).to.deep.equal(content)
@@ -796,7 +796,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['x-ipfs-path']).to.equal(escapedPath)
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
   })
@@ -829,7 +829,7 @@ describe('HTTP Gateway', function () {
 
     expect(res).to.have.property('statusCode', 200)
     expect(res.headers['content-type']).to.equal('image/jpeg')
-    expect(res.headers['content-length']).to.equal(res.rawPayload.length).to.equal(443230)
+    expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString()).to.equal('443230')
     expect(res.headers['x-ipfs-path']).to.equal(ipnsPath)
     expect(res.headers['etag']).to.equal(`"${fileCid}"`)
     expect(res.headers['cache-control']).to.equal('no-cache') // TODO: should be record TTL

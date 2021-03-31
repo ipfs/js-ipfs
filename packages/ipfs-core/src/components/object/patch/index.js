@@ -5,6 +5,14 @@ const createAppendData = require('./append-data')
 const createRmLink = require('./rm-link')
 const createSetData = require('./set-data')
 
+/**
+ * @typedef {import('ipld')} IPLD
+ * @typedef {import('../../../types').Preload} Preload
+ * @typedef {import('..').GCLock} GCLock
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
+
 class ObjectPatchAPI {
   /**
    * @param {Object} config
@@ -20,11 +28,3 @@ class ObjectPatchAPI {
   }
 }
 module.exports = ObjectPatchAPI
-
-/**
- * @typedef {import('..').IPLD} IPLD
- * @typedef {import('..').Preload} Preload
- * @typedef {import('..').GCLock} GCLock
- * @typedef {import('..').CID} CID
- * @typedef {import('..').AbortOptions} AbortOptions
- */

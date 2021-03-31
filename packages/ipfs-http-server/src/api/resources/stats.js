@@ -2,6 +2,7 @@
 
 const { map } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 const Joi = require('../../utils/joi')
@@ -18,7 +19,7 @@ exports.bw = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.peerId(),
+        peer: Joi.cid(),
         proto: Joi.string(),
         poll: Joi.boolean().default(false),
         interval: Joi.string().default('1s'),
@@ -26,6 +27,10 @@ exports.bw = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -55,10 +60,10 @@ exports.bw = {
         timeout
       }),
       map(stat => ({
-        TotalIn: stat.totalIn,
-        TotalOut: stat.totalOut,
-        RateIn: stat.rateIn,
-        RateOut: stat.rateOut
+        TotalIn: stat.totalIn.toString(),
+        TotalOut: stat.totalOut.toString(),
+        RateIn: stat.rateIn.toString(),
+        RateOut: stat.rateOut.toString()
       })),
       ndjson.stringify
     ))

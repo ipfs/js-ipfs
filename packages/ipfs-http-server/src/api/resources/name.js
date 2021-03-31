@@ -4,6 +4,7 @@ const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
 const last = require('it-last')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
@@ -27,6 +28,10 @@ exports.resolve = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -95,6 +100,10 @@ exports.publish = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -146,6 +155,10 @@ exports.pubsub = {
         })
       }
     },
+    /**
+     * @param {import('../../types').Request} request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     async handler (request, h) {
       const {
         app: {
@@ -183,6 +196,10 @@ exports.pubsub = {
         })
       }
     },
+    /**
+     * @param {import('../../types').Request} request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     async handler (request, h) {
       const {
         app: {
@@ -225,6 +242,10 @@ exports.pubsub = {
           })
       }
     },
+    /**
+     * @param {import('../../types').Request} request
+     * @param {import('@hapi/hapi').ResponseToolkit} h
+     */
     async handler (request, h) {
       const {
         app: {

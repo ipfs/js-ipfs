@@ -8,15 +8,24 @@ const concat = require('it-concat')
 const CID = require('cids')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
-const uint8ArrayToString = require('uint8arrays/to-string')
 
+/**
+ * @typedef {'dag-cbor' | 'dag-pb' | 'raw'} SupportedFormat
+ */
+
+/**
+ * @type {Record<string, (buf: Buffer) => any>}
+ */
 const inputDecoders = {
-  json: (buf) => JSON.parse(uint8ArrayToString(buf)),
+  json: (buf) => JSON.parse(buf.toString()),
   cbor: (buf) => dagCBOR.util.deserialize(buf),
   protobuf: (buf) => dagPB.util.deserialize(buf),
   raw: (buf) => buf
 }
 
+/**
+ * @type {Record<string, SupportedFormat>}
+ */
 const formats = {
   cbor: 'dag-cbor',
   raw: 'raw',
@@ -86,6 +95,20 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.data
+   * @param {'dag-cbor' | 'dag-pb' | 'raw' | 'cbor' | 'protobuf'} argv.format
+   * @param {'json' | 'cbor' | 'raw' | 'protobuf'} argv.inputEncoding
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {boolean} argv.pin
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {boolean} argv.preload
+   * @param {boolean} argv.onlyHash
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print, getStdin }, data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
     if (inputEncoding === 'cbor') {
       format = 'dag-cbor'
@@ -99,13 +122,14 @@ module.exports = {
       cidVersion = 1
     }
 
-    let source = data
+    /** @type {Buffer} */
+    let source
 
-    if (!source) {
+    if (!data) {
       // pipe from stdin
-      source = (await concat(getStdin())).slice()
+      source = (await concat(getStdin(), { type: 'buffer' })).slice()
     } else {
-      source = Buffer.from(source)
+      source = Buffer.from(data)
     }
 
     source = inputDecoders[inputEncoding](source)
@@ -130,6 +154,10 @@ module.exports = {
   }
 }
 
+/**
+ * @param {any} obj
+ * @returns {any}
+ */
 function objectSlashToCID (obj) {
   if (Array.isArray(obj)) {
     return obj.map(objectSlashToCID)

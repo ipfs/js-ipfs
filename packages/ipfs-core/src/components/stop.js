@@ -4,14 +4,17 @@ const Service = require('../utils/service')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
- * @param {import('.').Preload} config.preload
- * @param {import('.').BlockService} config.blockService
- * @param {import('.').IPNS} config.ipns
- * @param {import('.').Repo} config.repo
- * @param {import('.').MFSPreload} config.mfsPreload
+ * @param {import('../types').NetworkService} config.network
+ * @param {import('../types').Preload} config.preload
+ * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('./ipns')} config.ipns
+ * @param {import('ipfs-repo')} config.repo
+ * @param {import('../types').MfsPreload} config.mfsPreload
  */
 module.exports = ({ network, preload, blockService, ipns, repo, mfsPreload }) => {
+  /**
+   * @type {import('ipfs-core-types/src/root').API["stop"]}
+   */
   const stop = async () => {
     blockService.unsetExchange()
     await Promise.all([

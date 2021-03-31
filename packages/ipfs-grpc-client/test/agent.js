@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const grpcClient = require('../src')
+const { create } = require('../src')
 const WebSocket = require('ws')
 
 function startServer () {
@@ -30,7 +30,7 @@ describe('agent', function () {
 
     try {
       await new Promise((resolve) => {
-        const ipfs = grpcClient({
+        const ipfs = create({
           url: `http://localhost:${server.port}`,
           agent: {
             addRequest () {

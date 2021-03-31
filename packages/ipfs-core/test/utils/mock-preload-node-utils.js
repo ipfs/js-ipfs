@@ -1,6 +1,7 @@
 /* eslint-env browser */
 'use strict'
 
+// @ts-ignore no types
 const toUri = require('multiaddr-to-uri')
 const errCode = require('err-code')
 const HTTP = require('ipfs-utils/src/http')

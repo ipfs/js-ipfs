@@ -36,6 +36,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {boolean} argv.all
+   * @param {boolean} argv.commit
+   * @param {boolean} argv.repo
+   * @param {boolean} argv.number
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { print, ipfs }, all, commit, repo, number, timeout }) {
     const data = await ipfs.version({
       timeout
@@ -46,6 +55,7 @@ module.exports = {
 
     if (repo) {
       // go-ipfs prints only the number, even without the --number flag.
+      // @ts-ignore version return type is implementation-specific
       print(data.repo)
     } else if (number) {
       print(parsedVersion)

@@ -1,12 +1,16 @@
 'use strict'
 
-const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/config').API<HTTPClientExtraOptions>} ConfigAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'set', import('ipfs-core/src/components/config')>}
+   * @type {ConfigAPI["set"]}
    */
   const set = async (key, value, options = {}) => {
     if (typeof key !== 'string') {
@@ -25,12 +29,16 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    return toCamel(await res.json())
+    await res.text()
   }
 
   return set
 })
 
+/**
+ * @param {*} key
+ * @param {*} value
+ */
 const encodeParam = (key, value) => {
   switch (typeof value) {
     case 'boolean':

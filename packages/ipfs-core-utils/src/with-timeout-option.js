@@ -1,6 +1,7 @@
 /* eslint-disable no-unreachable */
 'use strict'
 
+// @ts-ignore
 const TimeoutController = require('timeout-abort-controller')
 const { anySignal } = require('any-signal')
 const { default: parseDuration } = require('parse-duration')
@@ -53,9 +54,11 @@ function withTimeoutOption (fn, optionsArgIndex) {
       }
     }
 
+    // @ts-ignore
     if (fnRes[Symbol.asyncIterator]) {
       // @ts-ignore
       return (async function * () {
+        // @ts-ignore
         const it = fnRes[Symbol.asyncIterator]()
 
         try {

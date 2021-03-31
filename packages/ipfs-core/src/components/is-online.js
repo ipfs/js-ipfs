@@ -2,7 +2,7 @@
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../types').NetworkService} config.network
  */
 module.exports = ({ network }) =>
   /**

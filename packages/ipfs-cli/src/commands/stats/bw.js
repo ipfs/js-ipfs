@@ -22,7 +22,8 @@ module.exports = {
     },
     interval: {
       type: 'string',
-      default: '1s'
+      default: '1s',
+      coerce: parseDuration
     },
     timeout: {
       type: 'string',
@@ -30,6 +31,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.peer
+   * @param {string} argv.proto
+   * @param {boolean} argv.poll
+   * @param {number} argv.interval
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, peer, proto, poll, interval, timeout }) {
     for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval, timeout })) {
       print(`bandwidth status

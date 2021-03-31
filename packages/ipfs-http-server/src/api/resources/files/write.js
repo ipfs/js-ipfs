@@ -27,7 +27,6 @@ const mfsWrite = {
         cidVersion: Joi.number().integer().valid(0, 1).default(0),
         hashAlg: Joi.string().default('sha2-256'),
         parents: Joi.boolean().default(false),
-        progress: Joi.func(),
         strategy: Joi.string().valid('flat', 'balanced', 'trickle').default('trickle'),
         flush: Joi.boolean().default(true),
         reduceSingleLeafToSelf: Joi.boolean().default(false),
@@ -72,6 +71,11 @@ const mfsWrite = {
         })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       ipfs
@@ -87,7 +91,6 @@ const mfsWrite = {
       cidVersion,
       hashAlg,
       parents,
-      progress,
       strategy,
       flush,
       shardSplitThreshold,
@@ -96,7 +99,7 @@ const mfsWrite = {
 
     let files = 0
 
-    for await (const entry of multipart(request)) {
+    for await (const entry of multipart(request.raw.req)) {
       if (entry.type === 'file') {
         files++
 
@@ -114,7 +117,6 @@ const mfsWrite = {
           cidVersion,
           hashAlg,
           parents,
-          progress,
           strategy,
           flush,
           shardSplitThreshold,

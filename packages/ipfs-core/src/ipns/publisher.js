@@ -8,20 +8,37 @@ const log = Object.assign(debug('ipfs:ipns:publisher'), {
   error: debug('ipfs:ipns:publisher:error')
 })
 const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayEquals = require('uint8arrays/equals')
 
 const ipns = require('ipns')
+
+/**
+ * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ * @typedef {import('libp2p-crypto').PublicKey} PublicKey
+ * @typedef {import('ipns').IPNSEntry} IPNSEntry
+ */
 
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
 class IpnsPublisher {
+  /**
+   * @param {import('ipfs-core-types/src/utils').BufferStore} routing
+   * @param {import('interface-datastore').Datastore} datastore
+   */
   constructor (routing, datastore) {
     this._routing = routing
     this._datastore = datastore
   }
 
-  // publish record with a eol
+  /**
+   * Publish record with a eol
+   *
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   * @param {number} lifetime
+   */
   async publishWithEOL (privKey, value, lifetime) {
     if (!privKey || !privKey.bytes) {
       throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
@@ -33,11 +50,20 @@ class IpnsPublisher {
     return this._putRecordToRouting(record, peerId)
   }
 
-  // Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
+  /**
+   * Accepts a keypair, as well as a value (ipfsPath), and publishes it out to the routing system
+   *
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   */
   publish (privKey, value) {
     return this.publishWithEOL(privKey, value, defaultRecordLifetime)
   }
 
+  /**
+   * @param {IPNSEntry} record
+   * @param {PeerId} peerId
+   */
   async _putRecordToRouting (record, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
@@ -61,6 +87,10 @@ class IpnsPublisher {
     return embedPublicKeyRecord || record
   }
 
+  /**
+   * @param {Key} key
+   * @param {IPNSEntry} entry
+   */
   async _publishEntry (key, entry) {
     if (!(Key.isKey(key))) {
       const errMsg = 'datastore key does not have a valid format'
@@ -95,6 +125,10 @@ class IpnsPublisher {
     }
   }
 
+  /**
+   * @param {Key} key
+   * @param {PublicKey} publicKey
+   */
   async _publishPublicKey (key, publicKey) {
     if ((!Key.isKey(key))) {
       const errMsg = 'datastore key does not have a valid format'
@@ -125,8 +159,15 @@ class IpnsPublisher {
     }
   }
 
-  // Returns the record this node has published corresponding to the given peer ID.
-  // If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
+  /**
+   * Returns the record this node has published corresponding to the given peer ID.
+   *
+   * If `checkRouting` is true and we have no existing record, this method will check the routing system for any existing records.
+   *
+   * @param {PeerId} peerId
+   * @param {object} options
+   * @param {boolean} [options.checkRouting]
+   */
   async _getPublished (peerId, options = {}) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
@@ -152,7 +193,7 @@ class IpnsPublisher {
       }
 
       if (!checkRouting) {
-        throw errcode(err)
+        throw errcode(err, 'ERR_NOT_FOUND_AND_CHECK_ROUTING_NOT_ENABLED')
       }
 
       // Try to get from routing
@@ -170,6 +211,9 @@ class IpnsPublisher {
     }
   }
 
+  /**
+   * @param {Uint8Array} data
+   */
   _unmarshalData (data) {
     try {
       return ipns.unmarshal(data)
@@ -178,7 +222,13 @@ class IpnsPublisher {
     }
   }
 
-  async _updateOrCreateRecord (privKey, value, validity, peerId) {
+  /**
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   * @param {number} lifetime
+   * @param {PeerId} peerId
+   */
+  async _updateOrCreateRecord (privKey, value, lifetime, peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
       log.error(errMsg)
@@ -207,14 +257,14 @@ class IpnsPublisher {
     let seqNumber = 0
 
     if (record && record.sequence !== undefined) {
-      seqNumber = record.value.toString() !== value ? record.sequence + 1 : record.sequence
+      seqNumber = !uint8ArrayEquals(record.value, value) ? record.sequence + 1 : record.sequence
     }
 
     let entryData
 
     try {
       // Create record
-      entryData = await ipns.create(privKey, value, seqNumber, validity)
+      entryData = await ipns.create(privKey, value, seqNumber, lifetime)
     } catch (err) {
       const errMsg = `ipns record for ${value} could not be created`
 
@@ -231,7 +281,7 @@ class IpnsPublisher {
       // Store the new record
       await this._datastore.put(ipns.getLocalKey(peerId.id), data)
 
-      log(`ipns record for ${value} was stored in the datastore`)
+      log(`ipns record for ${uint8ArrayToString(value, 'base32')} was stored in the datastore`)
 
       return entryData
     } catch (err) {

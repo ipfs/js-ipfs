@@ -1,12 +1,30 @@
 'use strict'
 
-const { default: Big } = require('bignumber.js')
 const { default: parseDuration } = require('parse-duration')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @param {LibP2P} libp2p
+ * @typedef {Object} BWOptions
+ * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
+ * @property {string} [proto] - Specifies a protocol to print bandwidth for
+ * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
+ * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
+ *
+ * @typedef {Object} BandwidthInfo
+ * @property {bigint} totalIn
+ * @property {bigint} totalOut
+ * @property {bigint} rateIn
+ * @property {bigint} rateOut
+ *
+ * @typedef {import('libp2p')} libp2p
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
+
+/**
+ * @param {libp2p} libp2p
  * @param {BWOptions} opts
  * @returns {BandwidthInfo}
  */
@@ -25,33 +43,30 @@ function getBandwidthStats (libp2p, opts) {
 
   if (!stats) {
     return {
-      totalIn: new Big(0),
-      totalOut: new Big(0),
-      rateIn: new Big(0),
-      rateOut: new Big(0)
+      totalIn: BigInt(0),
+      totalOut: BigInt(0),
+      rateIn: BigInt(0),
+      rateOut: BigInt(0)
     }
   }
 
   const { movingAverages, snapshot } = stats
 
   return {
-    totalIn: snapshot.dataReceived,
-    totalOut: snapshot.dataSent,
-    rateIn: new Big(movingAverages.dataReceived[60000].movingAverage() / 60),
-    rateOut: new Big(movingAverages.dataSent[60000].movingAverage() / 60)
+    totalIn: BigInt(snapshot.dataReceived.toString()),
+    totalOut: BigInt(snapshot.dataSent.toString()),
+    rateIn: BigInt(movingAverages.dataReceived[60000].movingAverage() / 60),
+    rateOut: BigInt(movingAverages.dataSent[60000].movingAverage() / 60)
   }
 }
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Get IPFS bandwidth information
-   *
-   * @param {BWOptions & AbortOptions} options
-   * @returns {AsyncIterable<BandwidthInfo>}
+   * @type {import('ipfs-core-types/src/stats').API["bw"]}
    */
   const bw = async function * (options = {}) {
     const { libp2p } = await network.use(options)
@@ -84,22 +99,3 @@ module.exports = ({ network }) => {
 
   return withTimeoutOption(bw)
 }
-
-/**
- * @typedef {Object} BWOptions
- * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
- * @property {string} [proto] - Specifies a protocol to print bandwidth for
- * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
- * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
- *
- * @typedef {Object} BandwidthInfo
- * @property {Big} totalIn
- * @property {Big} totalOut
- * @property {Big} rateIn
- * @property {Big} rateOut
- *
- * @typedef {import('.').LibP2P} LibP2P
- * @typedef {import('.').PeerId} PeerId
- * @typedef {import('.').CID} CID
- * @typedef {import('.').AbortOptions} AbortOptions
- */

@@ -27,6 +27,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {string} argv.passout
+   * @param {string} argv.output
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, name, passout, output, timeout }) {
     const { ipfs } = ctx
     const pem = await ipfs.key.export(name, passout, {

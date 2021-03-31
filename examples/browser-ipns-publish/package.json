@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "parcel build index.html --public-url ./",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html",
     "test": "test-ipfs-example"
   },
@@ -15,8 +15,8 @@
     "human-crypto-keys": "^0.1.4",
     "ipfs": "^0.54.4",
     "ipfs-http-client": "^49.0.4",
-    "ipfs-utils": "^6.0.1",
-    "ipns": "^0.8.0",
+    "ipfs-utils": "^6.0.4",
+    "ipns": "^0.10.0",
     "it-last": "^1.0.4",
     "p-retry": "^4.2.0",
     "uint8arrays": "^2.1.3"
@@ -27,9 +27,9 @@
   "devDependencies": {
     "delay": "^4.4.0",
     "execa": "^5.0.0",
-    "ipfsd-ctl": "^7.2.0",
+    "ipfsd-ctl": "^8.0.0",
     "go-ipfs": "0.8.0",
-    "parcel-bundler": "^1.12.4",
+    "parcel": "next",
     "path": "^0.12.7",
     "test-ipfs-example": "^3.0.0"
   },

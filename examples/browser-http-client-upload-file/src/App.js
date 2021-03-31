@@ -2,7 +2,7 @@
 'use strict'
 
 const React = require('react')
-const ipfsClient = require('ipfs-http-client')
+const { create: ipfsClient } = require('ipfs-http-client')
 
 class App extends React.Component {
   constructor () {

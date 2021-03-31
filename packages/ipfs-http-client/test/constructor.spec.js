@@ -4,7 +4,7 @@
 const multiaddr = require('multiaddr')
 const { expect } = require('aegir/utils/chai')
 const f = require('./utils/factory')()
-const ipfsClient = require('../src/index.js')
+const { create: ipfsClient } = require('../src/index.js')
 const { isBrowser } = require('ipfs-utils/src/env')
 
 describe('ipfs-http-client constructor tests', () => {

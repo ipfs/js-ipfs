@@ -26,6 +26,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {boolean} argv.human
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, cidBase, human, timeout }) {
     const { ipfs, print } = ctx
 
@@ -33,29 +40,34 @@ module.exports = {
       timeout
     })
 
+    /** @type {Record<string, any>} */
+    const output = {
+      ...stats
+    }
+
     if (human) {
-      stats.blocksReceived = stats.blocksReceived.toNumber()
-      stats.blocksSent = stats.blocksSent.toNumber()
-      stats.dataReceived = prettyBytes(stats.dataReceived.toNumber()).toUpperCase()
-      stats.dataSent = prettyBytes(stats.dataSent.toNumber()).toUpperCase()
-      stats.dupBlksReceived = stats.dupBlksReceived.toNumber()
-      stats.dupDataReceived = prettyBytes(stats.dupDataReceived.toNumber()).toUpperCase()
-      stats.wantlist = `[${stats.wantlist.length} keys]`
+      output.blocksReceived = Number(stats.blocksReceived)
+      output.blocksSent = Number(stats.blocksSent)
+      output.dataReceived = prettyBytes(Number(stats.dataReceived)).toUpperCase()
+      output.dataSent = prettyBytes(Number(stats.dataSent)).toUpperCase()
+      output.dupBlksReceived = Number(stats.dupBlksReceived)
+      output.dupDataReceived = prettyBytes(Number(stats.dupDataReceived)).toUpperCase()
+      output.wantlist = `[${stats.wantlist.length} keys]`
     } else {
       const wantlist = stats.wantlist.map(cid => cidToString(cid, { base: cidBase, upgrade: false }))
-      stats.wantlist = `[${wantlist.length} keys]
+      output.wantlist = `[${wantlist.length} keys]
             ${wantlist.join('\n            ')}`
     }
 
     print(`bitswap status
-        provides buffer: ${stats.provideBufLen}
-        blocks received: ${stats.blocksReceived}
-        blocks sent: ${stats.blocksSent}
-        data received: ${stats.dataReceived}
-        data sent: ${stats.dataSent}
-        dup blocks received: ${stats.dupBlksReceived}
-        dup data received: ${stats.dupDataReceived}
-        wantlist ${stats.wantlist}
+        provides buffer: ${output.provideBufLen}
+        blocks received: ${output.blocksReceived}
+        blocks sent: ${output.blocksSent}
+        data received: ${output.dataReceived}
+        data sent: ${output.dataSent}
+        dup blocks received: ${output.dupBlksReceived}
+        dup data received: ${output.dupDataReceived}
+        wantlist ${output.wantlist}
         partners [${stats.peers.length}]`)
   }
 }

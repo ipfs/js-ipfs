@@ -38,6 +38,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.cidpath
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
+   * @param {boolean} argv.localResolve
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, cidpath, cidBase, dataEnc, localResolve, timeout }) {
     const options = {
       localResolve,
@@ -67,11 +76,14 @@ module.exports = {
     const node = result.value
 
     if (cid.codec === 'dag-pb') {
+      /** @type {import('ipld-dag-pb').DAGNode} */
+      const dagNode = node
+
       print(JSON.stringify({
-        data: node.Data ? uint8ArrayToString(node.Data, dataEnc) : undefined,
-        links: (node.Links || []).map(link => ({
+        data: dagNode.Data ? uint8ArrayToString(node.Data, dataEnc) : undefined,
+        links: (dagNode.Links || []).map(link => ({
           Name: stripControlCharacters(link.Name),
-          Size: link.Size,
+          Size: link.Tsize,
           Cid: { '/': cidToString(link.Hash, { base: cidBase }) }
         }))
       }))

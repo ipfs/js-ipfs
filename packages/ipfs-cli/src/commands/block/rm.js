@@ -1,6 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
+const { coerceCIDs } = require('../../utils')
 
 module.exports = {
   command: 'rm <hash...>',
@@ -8,6 +9,10 @@ module.exports = {
   describe: 'Remove IPFS block(s)',
 
   builder: {
+    hash: {
+      type: 'array',
+      coerce: coerceCIDs
+    },
     force: {
       alias: 'f',
       describe: 'Ignore nonexistent blocks',
@@ -26,6 +31,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('cids')[]} argv.hash
+   * @param {boolean} argv.force
+   * @param {boolean} argv.quiet
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, hash, force, quiet, timeout }) {
     const { ipfs, print } = ctx
 

@@ -6,9 +6,14 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const { FinalPeer } = require('./response-types')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'findPeer', import('ipfs-core/src/components/dht')>}
+   * @type {DHTAPI["findPeer"]}
    */
   async function findPeer (peerId, options = {}) {
     const res = await api.post('dht/findpeer', {
@@ -26,7 +31,7 @@ module.exports = configure(api => {
         const { ID, Addrs } = data.Responses[0]
         return {
           id: ID,
-          addrs: (Addrs || []).map(a => multiaddr(a))
+          addrs: (Addrs || []).map((/** @type {string} **/ a) => multiaddr(a))
         }
       }
     }

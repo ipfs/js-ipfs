@@ -7,15 +7,20 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
+      "src/*": [
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/": [
+        "dist/src/index"
       ]
     }
   },
@@ -24,7 +29,6 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "prepare": "aegir build --no-bundle",
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
     "test:electron": "aegir test -t electron-main",
@@ -32,7 +36,8 @@
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "build": "aegir build --no-bundle"
   },
   "license": "MIT",
   "dependencies": {
@@ -40,9 +45,10 @@
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "cids": "^1.1.5",
-    "err-code": "^2.0.3",
+    "err-code": "^3.0.1",
     "ipfs-core-types": "^0.3.1",
-    "ipfs-utils": "^6.0.1",
+    "ipfs-unixfs": "^4.0.1",
+    "ipfs-utils": "^6.0.4",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
@@ -53,7 +59,7 @@
     "uint8arrays": "^2.1.3"
   },
   "devDependencies": {
-    "aegir": "^31.0.0",
+    "aegir": "^32.1.0",
     "rimraf": "^3.0.2"
   }
 }

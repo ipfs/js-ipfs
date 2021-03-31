@@ -2,11 +2,11 @@
   "name": "example-circuit-relaying",
   "description": "IPFS quick msg",
   "version": "0.1.1",
-  "main": "index.js",
+  "main": "./dist/index.html",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "parcel build index.html --public-url '.'",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html",
     "deploy": "ipfs add -r --quieter dist",
     "test": "test-ipfs-example"
@@ -24,15 +24,12 @@
     "execa": "^5.0.0",
     "ipfs-css": "^0.13.1",
     "ipfs-http-client": "^49.0.4",
-    "parcel-bundler": "^1.12.4",
+    "parcel": "next",
     "rimraf": "^3.0.2",
     "tachyons": "^4.11.1",
     "test-ipfs-example": "^3.0.0"
   },
   "browserslist": [
-    ">1%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
+    "last 2 versions and not dead and > 2%"
   ]
 }

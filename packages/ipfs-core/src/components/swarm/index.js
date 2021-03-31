@@ -9,7 +9,7 @@ const createPeersAPI = require('./peers')
 class SwarmAPI {
   /**
    * @param {Object} config
-   * @param {NetworkService} config.network
+   * @param {import('../../types').NetworkService} config.network
    */
   constructor ({ network }) {
     this.addrs = createAddrsAPI({ network })
@@ -21,9 +21,3 @@ class SwarmAPI {
 }
 
 module.exports = SwarmAPI
-
-/**
- * @typedef {import('..').NetworkService} NetworkService
- * @typedef {import('..').Multiaddr} Multiaddr
- * @typedef {import('..').AbortOptions} AbortOptions
- */

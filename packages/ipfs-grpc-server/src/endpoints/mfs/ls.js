@@ -2,7 +2,16 @@
 
 const encodeMtime = require('../../utils/encode-mtime')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {import('../../types').Options} options
+ */
 module.exports = function grpcMfsLs (ipfs, options = {}) {
+  /**
+   * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
+   *
+   * @type {import('../../types').ServerStreamingEndpoint<any, any, any>}
+   */
   async function mfsLs (request, sink, metadata) {
     const opts = {
       ...metadata

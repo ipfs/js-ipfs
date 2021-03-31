@@ -18,9 +18,11 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }])
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'index.html'
+      }]
+    })
   ],
   module: {
     rules: [
@@ -43,10 +45,5 @@ module.exports = {
         }
       }
     ]
-  },
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
   }
 }

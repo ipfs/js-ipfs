@@ -3,20 +3,44 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
+// @ts-ignore - no types
 const dagCborLinks = require('dag-cbor-links')
 const debug = require('debug')
-// const parallelBatch = require('it-parallel-batch')
 const first = require('it-first')
 const all = require('it-all')
-const cbor = require('cbor')
+const cborg = require('cborg')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
+const { Key } = require('interface-datastore')
+
+/**
+ * @typedef {object} Pin
+ * @property {number} depth
+ * @property {CID.CIDVersion} [version]
+ * @property {multicodec.CodecCode} [codec]
+ * @property {Record<string, any>} [metadata]
+ */
+
+/**
+ * @typedef {import('ipfs-core-types/src/pin').PinType} PinType
+ * @typedef {import('ipfs-core-types/src/pin').PinQueryType} PinQueryType
+ */
+
+/**
+ * @typedef {Object} PinOptions
+ * @property {any} [metadata]
+ *
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
 
 // arbitrary limit to the number of concurrent dag operations
 // const WALK_DAG_CONCURRENCY_LIMIT = 300
 // const IS_PINNED_WITH_TYPE_CONCURRENCY_LIMIT = 300
 // const PIN_DS_KEY = new Key('/local/pins')
 
+/**
+ * @param {string} type
+ */
 function invalidPinTypeErr (type) {
   const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
@@ -24,18 +48,19 @@ function invalidPinTypeErr (type) {
 
 const encoder = multibase.encoding('base32upper')
 
+/**
+ * @param {CID} cid
+ */
 function cidToKey (cid) {
-  return `/${encoder.encode(cid.multihash)}`
-}
-
-function keyToMultihash (key) {
-  return encoder.decode(key.toString().slice(1))
+  return new Key(`/${encoder.encode(cid.multihash)}`)
 }
 
 /**
- * @typedef {'direct'|'recursive'|'indirect'} PinType
- * @typedef {PinType|'all'} PinQueryType
+ * @param {Key | string} key
  */
+function keyToMultihash (key) {
+  return encoder.decode(key.toString().slice(1))
+}
 
 const PinTypes = {
   /** @type {'direct'} */
@@ -51,12 +76,12 @@ const PinTypes = {
 class PinManager {
   /**
    * @param {Object} config
-   * @param {import('.').Repo} config.repo
-   * @param {import('.').DagReader} config.dagReader
+   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipld')} config.ipld
    */
-  constructor ({ repo, dagReader }) {
+  constructor ({ repo, ipld }) {
     this.repo = repo
-    this.dag = dagReader
+    this.ipld = ipld
     this.log = debug('ipfs:pin')
     this.directPins = new Set()
     this.recursivePins = new Set()
@@ -65,21 +90,21 @@ class PinManager {
   /**
    * @private
    * @param {CID} cid
-   * @param {Object} options
-   * @param {boolean} [options.preload]
+   * @param {AbortOptions} [options]
+   * @returns {AsyncGenerator<CID, void, undefined>}
    */
-  async * _walkDag (cid, { preload = false }) {
-    const { value: node } = await this.dag.get(cid, { preload })
+  async * _walkDag (cid, options) {
+    const node = await this.ipld.get(cid, options)
 
     if (cid.codec === 'dag-pb') {
       for (const link of node.Links) {
         yield link.Hash
-        yield * this._walkDag(link.Hash, { preload })
+        yield * this._walkDag(link.Hash, options)
       }
     } else if (cid.codec === 'dag-cbor') {
       for (const [, childCid] of dagCborLinks(node)) {
         yield childCid
-        yield * this._walkDag(childCid, { preload })
+        yield * this._walkDag(childCid, options)
       }
     }
   }
@@ -90,8 +115,9 @@ class PinManager {
    * @returns {Promise<void>}
    */
   async pinDirectly (cid, options = {}) {
-    await this.dag.get(cid, options)
+    await this.ipld.get(cid, options)
 
+    /** @type {Pin} */
     const pin = {
       depth: 0
     }
@@ -108,7 +134,7 @@ class PinManager {
       pin.metadata = options.metadata
     }
 
-    return this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
+    return this.repo.pins.put(cidToKey(cid), cborg.encode(pin))
   }
 
   /**
@@ -123,12 +149,13 @@ class PinManager {
 
   /**
    * @param {CID} cid
-   * @param {PreloadOptions & PinOptions & AbortOptions} [options]
+   * @param {PinOptions & AbortOptions} [options]
    * @returns {Promise<void>}
    */
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
 
+    /** @type {Pin} */
     const pin = {
       depth: Infinity
     }
@@ -145,22 +172,21 @@ class PinManager {
       pin.metadata = options.metadata
     }
 
-    await this.repo.pins.put(cidToKey(cid), cbor.encode(pin))
+    await this.repo.pins.put(cidToKey(cid), cborg.encode(pin))
   }
 
   /**
    * @param {AbortOptions} [options]
-   * @returns {AsyncIterable<{ cid: CID, metadata: any }>}
    */
   async * directKeys (options) {
     for await (const entry of this.repo.pins.query({
       filters: [(entry) => {
-        const pin = cbor.decode(entry.value)
+        const pin = cborg.decode(entry.value)
 
         return pin.depth === 0
       }]
     })) {
-      const pin = cbor.decode(entry.value)
+      const pin = cborg.decode(entry.value)
       const version = pin.version || 0
       const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
       const multihash = keyToMultihash(entry.key)
@@ -174,17 +200,16 @@ class PinManager {
 
   /**
    * @param {AbortOptions} [options]
-   * @returns {AsyncIterable<{ cid: CID, metadata: any }>}
    */
   async * recursiveKeys (options) {
     for await (const entry of this.repo.pins.query({
       filters: [(entry) => {
-        const pin = cbor.decode(entry.value)
+        const pin = cborg.decode(entry.value)
 
         return pin.depth === Infinity
       }]
     })) {
-      const pin = cbor.decode(entry.value)
+      const pin = cborg.decode(entry.value)
       const version = pin.version || 0
       const codec = pin.codec ? multicodec.getName(pin.codec) : 'dag-pb'
       const multihash = keyToMultihash(entry.key)
@@ -197,12 +222,11 @@ class PinManager {
   }
 
   /**
-   * @param {Object} options
-   * @param {boolean} [options.preload]
+   * @param {AbortOptions} [options]
    */
-  async * indirectKeys ({ preload }) {
+  async * indirectKeys (options) {
     for await (const { cid } of this.recursiveKeys()) {
-      for await (const childCid of this._walkDag(cid, { preload })) {
+      for await (const childCid of this._walkDag(cid, options)) {
         // recursive pins override indirect pins
         const types = [
           PinTypes.recursive
@@ -236,13 +260,13 @@ class PinManager {
 
     if (recursive || direct || all) {
       const result = await first(this.repo.pins.query({
-        prefix: cidToKey(cid),
+        prefix: cidToKey(cid).toString(),
         filters: [entry => {
           if (all) {
             return true
           }
 
-          const pin = cbor.decode(entry.value)
+          const pin = cborg.decode(entry.value)
 
           return types.includes(pin.depth === 0 ? PinTypes.direct : PinTypes.recursive)
         }],
@@ -250,7 +274,7 @@ class PinManager {
       }))
 
       if (result) {
-        const pin = cbor.decode(result.value)
+        const pin = cborg.decode(result.value)
 
         return {
           cid,
@@ -263,9 +287,13 @@ class PinManager {
 
     const self = this
 
+    /**
+     * @param {CID} key
+     * @param {AsyncIterable<{ cid: CID, metadata: any }>} source
+     */
     async function * findChild (key, source) {
       for await (const { cid: parentCid } of source) {
-        for await (const childCid of self._walkDag(parentCid, { preload: false })) {
+        for await (const childCid of self._walkDag(parentCid)) {
           if (childCid.equals(key)) {
             yield parentCid
             return
@@ -298,10 +326,10 @@ class PinManager {
 
   /**
    * @param {CID} cid
-   * @param {PreloadOptions & AbortOptions} options
+   * @param {AbortOptions} options
    */
   async fetchCompleteDag (cid, options) {
-    await all(this._walkDag(cid, { preload: options.preload }))
+    await all(this._walkDag(cid, options))
   }
 
   /**
@@ -321,13 +349,3 @@ class PinManager {
 PinManager.PinTypes = PinTypes
 
 module.exports = PinManager
-
-/**
- * @typedef {Object} PinOptions
- * @property {any} [metadata]
- *
- * @typedef {Object} PreloadOptions
- * @property {boolean} [preload]
- *
- * @typedef {import('.').AbortOptions} AbortOptions
- */

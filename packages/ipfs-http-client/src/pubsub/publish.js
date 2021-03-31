@@ -6,8 +6,16 @@ const multipartRequest = require('../lib/multipart-request')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
+ */
+
 module.exports = configure(api => {
-  return async (topic, data, options = {}) => {
+  /**
+   * @type {PubsubAPI["publish"]}
+   */
+  async function publish (topic, data, options = {}) {
     const searchParams = toUrlSearchParams({
       arg: topic,
       ...options
@@ -29,4 +37,5 @@ module.exports = configure(api => {
 
     await res.text()
   }
+  return publish
 })

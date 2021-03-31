@@ -3,7 +3,15 @@
 const mergeOptions = require('merge-options')
 const multicodec = require('multicodec')
 
-// All known (non-default) IPLD formats
+/**
+ * @typedef {import('interface-ipld-format').Format<?>} IPLDFormat
+ */
+
+/**
+ * All known (non-default) IPLD formats
+ *
+ * @type {Record<number, IPLDFormat>}
+ */
 const IpldFormats = {
   get [multicodec.DAG_PB] () {
     return require('ipld-dag-pb')
@@ -16,16 +24,23 @@ const IpldFormats = {
   }
 }
 
-module.exports = (blockService, options = {}, log) => {
+/**
+ * @param {import('ipfs-block-service')} blockService
+ * @param {import('ipld').Options} [options]
+ */
+module.exports = (blockService, options) => {
   return mergeOptions.call(
     // ensure we have the defaults formats even if the user overrides `formats: []`
     { concatArrays: true },
     {
       blockService: blockService,
+      formats: [],
+      /**
+       * @type {import('ipld').LoadFormatFn}
+       */
       loadFormat: (codec) => {
-        log('Loading IPLD format', codec)
         if (IpldFormats[codec]) {
-          return IpldFormats[codec]
+          return Promise.resolve(IpldFormats[codec])
         } else {
           throw new Error(`Missing IPLD format "${multicodec.getName(codec)}"`)
         }
