@@ -84,7 +84,7 @@
     "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=10.3.0",
+    "node": ">=14.0.0",
     "npm": ">=3.0.0"
   },
   "contributors": [
