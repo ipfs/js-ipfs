@@ -110,16 +110,16 @@ exports.stat = {
 
     return h.response({
       ProvideBufLen: stats.provideBufLen,
-      BlocksReceived: stats.blocksReceived,
+      BlocksReceived: stats.blocksReceived.toString(),
       Wantlist: stats.wantlist.map(cid => ({
         '/': cidToString(cid, { base: cidBase, upgrade: false })
       })),
       Peers: stats.peers,
-      DupBlksReceived: stats.dupBlksReceived,
-      DupDataReceived: stats.dupDataReceived,
-      DataReceived: stats.dataReceived,
-      BlocksSent: stats.blocksSent,
-      DataSent: stats.dataSent
+      DupBlksReceived: stats.dupBlksReceived.toString(),
+      DupDataReceived: stats.dupDataReceived.toString(),
+      DataReceived: stats.dataReceived.toString(),
+      BlocksSent: stats.blocksSent.toString(),
+      DataSent: stats.dataSent.toString()
     })
   }
 }

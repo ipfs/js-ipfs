@@ -137,11 +137,11 @@ exports.stat = {
     })
 
     return h.response({
-      NumObjects: stat.numObjects,
-      RepoSize: stat.repoSize,
+      NumObjects: stat.numObjects.toString(),
+      RepoSize: stat.repoSize.toString(),
       RepoPath: stat.repoPath,
       Version: stat.version,
-      StorageMax: stat.storageMax
+      StorageMax: stat.storageMax.toString()
     })
   }
 

@@ -121,7 +121,7 @@ export interface PutOptions extends AbortOptions, PreloadOptions {
 
 export interface RmOptions extends AbortOptions {
   /**
-   * Ignores nonexistent blocks
+   * Ignores non-existent blocks
    */
   force?: boolean,
 
@@ -131,14 +131,14 @@ export interface RmOptions extends AbortOptions {
   quiet?: boolean
 }
 
-export interface RmResult extends AbortOptions {
+export interface RmResult {
   /**
    * The CID of the removed block
    */
   cid: CID
 
   /**
-   * Any error that occured while trying to remove the block
+   * Any error that occurred while trying to remove the block
    */
   error?: Error
 }

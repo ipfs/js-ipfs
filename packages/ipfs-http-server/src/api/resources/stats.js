@@ -60,10 +60,10 @@ exports.bw = {
         timeout
       }),
       map(stat => ({
-        TotalIn: stat.totalIn,
-        TotalOut: stat.totalOut,
-        RateIn: stat.rateIn,
-        RateOut: stat.rateOut
+        TotalIn: stat.totalIn.toString(),
+        TotalOut: stat.totalOut.toString(),
+        RateIn: stat.rateIn.toString(),
+        RateOut: stat.rateOut.toString()
       })),
       ndjson.stringify
     ))
