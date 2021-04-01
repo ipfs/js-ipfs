@@ -45,8 +45,6 @@ export interface IPFS extends RootAPI {
 }
 
 export type {
-  IPFS,
-
   AbortOptions,
   Await,
   AwaitIterable
