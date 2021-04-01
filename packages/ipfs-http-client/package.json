@@ -41,7 +41,7 @@
     "lint": "aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller -i ipld"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
