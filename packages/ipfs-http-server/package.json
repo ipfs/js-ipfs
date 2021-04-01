@@ -75,7 +75,7 @@
     "form-data": "^4.0.0",
     "ipfs-http-client": "^49.0.4",
     "iso-random-stream": "^1.1.1",
-    "it-to-buffer": "^1.0.2",
+    "it-to-buffer": "^2.0.0",
     "qs": "^6.9.4",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3",
