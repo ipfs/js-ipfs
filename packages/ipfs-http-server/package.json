@@ -51,7 +51,7 @@
     "it-map": "^1.0.4",
     "it-multipart": "^1.0.8",
     "it-pipe": "^1.1.0",
-    "it-tar": "^1.2.2",
+    "it-tar": "^2.0.0",
     "it-to-stream": "^0.1.2",
     "iterable-ndjson": "^1.1.0",
     "joi": "^17.2.1",
