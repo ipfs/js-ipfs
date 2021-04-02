@@ -115,7 +115,7 @@
     "multicodec": "^3.0.1",
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
-    "p-queue": "^6.6.1",
+    "p-queue": "^7.0.0",
     "parse-duration": "^0.4.4",
     "peer-id": "^0.14.1",
     "streaming-iterables": "^5.0.2",
