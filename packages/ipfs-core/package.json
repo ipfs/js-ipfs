@@ -114,7 +114,7 @@
     "multiaddr-to-uri": "^6.0.0",
     "multibase": "^4.0.2",
     "multicodec": "^3.0.1",
-    "multiformats": "/home/vmx/src/pl/js-multiformats/dist",
+    "multiformats": "^6.0.0",
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",

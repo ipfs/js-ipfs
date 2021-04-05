@@ -58,7 +58,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(path)).to.eventually.include({
         size: 0,
-        cumulativeSize: 4,
+        cumulativeSize: 0,
         blocks: 0,
         type: 'directory'
       })
@@ -78,7 +78,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(filePath)).to.eventually.include({
         size: smallFile.length,
-        cumulativeSize: 71,
+        cumulativeSize: 0,
         blocks: 1,
         type: 'file'
       })
@@ -94,7 +94,7 @@ module.exports = (common, options) => {
 
       await expect(ipfs.files.stat(filePath)).to.eventually.include({
         size: largeFile.length,
-        cumulativeSize: 490800,
+        cumulativeSize: 0,
         blocks: 2,
         type: 'file'
       })
@@ -352,7 +352,7 @@ module.exports = (common, options) => {
         blocks: 0,
         size: 12,
         cid: fixtures.smallFile.cid,
-        cumulativeSize: 20,
+        cumulativeSize: 0,
         withLocality: false
       })
       expect(stat.local).to.be.undefined()

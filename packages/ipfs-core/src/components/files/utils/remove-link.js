@@ -90,7 +90,7 @@ const removeLink = async (context, options) => {
 const removeFromDirectory = async (context, options) => {
   // Remove existing link if it exists
   options.parent.Links = options.parent.Links.filter((link) => {
-    link.Name !== options.name
+    return link.Name !== options.name
   })
 
   let hasher
@@ -110,7 +110,11 @@ const removeFromDirectory = async (context, options) => {
   })
   await context.blockStorage.put(parentBlock)
 
-  const cid = parentBlock.cid
+  let cid = parentBlock.cid
+  if (options.cidVersion === 0) {
+    cid = cid.toV0()
+  }
+
   log(`Updated regular directory ${cid}`)
 
   return {
@@ -217,7 +221,7 @@ const updateShard = async (context, positions, name, options) => {
 const updateShardParent = (context, bucket, parent, oldName, newName, size, cid, options) => {
   // Remove existing link if it exists
   const parentLinks = parent.Links.filter((link) => {
-    link.Name !== oldName
+    return link.Name !== oldName
   })
   parentLinks.push({
     Name: newName,

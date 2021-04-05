@@ -82,7 +82,7 @@ module.exports = (common, options) => {
       })
 
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
-        .that.has.property('message').that.matches(/"identity"/)
+        .that.has.property('message').that.matches(/unsupported codec/i)
     })
 
     it('refuses to copy files to an exsting file', async () => {

@@ -161,7 +161,6 @@ const copyToFile = async (context, source, destination, destinationTrail, option
   }
 
   parent = await addSourceToParent(context, source, destination, parent, options)
-  debugger
 
   // update the tree with the new containing directory
   destinationTrail.push(parent)
@@ -211,6 +210,7 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
     cid
   } = await addLink(context, {
     parentCid: parent.cid,
+    // TODO vmx 2021-04-05: decide what to do with the size, should it be 0?
     size: sourceBlock.bytes.length,
     cid: source.cid,
     name: childName,

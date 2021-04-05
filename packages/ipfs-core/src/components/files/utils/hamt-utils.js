@@ -3,7 +3,7 @@
 // @ts-ignore - TODO vmx 2021-03-31
 const dagPb = require('@ipld/dag-pb')
 const Block = require('multiformats/block')
-const { sha256 } = require('multiformats/hashes/sha2')
+const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const {
   Bucket,
   createHAMT
@@ -56,15 +56,18 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     case 'sha2-256':
       hasher = sha256
       break
+    case 'sha2-512':
+      hasher = sha512
+      break
     default:
-      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
   }
 
   const parent = dagPb.prepare({
     Data: dir.marshal(),
     Links: links
   })
-  // TODO vmx 2021-03-04: Check if the CID version matters
+
   const parentBlock = await Block.encode({
     value: parent,
     codec: dagPb,
@@ -75,7 +78,6 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     await context.blockStorage.put(parentBlock)
   }
 
-  // TODO vmx 2021-03-30: Check if this is needed, or whether it's always a CIDv0 anyway
   let cid = parentBlock.cid
   if (options.cidVersion === 0) {
     cid = cid.toV0()
@@ -84,8 +86,8 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   return {
     node: parent,
     cid,
-    // TODO vmx 2021-03-04: double check that it is the size we want here
-    size: parentBlock.bytes.length
+    // TODO vmx 2021-03-04: Decide whether the size matters or not
+    size: parent.Links.reduce((sum, link) => sum + link.Tsize, parentBlock.bytes.length)
   }
 }
 
@@ -285,8 +287,9 @@ const createShard = async (context, contents, options = {}) => {
     hamtHashFn: importerOptions.hamtHashFn,
     hamtHashCode: importerOptions.hamtHashCode,
     hamtBucketBits: importerOptions.hamtBucketBits,
+    hasher: importerOptions.hasher,
     ...options,
-    codec: 'dag-pb'
+    codec: dagPb.code
   })
 
   for (let i = 0; i < contents.length; i++) {

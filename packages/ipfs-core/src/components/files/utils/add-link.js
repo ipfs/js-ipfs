@@ -2,7 +2,7 @@
 
 // @ts-ignore
 const dagPb = require('@ipld/dag-pb')
-const { sha256 } = require('multiformats/hashes/sha2')
+const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const Block = require('multiformats/block')
 //// @ts-ignore
 const { CID } = require('multiformats/cid')
@@ -53,6 +53,10 @@ const addLink = async (context, options) => {
     const parentCid = CID.asCID(options.parentCid)
     if (parentCid === null) {
       throw errCode(new Error('Invalid CID passed to addLink'), 'EINVALIDPARENTCID')
+    }
+
+    if (parentCid.code !== dagPb.code) {
+      throw errCode(new Error('Unsupported codec. Only DAG-PB is supported'), 'EINVALIDPARENTCID')
     }
 
     log(`Loading parent node ${parentCid}`)
@@ -186,8 +190,11 @@ const addToDirectory = async (context, options) => {
     case 'sha2-256':
       hasher = sha256
       break
+    case 'sha2-512':
+      hasher = sha512
+      break
     default:
-      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
   }
 
   // Persist the new parent PbNode
@@ -195,14 +202,20 @@ const addToDirectory = async (context, options) => {
       value: options.parent,
       codec: dagPb,
       hasher
-     })
-    if (options.flush) {
-      await context.blockStorage.put(block)
-    }
+  })
+
+  if (options.flush) {
+    await context.blockStorage.put(block)
+  }
+
+  let cid = block.cid
+  if (options.cidVersion === 0) {
+    cid = cid.toV0()
+  }
 
   return {
     node: options.parent,
-    cid: block.cid,
+    cid,
     // TODO vmx 2021-03-31: `size` should be removed completely
     size: 0
   }
@@ -223,10 +236,9 @@ const addToShardedDirectory = async (context, options) => {
   const {
     shard, path
   } = await addFileToShardedDirectory(context, options)
-
   const result = await last(shard.flush(context.blockStorage))
   const block = await context.blockStorage.get(result.cid)
-  // TODO vmx 2021-03-31: shouldn't be needed once js-dag-pb has proper types
+  // TODO vmx 2021-03-31: this type annotation shouldn't be needed once js-dag-pb has proper types
   /** @type {PbNode} */
   const node = dagPb.decode(block.bytes)
 
@@ -246,7 +258,7 @@ const addToShardedDirectory = async (context, options) => {
 
   parentLinks.push(newLink)
 
-  return updateHamtDirectory(context, options.parent.Links, path[0].bucket, options)
+  return updateHamtDirectory(context, parentLinks, path[0].bucket, options)
 }
 
 /**
@@ -271,6 +283,21 @@ const addFileToShardedDirectory = async (context, options) => {
   const node = UnixFS.unmarshal(options.parent.Data)
   const importerOptions = defaultImporterOptions()
 
+  // NOTE vmx 2021-04-01: in ipfs the hash algorithm is a constant in unixfs
+  // it's an implementation. Do the option conversion at the boundary between
+  // ipfs and unixfs.
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    case 'sha2-512':
+      hasher = sha512
+      break
+    default:
+      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
+  }
+
   const shard = new DirSharded({
     root: true,
     dir: true,
@@ -284,6 +311,7 @@ const addFileToShardedDirectory = async (context, options) => {
     hamtHashFn: importerOptions.hamtHashFn,
     hamtHashCode: importerOptions.hamtHashCode,
     hamtBucketBits: importerOptions.hamtBucketBits,
+    hasher,
     ...options
   })
   shard._bucket = rootBucket

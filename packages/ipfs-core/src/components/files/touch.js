@@ -111,6 +111,11 @@ module.exports = (context) => {
       }
     }
 
+    let updatedCid = updatedBlock.cid
+    if (options.cidVersion === 0) {
+      updatedCid = updatedCid.toV0()
+    }
+
     const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
     // TODO vmx 2021-03-31 check if `toTrail()` should perhaps not return lagacy CIDs
@@ -122,7 +127,7 @@ module.exports = (context) => {
       parent: parentNode,
       name: name,
       //cid: asLegacyCid(updatedBlock.cid),
-      cid: updatedBlock.cid,
+      cid: updatedCid,
       // TODO vmx 2021-03-31: Check if that's the correct size of whether we should just use no size at all
       size: updatedBlock.bytes.length,
       flush: settings.flush,

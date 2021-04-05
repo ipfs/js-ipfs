@@ -51,6 +51,7 @@ const updateTree = async (context, trail, options) => {
         name,
         // TODO vmx 2021-03-04: Check if the size should be 0 or the actual size
         size: block.bytes.length
+        //size: 0
       }
 
       continue
@@ -61,6 +62,8 @@ const updateTree = async (context, trail, options) => {
       parent: node,
       name: child.name,
       cid: child.cid,
+      //size: child.size || 0,
+      // TODO vmx 2021-04-05: check what to do with the size
       size: child.size,
       flush: options.flush,
       shardSplitThreshold: options.shardSplitThreshold,
@@ -72,6 +75,7 @@ const updateTree = async (context, trail, options) => {
     child = {
       cid: result.cid,
       name,
+      // TODO vmx 2021-04-05: check what to do with the size
       size: result.size
     }
   }

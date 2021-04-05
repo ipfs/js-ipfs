@@ -6,7 +6,7 @@ const {
   decode
 // @ts-ignore - TODO vmx 2021-03-31
 } = require('@ipld/dag-pb')
-const { sha256 } = require('multiformats/hashes/sha2')
+const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
@@ -297,8 +297,11 @@ const write = async (context, source, destination, options) => {
     case 'sha2-256':
       hasher = sha256
       break
+    case 'sha2-512':
+      hasher = sha512
+      break
     default:
-      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
+      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
   }
 
   const result = await last(importer([{

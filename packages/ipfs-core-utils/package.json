@@ -41,7 +41,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "multiformats": "/home/vmx/src/pl/js-multiformats/dist",
+    "multiformats": "^6.0.0",
     "any-signal": "^2.1.2",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",

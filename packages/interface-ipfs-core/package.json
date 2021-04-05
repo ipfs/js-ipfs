@@ -45,6 +45,7 @@
     "delay": "^5.0.0",
     "dirty-chai": "^2.0.1",
     "err-code": "^3.0.1",
+    "ipfs-core-utils": "^0.7.2",
     "ipfs-unixfs": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs",
     "ipfs-unixfs-importer": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs-importer",
     "ipfs-utils": "^6.0.4",

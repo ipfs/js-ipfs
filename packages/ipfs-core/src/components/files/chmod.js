@@ -329,6 +329,10 @@ module.exports = (context) => {
     if (opts.flush) {
       await context.blockStorage.put(updatedBlock)
     }
+    let updatedCid = updatedBlock.cid
+    if (options.cidVersion === 0) {
+      updatedCid = updatedCid.toV0()
+    }
 
     const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
@@ -339,8 +343,8 @@ module.exports = (context) => {
     const result = await addLink(context, {
       parent: parentNode,
       name: name,
-      cid: updatedBlock.cid,
-      size: node.serialize().length,
+      cid: updatedCid,
+      size: updatedBlock.bytes.length,
       flush: opts.flush,
       // TODO vmx 2021-03-29: decide on the API, whether it should be a `hashAlg` or `hasher`
       hashAlg,
