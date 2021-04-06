@@ -21,7 +21,7 @@
     "ipfs": "^0.54.4"
   },
   "devDependencies": {
-    "parcel": "next",
+    "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "standard": "^16.0.3",
     "test-ipfs-example": "^3.0.0"

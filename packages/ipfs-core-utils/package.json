@@ -44,7 +44,7 @@
     "any-signal": "^2.1.2",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.3.1",
     "ipfs-unixfs": "^4.0.1",

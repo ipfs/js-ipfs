@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "parcel build index.html --no-scope-hoist",
+    "build": "parcel build index.html",
     "start": "parcel index.html -p 8888",
     "test": "test-ipfs-example"
   },
@@ -19,7 +19,7 @@
     "execa": "^5.0.0",
     "go-ipfs": "0.8.0",
     "ipfsd-ctl": "^8.0.0",
-    "parcel": "next",
+    "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   },

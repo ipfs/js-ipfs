@@ -25,11 +25,11 @@
     "last 2 versions and not dead and > 2%"
   ],
   "devDependencies": {
-    "delay": "^4.4.0",
+    "delay": "^5.0.0",
     "execa": "^5.0.0",
     "ipfsd-ctl": "^8.0.0",
     "go-ipfs": "0.8.0",
-    "parcel": "next",
+    "parcel": "2.0.0-beta.2",
     "path": "^0.12.7",
     "test-ipfs-example": "^3.0.0"
   },
