@@ -116,7 +116,7 @@
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",
-    "parse-duration": "^0.4.4",
+    "parse-duration": "^1.0.0",
     "peer-id": "^0.14.1",
     "streaming-iterables": "^5.0.2",
     "uint8arrays": "^2.1.3"

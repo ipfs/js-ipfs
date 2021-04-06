@@ -61,7 +61,7 @@
     "multicodec": "^3.0.1",
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
-    "parse-duration": "^0.4.4",
+    "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^5.0.2",
     "uint8arrays": "^2.1.3",
