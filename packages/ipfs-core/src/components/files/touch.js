@@ -97,8 +97,8 @@ module.exports = (context) => {
       metadata.mtime = settings.mtime
 
       const updatedNode = dagPb.prepare({
-          Data: metadata.marshal(),
-          Links: node.Links
+        Data: metadata.marshal(),
+        Links: node.Links
       })
 
       updatedBlock = await Block.encode({
@@ -126,7 +126,6 @@ module.exports = (context) => {
     const result = await addLink(context, {
       parent: parentNode,
       name: name,
-      //cid: asLegacyCid(updatedBlock.cid),
       cid: updatedCid,
       // TODO vmx 2021-03-31: Check if that's the correct size of whether we should just use no size at all
       size: updatedBlock.bytes.length,

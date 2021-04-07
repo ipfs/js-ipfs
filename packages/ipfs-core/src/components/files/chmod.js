@@ -14,8 +14,6 @@ const dagPb = require('@ipld/dag-pb')
 const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 const Block = require('multiformats/block')
-// @ts-ignore
-const IpldBlock = require('ipld-block')
 const { pipe } = require('it-pipe')
 const { importer } = require('ipfs-unixfs-importer')
 const { recursive } = require('ipfs-unixfs-exporter')

@@ -79,7 +79,7 @@ const statters = {
       cid: asLegacyCid(file.cid),
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      //cumulativeSize: file.node.length,
+      // cumulativeSize: file.node.length,
       cumulativeSize: 0,
       blocks: 0,
       type: 'file', // for go compatibility
@@ -98,7 +98,7 @@ const statters = {
       type: 'file',
       size: file.unixfs.fileSize(),
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      //cumulativeSize: file.node.size,
+      // cumulativeSize: file.node.size,
       cumulativeSize: 0,
       blocks: file.unixfs.blockSizes.length,
       local: undefined,
@@ -123,7 +123,7 @@ const statters = {
       type: 'directory',
       size: 0,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      //cumulativeSize: file.node.size,
+      // cumulativeSize: file.node.size,
       cumulativeSize: 0,
       blocks: file.node.Links.length,
       local: undefined,
@@ -147,7 +147,7 @@ const statters = {
       cid: asLegacyCid(file.cid),
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      //cumulativeSize: file.node.length,
+      // cumulativeSize: file.node.length,
       cumulativeSize: 0,
       type: 'file', // for go compatibility
       blocks: 0,
@@ -165,7 +165,7 @@ const statters = {
       cid: asLegacyCid(file.cid),
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      //cumulativeSize: file.node.length,
+      // cumulativeSize: file.node.length,
       cumulativeSize: 0,
       blocks: 0,
       type: 'file', // for go compatibility

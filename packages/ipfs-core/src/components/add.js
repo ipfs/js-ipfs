@@ -21,7 +21,7 @@ module.exports = ({ addAll }) => {
       throw Error('Failed to add a file, if you see this please report a bug')
     }
 
-    let legacyResult = result
+    const legacyResult = result
     legacyResult.cid = asLegacyCid(result.cid)
 
     return legacyResult

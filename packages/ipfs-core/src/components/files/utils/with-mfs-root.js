@@ -7,7 +7,6 @@ const dagPb = require('@ipld/dag-pb')
 const { sha256 } = require('multiformats/hashes/sha2')
 const Block = require('multiformats/block')
 // @ts-ignore
-const IpldBlock = require('ipld-block')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const errCode = require('err-code')
 

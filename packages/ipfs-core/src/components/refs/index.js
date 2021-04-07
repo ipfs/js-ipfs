@@ -7,7 +7,6 @@ const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const LegacyCID = require('cids')
 const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 const Format = {
@@ -17,6 +16,7 @@ const Format = {
 
 /**
  * @typedef {import('../../types').PbNode} PbNode
+ * @typedef {import('cids')} LegacyCID
  *
  * @typedef {object} Node
  * @property {string} [name]
@@ -207,26 +207,26 @@ async function getLinks (blockStorage, cid) {
   return node.Links.map(({ Name, Hash }) => ({ name: Name, cid: asLegacyCid(Hash) }))
 }
 
-///**
-// * Recursively search the node for CIDs
-// *
-// * @param {object} node
-// * @param {string} [path]
-// * @returns {Node[]}
-// */
-//function getNodeLinks (node, path = '') {
-//  /** @type {Node[]} */
-//  let links = []
-//  for (const [name, value] of Object.entries(node)) {
-//    const cid = CID.asCID(value)
-//    if (cid) {
-//      links.push({
-//        name: path + name,
-//        cid
-//      })
-//    } else if (typeof value === 'object') {
-//      links = links.concat(getNodeLinks(value, path + name + '/'))
-//    }
-//  }
-//  return links
-//}
+// /**
+//  * Recursively search the node for CIDs
+//  *
+//  * @param {object} node
+//  * @param {string} [path]
+//  * @returns {Node[]}
+//  */
+// function getNodeLinks (node, path = '') {
+//   /** @type {Node[]} */
+//   let links = []
+//   for (const [name, value] of Object.entries(node)) {
+//     const cid = CID.asCID(value)
+//     if (cid) {
+//       links.push({
+//         name: path + name,
+//         cid
+//       })
+//     } else if (typeof value === 'object') {
+//       links = links.concat(getNodeLinks(value, path + name + '/'))
+//     }
+//   }
+//   return links
+// }

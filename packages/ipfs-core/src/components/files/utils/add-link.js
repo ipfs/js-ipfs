@@ -4,7 +4,6 @@
 const dagPb = require('@ipld/dag-pb')
 const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const Block = require('multiformats/block')
-//// @ts-ignore
 const { CID } = require('multiformats/cid')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const { UnixFS } = require('ipfs-unixfs')
@@ -199,9 +198,9 @@ const addToDirectory = async (context, options) => {
 
   // Persist the new parent PbNode
   const block = await Block.encode({
-      value: options.parent,
-      codec: dagPb,
-      hasher
+    value: options.parent,
+    codec: dagPb,
+    hasher
   })
 
   if (options.flush) {

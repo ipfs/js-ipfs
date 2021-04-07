@@ -17,10 +17,6 @@ const {
   DAGNode,
   DAGLink
 } = require('ipld-dag-pb')
-//const {
-//  encode,
-//  prepare
-//} = require('@ipld/dag-pb')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('/object', () => {
@@ -35,19 +31,6 @@ describe('/object', () => {
   const emptyDirectoryNode = new DAGNode(new UnixFS({
     type: 'directory'
   }).marshal())
-  //const fileNode = prepare({
-  //  Data: unixfs.marshal(),
-  //  Links: [{
-  //    Name: '',
-  //    Tsize: 5,
-  //    Hash: cid
-  //  }]
-  //})
-  //const emptyDirectoryNode = prepare({
-  //  Data: new UnixFS({
-  //    type: 'directory'
-  //  }).marshal()
-  //})
   let ipfs
 
   beforeEach(() => {
@@ -327,10 +310,6 @@ describe('/object', () => {
 
       ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), defaultOptions).returns(cid)
       ipfs.object.get.withArgs(cid).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
-      //  .resolves(prepare({
-      //  Data: expectedResult.Data,
-      //  Links: expectedResult.Links
-      //}))
 
       const form = new FormData()
       const filePath = 'test/fixtures/test-data/node.json'
@@ -404,10 +383,6 @@ describe('/object', () => {
         signal: sinon.match.instanceOf(AbortSignal),
         timeout: 1000
       }).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
-      //}).resolves(prepare({
-      //  Data: expectedResult.Data,
-      //  Links: expectedResult.Links
-      //}))
 
       const form = new FormData()
       const filePath = 'test/fixtures/test-data/node.json'

@@ -90,15 +90,12 @@ function withTimeoutOption (fn, optionsArgIndex) {
     // @ts-ignore
     return (async () => {
       try {
-        //console.log('vmx: with timeout option5: timeoutPromise:', timeoutPromise, fnRes)
         const res = await Promise.race([fnRes, timeoutPromise])
-        //console.log('vmx: with timeout option6')
 
         maybeThrowTimeoutError()
 
         return res
       } catch (err) {
-        //console.log('vmx: with timeout option7: err:', err)
         maybeThrowTimeoutError()
 
         throw err

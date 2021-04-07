@@ -709,16 +709,6 @@ exports.patchAddLink = {
         signal,
         timeout
       })
-      //const link = {
-      //  Name: name,
-      //  Tsize: node.size,
-      //  Hash: ref
-      //}
-      //cid = await ipfs.object.patch.addLink(root, link, {
-      //  enc,
-      //  signal,
-      //  timeout
-      //})
       node = await ipfs.object.get(cid, {
         signal,
         timeout

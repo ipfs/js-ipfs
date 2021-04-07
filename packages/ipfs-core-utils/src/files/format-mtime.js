@@ -1,10 +1,9 @@
 'use strict'
 
-/* TODO vmx 2021-03-30 enable again
+/**
  * @param {import('ipfs-unixfs').Mtime} mtime
  * @returns {string}
  */
-// @ts-ignore - TODO vmx 2021-03-30 enable again
 function formatMtime (mtime) {
   if (mtime == null) {
     return '-'

@@ -4,7 +4,6 @@ const loadMfsRoot = require('./with-mfs-root')
 const toPathComponents = require('./to-path-components')
 const { exporter } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { CID } = require('multiformats/cid')
 const LegacyCID = require('cids')
 
 const IPFS_PREFIX = 'ipfs'
@@ -12,6 +11,7 @@ const IPFS_PREFIX = 'ipfs'
 /**
  * @typedef {import('ipfs-unixfs-exporter').UnixFSEntry} UnixFSEntry
  * @typedef {import('ipfs-unixfs-exporter').ExporterOptions} ExporterOptions
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('../').MfsContext} MfsContext
  *
  * @typedef {object} FilePath

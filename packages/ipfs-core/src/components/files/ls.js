@@ -32,7 +32,7 @@ const toOutput = (fsEntry) => {
 }
 
 /**
- * @param {MfsContext} context\b
+ * @param {MfsContext} context
  */
 module.exports = (context) => {
   /**
