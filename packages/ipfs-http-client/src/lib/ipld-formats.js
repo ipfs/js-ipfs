@@ -45,8 +45,8 @@ module.exports = ({ formats = [], loadFormat = noop } = {}) => {
    * @param {import('multicodec').CodecName} codec - The code to load the format for
    */
   const loadResolver = async (codec) => {
-    // @ts-ignore - codec is a string and not a CodecName
-    const number = multicodec.getNumber(codec)
+    const number = multicodec.getCodeFromName(codec)
+    // @ts-ignore wat
     const format = configuredFormats[number] || await loadFormat(codec)
 
     if (!format) {

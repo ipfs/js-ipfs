@@ -14,7 +14,7 @@
   "author": "Dmitriy Ryajov <dryajov@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "delay": "^4.4.0",
+    "delay": "^5.0.0",
     "ipfs": "^0.54.4",
     "ipfs-pubsub-room": "^2.0.1",
     "libp2p-websockets": "^0.15.1",
@@ -22,9 +22,9 @@
   },
   "devDependencies": {
     "execa": "^5.0.0",
-    "ipfs-css": "^0.13.1",
+    "ipfs-css": "^1.3.0",
     "ipfs-http-client": "^49.0.4",
-    "parcel": "next",
+    "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "tachyons": "^4.11.1",
     "test-ipfs-example": "^3.0.0"

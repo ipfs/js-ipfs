@@ -1,5 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import CID from 'cids'
+import CID, { CIDVersion } from 'cids'
 import { CodecName } from 'multicodec'
 import { HashName } from 'multihashes'
 

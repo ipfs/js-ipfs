@@ -28,7 +28,8 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
+    "ipld": "^0.29.0",
     "multiaddr": "^8.0.0",
     "multibase": "^4.0.2"
   },

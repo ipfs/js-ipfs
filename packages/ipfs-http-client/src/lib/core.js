@@ -15,8 +15,8 @@ const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
 const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
 
 /**
- * @typedef {import('electron-fetch').Response} Response
- * @typedef {import('ipfs-utils/dist/types/electron-fetch').Request} Request
+ * @typedef {import('ipfs-utils/dist/types/native-fetch').Response} Response
+ * @typedef {import('ipfs-utils/dist/types/native-fetch').Request} Request
  * @typedef {import('ipfs-utils/src/types').HTTPOptions} HTTPOptions
  * @typedef {import('../types').Options} Options
  */
@@ -188,7 +188,6 @@ class Client extends HTTP {
     /**
      * @param {string | Request} resource
      * @param {HTTPOptions} options
-     * @returns {Promise<import('ipfs-utils/dist/types/electron-fetch').Response>}
      */
     this.fetch = (resource, options = {}) => {
       if (typeof resource === 'string' && !resource.startsWith('/')) {

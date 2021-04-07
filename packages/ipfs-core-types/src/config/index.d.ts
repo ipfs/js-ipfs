@@ -107,7 +107,7 @@ export interface DEK {
 
 export interface PubsubConfig {
   PubSubRouter?: 'gossipsub' | 'floodsub'
-  Enabled?: booleam
+  Enabled?: boolean
 }
 
 export interface SwarmConfig {

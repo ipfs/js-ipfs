@@ -1,8 +1,8 @@
-import type { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
-import type CID, { CIDVersion } from 'cids'
-import type { Mtime } from 'ipfs-unixfs'
-import type Multiaddr from 'multiaddr'
-import type { BaseName } from 'multibase'
+import { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
+import CID, { CIDVersion } from 'cids'
+import { Mtime } from 'ipfs-unixfs'
+import Multiaddr from 'multiaddr'
+import { BaseName } from 'multibase'
 
 export interface API<OptionExtension = {}> {
   /**

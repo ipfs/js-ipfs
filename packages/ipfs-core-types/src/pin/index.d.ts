@@ -113,8 +113,6 @@ export interface AddOptions extends AbortOptions {
 }
 
 export interface AddAllOptions extends AbortOptions {
-  lock?: boolean
-
   /**
    * Whether to preload all blocks pinned during this operation
    */

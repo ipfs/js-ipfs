@@ -32,7 +32,7 @@
   "dependencies": {
     "byteman": "^1.3.5",
     "cid-tool": "^1.0.0",
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "execa": "^5.0.0",
@@ -45,7 +45,7 @@
     "ipfs-repo": "^9.0.0",
     "ipfs-utils": "^6.0.4",
     "ipld-dag-cbor": "^0.18.0",
-    "ipld-dag-pb": "^0.22.0",
+    "ipld-dag-pb": "^0.22.1",
     "it-all": "^1.0.4",
     "it-concat": "^1.0.3",
     "it-first": "^1.0.4",

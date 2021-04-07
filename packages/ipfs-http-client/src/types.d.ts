@@ -2,13 +2,14 @@ import { Format as IPLDFormat } from 'interface-ipld-format'
 import { LoadFormatFn } from 'ipld'
 import { Agent as HttpAgent } from 'http'
 import { Agent as HttpsAgent } from 'https'
+import Multiaddr from 'multiaddr'
 
 export interface Options {
   host?: string
   port?: number
   protocol?: string
   headers?: Headers | Record<string, string>
-  timeout?: number | sttring
+  timeout?: number | string
   apiPath?: string
   url?: URL|string|Multiaddr
   ipld?: IPLDOptions
@@ -16,7 +17,7 @@ export interface Options {
 }
 
 export interface IPLDOptions {
-  formats?: IPLDFormat[]
+  formats?: IPLDFormat<any>[]
   loadFormat?: LoadFormatFn
 }
 

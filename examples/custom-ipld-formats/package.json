@@ -11,7 +11,7 @@
     "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
     "ipfs-daemon": "^0.5.4",
     "ipfs-core": "^0.5.4",
     "ipfs-http-client": "^49.0.4",

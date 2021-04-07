@@ -1,9 +1,8 @@
 import { AbortOptions, IPFSPath } from '../utils'
-import { ToMTime } from './files'
 import CID, { CIDVersion } from 'cids'
 import { CodecName } from 'multicodec'
 import { HashName } from 'multihashes'
-import { Mtime } from 'ipfs-unixfs'
+import { Mtime, MtimeLike } from 'ipfs-unixfs'
 import type { AddProgressFn } from '../root'
 
 export interface API<OptionExtension = {}> {
@@ -105,7 +104,7 @@ export interface API<OptionExtension = {}> {
    * // Hello, World!
    * ```
    */
-  read: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => AsyncIterable<Uint8Array>
+  read: (ipfsPath: IPFSPath, options?: ReadOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   /**
    * Write to an MFS path
@@ -260,7 +259,7 @@ export interface MkdirOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries
@@ -351,7 +350,7 @@ export interface TouchOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries
@@ -442,7 +441,7 @@ export interface WriteOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries

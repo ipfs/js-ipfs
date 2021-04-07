@@ -46,7 +46,7 @@
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
     "ipfs-core-types": "^0.3.1",
     "ipld-block": "^0.11.0"
   },

@@ -2,7 +2,7 @@
 'use strict'
 
 const React = require('react')
-const { create: ipfsClient } = require('ipfs-http-client')
+const { create: ipfsHttpClient } = require('ipfs-http-client')
 
 class App extends React.Component {
   constructor () {
@@ -73,7 +73,7 @@ class App extends React.Component {
 
   async connect () {
     this.setState({
-      ipfs: ipfsClient(this.multiaddr.current.value)
+      ipfs: ipfsHttpClient(this.multiaddr.current.value)
     })
   }
 

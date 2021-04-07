@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "aegir": "^32.1.0",
-    "cids": "^1.1.5",
+    "cids": "^1.1.6",
     "rimraf": "^3.0.2"
   },
   "engines": {
