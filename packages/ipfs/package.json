@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
-    "aegir": "^32.1.0",
+    "aegir": "^33.0.0",
     "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
