@@ -56,7 +56,7 @@ class BlockStorage {
     // `self` is needed as bitswap access is global mutable state
     const self = this
     this.get = createGet({ self, repo, preload })
-    this.getMany = createGetMany({ self, repo})
+    this.getMany = createGetMany({ self, repo })
     this.put = createPut({ self, repo, preload, gcLock, pin })
     this.deleteMany = createDeleteMany({ repo, gcLock, pinManager })
   }
@@ -112,14 +112,22 @@ const createGet = ({ self, repo, preload }) => {
     }
 
     let legacyBlock
-    if (self._bitswap !== null) {
-      legacyBlock = await self._bitswap.get(legacyCid, {
-        signal: options.signal
-      })
-    } else {
-      legacyBlock = await repo.blocks.get(legacyCid, {
-        signal: options.signal
-      })
+    try {
+      if (self._bitswap !== null) {
+        legacyBlock = await self._bitswap.get(legacyCid, {
+          signal: options.signal
+        })
+      } else {
+        legacyBlock = await repo.blocks.get(legacyCid, {
+          signal: options.signal
+        })
+      }
+    } catch (err) {
+      if (err.code === 'ERR_NOT_FOUND') {
+        return
+      }
+
+      throw err
     }
 
     return {
@@ -149,7 +157,7 @@ const createGetMany = ({ self, repo }) => {
 
     // TODO vmx 2021-03-19: Is preload() needed for `getMany()`? It only seems to be used in non preload cases
     if (options.preload) {
-      throw new Error("TODO vmx 2021-03-19: Is preload needed for getMany?")
+      throw new Error('TODO vmx 2021-03-19: Is preload needed for getMany?')
     }
 
     let result
@@ -226,7 +234,6 @@ const createPut = ({ self, repo, preload, gcLock, pin }) => {
 
   return withTimeoutOption(put)
 }
-
 
 /**
  * @param {Object} config
