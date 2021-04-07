@@ -48,7 +48,7 @@
     "cids": "^1.1.6",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.3.1",
-    "ipfs-unixfs": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs",
+    "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb",
     "ipfs-utils": "^6.0.4",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",

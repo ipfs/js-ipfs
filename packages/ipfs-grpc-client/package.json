@@ -40,7 +40,7 @@
     "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
     "ipfs-grpc-protocol": "^0.2.0",
-    "ipfs-unixfs": "/home/vmx/src/pl/js-ipfs-unixfs/packages/ipfs-unixfs",
+    "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.0",
     "multiaddr": "^8.0.0",
