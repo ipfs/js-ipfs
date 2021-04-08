@@ -74,7 +74,7 @@
     "ipfs-block-service": "^0.19.0",
     "ipfs-core-types": "^0.3.1",
     "ipfs-core-utils": "^0.7.2",
-    "ipfs-repo": "github:hannahhoward/js-ipfs-repo#d0ad9a4",
+    "ipfs-repo": "github:hannahhoward/js-ipfs-repo#dd812a6",
     "ipfs-unixfs": "^4.0.1",
     "ipfs-unixfs-exporter": "^5.0.1",
     "ipfs-unixfs-importer": "^7.0.1",
