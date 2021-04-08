@@ -241,12 +241,12 @@ module.exports = (common, options) => {
       expect(result.value).to.deep.equal(buf)
     })
 
-    it('should be able to get a dag-cbor node with the identity hash', async() => {
+    it('should be able to get a dag-cbor node with the identity hash', async () => {
       const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
       const identityHash = await multihashing(identityData, 'identity')
       const identityCID = new CID(1, 'dag-cbor', identityHash)
       const result = await ipfs.dag.get(identityCID)
-      expect(result.value).to.deep.equal({"asdf":324})
+      expect(result.value).to.deep.equal({ asdf: 324 })
     })
 
     it('should throw error for invalid string CID input', () => {
