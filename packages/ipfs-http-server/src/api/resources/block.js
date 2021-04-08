@@ -69,7 +69,7 @@ exports.get = {
       throw Boom.notFound('Block was unwanted before it could be remotely retrieved')
     }
 
-    return h.response(Buffer.from(block.data.buffer)).header('X-Stream-Output', '1')
+    return h.response(Buffer.from(block.data.buffer, block.data.byteOffset, block.data.byteLength)).header('X-Stream-Output', '1')
   }
 }
 exports.put = {
