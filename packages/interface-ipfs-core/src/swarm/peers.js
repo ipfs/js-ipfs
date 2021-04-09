@@ -110,8 +110,9 @@ module.exports = (common, options) => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
       const config = getConfig(isBrowser && common.opts.type !== 'go'
         ? [
-            process.env.SIGNALA_SERVER,
-            process.env.SIGNALB_SERVER
+          process.env.SIGNALA_SERVER,
+
+            process.env.SIGNALB_SERVER,
           ]
         : [
             '/ip4/127.0.0.1/tcp/26545/ws',
@@ -129,6 +130,11 @@ module.exports = (common, options) => {
       // TODO: the webrtc-star transport only keeps the last listened on address around
       // so the browser has to use 1 as the array index
       // await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+      console.log(process.env.SIGNALA_SERVER)
+      console.log(process.env.SIGNALB_SERVER)
+      console.log(nodeA.peerId.addresses[0].toJSON())
+      console.log(nodeB.peerId.addresses[0].toJSON())
+      console.log(nodeB.peerId.addresses[1].toJSON())
       await nodeA.swarm.connect(nodeB.peerId.addresses[isBrowser ? 1 : 0])
 
       await delay(1000)
