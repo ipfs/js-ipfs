@@ -1,7 +1,7 @@
 'use strict'
 
 const toCamel = require('./lib/object-to-camel')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
@@ -28,7 +28,7 @@ module.exports = configure(api => {
     }
 
     if (output.addresses) {
-      output.addresses = output.addresses.map((/** @type {string} */ ma) => multiaddr(ma))
+      output.addresses = output.addresses.map((/** @type {string} */ ma) => new Multiaddr(ma))
     }
 
     // @ts-ignore server output is not typed

@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -31,7 +31,7 @@ module.exports = configure(api => {
       message.id = new CID(message.id)
       message.responses = (message.responses || []).map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
         id: ID,
-        addrs: (Addrs || []).map((/** @type {string} **/ a) => multiaddr(a))
+        addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))
       }))
       yield message
     }

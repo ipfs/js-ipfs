@@ -1,6 +1,6 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -26,7 +26,7 @@ module.exports = configure(api => {
 
     return (Peers || []).map(peer => {
       return {
-        addr: multiaddr(peer.Addr),
+        addr: new Multiaddr(peer.Addr),
         peer: peer.Peer,
         muxer: peer.Muxer,
         latency: peer.Latency,

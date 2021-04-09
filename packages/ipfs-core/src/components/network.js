@@ -2,7 +2,7 @@
 
 const IPFSBitswap = require('ipfs-bitswap')
 const createLibP2P = require('./libp2p')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const errCode = require('err-code')
 
 /**
@@ -101,7 +101,7 @@ const readAddrs = (peerId, config) => {
   const addrs = []
   const swarm = (config.Addresses && config.Addresses.Swarm) || []
   for (const addr of swarm) {
-    let ma = Multiaddr(addr)
+    let ma = new Multiaddr(addr)
 
     // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
     // websocket-star support was removed from ipfs and libp2p

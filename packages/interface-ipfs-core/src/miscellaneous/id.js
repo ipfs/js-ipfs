@@ -2,7 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const CID = require('cids')
 const testTimeout = require('../utils/test-timeout')
 const { isWebWorker } = require('ipfs-utils/src/env')
