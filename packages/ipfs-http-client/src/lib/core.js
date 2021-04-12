@@ -148,6 +148,7 @@ class Client extends HTTP {
       timeout: parseTimeout(opts.timeout || 0) || 60000 * 20,
       headers: opts.headers,
       base: `${opts.url}`,
+      mode: opts.mode || "cors",
       handleError: errorHandler,
       transformSearchParams: (search) => {
         const out = new URLSearchParams()
