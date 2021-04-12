@@ -36,14 +36,14 @@
     "filesize": "^6.1.0",
     "it-buffer": "^0.1.1",
     "it-concat": "^1.0.0",
-    "it-reader": "^2.1.0",
-    "it-to-stream": "^0.1.1",
+    "it-reader": "^3.0.0",
+    "it-to-stream": "^1.0.0",
     "mime-types": "^2.1.27",
     "multihashes": "^4.0.2",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^32.0.2",
+    "aegir": "^33.0.0",
     "cids": "^1.0.0",
     "get-stream": "^6.0.0",
     "ipfs": "^0.54.2",
