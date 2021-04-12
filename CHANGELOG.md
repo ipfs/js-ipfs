@@ -1,3 +1,7 @@
+## [0.6.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.2...v0.6.3) (2021-04-12)
+
+
+
 ## [0.6.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.1...v0.6.2) (2021-03-17)
 
 
