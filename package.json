@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-response",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Creates an HTTP response from an IPFS Hash",
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
