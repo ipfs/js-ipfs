@@ -55,7 +55,7 @@
     "it-to-stream": "^1.0.0",
     "iterable-ndjson": "^1.1.0",
     "joi": "^17.2.1",
-    "just-safe-set": "^2.1.0",
+    "just-safe-set": "^2.2.1",
     "multiaddr": "^9.0.1",
     "multibase": "^4.0.2",
     "multicodec": "^3.0.1",
@@ -70,7 +70,6 @@
   "devDependencies": {
     "@types/hapi__hapi": "^20.0.5",
     "@types/hapi-pino": "^8.0.1",
-    "@types/just-safe-set": "^2.1.0",
     "aegir": "^33.0.0",
     "form-data": "^4.0.0",
     "ipfs-http-client": "^49.0.4",

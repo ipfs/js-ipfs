@@ -79,7 +79,7 @@
     "go-ipfs": "0.8.0",
     "ipfsd-ctl": "^8.0.1",
     "it-all": "^1.0.4",
-    "it-concat": "^1.0.3",
+    "it-concat": "^2.0.0",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",
     "rimraf": "^3.0.2"

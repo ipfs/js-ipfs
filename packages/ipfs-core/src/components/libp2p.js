@@ -10,7 +10,7 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @property {string} [pass]
  *
  * @typedef {import('ipfs-repo')} Repo
- * @typedef {import('multiaddr')} Multiaddr
+ * @typedef {import('multiaddr').Multiaddr} Multiaddr
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P

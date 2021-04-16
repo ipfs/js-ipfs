@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
 'use strict'
 
-const { promisify } = require('util')
-const getFolderSize = promisify(require('get-folder-size'))
+// @ts-ignore no types
+const getFolderSize = require('get-folder-size')
 // @ts-ignore no types
 const byteman = require('byteman')
 const mh = require('multihashing-async').multihash
