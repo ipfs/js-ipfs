@@ -51,7 +51,7 @@
     "it-map": "^1.0.4",
     "it-multipart": "^1.0.8",
     "it-pipe": "^1.1.0",
-    "it-tar": "^2.0.0",
+    "it-tar": "^3.0.0",
     "it-to-stream": "^1.0.0",
     "iterable-ndjson": "^1.1.0",
     "joi": "^17.2.1",
@@ -65,7 +65,7 @@
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^5.0.2",
     "uint8arrays": "^2.1.3",
-    "uri-to-multiaddr": "^4.0.0"
+    "uri-to-multiaddr": "^5.0.0"
   },
   "devDependencies": {
     "@types/hapi__hapi": "^20.0.5",
