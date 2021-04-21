@@ -73,7 +73,7 @@ describe('libp2p customization', function () {
 
   describe('bundle', () => {
     it('should allow for using a libp2p bundle', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         options: {
           libp2p: (opts) => {
             return Libp2p.create({
@@ -97,7 +97,7 @@ describe('libp2p customization', function () {
     })
 
     it('should pass libp2p options to libp2p bundle function', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         options: {
           libp2p: (opts) => {
             return Libp2p.create({
@@ -123,7 +123,7 @@ describe('libp2p customization', function () {
 
   describe('options', () => {
     it('should use options by default', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
@@ -158,7 +158,7 @@ describe('libp2p customization', function () {
     it('should allow for overriding via options', async () => {
       const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
 
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
@@ -195,7 +195,7 @@ describe('libp2p customization', function () {
     it('should be able to specify Announce addresses', async () => {
       const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
 
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
@@ -214,7 +214,7 @@ describe('libp2p customization', function () {
     })
 
     it('should select gossipsub as pubsub router', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
