@@ -50,7 +50,7 @@ class Network {
 
     const config = await repo.config.getAll()
 
-    const libp2p = createLibP2P({
+    const libp2p = await createLibP2P({
       options,
       repo,
       peerId,

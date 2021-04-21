@@ -76,7 +76,7 @@ describe('libp2p customization', function () {
       libp2p = libp2pComponent({
         options: {
           libp2p: (opts) => {
-            return new Libp2p({
+            return Libp2p.create({
               peerId: opts.peerId,
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
@@ -100,7 +100,7 @@ describe('libp2p customization', function () {
       libp2p = libp2pComponent({
         options: {
           libp2p: (opts) => {
-            return new Libp2p({
+            return Libp2p.create({
               peerId: opts.peerId,
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }

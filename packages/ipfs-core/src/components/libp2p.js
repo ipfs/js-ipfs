@@ -1,5 +1,6 @@
 'use strict'
 
+const { Multiaddr } = require('multiaddr')
 const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
@@ -10,7 +11,6 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @property {string} [pass]
  *
  * @typedef {import('ipfs-repo')} Repo
- * @typedef {import('multiaddr').Multiaddr} Multiaddr
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
@@ -54,7 +54,7 @@ module.exports = ({
   // Required inline to reduce startup time
   const Libp2p = require('libp2p')
 
-  return new Libp2p(libp2pOptions)
+  return Libp2p.create(libp2pOptions)
 }
 
 /**
@@ -124,18 +124,18 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
           get(config, 'Pubsub.Enabled', true))
       },
       nat: {
-        enabled: get(options, 'nat.enabled', !get(config, 'Swarm.DisableNatPortMap', false)),
-        ttl: get(options, 'nat.ttl', 7200),
-        autoUpdate: get(options, 'nat.autoUpdate', true),
-        gateway: get(options, 'nat.gateway'),
-        externalIp: get(options, 'nat.externalIp'),
+        enabled: get(options, 'libp2p.config.nat.enabled', !get(config, 'Swarm.DisableNatPortMap', false)),
+        ttl: get(options, 'libp2p.config.nat.ttl', 7200),
+        keepAlive: get(options, 'libp2p.config.nat.keepAlive', true),
+        gateway: get(options, 'libp2p.config.nat.gateway'),
+        externalIp: get(options, 'libp2p.config.nat.externalIp'),
         pmp: {
-          enabled: get(options, 'nat.pmp.enabled', false)
+          enabled: get(options, 'libp2p.config.nat.pmp.enabled', false)
         }
       }
     },
     addresses: {
-      listen: multiaddrs,
+      listen: multiaddrs.map(ma => ma.toString()),
       announce: get(options, 'addresses.announce',
         get(config, 'Addresses.Announce', []))
     },
@@ -145,6 +145,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       minConnections: get(options, 'config.Swarm.ConnMgr.LowWater',
         get(config, 'Swarm.ConnMgr.LowWater'))
     }),
+    // @ts-ignore pass will be made optional in a follow up PR
     keychain: {
       datastore: keys,
       ...keychainConfig

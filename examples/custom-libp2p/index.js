@@ -30,7 +30,7 @@ const libp2pBundle = (opts) => {
 
   // Build and return our libp2p node
   // n.b. for full configuration options, see https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md
-  return new Libp2p({
+  return Libp2p.create({
     peerId,
     addresses: {
       listen: ['/ip4/127.0.0.1/tcp/0']

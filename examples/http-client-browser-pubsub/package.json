@@ -5,6 +5,7 @@
   "private": true,
   "main": "dist/index.html",
   "scripts": {
+    "clean": "rimraf ./dist ./.cache ./.parcel-cache",
     "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html -p 8888",
     "test": "test-ipfs-example"

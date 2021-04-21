@@ -4,7 +4,7 @@
   "description": "Upload file to IPFS via browser using js-ipfs-http-client with Webpack",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist ./.cache ./.parcel-cache",
     "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html",
     "test": "test-ipfs-example"

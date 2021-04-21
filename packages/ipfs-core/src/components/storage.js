@@ -126,13 +126,14 @@ const initRepo = async (print, repo, options) => {
   log('repo opened')
 
   // Create libp2p for Keychain creation
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,
     repo,
     config,
     keychainConfig: {
+      // @ts-ignore pass will be made optional in a follow up PR
       pass: options.pass
     }
   })
@@ -207,7 +208,7 @@ const configureRepo = async (repo, options) => {
 
   // @ts-ignore - Identity may not be present
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,

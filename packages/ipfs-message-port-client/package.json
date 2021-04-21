@@ -37,7 +37,7 @@
     "cids": "^1.1.6",
     "ipfs-core-types": "^0.3.1",
     "ipfs-message-port-protocol": "^0.6.1",
-    "ipfs-unixfs": "^4.0.1"
+    "ipfs-unixfs": "^4.0.3"
   },
   "devDependencies": {
     "aegir": "^33.0.0",
