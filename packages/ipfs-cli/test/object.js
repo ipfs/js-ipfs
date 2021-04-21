@@ -81,14 +81,13 @@ describe('object', () => {
 
   describe('get', () => {
     const defaultOptions = {
-      enc: 'base58',
       timeout: undefined
     }
 
     it('should get an object', async () => {
       const node = new DAGNode()
 
-      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+      ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
       const result = JSON.parse(out)
@@ -104,7 +103,7 @@ describe('object', () => {
         Hash: cid
       })
 
-      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+      ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
       const result = JSON.parse(out)
@@ -119,7 +118,7 @@ describe('object', () => {
     it('get with data', async () => {
       const node = new DAGNode(uint8ArrayFromString('aGVsbG8gd29ybGQK', 'base64'))
 
-      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+      ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
       const result = JSON.parse(out)
@@ -130,7 +129,7 @@ describe('object', () => {
     it('get while overriding data-encoding', async () => {
       const node = new DAGNode(uint8ArrayFromString('hello world'))
 
-      ipfs.object.get.withArgs(cid.toString(), defaultOptions).resolves(node)
+      ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get --data-encoding=utf8 ${cid}`, { ipfs })
       const result = JSON.parse(out)
@@ -143,7 +142,7 @@ describe('object', () => {
         new DAGLink('', 0, cid.toV1())
       ])
 
-      ipfs.object.get.withArgs(cid.toV1().toString(), defaultOptions).resolves(node)
+      ipfs.object.get.withArgs(cid.toV1(), defaultOptions).resolves(node)
 
       const out = await cli(`object get --cid-base=base64 ${cid.toV1()}`, { ipfs })
       const result = JSON.parse(out)
@@ -157,7 +156,7 @@ describe('object', () => {
     it('should get an object with a timeout', async () => {
       const node = new DAGNode()
 
-      ipfs.object.get.withArgs(cid.toString(), {
+      ipfs.object.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves(node)
@@ -186,7 +185,7 @@ describe('object', () => {
     })
 
     it('put from pipe', async () => {
-      const buf = uint8ArrayFromString('hello world')
+      const buf = Buffer.from('hello world')
 
       ipfs.object.put.withArgs(buf, defaultOptions).resolves(cid)
 
@@ -231,12 +230,11 @@ describe('object', () => {
 
   describe('stat', () => {
     const defaultOptions = {
-      enc: 'base58',
       timeout: undefined
     }
 
     it('should stat an object', async () => {
-      ipfs.object.stat.withArgs(cid.toString(), defaultOptions).resolves({
+      ipfs.object.stat.withArgs(cid, defaultOptions).resolves({
         Hash: cid,
         NumLinks: 1,
         BlockSize: 60,
@@ -256,7 +254,7 @@ describe('object', () => {
     })
 
     it('should stat an object with a timeout', async () => {
-      ipfs.object.stat.withArgs(cid.toString(), {
+      ipfs.object.stat.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves({
@@ -282,19 +280,18 @@ describe('object', () => {
   describe('data', () => {
     const data = 'another'
     const defaultOptions = {
-      enc: 'base58',
       timeout: undefined
     }
 
     it('should return data from an object', async () => {
-      ipfs.object.data.withArgs(cid.toString(), defaultOptions).resolves(data)
+      ipfs.object.data.withArgs(cid, defaultOptions).resolves(data)
 
       const out = await cli(`object data ${cid}`, { ipfs })
       expect(out).to.equal(data)
     })
 
     it('should return data from an object with a timeout', async () => {
-      ipfs.object.data.withArgs(cid.toString(), {
+      ipfs.object.data.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves(data)
@@ -306,12 +303,11 @@ describe('object', () => {
 
   describe('links', () => {
     const defaultOptions = {
-      enc: 'base58',
       timeout: undefined
     }
 
     it('should return links from an object', async () => {
-      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+      ipfs.object.links.withArgs(cid, defaultOptions).resolves([
         new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
       ])
 
@@ -324,7 +320,7 @@ describe('object', () => {
     it('should get links and print CIDs encoded in specified base', async () => {
       const cid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
 
-      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+      ipfs.object.links.withArgs(cid, defaultOptions).resolves([
         new DAGLink('some link', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1())
       ])
 
@@ -337,7 +333,7 @@ describe('object', () => {
     })
 
     it('should return links from an object with a timeout', async () => {
-      ipfs.object.links.withArgs(cid.toString(), {
+      ipfs.object.links.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves([
@@ -351,7 +347,7 @@ describe('object', () => {
     })
 
     it('should get an object and strip control characters from link names', async () => {
-      ipfs.object.links.withArgs(cid.toString(), defaultOptions).resolves([
+      ipfs.object.links.withArgs(cid, defaultOptions).resolves([
         new DAGLink('derp\t\n\b', 8, new CID('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'))
       ])
 
@@ -365,7 +361,6 @@ describe('object', () => {
   describe('patch', () => {
     describe('append-data', () => {
       const defaultOptions = {
-        enc: 'base58',
         timeout: undefined
       }
 
@@ -373,7 +368,7 @@ describe('object', () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.appendData.withArgs(cid, buf, defaultOptions).resolves(
           cid
         )
 
@@ -381,10 +376,10 @@ describe('object', () => {
         expect(out).to.equal(`${cid}\n`)
       })
 
-      it('append-data from pipe', async () => {
+      it('append data from pipe', async () => {
         const buf = Buffer.from('hello world')
 
-        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.appendData.withArgs(cid, buf, defaultOptions).resolves(
           cid
         )
 
@@ -397,11 +392,11 @@ describe('object', () => {
         expect(out).to.equal(`${cid}\n`)
       })
 
-      it('should append-data and print CID encoded in specified base', async () => {
+      it('should append data and print CID encoded in specified base', async () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.appendData.withArgs(cid, buf, defaultOptions).resolves(
           cid.toV1()
         )
 
@@ -413,7 +408,7 @@ describe('object', () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.appendData.withArgs(cid.toString(), buf, {
+        ipfs.object.patch.appendData.withArgs(cid, buf, {
           ...defaultOptions,
           timeout: 1000
         }).resolves(
@@ -427,7 +422,6 @@ describe('object', () => {
 
     describe('set-data', () => {
       const defaultOptions = {
-        enc: 'base58',
         timeout: undefined
       }
 
@@ -435,7 +429,7 @@ describe('object', () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.setData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.setData.withArgs(cid, buf, defaultOptions).resolves(
           cid
         )
 
@@ -446,7 +440,7 @@ describe('object', () => {
       it('set-data from pipe', async () => {
         const buf = Buffer.from('hello world')
 
-        ipfs.object.patch.setData.withArgs(cid.toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.setData.withArgs(cid, buf, defaultOptions).resolves(
           cid
         )
 
@@ -463,7 +457,7 @@ describe('object', () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.setData.withArgs(cid.toV1().toString(), buf, defaultOptions).resolves(
+        ipfs.object.patch.setData.withArgs(cid.toV1(), buf, defaultOptions).resolves(
           cid.toV1()
         )
 
@@ -475,7 +469,7 @@ describe('object', () => {
         const filePath = 'README.md'
         const buf = fs.readFileSync(filePath)
 
-        ipfs.object.patch.setData.withArgs(cid.toString(), buf, {
+        ipfs.object.patch.setData.withArgs(cid, buf, {
           ...defaultOptions,
           timeout: 1000
         }).resolves(
@@ -489,7 +483,6 @@ describe('object', () => {
 
     describe('add-link', () => {
       const defaultOptions = {
-        enc: 'base58',
         timeout: undefined
       }
 
@@ -497,10 +490,10 @@ describe('object', () => {
         const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
 
-        ipfs.object.get.withArgs(linkCid.toString(), defaultOptions).resolves(
+        ipfs.object.get.withArgs(linkCid, defaultOptions).resolves(
           new DAGNode()
         )
-        ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
+        ipfs.object.patch.addLink.withArgs(cid, sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
           updatedCid
         )
 
@@ -514,10 +507,10 @@ describe('object', () => {
         const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n').toV1()
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
 
-        ipfs.object.get.withArgs(linkCid.toString(), defaultOptions).resolves(
+        ipfs.object.get.withArgs(linkCid, defaultOptions).resolves(
           new DAGNode()
         )
-        ipfs.object.patch.addLink.withArgs(cid.toV1().toString(), sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
+        ipfs.object.patch.addLink.withArgs(cid.toV1(), sinon.match.instanceOf(DAGLink), defaultOptions).resolves(
           updatedCid
         )
 
@@ -531,13 +524,13 @@ describe('object', () => {
         const linkCid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
 
-        ipfs.object.get.withArgs(linkCid.toString(), {
+        ipfs.object.get.withArgs(linkCid, {
           ...defaultOptions,
           timeout: 1000
         }).resolves(
           new DAGNode()
         )
-        ipfs.object.patch.addLink.withArgs(cid.toString(), sinon.match.instanceOf(DAGLink), {
+        ipfs.object.patch.addLink.withArgs(cid, sinon.match.instanceOf(DAGLink), {
           ...defaultOptions,
           timeout: 1000
         }).resolves(
@@ -553,7 +546,6 @@ describe('object', () => {
 
     describe('rm-link', () => {
       const defaultOptions = {
-        enc: 'base58',
         timeout: undefined
       }
 
@@ -562,7 +554,7 @@ describe('object', () => {
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
         const linkName = 'foo'
 
-        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, defaultOptions).resolves(
+        ipfs.object.patch.rmLink.withArgs(cid, linkName, defaultOptions).resolves(
           updatedCid
         )
 
@@ -577,7 +569,7 @@ describe('object', () => {
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
         const linkName = 'foo'
 
-        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, defaultOptions).resolves(
+        ipfs.object.patch.rmLink.withArgs(cid, linkName, defaultOptions).resolves(
           updatedCid
         )
 
@@ -592,7 +584,7 @@ describe('object', () => {
         const updatedCid = new CID('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm')
         const linkName = 'foo'
 
-        ipfs.object.patch.rmLink.withArgs(cid.toString(), { name: linkName }, {
+        ipfs.object.patch.rmLink.withArgs(cid, linkName, {
           ...defaultOptions,
           timeout: 1000
         }).resolves(

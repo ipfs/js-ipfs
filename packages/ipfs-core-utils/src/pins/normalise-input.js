@@ -4,6 +4,22 @@ const errCode = require('err-code')
 const CID = require('cids')
 
 /**
+ * @typedef {Object} Pinnable
+ * @property {string | InstanceType<typeof window.String> | CID} [path]
+ * @property {CID} [cid]
+ * @property {boolean} [recursive]
+ * @property {any} [metadata]
+ *
+ * @typedef {CID|string|InstanceType<typeof window.String>|Pinnable} ToPin
+ * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
+ *
+ * @typedef {Object} Pin
+ * @property {string|CID} path
+ * @property {boolean} recursive
+ * @property {any} [metadata]
+ */
+
+/**
  * Transform one of:
  *
  * ```ts

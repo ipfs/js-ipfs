@@ -6,7 +6,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/interface-ipfs-core)](https://david-dm.org/ipfs/js-ipfs?path=packages/interface-ipfs-core)
 
-> IPFS interface definitions used by implementations for API compatibility.
+> IPFS interface definitions used by implementations for API compatibility
 
 ## Lead Maintainer <!-- omit in toc -->
 
@@ -17,6 +17,8 @@
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
+  - [In JSDoc syntax](#in-jsdoc-syntax)
+  - [In Typescript](#in-typescript)
 - [Validation](#validation)
 - [Contribute](#contribute)
   - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
@@ -24,9 +26,9 @@
 
 ## Background
 
-The primary goal of this module is to define and ensure that IPFS core implementations and their respective HTTP client libraries implement the same interface, so that developers can quickly change between a local and a remote node without having to change their applications.
+The primary goal of this module is to define and ensure that IPFS core implementations and their respective client libraries implement the same interface, so that developers can quickly change between a local and a remote node without having to change their applications.
 
-It offers set of typescript interface definitions that implementations can claim compatibility with and use typescript to validate those claims.
+It offers a set of typescript interface definitions that define the IPFS core API.  Once your implementation implements those APIs you can use the tests found in the [interface-ipfs-core](https://www.npmjs.com/package/interface-ipfs-core) module to validate your implementation.
 
 ## Install
 
@@ -44,9 +46,9 @@ Install `ipfs-core-types` as one of the dependencies of your project and use it 
 
 ```js
 /**
- * @implements {import('ipfs-core-types').RootAPI}
+ * @implements {import('ipfs-core-types').IPFS}
  */
-class Root {
+class MyImpl {
   // your implementation goes here
 }
 ```
@@ -54,8 +56,8 @@ class Root {
 ### In Typescript
 
 ```ts
-import { RootAPI } from 'ipfs-core-types'
-class Root implements RootAPI {
+import type { IPFS } from 'ipfs-core-types'
+class MyImpl implements IPFS {
   // your implementation goes here
 }
 ```

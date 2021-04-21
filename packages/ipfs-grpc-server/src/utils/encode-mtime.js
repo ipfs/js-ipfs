@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @param {import('ipfs-unixfs').Mtime} [mtime]
+ */
 function encodeMtime (mtime) {
   const output = {}
 

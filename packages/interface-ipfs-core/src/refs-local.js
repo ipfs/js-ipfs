@@ -4,7 +4,7 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
 const CID = require('cids')

@@ -20,9 +20,10 @@ describe('ping', function () {
   })
 
   it('ping host', async () => {
-    const peerId = 'peer-id'
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const time = 10
 
+    // https://github.com/libp2p/js-peer-id/issues/141
     ipfs.ping.withArgs(peerId, defaultOptions).returns([{
       success: true,
       time
@@ -33,9 +34,10 @@ describe('ping', function () {
   })
 
   it('ping host with --n option', async () => {
-    const peerId = 'peer-id'
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const time = 10
 
+    // https://github.com/libp2p/js-peer-id/issues/141
     ipfs.ping.withArgs(peerId, {
       ...defaultOptions,
       count: 1
@@ -49,10 +51,11 @@ describe('ping', function () {
   })
 
   it('ping host with --count option', async () => {
-    const peerId = 'peer-id'
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const time = 10
 
-    ipfs.ping.withArgs(peerId, {
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(peerId.toString(), {
       ...defaultOptions,
       count: 1
     }).returns([{
@@ -65,10 +68,11 @@ describe('ping', function () {
   })
 
   it('ping host with timeout', async () => {
-    const peerId = 'peer-id'
+    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const time = 10
 
-    ipfs.ping.withArgs(peerId, {
+    // https://github.com/libp2p/js-peer-id/issues/141
+    ipfs.ping.withArgs(peerId.toString(), {
       ...defaultOptions,
       timeout: 1000
     }).returns([{

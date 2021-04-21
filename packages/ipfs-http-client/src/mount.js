@@ -4,8 +4,16 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 
+/**
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ */
+
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {RootAPI["mount"]}
+   */
+  async function mount (options = {}) {
     const res = await api.post('dns', {
       timeout: options.timeout,
       signal: options.signal,
@@ -15,4 +23,5 @@ module.exports = configure(api => {
 
     return toCamel(await res.json())
   }
+  return mount
 })

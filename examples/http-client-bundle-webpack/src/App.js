@@ -1,6 +1,6 @@
 'use strict'
 const React = require('react')
-const ipfsClient = require('ipfs-http-client')
+const { create: ipfsClient } = require('ipfs-http-client')
 const stringToUse = 'hello world from webpacked IPFS'
 
 class App extends React.Component {

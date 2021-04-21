@@ -5,7 +5,6 @@ const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**

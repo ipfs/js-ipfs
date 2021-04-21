@@ -6,11 +6,15 @@ const {
 } = require('ipld-dag-pb')
 const CID = require('cids')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
-const UnixFS = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
+// @ts-ignore - refactor this to not need deep require
 const DirSharded = require('ipfs-unixfs-importer/src/dir-sharded')
+// @ts-ignore - refactor this to not need deep require
+const defaultImporterOptions = require('ipfs-unixfs-importer/src/options')
 const {
   updateHamtDirectory,
   recreateHamtLevel,
+  recreateInitialHamtLevel,
   createShard,
   toPrefix,
   addLinksToHamtBucket
@@ -20,19 +24,41 @@ const mc = require('multicodec')
 const mh = require('multihashing-async').multihash
 const last = require('it-last')
 
+/**
+ * @typedef {import('ipfs-unixfs').Mtime} Mtime
+ * @typedef {import('multihashes').HashName} HashName
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('hamt-sharding').Bucket<any>} Bucket
+ * @typedef {import('../').MfsContext} MfsContext
+ */
+
+/**
+ * @param {MfsContext} context
+ * @param {object} options
+ * @param {CID} options.cid
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {number} options.shardSplitThreshold
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ * @param {boolean} options.flush
+ * @param {CID} [options.parentCid]
+ * @param {DAGNode} [options.parent]
+ */
 const addLink = async (context, options) => {
-  if (!options.parentCid && !options.parent) {
-    throw errCode(new Error('No parent node or CID passed to addLink'), 'EINVALIDPARENT')
-  }
+  let parent = options.parent
 
-  if (options.parentCid && !CID.isCID(options.parentCid)) {
-    throw errCode(new Error('Invalid CID passed to addLink'), 'EINVALIDPARENTCID')
-  }
+  if (options.parentCid) {
+    if (!CID.isCID(options.parentCid)) {
+      throw errCode(new Error('Invalid CID passed to addLink'), 'EINVALIDPARENTCID')
+    }
 
-  if (!options.parent) {
     log(`Loading parent node ${options.parentCid}`)
+    parent = await context.ipld.get(options.parentCid)
+  }
 
-    options.parent = await context.ipld.get(options.parentCid)
+  if (!parent) {
+    throw errCode(new Error('No parent node or CID passed to addLink'), 'EINVALIDPARENT')
   }
 
   if (!options.cid) {
@@ -51,19 +77,23 @@ const addLink = async (context, options) => {
     throw errCode(new Error('No child size passed to addLink'), 'EINVALIDCHILDSIZE')
   }
 
-  const meta = UnixFS.unmarshal(options.parent.Data)
+  const meta = UnixFS.unmarshal(parent.Data)
 
   if (meta.type === 'hamt-sharded-directory') {
     log('Adding link to sharded directory')
 
-    return addToShardedDirectory(context, options)
+    return addToShardedDirectory(context, {
+      ...options,
+      parent
+    })
   }
 
-  if (options.parent.Links.length >= options.shardSplitThreshold) {
+  if (parent.Links.length >= options.shardSplitThreshold) {
     log('Converting directory to sharded directory')
 
     return convertToShardedDirectory(context, {
       ...options,
+      parent,
       mtime: meta.mtime,
       mode: meta.mode
     })
@@ -71,9 +101,25 @@ const addLink = async (context, options) => {
 
   log(`Adding ${options.name} (${options.cid}) to regular directory`)
 
-  return addToDirectory(context, options)
+  return addToDirectory(context, {
+    ...options,
+    parent
+  })
 }
 
+/**
+ * @param {MfsContext} context
+ * @param {object} options
+ * @param {CID} options.cid
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {DAGNode} options.parent
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ * @param {boolean} options.flush
+ * @param {Mtime} [options.mtime]
+ * @param {number} [options.mode]
+ */
 const convertToShardedDirectory = async (context, options) => {
   const result = await createShard(context, options.parent.Links.map(link => ({
     name: link.Name,
@@ -90,6 +136,19 @@ const convertToShardedDirectory = async (context, options) => {
   return result
 }
 
+/**
+ * @param {MfsContext} context
+ * @param {object} options
+ * @param {CID} options.cid
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {DAGNode} options.parent
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ * @param {boolean} options.flush
+ * @param {Mtime} [options.mtime]
+ * @param {number} [options.mode]
+ */
 const addToDirectory = async (context, options) => {
   options.parent.rmLink(options.name)
   options.parent.addLink(new DAGLink(options.name, options.size, options.cid))
@@ -98,7 +157,13 @@ const addToDirectory = async (context, options) => {
 
   if (node.mtime) {
     // Update mtime if previously set
-    node.mtime = new Date()
+    const ms = Date.now()
+    const secs = Math.floor(ms / 1000)
+
+    node.mtime = {
+      secs: secs,
+      nsecs: (ms - (secs * 1000)) * 1000
+    }
 
     options.parent = new DAGNode(node.marshal(), options.parent.Links)
   }
@@ -119,20 +184,37 @@ const addToDirectory = async (context, options) => {
   }
 }
 
+/**
+ * @param {MfsContext} context
+ * @param {object} options
+ * @param {CID} options.cid
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {DAGNode} options.parent
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ * @param {boolean} options.flush
+ */
 const addToShardedDirectory = async (context, options) => {
   const {
     shard, path
   } = await addFileToShardedDirectory(context, options)
 
-  const result = await last(shard.flush('', context.block))
+  const result = await last(shard.flush(context.block))
+  /** @type {DAGNode} */
   const node = await context.ipld.get(result.cid)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
   const oldLink = options.parent.Links
     .find(link => link.Name.substring(0, 2) === path[0].prefix)
 
+  /** @type {DAGLink | undefined} */
   const newLink = node.Links
     .find(link => link.Name.substring(0, 2) === path[0].prefix)
+
+  if (!newLink) {
+    throw new Error(`No link found with prefix ${path[0].prefix}`)
+  }
 
   if (oldLink) {
     options.parent.rmLink(oldLink.Name)
@@ -143,6 +225,16 @@ const addToShardedDirectory = async (context, options) => {
   return updateHamtDirectory(context, options.parent.Links, path[0].bucket, options)
 }
 
+/**
+ * @param {MfsContext} context
+ * @param {object} options
+ * @param {CID} options.cid
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {DAGNode} options.parent
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ */
 const addFileToShardedDirectory = async (context, options) => {
   const file = {
     name: options.name,
@@ -151,8 +243,9 @@ const addFileToShardedDirectory = async (context, options) => {
   }
 
   // start at the root bucket and descend, loading nodes as we go
-  const rootBucket = await recreateHamtLevel(options.parent.Links)
+  const rootBucket = await recreateInitialHamtLevel(options.parent.Links)
   const node = UnixFS.unmarshal(options.parent.Data)
+  const importerOptions = defaultImporterOptions()
 
   const shard = new DirSharded({
     root: true,
@@ -163,7 +256,12 @@ const addFileToShardedDirectory = async (context, options) => {
     dirty: true,
     flat: false,
     mode: node.mode
-  }, options)
+  }, {
+    hamtHashFn: importerOptions.hamtHashFn,
+    hamtHashCode: importerOptions.hamtHashCode,
+    hamtBucketBits: importerOptions.hamtBucketBits,
+    ...options
+  })
   shard._bucket = rootBucket
 
   if (node.mtime) {
@@ -181,6 +279,10 @@ const addFileToShardedDirectory = async (context, options) => {
     const segment = path[index]
     index++
     const node = segment.node
+
+    if (!node) {
+      throw new Error('Segment had no node')
+    }
 
     const link = node.Links
       .find(link => link.Name.substring(0, 2) === segment.prefix)
@@ -248,16 +350,18 @@ const addFileToShardedDirectory = async (context, options) => {
   }
 }
 
+/**
+ * @param {{ pos: number, bucket: Bucket }} position
+ * @returns {{ bucket: Bucket, prefix: string, node?: DAGNode }[]}
+ */
 const toBucketPath = (position) => {
-  let bucket = position.bucket
-  let positionInBucket = position.pos
   const path = [{
-    bucket,
-    prefix: toPrefix(positionInBucket)
+    bucket: position.bucket,
+    prefix: toPrefix(position.pos)
   }]
 
-  bucket = position.bucket._parent
-  positionInBucket = position.bucket._posAtParent
+  let bucket = position.bucket._parent
+  let positionInBucket = position.bucket._posAtParent
 
   while (bucket) {
     path.push({

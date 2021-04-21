@@ -4,20 +4,27 @@ const stat = require('./stat')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
-const defaultOptions = {
-  timeout: undefined,
-  signal: undefined
-}
+/**
+ * @typedef {import('./').MfsContext} MfsContext
+ * @typedef {object} DefaultOptions
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ */
 
+/**
+ * @type {DefaultOptions}
+ */
+const defaultOptions = {}
+
+/**
+ * @param {MfsContext} context
+ */
 module.exports = (context) => {
   /**
-   * Flush a given path's data to disk
-   *
-   * @param {string} path
-   * @param {AbortOptions} [options]
-   * @returns {Promise<CID>} The CID of the path that has been flushed
+   * @type {import('ipfs-core-types/src/files').API["flush"]}
    */
   async function mfsFlush (path, options = {}) {
+    /** @type {DefaultOptions} */
     options = mergeOptions(defaultOptions, options)
 
     const { cid } = await stat(context)(path, options)
@@ -27,8 +34,3 @@ module.exports = (context) => {
 
   return withTimeoutOption(mfsFlush)
 }
-
-/**
- * @typedef {import('cids')} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- */

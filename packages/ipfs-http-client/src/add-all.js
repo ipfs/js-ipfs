@@ -11,11 +11,14 @@ const { AbortController } = require('native-abort-controller')
 /**
  * @typedef {import('ipfs-utils/src/types').ProgressFn} IPFSUtilsHttpUploadProgressFn
  * @typedef {import('ipfs-core-types/src/root').AddProgressFn} IPFSCoreAddProgressFn
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ * @typedef {import('ipfs-core-types/src/root').AddResult} AddResult
  */
 
 module.exports = configure((api) => {
   /**
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all/index')>}
+   * @type {RootAPI["addAll"]}
    */
   async function * addAll (source, options = {}) {
     // allow aborting requests on body errors
@@ -30,6 +33,7 @@ module.exports = configure((api) => {
     // `{ total, loaded}` passed to `onUploadProgress` and `multipart.total`
     // in which case we disable progress updates to be written out.
     const [progressFn, onUploadProgress] = typeof options.progress === 'function'
+      // @ts-ignore tsc picks up the node codepath
       ? createProgressHandler(total, parts, options.progress)
       : [undefined, undefined]
 
@@ -104,9 +108,9 @@ const createOnUploadProgress = (size, parts, progress) => {
 
 /**
  * @param {any} input
- * @returns {import('ipfs-core-types/src/files').UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
+  /** @type {AddResult} */
   const output = {
     path: name,
     cid: new CID(hash),
@@ -124,6 +128,5 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
     }
   }
 
-  // @ts-ignore
   return output
 }

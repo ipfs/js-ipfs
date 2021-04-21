@@ -1,5 +1,6 @@
 'use strict'
 
+// @ts-ignore no types
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
 const uint8ArrayConcat = require('uint8arrays/concat')
@@ -11,8 +12,20 @@ const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
 const applicationSymlink = 'application/symlink'
 
+/**
+ * @typedef {import('http').IncomingMessage} IncomingMessage
+ * @typedef {import('it-multipart').Part} Part
+ * @typedef {import('../types').MultipartEntry} MultipartEntry
+ */
+
+/**
+ * @param {string} mediatype
+ */
 const isDirectory = (mediatype) => mediatype === multipartFormdataType || mediatype === applicationDirectory
 
+/**
+ * @param {string} disposition
+ */
 const parseDisposition = (disposition) => {
   const details = {}
   details.type = disposition.split(';')[0]
@@ -30,6 +43,9 @@ const parseDisposition = (disposition) => {
   return details
 }
 
+/**
+ * @param {AsyncIterable<Uint8Array>} stream
+ */
 const collect = async (stream) => {
   const buffers = []
   let size = 0
@@ -42,7 +58,18 @@ const collect = async (stream) => {
   return uint8ArrayConcat(buffers, size)
 }
 
-async function * parseEntry (stream, options) {
+/**
+ * @typedef {Object} MultipartUpload
+ * @property {'file' | 'directory' | 'symlink'} type
+ * @property {string} name
+ * @property {AsyncIterable<Uint8Array>} body
+ * @property {number} [mode]
+ * @property {import('ipfs-unixfs').Mtime} [mtime]
+ *
+ * @param {AsyncIterable<Part>} stream
+ * @returns {AsyncGenerator<MultipartUpload, void, undefined>}
+ */
+async function * parseEntry (stream) {
   for await (const part of stream) {
     if (!part.headers['content-type']) {
       throw new Error('No content-type in multipart part')
@@ -52,10 +79,7 @@ async function * parseEntry (stream, options) {
 
     if (type.boundary) {
       // recursively parse nested multiparts
-      yield * parser(part.body, {
-        ...options,
-        boundary: type.boundary
-      })
+      yield * parseEntry(multipart(part.body, type.boundary))
 
       continue
     }
@@ -64,6 +88,7 @@ async function * parseEntry (stream, options) {
       throw new Error('No content disposition in multipart part')
     }
 
+    /** @type {MultipartUpload} */
     const entry = {}
 
     if (isDirectory(type.mime)) {
@@ -75,7 +100,7 @@ async function * parseEntry (stream, options) {
     }
 
     const disposition = parseDisposition(part.headers['content-disposition'])
-    const query = qs.parse(disposition.name.split('?').pop())
+    const query = qs.parse(`${disposition.name}`.split('?').pop() || '')
 
     if (query.mode) {
       entry.mode = parseInt(readQueryParam(query.mode), 8)
@@ -104,9 +129,15 @@ async function * parseEntry (stream, options) {
  */
 const readQueryParam = value => Array.isArray(value) ? value[0] : value
 
-async function * parser (stream, options) {
-  for await (const entry of parseEntry(multipart(stream, options.boundary), options)) {
+/**
+ * @param {AsyncIterable<Buffer>} stream
+ * @param {string} boundary
+ * @returns {AsyncGenerator<MultipartEntry, void, undefined>}
+ */
+async function * parser (stream, boundary) {
+  for await (const entry of parseEntry(multipart(stream, boundary))) {
     if (entry.type === 'directory') {
+      /** @type {import('../types').MultipartDirectory} */
       yield {
         type: 'directory',
         name: entry.name,
@@ -118,6 +149,7 @@ async function * parser (stream, options) {
     }
 
     if (entry.type === 'symlink') {
+      /** @type {import('../types').MultipartSymlink} */
       yield {
         type: 'symlink',
         name: entry.name,
@@ -128,6 +160,7 @@ async function * parser (stream, options) {
     }
 
     if (entry.type === 'file') {
+      /** @type {import('../types').MultipartFile} */
       yield {
         type: 'file',
         name: entry.name,
@@ -142,12 +175,10 @@ async function * parser (stream, options) {
 /**
  * Request Parser
  *
- * @param {Object} req - Request
- * @param {Object} options - Options passed to stream constructors
- * @returns {Object} an async iterable
+ * @param {IncomingMessage} req
  */
-module.exports = (req, options = {}) => {
-  options.boundary = Content.type(req.headers['content-type']).boundary
+module.exports = (req) => {
+  const boundary = Content.type(req.headers['content-type']).boundary
 
-  return parser(req.payload || req, options)
+  return parser(req, boundary)
 }

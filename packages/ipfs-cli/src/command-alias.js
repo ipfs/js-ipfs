@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @type {Record<string, [src: string, target: string]>}
+ */
 const aliases = {
   // We need to be able to show help text for both the `refs` command and the
   // `refs local` command, but with yargs `refs` cannot be both a command and
@@ -7,8 +10,12 @@ const aliases = {
   'refs-local': ['refs', 'local']
 }
 
-// Replace multi-word command with alias
-// eg replace `refs local` with `refs-local`
+/**
+ * Replace multi-word command with alias
+ * eg replace `refs local` with `refs-local`
+ *
+ * @param {string[]} args
+ */
 module.exports = function (args) {
   for (const [alias, original] of Object.entries(aliases)) {
     if (arrayMatch(args, original)) {
@@ -19,7 +26,12 @@ module.exports = function (args) {
   return args
 }
 
-// eg arrayMatch([1, 2, 3], [1, 2]) => true
+/**
+ * eg arrayMatch([1, 2, 3], [1, 2]) => true
+ *
+ * @param {string[]} arr
+ * @param {string[]} sub
+ */
 function arrayMatch (arr, sub) {
   if (sub.length > arr.length) {
     return false

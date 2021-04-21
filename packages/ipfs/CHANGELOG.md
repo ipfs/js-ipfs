@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.54.4](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.3...ipfs@0.54.4) (2021-03-10)
+
+**Note:** Version bump only for package ipfs
+
+
+
+
+
+## [0.54.3](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.2...ipfs@0.54.3) (2021-03-09)
+
+
+### Bug Fixes
+
+* update to new aegir ([#3528](https://github.com/ipfs/js-ipfs/issues/3528)) ([49f7880](https://github.com/ipfs/js-ipfs/commit/49f78807d7e26483bd926b45cc7e0f797d77e41b))
+
+
+
+
+
 ## [0.54.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.1...ipfs@0.54.2) (2021-02-08)
 
 **Note:** Version bump only for package ipfs

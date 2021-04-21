@@ -12,8 +12,6 @@ const createLsAPI = require('./ls')
  * @typedef {import('./cat').Context} CatContext
  * @typedef {import('./get').Context} GetContext
  * @typedef {import('./ls').Context} ListContext
- * @typedef {import('ipfs-core-types/src').RootAPI} RootAPI
- * @implements {RootAPI}
  */
 class Root {
   /**

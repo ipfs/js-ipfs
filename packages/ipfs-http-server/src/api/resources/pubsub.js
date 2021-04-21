@@ -19,8 +19,7 @@ exports.subscribe = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        topic: Joi.string().required(),
-        discover: Joi.boolean()
+        topic: Joi.string().required()
       })
         .rename('arg', 'topic', {
           override: true,
@@ -28,6 +27,10 @@ exports.subscribe = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -39,12 +42,14 @@ exports.subscribe = {
         }
       },
       query: {
-        topic,
-        discover
+        topic
       }
     } = request
     const res = new PassThrough({ highWaterMark: 1 })
 
+    /**
+     * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+     */
     const handler = (msg) => {
       res.write(JSON.stringify({
         from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
@@ -66,7 +71,6 @@ exports.subscribe = {
     request.events.once('finish', unsubscribe)
 
     await ipfs.pubsub.subscribe(topic, handler, {
-      discover: discover,
       signal
     })
 
@@ -85,6 +89,10 @@ exports.publish = {
     },
     pre: [{
       assign: 'data',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
       method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest('argument "data" is required')
@@ -92,7 +100,7 @@ exports.publish = {
 
         let data
 
-        for await (const part of multipart(request)) {
+        for await (const part of multipart(request.raw.req)) {
           if (part.type === 'file') {
             data = Buffer.concat(await all(part.content))
           }
@@ -121,6 +129,10 @@ exports.publish = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -165,6 +177,10 @@ exports.ls = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -211,6 +227,10 @@ exports.peers = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "parcel build index.html --public-url '.'",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html",
     "test": "test-ipfs-example"
   },
@@ -15,13 +15,13 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^49.0.2"
+    "ipfs-http-client": "^49.0.4"
   },
   "devDependencies": {
-    "ipfs": "^0.54.2",
-    "parcel-bundler": "^1.12.4",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "ipfs": "^0.54.4",
+    "parcel": "2.0.0-beta.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   },

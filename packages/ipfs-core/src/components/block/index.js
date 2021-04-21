@@ -5,6 +5,14 @@ const createPut = require('./put')
 const createRm = require('./rm')
 const createStat = require('./stat')
 
+/**
+ * @typedef {import('../../types').Preload} Preload
+ * @typedef {import('ipfs-block-service')} BlockService
+ * @typedef {import('../gc-lock').GCLock} GCLock
+ * @typedef {import('ipfs-core-types/src/pin').API} Pin
+ * @typedef {import('../pin/pin-manager')} PinManager
+ */
+
 class BlockAPI {
   /**
    * @param {Object} config
@@ -23,14 +31,3 @@ class BlockAPI {
 }
 
 module.exports = BlockAPI
-
-/**
- * @typedef {import('..').Preload} Preload
- * @typedef {import('..').BlockService} BlockService
- * @typedef {import('..').GCLock} GCLock
- * @typedef {import('..').Pin} Pin
- * @typedef {import('..').PinManager} PinManager
- * @typedef {import('..').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').IPLDBlock} IPLDBlock
- */

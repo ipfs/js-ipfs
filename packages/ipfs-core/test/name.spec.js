@@ -14,6 +14,7 @@ const IpnsRepublisher = require('../src/ipns/republisher')
 const IpnsResolver = require('../src/ipns/resolver')
 const OfflineDatastore = require('../src/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../src/ipns/routing/pubsub-datastore')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -151,7 +152,7 @@ describe('name', function () {
     it('should resolve an inlined public key', async () => {
       const peerId = await PeerId.create({ keyType: 'ed25519' })
       const value = `/ipfs/${peerId.toB58String()}`
-      const record = await ipns.create(peerId.privKey, value, 1, 10e3)
+      const record = await ipns.create(peerId.privKey, uint8ArrayFromString(value), 1, 10e3)
 
       const routing = {
         get: sinon.stub().returns(ipns.marshal(record))

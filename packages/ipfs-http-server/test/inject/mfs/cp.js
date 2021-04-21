@@ -41,7 +41,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, defaultOptions)).to.be.true()
+    expect(ipfs.files.cp.calledWith([source], dest, defaultOptions)).to.be.true()
   })
 
   it('should copy files and create intermediate directories', async () => {
@@ -51,7 +51,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, {
+    expect(ipfs.files.cp.calledWith([source], dest, {
       ...defaultOptions,
       parents: true
     })).to.be.true()
@@ -64,7 +64,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, {
+    expect(ipfs.files.cp.calledWith([source], dest, {
       ...defaultOptions,
       cidVersion: 1
     })).to.be.true()
@@ -77,7 +77,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, {
+    expect(ipfs.files.cp.calledWith([source], dest, {
       ...defaultOptions,
       hashAlg: 'sha3-256'
     })).to.be.true()
@@ -90,7 +90,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, {
+    expect(ipfs.files.cp.calledWith([source], dest, {
       ...defaultOptions,
       shardSplitThreshold: 10
     })).to.be.true()
@@ -103,7 +103,7 @@ describe('/files/cp', () => {
     }, { ipfs })
 
     expect(ipfs.files.cp.callCount).to.equal(1)
-    expect(ipfs.files.cp.calledWith(source, dest, {
+    expect(ipfs.files.cp.calledWith([source], dest, {
       ...defaultOptions,
       timeout: 1000
     })).to.be.true()

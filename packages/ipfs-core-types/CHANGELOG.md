@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.3.0...ipfs-core-types@0.3.1) (2021-03-09)
+
+
+### Bug Fixes
+
+* bitswap related typedefs ([#3580](https://github.com/ipfs/js-ipfs/issues/3580)) ([1af82d1](https://github.com/ipfs/js-ipfs/commit/1af82d1ca4bd447d8c162e1fd8da8b043131969c))
+* update to new aegir ([#3528](https://github.com/ipfs/js-ipfs/issues/3528)) ([49f7880](https://github.com/ipfs/js-ipfs/commit/49f78807d7e26483bd926b45cc7e0f797d77e41b))
+
+
+
+
+
 # [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.2.1...ipfs-core-types@0.3.0) (2021-02-01)
 
 

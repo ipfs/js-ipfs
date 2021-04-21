@@ -1,7 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { coerceUint8Array } = require('../../utils')
 
 module.exports = {
   command: 'pub <topic> <data>',
@@ -9,14 +9,24 @@ module.exports = {
   describe: 'Publish data to a topic',
 
   builder: {
+    data: {
+      type: 'string',
+      coerce: coerceUint8Array
+    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.topic
+   * @param {Uint8Array} argv.data
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs }, topic, data, timeout }) {
-    data = uint8ArrayFromString(String(data))
     await ipfs.pubsub.publish(topic, data, {
       timeout
     })

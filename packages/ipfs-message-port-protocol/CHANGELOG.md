@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-protocol@0.6.0...ipfs-message-port-protocol@0.6.1) (2021-03-09)
+
+
+### Bug Fixes
+
+* update to new aegir ([#3528](https://github.com/ipfs/js-ipfs/issues/3528)) ([49f7880](https://github.com/ipfs/js-ipfs/commit/49f78807d7e26483bd926b45cc7e0f797d77e41b))
+
+
+
+
+
 # [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-protocol@0.5.0...ipfs-message-port-protocol@0.6.0) (2021-02-01)
 
 

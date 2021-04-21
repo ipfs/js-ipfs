@@ -10,6 +10,10 @@ const {
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
+/**
+ * @param {undefined | Uint8Array | Record<string, any>} obj
+ * @param {import('multibase').BaseName | 'utf8' | 'utf-8' | 'ascii'} encoding
+ */
 const encodeBufferKeys = (obj, encoding) => {
   if (!obj) {
     return obj
@@ -20,7 +24,7 @@ const encodeBufferKeys = (obj, encoding) => {
   }
 
   Object.keys(obj).forEach(key => {
-    if (obj instanceof Uint8Array) {
+    if (obj[key] instanceof Uint8Array) {
       obj[key] = uint8ArrayToString(obj[key], encoding)
 
       return
@@ -57,6 +61,11 @@ exports.get = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -113,6 +122,10 @@ exports.put = {
     },
     pre: [{
       assign: 'args',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
       method: async (request, _h) => {
         if (!request.payload) {
           throw Boom.badRequest("File argument 'object data' is required")
@@ -126,7 +139,7 @@ exports.put = {
 
         let data
 
-        for await (const part of multipart(request)) {
+        for await (const part of multipart(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -196,6 +209,11 @@ exports.put = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -263,6 +281,11 @@ exports.resolve = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

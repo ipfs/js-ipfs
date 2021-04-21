@@ -3,10 +3,10 @@
 const { paramCase } = require('change-case')
 
 /**
- * @param {object} [object] - key/value pairs to turn into HTTP headers
- * @returns {object} - HTTP headers
- **/
-module.exports = (object) => {
+ * @param {Record<string, any>} [object] - key/value pairs to turn into HTTP headers
+ */
+module.exports = (object = {}) => {
+  /** @type {Record<string, string>} */
   const output = {}
 
   Object.keys(object || {}).forEach(key => {
@@ -14,7 +14,7 @@ module.exports = (object) => {
       return
     }
 
-    output[paramCase(key)] = object[key]
+    output[paramCase(key)] = object[key].toString()
   })
 
   return output

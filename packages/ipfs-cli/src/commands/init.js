@@ -10,6 +10,10 @@ module.exports = {
     'If you are going to run IPFS in a server environment, you may want to ' +
     'initialize it using the \'server\' profile.\n\n' +
     'For the list of available profiles run `jsipfs config profile ls`',
+
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs
       .epilog(ipfsPathHelp)
@@ -20,8 +24,8 @@ module.exports = {
       .option('algorithm', {
         type: 'string',
         alias: 'a',
-        default: 'rsa',
-        describe: 'Cryptographic algorithm to use for key generation. Supports [rsa, ed25519, secp256k1]'
+        default: 'RSA',
+        describe: 'Cryptographic algorithm to use for key generation. Supports [RSA, Ed25519, secp256k1]'
       })
       .option('bits', {
         type: 'number',
@@ -50,6 +54,17 @@ module.exports = {
       })
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.defaultConfig
+   * @param {'RSA' | 'Ed25519' | 'secp256k1'} argv.algorithm
+   * @param {number} argv.bits
+   * @param {boolean} argv.emptyRepo
+   * @param {string} argv.privateKey
+   * @param {string[]} argv.profile
+   * @param {string} argv.pass
+   */
   async handler (argv) {
     const { print, repoPath } = argv.ctx
     let config = {}
@@ -78,9 +93,9 @@ module.exports = {
           bits: argv.bits,
           privateKey: argv.privateKey,
           emptyRepo: argv.emptyRepo,
-          profiles: argv.profile,
-          pass: argv.pass
+          profiles: argv.profile
         },
+        pass: argv.pass,
         start: false,
         // @ts-ignore - Expects more than {}
         config

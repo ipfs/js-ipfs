@@ -11,6 +11,7 @@ coverage
 tests_output
 cache
 .cache
+.parcel-cache
 
 # Dependency directory
 node_modules
@@ -19,6 +20,8 @@ node_modules
 dist
 build
 bundle.js
+tsconfig-types.aegir.json
+.tsbuildinfo
 
 # Deployment files
 .npmrc

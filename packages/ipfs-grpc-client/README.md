@@ -22,7 +22,7 @@ $ npm install ipfs-grpc-client
 
 ## API
 
-### `createClient([options])`
+### `create([options])`
 
 ### Parameters
 
@@ -46,9 +46,9 @@ An optional object which may have the following keys:
 ### Example
 
 ```js
-const createClient = require('ipfs-gprc-client')
+const { create } = require('ipfs-gprc-client')
 
-const client = createClient({
+const client = create({
   url: '/ipv4/127.0.0.1/tcp/1234/ws'
 })
 

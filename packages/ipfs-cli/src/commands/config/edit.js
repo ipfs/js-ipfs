@@ -8,6 +8,10 @@ module.exports = {
 
   describe: 'Opens the config file for editing in $EDITOR',
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   */
   async handler (argv) {
     const editor = process.env.EDITOR
 

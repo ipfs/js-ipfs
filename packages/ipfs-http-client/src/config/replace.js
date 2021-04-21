@@ -7,9 +7,14 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/config').API<HTTPClientExtraOptions>} ConfigAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'replace', import('ipfs-core/src/components/config')>}
+   * @type {ConfigAPI["replace"]}
    */
   const replace = async (config, options = {}) => {
     // allow aborting requests on body errors

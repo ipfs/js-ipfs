@@ -5,7 +5,8 @@ const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const {
-  stripControlCharacters
+  stripControlCharacters,
+  coerceCID
 } = require('../../utils')
 
 module.exports = {
@@ -14,6 +15,10 @@ module.exports = {
   describe: 'Get and serialize the DAG node named by <key>',
 
   builder: {
+    key: {
+      type: 'string',
+      coerce: coerceCID
+    },
     'data-encoding': {
       type: 'string',
       default: 'base64'
@@ -29,30 +34,36 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('cids')} argv.key
+   * @param {'base64' | 'text' | 'hex'} argv.dataEncoding
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
-    const node = await ipfs.object.get(key, { enc: 'base58', timeout })
-    let data = node.Data || ''
+    const node = await ipfs.object.get(key, { timeout })
+
+    /** @type {import('multibase').BaseName | 'utf8' | 'utf-8' | 'ascii' | undefined} */
+    let encoding
 
     if (dataEncoding === 'base64') {
-      dataEncoding = 'base64pad'
+      encoding = 'base64pad'
     }
 
     if (dataEncoding === 'text') {
-      dataEncoding = 'ascii'
+      encoding = 'ascii'
     }
 
     if (dataEncoding === 'hex') {
-      dataEncoding = 'base16'
-    }
-
-    if (data instanceof Uint8Array) {
-      data = uint8ArrayToString(node.Data, dataEncoding || undefined)
+      encoding = 'base16'
     }
 
     const answer = {
-      Data: data,
+      Data: uint8ArrayToString(node.Data, encoding),
       Hash: cidToString(key, { base: cidBase, upgrade: false }),
-      Size: node.Size,
+      Size: node.size,
       Links: node.Links.map((l) => {
         return {
           Name: stripControlCharacters(l.Name),

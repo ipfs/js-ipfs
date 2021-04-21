@@ -49,5 +49,3 @@ async function * rmAll ({ pinManager, gcLock, dagReader }, source, _options) {
     release()
   }
 }
-
-module.exports = withTimeoutOption(rmAll)

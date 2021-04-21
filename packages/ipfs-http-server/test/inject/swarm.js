@@ -51,7 +51,10 @@ describe('/swarm', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Peers').with.lengthOf(1).that.deep.includes({
         Peer: 'peerId',
-        Addr: 'addr'
+        Addr: 'addr',
+        Direction: undefined,
+        Muxer: undefined,
+        Latency: undefined
       })
     })
 
@@ -127,7 +130,9 @@ describe('/swarm', () => {
       expect(res).to.have.nested.property('result.Peers').with.lengthOf(1).that.deep.includes({
         Peer: 'peerId',
         Addr: 'addr',
-        Direction: 'direction'
+        Direction: 'direction',
+        Muxer: undefined,
+        Latency: undefined
       })
     })
 
@@ -151,7 +156,10 @@ describe('/swarm', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Peers').with.lengthOf(1).that.deep.includes({
         Peer: 'peerId',
-        Addr: 'addr'
+        Addr: 'addr',
+        Direction: undefined,
+        Muxer: undefined,
+        Latency: undefined
       })
     })
   })

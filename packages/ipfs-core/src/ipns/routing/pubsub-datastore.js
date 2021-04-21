@@ -6,8 +6,6 @@ const PubsubDatastore = require('datastore-pubsub')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
-const withIs = require('class-is')
-
 const errcode = require('err-code')
 const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:pubsub'), {
@@ -16,8 +14,13 @@ const log = Object.assign(debug('ipfs:ipns:pubsub'), {
 
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
+  /**
+   * @param {import('libp2p-interfaces/src/pubsub')} pubsub
+   * @param {import('interface-datastore').Datastore} localDatastore
+   * @param {import('peer-id')} peerId
+   */
   constructor (pubsub, localDatastore, peerId) {
-    this._pubsub = pubsub
+    /** @type {Record<string, string>} */
     this._subscriptions = {}
 
     // Bind _handleSubscriptionKey function, which is called by PubsubDatastore.
@@ -28,11 +31,11 @@ class IpnsPubsubDatastore {
   /**
    * Put a value to the pubsub datastore indexed by the received key properly encoded.
    *
-   * @param {Buffer} key - identifier of the value.
-   * @param {Buffer} value - value to be stored.
-   * @returns {Promise<void>}
+   * @param {Uint8Array} key - identifier of the value.
+   * @param {Uint8Array} value - value to be stored.
    */
-  async put (key, value) { // eslint-disable-line require-await
+  put (key, value) {
+    // @ts-ignore datastores take Key keys, this one takes Uint8Array keys
     return this._pubsubDs.put(key, value)
   }
 
@@ -41,14 +44,14 @@ class IpnsPubsubDatastore {
    * Also, the identifier topic is subscribed to and the pubsub datastore records will be
    * updated once new publishes occur.
    *
-   * @param {Buffer} key - identifier of the value to be obtained.
-   * @returns {Promise<Buffer>}
+   * @param {Uint8Array} key - identifier of the value to be obtained.
    */
   async get (key) {
     let res
     let err
 
     try {
+      // @ts-ignore datastores take Key keys, this one takes Uint8Array keys
       res = await this._pubsubDs.get(key)
     } catch (e) {
       err = e
@@ -74,7 +77,11 @@ class IpnsPubsubDatastore {
     return res
   }
 
-  // Modify subscription key to have a proper encoding
+  /**
+   * Modify subscription key to have a proper encoding
+   *
+   * @param {Uint8Array | string} key
+   */
   _handleSubscriptionKey (key) {
     if (key instanceof Uint8Array) {
       key = uint8ArrayToString(key, 'base58btc')
@@ -99,8 +106,6 @@ class IpnsPubsubDatastore {
 
   /**
    * Get pubsub subscriptions related to ipns.
-   *
-   * @returns {string[]}
    */
   getSubscriptions () {
     const subscriptions = Object.values(this._subscriptions).filter(Boolean)
@@ -112,7 +117,6 @@ class IpnsPubsubDatastore {
    * Cancel pubsub subscriptions related to ipns.
    *
    * @param {string} name - ipns path to cancel the pubsub subscription.
-   * @returns {Promise<{canceled: boolean}>}
    */
   async cancel (name) { // eslint-disable-line require-await
     if (typeof name !== 'string') {
@@ -138,7 +142,7 @@ class IpnsPubsubDatastore {
 
     this._pubsubDs.unsubscribe(bufTopic)
 
-    this._subscriptions[stringifiedTopic] = undefined
+    delete this._subscriptions[stringifiedTopic]
     log(`unsubscribed pubsub ${stringifiedTopic}: ${name}`)
 
     return {
@@ -147,4 +151,4 @@ class IpnsPubsubDatastore {
   }
 }
 
-exports = module.exports = withIs(IpnsPubsubDatastore, { className: 'IpnsPubsubDatastore', symbolName: '@js-ipfs/ipns/IpnsPubsubDatastore' })
+module.exports = IpnsPubsubDatastore

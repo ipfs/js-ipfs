@@ -5,17 +5,17 @@ const Client = require('./core')
 
 // Set default configuration and call create function with them
 /**
- * @typedef { import("./core").ClientOptions } ClientOptions
+ * @typedef { import("../types").Options } Options
  */
 
 /**
  * @template T
- * @typedef {(client: Client, clientOptions: ClientOptions) => T} Fn
+ * @typedef {(client: Client, clientOptions: Options) => T} Fn
  */
 
 /**
  * @template T
- * @typedef {(clientOptions: ClientOptions) => T} Factory
+ * @typedef {(clientOptions: Options) => T} Factory
  */
 
 /**

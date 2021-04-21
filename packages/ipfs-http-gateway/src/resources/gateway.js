@@ -7,9 +7,12 @@ const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const last = require('it-last')
 const multibase = require('multibase')
+// @ts-ignore no types
 const { resolver } = require('ipfs-http-response')
+// @ts-ignore no types
 const detectContentType = require('ipfs-http-response/src/utils/content-type')
 const isIPFS = require('is-ipfs')
+// @ts-ignore no types
 const toStream = require('it-to-stream')
 const PathUtils = require('../utils/path')
 const { cidToString } = require('ipfs-core-utils/src/cid')
@@ -20,17 +23,25 @@ const log = Object.assign(debug('ipfs:http-gateway'), {
 
 module.exports = {
 
+  /**
+   * @param {import('../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const { ipfs } = request.server.app
     const path = request.path
+
+    let ipfsPath = path
+
+    if (path.startsWith('/ipns/')) {
+      ipfsPath = await last(ipfs.name.resolve(path, { recursive: true })) || path
+    }
 
     // The resolver from ipfs-http-response supports only immutable /ipfs/ for now,
     // so we convert /ipns/ to /ipfs/ before passing it to the resolver ¯\_(ツ)_/¯
     // This could be removed if a solution proposed in
     //  https://github.com/ipfs/js-ipfs-http-response/issues/22 lands upstream
-    let ipfsPath = decodeURI(path.startsWith('/ipns/')
-      ? await last(ipfs.name.resolve(path, { recursive: true }))
-      : path)
+    ipfsPath = decodeURI(ipfsPath)
 
     let directory = false
     let data
@@ -157,11 +168,11 @@ module.exports = {
       const from = catOptions.offset
       const to = catOptions.offset + catOptions.length - 1
       res.header('Content-Range', `bytes ${from}-${to}/${size}`)
-      res.header('Content-Length', catOptions.length)
+      res.header('Content-Length', `${catOptions.length}`)
     } else {
       // Announce support for Range requests
       res.header('Accept-Ranges', 'bytes')
-      res.header('Content-Length', size)
+      res.header('Content-Length', `${size}`)
     }
 
     // Support Content-Disposition via ?filename=foo parameter
@@ -174,8 +185,17 @@ module.exports = {
     return res
   },
 
+  /**
+   * @param {import('../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   afterHandler (request, h) {
     const { response } = request
+
+    if (Boom.isBoom(response)) {
+      return h.continue
+    }
+
     // Add headers to successful responses (regular or range)
     if (response.statusCode === 200 || response.statusCode === 206) {
       const path = request.path

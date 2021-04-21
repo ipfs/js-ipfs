@@ -14,7 +14,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   handler ({ ctx: { ipfs }, timeout }) {
+    // @ts-ignore not part of the core api
     return ipfs.shutdown({
       timeout
     })

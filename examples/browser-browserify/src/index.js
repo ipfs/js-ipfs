@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function display (cid) {
     for await (const data of node.cat(cid)) {
       document.getElementById('cid').innerText = cid
-      document.getElementById('content').innerText = data
+      document.getElementById('content').innerText = new TextDecoder().decode(data)
       document.getElementById('output').setAttribute('style', 'display: block')
     }
   }

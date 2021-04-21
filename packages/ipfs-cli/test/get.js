@@ -27,6 +27,7 @@ describe('get', () => {
 
   it('should get file', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'file',
       path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
       content: function * () {
         yield buf
@@ -47,6 +48,7 @@ describe('get', () => {
 
   it('get file with output option', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'file',
       path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
       content: function * () {
         yield buf
@@ -67,6 +69,7 @@ describe('get', () => {
 
   it('get file with short output option', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'file',
       path: 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB',
       content: function * () {
         yield buf
@@ -87,6 +90,7 @@ describe('get', () => {
 
   it('get directory', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'dir',
       path: cid.toString()
     }])
 
@@ -104,8 +108,10 @@ describe('get', () => {
 
   it('get recursively', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'dir',
       path: cid.toString()
     }, {
+      type: 'file',
       path: `${cid}/foo.txt`,
       content: function * () {
         yield buf
@@ -132,6 +138,7 @@ describe('get', () => {
       ...defaultOptions,
       timeout: 1000
     }).returns([{
+      type: 'file',
       path: cid.toString(),
       content: function * () {
         yield buf
@@ -152,6 +159,7 @@ describe('get', () => {
 
   it('should not get file with path traversal characters that result in leaving the output directory', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'file',
       path: '../foo.txt',
       content: function * () {
         yield buf
@@ -165,6 +173,7 @@ describe('get', () => {
 
   it('should get file with path traversal characters that result in leaving the output directory when forced', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
+      type: 'file',
       path: '../foo.txt',
       content: function * () {
         yield buf
@@ -194,6 +203,7 @@ describe('get', () => {
     const junkPath = `${cid}/foo\b/bar`
 
     ipfs.get.withArgs(junkPath, defaultOptions).returns([{
+      type: 'file',
       path: junkPath,
       content: function * () {
         yield buf

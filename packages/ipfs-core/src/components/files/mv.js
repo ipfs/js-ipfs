@@ -1,62 +1,52 @@
 'use strict'
 
-const toSources = require('./utils/to-sources')
 const cp = require('./cp')
 const rm = require('./rm')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @typedef {import('multihashes').HashName} HashName
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('./').MfsContext} MfsContext
+ * @typedef {object} DefaultOptions
+ * @property {boolean} parents
+ * @property {boolean} flush
+ * @property {CIDVersion} cidVersion
+ * @property {HashName} hashAlg
+ * @property {number} shardSplitThreshold
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ */
+
+/**
+ * @type {DefaultOptions}
+ */
 const defaultOptions = {
   parents: false,
-  recursive: false,
   flush: true,
   cidVersion: 0,
   hashAlg: 'sha2-256',
-  shardSplitThreshold: 1000,
-  signal: undefined
+  shardSplitThreshold: 1000
 }
 
 /**
- *
- * @param {any} context
+ * @param {MfsContext} context
  */
 module.exports = (context) => {
   /**
-   *
-   * @param  {[...from:From, to:string, options?:MvOptions]} args
-   * @returns {Promise<void>}
+   * @type {import('ipfs-core-types/src/files').API["mv"]}
    */
-  async function mfsMv (...args) {
-    const {
-      sources,
-      options
-    } = await toSources(context, args, defaultOptions)
+  async function mfsMv (from, to, options = {}) {
+    /** @type {DefaultOptions} */
+    const opts = mergeOptions(defaultOptions, options)
 
-    const cpArgs = sources
-      .map(source => source.path).concat(options)
-
-    // remove the last source as it'll be the destination
-    const rmArgs = sources
-      .slice(0, -1)
-      .map(source => source.path)
-      .concat(Object.assign(options, {
-        recursive: true
-      }))
-
-    await cp(context).apply(null, cpArgs)
-    await rm(context).apply(null, rmArgs)
+    await cp(context)(from, to, opts)
+    await rm(context)(from, {
+      ...opts,
+      recursive: true
+    })
   }
 
   return withTimeoutOption(mfsMv)
 }
-
-/**
- * @typedef {Object} MvOptions
- * @property {boolean} [parents=false]
- * @property {boolean} [flush=false]
- * @property {string} [hashAlg='sha2-256']
- * @property {0|1} [cidVersion]
- *
- * @typedef {import('./utils/types').Tuple<string>} From
- * @typedef {import('cids')} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- */

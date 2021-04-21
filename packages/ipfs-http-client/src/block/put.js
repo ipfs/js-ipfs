@@ -9,9 +9,14 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/block').API<HTTPClientExtraOptions>} BlockAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/block/put')>}
+   * @type {BlockAPI["put"]}
    */
   async function put (data, options = {}) {
     if (Block.isBlock(data)) {
@@ -67,7 +72,7 @@ module.exports = configure(api => {
       throw err
     }
 
-    return new Block(/** @type {Uint8Array} */(data), new CID(res.Key))
+    return new Block((/** @type {Uint8Array} */ data), new CID(res.Key))
   }
 
   return put

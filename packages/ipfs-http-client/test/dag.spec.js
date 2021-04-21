@@ -78,7 +78,7 @@ describe('.dag', function () {
 
   it('should attempt to load an unsupported format', async () => {
     let askedToLoadFormat
-    const ipfs2 = ipfsHttpClient({
+    const ipfs2 = ipfsHttpClient.create({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
         loadFormat: (format) => {
@@ -101,7 +101,7 @@ describe('.dag', function () {
   })
 
   it('should allow formats to be specified without overwriting others', async () => {
-    const ipfs2 = ipfsHttpClient({
+    const ipfs2 = ipfsHttpClient.create({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
         formats: [

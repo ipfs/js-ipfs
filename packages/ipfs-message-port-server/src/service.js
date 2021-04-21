@@ -9,12 +9,11 @@ const { FilesService } = require('./files')
 const { PinService } = require('./pin')
 
 /**
- * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  */
 
 exports.IPFSService = class IPFSService {
   /**
-   *
    * @param {IPFS} ipfs
    */
   constructor (ipfs) {

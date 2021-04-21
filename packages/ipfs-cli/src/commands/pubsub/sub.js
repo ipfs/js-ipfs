@@ -14,7 +14,16 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.topic
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, topic, timeout }) {
+    /**
+     * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+     */
     const handler = msg => print(msg.data.toString())
     await ipfs.pubsub.subscribe(topic, handler, {
       timeout

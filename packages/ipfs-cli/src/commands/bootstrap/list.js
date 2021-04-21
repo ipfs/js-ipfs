@@ -14,10 +14,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const list = await ipfs.bootstrap.list({
       timeout
     })
-    list.Peers.forEach((node) => print(node))
+    list.Peers.forEach((node) => print(node.toString()))
   }
 }

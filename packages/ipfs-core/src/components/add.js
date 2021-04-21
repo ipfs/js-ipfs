@@ -3,23 +3,16 @@
 const last = require('it-last')
 
 /**
- * @typedef {Object} Context
- * @property {ReturnType<import('./add-all')>} addAll
- *
- * @param {Context} context
+ * @param {Object} context
+ * @param {import('ipfs-core-types/src/root').API["addAll"]} context.addAll
  */
 module.exports = ({ addAll }) => {
   /**
-   * Import a file or data into IPFS.
-   *
-   * @param {import('ipfs-core-types/src/files').ToEntry} entry
-   * @param {import('ipfs-core-types/src/root').AddAllOptions} [options]
-   * @returns {Promise<import('ipfs-core-types/src/files').UnixFSEntry>}
+   * @type {import('ipfs-core-types/src/root').API["add"]}
    */
-  async function add (entry, options) {
-    /** @type {import('ipfs-core-types/src/files').ImportSource} */
-    const source = (entry)
-    const result = await last(addAll(source, options))
+  async function add (entry, options = {}) {
+    // @ts-ignore TODO: https://github.com/ipfs/js-ipfs/issues/3290
+    const result = await last(addAll(entry, options))
     // Note this should never happen as `addAll` should yield at least one item
     // but to satisfy type checker we perfom this check and for good measure
     // throw an error in case it does happen.

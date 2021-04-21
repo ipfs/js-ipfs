@@ -1,14 +1,20 @@
 'use strict'
 
+// @ts-ignore no types
 const Tar = require('it-tar')
 const CID = require('cids')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 const map = require('it-map')
 
+/**
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/get')>}
+   * @type {RootAPI["get"]}
    */
   async function * get (path, options = {}) {
     const res = await api.post('get', {

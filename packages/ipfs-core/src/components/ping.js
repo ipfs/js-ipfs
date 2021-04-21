@@ -7,40 +7,24 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Send echo request packets to IPFS hosts.
-   *
-   * @param {PeerId} peerId - The remote peer to send packets to
-   * @param {PingOptions} [options]
-   * @returns {AsyncIterable<Packet>}
-   * @example
-   * ```js
-   * for await (const res of ipfs.ping('Qmhash')) {
-   *   if (res.time) {
-   *     console.log(`Pong received: time=${res.time} ms`)
-   *   } else {
-   *     console.log(res.text)
-   *   }
-   * }
-   * ```
+   * @type {import('ipfs-core-types/src/root').API["ping"]}
    */
   async function * ping (peerId, options = {}) {
     const { libp2p } = await network.use()
     options.count = options.count || 10
 
-    if (!PeerId.isPeerId(peerId)) {
-      peerId = PeerId.createFromCID(peerId)
-    }
+    const peer = PeerId.createFromCID(peerId)
 
-    const storedPeer = libp2p.peerStore.get(peerId)
+    const storedPeer = libp2p.peerStore.get(peer)
     let id = storedPeer && storedPeer.id
 
     if (!id) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      const remotePeer = await libp2p.peerRouting.findPeer(peerId)
+      const remotePeer = await libp2p.peerRouting.findPeer(peer)
 
       id = remotePeer && remotePeer.id
     }
@@ -100,5 +84,5 @@ module.exports = ({ network }) => {
  * @typedef {Object} PingSettings
  * @property {number} [count=10] - The number of ping messages to send
  *
- * @typedef {import('.').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */

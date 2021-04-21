@@ -3,17 +3,31 @@
 /* eslint-disable no-console */
 'use strict'
 
-// Handle any uncaught errors
-process.once('uncaughtException', (err, origin) => {
+/**
+ * Handle any uncaught errors
+ *
+ * @param {any} err
+ * @param {string} [origin]
+ */
+const onUncaughtException = (err, origin) => {
   if (!origin || origin === 'uncaughtException') {
     console.error(err)
     process.exit(1)
   }
-})
-process.once('unhandledRejection', (err) => {
+}
+
+/**
+ * Handle any uncaught errors
+ *
+ * @param {any} err
+ */
+const onUnhandledRejection = (err) => {
   console.error(err)
   process.exit(1)
-})
+}
+
+process.once('uncaughtException', onUncaughtException)
+process.once('unhandledRejection', onUnhandledRejection)
 
 const semver = require('semver')
 const pkg = require('../package.json')
@@ -34,19 +48,24 @@ if (!pkg.version.includes('-rc')) {
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 }
 
-const { InvalidRepoVersionError } = require('ipfs-repo/src/errors/index')
 const { NotEnabledError } = require('ipfs-core/src/errors')
+// @ts-ignore - TODO: refactor this so it does not require deep requires
 const { print, getIpfs, getRepoPath } = require('ipfs-cli/src/utils')
 const debug = require('debug')('ipfs:cli')
 const cli = require('ipfs-cli')
 
+/**
+ * @param {string[]} argv
+ */
 async function main (argv) {
   let exitCode = 0
   let ctx = {
     print,
     getStdin: () => process.stdin,
     repoPath: getRepoPath(),
-    cleanup: () => {}
+    cleanup: () => {},
+    isDaemon: false,
+    ipfs: undefined
   }
 
   const command = argv.slice(2)
@@ -73,7 +92,8 @@ async function main (argv) {
       print(data)
     }
   } catch (err) {
-    if (err.code === InvalidRepoVersionError.code) {
+    // TODO: export errors from ipfs-repo to use .code constants
+    if (err.code === 'ERR_INVALID_REPO_VERSION') {
       err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
     }
 

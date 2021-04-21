@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const nock = require('nock')
-const ipfsClient = require('../../src')
+const ipfsClient = require('../../src').create
 
 describe('.swarm.peers', function () {
   this.timeout(50 * 1000) // slow CI
@@ -44,23 +44,6 @@ describe('.swarm.peers', function () {
     expect(res[0].error).to.not.exist()
     expect(res[0].addr.toString()).to.equal(response.Peers[0].Addr)
     expect(res[0].peer.toString()).to.equal(response.Peers[0].Peer)
-    expect(scope.isDone()).to.equal(true)
-  })
-
-  it('handles unvalidatable peer addr', async () => {
-    const response = { Peers: [{ Addr: '/ip4/104.131.131.82/future-tech', Peer: 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSupNKC', Latency: '', Muxer: '', Streams: null }] }
-
-    const scope = nock(apiUrl)
-      .post('/api/v0/swarm/peers')
-      .query(true)
-      .reply(200, response)
-
-    const res = await ipfs.swarm.peers()
-
-    expect(res).to.be.a('array')
-    expect(res.length).to.equal(1)
-    expect(res[0].error).to.exist()
-    expect(res[0].rawPeerInfo).to.deep.equal(response.Peers[0])
     expect(scope.isDone()).to.equal(true)
   })
 

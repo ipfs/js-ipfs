@@ -1,21 +1,26 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
+      "src/*": [
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/": [
+        "dist/src/index"
       ]
     }
   },
@@ -30,19 +35,20 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:node": "aegir test -t node",
     "lint": "aegir lint",
-    "prepare": "aegir build --no-bundle",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "build": "aegir build --no-bundle"
   },
   "license": "MIT",
   "dependencies": {
     "any-signal": "^2.1.2",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.1.5",
-    "err-code": "^2.0.3",
-    "ipfs-core-types": "^0.3.0",
-    "ipfs-utils": "^6.0.1",
+    "cids": "^1.1.6",
+    "err-code": "^3.0.1",
+    "ipfs-core-types": "^0.3.1",
+    "ipfs-unixfs": "^4.0.1",
+    "ipfs-utils": "^6.0.4",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
@@ -50,10 +56,10 @@
     "multiaddr-to-uri": "^6.0.0",
     "parse-duration": "^0.4.4",
     "timeout-abort-controller": "^1.1.1",
-    "uint8arrays": "^2.0.5"
+    "uint8arrays": "^2.1.3"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "^32.1.0",
     "rimraf": "^3.0.2"
   }
 }

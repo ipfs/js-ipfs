@@ -4,7 +4,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const toMfsPath = require('./utils/to-mfs-path')
 const log = require('debug')('ipfs:mfs:touch')
 const errCode = require('err-code')
-const UnixFS = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 const toTrail = require('./utils/to-trail')
 const addLink = require('./utils/add-link')
 const updateTree = require('./utils/update-tree')
@@ -14,35 +14,40 @@ const mc = require('multicodec')
 const mh = require('multihashing-async').multihash
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @typedef {import('multihashes').HashName} HashName
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
+ * @typedef {import('./').MfsContext} MfsContext
+ * @typedef {object} DefaultOptions
+ * @property {boolean} flush
+ * @property {number} shardSplitThreshold
+ * @property {CIDVersion} cidVersion
+ * @property {HashName} hashAlg
+ * @property {MtimeLike} [mtime]
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ */
+
+/**
+ * @type {DefaultOptions}
+ */
 const defaultOptions = {
-  /** @type {ToMTime|undefined} */
-  mtime: undefined,
   flush: true,
   shardSplitThreshold: 1000,
   cidVersion: 0,
-  hashAlg: 'sha2-256',
-  signal: undefined
+  hashAlg: 'sha2-256'
 }
 
+/**
+ * @param {MfsContext} context
+ */
 module.exports = (context) => {
   /**
-   * Update the mtime of a file or directory
-   *
-   * @param {string} path - The MFS path to update the mtime for
-   * @param {TouchOptions & AbortOptions} [options]
-   * @returns {Promise<void>}
-   *
-   * @example
-   * ```js
-   * // set the mtime to the current time
-   * await ipfs.files.touch('/path/to/file.txt')
-   * // set the mtime to a specific time
-   * await ipfs.files.touch('/path/to/file.txt', {
-   *   mtime: new Date('May 23, 2014 14:45:14 -0700')
-   * })
-   * ```
+   * @type {import('ipfs-core-types/src/files').API["touch"]}
    */
   async function mfsTouch (path, options = {}) {
+    /** @type {DefaultOptions} */
     const settings = mergeOptions(defaultOptions, options)
     settings.mtime = settings.mtime || new Date()
 
@@ -63,6 +68,7 @@ module.exports = (context) => {
     if (!exists) {
       const metadata = new UnixFS({
         type: 'file',
+        // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
         mtime: settings.mtime
       })
       node = new DAGNode(metadata.marshal())
@@ -81,6 +87,8 @@ module.exports = (context) => {
       node = await context.ipld.get(cid)
 
       const metadata = UnixFS.unmarshal(node.Data)
+
+      // @ts-ignore TODO: restore setting all date types as mtime - it's in the code, just not the signature
       metadata.mtime = settings.mtime
 
       node = new DAGNode(metadata.marshal(), node.Links)
@@ -118,15 +126,3 @@ module.exports = (context) => {
 
   return withTimeoutOption(mfsTouch)
 }
-
-/**
- * @typedef {Object} TouchOptions
- * @property {ToMTime} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()`
- * @property {boolean} [flush=false] - If true the changes will be immediately flushed to disk
- * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
- * @property {import('cids').CIDVersion} [cidVersion] - The CID version to use for any updated entries
- *
- * @typedef {import('cids')} CID
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-core-types/src/files').ToMTime} ToMTime
- */

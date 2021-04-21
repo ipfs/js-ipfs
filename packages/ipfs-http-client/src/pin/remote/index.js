@@ -6,131 +6,99 @@ const Service = require('./service')
 const toUrlSearchParams = require('../../lib/to-url-search-params')
 
 /**
- * @typedef {import('../..').HttpOptions} HttpOptions
- * @typedef {import('../../lib/core').ClientOptions} ClientOptions
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-core-types/src/pin/remote').API} API
+ * @typedef {import('../../types').Options} Options
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Pin} Pin
  * @typedef {import('ipfs-core-types/src/pin/remote').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/pin/remote').Query} Query
  * @typedef {import('ipfs-core-types/src/pin/remote').Status} Status
- *
- * @implements {API}
+ * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pin/remote').API<HTTPClientExtraOptions>} RemotePiningAPI
  */
+
 class Remote {
   /**
-   * @param {ClientOptions} options
+   * @param {Options} options
    */
   constructor (options) {
-    /** @private */
     this.client = new Client(options)
     /** @readonly */
     this.service = new Service(options)
   }
+}
 
-  /**
-   * Stores an IPFS object(s) from a given path to a remote pinning service.
-   *
-   * @param {CID} cid
-   * @param {AddOptions & AbortOptions & HttpOptions} options
-   * @returns {Promise<Pin>}
-   */
-  add (cid, options) {
-    return Remote.add(this.client, cid, options)
+/**
+ * @type {RemotePiningAPI["add"]}
+ */
+Remote.prototype.add = async function add (cid, { timeout, signal, headers, ...query }) {
+  const response = await this.client.post('pin/remote/add', {
+    timeout,
+    signal,
+    headers,
+    searchParams: encodeAddParams({ cid, ...query })
+  })
+
+  return decodePin(await response.json())
+}
+
+/**
+ * @type {RemotePiningAPI["ls"]}
+ */
+Remote.prototype.ls = async function * ls ({ timeout, signal, headers, ...query }) {
+  const response = await this.client.post('pin/remote/ls', {
+    timeout,
+    signal,
+    headers,
+    searchParams: encodeQuery(query)
+  })
+
+  for await (const pin of response.ndjson()) {
+    yield decodePin(pin)
   }
+}
 
-  /**
-   * @param {Client} client
-   * @param {CID} cid
-   * @param {AddOptions & AbortOptions & HttpOptions} options
-   */
-  static async add (client, cid, { timeout, signal, headers, ...options }) {
-    const response = await client.post('pin/remote/add', {
-      timeout,
-      signal,
-      headers,
-      searchParams: encodeAddParams({ cid, ...options })
+/**
+ * @type {RemotePiningAPI["rm"]}
+ */
+Remote.prototype.rm = async function rm ({ timeout, signal, headers, ...query }) {
+  await this.client.post('pin/remote/rm', {
+    timeout,
+    signal,
+    headers,
+    searchParams: encodeQuery({
+      ...query,
+      all: false
     })
+  })
+}
 
-    return Remote.decodePin(await response.json())
-  }
-
-  /**
-   * @param {Object} json
-   * @param {string} json.Name
-   * @param {string} json.Cid
-   * @param {Status} json.Status
-   * @returns {Pin}
-   */
-  static decodePin ({ Name: name, Status: status, Cid: cid }) {
-    return {
-      cid: new CID(cid),
-      name,
-      status
-    }
-  }
-
-  /**
-   * Returns a list of matching pins on the remote pinning service.
-   *
-   * @param {Query & AbortOptions & HttpOptions} query
-   */
-  ls (query) {
-    return Remote.ls(this.client, query)
-  }
-
-  /**
-   *
-   * @param {Client} client
-   * @param {Query & AbortOptions & HttpOptions} options
-   * @returns {AsyncIterable<Pin>}
-   */
-  static async * ls (client, { timeout, signal, headers, ...query }) {
-    const response = await client.post('pin/remote/ls', {
-      signal,
-      timeout,
-      headers,
-      searchParams: encodeQuery(query)
+/**
+ * @type {RemotePiningAPI["rmAll"]}
+ */
+Remote.prototype.rmAll = async function ({ timeout, signal, headers, ...query }) {
+  await this.client.post('pin/remote/rm', {
+    timeout,
+    signal,
+    headers,
+    searchParams: encodeQuery({
+      ...query,
+      all: true
     })
+  })
+}
 
-    for await (const pin of response.ndjson()) {
-      yield Remote.decodePin(pin)
-    }
-  }
-
-  /**
-   * Removes a single pin object matching query allowing it to be garbage
-   * collected (if needed). Will error if multiple pins mtach provided
-   * query. To remove all matches use `rmAll` instead.
-   *
-   * @param {Query & AbortOptions & HttpOptions} query
-   */
-  rm (query) {
-    return Remote.rm(this.client, { ...query, all: false })
-  }
-
-  /**
-   * Removes all pin object that match given query allowing them to be garbage
-   * collected if needed.
-   *
-   * @param {Query & AbortOptions & HttpOptions} query
-   */
-  rmAll (query) {
-    return Remote.rm(this.client, { ...query, all: true })
-  }
-
-  /**
-   *
-   * @param {Client} client
-   * @param {{all: boolean} & Query & AbortOptions & HttpOptions} options
-   */
-  static async rm (client, { timeout, signal, headers, ...query }) {
-    await client.post('pin/remote/rm', {
-      timeout,
-      signal,
-      headers,
-      searchParams: encodeQuery(query)
-    })
+/**
+ * @param {Object} json
+ * @param {string} json.Name
+ * @param {string} json.Cid
+ * @param {Status} json.Status
+ * @returns {Pin}
+ */
+const decodePin = ({ Name: name, Status: status, Cid: cid }) => {
+  return {
+    cid: new CID(cid),
+    name,
+    status
   }
 }
 

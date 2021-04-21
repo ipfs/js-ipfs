@@ -2,7 +2,7 @@
 
 const errCode = require('err-code')
 const log = require('debug')('ipfs:mfs:mkdir')
-const exporter = require('ipfs-unixfs-exporter')
+const { exporter } = require('ipfs-unixfs-exporter')
 const createNode = require('./utils/create-node')
 const toPathComponents = require('./utils/to-path-components')
 const updateMfsRoot = require('./utils/update-mfs-root')
@@ -12,30 +12,46 @@ const withMfsRoot = require('./utils/with-mfs-root')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
+ * @typedef {import('ipld-dag-pb').DAGLink} DAGLink
+ * @typedef {import('multihashes').HashName} HashName
+ * @typedef {import('cids')} CID
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
+ * @typedef {import('./').MfsContext} MfsContext
+ * @typedef {object} DefaultOptions
+ * @property {boolean} parents
+ * @property {HashName} hashAlg
+ * @property {CIDVersion} cidVersion
+ * @property {number} shardSplitThreshold
+ * @property {boolean} flush
+ * @property {number} [mode]
+ * @property {MtimeLike} [mtime]
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ */
+
+/**
+ * @type {DefaultOptions}
+ */
 const defaultOptions = {
   parents: false,
   hashAlg: 'sha2-256',
   cidVersion: 0,
   shardSplitThreshold: 1000,
-  flush: true,
-  mode: null,
-  mtime: null,
-  signal: undefined
+  flush: true
 }
 
+/**
+ * @param {MfsContext} context
+ */
 module.exports = (context) => {
   /**
-   * Make a directory in your MFS
-   *
-   * @param {string} path
-   * @param {MkdirOptions & AbortOptions} [options]
-   * @returns {Promise<void>}
-   * @example
-   * ```js
-   * await ipfs.files.mkdir('/my/beautiful/directory')
-   * ```
+   * @type {import('ipfs-core-types/src/files').API["mkdir"]}
    */
   async function mfsMkdir (path, options = {}) {
+    /** @type {DefaultOptions} */
     const opts = mergeOptions(defaultOptions, options)
 
     if (!path) {
@@ -76,8 +92,10 @@ module.exports = (context) => {
 
       try {
         parent = await exporter(subPath, context.ipld)
-        log(`${subPath} existed`)
-        log(`${subPath} had children ${parent.node.Links.map(link => link.Name)}`)
+
+        if (parent.type !== 'file' && parent.type !== 'directory') {
+          throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
+        }
 
         if (i === pathComponents.length) {
           if (opts.parents) {
@@ -118,6 +136,14 @@ module.exports = (context) => {
   return withTimeoutOption(mfsMkdir)
 }
 
+/**
+ * @param {MfsContext} context
+ * @param {string} childName
+ * @param {{ cid: CID, node: { size: number }}} emptyDir
+ * @param {{ cid?: CID, node?: DAGNode }} parent
+ * @param {{ name: string, cid: CID }[]} trail
+ * @param {DefaultOptions} options
+ */
 const addEmptyDir = async (context, childName, emptyDir, parent, trail, options) => {
   log(`Adding empty dir called ${childName} to ${parent.cid}`)
 
@@ -129,7 +155,8 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     name: childName,
     hashAlg: options.hashAlg,
     cidVersion: options.cidVersion,
-    flush: options.flush
+    flush: options.flush,
+    shardSplitThreshold: options.shardSplitThreshold
   })
 
   trail[trail.length - 1].cid = result.cid
@@ -139,20 +166,3 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
     cid: emptyDir.cid
   })
 }
-
-/**
- * @typedef {Object} MkdirOptions
- * @property {boolean} [parents=false] - If true, create intermediate directories
- * @property {ToMode} [mode] - An integer that represents the file mode
- * @property {ToMTime} [mtime] - A Date object, an object with `{ secs, nsecs }` properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of `process.hrtime()
- * @property {boolean} [flush] - If true the changes will be immediately flushed to disk
- * @property {string} [hashAlg='sha2-256'] - The hash algorithm to use for any updated entries
- * @property {CIDVersion} [cidVersion=0] - The CID version to use for any updated entries
- *
- * @typedef {import('cids')} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
- * @typedef {import('ipfs-core-types/src/basic').AbortOptions} AbortOptions
- * @typedef {import('ipfs-core-types/src/files').MTime} Mtime
- * @typedef {import('ipfs-core-types/src/files').ToMTime} ToMTime
- * @typedef {import('ipfs-core-types/src/files').ToMode} ToMode
- */

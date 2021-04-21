@@ -5,16 +5,17 @@ const createResolve = require('./resolve')
 const createTree = require('./tree')
 const createPut = require('./put')
 
-class Reader {
-  /**
-   * @param {ReaderConfig} config
-   */
-  constructor (config) {
-    this.get = createGet(config)
-    this.resolve = createResolve(config)
-    this.tree = createTree(config)
-  }
-}
+/**
+ * @typedef {Object} ReaderConfig
+ * @property {IPLD} ipld
+ * @property {Preload} preload
+ *
+ * @typedef {import('ipld')} IPLD
+ * @typedef {import('../../types').Preload} Preload
+ * @typedef {import('ipfs-core-types/src/pin').API} Pin
+ * @typedef {import('../gc-lock').GCLock} GCLock
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
 
 class DagAPI {
   /**
@@ -23,47 +24,13 @@ class DagAPI {
    * @param {Preload} config.preload
    * @param {Pin} config.pin
    * @param {GCLock} config.gcLock
-   * @param {DagReader} config.dagReader
    */
-  constructor ({ ipld, pin, preload, gcLock, dagReader }) {
-    const { get, resolve, tree } = dagReader
-    const put = createPut({ ipld, preload, pin, gcLock })
-
-    this.get = get
-    this.resolve = resolve
-    this.tree = tree
-    this.put = put
-  }
-
-  /**
-   * Creates a reader part of the DAG API. This allows other APIs that require
-   * reader parts of the DAG API to be instantiated before components required
-   * by writer end are.
-   *
-   * @param {ReaderConfig} config
-   * @returns {DagReader}
-   */
-  static reader (config) {
-    return new Reader(config)
+  constructor ({ ipld, pin, preload, gcLock }) {
+    this.get = createGet({ ipld, preload })
+    this.resolve = createResolve({ ipld, preload })
+    this.tree = createTree({ ipld, preload })
+    this.put = createPut({ ipld, preload, pin, gcLock })
   }
 }
 
 module.exports = DagAPI
-
-/**
- * @typedef {Object} DagReader
- * @property {ReturnType<typeof createGet>} get
- * @property {ReturnType<typeof createResolve>} resolve
- * @property {ReturnType<typeof createTree>} tree
- *
- * @typedef {Object} ReaderConfig
- * @property {IPLD} ipld
- * @property {Preload} preload
- *
- * @typedef {import('..').IPLD} IPLD
- * @typedef {import('..').Preload} Preload
- * @typedef {import('..').Pin} Pin
- * @typedef {import('..').GCLock} GCLock
- * @typedef {import('..').CID} CID
- * @typedef {import('..').AbortOptions} AbortOptions
- */

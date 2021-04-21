@@ -78,7 +78,7 @@ module.exports = (common, options) => {
         create: true,
         parents: true
       })
-      await ipfs.files.rm(file1, file2)
+      await ipfs.files.rm([file1, file2])
 
       await expect(ipfs.files.stat(file1)).to.eventually.be.rejectedWith(/does not exist/)
       await expect(ipfs.files.stat(file2)).to.eventually.be.rejectedWith(/does not exist/)

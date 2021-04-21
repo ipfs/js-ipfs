@@ -21,6 +21,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {'unixfs-dir'} argv.template
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
     const cid = await ipfs.object.new({
       template,

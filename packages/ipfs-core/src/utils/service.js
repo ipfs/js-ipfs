@@ -4,6 +4,35 @@ const { NotStartedError, AlreadyStartingError, AlreadyStartedError } = require('
 const { withTimeout } = require('../utils')
 
 /**
+ * @template T
+ * @typedef {import('ipfs-core-types/src/utils').Await<T>} Await
+ */
+/**
+ * @template {(options:any) => any} T
+ * @typedef {Parameters<T>[0]} Options
+ */
+/**
+ * @template {(options:any) => any} T
+ * @typedef {ReturnType<T> extends ? Promise<infer U> ? U : ReturnType<T>} State
+ */
+/**
+ * Represents service state which can be not started in which case
+ * it is instance of `Error`. Pending in which case it's promise or
+ * ready in which case it is the value itself.
+ *
+ * @template T
+ * @typedef {{ status: 'stopped' }
+ * | { status: 'starting', ready: Await<T> }
+ * | { status: 'started', value: T }
+ * | { status: 'stopping', ready: Await<void> }
+ * } ServiceState
+ */
+
+/**
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
+
+/**
  * @template Options, T
  *
  * Allows you to create a handle to service that can be started or
@@ -209,31 +238,3 @@ class Service {
   }
 }
 module.exports = Service
-
-/**
- * @template T
- * @typedef {import('ipfs-core-types/src/basic').Await<T>} Await
- */
-/**
- * @template {(options:any) => any} T
- * @typedef {Parameters<T>[0]} Options
- */
-/**
- * @template {(options:any) => any} T
- * @typedef {ReturnType<T> extends ? Promise<infer U> ? U : ReturnType<T>} State
- */
-/**
- * Represents service state which can be not started in which case
- * it is instanceof `Error`. Pending in which case it's promise or
- * ready in which case it is the value itself.
- *
- * @template T
- * @typedef {{ status: 'stopped' }
- * | { status: 'starting', ready: Await<T> }
- * | { status: 'started', value: T }
- * | { status: 'stopping', ready: Await<void> }
- * } ServiceState
- */
-/**
- * @typedef {import('../utils').AbortOptions} AbortOptions
- */
