@@ -84,7 +84,7 @@ async function * normaliseInput (input) {
 }
 
 /**
- * @param {import('ipfs-core-types/src/pin').ToPin | InstanceType<typeof String>} input
+ * @param {import('ipfs-core-types/src/pin').ToPin | InstanceType<typeof window.String>} input
  * @param {{recursive?:boolean}} [options]
  * @returns {import('ipfs-core-types/src/pin').ToPinWithPath}
  */
@@ -99,7 +99,7 @@ const toPin = (input, options) => {
     return {
       path: `${input.path == null ? input.cid : input.path}`,
       recursive: input.recursive !== false,
-      ...(input.metadata && { metadata: input.metadata})
+      ...(input.metadata && { metadata: input.metadata })
     }
   }
 }

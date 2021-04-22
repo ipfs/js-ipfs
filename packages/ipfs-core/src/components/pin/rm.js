@@ -17,5 +17,4 @@ const rm = async (context, path, options) => {
   return /** @type {import('cids')} */(cid)
 }
 
-
 module.exports = rm

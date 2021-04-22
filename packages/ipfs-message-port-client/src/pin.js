@@ -94,7 +94,6 @@ module.exports = PinClient
  */
 const encodeSource = (source, transfer) =>
   encodeIterable(source, encodeToPin, transfer)
-  
 
 /**
  * @param {import('ipfs-core-types/src/pin').ToPin} value
@@ -132,7 +131,6 @@ const encodeToPin = (value) => {
     }
   }
 }
-
 
 /**
  * @param {import('ipfs-message-port-protocol/src/pin').EncodedPinEntry} entry

@@ -21,7 +21,6 @@ const toPin = (type, cid, metadata) => ({
   ...(metadata && { metadata })
 })
 
-
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').LsOptions} [options]

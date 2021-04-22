@@ -148,6 +148,7 @@ class PinAPI {
 }
 
 const notImplementedFn = async () => { throw new Error('Not implemented') }
+// eslint-disable-next-line require-yield
 const notImplementedGn = async function * () { throw new Error('Not implemented') }
 
 module.exports = PinAPI
