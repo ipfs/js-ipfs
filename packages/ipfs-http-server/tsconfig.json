@@ -12,9 +12,6 @@
       "path": "../ipfs-core-utils"
     },
     {
-      "path": "../ipfs-message-port-protocol"
-    }
-    {
       "path": "../ipfs-core"
     },
     {

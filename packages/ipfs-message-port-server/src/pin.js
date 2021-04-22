@@ -119,7 +119,7 @@ const encodeRmAllResult = entries => {
 const encodePinEntry = (entry, _transfer) => {
   // Important: Looks like pin.ls sometimes yields cid
   // which is referenced once again later, which is why
-  // we MUST note transfer CID or it gets corrupt.
+  // we MUST NOT transfer CID or it gets corrupt.
   return {
     ...entry,
     cid: encodeCID(entry.cid)
