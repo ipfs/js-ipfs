@@ -2,6 +2,7 @@
 
 const errCode = require('err-code')
 const CID = require('cids')
+const { isIterable, isAsyncIterable } = require('../iterable')
 
 /**
  * @typedef {Object} Pinnable
@@ -42,10 +43,9 @@ const CID = require('cids')
  * AsyncIterable<{ path: CID|String, recursive:boolean, metadata }>
  * ```
  *
- * @param {import('ipfs-core-types/src/pin').PinSource} input
+ * @param {import('ipfs-core-types/src/pin').ToPin|import('ipfs-core-types/src/pin').PinSource} input
  * @returns {AsyncIterable<import('ipfs-core-types/src/pin').ToPinWithPath>}
  */
-// eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input) {
   // must give us something
   if (input === null || input === undefined) {
@@ -53,15 +53,23 @@ module.exports = async function * normaliseInput (input) {
   }
 
   // CID|String
-  if (CID.isCID(input)) {
-    yield toPin({ cid: input })
+  if (CID.isCID(input) || typeof input === 'string' || input instanceof String) {
+    return yield toPin(input)
+  }
+
+  // Iterable<?>
+  if (isIterable(input)) {
+    for (const each of input) {
+      yield toPin(each)
+    }
     return
   }
 
-  if (typeof input === 'string' ||
-      // @ts-ignore - String instance is not typed
-      input instanceof String) {
-    yield toPin({ path: input.toString() })
+  // AsyncIterable<?>
+  if (isAsyncIterable(input)) {
+    for await (const each of input) {
+      yield toPin(each)
+    }
     return
   }
 
@@ -72,76 +80,26 @@ module.exports = async function * normaliseInput (input) {
     return yield toPin(input)
   }
 
-  // Iterable<?>
-  if (input[Symbol.iterator]) {
-    const iterator = input[Symbol.iterator]()
-    const first = iterator.next()
-    if (first.done) return iterator
-
-    // Iterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
-      yield toPin({ cid: first.value })
-      for (const cid of iterator) {
-        yield toPin({ cid })
-      }
-      return
-    }
-
-    // Iterable<{ cid: CID recursive, metadata }>
-    if (first.value.cid != null || first.value.path != null) {
-      yield toPin(first.value)
-      for (const obj of iterator) {
-        yield toPin(obj)
-      }
-      return
-    }
-
-    throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-  }
-
-  // AsyncIterable<?>
-  if (input[Symbol.asyncIterator]) {
-    const iterator = input[Symbol.asyncIterator]()
-    const first = await iterator.next()
-    if (first.done) return iterator
-
-    // AsyncIterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
-      yield toPin({ cid: first.value })
-      for await (const cid of iterator) {
-        yield toPin({ cid })
-      }
-      return
-    }
-
-    // AsyncIterable<{ cid: CID|String recursive, metadata }>
-    if (first.value.cid != null || first.value.path != null) {
-      yield toPin(first.value)
-      for await (const obj of iterator) {
-        yield toPin(obj)
-      }
-      return
-    }
-
-    throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
-  }
-
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')
 }
 
 /**
- * @param {import('ipfs-core-types/src/pin').ToPinWithPath|import('ipfs-core-types/src/pin').ToPinWithCID} input
+ * @param {import('ipfs-core-types/src/pin').ToPin | InstanceType<typeof String>} input
  * @returns {import('ipfs-core-types/src/pin').ToPinWithPath}
  */
-function toPin (input) {
-  const pin = {
-    path: input.path == null ? input.cid : `${input.path}`,
-    recursive: input.recursive !== false
+const toPin = (input) => {
+  if (typeof input === 'string') {
+    return { path: input }
+  } else if (input instanceof String) {
+    return { path: input.toString() }
+  } else if (CID.isCID(input)) {
+    return { path: input.toString() }
+  } else {
+    return {
+      path: `${input.path == null ? input.cid : input.path}`,
+      recursive: input.recursive !== false,
+      ...(input.metadata && { metadata: input.metadata})
+    }
   }
-
-  if (input.metadata != null) {
-    pin.metadata = input.metadata
-  }
-
-  return pin
 }
+

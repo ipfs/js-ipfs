@@ -1,7 +1,8 @@
-import * as Pin from 'ipfs-core-types/src/pin'
-import type { PinEntry, PinSource, PinType, PinQueryType } from 'ipfs-core-types/src/pin'
+import type * as Pin from 'ipfs-core-types/src/pin'
+import type { LsResult, PinSource, PinType, PinQueryType } from 'ipfs-core-types/src/pin'
 import type { TransferOptions, QueryOptions } from './rpc'
-import type { EncodedCID, CID } from './cid'
+import type { EncodedCID } from './cid'
+import type CID from 'cids'
 import type { RemoteIterable } from './core'
 
 export interface API {
@@ -9,24 +10,24 @@ export interface API {
   // addAll: (source: PinSource, options?: AddAllOptions) => AsyncIterable<CID>
   rm: (source: CID | string, options?: RemoveOptions) => Promise<CID>
   rmAll: (source: PinSource, options?: RemoveAllOptions) => AsyncIterable<CID>
-  ls: (options?: ListOptions) => AsyncIterable<PinEntry>
+  ls: (options?: ListOptions) => AsyncIterable<LsResult>
 }
 
-export interface AddOptions extends Pin.AddOptions, TransferOptions {}
+export interface AddOptions extends Pin.AddOptions, TransferOptions { }
 export interface AddAllOptions extends Pin.AddAllOptions, TransferOptions { }
-export interface RemoveOptions extends Pin.RemoveOptions, TransferOptions {}
-export interface RemoveAllOptions extends Pin.RemoveAllOptions, TransferOptions {}
-export interface ListOptions extends Pin.ListOptions, TransferOptions {}
+export interface RemoveOptions extends Pin.RmOptions, TransferOptions { }
+export interface RemoveAllOptions extends Pin.RmOptions, TransferOptions { }
+export interface ListOptions extends Pin.LsOptions, TransferOptions { }
 
 export interface EncodedPin {
   type: 'Pin'
-  path: string|EncodedCID
+  path: string
   cid?: undefined
   recursive?: boolean
   metadata?: any
 }
 
-export type EncodedPinSource = EncodedPin | RemoteIterable<EncodedPin>
+export type EncodedPinSource = RemoteIterable<EncodedPin>
 
 export interface EncodedPinEntry {
   cid: EncodedCID
@@ -35,7 +36,7 @@ export interface EncodedPinEntry {
 }
 
 export interface AddQuery extends QueryOptions {
-  path: string|EncodedCID
+  path: string | EncodedCID
   recursive?: boolean
   matadata?: any
 }
@@ -46,7 +47,7 @@ export interface AddResult {
 }
 
 export interface ListQuery extends QueryOptions {
-  paths?: Array<EncodedCID|string>
+  paths?: Array<EncodedCID | string>
 
 }
 
@@ -83,4 +84,4 @@ export interface Service {
   rmAll: (query: RemoveAllQuery) => RemoveAllResult
 }
 
-export type { PinEntry, PinSource, EncodedCID, PinType, PinQueryType }
+export type { LsResult, PinSource, EncodedCID, PinType, PinQueryType }

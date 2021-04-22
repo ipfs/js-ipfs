@@ -1,6 +1,6 @@
 import type { AbortOptions, AwaitIterable } from '../utils'
 import type CID from 'cids'
-import type { API as remote } from './remote'
+import type { API as RemoteAPI } from './remote'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -32,7 +32,7 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  addAll: (source: AwaitIterable<AddInput>, options?: AddAllOptions & OptionExtension) => AsyncIterable<CID>
+  addAll: (source: PinSource, options?: AddAllOptions & OptionExtension) => AsyncIterable<CID>
 
   /**
    * List all the objects pinned to local storage
@@ -90,9 +90,9 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  rmAll: (source: AwaitIterable<RmAllInput>, options?: AbortOptions & OptionExtension) => AsyncIterable<CID>
+  rmAll: (source: PinSource, options?: AbortOptions & OptionExtension) => AsyncIterable<CID>
 
-  remote
+  remote: RemoteAPI<OptionExtension>
 }
 
 export interface AddOptions extends AbortOptions {
@@ -124,21 +124,34 @@ export interface AddAllOptions extends AbortOptions {
   lock?: boolean
 }
 
-export interface AddInput {
-  /**
-   * A CID to pin - nb. you must pass either `cid` or `path`, not both
-   */
-  cid?: CID
+export type Metadata = Record<string, any>
+export type ToPin =
+  | CID
+  | string
+  | ToPinWithCID
+  | ToPinWithPath
 
+export interface ToPinWithPath extends PinDetails {
   /**
-   * An IPFS path to pin - nb. you must pass either `cid` or `path`, not both
-   */
-  path?: string
+   * An IPFS path to pin.
+  */
+  path: string
 
+  cid?: undefined
+}
+
+export interface ToPinWithCID extends PinDetails {
+  path?: undefined
+  cid: CID
+}
+
+export interface PinDetails {
   /**
    * If true, pin all blocked linked to from the pinned CID
    */
   recursive?: boolean
+
+  metadata?: Metadata
 
   /**
    * A human readable string to store with this pin
@@ -146,28 +159,27 @@ export interface AddInput {
   comments?: string
 }
 
-export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
+export type PinSource = AwaitIterable<ToPin>
 
-export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
-
-export interface LsOptions  extends AbortOptions {
-  paths?: CID | CID[] | string | string[]
+export type PinType =
+  | 'recursive'
+  | 'direct'
+  | 'indirect'
+export type PinQueryType =
+  | PinType
+  | 'all'
+export interface LsOptions extends AbortOptions {
+  paths?: CID | string | Array<CID | string>
   type?: PinQueryType
 }
 
 export interface LsResult {
   cid: CID
   type: PinType | string
-  metadata?: Record<string, any>
+  metadata?: Metadata
 }
 
 export interface RmOptions extends AbortOptions {
-  recursive?: boolean
-}
-
-export interface RmAllInput {
-  cid?: CID
-  path?: string
   recursive?: boolean
 }
 

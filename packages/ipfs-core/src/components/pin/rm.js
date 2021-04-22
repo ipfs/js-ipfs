@@ -5,22 +5,16 @@ const rmAll = require('./rm-all')
 
 /**
  * @param {import('.').Context} context
- * @param {string|CID} path - CID or IPFS Path to unpin.
- * @param {import('ipfs-core-types/src/pin').RemoveOptions} [options]
- * @returns {Promise<CID>} - The CIDs that was unpinned
+ * @param {string|import('cids')} path - CID or IPFS Path to unpin.
+ * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
+ * @returns {Promise<import('cids')>} - The CIDs that was unpinned
  */
-const rm = async (context, path, options) =>
-  /** @type {CID} - Need to loosen check here because it could be void */
-  (await last(rmAll(context, { path, ...options }, options)))
+const rm = async (context, path, options) => {
+  const cid = await last(rmAll(context, [path], options))
+  // last of empty would be undefined, but here we know it won't be so we
+  // manually cast type.
+  return /** @type {import('cids')} */(cid)
+}
 
-/**
- * @typedef {RmSettings & AbortOptions} RmOptions
- *
- * @typedef {Object} RmSettings
- * @property {boolean} [recursive=true] - Recursively unpin the object linked
- *
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- */
 
 module.exports = rm

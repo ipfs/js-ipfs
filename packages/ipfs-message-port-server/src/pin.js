@@ -6,10 +6,10 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/src/core')
 
 /**
- * @typedef {import('ipfs-message-port-protocol/src/cid').CID} CID
+ * @typedef {import('cids')} CID
  * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/pin').Service} Service
- * @typedef {import('./ipfs').IPFS} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  *
  * @implements {Service}
  */
@@ -52,6 +52,7 @@ exports.PinService = class PinService {
    */
   async rm (query) {
     const result = await this.ipfs.pin.rm(decodePathOrCID(query.source), query)
+    /** @type {Transferable[]} */
     const transfer = []
     return { cid: encodeCID(result, transfer), transfer }
   }
@@ -73,10 +74,7 @@ exports.PinService = class PinService {
 /**
  * @param {import('ipfs-message-port-protocol/src/pin').EncodedPinSource} source
  */
-const decodeSource = (source) =>
-  source.type === 'RemoteIterable'
-    ? decodeIterable(source, decodePin)
-    : decodePin(source)
+const decodeSource = (source) => decodeIterable(source, decodePin)
 
 /**
  *
@@ -90,13 +88,11 @@ const decodePathOrCID = pathOrCID =>
  *
  * @param {import('ipfs-message-port-protocol/src/pin').EncodedPin} pin
  */
-const decodePin = pin => {
-  return { ...pin, path: decodePathOrCID(pin.path) }
-}
+const decodePin = pin => pin
 
 /**
  *
- * @param {AsyncIterable<import('ipfs-core-types/src/pin').PinEntry>} entries
+ * @param {AsyncIterable<import('ipfs-core-types/src/pin').LsResult>} entries
  * @returns {import('ipfs-message-port-protocol/src/pin').ListResult}
  */
 const encodeListResult = entries => {
@@ -117,7 +113,7 @@ const encodeRmAllResult = entries => {
 }
 
 /**
- * @param {import('ipfs-core-types/src/pin').PinEntry} entry
+ * @param {import('ipfs-core-types/src/pin').LsResult} entry
  * @param {Transferable[]} _transfer
  */
 const encodePinEntry = (entry, _transfer) => {

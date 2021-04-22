@@ -8,21 +8,37 @@ const rmAll = require('./rm-all')
 
 /**
  * @typedef {import('cids')} CID
+ *
  * @typedef {Object} Context
- * @property {import('..').GCLock} gcLock
- * @property {import('..').DagReader} dagReader
- * @property {import('..').PinManager} pinManager
+ * @property {import('../gc-lock').GCLock} gcLock
+ * @property {import('ipld')} ipld
+ * @property {import('./pin-manager')} pinManager
  */
 
 /**
- * @typedef {import('ipfs-core-types/src/pin').API} API
+ * @typedef {import('ipfs-core-types/src/pin/index').API} API
  * @implements {API}
  */
 class PinAPI {
-  constructor ({ gcLock, dagReader, pinManager }) {
+  /**
+   * @param {Context} context
+   */
+  constructor ({ gcLock, ipld, pinManager }) {
     this.gcLock = gcLock
-    this.dagReader = dagReader
+    this.ipld = ipld
     this.pinManager = pinManager
+
+    this.remote = {
+      add: notImplementedFn,
+      ls: notImplementedGn,
+      rm: notImplementedFn,
+      rmAll: notImplementedFn,
+      service: {
+        add: notImplementedFn,
+        rm: notImplementedFn,
+        ls: notImplementedFn
+      }
+    }
   }
 
   /**
@@ -71,7 +87,7 @@ class PinAPI {
    * ```
    *
    * @param {CID|string} source
-   * @param {import('ipfs-core-types/src/pin').RemoveOptions} [options]
+   * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
    */
   rm (source, options) {
     return rm(this, source, options)
@@ -93,7 +109,7 @@ class PinAPI {
    * ```
    *
    * @param {import('ipfs-core-types/src/pin').PinSource} source
-   * @param {import('ipfs-core-types/src/pin').RemoveAllOptions} [options]
+   * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
    */
   rmAll (source, options) {
     return rmAll(this, source, options)
@@ -124,10 +140,14 @@ class PinAPI {
    * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
    * ```
    *
-   * @param {import('ipfs-core-types/src/pin').ListOptions} [options]
+   * @param {import('ipfs-core-types/src/pin').LsOptions} [options]
    */
   ls (options) {
     return ls(this, options)
   }
 }
+
+const notImplementedFn = async () => { throw new Error('Not implemented') }
+const notImplementedGn = async function * () { throw new Error('Not implemented') }
+
 module.exports = PinAPI

@@ -1,14 +1,15 @@
 'use strict'
 
 /* eslint-env browser */
+const CID = require('cids')
 const Client = require('./client')
-const { decodeCID, encodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
-const { isIterable, isAsyncIterable, decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/src/core')
+const { decodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/src/core')
 
 /**
  * @typedef {import('./client').MessageTransport} MessageTransport
  * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-server/src/pin').PinService} PinService
+ * @typedef {import('ipfs-message-port-server').PinService} PinService
  * @typedef {import('ipfs-message-port-protocol/src/pin').API} API
  */
 
@@ -32,7 +33,7 @@ class PinClient extends Client {
   async add (pathOrCID, options = {}) {
     const { cid } = await this.remote.add({
       ...options,
-      path: encodePathOrCID(pathOrCID, options.transfer)
+      path: pathOrCID.toString()
     })
     return decodeCID(cid)
   }
@@ -46,8 +47,8 @@ class PinClient extends Client {
     const encodedPaths = paths === undefined
       ? undefined
       : Array.isArray(paths)
-        ? paths.map(path => encodePathOrCID(path, options.transfer))
-        : [encodePathOrCID(paths, options.transfer)]
+        ? paths.map(String)
+        : [String(paths)]
 
     const result = await this.remote.ls({
       ...options,
@@ -64,7 +65,7 @@ class PinClient extends Client {
   async rm (source, options = {}) {
     const result = await this.remote.rm({
       ...options,
-      source: encodePathOrCID(source)
+      source: String(source)
     })
     return decodeCID(result.cid)
   }
@@ -91,15 +92,9 @@ module.exports = PinClient
  * @param {Transferable[]} transfer
  * @returns {import('ipfs-message-port-protocol/src/pin').EncodedPinSource}
  */
-const encodeSource = (source, transfer) => {
-  if (typeof source === 'string') {
-    return encodeToPin(source)
-  } else if (isIterable(source) || isAsyncIterable(source)) {
-    return encodeIterable(source, encodeToPin, transfer)
-  } else {
-    return encodeToPin(source)
-  }
-}
+const encodeSource = (source, transfer) =>
+  encodeIterable(source, encodeToPin, transfer)
+  
 
 /**
  * @param {import('ipfs-core-types/src/pin').ToPin} value
@@ -109,7 +104,7 @@ const encodeToPin = (value) => {
   if (CID.isCID(value)) {
     return {
       type: 'Pin',
-      path: encodeCID(value)
+      path: value.toString()
     }
   } else if (typeof value === 'string') {
     return {
@@ -126,26 +121,18 @@ const encodeToPin = (value) => {
       ...value,
       type: 'Pin',
       cid: undefined,
-      path: encodeCID(value.cid)
+      path: value.cid.toString()
     }
   } else {
     return {
       ...value,
       type: 'Pin',
       cid: undefined,
-      path: encodePathOrCID(value.path)
+      path: value.path.toString()
     }
   }
 }
 
-/**
- *
- * @param {string|CID} pathOrCID
- * @param {Transferable[]} [transfer]
- * @returns {string|EncodedCID}
- */
-const encodePathOrCID = (pathOrCID, transfer) =>
-  CID.isCID(pathOrCID) ? encodeCID(pathOrCID, transfer) : pathOrCID
 
 /**
  * @param {import('ipfs-message-port-protocol/src/pin').EncodedPinEntry} entry

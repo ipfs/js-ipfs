@@ -8,16 +8,17 @@ const { PinTypes } = require('./pin-manager')
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source - Unpin all pins from the source
- * @param {import('ipfs-core-types/src/pin').RemoveAllOptions} [_options]
+ * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
  * @returns {AsyncIterable<import('cids')>}
  */
-async function * rmAll ({ pinManager, gcLock, dagReader }, source, _options) {
+async function * rmAll ({ pinManager, gcLock, ipld }, source, options={}) {
   const release = await gcLock.readLock()
 
   try {
     // verify that each hash can be unpinned
-    for await (const { path, recursive } of normaliseInput(source)) {
-      const cid = await resolvePath(dagReader, path)
+    for await (const { path, recursive: pinRecursive } of normaliseInput(source)) {
+      const recursive = pinRecursive || options.recursive 
+      const cid = await resolvePath(ipld, path)
       const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 
       if (!pinned) {
@@ -49,3 +50,5 @@ async function * rmAll ({ pinManager, gcLock, dagReader }, source, _options) {
     release()
   }
 }
+
+module.exports = withTimeoutOption(rmAll)

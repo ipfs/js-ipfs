@@ -32,9 +32,9 @@ async function * addAll (context, source, options = {}) {
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source
  */
-async function * pinAdd ({ pinManager, dagReader }, source) {
+async function * pinAdd ({ pinManager, ipld }, source) {
   for await (const { path, recursive, metadata } of normaliseInput(source)) {
-    const cid = await resolvePath(dagReader, path)
+    const cid = await resolvePath(ipld, path)
 
     // verify that each hash can be pinned
     const { reason } = await pinManager.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])
