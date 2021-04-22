@@ -120,7 +120,7 @@ const initRepo = async (print, repo, options) => {
   }
   await repo.init(config)
 
-  // 4. Open initalized repo.
+  // 4. Open initialized repo.
   await repo.open()
 
   log('repo opened')
@@ -133,7 +133,6 @@ const initRepo = async (print, repo, options) => {
     repo,
     config,
     keychainConfig: {
-      // @ts-ignore pass will be made optional in a follow up PR
       pass: options.pass
     }
   })

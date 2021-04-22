@@ -1,6 +1,5 @@
 'use strict'
 
-const { Multiaddr } = require('multiaddr')
 const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
@@ -16,6 +15,7 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @typedef {import('libp2p')} LibP2P
  * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ * @typedef {import('multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -145,7 +145,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       minConnections: get(options, 'config.Swarm.ConnMgr.LowWater',
         get(config, 'Swarm.ConnMgr.LowWater'))
     }),
-    // @ts-ignore pass will be made optional in a follow up PR
     keychain: {
       datastore: keys,
       ...keychainConfig
