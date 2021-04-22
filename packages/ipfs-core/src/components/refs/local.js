@@ -11,7 +11,7 @@ module.exports = function ({ repo }) {
    * @type {import('ipfs-core-types/src/refs').API["local"]}
    */
   async function * refsLocal (options = {}) {
-    for await (const cid of repo.blocks.queryKeys({ signal: options.signal })) {
+    for await (const cid of repo.blocks.queryKeys({}, { signal: options.signal })) {
       yield { ref: cid.toString() }
     }
   }
