@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 
 const { expect } = require('aegir/utils/chai')
-const normalise = require('../../src/pins/normalise-input')
+const { normaliseInput: normalise } = require('../../src/pins/normalise-input')
 const all = require('it-all')
 const CID = require('cids')
 
