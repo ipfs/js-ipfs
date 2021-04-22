@@ -46,7 +46,7 @@ const { isIterable, isAsyncIterable } = require('../iterable')
  * @param {import('ipfs-core-types/src/pin').ToPin|import('ipfs-core-types/src/pin').PinSource} input
  * @returns {AsyncIterable<import('ipfs-core-types/src/pin').ToPinWithPath>}
  */
-module.exports = async function * normaliseInput (input) {
+async function * normaliseInput (input) {
   // must give us something
   if (input === null || input === undefined) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
@@ -85,15 +85,16 @@ module.exports = async function * normaliseInput (input) {
 
 /**
  * @param {import('ipfs-core-types/src/pin').ToPin | InstanceType<typeof String>} input
+ * @param {{recursive?:boolean}} [options]
  * @returns {import('ipfs-core-types/src/pin').ToPinWithPath}
  */
-const toPin = (input) => {
+const toPin = (input, options) => {
   if (typeof input === 'string') {
-    return { path: input }
+    return { path: input, ...options }
   } else if (input instanceof String) {
-    return { path: input.toString() }
+    return { path: input.toString(), ...options }
   } else if (CID.isCID(input)) {
-    return { path: input.toString() }
+    return { path: input.toString(), ...options }
   } else {
     return {
       path: `${input.path == null ? input.cid : input.path}`,
@@ -103,3 +104,7 @@ const toPin = (input) => {
   }
 }
 
+module.exports = {
+  normaliseInput,
+  toPin
+}

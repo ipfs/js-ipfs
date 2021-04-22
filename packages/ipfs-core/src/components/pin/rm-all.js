@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath } = require('../../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { PinTypes } = require('./pin-manager')
@@ -8,16 +8,15 @@ const { PinTypes } = require('./pin-manager')
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source - Unpin all pins from the source
- * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
+ * @param {import('ipfs-core-types/src/pin').RmOptions} [_options]
  * @returns {AsyncIterable<import('cids')>}
  */
-async function * rmAll ({ pinManager, gcLock, ipld }, source, options={}) {
+async function * rmAll ({ pinManager, gcLock, ipld }, source, _options) {
   const release = await gcLock.readLock()
 
   try {
     // verify that each hash can be unpinned
-    for await (const { path, recursive: pinRecursive } of normaliseInput(source)) {
-      const recursive = pinRecursive || options.recursive 
+    for await (const { path, recursive } of normaliseInput(source)) {
       const cid = await resolvePath(ipld, path)
       const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 

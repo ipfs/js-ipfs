@@ -5,12 +5,12 @@ const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source
- * @param {import('ipfs-core-types/src/pin').AddAllOptions} [options]
+ * @param {import('ipfs-core-types/src/pin').AddOptions} [options]
  * @returns {AsyncIterable<import('cids')>}
  */
 async function * addAll (context, source, options = {}) {
@@ -19,20 +19,21 @@ async function * addAll (context, source, options = {}) {
   if (options.lock) {
     const release = await context.gcLock.readLock()
     try {
-      yield * pinAdd(context, source)
+      yield * pinAdd(context, source, options)
     } finally {
       release()
     }
   } else {
-    yield * pinAdd(context, source)
+    yield * pinAdd(context, source, options)
   }
 }
 
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source
+ * @param {import('ipfs-core-types/src/pin').AddOptions} options
  */
-async function * pinAdd ({ pinManager, ipld }, source) {
+async function * pinAdd ({ pinManager, ipld }, source, options) {
   for await (const { path, recursive, metadata } of normaliseInput(source)) {
     const cid = await resolvePath(ipld, path)
 
