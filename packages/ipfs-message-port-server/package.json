@@ -43,7 +43,7 @@
     "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "aegir": "^32.1.0",
+    "aegir": "^33.1.0",
     "cids": "^1.1.6",
     "rimraf": "^3.0.2"
   },

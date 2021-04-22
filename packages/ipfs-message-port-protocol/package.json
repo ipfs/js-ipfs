@@ -51,7 +51,7 @@
     "ipld-block": "^0.11.0"
   },
   "devDependencies": {
-    "aegir": "^32.1.0",
+    "aegir": "^33.1.0",
     "rimraf": "^3.0.2",
     "uint8arrays": "^2.1.3"
   },
