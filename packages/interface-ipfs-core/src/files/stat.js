@@ -9,7 +9,7 @@ const createShardedDirectory = require('../utils/create-sharded-directory')
 const CID = require('cids')
 const mh = require('multihashing-async').multihash
 const Block = require('ipld-block')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
 const testTimeout = require('../utils/test-timeout')
 

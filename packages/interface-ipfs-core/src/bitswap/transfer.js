@@ -4,7 +4,7 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const CID = require('cids')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const Block = require('ipld-block')
 const concat = require('it-concat')
 const { nanoid } = require('nanoid')

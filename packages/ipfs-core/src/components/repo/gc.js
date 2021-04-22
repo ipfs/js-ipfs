@@ -42,8 +42,7 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
       // Mark all blocks that are being used
       const markedSet = await createMarkedSet({ pin, refs, repo })
       // Get all blocks keys from the blockstore
-      // @ts-ignore - TS is not aware of keysOnly overload
-      const blockKeys = repo.blocks.queryKeys()
+      const blockKeys = repo.blocks.queryKeys({})
 
       // Delete blocks that are not being used
       yield * deleteUnmarkedBlocks({ repo }, markedSet, blockKeys)
