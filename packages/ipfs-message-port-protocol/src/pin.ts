@@ -1,10 +1,13 @@
 import type * as Pin from 'ipfs-core-types/src/pin'
-import type { LsResult, PinSource, PinType, PinQueryType } from 'ipfs-core-types/src/pin'
 import type { TransferOptions, QueryOptions } from './rpc'
 import type { EncodedCID } from './cid'
 import type CID from 'cids'
 import type { RemoteIterable } from './core'
 
+export type LsResult = Pin.LsResult
+export type PinSource = Pin.PinSource
+export type PinType = Pin.PinType
+export type PinQueryType = Pin.PinQueryType
 export interface API {
   add: (source: CID | string, options?: AddOptions) => Promise<CID>
   // addAll: (source: PinSource, options?: AddAllOptions) => AsyncIterable<CID>
@@ -83,5 +86,3 @@ export interface Service {
   rm: (query: RemoveQuery) => Promise<RemoveResult>
   rmAll: (query: RemoveAllQuery) => RemoveAllResult
 }
-
-export type { LsResult, PinSource, EncodedCID, PinType, PinQueryType }
