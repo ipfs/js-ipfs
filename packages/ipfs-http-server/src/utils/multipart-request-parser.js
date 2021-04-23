@@ -123,7 +123,7 @@ async function * parseEntry (stream) {
 const readQueryParam = value => Array.isArray(value) ? value[0] : value
 
 /**
- * @param {AsyncIterable<Buffer>} stream
+ * @param {IncomingMessage} stream
  * @returns {AsyncGenerator<MultipartEntry, void, undefined>}
  */
 async function * parser (stream) {
@@ -164,11 +164,4 @@ async function * parser (stream) {
   }
 }
 
-/**
- * Request Parser
- *
- * @param {IncomingMessage} req
- */
-module.exports = (req) => {
-  return parser(req)
-}
+module.exports = parser
