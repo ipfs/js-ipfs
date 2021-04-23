@@ -8,7 +8,6 @@ const { decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/s
 
 /**
  * @typedef {import('./client').MessageTransport} MessageTransport
- * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-server').PinService} PinService
  * @typedef {import('ipfs-message-port-protocol/src/pin').API} API
  */
