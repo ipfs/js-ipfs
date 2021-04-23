@@ -126,10 +126,7 @@ module.exports = (common, options) => {
         }
       })).api
 
-      // TODO: the webrtc-star transport only keeps the last listened on address around
-      // so the browser has to use 1 as the array index
-      // await nodeA.swarm.connect(nodeB.peerId.addresses[0])
-      await nodeA.swarm.connect(nodeB.peerId.addresses[isBrowser ? 1 : 0])
+      await nodeB.swarm.connect(nodeA.peerId.addresses[0])
 
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

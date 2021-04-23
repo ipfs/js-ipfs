@@ -105,7 +105,7 @@
     "libp2p-noise": "^2.0.5",
     "libp2p-record": "^0.10.3",
     "libp2p-tcp": "^0.15.4",
-    "libp2p-webrtc-star": "^0.22.0",
+    "libp2p-webrtc-star": "^0.22.2",
     "libp2p-websockets": "^0.15.6",
     "mafmt": "^9.0.0",
     "merge-options": "^3.0.4",
