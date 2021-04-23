@@ -50,6 +50,26 @@ describe('name', function () {
       expect(republisher._republishEntries.calledTwice).to.equal(true)
     })
 
+    it('should not republish self key twice', async function () {
+      const mockKeychain = {
+        listKeys: () => Promise.resolve([{ name: 'self' }])
+      }
+      republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), mockKeychain, {
+        initialBroadcastInterval: 500,
+        broadcastInterval: 1000,
+        pass: 'pass'
+      })
+      republisher._republishEntry = sinon.stub()
+
+      await republisher.start()
+
+      expect(republisher._republishEntry.calledOnce).to.equal(false)
+
+      // Initial republish should happen after ~500ms
+      await delay(750)
+      expect(republisher._republishEntry.calledOnce).to.equal(true)
+    })
+
     it('should error if run republish again', async () => {
       republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), sinon.stub(), {
         initialBroadcastInterval: 50,
