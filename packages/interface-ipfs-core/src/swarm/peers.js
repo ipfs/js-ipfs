@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const CID = require('cids')
 const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
@@ -49,7 +49,7 @@ module.exports = (common, options) => {
       const peer = peers[0]
 
       expect(peer).to.have.a.property('addr')
-      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer').that.is.a('string')
       expect(CID.isCID(new CID(peer.peer))).to.equal(true)
       expect(peer).to.not.have.a.property('latency')
@@ -66,7 +66,7 @@ module.exports = (common, options) => {
 
       const peer = peers[0]
       expect(peer).to.have.a.property('addr')
-      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer')
       expect(peer).to.have.a.property('latency')
       expect(peer.latency).to.match(/n\/a|[0-9]+[mµ]?s/) // n/a or 3ms or 3µs or 3s

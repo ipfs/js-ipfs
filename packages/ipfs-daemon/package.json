@@ -39,15 +39,15 @@
     "ipfs-http-gateway": "^0.3.2",
     "ipfs-http-server": "^0.3.4",
     "ipfs-utils": "^6.0.4",
-    "just-safe-set": "^2.1.0",
-    "libp2p": "^0.30.12",
-    "libp2p-delegated-content-routing": "^0.9.0",
-    "libp2p-delegated-peer-routing": "^0.8.0",
-    "libp2p-webrtc-star": "^0.21.0",
-    "multiaddr": "^8.0.0"
+    "just-safe-set": "^2.2.1",
+    "libp2p": "^0.31.0-rc.6",
+    "libp2p-delegated-content-routing": "^0.10.0",
+    "libp2p-delegated-peer-routing": "^0.9.0",
+    "libp2p-webrtc-star": "^0.22.0",
+    "multiaddr": "^9.0.1"
   },
   "devDependencies": {
-    "aegir": "^32.1.0",
+    "aegir": "^33.0.0",
     "node-fetch": "^2.6.1",
     "ws": "^7.3.1"
   },

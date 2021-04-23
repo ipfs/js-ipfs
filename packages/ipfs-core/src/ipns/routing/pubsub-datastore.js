@@ -25,6 +25,8 @@ class IpnsPubsubDatastore {
 
     // Bind _handleSubscriptionKey function, which is called by PubsubDatastore.
     this._handleSubscriptionKey = this._handleSubscriptionKey.bind(this)
+
+    // @ts-ignore will be fixed by https://github.com/ipfs/js-datastore-pubsub/pull/74
     this._pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId, ipns.validator, this._handleSubscriptionKey)
   }
 

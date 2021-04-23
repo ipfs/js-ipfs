@@ -120,13 +120,13 @@ const initRepo = async (print, repo, options) => {
   }
   await repo.init(config)
 
-  // 4. Open initalized repo.
+  // 4. Open initialized repo.
   await repo.open()
 
   log('repo opened')
 
   // Create libp2p for Keychain creation
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,
@@ -207,7 +207,7 @@ const configureRepo = async (repo, options) => {
 
   // @ts-ignore - Identity may not be present
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,

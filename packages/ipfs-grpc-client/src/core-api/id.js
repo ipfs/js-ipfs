@@ -3,7 +3,7 @@
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toHeaders = require('../utils/to-headers')
 const unaryToPromise = require('../utils/unary-to-promise')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
@@ -25,7 +25,7 @@ module.exports = function grpcId (grpc, service, opts) {
 
     return {
       ...res,
-      addresses: (res.addresses || []).map(multiaddr)
+      addresses: (res.addresses || []).map((/** @type {string} */ str) => new Multiaddr(str))
     }
   }
 

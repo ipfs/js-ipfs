@@ -3,7 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

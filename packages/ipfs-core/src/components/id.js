@@ -1,7 +1,7 @@
 'use strict'
 
 const pkgversion = require('../../package.json').version
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
@@ -16,7 +16,7 @@ module.exports = ({ peerId, network }) => {
    */
   async function id (_options = {}) { // eslint-disable-line require-await
     const id = peerId.toB58String()
-    /** @type {import('multiaddr')[]} */
+    /** @type {Multiaddr[]} */
     let addresses = []
     /** @type {string[]} */
     let protocols = []
@@ -46,7 +46,7 @@ module.exports = ({ peerId, network }) => {
           return `${str}/p2p/${id}`
         })
         .sort()
-        .map(ma => multiaddr(ma)),
+        .map(ma => new Multiaddr(ma)),
       agentVersion: `js-ipfs/${pkgversion}`,
       protocolVersion: '9000',
       protocols: protocols.sort()
@@ -60,7 +60,7 @@ module.exports = ({ peerId, network }) => {
  * The Peer identity
  * @property {string} id - the Peer ID
  * @property {string} publicKey - the public key of the peer as a base64 encoded string
- * @property {import('multiaddr')[]} addresses - A list of multiaddrs this node is listening on
+ * @property {Multiaddr[]} addresses - A list of multiaddrs this node is listening on
  * @property {string} agentVersion - The agent version
  * @property {string} protocolVersion - The supported protocol version
  * @property {string[]} protocols - The supported protocols
