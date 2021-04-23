@@ -60,7 +60,7 @@
     "ipld-raw": "^7.0.0",
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
-    "it-tar": "^2.0.0",
+    "it-tar": "^3.0.0",
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
     "multiaddr": "^9.0.1",
