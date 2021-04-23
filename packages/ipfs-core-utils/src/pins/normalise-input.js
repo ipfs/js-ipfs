@@ -85,16 +85,15 @@ async function * normaliseInput (input) {
 
 /**
  * @param {import('ipfs-core-types/src/pin').ToPin | InstanceType<typeof window.String>} input
- * @param {{recursive?:boolean}} [options]
  * @returns {import('ipfs-core-types/src/pin').ToPinWithPath}
  */
-const toPin = (input, options) => {
+const toPin = (input) => {
   if (typeof input === 'string') {
-    return { path: input, ...options }
+    return { path: input, recursive: true }
   } else if (input instanceof String) {
-    return { path: input.toString(), ...options }
+    return { path: input.toString(), recursive: true }
   } else if (CID.isCID(input)) {
-    return { path: input.toString(), ...options }
+    return { path: input.toString(), recursive: true }
   } else {
     return {
       path: `${input.path == null ? input.cid : input.path}`,

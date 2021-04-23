@@ -19,21 +19,20 @@ async function * addAll (context, source, options = {}) {
   if (options.lock) {
     const release = await context.gcLock.readLock()
     try {
-      yield * pinAdd(context, source, options)
+      yield * pinAdd(context, source)
     } finally {
       release()
     }
   } else {
-    yield * pinAdd(context, source, options)
+    yield * pinAdd(context, source)
   }
 }
 
 /**
  * @param {import('.').Context} context
  * @param {import('ipfs-core-types/src/pin').PinSource} source
- * @param {import('ipfs-core-types/src/pin').AddOptions} options
  */
-async function * pinAdd ({ pinManager, ipld }, source, options) {
+async function * pinAdd ({ pinManager, ipld }, source) {
   for await (const { path, recursive, metadata } of normaliseInput(source)) {
     const cid = await resolvePath(ipld, path)
 

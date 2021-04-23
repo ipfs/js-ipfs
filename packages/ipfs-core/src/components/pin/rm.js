@@ -10,8 +10,9 @@ const { toPin } = require('ipfs-core-utils/src/pins/normalise-input')
  * @param {import('ipfs-core-types/src/pin').RmOptions} [options]
  * @returns {Promise<import('cids')>} - The CIDs that was unpinned
  */
-const rm = async (context, path, options) => {
-  const cid = await last(rmAll(context, [toPin(path, options)], options))
+const rm = async (context, path, options = {}) => {
+  const source = [{ ...toPin(path), ...options }]
+  const cid = await last(rmAll(context, source, options))
   // last of empty would be undefined, but here we know it won't be so we
   // manually cast type.
   return /** @type {import('cids')} */(cid)

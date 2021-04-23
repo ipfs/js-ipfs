@@ -10,7 +10,8 @@ const { toPin } = require('ipfs-core-utils/src/pins/normalise-input')
  * @returns {Promise<import('cids')>}
  */
 const add = async (context, path, options) => {
-  const cid = await last(addAll(context, [toPin(path, options)], options))
+  const source = [{ ...toPin(path), ...options }]
+  const cid = await last(addAll(context, source, options))
   // last of empty would be undefined, but here we know it won't be so we
   // manually cast type.
   return /** @type {import('cids')} */(cid)
