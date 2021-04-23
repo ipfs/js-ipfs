@@ -2,12 +2,11 @@
 
 /* eslint-env browser */
 
-const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
+const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { decodeIterable, encodeIterable } = require('ipfs-message-port-protocol/src/core')
 
 /**
  * @typedef {import('cids')} CID
- * @typedef {import('ipfs-message-port-protocol/src/pin').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-protocol/src/pin').Service} Service
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  *
@@ -27,7 +26,7 @@ exports.PinService = class PinService {
    * @param {import('ipfs-message-port-protocol/src/pin').AddQuery} query
    */
   async add (query) {
-    const cid = await this.ipfs.pin.add(decodePathOrCID(query.path), query)
+    const cid = await this.ipfs.pin.add(query.path, query)
     /** @type {Transferable[]} */
     const transfer = []
     return { cid: encodeCID(cid, transfer), transfer }
@@ -37,12 +36,7 @@ exports.PinService = class PinService {
    * @param {import('ipfs-message-port-protocol/src/pin').ListQuery} query
    */
   ls (query) {
-    const { paths } = query
-    const decodedPaths = paths === undefined
-      ? undefined
-      : paths.map(decodePathOrCID)
-
-    const result = this.ipfs.pin.ls({ ...query, paths: decodedPaths })
+    const result = this.ipfs.pin.ls(query)
 
     return encodeListResult(result)
   }
@@ -51,7 +45,7 @@ exports.PinService = class PinService {
    * @param {import('ipfs-message-port-protocol/src/pin').RemoveQuery} query
    */
   async rm (query) {
-    const result = await this.ipfs.pin.rm(decodePathOrCID(query.source), query)
+    const result = await this.ipfs.pin.rm(query.source, query)
     /** @type {Transferable[]} */
     const transfer = []
     return { cid: encodeCID(result, transfer), transfer }
@@ -75,14 +69,6 @@ exports.PinService = class PinService {
  * @param {import('ipfs-message-port-protocol/src/pin').EncodedPinSource} source
  */
 const decodeSource = (source) => decodeIterable(source, decodePin)
-
-/**
- *
- * @param {string|EncodedCID} pathOrCID
- * @returns {string|CID}
- */
-const decodePathOrCID = pathOrCID =>
-  typeof pathOrCID === 'string' ? pathOrCID : decodeCID(pathOrCID)
 
 /**
  *

@@ -39,7 +39,7 @@ export interface EncodedPinEntry {
 }
 
 export interface AddQuery extends QueryOptions {
-  path: string | EncodedCID
+  path: string
   recursive?: boolean
   matadata?: any
 }
@@ -50,7 +50,7 @@ export interface AddResult {
 }
 
 export interface ListQuery extends QueryOptions {
-  paths?: Array<EncodedCID | string>
+  paths?: string[]
 
 }
 
@@ -70,7 +70,7 @@ export interface RemoveResult {
 }
 
 export interface RemoveQuery extends QueryOptions {
-  source: EncodedCID | string
+  source: string
   recursive?: boolean
 }
 
