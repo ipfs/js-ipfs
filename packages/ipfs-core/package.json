@@ -57,7 +57,7 @@
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
-    "@ipld/dag-pb": "0.0.1",
+    "@ipld/dag-pb": "https://gitpkg.now.sh/ipld/js-dag-pb/dist?rvagg/types",
     "abort-controller": "^3.0.0",
     "array-shuffle": "^2.0.0",
     "cborg": "^1.2.1",

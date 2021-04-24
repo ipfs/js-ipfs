@@ -33,7 +33,7 @@
     "@hapi/boom": "^9.1.0",
     "@hapi/content": "^5.0.2",
     "@hapi/hapi": "^20.0.0",
-    "@ipld/dag-pb": "0.0.1",
+    "@ipld/dag-pb": "https://gitpkg.now.sh/ipld/js-dag-pb/dist?rvagg/types",
     "abort-controller": "^3.0.0",
     "cids": "^1.1.6",
     "debug": "^4.1.1",
