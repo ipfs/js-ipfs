@@ -303,7 +303,7 @@ An object may have the following optional fields:
 ```JavaScript
 await ipfs.pin.remote.sevice.add('pinata', {
   endpoint: new URL('https://api.pinata.cloud'),
-  name: 'block-party'
+  key: 'your-pinata-key'
 })
 ```
 
