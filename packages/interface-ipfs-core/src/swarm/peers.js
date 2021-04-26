@@ -118,13 +118,20 @@ module.exports = (common, options) => {
             '/ip4/127.0.0.1/tcp/26546/ws'
           ])
 
-      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      const nodeA = (await common.spawn({
+        // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
+        // peer a js-ipfs node to get a tcp address that can be dialled
+        type: isBrowser && common.opts.type === 'go' ? 'js' : 'proc',
+        ipfsOptions
+      })).api
       const nodeB = (await common.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
           config
         }
       })).api
+
+      console.info(nodeA.peerId.addresses.map(addr => addr.toString()))
 
       await nodeB.swarm.connect(nodeA.peerId.addresses[0])
 
