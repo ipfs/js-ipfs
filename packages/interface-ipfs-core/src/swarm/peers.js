@@ -6,7 +6,6 @@ const CID = require('cids')
 const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -35,12 +34,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when listing swarm peers', () => {
-      return testTimeout(() => ipfsA.swarm.peers({
-        timeout: 1
-      }))
-    })
 
     it('should list peers this node is connected to', async () => {
       const peers = await ipfsA.swarm.peers()
@@ -130,8 +123,6 @@ module.exports = (common, options) => {
           config
         }
       })).api
-
-      console.info(nodeA.peerId.addresses.map(addr => addr.toString()))
 
       await nodeB.swarm.connect(nodeA.peerId.addresses[0])
 

@@ -8,8 +8,6 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { UnixFS } = require('ipfs-unixfs')
 const { randomBytes } = require('iso-random-stream')
 const { asDAGLink } = require('./utils')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -31,12 +29,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when getting an object', () => {
-      return testTimeout(() => ipfs.object.get(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1
-      }))
-    })
 
     it('should get object by multihash', async () => {
       const obj = {

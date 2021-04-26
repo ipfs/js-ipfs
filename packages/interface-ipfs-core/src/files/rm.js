@@ -7,7 +7,6 @@ const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
 const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -270,19 +269,6 @@ module.exports = (common, options) => {
       await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
       expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
-    })
-
-    it('should respect timeout option when removing files', async () => {
-      const file = `/some-file-${Math.random()}.txt`
-
-      await ipfs.files.write(file, randomBytes(100), {
-        create: true,
-        parents: true
-      })
-
-      await testTimeout(() => ipfs.files.rm(file, {
-        timeout: 1
-      }))
     })
   })
 }

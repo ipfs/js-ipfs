@@ -8,7 +8,6 @@ const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const { randomBytes } = require('iso-random-stream')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -107,19 +106,6 @@ module.exports = (common, options) => {
       const { cid } = await ipfs.add(fixtures.smallFile.data)
       const testFileData = uint8ArrayConcat(await all(ipfs.files.read(`/ipfs/${cid}`)))
       expect(testFileData).to.eql(fixtures.smallFile.data)
-    })
-
-    it('should respect timeout option when reading files', async () => {
-      const path = `/some-file-${Math.random()}.txt`
-      const data = randomBytes(100)
-
-      await ipfs.files.write(path, data, {
-        create: true
-      })
-
-      await testTimeout(() => drain(ipfs.files.read(path, {
-        timeout: 1
-      })))
     })
 
     describe('with sharding', () => {
