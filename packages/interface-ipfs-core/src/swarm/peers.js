@@ -113,8 +113,9 @@ module.exports = (common, options) => {
 
       const nodeA = (await common.spawn({
         // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
-        // peer a js-ipfs node to get a tcp address that can be dialled
-        type: isBrowser && common.opts.type === 'go' ? 'js' : 'proc',
+        // peer a js-ipfs node to get a tcp address that can be dialled. Also, webworkers are not
+        // diable so don't use a in-proc node for webworkers
+        type: (isBrowser && common.opts.type === 'go' || isWebWorker) ? 'js' : 'proc',
         ipfsOptions
       })).api
       const nodeB = (await common.spawn({
