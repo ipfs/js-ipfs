@@ -438,7 +438,10 @@ exports.ls = {
       }
     }
 
-    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`)
+    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`, {
+      signal,
+      timeout
+    })
 
     if (stat.type === 'file') {
       // return single object with metadata
