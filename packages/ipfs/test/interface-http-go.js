@@ -3,7 +3,8 @@
 
 const tests = require('interface-ipfs-core')
 const factory = require('./utils/factory')
-const isWindows = global.process && global.process.platform && global.process.platform === 'win32'
+const isWindows = globalThis.process && globalThis.process.platform && globalThis.process.platform === 'win32'
+const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 
 /** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
 
@@ -70,7 +71,18 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         name: 'should error during add-all stream',
         reason: 'Not supported by http'
       }
-    ]
+    ].concat(isFirefox
+      ? [{
+          name: 'should add a BIG Uint8Array',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }, {
+          name: 'should add a BIG Uint8Array with progress enabled',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }, {
+          name: 'should add big files',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }]
+      : [])
   })
 
   tests.bitswap(commonFactory, {
@@ -461,6 +473,30 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'TODO go-ipfs drops the connection'
       }
     ]
+      .concat(isFirefox
+        ? [{
+            name: 'overwrites start of a file without truncating (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'limits how many bytes to write to a file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'pads the start of a new file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified and the offset is longer than the file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'truncates a file after writing (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'writes a file with raw blocks for newly created leaf nodes (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.key(commonFactory, {
@@ -575,6 +611,12 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'FIXME go-ipfs throws invalid encoding: protobuf'
       }
     ]
+      .concat(isFirefox
+        ? [{
+            name: 'should supply unaltered data',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.pin(commonFactory, {
