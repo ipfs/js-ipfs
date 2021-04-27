@@ -14,7 +14,7 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^16.2.3",
+    "browserify": "^17.0.0",
     "concat-stream": "^2.0.0",
     "execa": "^5.0.0",
     "http-server": "^0.12.3",

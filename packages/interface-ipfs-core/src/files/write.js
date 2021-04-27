@@ -10,11 +10,10 @@ const multihash = require('multihashing-async').multihash
 const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
-const randomBytes = require('iso-random-stream/src/random')
-const randomStream = require('iso-random-stream')
+const { randomBytes } = require('iso-random-stream')
+const { randomStream } = require('iso-random-stream')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -625,13 +624,6 @@ module.exports = (common, options) => {
         secs: mtime[0],
         nsecs: mtime[1]
       })
-    })
-
-    it('should respect timeout option when writing files', async () => {
-      await testTimeout(() => ipfs.files.write('/derp', [], {
-        create: true,
-        timeout: 1
-      }))
     })
 
     describe('with sharding', () => {

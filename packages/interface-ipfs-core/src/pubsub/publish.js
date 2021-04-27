@@ -5,7 +5,6 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,12 +25,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when publishing a pubsub message', () => {
-      return testTimeout(() => ipfs.pubsub.publish(getTopic(), 'derp', {
-        timeout: 1
-      }))
-    })
 
     it('should publish message from string', () => {
       const topic = getTopic()

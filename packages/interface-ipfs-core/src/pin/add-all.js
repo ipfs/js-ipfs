@@ -5,8 +5,6 @@ const { fixtures, clearPins } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -117,12 +115,6 @@ module.exports = (common, options) => {
           recursive: true
         }
       }())
-    })
-
-    it('should respect timeout option when pinning a block', () => {
-      return testTimeout(() => ipfs.pin.addAll([new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')], {
-        timeout: 1
-      }))
     })
   })
 }

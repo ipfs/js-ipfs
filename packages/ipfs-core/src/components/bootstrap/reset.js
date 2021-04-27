@@ -2,7 +2,7 @@
 
 const defaultConfig = require('../../runtime/config-nodejs.js')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /**
  * @param {Object} config

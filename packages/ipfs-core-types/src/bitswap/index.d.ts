@@ -60,7 +60,7 @@ export interface API<OptionExtension = {}> {
 export interface Stats {
   provideBufLen: number
   wantlist: CID[]
-  peers: CID[]
+  peers: string[]
   blocksReceived: BigInt
   dataReceived: BigInt
   blocksSent: BigInt

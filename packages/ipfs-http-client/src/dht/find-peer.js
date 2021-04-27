@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const { FinalPeer } = require('./response-types')
@@ -31,7 +31,7 @@ module.exports = configure(api => {
         const { ID, Addrs } = data.Responses[0]
         return {
           id: ID,
-          addrs: (Addrs || []).map((/** @type {string} **/ a) => multiaddr(a))
+          addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))
         }
       }
     }

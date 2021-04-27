@@ -3,7 +3,7 @@
 const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 // @ts-ignore no types
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
@@ -228,7 +228,7 @@ class HttpApi {
     if (!this._apiServers || !this._apiServers.length) {
       throw new Error('API address unavailable - server is not started')
     }
-    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
+    return new Multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
   async stop () {

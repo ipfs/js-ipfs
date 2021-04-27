@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^16.2.3",
+    "browserify": "^17.0.0",
     "execa": "^5.0.0",
     "http-server": "^0.12.3",
     "ipfs-http-client": "^49.0.4",
@@ -20,7 +20,7 @@
   "dependencies": {
     "ipfs": "^0.54.4",
     "it-all": "^1.0.4",
-    "libp2p-websockets": "^0.15.1",
+    "libp2p-websockets": "^0.15.6",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   }

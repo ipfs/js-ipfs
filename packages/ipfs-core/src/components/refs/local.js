@@ -11,8 +11,7 @@ module.exports = function ({ repo }) {
    * @type {import('ipfs-core-types/src/refs').API["local"]}
    */
   async function * refsLocal (options = {}) {
-    // @ts-ignore - TS is not aware of keysOnly
-    for await (const cid of repo.blocks.query({ keysOnly: true, signal: options.signal })) {
+    for await (const cid of repo.blocks.queryKeys({}, { signal: options.signal })) {
       yield { ref: cid.toString() }
     }
   }

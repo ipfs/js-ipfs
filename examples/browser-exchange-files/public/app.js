@@ -41,6 +41,7 @@ let workspace = (location.hash || 'default-workspace').replace(/^#/, '')
 
 let fileSize = 0
 
+/** @type {import('ipfs').IPFS} */
 let node
 let info
 

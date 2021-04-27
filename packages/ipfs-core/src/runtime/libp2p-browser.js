@@ -12,7 +12,8 @@ const GossipSub = require('libp2p-gossipsub')
 const ipnsUtils = require('../ipns/routing/utils')
 
 module.exports = () => {
-  return {
+  /** @type {import('libp2p').Libp2pOptions} */
+  const options = {
     dialer: {
       maxParallelDials: 150, // 150 total parallel multiaddr dials
       maxDialsPerPeer: 4, // Allow 4 multiaddrs to be dialed per peer in parallel
@@ -75,4 +76,6 @@ module.exports = () => {
       threshold: 1
     }
   }
+
+  return options
 }

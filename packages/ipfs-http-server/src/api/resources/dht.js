@@ -138,7 +138,7 @@ exports.findProvs = {
         return {
           Responses: [{
             ID: id.toString(),
-            Addrs: (addrs || []).map((/** @type {import('multiaddr')} */ a) => a.toString())
+            Addrs: (addrs || []).map((/** @type {import('multiaddr').Multiaddr} */ a) => a.toString())
           }],
           Type: 4
         }

@@ -9,8 +9,6 @@ const drain = require('it-drain')
 const {
   DAGNode
 } = require('ipld-dag-pb')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -180,12 +178,6 @@ module.exports = (common, options) => {
         cid: child,
         type: 'indirect'
       })
-    })
-
-    it('should respect timeout option when pinning a block', () => {
-      return testTimeout(() => ipfs.pin.add(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1
-      }))
     })
   })
 }

@@ -27,7 +27,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiaddr')} argv.peer
+   * @param {import('multiaddr').Multiaddr} argv.peer
    * @param {boolean} argv.all
    * @param {number} argv.timeout
    */
