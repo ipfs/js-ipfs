@@ -12,9 +12,8 @@ First clone this repo, install dependencies in the project root and build the pr
 
 ```console
 $ git clone https://github.com/ipfs/js-ipfs.git
-$ cd js-ipfs
+$ cd js-ipfs/examples/browser-vue
 $ npm install
-$ npm run build
 ```
 
 ### Compiles and hot-reloads for development

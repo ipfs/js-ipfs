@@ -24,7 +24,9 @@ export default {
     async getIpfsNodeInfo() {
       try {
         // Await for ipfs node instance.
-        const ipfs = await this.$ipfs;
+        const ipfs = await this.$ipfs.create();
+        const { cid } = await ipfs.add('Hello World');
+        console.info(cid);
         // Call ipfs `id` method.
         // Returns the identity of the Peer.
         const { agentVersion, id } = await ipfs.id();

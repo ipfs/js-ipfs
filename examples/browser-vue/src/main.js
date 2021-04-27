@@ -1,11 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
-import VueIpfs from './plugins/vue-ipfs';
+import IPFS from 'ipfs-core'
 
-// Load our IPFS plugin.
-Vue.use(VueIpfs);
-
-Vue.config.productionTip = false;
+Vue.prototype.$ipfs = IPFS
+Vue.config.productionTip = false
 
 new Vue({
   render: h => h(App),
