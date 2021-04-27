@@ -53,7 +53,7 @@
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.1",
     "multiaddr": "^8.0.0",
-    "multiaddr-to-uri": "^6.0.0",
+    "multiaddr-to-uri": "^7.0.0",
     "parse-duration": "^0.4.4",
     "timeout-abort-controller": "^1.1.1",
     "uint8arrays": "^2.1.3"
