@@ -54,7 +54,7 @@
     "jsondiffpatch": "^0.4.1",
     "libp2p-crypto": "^0.19.0",
     "mafmt": "^8.0.0",
-    "multiaddr": "^8.0.0",
+    "multiaddr": "^9.0.1",
     "multiaddr-to-uri": "^6.0.0",
     "multibase": "^4.0.2",
     "multihashing-async": "^2.1.2",

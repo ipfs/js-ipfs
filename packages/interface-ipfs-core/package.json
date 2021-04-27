@@ -64,7 +64,7 @@
     "it-pushable": "^1.4.0",
     "libp2p-crypto": "^0.19.0",
     "libp2p-websockets": "^0.15.1",
-    "multiaddr": "^8.0.0",
+    "multiaddr": "^9.0.1",
     "multibase": "^4.0.2",
     "multihashing-async": "^2.1.2",
     "nanoid": "^3.1.12",

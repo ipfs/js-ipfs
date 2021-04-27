@@ -41,7 +41,7 @@
     "it-peekable": "^1.0.1",
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.0",
-    "multiaddr": "^8.0.0",
+    "multiaddr": "^9.0.1",
     "protobufjs": "^6.10.2",
     "ws": "^7.3.1"
   },

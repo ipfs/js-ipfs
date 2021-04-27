@@ -30,7 +30,7 @@
   "dependencies": {
     "cids": "^1.1.6",
     "ipld": "^0.29.0",
-    "multiaddr": "^8.0.0",
+    "multiaddr": "^9.0.1",
     "multibase": "^4.0.2"
   },
   "devDependencies": {

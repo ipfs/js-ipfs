@@ -43,7 +43,7 @@
     "ipfs-unixfs": "^4.0.1",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.0",
-    "multiaddr": "^8.0.0",
+    "multiaddr": "^9.0.1",
     "protobufjs": "^6.10.2",
     "wherearewe": "1.0.0",
     "ws": "^7.3.1"
