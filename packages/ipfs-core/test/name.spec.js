@@ -55,7 +55,7 @@ describe('name', function () {
         listKeys: () => Promise.resolve([{ name: 'self' }])
       }
       republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), mockKeychain, {
-        initialBroadcastInterval: 500,
+        initialBroadcastInterval: 100,
         broadcastInterval: 1000,
         pass: 'pass'
       })
@@ -65,8 +65,8 @@ describe('name', function () {
 
       expect(republisher._republishEntry.calledOnce).to.equal(false)
 
-      // Initial republish should happen after ~500ms
-      await delay(750)
+      // Initial republish should happen after ~100ms
+      await delay(200)
       expect(republisher._republishEntry.calledOnce).to.equal(true)
     })
 
