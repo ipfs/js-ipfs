@@ -187,6 +187,11 @@ export interface AddOptions extends AbortOptions {
   cidVersion?: CIDVersion
 
   /**
+   * The multibase name to use. (defaults to 'base58btc' for v0 & 'base32' for v1)
+   */
+  multibaseName?: string
+
+  /**
    * Multihash hashing algorithm to use. (Defaults to 'sha2-256')
    */
   hashAlg?: string
