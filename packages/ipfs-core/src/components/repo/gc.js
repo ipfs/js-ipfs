@@ -17,7 +17,7 @@ const BLOCK_RM_CONCURRENCY = 256
  * @typedef {import('ipfs-core-types/src/refs').API} RefsAPI
  * @typedef {import('ipfs-repo')} IPFSRepo
  * @typedef {import('interface-datastore').Key} Key
- * @typedef {import('ipfs-repo/src/types').Block} Block
+ * @typedef {import('ipld-block')} Block
  */
 
 /**
@@ -101,7 +101,7 @@ async function createMarkedSet ({ pin, refs, repo }) {
  * @param {object} arg
  * @param {IPFSRepo} arg.repo
  * @param {Set<string>} markedSet
- * @param {AsyncIterable<CID|Block>} blockKeys
+ * @param {AsyncIterable<CID>} blockKeys
  */
 async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
@@ -110,16 +110,12 @@ async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
   let removedBlocksCount = 0
 
   /**
-   * @param {Block|CID} cid
+   * @param {CID} cid
    */
   const removeBlock = async (cid) => {
     blocksCount++
 
     try {
-      if (!CID.isCID(cid)) {
-        return null
-      }
-
       const b32 = multibase.encode('base32', cid.multihash).toString()
 
       if (markedSet.has(b32)) {
