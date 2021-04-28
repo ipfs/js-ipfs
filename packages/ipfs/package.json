@@ -62,7 +62,7 @@
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.22.2",
     "merge-options": "^3.0.4",
-    "mock-ipfs-pinning-service": "^0.1.2",
+    "mock-ipfs-pinning-service": "^0.3.0",
     "rimraf": "^3.0.2",
     "url": "^0.11.0",
     "wrtc": "^0.4.6"
