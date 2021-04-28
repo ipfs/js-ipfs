@@ -98,7 +98,7 @@
     "libp2p-bootstrap": "^0.12.3",
     "libp2p-crypto": "^0.19.3",
     "libp2p-floodsub": "^0.25.1",
-    "libp2p-gossipsub": "ChainSafe/js-libp2p-gossipsub#chore/update-deps-and-remove-protons",
+    "libp2p-gossipsub": "^0.9.0",
     "libp2p-kad-dht": "libp2p/js-libp2p-kad-dht#chore/update-deps-12-04-2021",
     "libp2p-mdns": "^0.16.0",
     "libp2p-mplex": "^0.10.2",
