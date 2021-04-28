@@ -2,7 +2,7 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const multihash = require('multihashing-async').multihash
+const multihashing = require('multihashing-async')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
@@ -43,7 +43,7 @@ module.exports = (common, options) => {
     })
 
     it('should get by CID in string', async () => {
-      const block = await ipfs.block.get(multihash.toB58String(hash))
+      const block = await ipfs.block.get(multihashing.multihash.toB58String(hash))
 
       expect(block.data).to.eql(uint8ArrayFromString('blorb'))
       expect(block.cid.multihash).to.eql(hash)
@@ -87,6 +87,14 @@ module.exports = (common, options) => {
 
       const block = await ipfs.block.get(cidv0)
       expect(block.data).to.eql(input)
+    })
+
+    it('should get a block with an identity CID, without putting first', async () => {
+      const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
+      const identityHash = await multihashing(identityData, 'identity')
+      const identityCID = new CID(1, 'dag-cbor', identityHash)
+      const block = await ipfs.block.get(identityCID)
+      expect(block.data).to.eql(identityData)
     })
 
     it('should return an error for an invalid CID', () => {

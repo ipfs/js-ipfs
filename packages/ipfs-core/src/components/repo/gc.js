@@ -17,6 +17,7 @@ const BLOCK_RM_CONCURRENCY = 256
  * @typedef {import('ipfs-core-types/src/refs').API} RefsAPI
  * @typedef {import('ipfs-repo')} IPFSRepo
  * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('ipld-block')} Block
  */
 
 /**
