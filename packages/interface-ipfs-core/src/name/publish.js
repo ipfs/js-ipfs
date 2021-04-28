@@ -6,7 +6,6 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
-const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -30,13 +29,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when publishing an IPNS name', () => {
-      return testTimeout(() => ipfs.name.publish(fixture.cid, {
-        allowOffline: true,
-        timeout: 1
-      }))
-    })
 
     it('should publish an IPNS record with the default params', async function () {
       this.timeout(50 * 1000)

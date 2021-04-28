@@ -5,8 +5,8 @@
   "main": "dist/index.html",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "parcel build index.html",
+    "clean": "rimraf ./dist ./.cache ./.parcel-cache",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html -p 8888",
     "test": "test-ipfs-example"
   },
@@ -16,7 +16,7 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "ipfs": "^0.54.4",
-    "ipfsd-ctl": "^8.0.0",
+    "ipfsd-ctl": "^8.0.1",
     "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"

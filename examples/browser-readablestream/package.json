@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "ipfs": "^0.54.4",
-    "it-to-stream": "^0.1.2",
+    "it-to-stream": "^1.0.0",
     "videostream": "^3.2.0"
   }
 }

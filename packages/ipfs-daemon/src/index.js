@@ -3,7 +3,7 @@
 const log = require('debug')('ipfs:daemon')
 const get = require('dlv')
 const set = require('just-safe-set')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 // @ts-ignore - no types
 const WebRTCStar = require('libp2p-webrtc-star')
 // @ts-ignore - no types
@@ -128,7 +128,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   if (delegateHosts.length > 0) {
     // Pick a random delegate host
     const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
-    const delegateAddr = Multiaddr(delegateString).toOptions()
+    const delegateAddr = new Multiaddr(delegateString).toOptions()
     const delegateApiOptions = {
       host: delegateAddr.host,
       // port is a string atm, so we need to convert for the check

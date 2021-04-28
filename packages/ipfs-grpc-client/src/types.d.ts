@@ -1,6 +1,6 @@
 import { agent as HttpAgent } from 'http'
 import { agent as HttpsAgent } from 'https'
-import Multiaddr from 'multiaddr'
+import { Multiaddr } from 'multiaddr'
 
 export interface Options {
   url: string | URL | Multiaddr

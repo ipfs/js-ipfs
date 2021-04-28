@@ -29,12 +29,12 @@
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
     "cids": "^1.1.6",
-    "ipld": "^0.29.0",
-    "multiaddr": "^8.0.0",
+    "ipld": "^0.30.0",
+    "multiaddr": "^9.0.1",
     "multibase": "^4.0.2"
   },
   "devDependencies": {
-    "aegir": "^32.1.0"
+    "aegir": "^33.0.0"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

@@ -1,5 +1,5 @@
 import CID from 'cids'
-import Multiaddr from 'multiaddr'
+import { Multiaddr } from 'multiaddr'
 import { API as Service } from './service'
 import { AbortOptions } from '../../utils'
 

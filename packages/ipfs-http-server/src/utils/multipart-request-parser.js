@@ -77,13 +77,6 @@ async function * parseEntry (stream) {
 
     const type = Content.type(part.headers['content-type'])
 
-    if (type.boundary) {
-      // recursively parse nested multiparts
-      yield * parseEntry(multipart(part.body, type.boundary))
-
-      continue
-    }
-
     if (!part.headers['content-disposition']) {
       throw new Error('No content disposition in multipart part')
     }
@@ -130,12 +123,11 @@ async function * parseEntry (stream) {
 const readQueryParam = value => Array.isArray(value) ? value[0] : value
 
 /**
- * @param {AsyncIterable<Buffer>} stream
- * @param {string} boundary
+ * @param {IncomingMessage} stream
  * @returns {AsyncGenerator<MultipartEntry, void, undefined>}
  */
-async function * parser (stream, boundary) {
-  for await (const entry of parseEntry(multipart(stream, boundary))) {
+async function * parser (stream) {
+  for await (const entry of parseEntry(multipart(stream))) {
     if (entry.type === 'directory') {
       /** @type {import('../types').MultipartDirectory} */
       yield {
@@ -172,13 +164,4 @@ async function * parser (stream, boundary) {
   }
 }
 
-/**
- * Request Parser
- *
- * @param {IncomingMessage} req
- */
-module.exports = (req) => {
-  const boundary = Content.type(req.headers['content-type']).boundary
-
-  return parser(req, boundary)
-}
+module.exports = parser

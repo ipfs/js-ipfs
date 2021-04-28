@@ -165,7 +165,7 @@ An optional object which may have the following keys:
 const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
 const node = await ipfs.object.get(multihash)
-console.log(node.data)
+console.log(node.Data)
 // Logs:
 // some data
 ```
