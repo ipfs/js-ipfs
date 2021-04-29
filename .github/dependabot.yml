@@ -1,0 +1,103 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "11:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: multiaddr-to-uri
+    versions:
+    - 7.0.0
+  - dependency-name: datastore-core
+    versions:
+    - 4.0.0
+  - dependency-name: datastore-pubsub
+    versions:
+    - 0.6.1
+  - dependency-name: multiaddr
+    versions:
+    - 9.0.1
+  - dependency-name: it-multipart
+    versions:
+    - 2.0.0
+  - dependency-name: aegir
+    versions:
+    - 30.3.0
+    - 33.0.0
+    - 33.1.0
+  - dependency-name: parse-duration
+    versions:
+    - 1.0.0
+  - dependency-name: mock-ipfs-pinning-service
+    versions:
+    - 0.2.0
+  - dependency-name: sinon
+    versions:
+    - 10.0.0
+  - dependency-name: it-tar
+    versions:
+    - 2.0.0
+  - dependency-name: p-queue
+    versions:
+    - 7.0.0
+  - dependency-name: cbor
+    versions:
+    - 6.0.1
+    - 7.0.0
+    - 7.0.1
+    - 7.0.2
+    - 7.0.3
+    - 7.0.4
+  - dependency-name: delay
+    versions:
+    - 5.0.0
+  - dependency-name: err-code
+    versions:
+    - 3.0.0
+    - 3.0.1
+  - dependency-name: it-to-buffer
+    versions:
+    - 2.0.0
+  - dependency-name: is-ipfs
+    versions:
+    - 3.0.0
+    - 4.0.0
+  - dependency-name: libp2p-record
+    versions:
+    - 0.10.0
+  - dependency-name: it-glob
+    versions:
+    - 0.0.11
+  - dependency-name: it-buffer-stream
+    versions:
+    - 2.0.0
+  - dependency-name: "@improbable-eng/grpc-web"
+    versions:
+    - 0.14.0
+  - dependency-name: native-abort-controller
+    versions:
+    - 1.0.1
+    - 1.0.3
+  - dependency-name: typescript
+    versions:
+    - 4.1.3
+  - dependency-name: merge-options
+    versions:
+    - 3.0.4
+  - dependency-name: ipfs-utils
+    versions:
+    - 6.0.0
+  - dependency-name: libp2p-delegated-content-routing
+    versions:
+    - 0.9.0
+  - dependency-name: interface-datastore
+    versions:
+    - 3.0.3
+  - dependency-name: uint8arrays
+    versions:
+    - 2.0.5
+  - dependency-name: array-shuffle
+    versions:
+    - 2.0.0
