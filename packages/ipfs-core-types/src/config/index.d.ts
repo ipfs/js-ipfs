@@ -51,7 +51,9 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm?: string[]
+  Swarm?: string[],
+  Announce?: string[],
+  NoAnnounce?: string[]
 }
 
 export interface APIConfig {
