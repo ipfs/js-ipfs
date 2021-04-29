@@ -5,7 +5,8 @@
   "keywords": [
     "ipfs"
   ],
-  "main": "dist/ipfs.json",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
@@ -22,10 +23,13 @@
     "test": "echo 'No tests here'",
     "clean": "rimraf ./dist",
     "prepare": "npm run build",
-    "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"
+    "build": "run-s clean build:*",
+    "build:proto": "pbjs -t static-module -w commonjs -r ipfs-grpc-protocol --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o src/index.js ./src/*.proto",
+    "build:proto-types": "pbts -o src/index.d.ts src/index.js"
   },
   "devDependencies": {
     "mkdirp": "^1.0.4",
+    "npm-run-all": "^4.1.5",
     "protobufjs": "^6.10.2",
     "rimraf": "^3.0.2"
   }

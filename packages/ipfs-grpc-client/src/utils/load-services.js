@@ -1,6 +1,5 @@
 'use strict'
 
-// @ts-ignore
 const protocol = require('ipfs-grpc-protocol')
 const protobuf = require('protobufjs/light')
 const { Service } = protobuf
@@ -19,17 +18,16 @@ const CONVERSION_OPTS = {
  * service definition on both the server and the client.
  */
 module.exports = function loadServices () {
-  const root = protobuf.Root.fromJSON(protocol)
   /** @type {Record<string, any>} */
   const output = {}
 
   Object
     // @ts-ignore
-    .keys(root.nested.ipfs)
+    .keys(protocol.ipfs)
     // @ts-ignore
-    .filter(key => root.nested.ipfs[key] instanceof Service)
+    .filter(key => protocol.ipfs[key] instanceof Service)
     // @ts-ignore
-    .map(key => root.nested.ipfs[key])
+    .map(key => protocol.ipfs[key])
     .forEach(service => {
       /** @type {Record<string, any>} */
       const serviceDef = {}
