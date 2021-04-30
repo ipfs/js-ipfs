@@ -8,7 +8,7 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
   "types": "dist/src/index.d.ts",
-  "broswer": {
+  "browser": {
     "./src/files/normalise-input": "./src/files/normalise-input/index.browser.js"
   },
   "files": [
