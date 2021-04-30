@@ -13,7 +13,7 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Libp2pOptions
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('multiaddr').Multiaddr} Multiaddr
  */
@@ -66,6 +66,7 @@ module.exports = ({
  * @param {KeychainConfig} input.keychainConfig
  * @param {PeerId} input.peerId
  * @param {Multiaddr[]} input.multiaddrs
+ * @returns {Libp2pOptions}
  */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
