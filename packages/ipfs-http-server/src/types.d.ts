@@ -7,7 +7,7 @@ import libp2p from 'libp2p'
 
 declare module '@hapi/hapi' {
   interface ServerApplicationState {
-    ipfs: IPFS & { ipld: IPLD, libp2p: libp2p }
+    ipfs: IPFS
   }
   interface RequestApplicationState {
     signal: AbortSignal

@@ -17,7 +17,6 @@ const LOG_ERROR = 'ipfs:http-api:error'
  * @typedef {import('./types').Server} Server
  * @typedef {import('ipld')} IPLD
  * @typedef {import('libp2p')} libp2p
- * @typedef {IPFS & { ipld: IPLD, libp2p: libp2p }} JSIPFS
  */
 
 /**
@@ -38,8 +37,8 @@ function hapiInfoToMultiaddr (info) {
 
 /**
  * @param {string | string[]} serverAddrs
- * @param {(host: string, port: string, ipfs: JSIPFS, cors: Record<string, any>) => Promise<Server>} createServer
- * @param {JSIPFS} ipfs
+ * @param {(host: string, port: string, ipfs: IPFS, cors: Record<string, any>) => Promise<Server>} createServer
+ * @param {IPFS} ipfs
  * @param {Record<string, any>} cors
  */
 async function serverCreator (serverAddrs, createServer, ipfs, cors) {
@@ -61,7 +60,7 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
 
 class HttpApi {
   /**
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    */
   constructor (ipfs) {
     this._ipfs = ipfs
@@ -98,7 +97,7 @@ class HttpApi {
   /**
    * @param {string} host
    * @param {string} port
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    * @param {Record<string, any>} cors
    */
   async _createApiServer (host, port, ipfs, cors) {
