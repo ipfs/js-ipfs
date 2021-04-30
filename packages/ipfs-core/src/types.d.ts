@@ -5,7 +5,7 @@ import type { ProfileNames } from 'ipfs-core-types/src/config/profiles'
 import type IPLD from 'ipld'
 import type { Options as IPLDOptions } from 'ipld'
 import type Libp2p from 'libp2p'
-import type { Libp2pConfig as Libp2pOptions } from 'libp2p'
+import type { Libp2pOptions } from 'libp2p'
 import type IPFSRepo from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
 import type { Datastore } from 'interface-datastore'
@@ -117,7 +117,7 @@ export interface Options {
  * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
  * browsers.
    */
-  libp2p?: Libp2pOptions | Libp2pFactoryFn
+  libp2p?: Partial<Libp2pOptions> | Libp2pFactoryFn
 
   silent?: boolean
 }

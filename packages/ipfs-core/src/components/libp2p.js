@@ -13,7 +13,7 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('multiaddr').Multiaddr} Multiaddr
  */
@@ -66,6 +66,7 @@ module.exports = ({
  * @param {KeychainConfig} input.keychainConfig
  * @param {PeerId} input.peerId
  * @param {Multiaddr[]} input.multiaddrs
+ * @returns {Libp2pOptions}
  */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
@@ -93,25 +94,20 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     config: {
       peerDiscovery: {
         mdns: {
-          enabled: get(options, 'config.Discovery.MDNS.Enabled',
-            get(config, 'Discovery.MDNS.Enabled', true))
+          enabled: get(options, 'config.Discovery.MDNS.Enabled', get(config, 'Discovery.MDNS.Enabled', true))
         },
         webRTCStar: {
-          enabled: get(options, 'config.Discovery.webRTCStar.Enabled',
-            get(config, 'Discovery.webRTCStar.Enabled', true))
+          enabled: get(options, 'config.Discovery.webRTCStar.Enabled', get(config, 'Discovery.webRTCStar.Enabled', true))
         },
         bootstrap: {
           list: get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
         }
       },
       relay: {
-        enabled: get(options, 'relay.enabled',
-          get(config, 'relay.enabled', true)),
+        enabled: get(options, 'relay.enabled', get(config, 'relay.enabled', true)),
         hop: {
-          enabled: get(options, 'relay.hop.enabled',
-            get(config, 'relay.hop.enabled', false)),
-          active: get(options, 'relay.hop.active',
-            get(config, 'relay.hop.active', false))
+          enabled: get(options, 'relay.hop.enabled', get(config, 'relay.hop.enabled', false)),
+          active: get(options, 'relay.hop.active', get(config, 'relay.hop.active', false))
         }
       },
       dht: {
@@ -120,30 +116,20 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         kBucketSize: get(options, 'dht.kBucketSize', 20)
       },
       pubsub: {
-        enabled: get(options, 'config.Pubsub.Enabled',
-          get(config, 'Pubsub.Enabled', true))
+        enabled: get(options, 'config.Pubsub.Enabled', get(config, 'Pubsub.Enabled', true))
       },
       nat: {
-        enabled: get(options, 'libp2p.config.nat.enabled', !get(config, 'Swarm.DisableNatPortMap', false)),
-        ttl: get(options, 'libp2p.config.nat.ttl', 7200),
-        keepAlive: get(options, 'libp2p.config.nat.keepAlive', true),
-        gateway: get(options, 'libp2p.config.nat.gateway'),
-        externalIp: get(options, 'libp2p.config.nat.externalIp'),
-        pmp: {
-          enabled: get(options, 'libp2p.config.nat.pmp.enabled', false)
-        }
+        enabled: !get(config, 'Swarm.DisableNatPortMap', false)
       }
     },
     addresses: {
       listen: multiaddrs.map(ma => ma.toString()),
-      announce: get(options, 'addresses.announce',
-        get(config, 'Addresses.Announce', []))
+      announce: get(options, 'addresses.announce', get(config, 'Addresses.Announce', [])),
+      noAnnounce: get(options, 'addresses.noAnnounce', get(config, 'Addresses.NoAnnounce', []))
     },
     connectionManager: get(options, 'connectionManager', {
-      maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater',
-        get(config, 'Swarm.ConnMgr.HighWater')),
-      minConnections: get(options, 'config.Swarm.ConnMgr.LowWater',
-        get(config, 'Swarm.ConnMgr.LowWater'))
+      maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater', get(config, 'Swarm.ConnMgr.HighWater')),
+      minConnections: get(options, 'config.Swarm.ConnMgr.LowWater', get(config, 'Swarm.ConnMgr.LowWater'))
     }),
     keychain: {
       datastore: keys,
@@ -155,10 +141,11 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
 
-  let constructorOptions = get(options, 'libp2p', {})
+  /** @type {import('libp2p').Libp2pOptions | undefined} */
+  let constructorOptions = get(options, 'libp2p', undefined)
 
   if (typeof constructorOptions === 'function') {
-    constructorOptions = {}
+    constructorOptions = undefined
   }
 
   // Merge defaults with Node.js/browser/other environments options and configuration
