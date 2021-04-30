@@ -1,6 +1,6 @@
 import type { AbortOptions, AwaitIterable } from '../utils'
 import type CID from 'cids'
-import type { API as remote } from './remote'
+import type { API as Remote } from './remote'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -92,7 +92,7 @@ export interface API<OptionExtension = {}> {
    */
   rmAll: (source: AwaitIterable<RmAllInput>, options?: AbortOptions & OptionExtension) => AsyncIterable<CID>
 
-  remote
+  remote: Remote<OptionExtension>
 }
 
 export interface AddOptions extends AbortOptions {

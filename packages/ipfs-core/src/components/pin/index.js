@@ -27,17 +27,16 @@ class PinAPI {
     this.rm = createRm({ rmAll })
     this.ls = createLs({ ipld, pinManager })
 
-    const notImplemented = () => Promise.reject(new Error('Not implemented'))
-
+    /** @type {import('ipfs-core-types/src/pin/remote').API} */
     this.remote = {
-      add: notImplemented,
-      ls: notImplemented,
-      rm: notImplemented,
-      rmAll: notImplemented,
+      add: (cid, options = {}) => Promise.reject(new Error('Not implemented')),
+      ls: async function * (query, options = {}) { return Promise.reject(new Error('Not implemented')) }, // eslint-disable-line require-yield
+      rm: (query, options = {}) => Promise.reject(new Error('Not implemented')),
+      rmAll: (query, options = {}) => Promise.reject(new Error('Not implemented')),
       service: {
-        add: notImplemented,
-        rm: notImplemented,
-        ls: notImplemented
+        add: (name, credentials) => Promise.reject(new Error('Not implemented')),
+        rm: (name, options = {}) => Promise.reject(new Error('Not implemented')),
+        ls: (options = {}) => Promise.reject(new Error('Not implemented'))
       }
     }
   }

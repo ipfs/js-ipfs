@@ -1,5 +1,7 @@
 import CID from 'cids'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
+import { Options as DatastoreOptions, Key, Query, KeyQuery } from 'interface-datastore'
+import Block from 'ipld-block'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
   | FileEntry<Content>
@@ -133,17 +135,17 @@ export interface BufferStore {
 }
 
 export interface Blockstore {
-  open: () => Promise<Void>
+  open: () => Promise<void>
 
   /**
    * Query the store
    */
-  query: (Query, options?: DatastoreOptions) => AsyncIterable<Block>
+  query: (query: Query, options?: DatastoreOptions) => AsyncIterable<Block>
 
   /**
    * Query the store, returning only keys
    */
-   queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
+  queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
 
   /**
    * Get a single block by CID
@@ -173,15 +175,15 @@ export interface Blockstore {
   /**
    * Delete a block from the store
    */
-  delete: (cid: CID, options?: DatastoreOptions) => Promise<Void>
+  delete: (cid: CID, options?: DatastoreOptions) => Promise<void>
 
   /**
    * Delete a block from the store
    */
-  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<Key>
+  deleteMany: (cids: AwaitIterable<CID>, options?: DatastoreOptions) => AsyncIterable<CID>
 
   /**
    * Close the store
    */
-  close: () => Promise<Void>
+  close: () => Promise<void>
 }
