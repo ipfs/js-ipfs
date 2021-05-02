@@ -1,8 +1,9 @@
 import { Format as IPLDFormat } from 'interface-ipld-format'
-import { LoadFormatFn } from 'ipld'
 import { Agent as HttpAgent } from 'http'
 import { Agent as HttpsAgent } from 'https'
 import { Multiaddr } from 'multiaddr'
+
+export type LoadFormatFn = (name: CodecName) => Promise<IPLDFormat>
 
 export interface Options {
   host?: string

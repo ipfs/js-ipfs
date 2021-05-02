@@ -8,7 +8,8 @@ const multicodec = require('multicodec')
 /**
  * @typedef {import('cids')} CID
  * @typedef {import('interface-ipld-format').Format<any>} IPLDFormat
- * @typedef {import('ipld').LoadFormatFn} LoadFormatFn
+ * @typedef {import('multicodec').CodecName} CodecName
+ * @typedef {import('../types').LoadFormatFn} LoadFormatFn
  */
 
 /**
@@ -23,7 +24,7 @@ const noop = (codec) => {
  *
  * @param {object} [options] - IPLD options passed to the http client constructor
  * @param {IPLDFormat[]} [options.formats] - A list of IPLD Formats to use
- * @param {import('ipld').LoadFormatFn} [options.loadFormat] - An async function that can load a format when passed a codec number
+ * @param {LoadFormatFn} [options.loadFormat] - An async function that can load a format when passed a codec name
  */
 module.exports = ({ formats = [], loadFormat = noop } = {}) => {
   formats = formats || []
@@ -42,11 +43,10 @@ module.exports = ({ formats = [], loadFormat = noop } = {}) => {
   /**
    * Attempts to load an IPLD format for the passed CID
    *
-   * @param {import('multicodec').CodecName} codec - The code to load the format for
+   * @param {CodecName} codec - The code to load the format for
    */
   const loadResolver = async (codec) => {
     const number = multicodec.getCodeFromName(codec)
-    // @ts-ignore wat
     const format = configuredFormats[number] || await loadFormat(codec)
 
     if (!format) {
