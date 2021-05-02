@@ -1,5 +1,7 @@
 import CID from 'cids'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
+import { Options as DatastoreOptions, Query, KeyQuery } from 'interface-datastore'
+import Block from 'ipld-block'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
   | FileEntry<Content>
@@ -130,58 +132,4 @@ export interface BufferStore {
   put: (key: Uint8Array, value: Uint8Array) => Promise<void>
   get: (key: Uint8Array) => Promise<Uint8Array>
   stores: any[]
-}
-
-export interface Blockstore {
-  open: () => Promise<Void>
-
-  /**
-   * Query the store
-   */
-  query: (Query, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Query the store, returning only keys
-   */
-   queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
-
-  /**
-   * Get a single block by CID
-   */
-  get: (cid: CID, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like get, but for more
-   */
-  getMany: (cids: AwaitIterable<CID>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Write a single block to the store
-   */
-  put: (block: Block, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like put, but for more
-   */
-  putMany: (blocks: AwaitIterable<Block>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Does the store contain block with this CID?
-   */
-  has: (cid: CID, options?: DatastoreOptions) => Promise<boolean>
-
-  /**
-   * Delete a block from the store
-   */
-  delete: (cid: CID, options?: DatastoreOptions) => Promise<Void>
-
-  /**
-   * Delete a block from the store
-   */
-  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<Key>
-
-  /**
-   * Close the store
-   */
-  close: () => Promise<Void>
 }

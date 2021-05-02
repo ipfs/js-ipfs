@@ -8,8 +8,8 @@ export interface API<OptionExtension = {}> {
   put: (obj: DAGNode | DAGNodeLike | Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>
   get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGNode>
   data: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Uint8Array>
-  links: (cid, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGLink[]>
-  stat: (cid, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  links: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGLink[]>
+  stat: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
 
   patch: PatchAPI
 }
