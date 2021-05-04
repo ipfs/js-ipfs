@@ -18,5 +18,6 @@ It is broken up into the following sections:
 * [PIN.md](PIN.md)
 * [PUBSUB.md](PUBSUB.md)
 * [REFS.md](REFS.md)
+* [REPO.md](REPO.md)
 * [STATS.md](STATS.md)
 * [SWARM.md](SWARM.md)
