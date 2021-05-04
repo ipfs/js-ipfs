@@ -81,7 +81,6 @@ jobs:
     - name: external - service-worker-gateway
     - name: external - orbit-db
     - name: external - ipfs-log
-    - name: external - sidetree
 
   include:
     - stage: test
@@ -370,13 +369,6 @@ jobs:
       name: external - ipfs-log
       script:
         - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
-
-    - stage: test-external
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: external - sidetree
-      script:
-        - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false
