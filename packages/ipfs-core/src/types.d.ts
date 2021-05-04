@@ -100,7 +100,7 @@ export interface Options {
  * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
  * in browsers)
    */
-  ipld?: IPLDOptions
+  ipld?: Partial<IPLDOptions>
 
   /**
    * The libp2p option allows you to build
