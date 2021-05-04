@@ -3,7 +3,6 @@
 // @ts-ignore no types
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
-const CID = require('cids')
 const shuffle = require('array-shuffle')
 const { AbortController } = require('native-abort-controller')
 const preload = require('./runtime/preload-nodejs')
@@ -44,13 +43,13 @@ const createPreloader = (options = {}) => {
   /**
    * @type {import('./types').Preload}
    */
-  const api = async path => {
+  const api = async cid => {
     try {
-      if (stopped) throw new Error(`preload ${path} but preloader is not started`)
-
-      if (typeof path !== 'string') {
-        path = new CID(path).toString()
+      if (stopped) {
+        throw new Error(`preload ${cid} but preloader is not started`)
       }
+
+      const path = cid.toString()
 
       if (cache.has(path)) {
         // we've preloaded this recently, don't preload it again
