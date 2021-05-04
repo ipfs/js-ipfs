@@ -47,7 +47,7 @@
     "err-code": "^3.0.1",
     "ipfs-unixfs": "^4.0.3",
     "ipfs-unixfs-importer": "^7.0.3",
-    "ipfs-utils": "^6.0.4",
+    "ipfs-utils": "^7.0.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
