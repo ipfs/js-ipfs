@@ -109,7 +109,7 @@ export interface IdentityConfig {
   /**
    * The base64 encoded protobuf describing (and containing) the nodes private key.
    */
-  PrivateKey: string
+  PrivKey: string
 }
 
 export interface KeychainConfig {

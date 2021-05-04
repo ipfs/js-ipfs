@@ -38,7 +38,7 @@
     "ipfs-http-client": "^49.0.4",
     "ipfs-http-gateway": "^0.3.2",
     "ipfs-http-server": "^0.3.4",
-    "ipfs-utils": "^6.0.4",
+    "ipfs-utils": "^7.0.0",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.31.2",
     "libp2p-delegated-content-routing": "^0.10.0",
