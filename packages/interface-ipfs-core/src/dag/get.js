@@ -135,17 +135,6 @@ module.exports = (common, options) => {
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
-    it('should get by CID string', async () => {
-      const cidCborStr = cidCbor.toBaseEncodedString()
-
-      const result = await ipfs.dag.get(cidCborStr)
-
-      const node = result.value
-
-      const cid = await dagCBOR.util.cid(dagCBOR.util.serialize(node))
-      expect(cid).to.eql(cidCbor)
-    })
-
     it('should get by CID with path option', async function () {
       const result = await ipfs.dag.get(cidCbor, { path: '/pb/Data' })
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))

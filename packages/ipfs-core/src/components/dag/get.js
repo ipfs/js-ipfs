@@ -3,7 +3,6 @@
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const first = require('it-first')
 const last = require('it-last')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**
  * @param {Object} config
