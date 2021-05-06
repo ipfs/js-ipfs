@@ -82,7 +82,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: CID | string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping: (peerId: string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS
