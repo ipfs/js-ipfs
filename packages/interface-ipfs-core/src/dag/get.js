@@ -189,7 +189,7 @@ module.exports = (common, options) => {
         foo: 'dag-cbor-bar'
       }
 
-      let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.codec).to.equal('dag-cbor')
       expect(cid.toBaseEncodedString('base32')).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
