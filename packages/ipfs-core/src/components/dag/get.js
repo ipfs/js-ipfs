@@ -14,16 +14,7 @@ module.exports = ({ ipld, preload }) => {
   /**
    * @type {import('ipfs-core-types/src/dag').API["get"]}
    */
-  const get = async function get (ipfsPath, options = {}) {
-    const {
-      cid,
-      path
-    } = toCidAndPath(ipfsPath)
-
-    if (path) {
-      options.path = path
-    }
-
+  const get = async function get (cid, options = {}) {
     if (options.preload !== false) {
       preload(cid)
     }
