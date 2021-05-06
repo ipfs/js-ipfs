@@ -191,8 +191,7 @@ module.exports = (common, options) => {
 
       let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.codec).to.equal('dag-cbor')
-      cid = cid.toBaseEncodedString('base32')
-      expect(cid).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
+      expect(cid.toBaseEncodedString('base32')).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
       const result = await ipfs.dag.get(cid, {
         path: 'foo'
