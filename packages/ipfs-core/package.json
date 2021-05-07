@@ -25,7 +25,6 @@
     "./src/runtime/preload-nodejs.js": "./src/runtime/preload-browser.js",
     "./src/runtime/repo-nodejs.js": "./src/runtime/repo-browser.js",
     "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
-    "ipfs-utils/src/files/glob-source": false
   },
   "typesVersions": {
     "*": {

@@ -9,8 +9,7 @@
   "browser": {
     "fs": false,
     "os": false,
-    "path": false,
-    "ipfs-utils/src/files/glob-source": false
+    "path": false
   },
   "scripts": {
     "lint": "aegir lint",
