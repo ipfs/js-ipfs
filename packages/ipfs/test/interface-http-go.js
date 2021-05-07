@@ -138,7 +138,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
       },
       {
-        name: 'should get by CID string + path',
+        name: 'should get by CID with path option',
         reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
       },
       {

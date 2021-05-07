@@ -135,21 +135,8 @@ module.exports = (common, options) => {
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
-    it('should get by CID string', async () => {
-      const cidCborStr = cidCbor.toBaseEncodedString()
-
-      const result = await ipfs.dag.get(cidCborStr)
-
-      const node = result.value
-
-      const cid = await dagCBOR.util.cid(dagCBOR.util.serialize(node))
-      expect(cid).to.eql(cidCbor)
-    })
-
-    it('should get by CID string + path', async function () {
-      const cidCborStr = cidCbor.toBaseEncodedString()
-
-      const result = await ipfs.dag.get(cidCborStr + '/pb/Data')
+    it('should get by CID with path option', async function () {
+      const result = await ipfs.dag.get(cidCbor, { path: '/pb/Data' })
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
@@ -202,10 +189,9 @@ module.exports = (common, options) => {
         foo: 'dag-cbor-bar'
       }
 
-      let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.codec).to.equal('dag-cbor')
-      cid = cid.toBaseEncodedString('base32')
-      expect(cid).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
+      expect(cid.toBaseEncodedString('base32')).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
       const result = await ipfs.dag.get(cid, {
         path: 'foo'
