@@ -14,6 +14,7 @@ const CONVERSION_OPTS = {
 }
 
 module.exports = function loadServices () {
+  // @ts-ignore protobuf's generated types are incompatible with it's own types
   const root = protobuf.Root.fromJSON(protocol)
   const output = {}
 
