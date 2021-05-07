@@ -32,7 +32,21 @@ describe('cors', () => {
         }
       }, { ipfs, cors: { origin: [origin] } })
 
+      expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('headers.access-control-allow-origin', origin)
+    })
+
+    it('allows request when referer is supplied in request', async () => {
+      const origin = 'http://localhost:8080'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          referer: origin + '/index.html'
+        }
+      }, { ipfs, cors: { origin: [origin] } })
+
+      expect(res).to.have.property('statusCode', 200)
     })
 
     it('does not allow credentials when omitted in config', async () => {
@@ -148,6 +162,103 @@ describe('cors', () => {
       })
 
       expect(res).to.have.property('statusCode', 404)
+    })
+
+    it('rejects requests when cors origin list is empty and origin is sent', async () => {
+      const origin = 'http://localhost:8080'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          origin
+        }
+      }, {
+        ipfs,
+        cors: { origin: [] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
+    })
+
+    it('rejects requests when cors origin list is empty and referer is sent', async () => {
+      const referer = 'http://localhost:8080/index.html'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          referer
+        }
+      }, {
+        ipfs,
+        cors: { origin: [] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
+    })
+
+    it('rejects requests when cors origin list is empty and referer and origin are sent', async () => {
+      const referer = 'http://localhost:8080/index.html'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          referer,
+          origin: 'http://localhost:8080'
+        }
+      }, {
+        ipfs,
+        cors: { origin: [] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
+    })
+
+    it('rejects requests when cors origin list is empty and origin is sent as "null" (e.g. data urls and sandboxed iframes)', async () => {
+      const origin = 'null'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          origin
+        }
+      }, {
+        ipfs,
+        cors: { origin: [] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
+    })
+
+    it('rejects requests when cors origin list does not contain the correct origin and origin is sent', async () => {
+      const origin = 'http://localhost:8080'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          origin
+        }
+      }, {
+        ipfs,
+        cors: { origin: ['http://example.com:8080'] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
+    })
+
+    it('rejects requests when cors origin list does not contain the correct origin and referer is sent', async () => {
+      const referer = 'http://localhost:8080/index.html'
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/id',
+        headers: {
+          referer
+        }
+      }, {
+        ipfs,
+        cors: { origin: ['http://example.com:8080'] }
+      })
+
+      expect(res).to.have.property('statusCode', 403)
     })
   })
 })

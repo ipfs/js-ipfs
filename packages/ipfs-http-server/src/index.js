@@ -40,6 +40,36 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   return servers
 }
 
+/**
+ * @param {string} [str]
+ * @param {string[]} [allowedOrigins]
+ */
+function isAllowedOrigin (str, allowedOrigins = []) {
+  if (!str) {
+    return false
+  }
+
+  let origin
+
+  try {
+    origin = (new URL(str)).origin
+  } catch {
+    return false
+  }
+
+  for (const allowedOrigin of allowedOrigins) {
+    if (allowedOrigin === '*') {
+      return true
+    }
+
+    if (allowedOrigin === origin) {
+      return true
+    }
+  }
+
+  return false
+}
+
 class HttpApi {
   constructor (ipfs, options = {}) {
     this._ipfs = ipfs
@@ -150,11 +180,17 @@ class HttpApi {
 
         const headers = request.headers || {}
         const origin = headers.origin || ''
-        const referrer = headers.referrer || ''
+        const referer = headers.referer || ''
         const userAgent = headers['user-agent'] || ''
 
-        // If these are set, we leave up to CORS and CSRF checks.
-        if (origin || referrer) {
+        // If these are set, check them against the configured list
+        if (origin || referer) {
+          if (!isAllowedOrigin(origin || referer, cors.origin)) {
+            // Hapi will not allow an empty CORS origin list so we have to manually
+            // reject the request if CORS origins have not been configured
+            throw Boom.forbidden()
+          }
+
           return h.continue
         }
 
