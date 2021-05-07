@@ -59,16 +59,15 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
 }
 
 /**
- * @param {string} str
- * @param {string[]} allowedOrigins
+ * @param {string} [str]
+ * @param {string[]} [allowedOrigins]
  */
 function isAllowedOrigin (str, allowedOrigins = []) {
   if (!str) {
     return false
   }
 
-  const url = new URL(str)
-  const origin = url.protocol + '//' + url.host
+  const { origin } = new URL(str)
 
   for (const allowedOrigin of allowedOrigins) {
     if (allowedOrigin === '*') {
