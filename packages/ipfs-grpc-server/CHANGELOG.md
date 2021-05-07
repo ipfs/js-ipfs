@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.2.4...ipfs-grpc-server@0.2.5) (2021-05-07)
+
+
+### Bug Fixes
+
+* reject requests when cors origin list is empty ([#3674](https://github.com/ipfs/js-ipfs/issues/3674)) ([#3676](https://github.com/ipfs/js-ipfs/issues/3676)) ([3e67f0a](https://github.com/ipfs/js-ipfs/commit/3e67f0a455546f3ce50ac2dc52f5a341ddf17cac)), closes [#3655](https://github.com/ipfs/js-ipfs/issues/3655)
+
+
+
+
+
 ## [0.2.4](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.2.3...ipfs-grpc-server@0.2.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-grpc-server

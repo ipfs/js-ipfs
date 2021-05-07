@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-server",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A server library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
