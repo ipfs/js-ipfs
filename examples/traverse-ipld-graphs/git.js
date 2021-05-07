@@ -42,7 +42,7 @@ async function main () {
     await ipfs.block.put(new Block(data, cid))
   }))
 
-  const v1tag = 'z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue'
+  const v1tag = new CID('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
 
   async function logResult (fn, comment) {
     const result = await fn()
