@@ -67,7 +67,13 @@ function isAllowedOrigin (str, allowedOrigins = []) {
     return false
   }
 
-  const { origin } = new URL(str)
+  let origin
+
+  try {
+    origin = (new URL(str)).origin
+  } catch {
+    return false
+  }
 
   for (const allowedOrigin of allowedOrigins) {
     if (allowedOrigin === '*') {
