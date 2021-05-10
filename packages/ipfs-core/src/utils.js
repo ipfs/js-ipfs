@@ -103,11 +103,11 @@ const mapFile = (file, options = {}) => {
     name: file.name,
     depth: file.path.split('/').length,
     size: 0,
-    type: file.type
+    type: 'file'
   }
 
-  // @ts-ignore - TS type can't be changed from File to Directory
   if (file.type === 'directory') {
+    // @ts-ignore - TS type can't be changed from File to Directory
     output.type = 'dir'
   }
 
