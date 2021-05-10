@@ -96,6 +96,11 @@ const resolvePath = async function (ipld, ipfsPath, options = {}) {
  * @param {boolean} [options.includeContent]
  */
 const mapFile = (file, options = {}) => {
+  if (file.type !== 'file' && file.type !== 'directory' && file.type !== 'raw') {
+    // file.type === object | identity not supported yet
+    throw new Error(`Unknown node type '${file.type}'`)
+  }
+
   /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
   const output = {
     cid: file.cid,
