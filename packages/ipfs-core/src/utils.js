@@ -103,26 +103,30 @@ const mapFile = (file, options = {}) => {
     name: file.name,
     depth: file.path.split('/').length,
     size: 0,
-    type: 'file'
+    type: file.type
+  }
+
+  // @ts-ignore - TS type can't be changed from File to Directory
+  if (file.type === 'directory') {
+    output.type = 'dir'
+  }
+
+  if (file.type === 'file') {
+    output.size = file.unixfs.fileSize()
   }
 
   if (file.type === 'file' || file.type === 'directory') {
-    // @ts-ignore - TS type can't be changed from File to Directory
-    output.type = file.type === 'directory' ? 'dir' : 'file'
-
-    if (file.type === 'file') {
-      output.size = file.unixfs.fileSize()
-
-      if (options.includeContent) {
-        // @ts-expect-error - content is readonly
-        output.content = file.content()
-      }
-    }
-
     output.mode = file.unixfs.mode
 
     if (file.unixfs.mtime !== undefined) {
       output.mtime = file.unixfs.mtime
+    }
+  }
+    
+  if (options.includeContent) {
+    if (file.type === 'file' || file.type === 'raw') {
+      // @ts-expect-error - content is readonly
+      output.content = file.content()
     }
   }
 

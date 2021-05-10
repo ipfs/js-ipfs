@@ -53,16 +53,20 @@ module.exports = {
         throw new Error(`File prefix invalid, would write to files outside of ${output}, pass --force to override`)
       }
 
-      if (file.type === 'file') {
+      if (file.type === 'file' || file.type === 'raw' ) {
         await fs.promises.mkdir(path.join(output, path.dirname(file.path)), { recursive: true })
         await pipe(
           file.content,
           map(chunk => chunk.slice()), // BufferList to Buffer
           toIterable.sink(fs.createWriteStream(fullFilePath))
         )
-      } else {
-        // this is a dir
+
+      } else if (file.type === 'dir') {
         await fs.promises.mkdir(fullFilePath, { recursive: true })
+
+      } else {
+        // file.type === object | identity not supported yet
+        throw new Error(`Unknown node type ${file.type}`)
       }
     }
   }
