@@ -20,11 +20,11 @@ export interface DirectoryEntry extends BaseEntry {
   content?: undefined
 }
 
-export type ImportSource =
-| AwaitIterable<ToEntry>
-| ReadableStream<ToEntry>
+export type ImportCandidateStream =
+| AwaitIterable<ImportCandidate>
+| ReadableStream<ImportCandidate>
 
-export type ToEntry =
+export type ImportCandidate =
   | ToFile
   | ToDirectory
   | ToContent

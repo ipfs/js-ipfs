@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
+import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
 import CID, { CIDVersion } from 'cids'
 import { Mtime } from 'ipfs-unixfs'
 import { Multiaddr } from 'multiaddr'
@@ -8,12 +8,12 @@ export interface API<OptionExtension = {}> {
   /**
    * Import a file or data into IPFS
    */
-  add: (entry: ToEntry, options?: AddOptions & OptionExtension) => Promise<AddResult>
+  add: (entry: ImportCandidate, options?: AddOptions & OptionExtension) => Promise<AddResult>
 
   /**
    * Import multiple files and data into IPFS
    */
-  addAll: (source: ImportSource, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
+  addAll: (source: ImportCandidateStream, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
 
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID
