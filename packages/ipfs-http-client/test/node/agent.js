@@ -102,14 +102,16 @@ describe('agent', function () {
     }
 
     const results = await requests
-
-    expect(results).to.deep.equal([{
+    expect(results).to.have.lengthOf(3)
+    expect(results).to.deep.include({
       res: 0
-    }, {
+    })
+    expect(results).to.deep.include({
       res: 1
-    }, {
+    })
+    expect(results).to.deep.include({
       res: 2
-    }])
+    })
 
     server.close()
   })
