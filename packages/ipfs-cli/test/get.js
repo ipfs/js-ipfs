@@ -46,28 +46,6 @@ describe('get', () => {
     await clean(outPath)
   })
 
-  it('should get file from a raw block', async () => {
-    const cid = new CID('bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e')
-    ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
-      type: 'raw',
-      path: 'bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e',
-      content: function * () {
-        yield buf
-      }
-    }])
-
-    const outPath = path.join(process.cwd(), cid.toString())
-    await clean(outPath)
-
-    const out = await cli(`get ${cid}`, { ipfs })
-    expect(out)
-      .to.equal(`Saving file(s) ${cid}\n`)
-
-    expect(fs.readFileSync(outPath)).to.deep.equal(buf)
-
-    await clean(outPath)
-  })
-
   it('get file with output option', async () => {
     ipfs.get.withArgs(cid.toString(), defaultOptions).returns([{
       type: 'file',
