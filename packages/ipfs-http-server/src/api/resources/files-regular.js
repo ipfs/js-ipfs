@@ -303,7 +303,7 @@ exports.add = {
         }
       },
       /**
-       * @param {import('ipfs-core-types/src/utils').ImportSource} source
+       * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} source
        */
       function (source) {
         return ipfs.addAll(source, {
