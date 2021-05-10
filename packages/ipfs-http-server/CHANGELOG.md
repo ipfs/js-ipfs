@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.3.4...ipfs-http-server@0.4.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* only use public api in http api server ([#3660](https://github.com/ipfs/js-ipfs/issues/3660)) ([61d0981](https://github.com/ipfs/js-ipfs/commit/61d0981c05371c4846dcea3330ac9fb2e810b8fa)), closes [#3639](https://github.com/ipfs/js-ipfs/issues/3639)
+* reject requests when cors origin list is empty ([#3674](https://github.com/ipfs/js-ipfs/issues/3674)) ([0b2d98c](https://github.com/ipfs/js-ipfs/commit/0b2d98c53ba18491d7b99ae9cc0955281146610d))
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### Features
+
+* support identity hash in block.get + dag.get ([#3616](https://github.com/ipfs/js-ipfs/issues/3616)) ([28ad9ad](https://github.com/ipfs/js-ipfs/commit/28ad9ad6e50abb89a366ecd6b5301e848f0e9962))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.3.4](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.3.3...ipfs-http-server@0.3.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-http-server

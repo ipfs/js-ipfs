@@ -1,6 +1,6 @@
 {
   "name": "ipfs-daemon",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -32,12 +32,12 @@
   "dependencies": {
     "debug": "^4.1.1",
     "dlv": "^1.1.3",
-    "ipfs-core": "^0.5.4",
-    "ipfs-core-types": "^0.3.1",
-    "ipfs-grpc-server": "^0.2.4",
-    "ipfs-http-client": "^49.0.4",
-    "ipfs-http-gateway": "^0.3.2",
-    "ipfs-http-server": "^0.3.4",
+    "ipfs-core": "^0.6.0",
+    "ipfs-core-types": "^0.4.0",
+    "ipfs-grpc-server": "^0.3.0",
+    "ipfs-http-client": "^50.0.0",
+    "ipfs-http-gateway": "^0.4.0",
+    "ipfs-http-server": "^0.4.0",
     "ipfs-utils": "^7.0.0",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.31.2",

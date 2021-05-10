@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.55.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.4...ipfs@0.55.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* mark ipld options as partial ([#3669](https://github.com/ipfs/js-ipfs/issues/3669)) ([f98af8e](https://github.com/ipfs/js-ipfs/commit/f98af8ed24784929898bb5d33a64dc442c77074d))
+* only accept cid for ipfs.dag.get ([#3675](https://github.com/ipfs/js-ipfs/issues/3675)) ([bb8f8bc](https://github.com/ipfs/js-ipfs/commit/bb8f8bc501ffc1ee0f064ba61ec0bca4015bf6ad)), closes [#3637](https://github.com/ipfs/js-ipfs/issues/3637)
+
+
+### chore
+
+* update node version in docker build ([#3603](https://github.com/ipfs/js-ipfs/issues/3603)) ([087fd1e](https://github.com/ipfs/js-ipfs/commit/087fd1eb402d1b933730e09c1d0cfb21067e9992))
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* Minimum supported node version is 14
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.54.4](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.3...ipfs@0.54.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs

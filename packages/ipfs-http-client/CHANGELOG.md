@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [50.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@49.0.4...ipfs-http-client@50.0.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* add missing type import ([#3664](https://github.com/ipfs/js-ipfs/issues/3664)) ([64cc1e1](https://github.com/ipfs/js-ipfs/commit/64cc1e1ea7da77f1553ac127e9fef1905f7c78da))
+* fix types ([#3662](https://github.com/ipfs/js-ipfs/issues/3662)) ([0fe8892](https://github.com/ipfs/js-ipfs/commit/0fe8892361180dab53ed3c3b006479b32a792d44))
+* loosen input type for swarm.connect and swarm.disconnect ([#3673](https://github.com/ipfs/js-ipfs/issues/3673)) ([46618c7](https://github.com/ipfs/js-ipfs/commit/46618c795bf5363ba3186645640fb81349231db7)), closes [#3638](https://github.com/ipfs/js-ipfs/issues/3638)
+* mark ipld options as partial ([#3669](https://github.com/ipfs/js-ipfs/issues/3669)) ([f98af8e](https://github.com/ipfs/js-ipfs/commit/f98af8ed24784929898bb5d33a64dc442c77074d))
+
+
+### chore
+
+* update node version in docker build ([#3603](https://github.com/ipfs/js-ipfs/issues/3603)) ([087fd1e](https://github.com/ipfs/js-ipfs/commit/087fd1eb402d1b933730e09c1d0cfb21067e9992))
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* Minimum supported node version is 14
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [49.0.4](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@49.0.3...ipfs-http-client@49.0.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-http-client

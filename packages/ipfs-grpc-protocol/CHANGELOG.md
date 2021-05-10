@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol@0.2.0...ipfs-grpc-protocol@0.3.0) (2021-05-10)
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 # [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol@0.1.0...ipfs-grpc-protocol@0.2.0) (2021-02-01)
 
 
