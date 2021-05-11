@@ -107,7 +107,7 @@ const mapFile = (file, options = {}) => {
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,
-    size: 0,
+    size: file.size,
     type: 'file'
   }
 
