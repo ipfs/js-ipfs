@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.145.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.145.0...interface-ipfs-core@0.145.1) (2021-05-11)
+
+
+### Bug Fixes
+
+* ipfs get with raw blocks ([#3683](https://github.com/ipfs/js-ipfs/issues/3683)) ([28235b0](https://github.com/ipfs/js-ipfs/commit/28235b02558c513e1119dfd3d12b622d67546eca)), closes [#3682](https://github.com/ipfs/js-ipfs/issues/3682)
+
+
+
+
+
 # [0.145.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.144.2...interface-ipfs-core@0.145.0) (2021-05-10)
 
 
