@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "delay": "^5.0.0",
-    "ipfs": "^0.55.0",
+    "ipfs": "^0.55.1",
     "ipfs-pubsub-room": "^2.0.1",
     "libp2p-websockets": "^0.15.6",
     "uint8arrays": "^2.1.3"

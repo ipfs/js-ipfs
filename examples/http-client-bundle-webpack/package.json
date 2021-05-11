@@ -24,7 +24,7 @@
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^8.1.0",
     "execa": "^5.0.0",
-    "ipfs": "^0.55.0",
+    "ipfs": "^0.55.1",
     "ipfsd-ctl": "^8.0.1",
     "react-hot-loader": "^4.12.21",
     "rimraf": "^3.0.2",

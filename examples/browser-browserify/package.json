@@ -18,7 +18,7 @@
     "concat-stream": "^2.0.0",
     "execa": "^5.0.0",
     "http-server": "^0.12.3",
-    "ipfs": "^0.55.0",
+    "ipfs": "^0.55.1",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   }
