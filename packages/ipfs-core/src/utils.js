@@ -127,7 +127,7 @@ const mapFile = (file, options = {}) => {
       output.mtime = file.unixfs.mtime
     }
   }
-    
+
   if (options.includeContent) {
     if (file.type === 'file' || file.type === 'raw') {
       // @ts-expect-error - content is readonly
