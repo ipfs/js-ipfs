@@ -5,6 +5,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { Multiaddr } = require('multiaddr')
 const CID = require('cids')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const retry = require('p-retry')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -71,11 +72,24 @@ module.exports = (common, options) => {
       const ipfsB = (await common.spawn()).api
       await ipfs.swarm.connect(ipfsB.peerId.addresses[0])
 
+      // have to wait for identify to complete before protocols etc are available for remote hosts
+      await retry(async () => {
+        const result = await ipfs.id({
+          peerId: ipfsB.peerId.id
+        })
+
+        expect(result).to.deep.equal(ipfsB.peerId)
+      }, {retries: 5})
+    })
+
+    it('should get our own id when passed as an option', async function () {
+      const res = await ipfs.id()
+
       const result = await ipfs.id({
-        peerId: ipfsB.peerId.id
+        peerId: res.id
       })
 
-      expect(result).to.deep.equal(ipfsB.peerId)
+      expect(result).to.deep.equal(res)
     })
   })
 }
