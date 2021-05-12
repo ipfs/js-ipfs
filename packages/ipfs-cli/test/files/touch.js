@@ -22,7 +22,8 @@ describe('touch', () => {
 
   const path = '/foo'
   const mtime = {
-    secs: 1000
+    secs: 1000,
+    nsecs: undefined
   }
   let ipfs
 

@@ -2,79 +2,43 @@
 
 const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
-const EchoServer = require('aegir/utils/echo-server')
-const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
 const path = require('path')
 
-let preloadNode
-let echoServer = new EchoServer()
-
-// the second signalling server is needed for the inferface test 'should list peers only once even if they have multiple addresses'
-let sigServerA
-let sigServerB
-let ipfsdServer
-
-module.exports = {
-  bundlesize: { maxSize: '523kB' },
-  karma: {
-    files: [{
-      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-      watched: false,
-      served: true,
-      included: false
-    }],
-    browserNoActivityTimeout: 600 * 1000
-  },
-  webpack: {
-    node: {
-      // required by the nofilter module
-      stream: true,
-
-      // required by the core-util-is module
-      Buffer: true
+/** @type {import('aegir').Options["build"]["config"]} */
+const esbuild = {
+  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
+  plugins: [
+    {
+      name: 'node built ins',
+      setup (build) {
+        build.onResolve({ filter: /^stream$/ }, () => {
+          return { path: require.resolve('readable-stream') }
+        })
+      }
     }
-  },
-  hooks: {
-    node: {
-      pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
+  ]
+}
 
-        await preloadNode.start(),
-        await echoServer.start()
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
-      },
-      post: async () => {
-        await preloadNode.stop(),
-        await echoServer.stop()
+/** @type {import('aegir').PartialOptions} */
+module.exports = {
+  test: {
+    browser: {
+      config: {
+        assets: '..',
+        buildConfig: esbuild
       }
     },
-    browser: {
-      pre: async () => {
-        preloadNode = MockPreloadNode.createNode()
-
-        await preloadNode.start()
-        await echoServer.start()
-        sigServerA = await webRTCStarSigServer.start({
-          host: '127.0.0.1',
-          port: 14579,
-          metrics: false
-        })
-        sigServerB = await webRTCStarSigServer.start({
-          host: '127.0.0.1',
-          port: 14578,
-          metrics: false
-        })
-        ipfsdServer = await createServer({
+    async before (options) {
+      const preloadNode = MockPreloadNode.createNode()
+      await preloadNode.start()
+      if (options.runner !== 'node') {
+        const ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: 57483
         }, {
           type: 'js',
           ipfsModule: require(__dirname),
-          ipfsHttpModule: require('../ipfs-http-client'),
+          ipfsHttpModule: require(path.join(__dirname, '..', 'ipfs-http-client')),
           ipfsBin: path.resolve(path.join(__dirname, '..', 'ipfs', 'src', 'cli.js')),
           ipfsOptions: {
             libp2p: {
@@ -88,20 +52,25 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           }
         }).start()
-
         return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
+          ipfsdServer,
+          preloadNode
         }
-      },
-      post: async () => {
-        await ipfsdServer.stop()
-        await preloadNode.stop()
-        await echoServer.stop()
-        await sigServerA.stop()
-        await sigServerB.stop()
+      }
+
+      return {
+        preloadNode
+      }
+    },
+    async after (options, before) {
+      await before.preloadNode.stop()
+      if (options.runner !== 'node') {
+        await before.ipfsdServer.stop()
       }
     }
+  },
+  build: {
+    bundlesizeMax: '549KB',
+    config: esbuild
   }
 }

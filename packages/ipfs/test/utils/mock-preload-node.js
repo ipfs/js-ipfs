@@ -3,6 +3,7 @@
 
 const http = require('http')
 const { URL } = require('iso-url')
+const getPort = require('aegir/utils/get-port')
 
 const defaultPort = 1138
 const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
@@ -44,7 +45,17 @@ module.exports.createNode = () => {
     res.end()
   })
 
-  server.start = (opts = {}) => new Promise(resolve => server.listen({ port: defaultPort, ...opts }, resolve))
+  server.start = async (opts = {}) => {
+    const port = await getPort(defaultPort)
+    return new Promise((resolve, reject) => {
+      server.listen(port, '127.0.0.1', err => {
+        if (err) {
+          return reject(err)
+        }
+        resolve()
+      })
+    })
+  }
   server.stop = () => new Promise(resolve => server.close(resolve))
 
   return server

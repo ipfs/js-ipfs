@@ -46,31 +46,31 @@ describe('utils', () => {
     after(() => cleanup())
 
     it('handles base58 hash format', async () => {
-      const hash = await utils.resolvePath(ipfs.dag, rootHash)
+      const hash = await utils.resolvePath(ipfs.ipld, rootHash)
 
       expect(hash).to.have.property('bytes').that.deep.equals(rootMultihash)
     })
 
     it('handles multihash format', async () => {
-      const hash = await utils.resolvePath(ipfs.dag, aboutMultihash)
+      const hash = await utils.resolvePath(ipfs.ipld, aboutMultihash)
 
       expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      const hash = await utils.resolvePath(ipfs.dag, aboutPath)
+      const hash = await utils.resolvePath(ipfs.ipld, aboutPath)
 
       expect(hash).to.have.property('bytes').that.deep.equals(aboutMultihash)
     })
 
     it('should error on invalid hashes', () => {
-      return expect(utils.resolvePath(ipfs.dag, '/ipfs/asdlkjahsdfkjahsdfd'))
+      return expect(utils.resolvePath(ipfs.ipld, '/ipfs/asdlkjahsdfkjahsdfd'))
         .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
-      return expect(utils.resolvePath(ipfs.dag, `${aboutPath}/fusion`))
+      return expect(utils.resolvePath(ipfs.ipld, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
         .and.have.property('message')
         .that.includes('no link named "fusion" under QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q')

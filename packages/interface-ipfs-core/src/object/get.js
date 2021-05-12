@@ -5,11 +5,9 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const UnixFs = require('ipfs-unixfs')
-const randomBytes = require('iso-random-stream/src/random')
+const { UnixFS } = require('ipfs-unixfs')
+const { randomBytes } = require('iso-random-stream')
 const { asDAGLink } = require('./utils')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -31,12 +29,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when getting an object', () => {
-      return testTimeout(() => ipfs.object.get(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1
-      }))
-    })
 
     it('should get object by multihash', async () => {
       const obj = {
@@ -147,7 +139,7 @@ module.exports = (common, options) => {
       })
 
       const node = await ipfs.object.get(result.cid)
-      const meta = UnixFs.unmarshal(node.Data)
+      const meta = UnixFS.unmarshal(node.Data)
 
       expect(meta.fileSize()).to.equal(data.length)
     })

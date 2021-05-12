@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf public/bundle.js",
+    "clean": "rimraf public/bundle.js",
     "bundle": "browserify public/app.js > public/bundle.js",
     "start": "http-server -c-1 -p 12345 public",
     "dev": "npm run bundle && npm run start",
@@ -11,18 +11,17 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "execa": "^4.0.3",
+    "browserify": "^17.0.0",
+    "execa": "^5.0.0",
     "http-server": "^0.12.3",
-    "ipfs-http-client": "^48.1.0",
-    "uint8arrays": "^1.1.0"
+    "ipfs-http-client": "^50.0.0",
+    "uint8arrays": "^2.1.3"
   },
   "dependencies": {
-    "ipfs": "^0.52.0",
+    "ipfs": "^0.55.1",
     "it-all": "^1.0.4",
-    "test-ipfs-example": "^2.0.3"
-  },
-  "browser": {
-    "ipfs": "ipfs/dist/index.min.js"
+    "libp2p-websockets": "^0.15.6",
+    "rimraf": "^3.0.2",
+    "test-ipfs-example": "^3.0.0"
   }
 }

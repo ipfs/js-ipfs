@@ -5,27 +5,35 @@ const IPFSRepo = require('ipfs-repo')
 const path = require('path')
 
 /**
- * @param {Object} [options]
+ * @param {import('../types').Print} print
+ * @param {object} options
  * @param {string} [options.path]
- * @param {boolean} [options.silent]
- * @param {boolean} [options.autoMigrate]
+ * @param {boolean} options.autoMigrate
  */
-module.exports = (options = {}) => {
+module.exports = (print, options = { autoMigrate: true }) => {
   const repoPath = options.path || path.join(os.homedir(), '.jsipfs')
-  let lastMigration = null
+  /**
+   * @type {number}
+   */
+  let lastMigration
 
+  /**
+   * @param {number} version
+   * @param {string} percentComplete
+   * @param {string} message
+   */
   const onMigrationProgress = (version, percentComplete, message) => {
     if (version !== lastMigration) {
       lastMigration = version
 
-      console.info(`Migrating repo from v${version - 1} to v${version}`) // eslint-disable-line no-console
+      print(`Migrating repo from v${version - 1} to v${version}`)
     }
 
-    console.info(`${percentComplete.toString().padStart(6, ' ')}% ${message}`) // eslint-disable-line no-console
+    print(`${percentComplete.toString().padStart(6, ' ')}% ${message}`)
   }
 
   return new IPFSRepo(repoPath, {
     autoMigrate: options.autoMigrate,
-    onMigrationProgress: options.silent ? null : onMigrationProgress
+    onMigrationProgress: onMigrationProgress
   })
 }

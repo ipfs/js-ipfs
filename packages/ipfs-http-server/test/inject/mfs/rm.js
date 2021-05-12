@@ -37,7 +37,7 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.calledWith(path, defaultOptions)).to.be.true()
+    expect(ipfs.files.rm.calledWith([path], defaultOptions)).to.be.true()
   })
 
   it('should remove a path recursively', async () => {
@@ -47,7 +47,7 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.calledWith(path, {
+    expect(ipfs.files.rm.calledWith([path], {
       ...defaultOptions,
       recursive: true
     })).to.be.true()
@@ -60,7 +60,7 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.calledWith(path, {
+    expect(ipfs.files.rm.calledWith([path], {
       ...defaultOptions,
       shardSplitThreshold: 10
     })).to.be.true()
@@ -73,7 +73,7 @@ describe('/files/rm', () => {
     }, { ipfs })
 
     expect(ipfs.files.rm.callCount).to.equal(1)
-    expect(ipfs.files.rm.calledWith(path, {
+    expect(ipfs.files.rm.calledWith([path], {
       ...defaultOptions,
       timeout: 1000
     })).to.be.true()

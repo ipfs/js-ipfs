@@ -38,8 +38,8 @@ describe('/dag', () => {
         put: sinon.stub(),
         resolve: sinon.stub()
       },
-      ipld: {
-        getFormat: sinon.stub()
+      block: {
+        put: sinon.stub()
       }
     }
   })
@@ -295,16 +295,14 @@ describe('/dag', () => {
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
     })
 
-    it('should attempt to load an unsupported format', async () => {
+    it('adds a node with an esoteric format', async () => {
+      const cid = new CID('baf4beiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
       const data = Buffer.from('some data')
       const codec = 'git-raw'
-      const format = {
-        util: {
-          deserialize: (buf) => buf
-        }
-      }
-      ipfs.ipld.getFormat.withArgs(codec).returns(format)
 
+      ipfs.dag.get.withArgs(cid).returns({
+        value: data
+      })
       ipfs.dag.put.withArgs(data, {
         ...defaultOptions,
         format: codec
@@ -316,7 +314,7 @@ describe('/dag', () => {
         ...await toHeadersAndPayload(data)
       }, { ipfs })
 
-      expect(ipfs.ipld.getFormat.calledWith(codec)).to.be.true()
+      expect(ipfs.block.put.called).to.be.true()
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
     })

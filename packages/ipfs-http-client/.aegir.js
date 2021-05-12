@@ -1,63 +1,35 @@
 'use strict'
 
 const { createServer } = require('ipfsd-ctl')
-const EchoServer = require('aegir/utils/echo-server')
+const getPort = require('aegir/utils/get-port')
 
-
-const server = createServer({
-  host: '127.0.0.1',
-  port: 48372
-}, {
-  type: 'go',
-  ipfsHttpModule: require('./'),
-  ipfsBin: require('go-ipfs').path()
-})
-
-let echoServer = new EchoServer()
-
+/** @type {import('aegir').PartialOptions} */
 module.exports = {
-  bundlesize: { maxSize: '83kB' },
-  karma: {
-    files: [{
-      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-      watched: false,
-      served: true,
-      included: false
-    }],
-    browserNoActivityTimeout: 210 * 1000,
-    singleRun: true
+  build: {
+    bundlesizeMax: '89KB'
   },
-  hooks: {
-    node: {
-      pre: async () => {
-        await echoServer.start()
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
-        }
-      },
-      post: () => echoServer.stop()
-    },
-    browser: {
-      pre: async () => {
+  test: {
+    async before (options) {
+      const port = await getPort()
+      const server = createServer({
+        host: '127.0.0.1',
+        port: port
+      }, {
+        type: 'go',
+        ipfsHttpModule: require('./'),
+        ipfsBin: require('go-ipfs').path()
+      })
 
-        await  Promise.all([
-          server.start(),
-          echoServer.start()
-        ])
-        return {
-          env: {
-            ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
-          }
+      await server.start()
+      return {
+        server,
+        env: {
+          IPFSD_SERVER: `http://${server.host}:${server.port}`
         }
-      },
-      post: () => {
-        return Promise.all([
-          server.stop(),
-          echoServer.stop()
-        ])
       }
+    },
+    async after (options, before) {
+      await before.server.stop()
     }
   }
 }

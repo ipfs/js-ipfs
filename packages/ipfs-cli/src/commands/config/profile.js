@@ -5,6 +5,9 @@ module.exports = {
 
   description: 'Interact with config profiles.',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs
       .commandDir('profile')

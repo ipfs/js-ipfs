@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'read <path>',
@@ -24,6 +24,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {number} argv.offset
+   * @param {number} argv.length
+   * @param {number} argv.timeout
+   */
   async handler ({
     ctx: { ipfs, print },
     path,

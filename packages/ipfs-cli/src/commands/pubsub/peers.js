@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'peers <topic>',
@@ -14,6 +14,12 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.topic
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, topic, timeout }) {
     const peers = await ipfs.pubsub.peers(topic, {
       timeout

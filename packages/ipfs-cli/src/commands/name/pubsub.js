@@ -9,8 +9,10 @@ module.exports = {
 
   description: 'IPNS pubsub management.',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs.commandDir('pubsub')
   }
-
 }

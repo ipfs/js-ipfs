@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'version',
@@ -14,10 +14,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const version = await ipfs.repo.version({
       timeout
     })
-    print(version)
+    print(`${version}`)
   }
 }

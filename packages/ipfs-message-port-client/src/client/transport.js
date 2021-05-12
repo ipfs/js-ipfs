@@ -178,7 +178,7 @@ module.exports = class MessageTransport {
         input: query.toJSON()
       },
       // @ts-ignore - TS seems to want second arg to postMessage to not be undefined
-      query.transfer()
+      [...new Set(query.transfer() || [])]
     )
   }
 

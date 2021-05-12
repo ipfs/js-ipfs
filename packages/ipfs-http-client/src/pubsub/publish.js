@@ -3,11 +3,19 @@
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
+
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
+ */
 
 module.exports = configure(api => {
-  return async (topic, data, options = {}) => {
+  /**
+   * @type {PubsubAPI["publish"]}
+   */
+  async function publish (topic, data, options = {}) {
     const searchParams = toUrlSearchParams({
       arg: topic,
       ...options
@@ -15,8 +23,9 @@ module.exports = configure(api => {
 
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('pubsub/pub', {
       timeout: options.timeout,
       signal,
@@ -28,4 +37,5 @@ module.exports = configure(api => {
 
     await res.text()
   }
+  return publish
 })

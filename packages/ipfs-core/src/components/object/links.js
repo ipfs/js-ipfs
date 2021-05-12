@@ -1,10 +1,16 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const DAGLink = dagPB.DAGLink
+const {
+  DAGLink
+} = require('ipld-dag-pb')
 const CID = require('cids')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {any} node
+ * @param {DAGLink[]} [links]
+ * @returns {DAGLink[]}
+ */
 function findLinks (node, links = []) {
   for (const key in node) {
     const val = node[key]
@@ -35,17 +41,24 @@ function findLinks (node, links = []) {
   return links
 }
 
-module.exports = ({ dag }) => {
-  return withTimeoutOption(async function links (multihash, options = {}) {
+/**
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ */
+module.exports = ({ ipld }) => {
+  /**
+   * @type {import('ipfs-core-types/src/object').API["links"]}
+   */
+  async function links (multihash, options = {}) {
     const cid = new CID(multihash)
-    const result = await dag.get(cid, options)
+    const result = await ipld.get(cid, options)
 
     if (cid.codec === 'raw') {
       return []
     }
 
     if (cid.codec === 'dag-pb') {
-      return result.value.Links
+      return result.Links
     }
 
     if (cid.codec === 'dag-cbor') {
@@ -53,5 +66,7 @@ module.exports = ({ dag }) => {
     }
 
     throw new Error(`Cannot resolve links from codec ${cid.codec}`)
-  })
+  }
+
+  return withTimeoutOption(links)
 }

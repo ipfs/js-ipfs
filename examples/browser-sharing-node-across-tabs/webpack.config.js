@@ -1,12 +1,13 @@
 'use strict'
 
-var path = require('path')
-var webpack = require('webpack')
-const WorkerPlugin = require('worker-plugin')
+const path = require('path')
+const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: 'eval',
+  mode: 'development',
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
@@ -18,14 +19,22 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
-    new WorkerPlugin({
-      sharedWorker: true,
-      globalObject: 'self'
-    }),
     new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }])
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'index.html'
+      }]
+    }),
+    // fixes Module not found: Error: Can't resolve 'stream' in '.../node_modules/nofilter/lib'
+    new NodePolyfillPlugin(),
+    // Note: stream-browserify has assumption about `Buffer` global in its
+    // dependencies causing runtime errors. This is a workaround to provide
+    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
+    // is fixed.
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser'
+    })
   ],
   module: {
     rules: [
@@ -35,15 +44,19 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }
+              ]
+            ]
           }
         }
       }
     ]
-  },
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
   }
 }

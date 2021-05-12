@@ -1,6 +1,7 @@
 'use strict'
 
 const last = require('it-last')
+const CID = require('cids')
 
 /**
  * @param {Object} config
@@ -8,19 +9,23 @@ const last = require('it-last')
  */
 module.exports = ({ addAll }) =>
   /**
-   * @param {CID|string} path
-   * @param {AddOptions & AbortOptions} [options]
-   * @returns {Promise<CID>}
+   * @type {import('ipfs-core-types/src/pin').API["add"]}
    */
-  async (path, options = {}) =>
-    /** @type {CID} - Need to loosen check here because it could be void */
-    (await last(addAll({ path, ...options }, options)))
+  (path, options = {}) => {
+    let iter
 
-/**
- * @typedef {Object} AddOptions
- * @property {boolean} [lock]
- * @property {boolean} [recursive] - Recursively pin all links contained by the object
- *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- */
+    if (CID.isCID(path)) {
+      iter = addAll([{
+        cid: path,
+        ...options
+      }], options)
+    } else {
+      iter = addAll([{
+        path: path.toString(),
+        ...options
+      }], options)
+    }
+
+    // @ts-ignore return value of last can be undefined
+    return last(iter)
+  }

@@ -1,44 +1,40 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-exporter')
+const { exporter, recursive } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
+const { normalizeCidPath, mapFile } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const CID = require('cids')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('ipld')} ipld
+ * @property {import('../types').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
   /**
-   * Lists a directory from IPFS that is addressed by a valid IPFS Path.
-   *
-   * @param {string|CID} ipfsPath - An IPFS path or CID to list
-   * @param {Options} options
-   * @returns {AsyncIterable<LSEntry>}
+   * @type {import('ipfs-core-types/src/root').API["ls"]}
    */
   async function * ls (ipfsPath, options = {}) {
     const path = normalizeCidPath(ipfsPath)
-    const recursive = options.recursive
     const pathComponents = path.split('/')
 
     if (options.preload !== false) {
-      preload(pathComponents[0])
+      preload(new CID(pathComponents[0]))
     }
 
     const file = await exporter(ipfsPath, ipld, options)
 
-    if (!file.unixfs) {
-      throw errCode(new Error('dag node was not a UnixFS node'), 'ERR_NOT_UNIXFS')
+    if (file.type === 'file') {
+      yield mapFile(file, options)
+      return
     }
 
-    if (file.unixfs.type === 'file') {
-      return mapFile(file, options)
-    }
-
-    if (file.unixfs.type.includes('dir')) {
-      if (recursive) {
-        for await (const child of exporter.recursive(file.cid, ipld, options)) {
+    if (file.type === 'directory') {
+      if (options.recursive) {
+        for await (const child of recursive(file.cid, ipld, options)) {
           if (file.cid.toBaseEncodedString() === child.cid.toBaseEncodedString()) {
             continue
           }
@@ -49,33 +45,18 @@ module.exports = function ({ ipld, preload }) {
         return
       }
 
-      for await (let child of file.content()) {
-        child = mapFile(child, options)
-        child.depth--
+      for await (const child of file.content()) {
+        const entry = mapFile(child, options)
+        entry.depth--
 
-        yield child
+        yield entry
       }
 
       return
     }
 
-    throw errCode(new Error(`Unknown UnixFS type ${file.unixfs.type}`), 'ERR_UNKNOWN_UNIXFS_TYPE')
+    throw errCode(new Error(`Unknown UnixFS type ${file.type}`), 'ERR_UNKNOWN_UNIXFS_TYPE')
   }
 
   return withTimeoutOption(ls)
 }
-
-/**
- * @typedef {import('../utils').IPFSEntry} LSEntry
- *
- * @typedef {LSOptions & AbortOptions} Options
- *
- * @typedef {Object} LSOptions
- * @property {boolean} [recursive]
- * @property {boolean} [preload]
- * @property {boolean} [includeContent]
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('.').CID} CID
- */

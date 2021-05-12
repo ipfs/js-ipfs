@@ -3,6 +3,112 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.2...ipfs-core-utils@0.8.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* mark ipld options as partial ([#3669](https://github.com/ipfs/js-ipfs/issues/3669)) ([f98af8e](https://github.com/ipfs/js-ipfs/commit/f98af8ed24784929898bb5d33a64dc442c77074d))
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
+## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.1...ipfs-core-utils@0.7.2) (2021-03-09)
+
+
+### Bug Fixes
+
+* update to new aegir ([#3528](https://github.com/ipfs/js-ipfs/issues/3528)) ([49f7880](https://github.com/ipfs/js-ipfs/commit/49f78807d7e26483bd926b45cc7e0f797d77e41b))
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.0...ipfs-core-utils@0.7.1) (2021-02-08)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.6.1...ipfs-core-utils@0.7.0) (2021-02-01)
+
+
+### chore
+
+* update deps ([#3514](https://github.com/ipfs/js-ipfs/issues/3514)) ([061d77c](https://github.com/ipfs/js-ipfs/commit/061d77cc03f40af5a3bc3590481e1e5836e7f0d8))
+
+
+### BREAKING CHANGES
+
+* ipfs-repo upgrade requires repo migration to v10
+
+
+
+
+
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.6.0...ipfs-core-utils@0.6.1) (2021-01-22)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.4...ipfs-core-utils@0.6.0) (2021-01-15)
+
+
+### Features
+
+* allow passing a http.Agent to the grpc client ([#3477](https://github.com/ipfs/js-ipfs/issues/3477)) ([c5f0bc5](https://github.com/ipfs/js-ipfs/commit/c5f0bc5eeee15369b7d02901035b04184a8608d2)), closes [#3474](https://github.com/ipfs/js-ipfs/issues/3474)
+
+
+
+
+
+## [0.5.4](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.3...ipfs-core-utils@0.5.4) (2020-12-16)
+
+
+### Bug Fixes
+
+* regressions introduced by new releases of CID & multicodec ([#3442](https://github.com/ipfs/js-ipfs/issues/3442)) ([b5152d8](https://github.com/ipfs/js-ipfs/commit/b5152d8cc93ecc8d39fc353ea66d7eaf1661e3c0)), closes [/github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb#diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26](https://github.com//github.com/multiformats/js-cid/commit/0e11f035c9230e7f6d79c159ace9b80de88cb5eb/issues/diff-25a6634263c1b1f6fc4697a04e2b9904ea4b042a89af59dc93ec1f5d44848a26)
+* types for withTimeoutOptions ([#3422](https://github.com/ipfs/js-ipfs/issues/3422)) ([af0b7f3](https://github.com/ipfs/js-ipfs/commit/af0b7f34587bd432860a31d40eabc6aa70aef619)), closes [/github.com/ipfs/js-ipfs/pull/3407/files#diff-722621abc3ed4edc6ab202fdf684f1607c261394b95da6b3ec79748711056f20](https://github.com//github.com/ipfs/js-ipfs/pull/3407/files/issues/diff-722621abc3ed4edc6ab202fdf684f1607c261394b95da6b3ec79748711056f20)
+
+
+
+
+
+## [0.5.3](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.2...ipfs-core-utils@0.5.3) (2020-11-25)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+## [0.5.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.1...ipfs-core-utils@0.5.2) (2020-11-16)
+
+
+### Bug Fixes
+
+* report ipfs.add progress over http ([#3310](https://github.com/ipfs/js-ipfs/issues/3310)) ([39cad4b](https://github.com/ipfs/js-ipfs/commit/39cad4b76b950ea6a76477fd01f8631b8bd9aa1e))
+
+
+
+
+
 ## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.5.0...ipfs-core-utils@0.5.1) (2020-11-09)
 
 

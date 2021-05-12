@@ -3,10 +3,19 @@
 const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
+// @ts-ignore no types
 const toMultiaddr = require('uri-to-multiaddr')
 const LOG = 'ipfs:http-gateway'
 const LOG_ERROR = 'ipfs:http-gateway:error'
 
+/**
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
+ * @typedef {import('./types').Server} Server
+ */
+
+/**
+ * @param {import('@hapi/hapi').ServerInfo} info
+ */
 function hapiInfoToMultiaddr (info) {
   let hostname = info.host
   let uri = info.uri
@@ -20,15 +29,21 @@ function hapiInfoToMultiaddr (info) {
   return toMultiaddr(uri)
 }
 
-async function serverCreator (serverAddrs, createServer, ipfs, cors) {
+/**
+ * @param {string | string[]} serverAddrs
+ * @param {(host: string, port: string, ipfs: IPFS) => Promise<Server>} createServer
+ * @param {IPFS} ipfs
+ */
+async function serverCreator (serverAddrs, createServer, ipfs) {
   serverAddrs = serverAddrs || []
   // just in case the address is just string
   serverAddrs = Array.isArray(serverAddrs) ? serverAddrs : [serverAddrs]
 
+  /** @type {Server[]} */
   const servers = []
   for (const address of serverAddrs) {
     const addrParts = address.split('/')
-    const server = await createServer(addrParts[2], addrParts[4], ipfs, cors)
+    const server = await createServer(addrParts[2], addrParts[4], ipfs)
     await server.start()
     server.info.ma = hapiInfoToMultiaddr(server.info)
     servers.push(server)
@@ -37,12 +52,16 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
 }
 
 class HttpGateway {
-  constructor (ipfs, options = {}) {
+  /**
+   * @param {IPFS} ipfs
+   */
+  constructor (ipfs) {
     this._ipfs = ipfs
-    this._options = {}
     this._log = Object.assign(debug(LOG), {
       error: debug(LOG_ERROR)
     })
+    /** @type {Server[]} */
+    this._gatewayServers = []
   }
 
   async start () {
@@ -50,9 +69,10 @@ class HttpGateway {
 
     const ipfs = this._ipfs
 
+    // @ts-ignore TODO: move config typedefs to repo
     const config = await ipfs.config.getAll()
-    config.Addresses = config.Addresses || {}
-    const gatewayAddrs = config.Addresses.Gateway
+    const addresses = config.Addresses || { Swarm: [], Gateway: [] }
+    const gatewayAddrs = addresses?.Gateway || []
 
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
@@ -60,6 +80,11 @@ class HttpGateway {
     return this
   }
 
+  /**
+   * @param {string} host
+   * @param {string} port
+   * @param {IPFS} ipfs
+   */
   async _createGatewayServer (host, port, ipfs) {
     const server = Hapi.server({
       host,
@@ -89,12 +114,14 @@ class HttpGateway {
 
   async stop () {
     this._log('stopping')
+    /**
+     * @param {Server[]} servers
+     */
     const stopServers = servers => Promise.all((servers || []).map(s => s.stop()))
     await Promise.all([
       stopServers(this._gatewayServers)
     ])
     this._log('stopped')
-    return this
   }
 }
 

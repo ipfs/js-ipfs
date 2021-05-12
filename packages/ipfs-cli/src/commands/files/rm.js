@@ -3,7 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'rm <path>',
@@ -24,6 +24,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {boolean} argv.recursive
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     path,

@@ -2,19 +2,25 @@
 'use strict'
 
 const { promisify } = require('util')
+// @ts-ignore no types
 const getFolderSize = promisify(require('get-folder-size'))
+// @ts-ignore no types
 const byteman = require('byteman')
 const mh = require('multihashing-async').multihash
 const multibase = require('multibase')
 const {
   createProgressBar,
   coerceMtime,
-  coerceMtimeNsecs
+  coerceMtimeNsecs,
+  stripControlCharacters
 } = require('../utils')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
+/**
+ * @param {string[]} paths
+ */
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
   return sizes.reduce((total, size) => total + size, 0)
@@ -79,8 +85,7 @@ module.exports = {
     },
     'raw-leaves': {
       type: 'boolean',
-      describe: 'Use raw blocks for leaf nodes. (experimental)',
-      default: false
+      describe: 'Use raw blocks for leaf nodes. (experimental)'
     },
     'cid-version': {
       type: 'integer',
@@ -161,6 +166,37 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {boolean} argv.trickle
+   * @param {number} argv.shardSplitThreshold
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {boolean} argv.rawLeaves
+   * @param {boolean} argv.onlyHash
+   * @param {import('multihashes').HashName} argv.hash
+   * @param {boolean} argv.wrapWithDirectory
+   * @param {boolean} argv.pin
+   * @param {string} argv.chunker
+   * @param {boolean} argv.preload
+   * @param {number} argv.fileImportConcurrency
+   * @param {number} argv.blockWriteConcurrency
+   * @param {number} argv.timeout
+   * @param {boolean} argv.quieter
+   * @param {boolean} argv.quiet
+   * @param {boolean} argv.silent
+   * @param {boolean} argv.progress
+   * @param {string[]} argv.file
+   * @param {number} argv.mtime
+   * @param {number} argv.mtimeNsecs
+   * @param {boolean} argv.recursive
+   * @param {boolean} argv.hidden
+   * @param {boolean} argv.preserveMode
+   * @param {boolean} argv.preserveMtime
+   * @param {number} argv.mode
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {boolean} argv.enableShardingExperiment
+   */
   async handler ({
     ctx: { ipfs, print, isDaemon, getStdin },
     trickle,
@@ -188,7 +224,8 @@ module.exports = {
     preserveMode,
     preserveMtime,
     mode,
-    cidBase
+    cidBase,
+    enableShardingExperiment
   }) {
     const options = {
       trickle,
@@ -203,14 +240,18 @@ module.exports = {
       preload,
       fileImportConcurrency,
       blockWriteConcurrency,
-      progress: () => {},
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
+      progress: (bytes, name) => {},
       timeout
     }
 
-    if (options.enableShardingExperiment && isDaemon) {
+    if (enableShardingExperiment && isDaemon) {
       throw new Error('Error: Enabling the sharding experiment should be done on the daemon')
     }
 
+    /** @type {{update: Function, interrupt: Function, terminate: Function} | undefined} */
     let bar
     let log = print
 
@@ -226,19 +267,26 @@ module.exports = {
         // bar.interrupt uses clearLine and cursorTo methods that are only on TTYs
         log = bar.interrupt.bind(bar)
       }
+
+      /**
+       * @param {number} byteLength
+       */
       options.progress = byteLength => {
-        bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
+        if (bar) {
+          bar.update(byteLength / totalBytes, { progress: byteman(byteLength, 2, 'MB') })
+        }
       }
     }
 
-    if (mtime != null) {
-      mtime = {
-        secs: mtime
-      }
+    if (options.rawLeaves == null) {
+      options.rawLeaves = cidVersion > 0
+    }
 
-      if (mtimeNsecs != null) {
-        mtime.nsecs = mtimeNsecs
-      }
+    /** @type {{ secs: number, nsecs?: number } | undefined} */
+    let date
+
+    if (mtime) {
+      date = { secs: mtime, nsecs: mtimeNsecs }
     }
 
     const source = file
@@ -248,39 +296,40 @@ module.exports = {
         preserveMode,
         preserveMtime,
         mode,
-        mtime
+        mtime: date
       })
-      : {
-        content: getStdin(),
-        mode,
-        mtime
-      } // Pipe to ipfs.add tagging with mode and mtime
+      : [{
+          content: getStdin(),
+          mode,
+          mtime: date
+        }] // Pipe to ipfs.add tagging with mode and mtime
 
     let finalCid
 
     try {
-      for await (const added of ipfs.addAll(source, options)) {
+      for await (const { cid, path } of ipfs.addAll(source, options)) {
         if (silent) {
           continue
         }
 
         if (quieter) {
-          finalCid = added.cid
+          finalCid = cid
           continue
         }
 
-        const cid = cidToString(added.cid, { base: cidBase })
-        let message = cid
+        const pathStr = stripControlCharacters(path)
+        const cidStr = cidToString(cid, { base: cidBase })
+        let message = cidStr
 
         if (!quiet) {
           // print the hash twice if we are piping from stdin
-          message = `added ${cid} ${file ? added.path || '' : cid}`.trim()
+          message = `added ${cidStr} ${file ? pathStr || '' : cidStr}`.trim()
         }
 
         log(message)
       }
     } catch (err) {
-      // Tweak the error message and add more relevant infor for the CLI
+      // Tweak the error message and add more relevant info for the CLI
       if (err.code === 'ERR_DIR_NON_RECURSIVE') {
         err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`
       }
@@ -292,7 +341,7 @@ module.exports = {
       }
     }
 
-    if (quieter) {
+    if (quieter && finalCid) {
       log(cidToString(finalCid, { base: cidBase }))
     }
   }

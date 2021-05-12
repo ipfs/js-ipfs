@@ -3,6 +3,7 @@
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
@@ -15,7 +16,7 @@ module.exports = {
       },
       query: Joi.object().keys({
         count: Joi.number().integer().greater(0).default(10),
-        peerId: Joi.peerId().required(),
+        peerId: Joi.cid().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -28,6 +29,10 @@ module.exports = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {

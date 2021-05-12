@@ -1,5 +1,5 @@
 {
-  "name": "example-custom-ipld-formats",
+  "name": "skipped-example-custom-ipld-formats",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,16 +7,16 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "execa": "^4.0.3",
-    "test-ipfs-example": "^2.0.3"
+    "execa": "^5.0.0",
+    "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "cids": "^1.0.0",
-    "ipfs-cli": "^0.1.0",
-    "ipfs-core": "^0.2.0",
-    "ipfs-http-client": "^48.1.0",
-    "multicodec": "^2.0.1",
-    "multihashing-async": "^2.0.1",
-    "uint8arrays": "^1.1.0"
+    "cids": "^1.1.6",
+    "ipfs-daemon": "^0.6.1",
+    "ipfs-core": "^0.6.1",
+    "ipfs-http-client": "^50.0.0",
+    "multicodec": "^3.0.1",
+    "multihashing-async": "^2.1.2",
+    "uint8arrays": "^2.1.3"
   }
 }

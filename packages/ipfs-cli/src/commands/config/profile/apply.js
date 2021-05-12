@@ -1,7 +1,7 @@
 'use strict'
 
 const JSONDiff = require('jsondiffpatch')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'apply <profile>',
@@ -20,6 +20,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../../types').Context} argv.ctx
+   * @param {string} argv.profile
+   * @param {boolean} argv.dryRun
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, profile, dryRun, timeout }) {
     const { print, ipfs, isDaemon } = ctx
     const diff = await ipfs.config.profiles.apply(profile, {

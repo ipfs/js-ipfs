@@ -49,6 +49,18 @@ describe('pubsub', () => {
       const out = await cli('pubsub ls --timeout=1s', { ipfs })
       expect(out).to.equal(`${subName}\n`)
     })
+
+    it('should strip control characters from sub names', async () => {
+      const subName = 'sub-name'
+      const junkSubName = 'sub-nam\b\te\n'
+
+      ipfs.pubsub.ls.withArgs(defaultOptions).resolves([
+        junkSubName
+      ])
+
+      const out = await cli('pubsub ls', { ipfs })
+      expect(out).to.equal(`${subName}\n`)
+    })
   })
 
   describe('peers', () => {

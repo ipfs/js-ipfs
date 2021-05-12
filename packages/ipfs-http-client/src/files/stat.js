@@ -5,12 +5,17 @@ const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/stat')>}
+   * @type {FilesAPI["stat"]}
    */
   async function stat (path, options = {}) {
-    if (typeof path !== 'string') {
+    if (path && !CID.isCID(path) && typeof path !== 'string') {
       options = path || {}
       path = '/'
     }
@@ -29,10 +34,12 @@ module.exports = configure(api => {
     data.WithLocality = data.WithLocality || false
     return toCoreInterface(toCamelWithMetadata(data))
   }
-
   return stat
 })
 
+/**
+ * @param {*} entry
+ */
 function toCoreInterface (entry) {
   entry.cid = new CID(entry.hash)
   delete entry.hash

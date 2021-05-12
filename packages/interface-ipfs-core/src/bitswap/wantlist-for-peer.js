@@ -4,7 +4,7 @@
 const { getDescribe, getIt } = require('../utils/mocha')
 const { waitForWantlistKey } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
-const testTimeout = require('../utils/test-timeout')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -12,6 +12,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -23,7 +24,7 @@ module.exports = (common, options) => {
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await common.spawn()).api
+      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
@@ -33,12 +34,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when getting bitswap wantlist by peer', () => {
-      return testTimeout(() => ipfsA.bitswap.wantlistForPeer(ipfsB.peerId.id, {
-        timeout: 1
-      }))
-    })
 
     it('should get the wantlist by peer ID for a different node', function () {
       return waitForWantlistKey(ipfsA, key, {

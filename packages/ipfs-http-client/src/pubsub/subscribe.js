@@ -7,13 +7,25 @@ const SubscriptionTracker = require('./subscription-tracker')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pubsub').Message} Message
+ * @typedef {(err: Error, fatal: boolean, msg?: Message) => void} ErrorHandlerFn
+ * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
+ */
+
 module.exports = configure((api, options) => {
   const subsTracker = SubscriptionTracker.singleton()
 
-  return async (topic, handler, options = {}) => { // eslint-disable-line require-await
+  /**
+   * @type {PubsubAPI["subscribe"]}
+   */
+  async function subscribe (topic, handler, options = {}) { // eslint-disable-line require-await
     options.signal = subsTracker.subscribe(topic, handler, options.signal)
 
+    /** @type {(value?: any) => void} */
     let done
+    /** @type {(error: Error) => void} */
     let fail
 
     const result = new Promise((resolve, reject) => {
@@ -62,8 +74,16 @@ module.exports = configure((api, options) => {
 
     return result
   }
+  return subscribe
 })
 
+/**
+ * @param {*} msgStream
+ * @param {object} options
+ * @param {(message: Message) => void} options.onMessage
+ * @param {() => void} options.onEnd
+ * @param {ErrorHandlerFn} [options.onError]
+ */
 async function readMessages (msgStream, { onMessage, onEnd, onError }) {
   onError = onError || log
 

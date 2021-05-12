@@ -1,9 +1,9 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
-  command: 'id [peerid]',
+  command: 'id [peerId]',
 
   describe: 'Shows IPFS Node ID info',
 
@@ -23,7 +23,14 @@ module.exports = {
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, format, timeout, peerid: peerId }) {
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.format
+   * @param {number} argv.timeout
+   * @param {string} [argv.peerId]
+   */
+  async handler ({ ctx: { ipfs, print }, format, timeout, peerId }) {
     const id = await ipfs.id({
       timeout,
       peerId

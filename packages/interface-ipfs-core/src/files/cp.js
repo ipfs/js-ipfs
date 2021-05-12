@@ -10,10 +10,9 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const mh = require('multihashing-async').multihash
 const Block = require('ipld-block')
 const CID = require('cids')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -65,7 +64,7 @@ module.exports = (common, options) => {
         create: true
       })
       await ipfs.files.mkdir(parent)
-      await expect(ipfs.files.cp(src1, src2, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
+      await expect(ipfs.files.cp([src1, src2], `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/destination did not exist/)
     })
 
@@ -80,6 +79,7 @@ module.exports = (common, options) => {
       await ipfs.files.write(src1, [], {
         create: true
       })
+
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
         .that.has.property('message').that.matches(/"identity"/)
     })
@@ -194,7 +194,7 @@ module.exports = (common, options) => {
         })
       }
 
-      await ipfs.files.cp(sources[0].path, sources[1].path, destination, {
+      await ipfs.files.cp([sources[0].path, sources[1].path], destination, {
         parents: true
       })
 
@@ -334,12 +334,6 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(testDestPath)
       expect(stats).to.have.deep.property('mtime', expectedMtime)
       expect(stats).to.have.property('mode', mode)
-    })
-
-    it('should respect timeout option when copying a file', async () => {
-      await testTimeout(() => ipfs.files.cp('/ipfs/QmaWLMK8yg36wMZX4Ybz7PAbKi1z5FzEtg5iEVeXHtNBqa', '/derp', {
-        timeout: 1
-      }))
     })
 
     describe('with sharding', () => {

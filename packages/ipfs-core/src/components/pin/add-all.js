@@ -1,37 +1,33 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 'use strict'
 
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
-
-/** @type {(source:Source) => AsyncIterable<PinTarget>} */
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**
- *
+ * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
+ * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Pin} PinTarget
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @template T
+ * @typedef {Iterable<T>|AsyncIterable<T>} AwaitIterable
+ */
+
+/**
  * @param {Object} config
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').DAG} config.dag
+ * @param {import('../gc-lock').GCLock} config.gcLock
+ * @param {import('ipld')} config.ipld
  * @param {import('./pin-manager')} config.pinManager
  */
-module.exports = ({ pinManager, gcLock, dag }) => {
+module.exports = ({ pinManager, gcLock, ipld }) => {
   /**
-   * Adds multiple IPFS objects to the pinset and also stores it to the IPFS
-   * repo. pinset is the set of hashes currently pinned (not gc'able)
-   *
-   * @param {Source} source - One or more CIDs or IPFS Paths to pin in your repo
-   * @param {AddOptions} [options]
-   * @returns {AsyncIterable<CID>} - CIDs that were pinned.
-   * @example
-   * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-   * for await (const cid of ipfs.pin.addAll([cid])) {
-   *   console.log(cid)
-   * }
-   * // Logs:
-   * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-   * ```
+   * @type {import('ipfs-core-types/src/pin').API["addAll"]}
    */
   async function * addAll (source, options = {}) {
     /**
@@ -39,7 +35,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
      */
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
-        const cid = await resolvePath(dag, path)
+        const cid = await resolvePath(ipld, path)
 
         // verify that each hash can be pinned
         const { reason } = await pinManager.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])
@@ -79,22 +75,3 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 
   return withTimeoutOption(addAll)
 }
-
-/**
- * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
- * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Pin} PinTarget
- *
- * @typedef {AddSettings & AbortOptions} AddOptions
- *
- * @typedef {Object} AddSettings
- * @property {boolean} [lock]
- *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- *
- * @typedef {import('..').CID} CID
- */
-
-/**
- * @template T
- * @typedef {Iterable<T>|AsyncIterable<T>} AwaitIterable
- */

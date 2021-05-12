@@ -9,9 +9,10 @@ const CID = require('cids')
 const all = require('it-all')
 const drain = require('it-drain')
 const last = require('it-last')
+const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -85,6 +86,19 @@ module.exports = (common, options) => {
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 
+    it('should get a file added as CIDv1 with rawLeaves', async () => {
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
+
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: true }))
+
+      const cidv1 = res[0].cid
+      expect(cidv1.version).to.equal(1)
+
+      const output = await all(ipfs.get(cidv1))
+      expect(output[0].type).to.eql('file')
+      expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
+    })
+
     it('should get a BIG file', async () => {
       for await (const file of ipfs.get(fixtures.bigFile.cid)) {
         expect(file.path).to.equal(fixtures.bigFile.cid)
@@ -155,6 +169,53 @@ module.exports = (common, options) => {
         fixtures.directory.files['holmes.txt'].toString(),
         fixtures.directory.files['jungle.txt'].toString(),
         fixtures.directory.files['pp.txt'].toString()
+      ])
+    })
+
+    it('should get a nested directory', async function () {
+      const content = (name, path) => ({
+        path: `test-folder/${path}`,
+        content: fixtures.directory.files[name]
+      })
+
+      const dirs = [
+        content('pp.txt', 'pp.txt'),
+        content('holmes.txt', 'foo/holmes.txt'),
+        content('jungle.txt', 'foo/bar/jungle.txt')
+      ]
+
+      const res = await all(importer(dirs, ipfs.block))
+      const root = res[res.length - 1]
+      expect(root.path).to.equal('test-folder')
+      expect(root.cid.toString()).to.equal('QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g')
+
+      let files = await all(
+        map(ipfs.get(root.cid), async ({ path, content }) => {
+          content = content ? uint8ArrayToString(uint8ArrayConcat(await all(content))) : null
+          return { path, content }
+        })
+      )
+
+      files = files.sort((a, b) => {
+        if (a.path > b.path) return 1
+        if (a.path < b.path) return -1
+        return 0
+      })
+
+      // Check paths
+      const paths = files.map((file) => { return file.path })
+      expect(paths).to.include.members([
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/pp.txt',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/foo/holmes.txt',
+        'QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g/foo/bar/jungle.txt'
+      ])
+
+      // Check contents
+      expect(files.map(f => f.content)).to.include.members([
+        fixtures.directory.files['pp.txt'].toString(),
+        fixtures.directory.files['holmes.txt'].toString(),
+        fixtures.directory.files['jungle.txt'].toString()
       ])
     })
 

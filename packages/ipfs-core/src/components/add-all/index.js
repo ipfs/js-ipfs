@@ -1,28 +1,32 @@
 'use strict'
 
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
- * @param {Object} config
- * @param {import('..').Block} config.block
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').Preload} config.preload
- * @param {import('..').Pin} config.pin
- * @param {import('../init').ConstructorOptions<any, boolean>} config.options
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-unixfs-importer').ImportResult} ImportResult
  */
-module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) => {
-  const isShardingEnabled = constructorOptions.EXPERIMENTAL && constructorOptions.EXPERIMENTAL.sharding
+
+/**
+ * @typedef {Object} Context
+ * @property {import('ipfs-core-types/src/block').API} block
+ * @property {import('../gc-lock').GCLock} gcLock
+ * @property {import('../../types').Preload} preload
+ * @property {import('ipfs-core-types/src/pin').API} pin
+ * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
+ *
+ * @param {Context} context
+ */
+module.exports = ({ block, gcLock, preload, pin, options }) => {
+  const isShardingEnabled = options && options.sharding
+
   /**
-   * Import multiple files and data into IPFS.
-   *
-   * @param {FileStream} source
-   * @param {AddAllOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<UnixFSEntry>}
+   * @type {import('ipfs-core-types/src/root').API["addAll"]}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
@@ -60,18 +64,32 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
 
     delete opts.trickle
 
+    /** @type {Record<string, number>} */
+    const totals = {}
+
     if (opts.progress) {
-      let total = 0
       const prog = opts.progress
 
-      opts.progress = (bytes, fileName) => {
-        total += bytes
-        prog(total, fileName)
+      /**
+       * @param {number} bytes
+       * @param {string} path
+       */
+      opts.progress = (bytes, path) => {
+        if (!totals[path]) {
+          totals[path] = 0
+        }
+
+        totals[path] += bytes
+
+        prog(totals[path], path)
       }
     }
 
     const iterator = pipe(
       normaliseAddInput(source),
+      /**
+       * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
+       */
       source => importer(source, block, {
         ...opts,
         pin: false
@@ -84,7 +102,12 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
     const releaseLock = await gcLock.readLock()
 
     try {
-      yield * iterator
+      for await (const added of iterator) {
+        // do not keep file totals around forever
+        delete totals[added.path]
+
+        yield added
+      }
     } finally {
       releaseLock()
     }
@@ -93,8 +116,14 @@ module.exports = ({ block, gcLock, preload, pin, options: constructorOptions }) 
   return withTimeoutOption(addAll)
 }
 
+/**
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function transformFile (opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * transformFile (source) {
     for await (const file of source) {
       let cid = file.cid
 
@@ -117,10 +146,19 @@ function transformFile (opts) {
       }
     }
   }
+
+  return transformFile
 }
 
+/**
+ * @param {(cid: CID) => void} preload
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function preloadFile (preload, opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * maybePreloadFile (source) {
     for await (const file of source) {
       const isRootFile = !file.path || opts.wrapWithDirectory
         ? file.path === ''
@@ -135,14 +173,23 @@ function preloadFile (preload, opts) {
       yield file
     }
   }
+
+  return maybePreloadFile
 }
 
+/**
+ * @param {import('ipfs-core-types/src/pin').API} pin
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function pinFile (pin, opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * maybePinFile (source) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
-      const isRootDir = !file.path.includes('/')
+      const isRootDir = !file.path?.includes('/')
       const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {
@@ -157,42 +204,6 @@ function pinFile (pin, opts) {
       yield file
     }
   }
-}
 
-/**
- * @typedef {object} UnixFSEntry
- * @property {string} path
- * @property {CID} cid
- * @property {number} [mode]
- * @property {MTime} [mtime]
- * @property {number} size
- *
- * @typedef {Object} AddAllOptions
- * @property {string} [chunker='size-262144'] - Chunking algorithm used to build
- * ipfs DAGs.
- * @property {0|1} [cidVersion=0] - The CID version to use when storing the data.
- * @property {boolean} [enableShardingExperiment=false] - Allows to create
- * directories with an unlimited number of entries currently size of unixfs
- * directories is limited by the maximum block size. **Note** that this is an
- * experimental feature.
- * @property {string} [hashAlg='sha2-256'] - Multihash hashing algorithm to use.
- * @property {boolean} [onlyHash=false] - If true, will not add blocks to the
- * blockstore.
- * @property {boolean} [pin=true] - Pin this object when adding.
- * @property {(bytes:number, fileName:string) => void} [progress] - A function that will be
- * called with the number of bytes added as a file is added to ipfs and the name of the file being added.
- * @property {boolean} [rawLeaves=false] - If true, DAG leaves will contain raw
- * file data and not be wrapped in a protobuf.
- * @property {number} [shardSplitThreshold=1000] - Directories with more than this
- * number of files will be created as HAMT-sharded directories.
- * @property {boolean} [trickle=false] - If true will use the
- * [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle)
- * format for DAG generation.
- * @property {boolean} [wrapWithDirectory=false] - Adds a wrapping node around
- * the content.
- *
- * @typedef {import('ipfs-core-utils/src/files/normalise-input/normalise-input').Source} FileStream
- * @typedef {import('../../utils').MTime} MTime
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- */
+  return maybePinFile
+}

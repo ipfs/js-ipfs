@@ -5,12 +5,13 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const dagCBOR = require('ipld-dag-cbor')
-const importer = require('ipfs-unixfs-importer')
-const Unixfs = require('ipfs-unixfs')
+const { importer } = require('ipfs-unixfs-importer')
+const { UnixFS } = require('ipfs-unixfs')
 const all = require('it-all')
 const CID = require('cids')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
+const multihashing = require('multihashing-async')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -134,21 +135,8 @@ module.exports = (common, options) => {
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
-    it('should get by CID string', async () => {
-      const cidCborStr = cidCbor.toBaseEncodedString()
-
-      const result = await ipfs.dag.get(cidCborStr)
-
-      const node = result.value
-
-      const cid = await dagCBOR.util.cid(dagCBOR.util.serialize(node))
-      expect(cid).to.eql(cidCbor)
-    })
-
-    it('should get by CID string + path', async function () {
-      const cidCborStr = cidCbor.toBaseEncodedString()
-
-      const result = await ipfs.dag.get(cidCborStr + '/pb/Data')
+    it('should get by CID with path option', async function () {
+      const result = await ipfs.dag.get(cidCbor, { path: '/pb/Data' })
       expect(result.value).to.eql(uint8ArrayFromString('I am inside a Protobuf'))
     })
 
@@ -193,7 +181,7 @@ module.exports = (common, options) => {
       const cidv0 = cidv1.toV0()
 
       const output = await ipfs.dag.get(cidv0)
-      expect(Unixfs.unmarshal(output.value.Data).data).to.eql(input)
+      expect(UnixFS.unmarshal(output.value.Data).data).to.eql(input)
     })
 
     it('should be able to get part of a dag-cbor node', async () => {
@@ -201,10 +189,9 @@ module.exports = (common, options) => {
         foo: 'dag-cbor-bar'
       }
 
-      let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.codec).to.equal('dag-cbor')
-      cid = cid.toBaseEncodedString('base32')
-      expect(cid).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
+      expect(cid.toBaseEncodedString('base32')).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
       const result = await ipfs.dag.get(cid, {
         path: 'foo'
@@ -238,6 +225,14 @@ module.exports = (common, options) => {
 
       const result = await ipfs.dag.get(cid)
       expect(result.value).to.deep.equal(buf)
+    })
+
+    it('should be able to get a dag-cbor node with the identity hash', async () => {
+      const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
+      const identityHash = await multihashing(identityData, 'identity')
+      const identityCID = new CID(1, 'dag-cbor', identityHash)
+      const result = await ipfs.dag.get(identityCID)
+      expect(result.value).to.deep.equal({ asdf: 324 })
     })
 
     it('should throw error for invalid string CID input', () => {

@@ -7,7 +7,7 @@ const {
   coerceMtime,
   coerceMtimeNsecs
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'mkdir <path>',
@@ -67,6 +67,20 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {boolean} argv.parents
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {boolean} argv.flush
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.mode
+   * @param {number} argv.mtime
+   * @param {number} argv.mtimeNsecs
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     path,

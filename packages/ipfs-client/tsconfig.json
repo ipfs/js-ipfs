@@ -1,0 +1,17 @@
+{
+  "extends": "aegir/src/config/tsconfig.aegir.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-http-client"
+    },
+    {
+      "path": "../ipfs-grpc-client"
+    }
+  ]
+}

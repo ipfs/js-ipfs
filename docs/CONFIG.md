@@ -10,6 +10,7 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`Delegates`](#delegates)
   - [`Gateway`](#gateway)
   - [`Swarm`](#swarm)
+  - [`Announce`](#announce)
 - [`Bootstrap`](#bootstrap)
 - [`Datastore`](#datastore)
   - [`Spec`](#spec)
@@ -25,6 +26,7 @@ The js-ipfs config file is a JSON document located in the root directory of the 
   - [`Enabled`](#enabled)
 - [`Swarm`](#swarm-1)
   - [`ConnMgr`](#connmgr)
+  - [`DisableNatPortMap`](#disablenatportmap)
   - [Example](#example)
 - [`API`](#api-1)
   - [`HTTPHeaders`](#httpheaders)
@@ -109,6 +111,15 @@ Default:
   "/ip4/0.0.0.0/tcp/4002",
   "/ip4/127.0.0.1/tcp/4003/ws"
 ]
+```
+
+### `Announce`
+
+Array of [Multiaddr](https://github.com/multiformats/multiaddr/) describing which addresses to [announce](https://github.com/libp2p/js-libp2p/tree/master/src/address-manager#announce-addresses) over the network.
+
+Default:
+```json
+[]
 ```
 
 ## `Bootstrap`
@@ -259,6 +270,12 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
 1. Keeping all connections until `HighWater` connections is reached.
 2. Once `HighWater` is reached, it closes connections until `LowWater` is reached.
 
+### `DisableNatPortMap`
+
+By default when running under nodejs, libp2p will try to use [UPnP](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) to open a random high port on your router for any TCP connections you have configured.
+
+Set `DisableNatPortMap` to `false` to disable this behaviour.
+
 ### Example
 
 ```json
@@ -268,7 +285,8 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
       "LowWater": 100,
       "HighWater": 200,
     }
-  }
+  },
+  "DisableNatPortMap": false
 }
 ```
 

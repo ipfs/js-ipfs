@@ -1,23 +1,22 @@
 'use strict'
 
 const { getPubsubRouting } = require('./utils')
-const { withTimeoutOption } = require('../../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ ipns, options: constructorOptions }) => {
+/**
+ * @param {Object} config
+ * @param {import('../../ipns')} config.ipns
+ * @param {import('../../../types').Options} config.options
+ */
+module.exports = ({ ipns, options }) => {
+  const experimental = options.EXPERIMENTAL
+
   /**
-   * Query the state of IPNS pubsub.
-   *
-   * @param {AbortOptions} [_options]
-   * @returns {Promise<{ enabled: boolean }>}
-   * ```js
-   * const result = await ipfs.name.pubsub.state()
-   * console.log(result.enabled)
-   * // Logs: true
-   * ```
+   * @type {import('ipfs-core-types/src/name/pubsub').API["state"]}
    */
-  async function state (_options) { // eslint-disable-line require-await
+  async function state (_options = {}) { // eslint-disable-line require-await
     try {
-      return { enabled: Boolean(getPubsubRouting(ipns, constructorOptions)) }
+      return { enabled: Boolean(getPubsubRouting(ipns, experimental)) }
     } catch (err) {
       return { enabled: false }
     }
@@ -25,7 +24,3 @@ module.exports = ({ ipns, options: constructorOptions }) => {
 
   return withTimeoutOption(state)
 }
-
-/**
- * @typedef {import('../../../utils').AbortOptions} AbortOptions
- */

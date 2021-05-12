@@ -2,41 +2,28 @@
 
 const CID = require('cids')
 const errCode = require('err-code')
-const { withTimeoutOption } = require('../../utils')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-function normalizeMultihash (multihash, enc) {
-  if (typeof multihash === 'string') {
-    if (enc === 'base58' || !enc) {
-      return multihash
-    }
-    return uint8ArrayFromString(multihash, enc)
-  } else if (multihash instanceof Uint8Array) {
-    return multihash
-  } else if (CID.isCID(multihash)) {
-    return multihash.bytes
-  }
-  throw new Error('unsupported multihash')
-}
+/**
+ * @typedef {import('multibase').BaseName} BaseName
+ */
 
+/**
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ * @param {import('../../types').Preload} config.preload
+ */
 module.exports = ({ ipld, preload }) => {
-  return withTimeoutOption(async function get (multihash, options = {}) { // eslint-disable-line require-await
-    let mh, cid
+  /**
+   * @type {import('ipfs-core-types/src/object').API["get"]}
+   */
+  async function get (multihash, options = {}) { // eslint-disable-line require-await
+    let cid
 
     try {
-      mh = normalizeMultihash(multihash, options.enc)
-    } catch (err) {
-      throw errCode(err, 'ERR_INVALID_MULTIHASH')
-    }
-
-    try {
-      cid = new CID(mh)
+      cid = new CID(multihash)
     } catch (err) {
       throw errCode(err, 'ERR_INVALID_CID')
-    }
-
-    if (options.cidVersion === 1) {
-      cid = cid.toV1()
     }
 
     if (options.preload !== false) {
@@ -44,5 +31,7 @@ module.exports = ({ ipld, preload }) => {
     }
 
     return ipld.get(cid, { signal: options.signal })
-  })
+  }
+
+  return withTimeoutOption(get)
 }

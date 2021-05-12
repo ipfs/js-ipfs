@@ -2,10 +2,10 @@
 'use strict'
 
 const CID = require('cids')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
-const testTimeout = require('../utils/test-timeout')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -13,6 +13,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -23,19 +24,13 @@ module.exports = (common, options) => {
     let ipfsB
 
     before(async () => {
-      ipfsA = (await common.spawn()).api
+      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when listing swarm addresses', () => {
-      return testTimeout(() => ipfsA.swarm.addrs({
-        timeout: 1
-      }))
-    })
 
     it('should get a list of node addresses', async () => {
       const peers = await ipfsA.swarm.addrs()

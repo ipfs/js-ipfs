@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * @param {MTime} mtime
+ * @param {import('ipfs-unixfs').Mtime} mtime
  * @returns {string}
  */
 function formatMtime (mtime) {
@@ -9,7 +9,7 @@ function formatMtime (mtime) {
     return '-'
   }
 
-  const date = new Date((mtime.secs * 1000) + Math.round(mtime.nsecs / 1000))
+  const date = new Date((mtime.secs * 1000) + Math.round((mtime.nsecs || 0) / 1000))
 
   return date.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
     year: 'numeric',
@@ -21,13 +21,5 @@ function formatMtime (mtime) {
     timeZoneName: 'short'
   })
 }
-
-/**
- * @typedef {object} MTime
- * @property {number} secs - the number of seconds since (positive) or before
- * (negative) the Unix Epoch began
- * @property {number} nsecs - the number of nanoseconds since the last full
- * second.
- */
 
 module.exports = formatMtime

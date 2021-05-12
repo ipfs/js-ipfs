@@ -2,7 +2,7 @@
 
 const multibase = require('multibase')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'rm <ipfsPath...>',
@@ -27,6 +27,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string[]} argv.ipfsPath
+   * @param {boolean} argv.recursive
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx, ipfsPath, timeout, recursive, cidBase }) {
     const { ipfs, print } = ctx
 

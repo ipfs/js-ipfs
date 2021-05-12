@@ -4,9 +4,20 @@
 const PinManager = require('./pin-manager')
 const { PinTypes } = PinManager
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @param {string} type
+ * @param {CID} cid
+ * @param {Record<string, any>} [metadata]
+ */
 function toPin (type, cid, metadata) {
+  /** @type {import('ipfs-core-types/src/pin').LsResult} */
   const output = {
     type,
     cid
@@ -22,50 +33,20 @@ function toPin (type, cid, metadata) {
 /**
  * @param {Object} config
  * @param {import('./pin-manager')} config.pinManager
- * @param {import('../index').DAG} config.dag
+ * @param {import('ipld')} config.ipld
  */
-module.exports = ({ pinManager, dag }) => {
+module.exports = ({ pinManager, ipld }) => {
   /**
-   * List all the objects pinned to local storage
-   *
-   * @param {LsOptions} [options]
-   * @returns {AsyncIterable<LsEntry>}
-   * @example
-   * ```js
-   * for await (const { cid, type } of ipfs.pin.ls()) {
-   *   console.log({ cid, type })
-   * }
-   * // { cid: CID(Qmc5XkteJdb337s7VwFBAGtiaoj2QCEzyxtNRy3iMudc3E), type: 'recursive' }
-   * // { cid: CID(QmZbj5ruYneZb8FuR9wnLqJCpCXMQudhSdWhdhp5U1oPWJ), type: 'indirect' }
-   * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
-   *
-   * const paths = [
-   *   CID.from('Qmc5..'),
-   *   CID.from('QmZb..'),
-   *   CID.from('QmSo..')
-   * ]
-   * for await (const { cid, type } of ipfs.pin.ls({ paths })) {
-   *   console.log({ cid, type })
-   * }
-   * // { cid: CID(Qmc5XkteJdb337s7VwFBAGtiaoj2QCEzyxtNRy3iMudc3E), type: 'recursive' }
-   * // { cid: CID(QmZbj5ruYneZb8FuR9wnLqJCpCXMQudhSdWhdhp5U1oPWJ), type: 'indirect' }
-   * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
-   * ```
+   * @type {import('ipfs-core-types/src/pin').API["ls"]}
    */
   async function * ls (options = {}) {
-    /** @type {PinQueryType} */
+    /** @type {import('ipfs-core-types/src/pin').PinQueryType} */
     let type = PinTypes.all
 
     if (options.type) {
       type = options.type
-      if (typeof options.type === 'string') {
-        // @ts-ignore - Can't infer that string returned by toLowerCase() is PinQueryType
-        type = options.type.toLowerCase()
-      }
 
       PinManager.checkPinType(type)
-    } else {
-      options.type = PinTypes.all
     }
 
     if (options.paths) {
@@ -73,7 +54,7 @@ module.exports = ({ pinManager, dag }) => {
       let matched = false
 
       for await (const { path } of normaliseInput(options.paths)) {
-        const cid = await resolvePath(dag, path)
+        const cid = await resolvePath(ipld, path)
         const { reason, pinned, parent, metadata } = await pinManager.isPinnedWithType(cid, type)
 
         if (!pinned) {
@@ -122,21 +103,3 @@ module.exports = ({ pinManager, dag }) => {
 
   return withTimeoutOption(ls)
 }
-
-/**
- * @typedef {LsSettings & AbortOptions} LsOptions
- *
- * @typedef {Object} LsSettings
- * @property {string[]|CID[]} [paths] - CIDs or IPFS paths to search for in the pinset.
- * @property {PinQueryType} [type] - Filter by this type of pin ("recursive", "direct" or "indirect")
- *
- * @typedef {Object} LsEntry
- * @property {CID} cid -  CID of the pinned node
- * @property {PinType} type -  Pin type ("recursive", "direct" or "indirect")
- *
- * @typedef {import('./pin-manager').PinType} PinType
- * @typedef {import('./pin-manager').PinQueryType} PinQueryType
- *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- */

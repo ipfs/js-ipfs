@@ -1,6 +1,9 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'list',
@@ -14,10 +17,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const keys = await ipfs.key.list({
       timeout
     })
-    keys.forEach((ki) => print(`${ki.id} ${ki.name}`))
+    keys.forEach((ki) => print(`${ki.id} ${stripControlCharacters(ki.name)}`))
   }
 }

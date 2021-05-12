@@ -3,7 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'cp <source> <dest>',
@@ -42,6 +42,17 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.source
+   * @param {string} argv.dest
+   * @param {boolean} argv.parents
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {boolean} argv.flush
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     source,

@@ -1,12 +1,15 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'config <key> [value]',
 
   description: 'Get and set IPFS config values.',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder: (yargs) => {
     return yargs
       .commandDir('config')
@@ -26,6 +29,15 @@ module.exports = {
       })
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {any} argv.value
+   * @param {boolean} argv.bool
+   * @param {boolean} argv.json
+   * @param {string} argv.key
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, value, bool, json, key, timeout }) {
     if (!value) {
       // Get the value of a given key

@@ -2,6 +2,7 @@
 
 const { parseArgsStringToArgv } = require('string-argv')
 const cli = require('../../src')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const output = () => {
   const output = []
@@ -11,22 +12,18 @@ const output = () => {
       line = `${line}\n`
     }
 
-    output.push(line)
+    output.push(Buffer.from(line))
   }
   print.clearLine = () => {
     output.pop()
   }
   print.cursorTo = () => {}
   print.write = (data) => {
-    output.push(data)
+    output.push(Buffer.from(data))
   }
   print.error = print
   print.getOutput = () => {
-    if (output.length) {
-      return output.join('')
-    }
-
-    return ''
+    return Buffer.concat(output)
   }
   // used by ipfs.add to interrupt the progress bar
   print.isTTY = true
@@ -34,7 +31,7 @@ const output = () => {
   return print
 }
 
-module.exports = async (command, ctx) => {
+module.exports = async (command, ctx = {}) => {
   const print = output()
 
   command = parseArgsStringToArgv(command)
@@ -46,10 +43,16 @@ module.exports = async (command, ctx) => {
     }
   })
 
-  return print.getOutput()
+  const out = print.getOutput()
+
+  if (ctx.raw) {
+    return out
+  }
+
+  return uint8ArrayToString(out)
 }
 
-module.exports.fail = async (command, ctx) => {
+module.exports.fail = async (command, ctx = {}) => {
   const print = output()
 
   command = parseArgsStringToArgv(command)
@@ -71,5 +74,11 @@ module.exports.fail = async (command, ctx) => {
     print(err.message)
   }
 
-  return print.getOutput()
+  const out = print.getOutput()
+
+  if (ctx.raw) {
+    return out
+  }
+
+  return uint8ArrayToString(out)
 }

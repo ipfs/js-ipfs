@@ -5,9 +5,8 @@ const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -78,7 +77,7 @@ module.exports = (common, options) => {
         create: true,
         parents: true
       })
-      await ipfs.files.rm(file1, file2)
+      await ipfs.files.rm([file1, file2])
 
       await expect(ipfs.files.stat(file1)).to.eventually.be.rejectedWith(/does not exist/)
       await expect(ipfs.files.stat(file2)).to.eventually.be.rejectedWith(/does not exist/)
@@ -270,19 +269,6 @@ module.exports = (common, options) => {
       await expect(isShardAtPath(dirPath, ipfs)).to.eventually.be.true()
       expect((await ipfs.files.stat(dirPath)).type).to.equal('directory')
       expect(updatedDirCid.toString()).to.deep.equal(dirWithSomeFiles.toString())
-    })
-
-    it('should respect timeout option when removing files', async () => {
-      const file = `/some-file-${Math.random()}.txt`
-
-      await ipfs.files.write(file, randomBytes(100), {
-        create: true,
-        parents: true
-      })
-
-      await testTimeout(() => ipfs.files.rm(file, {
-        timeout: 1
-      }))
     })
   })
 }

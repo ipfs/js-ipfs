@@ -2,9 +2,7 @@
 
 const FormData = require('form-data')
 
-// TODO form data append doesnt have header option
-
-// @ts-ignore
+// @ts-ignore TODO form data append doesn't have header option
 module.exports = (buf, { mode, mtime, mtimeNsecs } = {}) => {
   const headers = {}
 

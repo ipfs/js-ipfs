@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "aegir/src/config/tsconfig.aegir.json",
   "compilerOptions": {
     "outDir": "dist"
   },
@@ -9,13 +9,22 @@
   ],
   "references": [
     {
-      "path": "../ipfs-core-utils"
-    },
-    {
       "path": "../ipfs-core"
     },
     {
+      "path": "../ipfs-core-types"
+    },
+    {
+      "path": "../ipfs-core-utils"
+    },
+    {
+      "path": "../ipfs-daemon"
+    },
+    {
       "path": "../ipfs-http-client"
+    },
+    {
+      "path": "../ipfs-http-gateway"
     },
     {
       "path": "../ipfs-http-server"

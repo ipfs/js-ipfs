@@ -1,11 +1,11 @@
 'use strict'
 
 const multibase = require('multibase')
-const { rightpad } = require('../utils')
+const { rightpad, stripControlCharacters } = require('../utils')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const formatMode = require('ipfs-core-utils/src/files/format-mode')
 const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'ls <key>',
@@ -41,6 +41,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.key
+   * @param {boolean} argv.recursive
+   * @param {boolean} argv.headers
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, key, recursive, headers, cidBase, timeout }) {
     // replace multiple slashes
     key = key.replace(/\/(\/+)/g, '/')
@@ -58,13 +67,26 @@ module.exports = {
 
     let first = true
 
+    /** @type {number[]} */
     let maxWidths = []
+    /**
+     * @param  {...string} args
+     */
     const getMaxWidths = (...args) => {
       maxWidths = args.map((v, i) => Math.max(maxWidths[i] || 0, v.length))
       return maxWidths
     }
 
+    /**
+     * @param {*} mode
+     * @param {*} mtime
+     * @param {*} cid
+     * @param {*} size
+     * @param {*} name
+     * @param {*} depth
+     */
     const printLink = (mode, mtime, cid, size, name, depth = 0) => {
+      name = stripControlCharacters(name)
       const widths = getMaxWidths(mode, mtime, cid, size, name)
       // todo: fix this by resolving https://github.com/ipfs/js-ipfs-unixfs-exporter/issues/24
       const padding = Math.max(depth - pathParts.length, 0)
@@ -78,11 +100,11 @@ module.exports = {
     }
 
     for await (const link of ipfs.ls(key, { recursive, timeout })) {
-      const mode = formatMode(link.mode, link.type === 'dir')
-      const mtime = formatMtime(link.mtime)
+      const mode = link.mode != null ? formatMode(link.mode, link.type === 'dir') : ''
+      const mtime = link.mtime != null ? formatMtime(link.mtime) : '-'
       const cid = cidToString(link.cid, { base: cidBase })
       const size = link.size ? String(link.size) : '-'
-      const name = link.type === 'dir' ? `${link.name || ''}/` : link.name
+      const name = stripControlCharacters(link.type === 'dir' ? `${link.name || ''}/` : link.name)
 
       if (first) {
         first = false

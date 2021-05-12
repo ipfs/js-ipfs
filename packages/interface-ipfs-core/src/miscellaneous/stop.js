@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -27,12 +26,6 @@ module.exports = (common, options) => {
       // next test will call `common.clean()` which will explode when it
       // can't connect to the nodes started by this test.
       common.controllers = []
-    })
-
-    it('should respect timeout option when stopping the node', () => {
-      return testTimeout(() => ipfs.api.stop({
-        timeout: 1
-      }))
     })
 
     it('should stop the node', async () => {

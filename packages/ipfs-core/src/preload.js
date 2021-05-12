@@ -1,10 +1,10 @@
 'use strict'
 
+// @ts-ignore no types
 const toUri = require('multiaddr-to-uri')
 const debug = require('debug')
-const CID = require('cids')
 const shuffle = require('array-shuffle')
-const AbortController = require('native-abort-controller')
+const { AbortController } = require('native-abort-controller')
 const preload = require('./runtime/preload-nodejs')
 /** @type {typeof import('hashlru').default} */
 // @ts-ignore - hashlru has incorrect typedefs
@@ -16,10 +16,7 @@ const log = Object.assign(
 )
 
 /**
- * @param {Object} [options]
- * @param {boolean} [options.enabled = false] - Whether to preload anything
- * @param {string[]} [options.addresses = []] - Which preload servers to use
- * @param {number} [options.cache = 1000] - How many CIDs to cache
+ * @param {import('./types').PreloadOptions} [options]
  */
 const createPreloader = (options = {}) => {
   options.enabled = Boolean(options.enabled)
@@ -36,6 +33,7 @@ const createPreloader = (options = {}) => {
   }
 
   let stopped = true
+  /** @type {AbortController[]} */
   let requests = []
   const apiUris = options.addresses.map(toUri)
 
@@ -43,16 +41,15 @@ const createPreloader = (options = {}) => {
   const cache = hashlru(options.cache)
 
   /**
-   * @param {string|CID} path
-   * @returns {Promise<void>}
+   * @type {import('./types').Preload}
    */
-  const api = async path => {
+  const api = async cid => {
     try {
-      if (stopped) throw new Error(`preload ${path} but preloader is not started`)
-
-      if (typeof path !== 'string') {
-        path = new CID(path).toString()
+      if (stopped) {
+        throw new Error(`preload ${cid} but preloader is not started`)
       }
+
+      const path = cid.toString()
 
       if (cache.has(path)) {
         // we've preloaded this recently, don't preload it again
@@ -68,6 +65,7 @@ const createPreloader = (options = {}) => {
 
       for (const uri of fallbackApiUris) {
         if (stopped) throw new Error(`preload aborted for ${path}`)
+        /** @type {AbortController} */
         let controller
 
         try {

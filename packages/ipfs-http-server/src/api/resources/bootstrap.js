@@ -15,6 +15,11 @@ exports.list = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -56,6 +61,11 @@ exports.add = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -105,6 +115,11 @@ exports.addDefault = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -146,6 +161,11 @@ exports.rm = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -195,6 +215,11 @@ exports.rmAll = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {

@@ -9,6 +9,10 @@ module.exports = {
 
   describe: 'List all available commands',
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   */
   async handler ({ ctx }) {
     const { print } = ctx
 

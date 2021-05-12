@@ -3,10 +3,13 @@
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { pipe } = require('it-pipe')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
+// @ts-ignore no types
 const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
 const { PassThrough } = require('stream')
+// @ts-ignore no types
 const toIterable = require('stream-to-it')
 const debug = require('debug')
 const log = Object.assign(debug('ipfs:http-api:dht'), {
@@ -21,7 +24,7 @@ exports.findPeer = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.peerId().required(),
+        peerId: Joi.cid().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -30,6 +33,11 @@ exports.findPeer = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -93,6 +101,11 @@ exports.findProvs = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -125,7 +138,7 @@ exports.findProvs = {
         return {
           Responses: [{
             ID: id.toString(),
-            Addrs: (addrs || []).map(a => a.toString())
+            Addrs: (addrs || []).map((/** @type {import('multiaddr').Multiaddr} */ a) => a.toString())
           }],
           Type: 4
         }
@@ -133,7 +146,7 @@ exports.findProvs = {
       ndjson.stringify,
       toIterable.sink(output)
     )
-      .catch(err => {
+      .catch((/** @type {Error} */ err) => {
         log.error(err)
 
         if (!providersFound && output.writable) {
@@ -175,6 +188,11 @@ exports.get = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -220,6 +238,11 @@ exports.provide = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -258,6 +281,11 @@ exports.put = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -294,7 +322,7 @@ exports.query = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.peerId().required(),
+        peerId: Joi.cid().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -303,6 +331,11 @@ exports.query = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {

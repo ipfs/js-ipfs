@@ -10,6 +10,7 @@
 - [How can I configure an IPFS node to use a custom `signaling endpoint` for my WebRTC transport?](#how-can-i-configure-an-ipfs-node-to-use-a-custom-signaling-endpoint-for-my-webrtc-transport)
 - [I see some slowness when hopping between tabs Chrome with IPFS nodes, is there a reason why?](#i-see-some-slowness-when-hopping-between-tabs-chrome-with-ipfs-nodes-is-there-a-reason-why)
 - [Can I use IPFS in my Electron App?](#can-i-use-ipfs-in-my-electron-app)
+- [What are all these `refs?Qmfoo` HTTP errors I keep seeing in the console?](#what-are-all-these-refsqmfoo-http-errors-i-keep-seeing-in-the-console)
 - [Have more questions?](#have-more-questions)
 
 ## Why isn't there DHT support in js-IPFS?
@@ -50,7 +51,8 @@ const node = await IPFS.create({
   config: {
     Addresses: {
       Swarm: [
-        '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
+        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star'
       ]
     }
   }
@@ -81,7 +83,8 @@ const node = await IPFS.create({
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
         "/ip4/127.0.0.1/tcp/4003/ws",
-        "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+        "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
+        "/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star"
       ]
     }
   },
@@ -150,6 +153,24 @@ Yes you can and in many ways. Read https://github.com/ipfs/notes/issues/256 for 
 
 We now support Electron v5.0.0 without the need to rebuilt native modules.
 Still if you run into problems with native modules follow these instructions [here](https://electronjs.org/docs/tutorial/using-native-node-modules).
+
+## What are all these `refs?Qmfoo` HTTP errors I keep seeing in the console?
+
+In order for content added to your node to be accessible to other nodes on the network, they need to be able to [dial](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/SWARM.md#ipfsswarmconnectaddr-options) your node. This means there needs to be some way of connecting to you from the open Internet.
+
+From node.js and Electron this might be done by opening a TCP port on your router and forwarding traffic to your node, while also configuring an [Announce](https://github.com/ipfs/js-ipfs/blob/master/docs/CONFIG.md#announce) address that is a combination of the forwarded port and your public IP address.
+
+Browsers [can't open TCP sockets](https://github.com/ipfs/js-ipfs/blob/master/docs/BROWSERS.md#limitations-of-the-browser-context) so the only way right now is for your node to be connected to a WebRTC-Star signalling server - nodes interested in your content would connect to the same WebRTC-Star server and use that to negotiate a peer-to-peer connection.
+
+This has several drawbacks - WebRTC is expensive so having lots of peers does not scale well, the maximum packet size is small so it's comparatively inefficient, browsers will frequently cull connections if you switch away from the tab and at the time of writing go-IPFS [has no WebRTC-Star transport](https://libp2p.io/implementations/#transports) so great swathes of the network will not be able to dial your node.
+
+To make your content available, several 'preload' nodes are running. These nodes expose their [refs endpoint](https://docs.ipfs.io/reference/http/api/#api-v0-refs) over HTTP and all js-IPFS nodes connect to them as peers on startup.
+
+When you add content to your node, a request is sent to a preload node with the CID of the content you've just added. This causes the preload node to use [Bitswap](https://docs.ipfs.io/concepts/bitswap/) to pull the content from your node, caching it for an hour or so which then means other nodes can then access the content without having to dial your otherwise undialable node.
+
+These nodes sometimes go down, which is why you see errors in the console. They are non-fatal and can be ignored.
+
+If you run your own node you can [disable preloading](https://github.com/ipfs/js-ipfs/blob/master/docs/MODULE.md#optionspreload) which will make the errors go away, at the cost of your content becoming less available or not available at all.
 
 ## Have more questions?
 

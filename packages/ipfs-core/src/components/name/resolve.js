@@ -2,15 +2,18 @@
 
 const debug = require('debug')
 const errcode = require('err-code')
-const mergeOptions = require('merge-options')
+const { mergeOptions } = require('../../utils')
 const CID = require('cids')
+// @ts-ignore no types
 const isDomain = require('is-domain-name')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')
 })
 
-const { OFFLINE_ERROR, withTimeoutOption } = require('../../utils')
+const { OFFLINE_ERROR } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  *
@@ -27,37 +30,21 @@ const appendRemainder = (result, remainder) =>
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('../index').DNS} config.dns
- * @param {import('../../ipns')} config.ipns
+ * @param {import('ipfs-core-types/src/root').API["dns"]} config.dns
+ * @param {import('../ipns')} config.ipns
  * @param {import('peer-id')} config.peerId
- * @param {import('../index').IsOnline} config.isOnline
- * @param {{offline?:boolean}} config.options
+ * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
+ * @param {import('../../types').Options} config.options
  */
-module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) => {
+module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
   /**
-   * Given a key, query the DHT for its best value.
-   *
-   * @param {string} name - ipns name to resolve. Defaults to your node's peerID.
-   * @param {ResolveOptions} [options]
-   * @returns {AsyncIterable<string>}
-   * @example
-   * ```js
-   * // The IPNS address you want to resolve.
-   * const addr = '/ipns/ipfs.io'
-   *
-   * for await (const name of ipfs.name.resolve(addr)) {
-   *   console.log(name)
-   * }
-   * // Logs: /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
-   * ```
+   * @type {import('ipfs-core-types/src/name').API["resolve"]}
    */
   async function * resolve (name, options = {}) { // eslint-disable-line require-await
     options = mergeOptions({
       nocache: false,
       recursive: true
     }, options)
-
-    const { offline } = constructorOptions
 
     // TODO: params related logic should be in the core implementation
     if (offline && options && options.nocache) {
@@ -94,20 +81,9 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: constructorOptions }) 
     }
 
     // TODO: convert ipns.resolve to return an iterator
-    yield appendRemainder(await ipns.resolve(`/${namespace}/${hash}`, options), remainder)
+    const value = await ipns.resolve(`/${namespace}/${hash}`, options)
+    yield appendRemainder(value instanceof Uint8Array ? uint8ArrayToString(value) : value, remainder)
   }
 
   return withTimeoutOption(resolve)
 }
-
-/**
- * IPFS resolve options.
- *
- * @typedef {ResolveSettings & AbortOptions} ResolveOptions
- *
- * @typedef {Object} ResolveSettings
- * @property {boolean} [options.nocache=false] - do not use cached entries.
- * @property {boolean} [options.recursive=true] - resolve until the result is not an IPNS name.
- *
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- */

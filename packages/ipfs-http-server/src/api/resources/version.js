@@ -1,6 +1,7 @@
 'use strict'
 
 const Joi = require('../../utils/joi')
+const pkg = require('../../../package.json')
 
 module.exports = {
   options: {
@@ -14,6 +15,10 @@ module.exports = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -38,7 +43,7 @@ module.exports = {
       Version: version.version,
       Commit: version.commit,
       Repo: version.repo,
-      'ipfs-http-client': version['ipfs-http-client'],
+      'ipfs-http-client': pkg.devDependencies['ipfs-http-client'],
       'interface-ipfs-core': version['interface-ipfs-core']
     })
   }

@@ -1,32 +1,43 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-module.exports = ({ libp2p }) => {
-  return withTimeoutOption(async function peers (options = {}) { // eslint-disable-line require-await
-    const verbose = options.v || options.verbose
+/**
+ * @param {Object} config
+ * @param {import('../../types').NetworkService} config.network
+ */
+module.exports = ({ network }) => {
+  /**
+   * @type {import('ipfs-core-types/src/swarm').API["peers"]}
+   */
+  async function peers (options = {}) {
+    const { libp2p } = await network.use(options)
     const peers = []
 
     for (const [peerId, connections] of libp2p.connections) {
       for (const connection of connections) {
-        const tupple = {
+        /** @type {import('ipfs-core-types/src/swarm').PeersResult} */
+        const peer = {
           addr: connection.remoteAddr,
           peer: peerId
         }
 
-        if (verbose || options.direction) {
-          tupple.direction = connection.stat.direction
+        if (options.verbose || options.direction) {
+          peer.direction = connection.stat.direction
         }
 
-        if (verbose) {
-          tupple.muxer = connection.stat.multiplexer
-          tupple.latency = 'n/a'
+        if (options.verbose) {
+          peer.muxer = connection.stat.multiplexer
+          peer.latency = 'n/a'
+          peer.streams = [] // TODO: get this from libp2p
         }
 
-        peers.push(tupple)
+        peers.push(peer)
       }
     }
 
     return peers
-  })
+  }
+
+  return withTimeoutOption(peers)
 }

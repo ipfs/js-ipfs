@@ -13,8 +13,8 @@ const { supportsFileReader } = require('ipfs-utils/src/supports')
 const globSource = require('ipfs-utils/src/files/glob-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const bufferStream = require('it-buffer-stream')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -59,12 +59,6 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
-
-    it('should respect timeout option when adding files', () => {
-      return testTimeout(() => drain(ipfs.addAll(uint8ArrayFromString('Hello'), {
-        timeout: 1
-      })))
-    })
 
     it('should add a File as array of tuples', async function () {
       if (!supportsFileReader) return this.skip('skip in node')
@@ -140,6 +134,7 @@ module.exports = (common, options) => {
       })
 
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
+      const progressSizes = {}
 
       const dirs = [
         content('pp.txt'),
@@ -152,22 +147,44 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const total = dirs.reduce((i, entry) => {
-        return i + (entry.content ? entry.content.length : 0)
-      }, 0)
+      const total = dirs.reduce((acc, curr) => {
+        if (curr.content) {
+          acc[curr.path] = curr.content.length
+        }
 
-      let progCalled = false
-      let accumProgress = 0
-      const handler = (p) => {
-        progCalled = true
-        accumProgress += p
+        return acc
+      }, {})
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
       }
 
       const root = await last(ipfs.addAll(dirs, { progress: handler }))
-      expect(progCalled).to.be.true()
-      expect(accumProgress).to.be.at.least(total)
+      expect(progressSizes).to.deep.equal(total)
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+    })
+
+    it('should receive progress path as empty string when adding content without paths', async function () {
+      const content = (name) => fixtures.directory.files[name]
+      const progressSizes = {}
+
+      const dirs = [
+        content('pp.txt'),
+        content('holmes.txt'),
+        content('jungle.txt')
+      ]
+
+      const total = {
+        '': dirs.reduce((acc, curr) => acc + curr.length, 0)
+      }
+
+      const handler = (bytes, path) => {
+        progressSizes[path] = bytes
+      }
+
+      await drain(ipfs.addAll(dirs, { progress: handler }))
+      expect(progressSizes).to.deep.equal(total)
     })
 
     it('should receive file name from progress event', async () => {
@@ -331,11 +348,11 @@ module.exports = (common, options) => {
     it('should add a file from the file system', async function () {
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, '..', 'test', 'fixtures', 'testfile.txt')
+      const filePath = path.join(__dirname, 'add-all.js')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('testfile.txt')
+      expect(result[0].path).to.equal('add-all.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
@@ -396,6 +413,101 @@ module.exports = (common, options) => {
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
       expect(files[0].cid.codec).to.equal('dag-pb')
       expect(files[0].size).to.equal(18)
+    })
+
+    it('should add directories with metadata', async () => {
+      const files = await all(ipfs.addAll([{
+        path: '/foo',
+        mode: 0o123,
+        mtime: {
+          secs: 1000,
+          nsecs: 0
+        }
+      }]))
+
+      expect(files.length).to.equal(1)
+      expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
+      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].size).to.equal(11)
+    })
+
+    it('should support bidirectional streaming', async function () {
+      let progressInvoked
+
+      const handler = (bytes, path) => {
+        progressInvoked = true
+      }
+
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        await new Promise((resolve) => {
+          const interval = setInterval(() => {
+            // we've received a progress result, that means we've received some
+            // data from the server before we're done sending data to the server
+            // so the streaming is bidirectional and we can finish up
+            if (progressInvoked) {
+              clearInterval(interval)
+              resolve()
+            }
+          }, 10)
+        })
+      }
+
+      await drain(ipfs.addAll(source(), {
+        progress: handler,
+        fileImportConcurrency: 1
+      }))
+
+      expect(progressInvoked).to.be.true()
+    })
+
+    it('should error during add-all stream', async function () {
+      const source = async function * () {
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+
+        yield {
+          content: 'hello',
+          path: '/file'
+        }
+      }
+
+      await expect(drain(ipfs.addAll(source(), {
+        fileImportConcurrency: 1,
+        chunker: 'rabin-2048--50' // invalid chunker parameters, validated after the stream starts moving
+      }))).to.eventually.be.rejectedWith(/Chunker parameter avg must be an integer/)
+    })
+
+    it('should add big files', async function () {
+      const totalSize = 1024 * 1024 * 200
+      const chunkSize = 1024 * 1024 * 99
+
+      const source = async function * () {
+        yield {
+          path: '/dir/file-200mb-1',
+          content: bufferStream(totalSize, {
+            chunkSize
+          })
+        }
+
+        yield {
+          path: '/dir/file-200mb-2',
+          content: bufferStream(totalSize, {
+            chunkSize
+          })
+        }
+      }
+
+      const results = await all(ipfs.addAll(source()))
+
+      expect(await ipfs.files.stat(`/ipfs/${results[0].cid}`)).to.have.property('size', totalSize)
+      expect(await ipfs.files.stat(`/ipfs/${results[1].cid}`)).to.have.property('size', totalSize)
     })
   })
 }

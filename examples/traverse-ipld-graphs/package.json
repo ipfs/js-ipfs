@@ -10,15 +10,15 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "cids": "^1.0.0",
-    "ipfs": "^0.52.0",
+    "cids": "^1.1.6",
+    "ipfs": "^0.55.1",
     "ipld-block": "^0.11.0",
-    "ipld-dag-pb": "^0.20.0",
+    "ipld-dag-pb": "^0.22.1",
     "ipld-git": "^0.6.1",
-    "ipld-ethereum": "^5.0.1",
-    "multihashing-async": "^2.0.1"
+    "ipld-ethereum": "^6.0.0",
+    "multihashing-async": "^2.1.2"
   }
 }

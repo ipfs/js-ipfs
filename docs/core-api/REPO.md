@@ -80,11 +80,11 @@ An optional object which may have the following keys:
 
 the returned object has the following keys:
 
-- `numObjects` is a [BigNumber Int][1].
-- `repoSize` is a [BigNumber Int][1], in bytes.
+- `numObjects` is a [BigInt][1].
+- `repoSize` is a [BigInt][1], in bytes.
 - `repoPath` is a string.
 - `version` is a string.
-- `storageMax` is a [BigNumber Int][1].
+- `storageMax` is a [BigInt][1].
 
 ### Example
 
@@ -135,6 +135,6 @@ console.log(version)
 // "6"
 ```
 
-[1]: https://github.com/MikeMcl/bignumber.js/
+[1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 [cid]: https://www.npmjs.com/package/cids
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

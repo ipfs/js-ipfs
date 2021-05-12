@@ -165,7 +165,7 @@ An optional object which may have the following keys:
 const multihash = 'QmPb5f92FxKPYdT3QNBd1GKiL4tZUXUrzF4Hkpdr3Gf1gK'
 
 const node = await ipfs.object.get(multihash)
-console.log(node.data)
+console.log(node.Data)
 // Logs:
 // some data
 ```
@@ -341,8 +341,8 @@ An optional object which may have the following keys:
 ```JavaScript
 // cid is CID of the DAG node created by adding a link
 const cid = await ipfs.object.patch.addLink(node, {
-  name: 'some-link'
-  size: 10
+  name: 'some-link',
+  size: 10,
   cid: new CID('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
 })
 ```
@@ -398,8 +398,8 @@ An optional object which may have the following keys:
 ```JavaScript
 // cid is CID of the DAG node created by removing a link
 const cid = await ipfs.object.patch.rmLink(node, {
-  name: 'some-link'
-  size: 10
+  name: 'some-link',
+  size: 10,
   cid: new CID('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
 })
 ```

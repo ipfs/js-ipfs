@@ -3,8 +3,16 @@
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/diag').API<HTTPClientExtraOptions>} DiagAPI
+ */
+
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {DiagAPI["net"]}
+   */
+  async function net (options = {}) {
     const res = await api.post('diag/net', {
       timeout: options.timeout,
       signal: options.signal,
@@ -13,4 +21,5 @@ module.exports = configure(api => {
     })
     return res.json()
   }
+  return net
 })

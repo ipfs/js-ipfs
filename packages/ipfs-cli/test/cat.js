@@ -6,7 +6,6 @@ const CID = require('cids')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 const defaultOptions = {
   offset: undefined,
@@ -29,8 +28,8 @@ describe('cat', () => {
 
     ipfs.cat.withArgs(cid.toString(), defaultOptions).returns([buf])
 
-    const out = await cli(`cat ${cid}`, { ipfs })
-    expect(out).to.equal(uint8ArrayToString(buf))
+    const out = await cli(`cat ${cid}`, { ipfs, raw: true })
+    expect(out).to.deep.equal(buf)
   })
 
   it('cat part of a file using `count`', async () => {
@@ -43,8 +42,8 @@ describe('cat', () => {
       length: 5
     }).returns([buf])
 
-    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5', { ipfs })
-    expect(out).to.equal(uint8ArrayToString(buf))
+    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --count 5', { ipfs, raw: true })
+    expect(out).to.deep.equal(buf)
   })
 
   it('cat part of a file using `length`', async () => {
@@ -57,8 +56,8 @@ describe('cat', () => {
       length: 5
     }).returns([buf])
 
-    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5', { ipfs })
-    expect(out).to.equal(uint8ArrayToString(buf))
+    const out = await cli('cat QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB --offset 21 --length 5', { ipfs, raw: true })
+    expect(out).to.deep.equal(buf)
   })
 
   it('cat non-existent file', async () => {
@@ -80,7 +79,7 @@ describe('cat', () => {
       timeout: 1000
     }).returns([buf])
 
-    const out = await cli(`cat ${cid} --timeout=1s`, { ipfs })
-    expect(out).to.equal(uint8ArrayToString(buf))
+    const out = await cli(`cat ${cid} --timeout=1s`, { ipfs, raw: true })
+    expect(out).to.deep.equal(buf)
   })
 })

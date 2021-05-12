@@ -1,11 +1,20 @@
 'use strict'
 
 const dagPB = require('ipld-dag-pb')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {Object} config
+ * @param {import('ipld')} config.ipld
+ * @param {import('../../types').Preload} config.preload
+ */
 module.exports = ({ ipld, preload }) => {
   const get = require('./get')({ ipld, preload })
-  return withTimeoutOption(async function stat (multihash, options = {}) {
+
+  /**
+   * @type {import('ipfs-core-types/src/object').API["stat"]}
+   */
+  async function stat (multihash, options = {}) {
     const node = await get(multihash, options)
     const serialized = dagPB.util.serialize(node)
     const cid = await dagPB.util.cid(serialized, {
@@ -23,5 +32,7 @@ module.exports = ({ ipld, preload }) => {
       DataSize: node.Data.length,
       CumulativeSize: blockSize + linkLength
     }
-  })
+  }
+
+  return withTimeoutOption(stat)
 }

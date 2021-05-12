@@ -1,11 +1,20 @@
 'use strict'
 
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {Object} config
+ * @param {import('ipfs-repo')} config.repo
+ */
 module.exports = function ({ repo }) {
-  return withTimeoutOption(async function * refsLocal (options = {}) {
-    for await (const cid of repo.blocks.query({ keysOnly: true, signal: options.signal })) {
+  /**
+   * @type {import('ipfs-core-types/src/refs').API["local"]}
+   */
+  async function * refsLocal (options = {}) {
+    for await (const cid of repo.blocks.queryKeys({}, { signal: options.signal })) {
       yield { ref: cid.toString() }
     }
-  })
+  }
+
+  return withTimeoutOption(refsLocal)
 }

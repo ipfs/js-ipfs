@@ -65,7 +65,7 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Options](#options-9)
     - [Returns](#returns-9)
     - [Example](#example-9)
-  - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
+  - [`ipfs.files.rm(path, [options])`](#ipfsfilesrmpath-options)
     - [Parameters](#parameters-10)
     - [Options](#options-10)
     - [Returns](#returns-10)
@@ -121,7 +121,7 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 ```js
 {
-  // The path you want to the file to be accessible at from the root CID _after_ it has been added
+  // The path you want the file to be accessible at from the root CID _after_ it has been added
   path?: string
   // The contents of the file (see below for definition)
   content?: FileContent
@@ -171,7 +171,7 @@ An optional object which may have the following keys:
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
 | pin | `boolean` | `true` | pin this object when adding |
-| progress | function | `undefined` | a function that will be called with the byte length of chunks as a file is added to ipfs |
+| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added |
 | rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
 | trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |
 | wrapWithDirectory | `boolean` | `false` | Adds a wrapping node around the content |
@@ -252,7 +252,7 @@ An optional object which may have the following keys:
 | hashAlg | `String` | `'sha2-256'` | multihash hashing algorithm to use |
 | onlyHash | `boolean` | `false` | If true, will not add blocks to the blockstore |
 | pin | `boolean` | `true` | pin this object when adding |
-| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the name of the file being added |
+| progress | function | `undefined` | a function that will be called with the number of bytes added as a file is added to ipfs and the path of the file being added |
 | rawLeaves | `boolean` | `false` | if true, DAG leaves will contain raw file data and not be wrapped in a protobuf |
 | shardSplitThreshold | `Number` | `1000` | Directories with more than this number of files will be created as HAMT-sharded directories |
 | trickle | `boolean` | `false` | if true will use the [trickle DAG](https://godoc.org/github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-unixfs/importer/trickle) format for DAG generation |
@@ -460,8 +460,9 @@ Each yielded object is of the form:
 
 ```js
 {
-  path: string,
-  content: <AsyncIterable<Uint8Array>>,
+  type: string, // 'file' or 'dir'
+  path: string, // a deeply nested path within the directory structure
+  content?: <AsyncIterable<Uint8Array>>, // only present if `type` is 'file'
   mode: Number, // implicit if not provided - 0644 for files, 0755 for directories
   mtime?: { secs: Number, nsecs: Number }
 }
@@ -475,19 +476,23 @@ Here, each `path` corresponds to the name of a file, and `content` is an async i
 const cid = 'QmQ2r6iMNpky5f1m4cnm3Yqw8VSvjuKpTcK1X7dBR1LkJF'
 
 for await (const file of ipfs.get(cid)) {
-  console.log(file.path)
+  console.log(file.type, file.path)
 
   if (!file.content) continue;
 
   const content = []
 
-for await (const chunk of file.content) {
+  for await (const chunk of file.content) {
     content.push(chunk)
   }
 
   console.log(content)
 }
 ```
+
+When invoking this method via the HTTP API client, the response arrives as a stream containing either the entire contents of the file (if the passed [CID][] resolves to a file) or recursive directory tree and all files contained therein (if the passed [CID][] resolves to a directory).
+
+If you are iterating over a directory, in order to proceed to the next entry in the stream, you must consume the `content` field of the current entry if it is present.
 
 A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/get.js) can be found in the tests for this API.
 
@@ -632,7 +637,7 @@ await ipfs.files.cp('/src-file', '/dst-file')
 await ipfs.files.cp('/src-dir', '/dst-dir')
 
 // To copy multiple files to a directory
-await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
+await ipfs.files.cp(['/src-file1', '/src-file2'], '/dst-dir')
 ```
 
 #### Notes
@@ -779,7 +784,7 @@ await ipfs.files.touch('/path/to/file.txt', {
 })
 ```
 
-### `ipfs.files.rm(...paths, [options])`
+### `ipfs.files.rm(path, [options])`
 
 > Remove a file or directory.
 
@@ -815,7 +820,7 @@ An optional object which may have the following keys:
 await ipfs.files.rm('/my/beautiful/file.txt')
 
 // To remove multiple files
-await ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt')
+await ipfs.files.rm(['/my/beautiful/file.txt', '/my/other/file.txt'])
 
 // To remove a directory
 await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
@@ -941,7 +946,7 @@ await ipfs.files.mv('/src-file', '/dst-file')
 
 await ipfs.files.mv('/src-dir', '/dst-dir')
 
-await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
+await ipfs.files.mv(['/src-file1', '/src-file2'], '/dst-dir')
 ```
 
 #### Notes

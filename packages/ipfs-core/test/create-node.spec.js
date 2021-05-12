@@ -12,7 +12,6 @@ const IPFS = require('../')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('./utils/create-repo-nodejs.js')
-const { console } = require('ipfs-utils/src/globalthis')
 
 describe('create node', function () {
   let tempRepo
@@ -87,9 +86,8 @@ describe('create node', function () {
     expect(ipfs.isOnline()).to.be.false()
   })
 
-  it('should create but not initialize and not start', async () => {
+  it('should create but not start', async () => {
     const ipfs = await IPFS.create({
-      init: false,
       start: false,
       repo: tempRepo,
       config: { Addresses: { Swarm: [] } }
@@ -230,9 +228,11 @@ describe('create node', function () {
           Addresses: {
             API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
             Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
-            Swarm: isNode ? [
+            Swarm: isNode
+              ? [
               `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`
-            ] : []
+                ]
+              : []
           },
           Bootstrap: []
         },

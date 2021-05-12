@@ -1,9 +1,11 @@
 'use strict'
 
 const multibase = require('multibase')
-const all = require('it-all')
 const { cidToString } = require('ipfs-core-utils/src/cid')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
+const {
+  makeEntriesPrintable
+} = require('../../utils')
 
 module.exports = {
   // bracket syntax with '...' tells yargs to optionally accept a list
@@ -30,39 +32,35 @@ module.exports = {
       type: 'string',
       choices: Object.keys(multibase.names)
     },
-    stream: {
-      type: 'boolean',
-      alias: 's',
-      default: false,
-      describe: 'Enable streaming of pins as they are discovered.'
-    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, ipfsPath, type, quiet, cidBase, stream, timeout }) {
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string[]} argv.ipfsPath
+   * @param {'direct' | 'indirect' | 'recursive' | 'all'} argv.type
+   * @param {boolean} argv.quiet
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
+  async handler ({ ctx: { ipfs, print }, ipfsPath, type, quiet, cidBase, timeout }) {
+    /**
+     * @param {import('ipfs-core-types/src/pin').LsResult} res
+     */
     const printPin = res => {
       let line = cidToString(res.cid, { base: cidBase })
       if (!quiet) {
         line += ` ${res.type}`
 
-        if (res.comments) {
-          line += ` ${res.comments}`
+        if (res.metadata) {
+          line += ` ${JSON.stringify(makeEntriesPrintable(res.metadata))}`
         }
       }
       print(line)
-    }
-
-    if (!stream) {
-      const pins = await all(ipfs.pin.ls({
-        paths: ipfsPath,
-        type,
-        stream: false,
-        timeout
-      }))
-      return pins.forEach(printPin)
     }
 
     for await (const res of ipfs.pin.ls({

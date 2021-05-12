@@ -10,25 +10,30 @@ const {
   isReadableStream,
   isFileObject
 } = require('./utils')
-
-// eslint-disable-next-line complexity
+const {
+  parseMtime,
+  parseMode
+} = require('ipfs-unixfs')
 
 /**
- * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {Source} input
- * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {AsyncIterable<Entry<Content>>}
+ * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
+ * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImporterImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
+ */
+
+/**
+ * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} input
+ * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
-  // must give us something
   if (input === null || input === undefined) {
-    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
+    return
   }
 
   // String
   if (typeof input === 'string' || input instanceof String) {
-    yield toFileObject(input, normaliseContent)
+    yield toFileObject(input.toString(), normaliseContent)
     return
   }
 
@@ -45,7 +50,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
   }
 
   // Iterable<?>
-  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+  if (Symbol.iterator in input || Symbol.asyncIterator in input) {
     /** @type {any} peekable */
     const peekable = itPeekable(input)
 
@@ -71,7 +76,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // (Async)Iterable<String>
     // (Async)Iterable<{ path, content }>
     if (isFileObject(value) || isBlob(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
 
@@ -80,7 +85,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
     if (value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
-      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
   }
@@ -97,15 +102,19 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 }
 
 /**
- * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {ToFile} input
- * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {Promise<Entry<Content>>}
+ * @param {ImportCandidate} input
+ * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
-  const file = { path: path || '', mode, mtime }
+
+  /** @type {ImporterImportCandidate} */
+  const file = {
+    path: path || '',
+    mode: parseMode(mode),
+    mtime: parseMtime(mtime)
+  }
 
   if (content) {
     file.content = await normaliseContent(content)
@@ -116,42 +125,3 @@ async function toFileObject (input, normaliseContent) {
 
   return file
 }
-
-/**
- * @typedef {import('../format-mtime').MTime} MTime
- * @typedef {import('../format-mode').Mode} Mode
- * @typedef {Object} Directory
- * @property {string} path
- * @property {Mode} [mode]
- * @property {MTime} [mtime]
- * @property {undefined} [content]
- *
- * @typedef {Object} FileInput
- * @property {string} [path]
- * @property {ToContent} [content]
- * @property {number | string} [mode]
- * @property {UnixTime} [mtime]
- *
- * @typedef {Date | MTime | HRTime} UnixTime
- *
- * Time representation as tuple of two integers, as per the output of
- * [`process.hrtime()`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_hrtime_time).
- * @typedef {[number, number]} HRTime
- *
- * @typedef {string|InstanceType<typeof window.String>|ArrayBufferView|ArrayBuffer|Blob|Iterable<Uint8Array> | AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>} ToContent
- * @typedef {ToContent|FileInput} ToFile
- * @typedef {Iterable<ToFile> | AsyncIterable<ToFile> | ReadableStream<ToFile>} Source
- */
-/**
- * @template {AsyncIterable<Uint8Array>|Blob} Content
- * @typedef {Object} File
- * @property {string} path
- * @property {Mode} [mode]
- * @property {MTime} [mtime]
- * @property {Content} [content]
- */
-
-/**
- * @template {AsyncIterable<Uint8Array>|Blob} Content
- * @typedef {File<Content>|Directory} Entry
- */

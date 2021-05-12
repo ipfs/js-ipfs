@@ -4,9 +4,10 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
+const { Multiaddr } = require('multiaddr')
 
 describe('bootstrap', () => {
-  const peer = '/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD'
+  const peer = new Multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
   let ipfs
 
   before(() => {

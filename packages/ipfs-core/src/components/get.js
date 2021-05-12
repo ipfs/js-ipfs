@@ -2,20 +2,20 @@
 
 const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile, withTimeoutOption } = require('../utils')
+const { normalizeCidPath, mapFile } = require('../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const CID = require('cids')
 
 /**
- * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @typedef {Object} Context
+ * @property {import('ipld')} ipld
+ * @property {import('../types').Preload} preload
+ *
+ * @param {Context} context
  */
 module.exports = function ({ ipld, preload }) {
   /**
-   * Fetch a file or an entire directory tree from IPFS that is addressed by a valid IPFS Path.
-   *
-   * @param {CID|string} ipfsPath - An IPFS path or CID to export
-   * @param {Options} [options]
-   * @returns {AsyncIterable<IPFSEntry>}
+   * @type {import('ipfs-core-types/src/root').API["get"]}
    */
   async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {
@@ -27,7 +27,7 @@ module.exports = function ({ ipld, preload }) {
         throw errCode(err, 'ERR_INVALID_PATH')
       }
 
-      preload(pathComponents[0])
+      preload(new CID(pathComponents[0]))
     }
 
     for await (const file of exporter.recursive(ipfsPath, ipld, options)) {
@@ -40,14 +40,3 @@ module.exports = function ({ ipld, preload }) {
 
   return withTimeoutOption(get)
 }
-
-/**
- * @typedef {GetOptions & AbortOptions} Options
- *
- * @typedef {Object} GetOptions
- * @property {boolean} [preload]
- *
- * @typedef {import('.').CID} CID
- * @typedef {import('../utils').AbortOptions} AbortOptions
- * @typedef {import('../utils').IPFSEntry} IPFSEntry
- */

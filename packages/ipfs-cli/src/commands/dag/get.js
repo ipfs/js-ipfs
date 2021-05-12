@@ -1,8 +1,15 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const { cidToString } = require('ipfs-core-utils/src/cid')
+const {
+  stripControlCharacters,
+  makeEntriesPrintable,
+  escapeControlCharacters
+} = require('../../utils')
+const multibase = require('multibase')
 
 module.exports = {
   command: 'get <cid path>',
@@ -14,13 +21,33 @@ module.exports = {
       type: 'boolean',
       default: false
     },
+    'cid-base': {
+      describe: 'Number base to display CIDs in.',
+      type: 'string',
+      choices: Object.keys(multibase.names)
+    },
+    'data-enc': {
+      describe: 'String encoding to display data in.',
+      type: 'string',
+      choices: ['base16', 'base64', 'base58btc'],
+      default: 'base64'
+    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, cidpath, localResolve, timeout }) {
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.cidpath
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
+   * @param {boolean} argv.localResolve
+   * @param {number} argv.timeout
+   */
+  async handler ({ ctx: { ipfs, print }, cidpath, cidBase, dataEnc, localResolve, timeout }) {
     const options = {
       localResolve,
       timeout
@@ -48,24 +75,24 @@ module.exports = {
 
     const node = result.value
 
-    // TODO we need to find* a way to pretty print objects
-    // * reads as 'agree in'
-    if (node._json) {
-      delete node._json.multihash
-      node._json.data = '0x' + uint8ArrayToString(node._json.data, 'base16')
-      print(JSON.stringify(node._json, null, 4))
-      return
-    }
+    if (cid.codec === 'dag-pb') {
+      /** @type {import('ipld-dag-pb').DAGNode} */
+      const dagNode = node
 
-    if (node instanceof Uint8Array) {
-      print('0x' + uint8ArrayToString(node, 'base16'))
-      return
-    }
-
-    if (node.raw) {
-      print(node.raw)
+      print(JSON.stringify({
+        data: dagNode.Data ? uint8ArrayToString(node.Data, dataEnc) : undefined,
+        links: (dagNode.Links || []).map(link => ({
+          Name: stripControlCharacters(link.Name),
+          Size: link.Tsize,
+          Cid: { '/': cidToString(link.Hash, { base: cidBase }) }
+        }))
+      }))
+    } else if (cid.codec === 'raw') {
+      print(uint8ArrayToString(node, dataEnc))
+    } else if (cid.codec === 'dag-cbor') {
+      print(JSON.stringify(makeEntriesPrintable(node, cidBase)))
     } else {
-      print(node)
+      print(escapeControlCharacters(node.toString()))
     }
   }
 }

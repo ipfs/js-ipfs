@@ -1,7 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'cat <ipfsPath>',
@@ -25,9 +24,17 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.ipfsPath
+   * @param {number} argv.offset
+   * @param {number} argv.length
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
     for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {
-      print.write(uint8ArrayToString(buf))
+      print.write(buf)
     }
   }
 }

@@ -3,13 +3,12 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
-const loadFixture = require('aegir/fixtures')
 const { nanoid } = require('nanoid')
 const multibase = require('multibase')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const { isWebWorker } = require('ipfs-utils/src/env')
-const testTimeout = require('../utils/test-timeout')
+const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -17,6 +16,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Object} options
  */
 module.exports = (common, options) => {
+  const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -25,19 +25,13 @@ module.exports = (common, options) => {
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await common.spawn({ type: 'proc', ipfsOptions })).api
     })
 
     after(() => common.clean())
 
-    it('should respect timeout option when resoving an ipfs path', () => {
-      return testTimeout(() => ipfs.resolve('/ipfs/Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ/herp/derp', {
-        timeout: 1
-      }))
-    })
-
     it('should resolve an IPFS hash', async () => {
-      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = uint8ArrayFromString('Hello world')
 
       const { cid } = await ipfs.add(content)
       const path = await ipfs.resolve(`/ipfs/${cid}`)
@@ -55,7 +49,7 @@ module.exports = (common, options) => {
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash
     it('should resolve an IPFS path link', async () => {
       const path = 'path/to/testfile.txt'
-      const content = loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
+      const content = uint8ArrayFromString('Hello world')
       const [{ cid: fileCid }, , , { cid: rootCid }] = await all(ipfs.addAll([{ path, content }], { wrapWithDirectory: true }))
       const resolve = await ipfs.resolve(`/ipfs/${rootCid}/${path}`)
 

@@ -1,33 +1,19 @@
 'use strict'
 
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath, withTimeoutOption } = require('../../utils')
+const { resolvePath } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { PinTypes } = require('./pin-manager')
 
 /**
  * @param {Object} config
  * @param {import('./pin-manager')} config.pinManager
- * @param {import('..').GCLock} config.gcLock
- * @param {import('..').DAG} config.dag
+ * @param {import('.').GCLock} config.gcLock
+ * @param {import('ipld')} config.ipld
  */
-module.exports = ({ pinManager, gcLock, dag }) => {
+module.exports = ({ pinManager, gcLock, ipld }) => {
   /**
-   * Unpin one or more blocks from your repo
-   *
-   * @param {Source} source - Unpin all pins from the source
-   * @param {AbortOptions} [_options]
-   * @returns {AsyncIterable<CID>}
-   * @example
-   * ```js
-   * const source = [
-   *   CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-   * ]
-   * for await (const cid of ipfs.pin.rmAll(source)) {
-   *   console.log(cid)
-   * }
-   * // prints the CIDs that were unpinned
-   * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
-   * ```
+   * @type {import('ipfs-core-types/src/pin').API["rmAll"]}
    */
   async function * rmAll (source, _options = {}) {
     const release = await gcLock.readLock()
@@ -35,7 +21,7 @@ module.exports = ({ pinManager, gcLock, dag }) => {
     try {
       // verify that each hash can be unpinned
       for await (const { path, recursive } of normaliseInput(source)) {
-        const cid = await resolvePath(dag, path)
+        const cid = await resolvePath(ipld, path)
         const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
 
         if (!pinned) {
@@ -70,9 +56,3 @@ module.exports = ({ pinManager, gcLock, dag }) => {
 
   return withTimeoutOption(rmAll)
 }
-
-/**
- * @typedef {import('..').CID} CID
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- * @typedef {import('./add-all').Source} Source
- */

@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,12 +22,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when creating a new object', () => {
-      return testTimeout(() => ipfs.object.new({
-        timeout: 1
-      }))
-    })
 
     it('should create a new object with no template', async () => {
       const cid = await ipfs.object.new()

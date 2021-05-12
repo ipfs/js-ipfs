@@ -10,11 +10,26 @@ const log = Object.assign(debug('ipfs:ipns'), {
 const IpnsPublisher = require('./publisher')
 const IpnsRepublisher = require('./republisher')
 const IpnsResolver = require('./resolver')
-const { normalizePath } = require('../utils')
 const TLRU = require('../utils/tlru')
 const defaultRecordTtl = 60 * 1000
+const uint8ArrayToString = require('uint8arrays/to-string')
+
+/**
+ * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ * @typedef {import('peer-id')} PeerId
+ */
 
 class IPNS {
+  /**
+   * @param {import('ipfs-core-types/src/utils').BufferStore} routing
+   * @param {import('interface-datastore').Datastore} datastore
+   * @param {PeerId} peerId
+   * @param {import('libp2p/src/keychain')} keychain
+   * @param {object} options
+   * @param {string} options.pass
+   * @param {number} [options.initialBroadcastInterval]
+   * @param {number} [options.broadcastInterval]
+   */
   constructor (routing, datastore, peerId, keychain, options) {
     this.publisher = new IpnsPublisher(routing, datastore)
     this.republisher = new IpnsRepublisher(this.publisher, datastore, peerId, keychain, options)
@@ -23,15 +38,19 @@ class IPNS {
     this.routing = routing
   }
 
-  // Publish
+  /**
+   * Publish
+   *
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   * @param {number} lifetime
+   */
   async publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
     try {
-      value = normalizePath(value)
-
       const peerId = await createFromPrivKey(privKey.bytes)
       await this.publisher.publishWithEOL(privKey, value, lifetime)
 
-      log(`IPNS value ${value} was published correctly`)
+      log(`IPNS value ${uint8ArrayToString(value, 'base32')} was published correctly`)
 
       // // Add to cache
       const id = peerId.toB58String()
@@ -41,7 +60,7 @@ class IPNS {
 
       this.cache.set(id, value, ttl)
 
-      log(`IPNS value ${value} was cached correctly`)
+      log(`IPNS value ${uint8ArrayToString(value, 'base32')} was cached correctly`)
 
       return {
         name: id,
@@ -54,7 +73,14 @@ class IPNS {
     }
   }
 
-  // Resolve
+  /**
+   * Resolve
+   *
+   * @param {string} name
+   * @param {object} options
+   * @param {boolean} [options.nocache]
+   * @param {boolean} [options.recursive]
+   */
   async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('name received is not valid'), 'ERR_INVALID_NAME')
@@ -84,8 +110,14 @@ class IPNS {
     }
   }
 
-  // Initialize keyspace
-  // sets the ipns record for the given key to point to an empty directory
+  /**
+   * Initialize keyspace
+   *
+   * Sets the ipns record for the given key to point to an empty directory
+   *
+   * @param {PrivateKey} privKey
+   * @param {Uint8Array} value
+   */
   async initializeKeyspace (privKey, value) { // eslint-disable-line require-await
     return this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime)
   }

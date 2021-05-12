@@ -5,6 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const f = require('./utils/factory')()
+const first = require('it-first')
 
 describe('.log', function () {
   this.timeout(100 * 1000)
@@ -26,11 +27,10 @@ describe('.log', function () {
       }
     }, 1000)
 
-    for await (const message of ipfs.log.tail()) {
-      clearInterval(i)
-      expect(message).to.be.an('object')
-      break
-    }
+    const message = await first(ipfs.log.tail())
+
+    clearInterval(i)
+    expect(message).to.be.an('object')
   })
 
   it('.log.ls', async () => {

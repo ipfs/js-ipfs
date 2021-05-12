@@ -16,6 +16,12 @@ const S_IROTH = parseInt('4', 8) //      others have read permission
 const S_IWOTH = parseInt('2', 8) //      others have write permission
 const S_IXOTH = parseInt('1', 8) //      others have execute permission
 
+/**
+ * @param {number} mode
+ * @param {number} perm
+ * @param {string} type
+ * @param {string[]} output
+ */
 function checkPermission (mode, perm, type, output) {
   if ((mode & perm) === perm) {
     output.push(type)
@@ -25,8 +31,7 @@ function checkPermission (mode, perm, type, output) {
 }
 
 /**
- *
- * @param {Mode} mode
+ * @param {number} mode
  * @param {boolean} isDirectory
  * @returns {string}
  */
@@ -70,7 +75,3 @@ function formatMode (mode, isDirectory) {
 }
 
 module.exports = formatMode
-
-/**
- * @typedef {number} Mode
- */

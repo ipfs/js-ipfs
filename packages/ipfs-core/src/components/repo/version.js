@@ -1,17 +1,19 @@
 'use strict'
 
 const { repoVersion } = require('ipfs-repo')
-const { withTimeoutOption } = require('../../utils')
+const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {Object} config
+ * @param {import('ipfs-repo')} config.repo
+ */
 module.exports = ({ repo }) => {
   /**
-   * If the repo has been initialized, report the current version.
-   * Otherwise report the version that would be initialized.
-   *
-   * @returns {number}
+   * @type {import('ipfs-core-types/src/repo').API["version"]}
    */
-  return withTimeoutOption(async function version (options) {
+  async function version (options = {}) {
     try {
+      // @ts-ignore - not a public API
       await repo._checkInitialized(options)
     } catch (err) {
       // TODO: (dryajov) This is really hacky, there must be a better way
@@ -29,6 +31,8 @@ module.exports = ({ repo }) => {
       throw err
     }
 
-    return repo.version.get(options)
-  })
+    return repo.version.get()
+  }
+
+  return withTimeoutOption(version)
 }

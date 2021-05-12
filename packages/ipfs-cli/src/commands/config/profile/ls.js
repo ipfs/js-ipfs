@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'ls',
@@ -14,6 +14,11 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../../types').Context} argv.ctx
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     for (const profile of await ipfs.config.profiles.list({
       timeout

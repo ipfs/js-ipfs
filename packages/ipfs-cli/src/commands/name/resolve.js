@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'resolve [<name>]',
@@ -32,6 +32,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {boolean} argv.nocache
+   * @param {boolean} argv.recursive
+   * @param {boolean} argv.stream
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, nocache, recursive, name, stream, timeout }) {
     let bestValue
 
@@ -40,6 +49,6 @@ module.exports = {
       if (stream) print(value)
     }
 
-    if (!stream) print(bestValue)
+    if (!stream) print(bestValue || '')
   }
 }

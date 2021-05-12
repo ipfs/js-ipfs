@@ -3,7 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'chmod [mode] [path]',
@@ -50,6 +50,17 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {number} argv.mode
+   * @param {boolean} argv.recursive
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {boolean} argv.flush
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     path,

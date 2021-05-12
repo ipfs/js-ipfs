@@ -73,10 +73,10 @@ describe('libp2p customization', function () {
 
   describe('bundle', () => {
     it('should allow for using a libp2p bundle', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         options: {
           libp2p: (opts) => {
-            return new Libp2p({
+            return Libp2p.create({
               peerId: opts.peerId,
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
@@ -97,10 +97,10 @@ describe('libp2p customization', function () {
     })
 
     it('should pass libp2p options to libp2p bundle function', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         options: {
           libp2p: (opts) => {
-            return new Libp2p({
+            return Libp2p.create({
               peerId: opts.peerId,
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
@@ -123,7 +123,7 @@ describe('libp2p customization', function () {
 
   describe('options', () => {
     it('should use options by default', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
@@ -148,9 +148,7 @@ describe('libp2p customization', function () {
         },
         pubsub: {
           enabled: true,
-          emitSelf: true,
-          signMessages: true,
-          strictSigning: true
+          emitSelf: true
         }
       })
       const transports = Array.from(libp2p.transportManager.getTransports())
@@ -158,7 +156,9 @@ describe('libp2p customization', function () {
     })
 
     it('should allow for overriding via options', async () => {
-      libp2p = libp2pComponent({
+      const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
+
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
@@ -169,7 +169,10 @@ describe('libp2p customization', function () {
               transport: [DummyTransport],
               peerDiscovery: [DummyDiscovery]
             },
-            config: { relay: { enabled: false } }
+            config: { relay: { enabled: false } },
+            addresses: {
+              announce: [annAddr]
+            }
           }
         }
       })
@@ -183,12 +186,35 @@ describe('libp2p customization', function () {
       const discoveries = Array.from(libp2p._discovery.values())
       expect(discoveries).to.have.length(1)
       expect(discoveries[0] instanceof DummyDiscovery).to.be.true()
+
+      expect(libp2p.multiaddrs.map(m => m.toString())).to.include(annAddr)
     })
   })
 
   describe('config', () => {
+    it('should be able to specify Announce addresses', async () => {
+      const annAddr = '/dns4/test.ipfs.io/tcp/443/wss'
+
+      libp2p = await libp2pComponent({
+        peerId,
+        repo: { datastore },
+        print: console.log, // eslint-disable-line no-console
+        config: {
+          ...testConfig,
+          Addresses: {
+            ...testConfig.Addresses,
+            Announce: [annAddr]
+          }
+        }
+      })
+
+      await libp2p.start()
+
+      expect(libp2p.multiaddrs.map(m => m.toString())).to.include(annAddr)
+    })
+
     it('should select gossipsub as pubsub router', async () => {
-      libp2p = libp2pComponent({
+      libp2p = await libp2pComponent({
         peerId,
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console

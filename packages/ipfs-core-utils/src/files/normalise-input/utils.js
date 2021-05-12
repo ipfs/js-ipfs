@@ -1,6 +1,6 @@
 'use strict'
 
-const { Blob } = require('ipfs-utils/src/globalthis')
+const { Blob } = globalThis
 
 /**
  * @param {any} obj
@@ -22,7 +22,7 @@ function isBlob (obj) {
  * An object with a path or content property
  *
  * @param {any} obj
- * @returns {obj is import('./normalise-input').FileInput}
+ * @returns {obj is import('ipfs-core-types/src/utils').ImportCandidate}
  */
 function isFileObject (obj) {
   return typeof obj === 'object' && (obj.path || obj.content)

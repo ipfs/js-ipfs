@@ -1,0 +1,32 @@
+{
+  "name": "ipfs-grpc-protocol",
+  "version": "0.3.0",
+  "description": "Protobuf definitions for the IPFS gRPC API",
+  "keywords": [
+    "ipfs"
+  ],
+  "main": "dist/ipfs.json",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "license": "(Apache-2.0 OR MIT)",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "scripts": {
+    "test": "echo 'No tests here'",
+    "clean": "rimraf ./dist",
+    "prepare": "npm run build",
+    "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"
+  },
+  "devDependencies": {
+    "mkdirp": "^1.0.4",
+    "protobufjs": "^6.10.2",
+    "rimraf": "^3.0.2"
+  }
+}

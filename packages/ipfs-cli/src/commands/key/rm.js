@@ -1,6 +1,9 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
+const {
+  stripControlCharacters
+} = require('../../utils')
 
 module.exports = {
   command: 'rm <name>',
@@ -14,10 +17,16 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, name, timeout }) {
     const key = await ipfs.key.rm(name, {
       timeout
     })
-    print(`${key.id} ${key.name}`)
+    print(`${key.id} ${stripControlCharacters(key.name)}`)
   }
 }
