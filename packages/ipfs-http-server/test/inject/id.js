@@ -6,7 +6,6 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
-const PeerId = require('peer-id')
 
 const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal),
@@ -69,11 +68,11 @@ describe('/id', () => {
   })
 
   it('get the id of another peer', async () => {
-    const peerId = PeerId.createFromB58String('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
+    const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
     ipfs.id.withArgs({
       ...defaultOptions,
-      peerId: peerId.toString()
+      peerId
     }).returns({
       id: 'id',
       publicKey: 'publicKey',

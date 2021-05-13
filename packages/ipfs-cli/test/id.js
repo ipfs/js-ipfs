@@ -7,7 +7,8 @@ const sinon = require('sinon')
 const PeerId = require('peer-id')
 
 const defaultOptions = {
-  timeout: undefined
+  timeout: undefined,
+  peerId: undefined
 }
 
 describe('id', () => {

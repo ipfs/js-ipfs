@@ -79,7 +79,7 @@ module.exports = (common, options) => {
         })
 
         expect(result).to.deep.equal(ipfsB.peerId)
-      }, {retries: 5})
+      }, { retries: 5 })
     })
 
     it('should get our own id when passed as an option', async function () {
