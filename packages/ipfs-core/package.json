@@ -94,7 +94,7 @@
     "it-map": "^1.0.4",
     "it-pipe": "^1.1.0",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.31.2",
+    "libp2p": "^0.31.5",
     "libp2p-bootstrap": "^0.12.3",
     "libp2p-crypto": "^0.19.3",
     "libp2p-floodsub": "^0.25.1",

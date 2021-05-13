@@ -4,6 +4,7 @@ const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
+const pkgversion = require('../../package.json').version
 
 /**
  * @typedef {Object} KeychainConfig
@@ -134,6 +135,9 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     keychain: {
       datastore: keys,
       ...keychainConfig
+    },
+    host: {
+      agentVersion: `js-ipfs/${pkgversion}`
     }
   }
 

@@ -40,7 +40,7 @@ export interface API<OptionExtension = {}> {
    * console.log(identity)
    * ```
    */
-  id: (options?: AbortOptions & OptionExtension) => Promise<IDResult>
+  id: (options?: IDOptions & OptionExtension) => Promise<IDResult>
 
   /**
    * Returns the implementation version
@@ -287,6 +287,10 @@ export interface GetOptions extends AbortOptions, PreloadOptions {}
 export interface ListOptions extends AbortOptions, PreloadOptions {
   recursive?: boolean
   includeContent?: boolean
+}
+
+export interface IDOptions extends AbortOptions {
+  peerId?: string
 }
 
 export interface IDResult {
