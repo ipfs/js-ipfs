@@ -10,7 +10,8 @@ const PeerId = require('peer-id')
 
 const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal),
-  timeout: undefined
+  timeout: undefined,
+  peerId: undefined
 }
 
 describe('/id', () => {
