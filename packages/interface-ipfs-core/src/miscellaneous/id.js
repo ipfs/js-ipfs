@@ -69,6 +69,11 @@ module.exports = (common, options) => {
     })
 
     it('should get the id of another node in the swarm', async function () {
+      if (isWebWorker) {
+        // TODO: https://github.com/libp2p/js-libp2p-websockets/issues/129
+        return this.skip()
+      }
+
       const ipfsB = (await common.spawn()).api
       await ipfs.swarm.connect(ipfsB.peerId.addresses[0])
 
