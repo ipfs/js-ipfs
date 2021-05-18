@@ -167,13 +167,13 @@ const decodePeerId = (peerId) => {
  *
  * @param {Print} print
  * @param {Object} options
- * @param {KeyType} [options.algorithm='RSA']
+ * @param {KeyType} [options.algorithm='Ed25519']
  * @param {number} [options.bits=2048]
  * @returns {Promise<PeerId>}
  */
-const initPeerId = (print, { algorithm = 'RSA', bits = 2048 }) => {
+const initPeerId = (print, { algorithm = 'Ed25519', bits = 2048 }) => {
   // Generate peer identity keypair + transform to desired format + add to config.
-  print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
+  print('generating %s keypair...', algorithm)
   return PeerId.create({ keyType: algorithm, bits })
 }
 

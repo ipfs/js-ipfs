@@ -24,14 +24,14 @@ module.exports = {
       .option('algorithm', {
         type: 'string',
         alias: 'a',
-        default: 'RSA',
+        default: 'Ed25519',
         describe: 'Cryptographic algorithm to use for key generation. Supports [RSA, Ed25519, secp256k1]'
       })
       .option('bits', {
         type: 'number',
         alias: 'b',
         default: '2048',
-        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)',
+        describe: 'Number of bits to use if the generated private key is RSA (defaults to 2048)',
         coerce: Number
       })
       .option('empty-repo', {
