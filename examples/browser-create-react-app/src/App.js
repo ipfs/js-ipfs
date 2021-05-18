@@ -4,8 +4,11 @@ import useIpfs from './hooks/use-ipfs.js'
 import logo from './ipfs-logo.svg'
 
 const App = () => {
-  const { ipfs, ipfsInitError } = useIpfsFactory({ commands: ['id'] })
-  const id = useIpfs(ipfs, 'id')
+    // there is no change when we comment out the args of useIpfsFactory -> remove args?
+    const { ipfs, ipfsInitError } = useIpfsFactory(/*{ commands: ['id'] }*/)
+    // retrieve id of the current peer (see https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/MISCELLANEOUS.md)
+    const id = useIpfs(ipfs, 'id')
+
   return (
     <div className='sans-serif'>
       <header className='flex items-center pa3 bg-navy bb bw3 b--aqua'>
@@ -26,27 +29,29 @@ const App = () => {
   )
 }
 
-const Title = ({ children }) => {
-  return (
-    <h2 className='f5 ma0 pb2 tracked aqua fw4 montserrat'>{children}</h2>
-  )
-}
-
 const IpfsId = (props) => {
-  if (!props) return null
-  return (
-    <section className='bg-snow mw7 center mt5'>
-      <h1 className='f3 fw4 ma0 pv3 aqua montserrat tc' data-test='title'>Connected to IPFS</h1>
-      <div className='pa4'>
-        {['id', 'agentVersion'].map((key) => (
-          <div className='mb4' key={key}>
-            <Title>{key}</Title>
-            <div className='bg-white pa2 br2 truncate monospace' data-test={key}>{props[key]}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
+    // the props of this component are all key-value pairs of the object 'id'
+    // prints out the values of the keys 'id' and 'agentVersion' of the object 'id'
+    if (!props) return null
+    return (
+        <section className='bg-snow mw7 center mt5'>
+        <h1 className='f3 fw4 ma0 pv3 aqua montserrat tc' data-test='title'>Connected – properties of current IPFS node</h1>
+        <div className='pa4'>
+            {['id', 'agentVersion'].map((key) => (
+            <div className='mb4' key={key}>
+                <Title>{key}</Title>
+                <div className='bg-white pa2 br2 truncate monospace' data-test={key}>{props[key]}</div>
+            </div>
+            ))}
+        </div>
+        </section>
+    )
 }
 
-export default App
+const Title = ({ children }) => {
+    return (
+      <h2 className='f5 ma0 pb2 tracked aqua fw4 montserrat'>{children}</h2>
+    )
+  }
+  
+  export default App

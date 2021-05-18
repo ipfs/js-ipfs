@@ -2,24 +2,35 @@
 
 A minimal demonstration of how to use js-ipfs in a `create-react-app` generated app.
 
-It boots up a js-ipfs instance via a custom React hook in `./src/hooks/use-ipfs-factory.js`, which is called from `./src/App.js`, which is where the magic happens.
+It boots up a js-ipfs instance (an IPFS node) via a custom React hook in `./src/hooks/use-ipfs-factory.js`, which is called from `./src/App.js`. Once the IPFS node is set up, `App.js` displays its ident  and its version number.
 
-![Screen shot of the js ipfs node id info](./screenshot.png)
+![Screen shot of the js ipfs node id info](./images/screenshot.png)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). **v2.1.3**
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). **v2.1.3**. It has been tested with `node` **v12.18.4** (`npm` **v6.14.6**) and `node` **v14.17.0** (`npm` **v7.13.0****)
 
-## Before you start
+**Note**: this example is useful to learn how to spawn IPFS from a web page, but this is not the best way to use IPFS because it will spawn an IPFS daemon regardless of whether there is already another daemon running on the same computer. See https://github.com/ipfs/in-web-browsers/issues/158. For pragmatic uses, you may want to call directly the IPFS node run by Infura, see tutorial at https://github.com/kvutien/ipfs-dapp.
 
-First clone this repo, install dependencies in the project root and build the project.
+## To start
+
+First clone the whole repo, install dependencies limited to this project `browser-create-react-app` and run the demo.
 
 ```console
 $ git clone https://github.com/ipfs/js-ipfs.git
-$ cd js-ipfs
+$ cd js-ipfs/examples/browser-create-react-app
 $ npm install
-$ npm run build
+$ npm start
 ```
+## Call structure in `App.js`
+All React applications store their main logic in `App.js`. For this demo, the calling sequence of `App.js` is ![App.js](./images/appJsStructure.png)
+* `App.js` renders the cosmetics of the demo
+* `useIpfsFactory.js` initialises and closes the IPFS daemon 
+* `useIpfs.js` does the actual calls to IPFS
 
-## Available Scripts
+## Annex: console message `[HMR] Waiting for update signal from WDS...`
+
+This message comes from the hot reload capability of webpack, that can update the web app every time you save your development code. To remove it, see here: https://stackoverflow.com/questions/59695102/reactjs-console-error-hmr-waiting-for-update-signal-from-wds
+
+## Annex: available Scripts from create-react-app
 
 In the project directory, you can run:
 
@@ -42,46 +53,16 @@ Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Your app is ready to be deployed! For example drag-and-dropped in the Netlify manual installation page.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+But with modern hosting services like Heroku, Netlity or Fleek, you can skip the build because they will do a complete github deployment for you. See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You can learn more on IPFS API in the [IPFS documentation](https://docs.ipfs.io/) and [IPFS npm documentation](https://www.npmjs.com/package/ipfs-http-client).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Details how to use the File System abstraction of IPFS (add, cat, egt, ls etc.) are [here](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md)
 
-### Code Splitting
+To have a high level view of IPFS, check out the [ConsenSys blog](https://medium.com/@ConsenSys/an-introduction-to-ipfs-9bba4860abd0).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
