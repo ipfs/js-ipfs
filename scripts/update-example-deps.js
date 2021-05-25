@@ -88,7 +88,7 @@ async function main () {
   }
 
   console.info('Pushing updated dependencies')
-  await execa('git', ['commit', '-m', '"chore: updated example dependencies"'])
+  await execa('git', ['commit', '-m', 'chore: updated example dependencies'])
   await execa('git', ['push'])
 }
 
