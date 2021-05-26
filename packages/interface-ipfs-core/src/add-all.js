@@ -13,7 +13,6 @@ const { supportsFileReader } = require('ipfs-utils/src/supports')
 const globSource = require('ipfs-utils/src/files/glob-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const bufferStream = require('it-buffer-stream')
 
@@ -60,12 +59,6 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
-
-    it('should respect timeout option when adding files', () => {
-      return testTimeout(() => drain(ipfs.addAll(uint8ArrayFromString('Hello'), {
-        timeout: 1
-      })))
-    })
 
     it('should add a File as array of tuples', async function () {
       if (!supportsFileReader) return this.skip('skip in node')
@@ -355,11 +348,11 @@ module.exports = (common, options) => {
     it('should add a file from the file system', async function () {
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, '..', 'test', 'fixtures', 'testfile.txt')
+      const filePath = path.join(__dirname, 'add-all.js')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('testfile.txt')
+      expect(result[0].path).to.equal('add-all.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {

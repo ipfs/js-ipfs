@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import IPFS from 'ipfs'
 import uint8ArrayConcat from 'uint8arrays/concat'
 import uint8ArrayToString from 'uint8arrays/to-string'

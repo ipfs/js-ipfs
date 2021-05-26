@@ -12,7 +12,7 @@ const last = require('it-last')
 const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -83,6 +83,19 @@ module.exports = (common, options) => {
       const cidv0 = cidv1.toV0()
 
       const output = await all(ipfs.get(cidv0))
+      expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
+    })
+
+    it('should get a file added as CIDv1 with rawLeaves', async () => {
+      const input = uint8ArrayFromString(`TEST${Math.random()}`)
+
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: true }))
+
+      const cidv1 = res[0].cid
+      expect(cidv1.version).to.equal(1)
+
+      const output = await all(ipfs.get(cidv1))
+      expect(output[0].type).to.eql('file')
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 

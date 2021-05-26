@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.4.3",
+  "version": "0.7.1",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -13,53 +13,42 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
-  "browser": {},
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
-      ]
-    }
+  "types": "dist/src/index.d.ts",
+  "browser": {
+    "worker_threads": false
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "build": "aegir build",
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir lint",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
-    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i @types/* -i typescript -i rimraf"
+    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-message-port-protocol": "^0.4.3",
+    "ipfs-core-types": "^0.5.0",
+    "ipfs-message-port-protocol": "^0.7.1",
     "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "@types/it-all": "^1.0.0",
-    "aegir": "^29.2.2",
-    "cids": "^1.0.0",
-    "ipfs-utils": "^5.0.0",
-    "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "aegir": "^33.0.0",
+    "cids": "^1.1.6",
+    "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=10.3.0",
+    "node": ">=14.0.0",
     "npm": ">=3.0.0"
-  },
-  "contributors": [
-    "Irakli Gozalishvili <dev@gozala.io>"
-  ]
+  }
 }

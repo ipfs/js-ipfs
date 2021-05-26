@@ -27,7 +27,7 @@
   <br>
 </p>
 
-> A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
+> A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
 ## Lead Maintainer <!-- omit in toc -->
 
@@ -39,16 +39,21 @@
   - [Install](#install)
   - [Next Steps](#next-steps)
 - [Usage](#usage)
+    - [`create([options])`](#createoptions)
+    - [Parameters](#parameters)
+    - [Options](#options)
+    - [Returns](#returns)
+    - [Example](#example)
   - [API](#api)
   - [Additional Options](#additional-options)
   - [Instance Utils](#instance-utils)
   - [Static Types and Utils](#static-types-and-utils)
     - [Glob source](#glob-source)
       - [`globSource(path, [options])`](#globsourcepath-options)
-      - [Example](#example)
+      - [Example](#example-1)
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
-      - [Example](#example-1)
+      - [Example](#example-2)
   - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [In a web browser](#in-a-web-browser)
@@ -86,6 +91,53 @@ Both the Current and Active LTS versions of Node.js are supported. Please see [n
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
 
 ## Usage
+
+#### `create([options])`
+
+> create an instance of the HTTP API client
+
+#### Parameters
+
+None
+
+#### Options
+
+`options` can be a `String`, a `URL` or a `Multiaddr` which will be interpreted as the address of the IPFS node we wish to use the API of.
+
+Alternatively it can be an object which may have the following keys:
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| url | `String` or `URL` or `Multiaddr` | `'http://localhost:5001/api/v0'` | A URL that resolves to a running instance of the IPFS HTTP API |
+| protocol | `String` | `'http'` | The protocol to used (ignored if url is specified) |
+| host | `String` | `'localhost'` | The host to used (ignored if url is specified) |
+| port | `number` | `5001` | The port to used (ignored if url is specified) |
+| path | `String` | `'api/v0'` | The path to used (ignored if url is specified) |
+| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `http.Agent({ keepAlive: true, maxSockets: 6 })` | An `http.Agent` used to control client behaviour (node.js only) |
+
+#### Returns
+
+| Type | Description |
+| -------- | -------- |
+| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)  |
+
+#### Example
+
+```JavaScript
+const { create } = require('ipfs-http-client')
+
+// connect to the default API address http://localhost:5001
+const client = create()
+
+// connect to a different API
+const client = create('http://127.0.0.1:5002')
+
+// connect using a URL
+const client = create(new URL('http://127.0.0.1:5002'))
+
+// call Core API methods
+const { cid } = await client.add('Hello world!')
+```
 
 ### API
 
@@ -143,9 +195,8 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const IpfsHttpClient = require('ipfs-http-client')
-const { globSource } = IpfsHttpClient
-const ipfs = IpfsHttpClient()
+const { create, globSource } = require('ipfs-http-client')
+const ipfs = create()
 
 const file = await ipfs.add(globSource('./docs', { recursive: true }))
 console.log(file)
@@ -178,9 +229,8 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const IpfsHttpClient = require('ipfs-http-client')
-const { urlSource } = IpfsHttpClient
-const ipfs = IpfsHttpClient()
+const { create, urlSource } = require('ipfs-http-client')
+const ipfs = create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
 console.log(file)
@@ -213,19 +263,19 @@ To interact with the API, you need to have a local daemon running. It needs to b
 ### Importing the module and usage
 
 ```javascript
-const ipfsClient = require('ipfs-http-client')
+const { create } = require('ipfs-http-client')
 
 // connect to ipfs daemon API server
-const ipfs = ipfsClient('http://localhost:5001') // (the default in Node.js)
+const ipfs = create('http://localhost:5001') // (the default in Node.js)
 
 // or connect with multiaddr
-const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
+const ipfs = create('/ip4/127.0.0.1/tcp/5001')
 
 // or using options
-const ipfs = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' })
+const ipfs = create({ host: 'localhost', port: '5001', protocol: 'http' })
 
 // or specifying a specific API path
-const ipfs = ipfsClient({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' })
+const ipfs = create({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' })
 ```
 
 ### In a web browser
@@ -282,7 +332,7 @@ const ipfs = window.IpfsHttpClient()
 If you wish to send custom headers with each request made by this library, for example, the Authorization header. You can use the config to do so:
 
 ```js
-const ipfs = ipfsClient({
+const ipfs = create({
   host: 'localhost',
   port: 5001,
   protocol: 'http',
@@ -298,9 +348,9 @@ To set a global timeout for _all_ requests pass a value for the `timeout` option
 
 ```js
 // Timeout after 10 seconds
-const ipfs = ipfsClient({ timeout: 10000 })
+const ipfs = create({ timeout: 10000 })
 // Timeout after 2 minutes
-const ipfs = ipfsClient({ timeout: '2m' })
+const ipfs = create({ timeout: '2m' })
 // see https://www.npmjs.com/package/parse-duration for valid string values
 ```
 

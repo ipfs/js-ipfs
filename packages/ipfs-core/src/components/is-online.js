@@ -2,7 +2,7 @@
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../types').NetworkService} config.network
  */
 module.exports = ({ network }) =>
   /**
@@ -10,5 +10,5 @@ module.exports = ({ network }) =>
    */
   () => {
     const net = network.try()
-    return net != null && net.libp2p.isStarted()
+    return net != null && Boolean(net.libp2p.isStarted())
   }

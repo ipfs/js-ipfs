@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const { expect } = require('aegir/utils/chai')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -315,9 +315,6 @@ describe('/files', () => {
 
   describe('/get', () => {
     const defaultOptions = {
-      archive: false,
-      compress: false,
-      compressionLevel: undefined,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -379,6 +376,8 @@ describe('/files', () => {
           Depth: 1,
           Hash: cid.toString(),
           Mode: '0420',
+          Mtime: undefined,
+          MtimeNsecs: undefined,
           Name: 'link',
           Size: 10,
           Type: 2
@@ -405,6 +404,9 @@ describe('/files', () => {
         Hash: `${cid}/derp`,
         Depth: 1,
         Mode: '0420',
+        Mtime: undefined,
+        MtimeNsecs: undefined,
+        Name: undefined,
         Size: 10,
         Type: 2,
         Links: []
@@ -435,6 +437,9 @@ describe('/files', () => {
         Links: [{
           Depth: 1,
           Hash: cid.toString(),
+          Mode: undefined,
+          Mtime: undefined,
+          MtimeNsecs: undefined,
           Name: 'link',
           Size: 10,
           Type: 2
@@ -470,6 +475,8 @@ describe('/files', () => {
           Depth: 1,
           Hash: cid.toString(),
           Mode: '0420',
+          Mtime: undefined,
+          MtimeNsecs: undefined,
           Name: 'link',
           Size: 10,
           Type: 2

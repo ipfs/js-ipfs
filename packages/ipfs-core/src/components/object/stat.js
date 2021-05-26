@@ -5,18 +5,14 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Preload} config.preload
+ * @param {import('ipld')} config.ipld
+ * @param {import('../../types').Preload} config.preload
  */
 module.exports = ({ ipld, preload }) => {
   const get = require('./get')({ ipld, preload })
 
   /**
-   * Returns stats about an Object
-   *
-   * @param {CID} multihash
-   * @param {StatOptions & AbortOptions} options
-   * @returns {Promise<Stat>}
+   * @type {import('ipfs-core-types/src/object').API["stat"]}
    */
   async function stat (multihash, options = {}) {
     const node = await get(multihash, options)
@@ -40,16 +36,3 @@ module.exports = ({ ipld, preload }) => {
 
   return withTimeoutOption(stat)
 }
-/**
- * @typedef {Object} Stat
- * @property {string} Hash
- * @property {number} NumLinks
- * @property {number} BlockSize
- * @property {number} LinksSize
- * @property {number} DataSize
- * @property {number} CumulativeSize
- *
- * @typedef {import('./get').GetOptions} StatOptions
- * @typedef {import('.').CID} CID
- * @typedef {import('.').AbortOptions} AbortOptions
- */

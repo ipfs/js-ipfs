@@ -2,6 +2,9 @@
 
 const Joi = require('../../utils/joi')
 
+/**
+ * @param {any} key
+ */
 function toKeyInfo (key) {
   return {
     Name: key.name,
@@ -21,6 +24,10 @@ exports.list = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -62,6 +69,10 @@ exports.rm = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -100,6 +111,10 @@ exports.rename = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -152,6 +167,10 @@ exports.gen = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {
@@ -200,6 +219,10 @@ exports.import = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler: async (request, h) => {
     const {
       app: {

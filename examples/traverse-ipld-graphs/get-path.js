@@ -15,13 +15,13 @@ async function main () {
   const cid = await ipfs.dag.put(myData, { format: 'dag-cbor', hashAlg: 'sha2-256' })
   let result
 
-  result = await ipfs.dag.get(cid, 'name')
+  result = await ipfs.dag.get(cid, { path: 'name' })
   console.log(result.value)
 
-  result = await ipfs.dag.get(cid, 'likes')
+  result = await ipfs.dag.get(cid, { path: 'likes' })
   console.log(result.value)
 
-  result = await ipfs.dag.get(cid + '/likes/0')
+  result = await ipfs.dag.get(cid, { path: '/likes/0' })
   console.log(result.value)
 }
 

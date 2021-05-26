@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'ping <peerId>',
@@ -19,6 +19,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {number} argv.count
+   * @param {string} argv.peerId
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, count, peerId, timeout }) {
     for await (const pong of ipfs.ping(peerId, { count, timeout })) {
       const { success, time, text } = pong

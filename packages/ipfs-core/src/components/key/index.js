@@ -8,6 +8,10 @@ const createList = require('./list')
 const createRename = require('./rename')
 const createRm = require('./rm')
 
+/**
+ * @typedef {import('libp2p/src/keychain')} Keychain
+ */
+
 class KeyAPI {
   /**
    * @param {Object} config
@@ -24,12 +28,3 @@ class KeyAPI {
   }
 }
 module.exports = KeyAPI
-
-/**
- * @typedef {import('..').Keychain} Keychain
- * @typedef {import('..').AbortOptions} AbortOptions
- *
- * @typedef {Object} Key
- * @property {string} name
- * @property {string} id
- */

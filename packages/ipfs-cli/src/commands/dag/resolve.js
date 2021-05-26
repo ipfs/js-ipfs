@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'resolve <ref>',
@@ -17,6 +17,12 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.ref
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, ref, timeout }) {
     const options = {
       timeout
@@ -32,6 +38,7 @@ module.exports = {
           ref = ref.substring(6)
         }
 
+        // @ts-ignore we will toString this so it doesn't matter
         lastCid = ref.split('/').shift()
       }
 

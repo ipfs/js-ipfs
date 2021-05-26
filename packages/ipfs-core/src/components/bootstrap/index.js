@@ -8,7 +8,7 @@ const createRm = require('./rm')
 class BootstrapAPI {
   /**
    * @param {Object} config
-   * @param {Repo} config.repo
+   * @param {import('ipfs-repo')} config.repo
    */
   constructor ({ repo }) {
     this.add = createAdd({ repo })
@@ -19,10 +19,3 @@ class BootstrapAPI {
   }
 }
 module.exports = BootstrapAPI
-
-/**
- * @typedef {import('..').Repo} Repo
- * @typedef {import('..').AbortOptions} AbortOptions
- * @typedef {import('..').CID} CID
- * @typedef {import('..').Multiaddr} Multiaddr
- */

@@ -25,25 +25,35 @@ const mfsRm = {
         })
     }
   },
+
+  /**
+   * @param {import('../../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
-      ipfs
-    } = request.server.app
-    const {
-      arg,
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        arg,
+        recursive,
+        shardSplitThreshold,
+        timeout
+      },
+      app: {
+        signal
+      }
+    } = request
+
+    await ipfs.files.rm(arg, {
       recursive,
       shardSplitThreshold,
+      signal,
       timeout
-    } = request.query
-
-    const args = [...arg, {
-      recursive,
-      shardSplitThreshold,
-      signal: request.app.signal,
-      timeout
-    }]
-
-    await ipfs.files.rm.apply(null, args)
+    })
 
     return h.response()
   }

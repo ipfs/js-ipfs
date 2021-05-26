@@ -65,7 +65,7 @@ _Explore the Mutable File System through interactive coding challenges in our [P
     - [Options](#options-9)
     - [Returns](#returns-9)
     - [Example](#example-9)
-  - [`ipfs.files.rm(...paths, [options])`](#ipfsfilesrmpaths-options)
+  - [`ipfs.files.rm(path, [options])`](#ipfsfilesrmpath-options)
     - [Parameters](#parameters-10)
     - [Options](#options-10)
     - [Returns](#returns-10)
@@ -121,7 +121,7 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 ```js
 {
-  // The path you want to the file to be accessible at from the root CID _after_ it has been added
+  // The path you want the file to be accessible at from the root CID _after_ it has been added
   path?: string
   // The contents of the file (see below for definition)
   content?: FileContent
@@ -637,7 +637,7 @@ await ipfs.files.cp('/src-file', '/dst-file')
 await ipfs.files.cp('/src-dir', '/dst-dir')
 
 // To copy multiple files to a directory
-await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
+await ipfs.files.cp(['/src-file1', '/src-file2'], '/dst-dir')
 ```
 
 #### Notes
@@ -784,7 +784,7 @@ await ipfs.files.touch('/path/to/file.txt', {
 })
 ```
 
-### `ipfs.files.rm(...paths, [options])`
+### `ipfs.files.rm(path, [options])`
 
 > Remove a file or directory.
 
@@ -820,7 +820,7 @@ An optional object which may have the following keys:
 await ipfs.files.rm('/my/beautiful/file.txt')
 
 // To remove multiple files
-await ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt')
+await ipfs.files.rm(['/my/beautiful/file.txt', '/my/other/file.txt'])
 
 // To remove a directory
 await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
@@ -946,7 +946,7 @@ await ipfs.files.mv('/src-file', '/dst-file')
 
 await ipfs.files.mv('/src-dir', '/dst-dir')
 
-await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
+await ipfs.files.mv(['/src-file1', '/src-file2'], '/dst-dir')
 ```
 
 #### Notes

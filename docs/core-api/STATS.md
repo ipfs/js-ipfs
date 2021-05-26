@@ -49,10 +49,10 @@ An optional object which may have the following keys:
 
 Each yielded object contains the following keys:
 
-- `totalIn` - is a [BigNumber Int][bigNumber], in bytes.
-- `totalOut` - is a [BigNumber Int][bigNumber], in bytes.
-- `rateIn` - is a [BigNumber Int][bigNumber], in bytes.
-- `rateOut` - is a [BigNumber Int][bigNumber], in bytes.
+- `totalIn` - is a [BigInt][bigNumber], in bytes.
+- `totalOut` - is a [BigInt][bigNumber], in bytes.
+- `rateIn` - is a [BigInt][bigNumber], in bytes.
+- `rateOut` - is a [BigInt][bigNumber], in bytes.
 
 ### Example
 
@@ -60,15 +60,15 @@ Each yielded object contains the following keys:
 for await (const stats of ipfs.stats.bw()) {
   console.log(stats)
 }
-// { totalIn: BigNumber {...},
-//   totalOut: BigNumber {...},
-//   rateIn: BigNumber {...},
-//   rateOut: BigNumber {...} }
+// { totalIn: BigInt {...},
+//   totalOut: BigInt {...},
+//   rateIn: BigInt {...},
+//   rateOut: BigInt {...} }
 ```
 
 A great source of [examples][] can be found in the tests for this API.
 
-[bigNumber]: https://github.com/MikeMcl/bignumber.js/
+[bigNumber]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/stats
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
 [cid]: https://www.npmjs.com/package/cids

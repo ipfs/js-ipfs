@@ -4,23 +4,16 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Local addresses this node is listening on.
-   *
-   * @param {import('.').AbortOptions} [options]
-   * @returns {Promise<Multiaddr[]>}
+   * @type {import('ipfs-core-types/src/swarm').API["localAddrs"]}
    */
-  async function localAddrs (options) {
+  async function localAddrs (options = {}) {
     const { libp2p } = await network.use(options)
     return libp2p.multiaddrs
   }
 
   return withTimeoutOption(localAddrs)
 }
-
-/**
- * @typedef {import('.').Multiaddr} Multiaddr
- */

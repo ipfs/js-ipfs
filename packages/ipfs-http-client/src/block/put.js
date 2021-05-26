@@ -6,12 +6,17 @@ const multihash = require('multihashes')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
+
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/block').API<HTTPClientExtraOptions>} BlockAPI
+ */
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/block/put')>}
+   * @type {BlockAPI["put"]}
    */
   async function put (data, options = {}) {
     if (Block.isBlock(data)) {
@@ -41,10 +46,11 @@ module.exports = configure(api => {
 
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
 
     let res
     try {
+      // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
       const response = await api.post('block/put', {
         timeout: options.timeout,
         signal: signal,
@@ -66,7 +72,7 @@ module.exports = configure(api => {
       throw err
     }
 
-    return new Block(/** @type {Uint8Array} */(data), new CID(res.Key))
+    return new Block((/** @type {Uint8Array} */ data), new CID(res.Key))
   }
 
   return put

@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.52.3",
+  "version": "0.55.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -11,9 +11,11 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
+  "types": "dist/src/index.d.ts",
   "bin": {
     "jsipfs": "src/cli.js"
   },
@@ -22,10 +24,8 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "build": "aegir build",
     "lint": "aegir lint",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
-    "build:types": "tsc --build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
@@ -35,48 +35,44 @@
     "test:external": "aegir test-dependant",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i cross-env -i typescript -i ipfs-interop -i electron-webrtc -i wrtc -i rimraf"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.2.3",
-    "ipfs-core": "^0.3.1",
-    "ipfs-repo": "^7.0.0",
+    "ipfs-cli": "^0.6.0",
+    "ipfs-core": "^0.7.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
+    "@types/semver": "^7.3.4",
+    "@types/update-notifier": "^5.0.0",
+    "aegir": "^33.0.0",
+    "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "^0.7.0",
-    "interface-ipfs-core": "^0.142.3",
-    "ipfs-client": "^0.1.0",
-    "ipfs-http-client": "^48.1.3",
-    "ipfs-interop": "^3.0.0",
-    "ipfs-utils": "^5.0.0",
-    "ipfsd-ctl": "^7.2.0",
+    "go-ipfs": "0.8.0",
+    "interface-ipfs-core": "^0.146.0",
+    "ipfs-client": "^0.4.1",
+    "ipfs-core-types": "^0.5.0",
+    "ipfs-http-client": "^50.1.0",
+    "ipfs-interop": "^5.0.2",
+    "ipfs-utils": "^7.0.0",
+    "ipfsd-ctl": "^8.0.1",
     "iso-url": "^1.0.0",
-    "libp2p-webrtc-star": "^0.20.1",
-    "merge-options": "^2.0.0",
+    "libp2p-webrtc-star": "^0.22.2",
+    "merge-options": "^3.0.4",
+    "mock-ipfs-pinning-service": "^0.1.2",
     "rimraf": "^3.0.2",
-    "typescript": "4.0.x",
+    "url": "^0.11.0",
     "wrtc": "^0.4.6"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
-      ]
-    }
   },
   "browser": {
     "./src/cli.js": false,
     "go-ipfs": false
   },
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=14.0.0",
     "npm": ">=6.0.0"
   },
   "contributors": [

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.4.3",
+  "version": "0.6.2",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -13,53 +13,41 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
-      ]
-    }
-  },
+  "types": "dist/src/index.d.ts",
   "browser": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
+    "build": "aegir build",
     "test": "echo 'Only interface tests live here'",
-    "test:interface:message-port-client": "npm run build:test-worker && aegir test -t browser -f ./test/interface-message-port-client.js",
+    "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
-    "build:test-worker": "aegir build -- --config ./test/util/webpack.config.js",
-    "build": "npm run build:bundle && npm run build:types",
-    "build:bundle": "aegir build",
-    "build:types": "tsc --build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i typescript -i ipfs-core -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "ipfs-message-port-protocol": "^0.4.3",
-    "ipfs-core-types": "^0.1.0"
+    "cids": "^1.1.6",
+    "ipfs-core-types": "^0.5.0",
+    "ipfs-message-port-protocol": "^0.7.1",
+    "ipfs-unixfs": "^4.0.3"
   },
   "devDependencies": {
-    "aegir": "^29.2.2",
-    "interface-ipfs-core": "^0.142.3",
-    "ipfs": "^0.52.3",
-    "ipfs-core": "^0.3.1",
-    "ipfs-message-port-server": "^0.4.3",
-    "rimraf": "^3.0.2",
-    "typescript": "4.0.x"
+    "aegir": "^33.0.0",
+    "interface-ipfs-core": "^0.146.0",
+    "ipfs-core": "^0.7.0",
+    "ipfs-message-port-server": "^0.7.1",
+    "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=10.3.0",
+    "node": ">=14.0.0",
     "npm": ">=3.0.0"
-  },
-  "contributors": [
-    "Irakli Gozalishvili <dev@gozala.io>"
-  ]
+  }
 }

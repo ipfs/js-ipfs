@@ -13,9 +13,9 @@
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.12.3",
-    "test-ipfs-example": "^2.0.3"
+    "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "ipfs": "^0.52.2"
+    "ipfs": "^0.55.2"
   }
 }

@@ -5,8 +5,7 @@ const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-  mode: "development",
-  devtool: 'source-map',
+  devtool: 'eval',
   entry: './src/main.js',
   output: {
     path: path.join(__dirname, 'dist'),
@@ -28,7 +27,16 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }
+              ]
+            ]
           }
         }
       }
@@ -36,13 +44,15 @@ module.exports = {
   },
   resolve: {
     fallback: {
-      "stream": require.resolve("stream-browserify")
+      stream: require.resolve('stream-browserify')
     }
   },
   plugins: [
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }]),
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'index.html'
+      }]
+    }),
     // Note: stream-browserify has assumption about `Buffer` global in its
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29

@@ -3,55 +3,47 @@
 /* eslint-env browser */
 
 const Client = require('./client')
-const { encodeCID, decodeCID, CID } = require('ipfs-message-port-protocol/src/cid')
+const CID = require('cids')
+const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,
   encodeIterable,
   encodeCallback
 } = require('ipfs-message-port-protocol/src/core')
 /** @type {<T>(stream:ReadableStream<T>) => AsyncIterable<T>} */
-// @ts-ignore - browser-stream-to-it has not types
+// @ts-ignore - browser-stream-to-it has no types
 const iterateReadableStream = require('browser-readablestream-to-it')
+const {
+  parseMode,
+  parseMtime
+} = require('ipfs-unixfs')
 
 /**
  * @template T
  * @typedef {import('ipfs-message-port-protocol/src/core').RemoteIterable<T>} RemoteIterable
  */
-/**
- * @typedef {import('ipfs-message-port-protocol/src/data').Time} Time
- * @typedef {import('ipfs-message-port-protocol/src/data').UnixFSTime} UnixFSTime
- * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-server/src/core').SingleFileInput} EncodedAddInput
- * @typedef {import('ipfs-message-port-server/src/core').MultiFileInput} EncodedAddAllInput
- * @typedef {import('ipfs-message-port-server/src/core').FileInput} FileInput
- * @typedef {import('ipfs-message-port-server/src/core').FileContent} EncodedFileContent
- *
- * @typedef {Object} NoramilzedFileInput
- * @property {string} path
- * @property {AsyncIterable<ArrayBuffer>} content
- *
- * @typedef {ArrayBuffer|ArrayBufferView} Bytes
- *
- * @typedef {Blob|Bytes|string|Iterable<number>|Iterable<Bytes>|AsyncIterable<Bytes>} FileContent
- *
- * @typedef {Object} FileObject
- * @property {string} [path]
- * @property {FileContent} [content]
- * @property {string|number} [mode]
- * @property {UnixFSTime} [mtime]
- *
- *
- * @typedef {Blob|Bytes|string|FileObject|Iterable<number>|Iterable<Bytes>|AsyncIterable<Bytes>|ReadableStream} AddInput
- *
- * @typedef {Iterable<Blob|string|FileObject>|AsyncIterable<Blob|string|FileObject>} AddAllInput
- */
 
 /**
- * @typedef {import('ipfs-message-port-server/src/core').CoreService} CoreService
- * @typedef {import('ipfs-message-port-server/src/core').AddedEntry} AddedEntry
- * @typedef {import('ipfs-message-port-server/src/core').EncodedLsEntry} EncodedLsEntry
- * @typedef {import('ipfs-message-port-server/src/core').LsEntry} LsEntry
+ * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddInput} EncodedAddInput
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddAllInput} EncodedAddAllInput
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddResult} EncodedAddResult
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedIPFSEntry} EncodedIPFSEntry
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedFileInput} EncodedFileInput
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedFileContent} EncodedFileContent
+ * @typedef {import('ipfs-message-port-protocol/src/root').EncodedDirectoryInput} EncodedDirectoryInput
+ *
+ * @typedef {import('ipfs-message-port-server').CoreService} CoreService
+ *
  * @typedef {import('./client').MessageTransport} MessageTransport
+ * @typedef {import('./interface').MessagePortClientOptions} MessagePortClientOptions
+ * @typedef {import('ipfs-core-types/src/root').API<MessagePortClientOptions>} RootAPI
+ *
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ToFile} ToFile
+ * @typedef {import('ipfs-core-types/src/utils').ToDirectory} ToDirectory
+ * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  */
 
 /**
@@ -65,103 +57,93 @@ class CoreClient extends Client {
   constructor (transport) {
     super('core', ['add', 'addAll', 'cat', 'ls'], transport)
   }
+}
 
-  /**
-   * Import files and data into IPFS.
-   *
-   * If you pass binary data like `Uint8Array` it is recommended to provide
-   * `transfer: [input.buffer]` which would allow transferring it instead of
-   * copying.
-   *
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all')>}
-   */
-  async * addAll (input, options = {}) {
-    const { timeout, signal } = options
-    const transfer = [...(options.transfer || [])]
-    const progress = options.progress
-      ? encodeCallback(options.progress, transfer)
-      : undefined
+/**
+ * Import files and data into IPFS.
+ *
+ * If you pass binary data like `Uint8Array` it is recommended to provide
+ * `transfer: [input.buffer]` which would allow transferring it instead of
+ * copying.
+ *
+ * @type {RootAPI["addAll"]}
+ */
+CoreClient.prototype.addAll = async function * addAll (input, options = {}) {
+  const { timeout, signal } = options
+  const transfer = [...(options.transfer || [])]
+  const progressCallback = options.progress
+    ? encodeCallback(options.progress, transfer)
+    : undefined
 
-    const result = await this.remote.addAll({
-      ...options,
-      input: encodeAddAllInput(input, transfer),
-      progress,
-      transfer,
-      timeout,
-      signal
-    })
-    yield * decodeIterable(result.data, decodeAddedData)
-  }
+  const result = await this.remote.addAll({
+    ...options,
+    input: encodeAddAllInput(input, transfer),
+    progress: undefined,
+    progressCallback,
+    transfer,
+    timeout,
+    signal
+  })
+  yield * decodeIterable(result.data, decodeAddedData)
+}
 
-  /**
-   * Add file to IPFS.
-   *
-   * If you pass binary data like `Uint8Array` it is recommended to provide
-   * `transfer: [input.buffer]` which would allow transferring it instead of
-   * copying.
-   *
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add')>}
-   */
-  async add (input, options = {}) {
-    const { timeout, signal } = options
-    const transfer = [...(options.transfer || [])]
-    const progress = options.progress
-      ? encodeCallback(options.progress, transfer)
-      : undefined
+/**
+ * Add file to IPFS.
+ *
+ * If you pass binary data like `Uint8Array` it is recommended to provide
+ * `transfer: [input.buffer]` which would allow transferring it instead of
+ * copying.
+ *
+ * @type {RootAPI["add"]}
+ */
+CoreClient.prototype.add = async function add (input, options = {}) {
+  const { timeout, signal } = options
+  const transfer = [...(options.transfer || [])]
+  const progressCallback = options.progress
+    ? encodeCallback(options.progress, transfer)
+    : undefined
 
-    const result = await this.remote.add({
-      ...options,
-      input: encodeAddInput(input, transfer),
-      progress,
-      transfer,
-      timeout,
-      signal
-    })
+  const result = await this.remote.add({
+    ...options,
+    input: encodeAddInput(input, transfer),
+    progress: undefined,
+    progressCallback,
+    transfer,
+    timeout,
+    signal
+  })
 
-    return decodeAddedData(result.data)
-  }
+  return decodeAddedData(result.data)
+}
 
-  /**
-   * Returns content addressed by a valid IPFS Path.
-   *
-   * @param {string|CID} inputPath
-   * @param {Object} [options]
-   * @param {number} [options.offset]
-   * @param {number} [options.length]
-   * @param {number} [options.timeout]
-   * @param {AbortSignal} [options.signal]
-   * @returns {AsyncIterable<Uint8Array>}
-   */
-  async * cat (inputPath, options = {}) {
-    const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
-    const result = await this.remote.cat({ ...options, path: input })
-    yield * decodeIterable(result.data, identity)
-  }
+/**
+ * Returns content addressed by a valid IPFS Path.
+ *
+ * @type {RootAPI["cat"]}
+ */
+CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
+  const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+  const result = await this.remote.cat({ ...options, path: input })
+  yield * decodeIterable(result.data, identity)
+}
 
-  /**
-   * Returns content addressed by a valid IPFS Path.
-   *
-   * @param {string|CID} inputPath
-   * @param {Object} [options]
-   * @param {boolean} [options.recursive]
-   * @param {boolean} [options.preload]
-   * @param {number} [options.timeout]
-   * @param {AbortSignal} [options.signal]
-   * @returns {AsyncIterable<LsEntry>}
-   */
-  async * ls (inputPath, options = {}) {
-    const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
-    const result = await this.remote.ls({ ...options, path: input })
+/**
+ * Returns content addressed by a valid IPFS Path.
+ *
+ * @type {RootAPI["ls"]}
+ */
+CoreClient.prototype.ls = async function * ls (inputPath, options = {}) {
+  const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+  const result = await this.remote.ls({ ...options, path: input })
 
-    yield * decodeIterable(result.data, decodeLsEntry)
-  }
+  yield * decodeIterable(result.data, decodeLsEntry)
 }
 
 /**
  * Decodes values yield by `ipfs.add`.
  *
- * @param {AddedEntry} data
- * @returns {import('ipfs-core-types/src/files').UnixFSEntry}
+ * @param {EncodedAddResult} data
+ * @returns {import('ipfs-core-types/src/root').AddResult}
  */
 const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
   return {
@@ -174,8 +156,8 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
 }
 
 /**
- * @param {EncodedLsEntry} encodedEntry
- * @returns {LsEntry}
+ * @param {EncodedIPFSEntry} encodedEntry
+ * @returns {import('ipfs-core-types/src/root').IPFSEntry}
  */
 const decodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
   cid: decodeCID(cid),
@@ -199,7 +181,7 @@ const identity = (v) => v
  * Encodes input passed to the `ipfs.add` via the best possible strategy for the
  * given input.
  *
- * @param {AddInput} input
+ * @param {ImportCandidate} input
  * @param {Transferable[]} transfer
  * @returns {EncodedAddInput}
  */
@@ -253,7 +235,7 @@ const encodeAddInput = (input, transfer) => {
  * Encodes input passed to the `ipfs.add` via the best possible strategy for the
  * given input.
  *
- * @param {AddAllInput} input
+ * @param {ImportCandidateStream} input
  * @param {Transferable[]} transfer
  * @returns {EncodedAddAllInput}
  */
@@ -290,9 +272,9 @@ const encodeAddAllInput = (input, transfer) => {
  * Function encodes individual item of some `AsyncIterable` by choosing most
  * effective strategy.
  *
- * @param {ArrayBuffer|ArrayBufferView|Blob|string|FileObject} content
+ * @param {ImportCandidate} content
  * @param {Transferable[]} transfer
- * @returns {FileInput|ArrayBuffer|ArrayBufferView}
+ * @returns {EncodedAddInput}
  */
 const encodeAsyncIterableContent = (content, transfer) => {
   if (content instanceof ArrayBuffer) {
@@ -314,9 +296,9 @@ const encodeAsyncIterableContent = (content, transfer) => {
 }
 
 /**
- * @param {number|Bytes|Blob|string|FileObject|void} content
+ * @param {ImportCandidate} content
  * @param {Transferable[]} transfer
- * @returns {FileInput|ArrayBuffer|ArrayBufferView}
+ * @returns {EncodedAddInput}
  */
 const encodeIterableContent = (content, transfer) => {
   if (typeof content === 'number') {
@@ -340,22 +322,27 @@ const encodeIterableContent = (content, transfer) => {
 }
 
 /**
- * @param {FileObject} file
+ * @param {ToFile | ToDirectory} file
  * @param {Transferable[]} transfer
- * @returns {FileInput}
+ * @returns {EncodedFileInput | EncodedDirectoryInput}
  */
 const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
-  return {
+  /** @type {any} */
+  const output = {
     path,
-    mode,
-    mtime,
-    content: content ? encodeFileContent(content, transfer) : undefined
+    mode: parseMode(mode),
+    mtime: parseMtime(mtime)
   }
+
+  if (content) {
+    output.content = encodeFileContent(content, transfer)
+  }
+
+  return output
 }
 
 /**
- *
- * @param {FileContent|undefined} content
+ * @param {ToContent|undefined} content
  * @param {Transferable[]} transfer
  * @returns {EncodedFileContent}
  */
@@ -401,7 +388,7 @@ const encodeFileContent = (content, transfer) => {
  * iterable or `null`.
  *
  * @template I
- * @param {Iterable<I>|AddInput|AddAllInput} input
+ * @param {Iterable<I>|ImportCandidate|ImportCandidateStream} input
  * @returns {Iterable<I>|null}
  */
 const asIterable = (input) => {
@@ -419,7 +406,7 @@ const asIterable = (input) => {
  * matched `AsyncIterable` or `null`.
  *
  * @template I
- * @param {AsyncIterable<I>|AddInput|AddAllInput} input
+ * @param {AsyncIterable<I>|ImportCandidate|ImportCandidateStream} input
  * @returns {AsyncIterable<I>|null}
  */
 const asAsyncIterable = (input) => {
@@ -452,7 +439,7 @@ const asReadableStream = (input) => {
  * input or `null`.
  *
  * @param {*} input
- * @returns {FileObject|null}
+ * @returns {ToFile|null}
  */
 const asFileObject = (input) => {
   if (typeof input === 'object' && (input.path || input.content)) {

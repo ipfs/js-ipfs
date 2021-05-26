@@ -10,6 +10,10 @@ const log = Object.assign(debug('ipfs:ipns:republisher'), {
   error: debug('ipfs:ipns:republisher:error')
 })
 
+/**
+ * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ */
+
 const minute = 60 * 1000
 const hour = 60 * minute
 
@@ -17,7 +21,17 @@ const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
 class IpnsRepublisher {
-  constructor (publisher, datastore, peerId, keychain, options = {}) {
+  /**
+   * @param {import('./publisher')} publisher
+   * @param {import('interface-datastore').Datastore} datastore
+   * @param {PeerId} peerId
+   * @param {import('libp2p/src/keychain')} keychain
+   * @param {object} options
+   * @param {string} options.pass
+   * @param {number} [options.initialBroadcastInterval]
+   * @param {number} [options.broadcastInterval]
+   */
+  constructor (publisher, datastore, peerId, keychain, options = { pass: '' }) {
     this._publisher = publisher
     this._datastore = datastore
     this._peerId = peerId
@@ -102,6 +116,10 @@ class IpnsRepublisher {
     await republishHandle.cancel()
   }
 
+  /**
+   * @param {PrivateKey} privateKey
+   * @param {string} pass
+   */
   async _republishEntries (privateKey, pass) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
@@ -120,6 +138,9 @@ class IpnsRepublisher {
         const keys = await this._keychain.listKeys()
 
         for (const key of keys) {
+          if (key.name === 'self') {
+            continue
+          }
           const pem = await this._keychain.exportKey(key.name, pass)
           const privKey = await crypto.keys.import(pem, pass)
 
@@ -131,6 +152,9 @@ class IpnsRepublisher {
     }
   }
 
+  /**
+   * @param {PrivateKey} privateKey
+   */
   async _republishEntry (privateKey) {
     if (!privateKey || !privateKey.bytes) {
       throw errcode(new Error('invalid private key'), 'ERR_INVALID_PRIVATE_KEY')
@@ -149,6 +173,9 @@ class IpnsRepublisher {
     }
   }
 
+  /**
+   * @param {PeerId} peerId
+   */
   async _getPreviousValue (peerId) {
     if (!(PeerId.isPeerId(peerId))) {
       throw errcode(new Error('invalid peer ID'), 'ERR_INVALID_PEER_ID')

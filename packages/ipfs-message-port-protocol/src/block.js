@@ -4,7 +4,15 @@ const { encodeCID, decodeCID } = require('./cid')
 const Block = require('ipld-block')
 
 /**
+ * @typedef {import('./error').EncodedError} EncodedError
  * @typedef {import('./cid').EncodedCID} EncodedCID
+ *
+ * @typedef {Object} EncodedRmResult
+ * @property {EncodedCID} cid
+ * @property {EncodedError|undefined} [error]
+ */
+
+/**
  * @typedef {Object} EncodedBlock
  * @property {Uint8Array} data
  * @property {EncodedCID} cid

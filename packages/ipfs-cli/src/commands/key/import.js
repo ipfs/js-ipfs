@@ -1,7 +1,7 @@
 'use strict'
 
 const fs = require('fs')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'import <name>',
@@ -19,6 +19,9 @@ module.exports = {
       describe: 'Input PEM file',
       type: 'string',
       demandOption: true,
+      /**
+       * @param {string} input
+       */
       coerce: input => fs.readFileSync(input, 'utf8')
     },
     timeout: {
@@ -27,6 +30,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {string} argv.input
+   * @param {string} argv.passin
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, name, input, passin, timeout }) {
     const key = await ipfs.key.import(name, input, passin, {
       timeout

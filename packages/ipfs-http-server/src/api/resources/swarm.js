@@ -20,6 +20,10 @@ exports.peers = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -45,21 +49,13 @@ exports.peers = {
 
     return h.response({
       Peers: peers.map((p) => {
-        const res = {
+        return {
           Peer: p.peer.toString(),
-          Addr: p.addr.toString()
+          Addr: p.addr.toString(),
+          Direction: verbose || direction ? p.direction : undefined,
+          Muxer: verbose ? p.muxer : undefined,
+          Latency: verbose ? p.latency : undefined
         }
-
-        if (verbose || direction) {
-          res.Direction = p.direction
-        }
-
-        if (verbose) {
-          res.Muxer = p.muxer
-          res.Latency = p.latency
-        }
-
-        return res
       })
     })
   }
@@ -77,6 +73,10 @@ exports.addrs = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -98,7 +98,7 @@ exports.addrs = {
     })
 
     return h.response({
-      Addrs: peers.reduce((addrs, peer) => {
+      Addrs: peers.reduce((/** @type {Record<string, any>} */ addrs, peer) => {
         addrs[peer.id.toString()] = peer.addrs.map(a => a.toString())
         return addrs
       }, {})
@@ -118,6 +118,10 @@ exports.localAddrs = {
       })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -161,6 +165,10 @@ exports.connect = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -205,6 +213,10 @@ exports.disconnect = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {

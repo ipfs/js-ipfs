@@ -5,10 +5,13 @@ const os = require('os')
 const path = require('path')
 const log = require('debug')('ipfs:cli:utils')
 const Progress = require('progress')
+// @ts-ignore no types
 const byteman = require('byteman')
 const IPFS = require('ipfs-core')
 const CID = require('cids')
+const { Multiaddr } = require('multiaddr')
 const { cidToString } = require('ipfs-core-utils/src/cid')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
@@ -29,10 +32,7 @@ let visible = true
 const disablePrinting = () => { visible = false }
 
 /**
- *
- * @param {string} msg
- * @param {boolean} [includeNewline=true]
- * @param {boolean} [isError=false]
+ * @type {import('./types').Print}
  */
 const print = (msg, includeNewline = true, isError = false) => {
   if (visible) {
@@ -51,6 +51,9 @@ print.clearLine = () => {
   return process.stdout.clearLine(0)
 }
 
+/**
+ * @param {number} pos
+ */
 print.cursorTo = (pos) => {
   process.stdout.cursorTo(pos)
 }
@@ -78,6 +81,10 @@ print.error = (msg, newline = true) => {
 print.isTTY = process.stdout.isTTY
 print.columns = process.stdout.columns
 
+/**
+ * @param {number} totalBytes
+ * @param {*} output
+ */
 const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`
@@ -91,6 +98,10 @@ const createProgressBar = (totalBytes, output) => {
   })
 }
 
+/**
+ * @param {*} val
+ * @param {number} n
+ */
 const rightpad = (val, n) => {
   let result = String(val)
   for (let i = result.length; i < n; ++i) {
@@ -103,6 +114,9 @@ const ipfsPathHelp = 'ipfs uses a repository in the local file system. By defaul
   'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
   'export IPFS_PATH=/path/to/ipfsrepo\n'
 
+/**
+ * @param {{ api?: string, silent?: boolean, migrate?: boolean, pass?: string }} argv
+ */
 async function getIpfs (argv) {
   if (!argv.api && !isDaemonOn()) {
     const ipfs = await IPFS.create({
@@ -131,14 +145,17 @@ async function getIpfs (argv) {
     endpoint = argv.api
   }
   // Required inline to reduce startup time
-  const APIctl = require('ipfs-http-client')
+  const { create } = require('ipfs-http-client')
   return {
     isDaemon: true,
-    ipfs: APIctl(endpoint),
+    ipfs: create({ url: endpoint }),
     cleanup: async () => { }
   }
 }
 
+/**
+ * @param {boolean} [value]
+ */
 const asBoolean = (value) => {
   if (value === false || value === true) {
     return value
@@ -151,26 +168,31 @@ const asBoolean = (value) => {
   return false
 }
 
+/**
+ * @param {any} value
+ */
 const asOctal = (value) => {
   return parseInt(value, 8)
 }
 
+/**
+ * @param {number} [secs]
+ * @param {number} [nsecs]
+ */
 const asMtimeFromSeconds = (secs, nsecs) => {
-  if (secs === null || secs === undefined) {
+  if (secs == null) {
     return undefined
   }
 
-  const output = {
-    secs
+  return {
+    secs,
+    nsecs
   }
-
-  if (nsecs !== null && nsecs !== undefined) {
-    output.nsecs = nsecs
-  }
-
-  return output
 }
 
+/**
+ * @param {*} value
+ */
 const coerceMtime = (value) => {
   value = parseInt(value)
 
@@ -181,6 +203,9 @@ const coerceMtime = (value) => {
   return value
 }
 
+/**
+ * @param {*} value
+ */
 const coerceMtimeNsecs = (value) => {
   value = parseInt(value)
 
@@ -195,13 +220,71 @@ const coerceMtimeNsecs = (value) => {
   return value
 }
 
+/**
+ * @param {*} value
+ */
+const coerceCID = (value) => {
+  if (!value) {
+    return undefined
+  }
+
+  if (value.startsWith('/ipfs/')) {
+    return new CID(value.split('/')[2])
+  }
+
+  return new CID(value)
+}
+
+/**
+ * @param {string[]} values
+ */
+const coerceCIDs = (values) => {
+  if (values == null) {
+    return []
+  }
+
+  return values.map(coerceCID).filter(Boolean)
+}
+
+/**
+ * @param {string} value
+ */
+const coerceMultiaddr = (value) => {
+  if (value == null) {
+    return undefined
+  }
+
+  return new Multiaddr(value)
+}
+
+/**
+ * @param {string[]} values
+ */
+const coerceMultiaddrs = (values) => {
+  if (values == null) {
+    return undefined
+  }
+
+  return values.map(coerceMultiaddr).filter(Boolean)
+}
+
+/**
+ * @param {string} value
+ */
+const coerceUint8Array = (value) => {
+  if (value == null) {
+    return undefined
+  }
+
+  return uint8ArrayFromString(value)
+}
+
 const DEL = 127
 
 /**
  * Strip control characters from a string
  *
- * @param {string} str - a string to strip control characters from
- * @returns {string}
+ * @param {string} [str] - a string to strip control characters from
  */
 const stripControlCharacters = (str) => {
   return (str || '')
@@ -218,9 +301,9 @@ const stripControlCharacters = (str) => {
  * Escape control characters in a string
  *
  * @param {string} str - a string to escape control characters in
- * @returns {string}
  */
 const escapeControlCharacters = (str) => {
+  /** @type {Record<string, string>} */
   const escapes = {
     '00': '\\0',
     '08': '\\b',
@@ -251,9 +334,9 @@ const escapeControlCharacters = (str) => {
  * Removes control characters from all key/values and stringifies
  * CID properties
  *
- * @param {object} obj - all keys/values in this object will be have control characters stripped
+ * @param {any} obj - all keys/values in this object will be have control characters stripped
  * @param {import('cids').BaseNameOrCode} cidBase - any encountered CIDs will be stringified using this base
- * @returns {object}
+ * @returns {any}
  */
 const makeEntriesPrintable = (obj, cidBase = 'base58btc') => {
   if (CID.isCID(obj)) {
@@ -278,6 +361,7 @@ const makeEntriesPrintable = (obj, cidBase = 'base58btc') => {
     return output
   }
 
+  /** @type {Record<string, any>} */
   const output = {}
 
   Object.entries(obj)
@@ -304,6 +388,11 @@ module.exports = {
   asMtimeFromSeconds,
   coerceMtime,
   coerceMtimeNsecs,
+  coerceCID,
+  coerceCIDs,
+  coerceMultiaddr,
+  coerceMultiaddrs,
+  coerceUint8Array,
   stripControlCharacters,
   escapeControlCharacters,
   makeEntriesPrintable

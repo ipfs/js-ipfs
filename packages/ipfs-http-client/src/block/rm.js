@@ -4,9 +4,15 @@ const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/block').API<HTTPClientExtraOptions>} BlockAPI
+ * @typedef {import('ipfs-core-types/src/block').RmResult} RmResult
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/block/rm')>}
+   * @type {BlockAPI["rm"]}
    */
   async function * rm (cid, options = {}) {
     if (!Array.isArray(cid)) {
@@ -32,7 +38,11 @@ module.exports = configure(api => {
   return rm
 })
 
+/**
+ * @param {*} removed
+ */
 function toCoreInterface (removed) {
+  /** @type {RmResult} */
   const out = {
     cid: new CID(removed.Hash)
   }

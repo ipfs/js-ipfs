@@ -14,6 +14,10 @@ const log = Object.assign(debug('ipfs:http-api:object'), {
   error: debug('ipfs:http-api:object:error')
 })
 
+/**
+ * @param {import('../../types').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} _h
+ */
 const readFilePart = async (request, _h) => {
   if (!request.payload) {
     throw Boom.badRequest("File argument 'data' is required")
@@ -21,7 +25,7 @@ const readFilePart = async (request, _h) => {
 
   let data
 
-  for await (const part of multipart(request)) {
+  for await (const part of multipart(request.raw.req)) {
     if (part.type !== 'file') {
       continue
     }
@@ -69,6 +73,10 @@ exports.new = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -130,7 +138,6 @@ exports.get = {
       query: Joi.object().keys({
         cid: Joi.cid().required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -153,6 +160,10 @@ exports.get = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -166,7 +177,6 @@ exports.get = {
       query: {
         cid,
         cidBase,
-        enc,
         dataEncoding,
         timeout
       }
@@ -175,7 +185,6 @@ exports.get = {
     let node
     try {
       node = await ipfs.object.get(cid, {
-        enc,
         signal,
         timeout
       })
@@ -224,6 +233,10 @@ exports.put = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -302,6 +315,10 @@ exports.stat = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -345,7 +362,6 @@ exports.data = {
       query: Joi.object().keys({
         cid: Joi.cid().required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -358,6 +374,10 @@ exports.data = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -370,7 +390,6 @@ exports.data = {
       },
       query: {
         cid,
-        enc,
         timeout
       }
     } = request
@@ -378,7 +397,6 @@ exports.data = {
     let data
     try {
       data = await ipfs.object.data(cid, {
-        enc,
         signal,
         timeout
       })
@@ -400,7 +418,6 @@ exports.links = {
       query: Joi.object().keys({
         cid: Joi.cid().required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -413,6 +430,10 @@ exports.links = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -426,22 +447,18 @@ exports.links = {
       query: {
         cid,
         cidBase,
-        enc,
         timeout
       }
     } = request
 
-    const response = {
-      Hash: cidToString(cid, { base: cidBase, upgrade: false })
-    }
     const links = await ipfs.object.links(cid, {
-      enc,
       signal,
       timeout
     })
 
-    if (links) {
-      response.Links = links.map((l) => {
+    const response = {
+      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
+      Links: (links || []).map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
@@ -472,7 +489,6 @@ exports.patchAppendData = {
       query: Joi.object().keys({
         cid: Joi.cid().required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -489,6 +505,10 @@ exports.patchAppendData = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -507,7 +527,6 @@ exports.patchAppendData = {
       query: {
         cid,
         cidBase,
-        enc,
         timeout
       }
     } = request
@@ -515,7 +534,6 @@ exports.patchAppendData = {
     let newCid, node
     try {
       newCid = await ipfs.object.patch.appendData(cid, data, {
-        enc,
         signal,
         timeout
       })
@@ -564,7 +582,6 @@ exports.patchSetData = {
       query: Joi.object().keys({
         cid: Joi.cid().required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -577,6 +594,10 @@ exports.patchSetData = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -595,7 +616,6 @@ exports.patchSetData = {
       query: {
         cid,
         cidBase,
-        enc,
         timeout
       }
     } = request
@@ -603,7 +623,6 @@ exports.patchSetData = {
     let newCid, node
     try {
       newCid = await ipfs.object.patch.setData(cid, data, {
-        enc,
         signal,
         timeout
       })
@@ -643,7 +662,6 @@ exports.patchAddLink = {
           Joi.cid().required()
         ).required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -656,6 +674,10 @@ exports.patchAddLink = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -673,7 +695,6 @@ exports.patchAddLink = {
           ref
         ],
         cidBase,
-        enc,
         timeout
       }
     } = request
@@ -681,12 +702,10 @@ exports.patchAddLink = {
     let node, cid
     try {
       node = await ipfs.object.get(ref, {
-        enc,
         signal,
         timeout
       })
       cid = await ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref), {
-        enc,
         signal,
         timeout
       })
@@ -730,7 +749,6 @@ exports.patchRmLink = {
           Joi.string().required()
         ).required(),
         cidBase: Joi.cidBase(),
-        enc: Joi.string(),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -743,6 +761,10 @@ exports.patchRmLink = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -759,16 +781,13 @@ exports.patchRmLink = {
           link
         ],
         cidBase,
-        enc,
         timeout
       }
     } = request
 
     let cid, node
     try {
-      cid = await ipfs.object.patch.rmLink(root, {
-        name: link,
-        enc,
+      cid = await ipfs.object.patch.rmLink(root, link, {
         signal,
         timeout
       })

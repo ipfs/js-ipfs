@@ -6,30 +6,13 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
+ * @param {import('../../types').NetworkService} config.network
  */
 module.exports = ({ network }) => {
   /**
-   * Removes one or more CIDs from the wantlist
-   *
-   * @example
-   * ```JavaScript
-   * let list = await ipfs.bitswap.wantlist()
-   * console.log(list)
-   * // [ CID('QmHash') ]
-   *
-   * await ipfs.bitswap.unwant(cid)
-   *
-   * list = await ipfs.bitswap.wantlist()
-   * console.log(list)
-   * // []
-   * ```
-   *
-   * @param {CID | CID[]} cids - The CIDs to remove from the wantlist
-   * @param {AbortOptions} [options]
-   * @returns {Promise<void>} - A promise that resolves once the request is complete
+   * @type {import('ipfs-core-types/src/bitswap').API["unwant"]}
    */
-  async function unwant (cids, options) {
+  async function unwant (cids, options = {}) {
     const { bitswap } = await network.use(options)
 
     if (!Array.isArray(cids)) {
@@ -42,12 +25,8 @@ module.exports = ({ network }) => {
       throw errCode(err, 'ERR_INVALID_CID')
     }
 
-    return bitswap.unwant(cids, options)
+    return bitswap.unwant(cids)
   }
 
   return withTimeoutOption(unwant)
 }
-
-/**
- * @typedef {import('.').AbortOptions} AbortOptions
- */

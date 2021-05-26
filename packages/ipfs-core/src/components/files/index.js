@@ -4,26 +4,26 @@ const createLock = require('./utils/create-lock')
 const isIpfs = require('is-ipfs')
 
 /**
- * @typedef {Object} MFS
- * @property {ReturnType<typeof import('./stat')>} stat
- * @property {ReturnType<typeof import('./chmod')>} chmod
- * @property {ReturnType<typeof import('./cp')>} cp
- * @property {ReturnType<typeof import('./flush')>} flush
- * @property {ReturnType<typeof import('./mkdir')>} mkdir
- * @property {ReturnType<typeof import('./mv')>} mv
- * @property {ReturnType<typeof import('./rm')>} rm
- * @property {ReturnType<typeof import('./touch')>} touch
- * @property {ReturnType<typeof import('./write')>} write
- * @property {ReturnType<typeof import('./read')>} read
- * @property {ReturnType<typeof import('./ls')>} ls
+ * @typedef {object} MfsContext
+ * @property {import('ipld')} ipld
+ * @property {import('ipfs-repo')} repo
+ * @property {import('ipfs-core-types/src/block').API} block
  */
 
-// These operations are read-locked at the function level and will execute simultaneously
+/**
+ * These operations are read-locked at the function level and will execute simultaneously
+ *
+ * @type {Record<string, any>}
+ */
 const readOperations = {
   stat: require('./stat')
 }
 
-// These operations are locked at the function level and will execute in series
+/**
+ * These operations are locked at the function level and will execute in series
+ *
+ * @type {Record<string, any>}
+ */
 const writeOperations = {
   chmod: require('./chmod'),
   cp: require('./cp'),
@@ -34,13 +34,24 @@ const writeOperations = {
   touch: require('./touch')
 }
 
-// These operations are asynchronous and manage their own locking
+/**
+ * These operations are asynchronous and manage their own locking
+ *
+ * @type {Record<string, any>}
+ */
 const unwrappedOperations = {
   write: require('./write'),
   read: require('./read'),
   ls: require('./ls')
 }
 
+/**
+ * @param {object} arg
+ * @param {*} arg.options
+ * @param {*} arg.mfs
+ * @param {*} arg.operations
+ * @param {*} arg.lock
+ */
 const wrap = ({
   options, mfs, operations, lock
 }) => {
@@ -55,6 +66,9 @@ const defaultOptions = {
   repo: null
 }
 
+/**
+ * @param {*} options
+ */
 function createMfs (options) {
   const {
     repoOwner
@@ -67,14 +81,21 @@ function createMfs (options) {
 
   const lock = createLock(repoOwner)
 
+  /**
+   * @param {(fn: (...args: any) => any) => (...args: any) => any} operation
+   */
   const readLock = (operation) => {
     return lock.readLock(operation)
   }
 
+  /**
+   * @param {(fn: (...args: any) => any) => (...args: any) => any} operation
+   */
   const writeLock = (operation) => {
     return lock.writeLock(operation)
   }
 
+  /** @type {Record<string, any>} */
   const mfs = {}
 
   wrap({
@@ -92,14 +113,14 @@ function createMfs (options) {
 }
 
 /**
- * @param {Object} context
- * @param {import('..').IPLD} context.ipld
- * @param {import('..').Block} context.block
- * @param {import('..').BlockService} context.blockService
- * @param {import('..').Repo} context.repo
- * @param {import('..').Preload} context.preload
+ * @param {object} context
+ * @param {import('ipld')} context.ipld
+ * @param {import('ipfs-core-types/src/block').API} context.block
+ * @param {import('ipfs-block-service')} context.blockService
+ * @param {import('ipfs-repo')} context.repo
+ * @param {import('../../types').Preload} context.preload
  * @param {import('..').Options} context.options
- * @returns {MFS}
+ * @returns {import('ipfs-core-types/src/files').API}
  */
 module.exports = ({ ipld, block, blockService, repo, preload, options: constructorOptions }) => {
   const methods = createMfs({
@@ -110,17 +131,29 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     repoOwner: constructorOptions.repoOwner
   })
 
-  const withPreload = fn => (...args) => {
-    const paths = args.filter(arg => isIpfs.ipfsPath(arg) || isIpfs.cid(arg))
+  /**
+   * @param {any} fn
+   */
+  const withPreload = fn => {
+    /**
+     * @param  {...any} args
+     */
+    const wrapped = (...args) => {
+      // @ts-ignore cannot derive type of arg
+      const paths = args.filter(arg => isIpfs.ipfsPath(arg) || isIpfs.cid(arg))
 
-    if (paths.length) {
-      const options = args[args.length - 1]
-      if (options && options.preload !== false) {
-        paths.forEach(path => preload(path))
+      if (paths.length) {
+        const options = args[args.length - 1]
+        // @ts-ignore it's a PreloadOptions, honest
+        if (options && options.preload !== false) {
+          paths.forEach(path => preload(path))
+        }
       }
+
+      return fn(...args)
     }
 
-    return fn(...args)
+    return wrapped
   }
 
   return {
@@ -135,7 +168,7 @@ module.exports = ({ ipld, block, blockService, repo, preload, options: construct
     write: methods.write,
     mv: withPreload(methods.mv),
     flush: methods.flush,
-    ls: withPreload(async function * (...args) {
+    ls: withPreload(async function * (/** @type {...any} */ ...args) {
       for await (const file of methods.ls(...args)) {
         yield { ...file, size: file.size || 0 }
       }

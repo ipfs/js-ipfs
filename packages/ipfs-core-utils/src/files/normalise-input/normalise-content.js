@@ -15,12 +15,16 @@ const {
 
 /**
  * @param {import('./normalise-input').ToContent} input
- * @returns {AsyncIterable<Uint8Array>}
  */
 async function * toAsyncIterable (input) {
   // Bytes | String
-  if (isBytes(input) || typeof input === 'string' || input instanceof String) {
+  if (isBytes(input)) {
     yield toBytes(input)
+    return
+  }
+
+  if (typeof input === 'string' || input instanceof String) {
+    yield toBytes(input.toString())
     return
   }
 
@@ -36,7 +40,7 @@ async function * toAsyncIterable (input) {
   }
 
   // (Async)Iterator<?>
-  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+  if (Symbol.iterator in input || Symbol.asyncIterator in input) {
     /** @type {any} peekable */
     const peekable = itPeekable(input)
 
@@ -68,9 +72,7 @@ async function * toAsyncIterable (input) {
 }
 
 /**
- *
  * @param {ArrayBuffer | ArrayBufferView | string | InstanceType<typeof window.String> | number[]} chunk
- * @returns {Uint8Array}
  */
 function toBytes (chunk) {
   if (chunk instanceof Uint8Array) {
@@ -89,7 +91,7 @@ function toBytes (chunk) {
     return Uint8Array.from(chunk)
   }
 
-  return uint8ArrayFromString(chunk)
+  return uint8ArrayFromString(chunk.toString())
 }
 
 module.exports = toAsyncIterable

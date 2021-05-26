@@ -14,7 +14,7 @@ $ npm install ipfs-client
 
 The client object created by the `createClient` function supports the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api), see the docs for more.
 
-### `createClient([options])`
+### `create([options])`
 
 ### Parameters
 
@@ -28,6 +28,7 @@ An optional object which may have the following keys:
 | ---- | ---- | ------- | ----------- |
 | grpc | `Multiaddr` or `string` or `URL` | `undefined` | The address of a [ipfs-grpc-server][] to connect to |
 | http | `Multiaddr` or `string` or `URL` | `undefined` | The address of a [ipfs-http-server][] to connect to |
+| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `undefined` | A http.Agent used to control HTTP client behaviour (node.js only) |
 
 ### Returns
 
@@ -38,9 +39,9 @@ An optional object which may have the following keys:
 ### Example
 
 ```js
-const createClient = require('ipfs-client')
+const { create } = require('ipfs-client')
 
-const client = createClient({
+const client = create({
   grpc: '/ipv4/127.0.0.1/tcp/5003/ws',
   http: '/ipv4/127.0.0.1/tcp/5002/http'
 })

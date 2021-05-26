@@ -3,7 +3,7 @@
 const { expect } = require('../utils/mocha')
 
 const isBigInt = (n) => {
-  return n.constructor.name === 'BigNumber'
+  return typeof n === 'bigint'
 }
 
 exports.expectIsBitswap = (err, stats) => {

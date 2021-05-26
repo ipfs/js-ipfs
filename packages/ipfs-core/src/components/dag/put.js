@@ -1,36 +1,37 @@
 'use strict'
 
 const multicodec = require('multicodec')
+const multihashes = require('multihashing-async').multihash
 
 /**
- * @param {string} name
- * @returns {number}
+ * @typedef {import('cids')} CID
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multicodec').CodecCode} CodecCode
+ * @typedef {import('multicodec').CodecName} CodecName
+ * @typedef {import('multihashes').HashCode} HashCode
+ * @typedef {import('multihashes').HashName} HashName
  */
-const nameToCodec = name => multicodec[name.toUpperCase().replace(/-/g, '_')]
+/**
+ *
+ * @param {CodecName} name
+ */
+const nameToCodec = name => multicodec.getCodeFromName(name)
+/**
+ * @param {HashName} name
+ */
+const nameToHashCode = name => multihashes.names[name]
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPLD} config.ipld
- * @param {import('.').Pin} config.pin
- * @param {import('.').Preload} config.preload
+ * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-core-types/src/pin').API} config.pin
+ * @param {import('../../types').Preload} config.preload
  * @param {import('.').GCLock} config.gcLock
  */
 module.exports = ({ ipld, pin, gcLock, preload }) => {
   /**
-   * Store an IPLD format node
-   *
-   * @param {Object} dagNode
-   * @param {PutOptions & AbortOptions} [options]
-   * @returns {Promise<CID>}
-   * @example
-   * ```js
-   * const obj = { simple: 'object' }
-   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' })
-   *
-   * console.log(cid.toString())
-   * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
-   * ```
+   * @type {import('ipfs-core-types/src/dag').API["put"]}
    */
   async function put (dagNode, options = {}) {
     const { cidVersion, format, hashAlg } = readEncodingOptions(options)
@@ -66,8 +67,7 @@ module.exports = ({ ipld, pin, gcLock, preload }) => {
 }
 
 /**
- *
- * @param {PutOptions} options
+ * @param {import('ipfs-core-types/src/dag').PutOptions} options
  */
 const readEncodingOptions = (options) => {
   if (options.cid && (options.format || options.hashAlg)) {
@@ -91,22 +91,22 @@ const readEncodingOptions = (options) => {
 /**
  *
  * @param {Object} options
- * @param {number|string} options.format
- * @param {number|string} [options.hashAlg]
+ * @param {CodecCode|CodecName} options.format
+ * @param {HashCode|HashName} [options.hashAlg]
  */
 const encodingCodes = ({ format, hashAlg }) => ({
   format: typeof format === 'string' ? nameToCodec(format) : format,
-  hashAlg: typeof hashAlg === 'string' ? nameToCodec(hashAlg) : hashAlg
+  hashAlg: typeof hashAlg === 'string' ? nameToHashCode(hashAlg) : hashAlg
 })
 
 /**
  * Figures out what version of CID should be used given the options.
  *
  * @param {Object} options
- * @param {0|1} [options.version]
+ * @param {CIDVersion} [options.version]
  * @param {CID} [options.cid]
- * @param {number} [options.format]
- * @param {number} [options.hashAlg]
+ * @param {CodecCode} [options.format]
+ * @param {HashCode} [options.hashAlg]
  */
 const readVersion = ({ version, cid, format, hashAlg }) => {
   // If version is passed just use that.
@@ -124,35 +124,7 @@ const readVersion = ({ version, cid, format, hashAlg }) => {
   }
 }
 
-/** @type {WithCIDOptions} */
 const defaultCIDOptions = {
-  format: multicodec.DAG_CBOR,
-  hashAlg: multicodec.SHA2_256
+  format: multicodec.getCodeFromName('dag-cbor'),
+  hashAlg: multihashes.names['sha2-256']
 }
-
-/**
- * @typedef {PutWith & OtherPutOptions} PutOptions
- * @typedef {WithCID | WithCIDOptions} PutWith
- *
- *
- * @typedef {Object} WithCID
- * @property {CID} [cid]
- * // Note: We still stil need to reserve these fields otherwise it implies
- * // that those fields can still be there and have very different types.
- * @property {undefined} [format]
- * @property {undefined} [hashAlg]
- * @property {undefined} [version]
- *
- * @typedef {Object} WithCIDOptions
- * @property {undefined} [cid]
- * @property {string|number} format
- * @property {string|number} hashAlg
- * @property {0|1} [version]
- *
- * @typedef {Object} OtherPutOptions
- * @property {boolean} [pin=false]
- * @property {boolean} [preload=false]
- *
- * @typedef {import('.').CID} CID
- * @typedef {import('.').AbortOptions} AbortOptions
- */

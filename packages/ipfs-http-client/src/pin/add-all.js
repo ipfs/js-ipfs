@@ -5,8 +5,16 @@ const configure = require('../lib/configure')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
+ */
+
 module.exports = configure(api => {
-  return async function * addAll (source, options = {}) {
+  /**
+   * @type {PinAPI["addAll"]}
+   */
+  async function * addAll (source, options = {}) {
     for await (const { path, recursive, metadata } of normaliseInput(source)) {
       const res = await api.post('pin/add', {
         timeout: options.timeout,
@@ -33,4 +41,5 @@ module.exports = configure(api => {
       }
     }
   }
+  return addAll
 })

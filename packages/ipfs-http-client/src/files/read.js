@@ -1,12 +1,18 @@
 'use strict'
 
+// @ts-ignore no types
 const toIterable = require('stream-to-it/source')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/files/read')>}
+   * @type {FilesAPI["read"]}
    */
   async function * read (path, options = {}) {
     const res = await api.post('files/read', {
@@ -22,6 +28,5 @@ module.exports = configure(api => {
 
     yield * toIterable(res.body)
   }
-
   return read
 })

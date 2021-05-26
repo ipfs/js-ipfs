@@ -22,7 +22,7 @@ $ npm install ipfs-grpc-client
 
 ## API
 
-### `createClient([options])`
+### `create([options])`
 
 ### Parameters
 
@@ -35,6 +35,7 @@ An optional object which may have the following keys:
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | url | `Multiaddr` or `string` or `URL` | `undefined` | The address of a [ipfs-grpc-server][] to connect to |
+| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `undefined` | A http.Agent used to control HTTP client behaviour (node.js only) |
 
 ### Returns
 
@@ -45,9 +46,9 @@ An optional object which may have the following keys:
 ### Example
 
 ```js
-const createClient = require('ipfs-gprc-client')
+const { create } = require('ipfs-gprc-client')
 
-const client = createClient({
+const client = create({
   url: '/ipv4/127.0.0.1/tcp/1234/ws'
 })
 

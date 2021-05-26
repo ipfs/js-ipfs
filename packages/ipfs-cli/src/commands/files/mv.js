@@ -3,7 +3,7 @@
 const {
   asBoolean
 } = require('../../utils')
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
   command: 'mv <source> <dest>',
@@ -17,13 +17,6 @@ module.exports = {
       default: false,
       coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
-    },
-    recursive: {
-      alias: 'r',
-      type: 'boolean',
-      default: false,
-      coerce: asBoolean,
-      describe: 'Remove directories recursively'
     },
     'cid-version': {
       alias: ['cid-ver'],
@@ -55,12 +48,23 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.source
+   * @param {string} argv.dest
+   * @param {boolean} argv.parents
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {boolean} argv.flush
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     source,
     dest,
     parents,
-    recursive,
     cidVersion,
     hashAlg,
     flush,
@@ -69,7 +73,6 @@ module.exports = {
   }) {
     return ipfs.files.mv(source, dest, {
       parents,
-      recursive,
       cidVersion,
       hashAlg,
       flush,

@@ -5,6 +5,9 @@ module.exports = {
 
   description: 'pubsub commands',
 
+  /**
+   * @param {import('yargs').Argv} yargs
+   */
   builder (yargs) {
     return yargs
       .commandDir('pubsub')

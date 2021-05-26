@@ -13,18 +13,25 @@ const multibase = require('multibase')
 const BLOCK_RM_CONCURRENCY = 256
 
 /**
+ * @typedef {import('ipfs-core-types/src/pin').API} PinAPI
+ * @typedef {import('ipfs-core-types/src/refs').API} RefsAPI
+ * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('ipld-block')} Block
+ */
+
+/**
  * Perform mark and sweep garbage collection
  *
  * @param {Object} config
- * @param {import('.').GCLock} config.gcLock
- * @param {import('.').Pin} config.pin
- * @param {import('.').Refs} config.refs
- * @param {import('.').Repo} config.repo
+ * @param {import('../gc-lock').GCLock} config.gcLock
+ * @param {PinAPI} config.pin
+ * @param {RefsAPI["refs"]} config.refs
+ * @param {IPFSRepo} config.repo
  */
 module.exports = ({ gcLock, pin, refs, repo }) => {
   /**
-   * @param {AbortOptions} [_options]
-   * @returns {AsyncIterable<Notification>}
+   * @type {import('ipfs-core-types/src/repo').API["gc"]}
    */
   async function * gc (_options = {}) {
     const start = Date.now()
@@ -36,8 +43,7 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
       // Mark all blocks that are being used
       const markedSet = await createMarkedSet({ pin, refs, repo })
       // Get all blocks keys from the blockstore
-      // @ts-ignore - TS is not aware of keysOnly overload
-      const blockKeys = repo.blocks.query({ keysOnly: true })
+      const blockKeys = repo.blocks.queryKeys({})
 
       // Delete blocks that are not being used
       yield * deleteUnmarkedBlocks({ repo }, markedSet, blockKeys)
@@ -51,7 +57,14 @@ module.exports = ({ gcLock, pin, refs, repo }) => {
   return withTimeoutOption(gc)
 }
 
-// Get Set of CIDs of blocks to keep
+/**
+ * Get Set of CIDs of blocks to keep
+ *
+ * @param {object} arg
+ * @param {PinAPI} arg.pin
+ * @param {RefsAPI["refs"]} arg.refs
+ * @param {IPFSRepo} arg.repo
+ */
 async function createMarkedSet ({ pin, refs, repo }) {
   const pinsSource = map(({ cid }) => cid, pin.ls())
 
@@ -82,29 +95,43 @@ async function createMarkedSet ({ pin, refs, repo }) {
   return output
 }
 
-// Delete all blocks that are not marked as in use
+/**
+ * Delete all blocks that are not marked as in use
+ *
+ * @param {object} arg
+ * @param {IPFSRepo} arg.repo
+ * @param {Set<string>} markedSet
+ * @param {AsyncIterable<CID>} blockKeys
+ */
 async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
   // Iterate through all blocks and find those that are not in the marked set
   // blockKeys yields { key: Key() }
   let blocksCount = 0
   let removedBlocksCount = 0
 
+  /**
+   * @param {CID} cid
+   */
   const removeBlock = async (cid) => {
     blocksCount++
 
     try {
       const b32 = multibase.encode('base32', cid.multihash).toString()
-      if (markedSet.has(b32)) return null
-      const res = { cid }
+
+      if (markedSet.has(b32)) {
+        return null
+      }
 
       try {
         await repo.blocks.delete(cid)
         removedBlocksCount++
       } catch (err) {
-        res.err = new Error(`Could not delete block with CID ${cid}: ${err.message}`)
+        return {
+          err: new Error(`Could not delete block with CID ${cid}: ${err.message}`)
+        }
       }
 
-      return res
+      return { cid }
     } catch (err) {
       const msg = `Could delete block with CID ${cid}`
       log(msg, err)
@@ -120,19 +147,3 @@ async function * deleteUnmarkedBlocks ({ repo }, markedSet, blockKeys) {
   log(`Marked set has ${markedSet.size} unique blocks. Blockstore has ${blocksCount} blocks. ` +
   `Deleted ${removedBlocksCount} blocks.`)
 }
-
-/**
- * @typedef {import('../../utils').AbortOptions} AbortOptions
- *
- * @typedef {Err|BlockID} Notification
- *
- * @typedef {Object} Err
- * @property {void} [cid]
- * @property {Error} err
- *
- * @typedef {Object} BlockID
- * @property {CID} cid
- * @property {void} [err]
- *
- * @typedef {import('interface-datastore').Key} Key
- */

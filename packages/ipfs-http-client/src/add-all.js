@@ -5,17 +5,25 @@ const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
 const toUrlSearchParams = require('./lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('./lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
+
+/**
+ * @typedef {import('ipfs-utils/src/types').ProgressFn} IPFSUtilsHttpUploadProgressFn
+ * @typedef {import('ipfs-core-types/src/root').AddProgressFn} IPFSCoreAddProgressFn
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ * @typedef {import('ipfs-core-types/src/root').AddResult} AddResult
+ */
 
 module.exports = configure((api) => {
   /**
-   * @type {import('.').Implements<typeof import('ipfs-core/src/components/add-all/index')>}
+   * @type {RootAPI["addAll"]}
    */
   async function * addAll (source, options = {}) {
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, options.signal])
+    const signal = abortSignal(controller.signal, options.signal)
     const { headers, body, total, parts } =
       await multipartRequest(source, controller, options.headers)
 
@@ -25,8 +33,9 @@ module.exports = configure((api) => {
     // `{ total, loaded}` passed to `onUploadProgress` and `multipart.total`
     // in which case we disable progress updates to be written out.
     const [progressFn, onUploadProgress] = typeof options.progress === 'function'
+      // @ts-ignore tsc picks up the node codepath
       ? createProgressHandler(total, parts, options.progress)
-      : [null, null]
+      : [undefined, undefined]
 
     const res = await api.post('add', {
       searchParams: toUrlSearchParams({
@@ -60,10 +69,11 @@ module.exports = configure((api) => {
  *
  * @param {number} total
  * @param {{name:string, start:number, end:number}[]|null} parts
- * @param {(n:number, name:string) => void} progress
+ * @param {IPFSCoreAddProgressFn} progress
+ * @returns {[IPFSCoreAddProgressFn|undefined, IPFSUtilsHttpUploadProgressFn|undefined]}
  */
 const createProgressHandler = (total, parts, progress) =>
-  parts ? [null, createOnUploadPrgress(total, parts, progress)] : [progress, null]
+  parts ? [undefined, createOnUploadProgress(total, parts, progress)] : [progress, undefined]
 
 /**
  * Creates a progress handler that interpolates progress from upload progress
@@ -71,10 +81,10 @@ const createProgressHandler = (total, parts, progress) =>
  *
  * @param {number} size - actual content size
  * @param {{name:string, start:number, end:number}[]} parts
- * @param {(n:number, name:string) => void} progress
- * @returns {(event:{total:number, loaded: number}) => void}
+ * @param {IPFSCoreAddProgressFn} progress
+ * @returns {IPFSUtilsHttpUploadProgressFn}
  */
-const createOnUploadPrgress = (size, parts, progress) => {
+const createOnUploadProgress = (size, parts, progress) => {
   let index = 0
   const count = parts.length
   return ({ loaded, total }) => {
@@ -98,9 +108,9 @@ const createOnUploadPrgress = (size, parts, progress) => {
 
 /**
  * @param {any} input
- * @returns {import('ipfs-core-types/src/files').UnixFSEntry}
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
+  /** @type {AddResult} */
   const output = {
     path: name,
     cid: new CID(hash),
@@ -118,6 +128,5 @@ function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
     }
   }
 
-  // @ts-ignore
   return output
 }

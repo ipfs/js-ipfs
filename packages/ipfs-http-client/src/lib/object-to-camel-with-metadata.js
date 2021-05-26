@@ -2,6 +2,9 @@
 
 const toCamel = require('./object-to-camel')
 
+/**
+ * @param {Record<string, any>} entry
+ */
 function toCamelWithMetadata (entry) {
   const file = toCamel(entry)
 

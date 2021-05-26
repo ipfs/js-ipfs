@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -25,16 +24,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when putting a value into the DHT', async () => {
-      const { cid } = await nodeA.add('should respect timeout option when putting a value into the DH')
-      const publish = await nodeA.name.publish(cid)
-      const record = await nodeA.dht.get(`/ipns/${publish.name}`)
-
-      await testTimeout(() => nodeA.dht.put(`/ipns/${publish.name}`, record, {
-        timeout: 1
-      }))
-    })
 
     it('should put a value to the DHT', async function () {
       const { cid } = await nodeA.add('should put a value to the DHT')

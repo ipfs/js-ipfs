@@ -5,16 +5,21 @@ const multihash = require('multihashes')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const { anySignal } = require('any-signal')
-const AbortController = require('native-abort-controller')
+const abortSignal = require('../lib/abort-signal')
+const { AbortController } = require('native-abort-controller')
 const multicodec = require('multicodec')
 const loadFormat = require('../lib/ipld-formats')
+
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
+ */
 
 module.exports = configure((api, opts) => {
   const load = loadFormat(opts.ipld)
 
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/dag/put')>}
+   * @type {DAGAPI["put"]}
    */
   const put = async (dagNode, options = {}) => {
     if (options.cid && (options.format || options.hashAlg)) {
@@ -28,7 +33,6 @@ module.exports = configure((api, opts) => {
       const cid = new CID(options.cid)
       encodingOptions = {
         ...options,
-        // @ts-expect-error - https://github.com/multiformats/js-cid/pull/138
         format: multicodec.getName(cid.code),
         hashAlg: multihash.decode(cid.multihash).name
       }
@@ -44,13 +48,15 @@ module.exports = configure((api, opts) => {
       ...encodingOptions
     }
 
+    // @ts-ignore settings.format might be an invalid CodecName
     const format = await load(settings.format)
     const serialized = format.util.serialize(dagNode)
 
     // allow aborting requests on body errors
     const controller = new AbortController()
-    const signal = anySignal([controller.signal, settings.signal])
+    const signal = abortSignal(controller.signal, settings.signal)
 
+    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dag/put', {
       timeout: settings.timeout,
       signal,

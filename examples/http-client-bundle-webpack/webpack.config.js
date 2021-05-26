@@ -1,4 +1,3 @@
-'use strict'
 
 const path = require('path')
 const webpack = require('webpack')
@@ -19,9 +18,11 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }])
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'index.html'
+      }]
+    })
   ],
   module: {
     rules: [
@@ -31,15 +32,18 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react']
+            presets: [
+              ['@babel/preset-env',
+                {
+                  targets: {
+                    esmodules: true
+                  }
+                }],
+              '@babel/preset-react'
+            ]
           }
         }
       }
     ]
-  },
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
   }
 }

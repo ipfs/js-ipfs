@@ -2,11 +2,16 @@
 
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
+
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/bootstrap').API<HTTPClientExtraOptions>} BootstrapAPI
+ */
 
 module.exports = configure(api => {
   /**
-   * @type {import('..').Implements<typeof import('ipfs-core/src/components/bootstrap/add')>}
+   * @type {BootstrapAPI["add"]}
    */
   async function add (addr, options = {}) {
     const res = await api.post('bootstrap/add', {
@@ -21,7 +26,7 @@ module.exports = configure(api => {
 
     const { Peers } = await res.json()
 
-    return { Peers: Peers.map(ma => new Multiaddr(ma)) }
+    return { Peers: Peers.map((/** @type {string} */ ma) => new Multiaddr(ma)) }
   }
 
   return add

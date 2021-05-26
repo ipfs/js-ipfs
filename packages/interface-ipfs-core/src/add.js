@@ -7,7 +7,6 @@ const { supportsFileReader } = require('ipfs-utils/src/supports')
 const urlSource = require('ipfs-utils/src/files/url-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
 const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -54,12 +53,6 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
-
-    it('should respect timeout option when adding a file', () => {
-      return testTimeout(() => ipfs.add('Hello', {
-        timeout: 1
-      }))
-    })
 
     it('should add a File', async function () {
       if (!supportsFileReader) return this.skip('skip in node')
@@ -346,7 +339,7 @@ module.exports = (common, options) => {
     })
 
     it('should not add from an invalid url', () => {
-      return expect(ipfs.add(urlSource('123http://invalid'))).to.eventually.be.rejected()
+      return expect(() => ipfs.add(urlSource('123http://invalid'))).to.throw()
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {

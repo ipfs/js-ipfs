@@ -51,7 +51,8 @@ const node = await IPFS.create({
   config: {
     Addresses: {
       Swarm: [
-        '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
+        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star'
       ]
     }
   }
@@ -82,7 +83,8 @@ const node = await IPFS.create({
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
         "/ip4/127.0.0.1/tcp/4003/ws",
-        "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+        "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
+        "/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star"
       ]
     }
   },

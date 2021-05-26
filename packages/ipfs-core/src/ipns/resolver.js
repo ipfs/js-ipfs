@@ -15,10 +15,18 @@ const ERR_NOT_FOUND = Errors.notFoundError().code
 const defaultMaximumRecursiveDepth = 32
 
 class IpnsResolver {
+  /**
+   * @param {import('ipfs-core-types/src/utils').BufferStore} routing
+   */
   constructor (routing) {
     this._routing = routing
   }
 
+  /**
+   * @param {string} name
+   * @param {object} options
+   * @param {boolean} [options.recursive]
+   */
   async resolve (name, options = {}) {
     if (typeof name !== 'string') {
       throw errcode(new Error('invalid name'), 'ERR_INVALID_NAME')
@@ -35,7 +43,7 @@ class IpnsResolver {
     const key = nameSegments[2]
 
     // Define a maximum depth if recursive option enabled
-    let depth
+    let depth = Infinity
 
     if (recursive) {
       depth = defaultMaximumRecursiveDepth
@@ -47,7 +55,13 @@ class IpnsResolver {
     return res
   }
 
-  // Recursive resolver according to the specified depth
+  /**
+   * Recursive resolver according to the specified depth
+   *
+   * @param {string} name
+   * @param {number} depth
+   * @returns {Promise<string>}
+   */
   async resolver (name, depth) {
     // Exceeded recursive maximum depth
     if (depth === 0) {
@@ -69,7 +83,11 @@ class IpnsResolver {
     return this.resolver(nameSegments[2], depth - 1)
   }
 
-  // resolve ipns entries from the provided routing
+  /**
+   * Resolve ipns entries from the provided routing
+   *
+   * @param {string} name
+   */
   async _resolveName (name) {
     const peerId = PeerId.createFromCID(name)
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
@@ -101,7 +119,12 @@ class IpnsResolver {
     return this._validateRecord(peerId, ipnsEntry)
   }
 
-  // validate a resolved record
+  /**
+   * Validate a resolved record
+   *
+   * @param {PeerId} peerId
+   * @param {import('ipns').IPNSEntry} ipnsEntry
+   */
   async _validateRecord (peerId, ipnsEntry) {
     const pubKey = await ipns.extractPublicKey(peerId, ipnsEntry)
 

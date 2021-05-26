@@ -235,7 +235,6 @@ describe('pin', () => {
   describe('ls', function () {
     const defaultOptions = {
       type: 'all',
-      stream: false,
       timeout: undefined,
       paths: undefined
     }

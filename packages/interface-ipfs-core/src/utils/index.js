@@ -1,6 +1,9 @@
 'use strict'
 
-const loadFixture = require('aegir/fixtures')
+const fromString = require('uint8arrays/from-string')
+const loadFixture = require('aegir/utils/fixtures')
+
+const ONE_MEG = Math.pow(2, 20)
 
 exports.fixtures = Object.freeze({
   directory: Object.freeze({
@@ -16,11 +19,11 @@ exports.fixtures = Object.freeze({
   }),
   smallFile: Object.freeze({
     cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-    data: loadFixture('test/fixtures/testfile.txt', 'interface-ipfs-core')
+    data: fromString('Plz add me!\n')
   }),
   bigFile: Object.freeze({
-    cid: 'Qme79tX2bViL26vNjPsF3DP1R9rMKMvnPYJiKTTKPrXJjq',
-    data: loadFixture('test/fixtures/15mb.random', 'interface-ipfs-core')
+    cid: 'QmcKEs7mbxbGPPc2zo77E6CPwgaSbY4SmD2MFh16AqaR9e',
+    data: Uint8Array.from(new Array(ONE_MEG * 15).fill(0))
   }),
   emptyFile: Object.freeze({
     cid: 'QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH',

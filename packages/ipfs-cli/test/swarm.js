@@ -5,7 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const ma = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 describe('swarm', () => {
   let ipfs
@@ -28,17 +28,16 @@ describe('swarm', () => {
     }
 
     it('connect online', async () => {
-      const multiaddr = 'multiaddr'
-      const result = 'result'
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
 
-      ipfs.swarm.connect.withArgs(multiaddr, defaultOptions).resolves([result])
+      ipfs.swarm.connect.withArgs(multiaddr, defaultOptions).resolves()
 
       const out = await cli(`swarm connect ${multiaddr}`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${result}\n`)
+      expect(out).to.equal(`${multiaddr}\n`)
     })
 
     it('connect offline', async () => {
-      const multiaddr = 'multiaddr'
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
 
       const out = await cli.fail(`swarm connect ${multiaddr}`, { ipfs, isDaemon: false })
       expect(out).to.include('This command must be run in online mode')
@@ -47,16 +46,15 @@ describe('swarm', () => {
     })
 
     it('connect with timeout', async () => {
-      const multiaddr = 'multiaddr'
-      const result = 'result'
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
 
       ipfs.swarm.connect.withArgs(multiaddr, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves([result])
+      }).resolves()
 
       const out = await cli(`swarm connect ${multiaddr} --timeout=1s`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${result}\n`)
+      expect(out).to.equal(`${multiaddr}\n`)
     })
   })
 
@@ -112,7 +110,7 @@ describe('swarm', () => {
       ipfs.swarm.addrs.withArgs(defaultOptions).resolves([{
         id: peer,
         addrs: [
-          ma(addr)
+          new Multiaddr(addr)
         ]
       }])
 
@@ -130,7 +128,7 @@ describe('swarm', () => {
       }).resolves([{
         id: peer,
         addrs: [
-          ma(addr)
+          new Multiaddr(addr)
         ]
       }])
 
@@ -177,26 +175,26 @@ describe('swarm', () => {
     }
 
     it('disconnect online', async () => {
-      const addr = 'addr'
-      ipfs.swarm.disconnect.withArgs(addr, defaultOptions).resolves([addr])
-      const out = await cli(`swarm disconnect ${addr}`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${addr}\n`)
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      ipfs.swarm.disconnect.withArgs(multiaddr, defaultOptions).resolves()
+      const out = await cli(`swarm disconnect ${multiaddr}`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${multiaddr}\n`)
     })
 
     it('disconnect offline', async () => {
-      const addr = 'addr'
-      const out = await cli.fail(`swarm disconnect ${addr}`, { ipfs, isDaemon: false })
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      const out = await cli.fail(`swarm disconnect ${multiaddr}`, { ipfs, isDaemon: false })
       expect(out).to.include('This command must be run in online mode')
     })
 
     it('disconnect with timeout', async () => {
-      const addr = 'addr'
-      ipfs.swarm.disconnect.withArgs(addr, {
+      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      ipfs.swarm.disconnect.withArgs(multiaddr, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves([addr])
-      const out = await cli(`swarm disconnect ${addr} --timeout=1s`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${addr}\n`)
+      }).resolves()
+      const out = await cli(`swarm disconnect ${multiaddr} --timeout=1s`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${multiaddr}\n`)
     })
   })
 })

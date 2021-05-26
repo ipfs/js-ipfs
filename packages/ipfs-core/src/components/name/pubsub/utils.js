@@ -4,10 +4,15 @@ const IpnsPubsubDatastore = require('../../../ipns/routing/pubsub-datastore')
 const errcode = require('err-code')
 
 /**
+ * @typedef {import('../../../types').ExperimentalOptions} ExperimentalOptions
+ * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
+ */
+
+/**
  * Get pubsub from IPNS routing
  *
- * @param {import('.').IPNS} ipns
- * @param {PubSubRoutingOptions} [options]
+ * @param {import('../../ipns')} ipns
+ * @param {ExperimentalOptions} [options]
  */
 exports.getPubsubRouting = (ipns, options) => {
   if (!ipns || !(options && options.ipnsPubsub)) {
@@ -15,12 +20,12 @@ exports.getPubsubRouting = (ipns, options) => {
   }
 
   // Only one store and it is pubsub
-  if (IpnsPubsubDatastore.isIpnsPubsubDatastore(ipns.routing)) {
+  if (ipns.routing instanceof IpnsPubsubDatastore) {
     return ipns.routing
   }
 
   // Find in tiered
-  const pubsub = (ipns.routing.stores || []).find(s => IpnsPubsubDatastore.isIpnsPubsubDatastore(s))
+  const pubsub = (ipns.routing.stores || []).find(s => s instanceof IpnsPubsubDatastore)
 
   if (!pubsub) {
     throw errcode(new Error('IPNS pubsub datastore not found'), 'ERR_PUBSUB_DATASTORE_NOT_FOUND')
@@ -28,8 +33,3 @@ exports.getPubsubRouting = (ipns, options) => {
 
   return pubsub
 }
-
-/**
- * @typedef {Object} PubSubRoutingOptions
- * @property {boolean} [ipnsPubsub] - Enable pub-sub on IPNS. (Default: `false`)
- */

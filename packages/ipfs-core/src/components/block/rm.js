@@ -12,29 +12,13 @@ const BLOCK_RM_CONCURRENCY = 8
 
 /**
  * @param {Object} config
- * @param {import('.').BlockService} config.blockService
- * @param {import('.').PinManager} config.pinManager
+ * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('../pin/pin-manager')} config.pinManager
  * @param {import('.').GCLock} config.gcLock
  */
 module.exports = ({ blockService, gcLock, pinManager }) => {
   /**
-  /**
-   * Remove one or more IPFS block(s).
-   *
-   * @param {CID[]|CID} cids - CID(s) corresponding to the block(s) to be removed.
-   * @param {RmOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<RmResult>}
-   *
-   * @example
-   * ```js
-   * for await (const result of ipfs.block.rm(cid)) {
-   *   if (result.error) {
-   *     console.error(`Failed to remove block ${result.cid} due to ${result.error.message}`)
-   *   } else {
-   *    console.log(`Removed block ${result.cid}`)
-   *   }
-   * }
-   * ```
+   * @type {import('ipfs-core-types/src/block').API["rm"]}
    */
   async function * rm (cids, options = {}) {
     if (!Array.isArray(cids)) {
@@ -51,6 +35,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
         parallelMap(BLOCK_RM_CONCURRENCY, async cid => {
           cid = cleanCid(cid)
 
+          /** @type {import('ipfs-core-types/src/block').RmResult} */
           const result = { cid }
 
           try {
@@ -58,10 +43,10 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
 
             if (pinResult.pinned) {
               if (CID.isCID(pinResult.reason)) { // eslint-disable-line max-depth
-                throw errCode(new Error(`pinned via ${pinResult.reason}`))
+                throw errCode(new Error(`pinned via ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
               }
 
-              throw errCode(new Error(`pinned: ${pinResult.reason}`))
+              throw errCode(new Error(`pinned: ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
             }
 
             // remove has check when https://github.com/ipfs/js-ipfs-block-service/pull/88 is merged
@@ -91,24 +76,3 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
 
   return withTimeoutOption(rm)
 }
-
-/**
- * @typedef {Object} RmOptions
- * @property {boolean} [force=false] - Ignores nonexistent blocks
- * @property {boolean} [quiet=false] - Write minimal output
- *
- * @typedef {import('.').AbortOptions} AbortOptions
- *
- * @typedef {RmSucceess|RmFailure} RmResult
- * Note: If an error is present for a given object, the block with
- * that cid was not removed and the error will contain the reason why,
- * for example if the block was pinned.
- *
- * @typedef {Object} RmSucceess
- * @property {CID} cid
- * @property {void} [error]
- *
- * @typedef {Object} RmFailure
- * @property {CID} cid
- * @property {Error} error
- */

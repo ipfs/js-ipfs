@@ -14,7 +14,10 @@ const CONVERSION_OPTS = {
 }
 
 module.exports = function loadServices () {
+  // @ts-ignore - recent protobufjs release changed the types
   const root = protobuf.Root.fromJSON(protocol)
+
+  /** @type {Record<string, any>} */
   const output = {}
 
   Object
@@ -25,6 +28,7 @@ module.exports = function loadServices () {
     // @ts-ignore
     .map(key => root.nested.ipfs[key])
     .forEach(service => {
+      /** @type {Record<string, any>} */
       const serviceDef = {}
 
       output[service.name] = serviceDef
@@ -37,10 +41,16 @@ module.exports = function loadServices () {
             path: `/ipfs.${service.name}/${methodName}`,
             requestStream: method.requestStream,
             responseStream: method.responseStream,
+            /**
+             * @param {*} obj
+             */
             requestSerialize: (obj) => {
               const message = method.resolvedRequestType.fromObject(obj)
               return method.resolvedRequestType.encode(message).finish()
             },
+            /**
+             * @param {Uint8Array} buf
+             */
             requestDeserialize: (buf) => {
               const message = method.resolvedRequestType.decode(buf)
               const obj = method.resolvedRequestType.toObject(message, CONVERSION_OPTS)
@@ -53,10 +63,16 @@ module.exports = function loadServices () {
 
               return obj
             },
+            /**
+             * @param {any} obj
+             */
             responseSerialize: (obj) => {
               const message = method.resolvedResponseType.fromObject(obj)
               return method.resolvedResponseType.encode(message).finish()
             },
+            /**
+             * @param {Uint8Array} buf
+             */
             responseDeserialize: (buf) => {
               const message = method.resolvedResponseType.decode(buf)
               const obj = method.resolvedResponseType.toObject(message, CONVERSION_OPTS)

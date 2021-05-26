@@ -1,6 +1,6 @@
 'use strict'
 
-const parseDuration = require('parse-duration').default
+const { default: parseDuration } = require('parse-duration')
 const {
   stripControlCharacters
 } = require('../../utils')
@@ -28,6 +28,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {string} argv.type
+   * @param {number} argv.size
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, name, type, size, timeout }) {
     const key = await ipfs.key.gen(name, {
       type,

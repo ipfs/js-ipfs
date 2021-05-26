@@ -159,13 +159,13 @@ The returned object contains the following keys:
 
 - `provideBufLen` is an integer.
 - `wantlist` (array of [CID][cid]s)
-- `peers` (array of peer IDs represented by CIDs)
-- `blocksReceived` is a [BigNumber Int][1]
-- `dataReceived` is a [BigNumber Int][1]
-- `blocksSent` is a [BigNumber Int][1]
-- `dataSent` is a [BigNumber Int][1]
-- `dupBlksReceived` is a [BigNumber Int][1]
-- `dupDataReceived` is a [BigNumber Int][1]
+- `peers` (array of peer IDs represented by strings)
+- `blocksReceived` is a [BigInt][1]
+- `dataReceived` is a [BigInt][1]
+- `blocksSent` is a [BigInt][1]
+- `dataSent` is a [BigInt][1]
+- `dupBlksReceived` is a [BigInt][1]
+- `dupDataReceived` is a [BigInt][1]
 
 ### Example
 
@@ -190,7 +190,7 @@ console.log(stats)
 
 A great source of [examples][] can be found in the tests for this API.
 
-[1]: https://github.com/MikeMcl/bignumber.js/
+[1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/bitswap
 [cid]: https://www.npmjs.com/package/cids
 [peerid]: https://www.npmjs.com/package/peer-id

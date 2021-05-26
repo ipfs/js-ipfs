@@ -1,10 +1,19 @@
 'use strict'
 
+const Boom = require('@hapi/boom')
+
+/**
+ * @param {import('./types').Server} server
+ */
 module.exports = server => {
+  /**
+   * @param {import('./types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   server.ext('onPreResponse', (request, h) => {
     const res = request.response
 
-    if (!res.isBoom) {
+    if (!Boom.isBoom(res)) {
       return h.continue
     }
 
@@ -28,7 +37,7 @@ module.exports = server => {
       const { req } = request.raw
       const debug = {
         method: req.method,
-        url: request.url.path,
+        url: request.url,
         headers: req.headers,
         info: request.info,
         payload: request.payload,
@@ -48,7 +57,7 @@ module.exports = server => {
     const headers = res.output.headers || {}
 
     Object.keys(headers).forEach(header => {
-      response.header(header, headers[header])
+      response.header(header, `${headers[header]}`)
     })
 
     return response

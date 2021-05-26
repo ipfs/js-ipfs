@@ -4,42 +4,35 @@ const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
 const path = require('path')
 
-let preloadNode = MockPreloadNode.createNode()
-let ipfsdServer
-
-module.exports = {
-  bundlesize: { maxSize: '560kB' },
-  karma: {
-    files: [{
-      pattern: 'node_modules/interface-ipfs-core/test/fixtures/**/*',
-      watched: false,
-      served: true,
-      included: false
-    }],
-    browserNoActivityTimeout: 600 * 1000
-  },
-  webpack: {
-    node: {
-      // required by the nofilter module
-      stream: true,
-
-      // required by the core-util-is module
-      Buffer: true
+/** @type {import('aegir').Options["build"]["config"]} */
+const esbuild = {
+  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
+  plugins: [
+    {
+      name: 'node built ins',
+      setup (build) {
+        build.onResolve({ filter: /^stream$/ }, () => {
+          return { path: require.resolve('readable-stream') }
+        })
+      }
     }
-  },
-  hooks: {
-    node: {
-      pre: async () => {
-        await preloadNode.start()
-      },
-      post: async () => {
-        await preloadNode.stop()
+  ]
+}
+
+/** @type {import('aegir').PartialOptions} */
+module.exports = {
+  test: {
+    browser: {
+      config: {
+        assets: '..',
+        buildConfig: esbuild
       }
     },
-    browser: {
-      pre: async () => {
-        await preloadNode.start()
-        ipfsdServer = await createServer({
+    async before (options) {
+      const preloadNode = MockPreloadNode.createNode()
+      await preloadNode.start()
+      if (options.runner !== 'node') {
+        const ipfsdServer = await createServer({
           host: '127.0.0.1',
           port: 57483
         }, {
@@ -59,11 +52,25 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           }
         }).start()
-      },
-      post: async () => {
-        await ipfsdServer.stop()
-        await preloadNode.stop()
+        return {
+          ipfsdServer,
+          preloadNode
+        }
+      }
+
+      return {
+        preloadNode
+      }
+    },
+    async after (options, before) {
+      await before.preloadNode.stop()
+      if (options.runner !== 'node') {
+        await before.ipfsdServer.stop()
       }
     }
+  },
+  build: {
+    bundlesizeMax: '549KB',
+    config: esbuild
   }
 }

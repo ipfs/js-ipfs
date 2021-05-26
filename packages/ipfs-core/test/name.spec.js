@@ -14,6 +14,7 @@ const IpnsRepublisher = require('../src/ipns/republisher')
 const IpnsResolver = require('../src/ipns/resolver')
 const OfflineDatastore = require('../src/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../src/ipns/routing/pubsub-datastore')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -31,8 +32,8 @@ describe('name', function () {
 
     it('should republish entries', async function () {
       republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), sinon.stub(), {
-        initialBroadcastInterval: 500,
-        broadcastInterval: 1000
+        initialBroadcastInterval: 200,
+        broadcastInterval: 500
       })
       republisher._republishEntries = sinon.stub()
 
@@ -40,13 +41,33 @@ describe('name', function () {
 
       expect(republisher._republishEntries.calledOnce).to.equal(false)
 
-      // Initial republish should happen after ~500ms
-      await delay(750)
+      // Initial republish should happen after ~200ms
+      await delay(300)
       expect(republisher._republishEntries.calledOnce).to.equal(true)
 
-      // Subsequent republishes should happen after ~1500ms
-      await delay(1000)
+      // Subsequent republishes should happen after ~700
+      await delay(600)
       expect(republisher._republishEntries.calledTwice).to.equal(true)
+    })
+
+    it('should not republish self key twice', async function () {
+      const mockKeychain = {
+        listKeys: () => Promise.resolve([{ name: 'self' }])
+      }
+      republisher = new IpnsRepublisher(sinon.stub(), sinon.stub(), sinon.stub(), mockKeychain, {
+        initialBroadcastInterval: 100,
+        broadcastInterval: 1000,
+        pass: 'pass'
+      })
+      republisher._republishEntry = sinon.stub()
+
+      await republisher.start()
+
+      expect(republisher._republishEntry.calledOnce).to.equal(false)
+
+      // Initial republish should happen after ~100ms
+      await delay(200)
+      expect(republisher._republishEntry.calledOnce).to.equal(true)
     })
 
     it('should error if run republish again', async () => {
@@ -151,7 +172,7 @@ describe('name', function () {
     it('should resolve an inlined public key', async () => {
       const peerId = await PeerId.create({ keyType: 'ed25519' })
       const value = `/ipfs/${peerId.toB58String()}`
-      const record = await ipns.create(peerId.privKey, value, 1, 10e3)
+      const record = await ipns.create(peerId.privKey, uint8ArrayFromString(value), 1, 10e3)
 
       const routing = {
         get: sinon.stub().returns(ipns.marshal(record))

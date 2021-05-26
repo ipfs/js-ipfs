@@ -11,6 +11,10 @@ const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_c
 module.exports = {
   method: 'POST',
   path: '/debug/metrics/prometheus',
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     if (!process.env.IPFS_MONITORING) {
       throw Boom.notImplemented('Monitoring is disabled. Enable it by setting environment variable IPFS_MONITORING')

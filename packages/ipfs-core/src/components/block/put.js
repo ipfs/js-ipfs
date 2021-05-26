@@ -7,53 +7,19 @@ const isIPFS = require('is-ipfs')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ */
+
+/**
  * @param {Object} config
- * @param {import('.').BlockService} config.blockService
- * @param {import('.').Pin} config.pin
+ * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('ipfs-core-types/src/pin').API} config.pin
  * @param {import('.').GCLock} config.gcLock
- * @param {import('.').Preload} config.preload
+ * @param {import('../../types').Preload} config.preload
  */
 module.exports = ({ blockService, pin, gcLock, preload }) => {
   /**
-   * Stores input as an IPFS block.
-   *
-   * **Note:** If you pass a `Block` instance as the block parameter, you
-   * don't need to pass options, as the block instance will carry the CID
-   * value as a property.
-   *
-   * @example
-   * ```js
-   * // Defaults
-   * const encoder = new TextEncoder()
-   * const decoder = new TextDecoder()
-   *
-   * const bytes = encoder.encode('a serialized object')
-   * const block = await ipfs.block.put(bytes)
-   *
-   * console.log(decoder.decode(block.data))
-   * // Logs:
-   * // a serialized object
-   * console.log(block.cid.toString())
-   * // Logs:
-   * // the CID of the object
-   *
-   * // With custom format and hashtype through CID
-   * const CID = require('cids')
-   * const another = encoder.encode('another serialized object')
-   * const cid = new CID(1, 'dag-pb', multihash)
-   * const block = await ipfs.block.put(another, cid)
-   * console.log(decoder.decode(block.data))
-   *
-   * // Logs:
-   * // a serialized object
-   * console.log(block.cid.toString())
-   * // Logs:
-   * // the CID of the object
-   * ```
-   *
-   * @param {IPLDBlock|Uint8Array} block - The block or data to store
-   * @param {PutOptions & AbortOptions} [options] - **Note:** If you pass a `Block` instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
-   * @returns {Promise<IPLDBlock>} - A Block type object, containing both the data and the hash of the block
+   * @type {import('ipfs-core-types/src/block').API["put"]}
    */
   async function put (block, options = {}) {
     if (Array.isArray(block)) {
@@ -82,7 +48,7 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
           cidVersion = options.version
         }
 
-        const multihash = await multihashing(block, mhtype)
+        const multihash = await multihashing(bytes, mhtype)
         const cid = new CID(cidVersion, format, multihash)
 
         block = new Block(bytes, cid)
@@ -115,18 +81,3 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
 
   return withTimeoutOption(put)
 }
-
-/**
- * @typedef {Object} PutOptions
- * @property {CID} [cid] - A CID to store the block under (default: `undefined`)
- * @property {string} [format='dag-pb'] - The codec to use to create the CID (default: `'dag-pb'`)
- * @property {string} [mhtype='sha2-256'] - The hashing algorithm to use to create the CID (default: `'sha2-256'`)
- * @property {number} [mhlen]
- * @property {CIDVersion} [version=0] - The version to use to create the CID (default: `0`)
- * @property {boolean} [pin=false] - If true, pin added blocks recursively (default: `false`)
- * @property {boolean} [preload]
- *
- * @typedef {import('.').AbortOptions} AbortOptions
- * @typedef {import('.').IPLDBlock} IPLDBlock
- * @typedef {0|1} CIDVersion
- */

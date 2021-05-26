@@ -1,10 +1,21 @@
 'use strict'
 
+// @ts-ignore - no types
 const mortice = require('mortice')
 
+/**
+ * @typedef {object} Lock
+ * @property {(fn: (...args: any) => any) => (...args: any) => any} readLock
+ * @property {(fn: (...args: any) => any) => (...args: any) => any} writeLock
+ */
+
+/** @type {Lock} */
 let lock
 
-module.exports = (repoOwner) => {
+/**
+ * @param {boolean} [repoOwner]
+ */
+module.exports = (repoOwner = false) => {
   if (lock) {
     return lock
   }

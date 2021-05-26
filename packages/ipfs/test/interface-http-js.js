@@ -4,6 +4,7 @@
 const tests = require('interface-ipfs-core')
 const { isNode, isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const factory = require('./utils/factory')
+const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
@@ -24,16 +25,30 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
         name: 'should error during add-all stream',
         reason: 'Not supported by http'
       }]
-      .concat(isNode ? [{
-        name: 'should fail when passed invalid input',
-        reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-      }, {
-        name: 'should not add from an invalid url',
-        reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-      }] : [{
-        name: 'should add with mtime as hrtime',
-        reason: 'Not designed to run in the browser'
-      }])
+      .concat(isNode
+        ? [{
+            name: 'should fail when passed invalid input',
+            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
+          }, {
+            name: 'should not add from an invalid url',
+            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
+          }]
+        : [{
+            name: 'should add with mtime as hrtime',
+            reason: 'Not designed to run in the browser'
+          }])
+      .concat(isFirefox
+        ? [{
+            name: 'should add a BIG Uint8Array',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'should add a BIG Uint8Array with progress enabled',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'should add big files',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.bitswap(commonFactory)
@@ -61,16 +76,42 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   })
 
   tests.files(commonFactory, {
-    skip: isBrowser || isWebWorker ? [{
-      name: 'should make directory and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should write file and specify mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }, {
-      name: 'should set mtime as hrtime',
-      reason: 'Not designed to run in the browser'
-    }] : []
+    skip: (isBrowser || isWebWorker
+      ? [{
+          name: 'should make directory and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should write file and specify mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }, {
+          name: 'should set mtime as hrtime',
+          reason: 'Not designed to run in the browser'
+        }]
+      : [])
+      .concat(isFirefox
+        ? [{
+            name: 'overwrites start of a file without truncating (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'limits how many bytes to write to a file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'pads the start of a new file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified and the offset is longer than the file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'truncates a file after writing (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'writes a file with raw blocks for newly created leaf nodes (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.key(commonFactory)
@@ -94,7 +135,14 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }
   }))
 
-  tests.object(commonFactory)
+  tests.object(commonFactory, {
+    skip: isFirefox
+      ? [{
+          name: 'should supply unaltered data',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }]
+      : []
+  })
 
   tests.pin(commonFactory, {
     skip: [{

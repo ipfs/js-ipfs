@@ -1,6 +1,6 @@
 'use strict'
 
-const UnixFS = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 
 module.exports = async (path, ipfs) => {
   const stats = await ipfs.files.stat(path)
