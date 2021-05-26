@@ -77,8 +77,6 @@ describe('.pubsub', function () {
       // Just to make sure no error is caused by above line
       setTimeout(onError, 200, 'aborted')
 
-      console.log(await error.catch(e => e.type))
-
       await expect(error).to.eventually.be.fulfilled().and.to.equal('aborted')
     })
   })
