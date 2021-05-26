@@ -25,9 +25,9 @@
     "worker-loader": "^3.0.8"
   },
   "dependencies": {
-    "ipfs": "^0.55.1",
-    "ipfs-message-port-client": "^0.6.1",
-    "ipfs-message-port-server": "^0.7.0"
+    "ipfs": "^0.55.2",
+    "ipfs-message-port-client": "^0.6.2",
+    "ipfs-message-port-server": "^0.7.1"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"

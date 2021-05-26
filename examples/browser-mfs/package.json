@@ -22,7 +22,7 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
-    "ipfs": "^0.55.1",
+    "ipfs": "^0.55.2",
     "mime-sniffer": "~0.0.3"
   }
 }
