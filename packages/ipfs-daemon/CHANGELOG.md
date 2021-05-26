@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.6.1...ipfs-daemon@0.7.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 ## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.6.0...ipfs-daemon@0.6.1) (2021-05-11)
 
 **Note:** Version bump only for package ipfs-daemon

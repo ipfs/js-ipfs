@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.146.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.145.1...interface-ipfs-core@0.146.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 ## [0.145.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.145.0...interface-ipfs-core@0.145.1) (2021-05-11)
 
 

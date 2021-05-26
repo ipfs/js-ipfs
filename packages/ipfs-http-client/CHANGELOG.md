@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [50.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.0.0...ipfs-http-client@50.1.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 # [50.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@49.0.4...ipfs-http-client@50.0.0) (2021-05-10)
 
 
