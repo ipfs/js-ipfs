@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const AbortController = require('native-abort-controller')
+const { AbortController } = require('native-abort-controller')
 
 const f = require('./utils/factory')()
 
