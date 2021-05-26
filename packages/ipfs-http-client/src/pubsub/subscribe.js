@@ -78,7 +78,7 @@ module.exports = configure((api, options) => {
 })
 
 /**
- * @param {*} response
+ * @param {import('ipfs-utils/src/types').ExtendedResponse} response
  * @param {object} options
  * @param {(message: Message) => void} options.onMessage
  * @param {() => void} options.onEnd
