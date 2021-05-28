@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "aegir": "^33.0.0",
+    "node-fetch": "npm:@achingbrain/node-fetch",
     "ws": "^7.3.1"
   },
   "optionalDependencies": {
