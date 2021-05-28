@@ -43,7 +43,7 @@
     "ipfs-daemon": "^0.7.0",
     "ipfs-http-client": "^50.1.0",
     "ipfs-repo": "^9.1.6",
-    "ipfs-utils": "^7.0.0",
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/use-node-fetch-fork-with-stream-closed-fix",
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
     "it-all": "^1.0.4",

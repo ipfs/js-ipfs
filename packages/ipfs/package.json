@@ -57,7 +57,7 @@
     "ipfs-core-types": "^0.5.0",
     "ipfs-http-client": "^50.1.0",
     "ipfs-interop": "^5.0.2",
-    "ipfs-utils": "^7.0.0",
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/use-node-fetch-fork-with-stream-closed-fix",
     "ipfsd-ctl": "^8.0.1",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star": "^0.22.2",
