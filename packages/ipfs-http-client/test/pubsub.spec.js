@@ -26,12 +26,17 @@ describe('.pubsub', function () {
 
     it('.onError when connection is closed', async () => {
       const topic = 'gossipboom'
-      const messages = []
+      let messageCount = 0
       let onError
       const error = new Promise(resolve => { onError = resolve })
 
       await ipfs.pubsub.subscribe(topic, message => {
-        messages.push(message)
+        messageCount++
+
+        if (messageCount === 2) {
+          // Stop the daemon
+          ctl.stop().catch()
+        }
       }, {
         onError
       })
@@ -39,11 +44,7 @@ describe('.pubsub', function () {
       await ipfs.pubsub.publish(topic, 'hello')
       await ipfs.pubsub.publish(topic, 'bye')
 
-      // Stop the daemon
-      await ctl.stop()
-
       await expect(error).to.eventually.be.fulfilled().and.to.be.instanceOf(Error)
-      expect(messages).property('length').equal(2)
     })
 
     it('does not call onError when aborted', async () => {
