@@ -78,7 +78,7 @@
     "ipfs-unixfs": "^4.0.3",
     "ipfs-unixfs-exporter": "^5.0.3",
     "ipfs-unixfs-importer": "^7.0.3",
-    "ipfs-utils": "Gozala/js-ipfs-utils#feat/better-fetch",
+    "ipfs-utils": "ipfs/js-ipfs-utils#fix/use-node-fetch-fork-with-stream-closed-fix",
     "ipld": "^0.30.0",
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^1.0.0",
