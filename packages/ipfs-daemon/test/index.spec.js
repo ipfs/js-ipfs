@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const Daemon = require('../')
-const fetch = require('node-fetch')
+const fetch = require('ipfs-utils/src/fetch')
 const WebSocket = require('ws')
 const os = require('os')
 
