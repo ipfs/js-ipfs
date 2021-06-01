@@ -26,7 +26,7 @@
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core-types",
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @mapbox/node-pre-gyp",
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
