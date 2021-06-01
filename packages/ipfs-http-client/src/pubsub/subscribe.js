@@ -105,10 +105,6 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
         onError(err, false, msg) // Not fatal
       }
     }
-    // Connection for active pubsub subscription should not be closed unless
-    // subscription is aborted (which will never reach this code path).
-    // Workaround for https://github.com/node-fetch/node-fetch/issues/1055 on windows
-    throw Error('Response stream for active subscription was closed')
   } catch (err) {
     if (!isAbortError(err)) {
       onError(err, true) // Fatal
