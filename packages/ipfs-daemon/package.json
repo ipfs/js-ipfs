@@ -38,9 +38,9 @@
     "ipfs-http-client": "^50.1.0",
     "ipfs-http-gateway": "^0.4.1",
     "ipfs-http-server": "^0.5.0",
-    "ipfs-utils": "^7.0.0",
+    "ipfs-utils": "^8.1.2",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.31.5",
+    "libp2p": "^0.31.6",
     "libp2p-delegated-content-routing": "^0.10.0",
     "libp2p-delegated-peer-routing": "^0.9.0",
     "libp2p-webrtc-star": "^0.22.2",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "aegir": "^33.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
     "ws": "^7.3.1"
   },
   "optionalDependencies": {

@@ -62,7 +62,7 @@ module.exports = configure((api, options) => {
             return
           }
 
-          readMessages(response.ndjson(), {
+          readMessages(response, {
             onMessage: handler,
             onEnd: () => subsTracker.unsubscribe(topic, handler),
             onError: options.onError
@@ -78,17 +78,17 @@ module.exports = configure((api, options) => {
 })
 
 /**
- * @param {*} msgStream
+ * @param {import('ipfs-utils/src/types').ExtendedResponse} response
  * @param {object} options
  * @param {(message: Message) => void} options.onMessage
  * @param {() => void} options.onEnd
  * @param {ErrorHandlerFn} [options.onError]
  */
-async function readMessages (msgStream, { onMessage, onEnd, onError }) {
+async function readMessages (response, { onMessage, onEnd, onError }) {
   onError = onError || log
 
   try {
-    for await (const msg of msgStream) {
+    for await (const msg of response.ndjson()) {
       try {
         if (!msg.from) {
           continue
@@ -106,12 +106,28 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
       }
     }
   } catch (err) {
-    // FIXME: In testing with Chrome, err.type is undefined (should not be!)
-    // Temporarily use the name property instead.
-    if (err.type !== 'aborted' && err.name !== 'AbortError') {
+    if (!isAbortError(err)) {
       onError(err, true) // Fatal
     }
   } finally {
     onEnd()
+  }
+}
+
+/**
+ * @param {Error & {type?:string}} error
+ * @returns {boolean}
+ */
+const isAbortError = error => {
+  switch (error.type) {
+    case 'aborted':
+      return true
+    // It is `abort` in Electron instead of `aborted`
+    case 'abort':
+      return true
+    default:
+      // FIXME: In testing with Chrome, err.type is undefined (should not be!)
+      // Temporarily use the name property instead.
+      return error.name === 'AbortError'
   }
 }
