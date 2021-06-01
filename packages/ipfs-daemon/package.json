@@ -53,9 +53,7 @@
   },
   "optionalDependencies": {
     "prom-client": "^12.0.0",
-    "prometheus-gc-stats": "^0.6.0"
-  },
-  "peerDependencies": {
+    "prometheus-gc-stats": "^0.6.0",
     "electron-webrtc": "^0.3.0",
     "wrtc": "^0.4.6"
   }
