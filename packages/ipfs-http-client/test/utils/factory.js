@@ -1,5 +1,6 @@
 'use strict'
 
+// @ts-ignore no types
 const { createFactory } = require('ipfsd-ctl')
 const merge = require('merge-options')
 const { isNode } = require('ipfs-utils/src/env')
@@ -13,6 +14,7 @@ const commonOptions = {
 
 const commonOverrides = {
   go: {
+    // @ts-ignore go-ipfs has no types
     ipfsBin: isNode ? require('go-ipfs').path() : undefined
   }
 }
