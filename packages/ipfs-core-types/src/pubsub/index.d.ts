@@ -13,7 +13,7 @@ export interface API<OptionExtension = {}> {
    * console.log(`subscribed to ${topic}`)
    * ```
    */
-  subscribe: (topic: string, handler: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
+  subscribe: (topic: string, handler: MessageHandlerFn, options?: SubscribeOptions & OptionExtension) => Promise<void>
 
   /**
    * Unsubscribes from a pubsub topic
@@ -79,6 +79,14 @@ export interface Message {
   seqno: Uint8Array
   data: Uint8Array
   topicIDs: string[]
+}
+
+export interface SubscribeOptions extends AbortOptions {
+  /**
+   * A callback to receive an error if one occurs during processing
+   * subscription messages. Only supported by ipfs-http-client.
+   */
+  onError?: (err: Error) => void
 }
 
 export type MessageHandlerFn = (message: Message) => void

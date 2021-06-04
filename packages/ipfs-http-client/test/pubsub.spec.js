@@ -3,13 +3,17 @@
 
 const { expect } = require('aegir/utils/chai')
 const { AbortController } = require('native-abort-controller')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const defer = require('p-defer')
 
 const f = require('./utils/factory')()
 
 describe('.pubsub', function () {
   this.timeout(20 * 1000)
   describe('.subscribe', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {any} */
     let ctl
 
     beforeEach(async function () {
@@ -27,8 +31,7 @@ describe('.pubsub', function () {
     it('.onError when connection is closed', async () => {
       const topic = 'gossipboom'
       let messageCount = 0
-      let onError
-      const error = new Promise(resolve => { onError = resolve })
+      const onError = defer()
 
       await ipfs.pubsub.subscribe(topic, message => {
         messageCount++
@@ -38,47 +41,44 @@ describe('.pubsub', function () {
           ctl.stop().catch()
         }
       }, {
-        onError
+        onError: onError.resolve
       })
 
-      await ipfs.pubsub.publish(topic, 'hello')
-      await ipfs.pubsub.publish(topic, 'bye')
+      await ipfs.pubsub.publish(topic, uint8ArrayFromString('hello'))
+      await ipfs.pubsub.publish(topic, uint8ArrayFromString('bye'))
 
-      await expect(error).to.eventually.be.fulfilled().and.to.be.instanceOf(Error)
+      await expect(onError.promise).to.eventually.be.fulfilled().and.to.be.instanceOf(Error)
     })
 
     it('does not call onError when aborted', async () => {
       const controller = new AbortController()
       const topic = 'gossipabort'
       const messages = []
-      let onError
-      let onReceived
-
-      const received = new Promise(resolve => { onReceived = resolve })
-      const error = new Promise(resolve => { onError = resolve })
+      const onError = defer()
+      const onReceived = defer()
 
       await ipfs.pubsub.subscribe(topic, message => {
         messages.push(message)
         if (messages.length === 2) {
-          onReceived()
+          onReceived.resolve()
         }
       }, {
-        onError,
+        onError: onError.resolve,
         signal: controller.signal
       })
 
-      await ipfs.pubsub.publish(topic, 'hello')
-      await ipfs.pubsub.publish(topic, 'bye')
+      await ipfs.pubsub.publish(topic, uint8ArrayFromString('hello'))
+      await ipfs.pubsub.publish(topic, uint8ArrayFromString('bye'))
 
-      await received
+      await onReceived.promise
       controller.abort()
 
       // Stop the daemon
       await ctl.stop()
       // Just to make sure no error is caused by above line
-      setTimeout(onError, 200, 'aborted')
+      setTimeout(onError.resolve, 200, 'aborted')
 
-      await expect(error).to.eventually.be.fulfilled().and.to.equal('aborted')
+      await expect(onError.promise).to.eventually.be.fulfilled().and.to.equal('aborted')
     })
   })
 })

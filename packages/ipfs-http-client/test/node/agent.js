@@ -5,6 +5,11 @@ const { expect } = require('aegir/utils/chai')
 const ipfsClient = require('../../src').create
 const delay = require('delay')
 
+/**
+ * @typedef {import('http').IncomingMessage} IncomingMessage
+ *
+ * @param {(message: IncomingMessage) => Promise<any>} handler
+ */
 function startServer (handler) {
   return new Promise((resolve) => {
     // spin up a test http server to inspect the requests made by the library
@@ -20,8 +25,10 @@ function startServer (handler) {
     })
 
     server.listen(0, () => {
+      const addressInfo = server.address()
+
       resolve({
-        port: server.address().port,
+        port: addressInfo && (typeof addressInfo === 'string' ? addressInfo : addressInfo.port),
         close: () => server.close()
       })
     })
@@ -29,6 +36,7 @@ function startServer (handler) {
 }
 
 describe('agent', function () {
+  /** @type {import('http').Agent} */
   let agent
 
   before(() => {
@@ -40,6 +48,7 @@ describe('agent', function () {
   })
 
   it('restricts the number of concurrent connections', async () => {
+    /** @type {((arg: any) => void)[]} */
     const responses = []
 
     const server = await startServer(() => {
