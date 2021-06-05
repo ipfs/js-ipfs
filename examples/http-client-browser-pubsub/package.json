@@ -13,7 +13,7 @@
   "author": "Alan Shaw",
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^50.1.0"
+    "ipfs-http-client": "^50.1.1"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"
@@ -21,7 +21,7 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "go-ipfs": "0.8.0",
-    "ipfs": "^0.55.2",
+    "ipfs": "^0.55.3",
     "ipfsd-ctl": "^8.0.1",
     "parcel": "2.0.0-beta.2",
     "test-ipfs-example": "^3.0.0"
