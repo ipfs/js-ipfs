@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [50.1.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.1.0...ipfs-http-client@50.1.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* add onError to pubsub.subscribe types ([#3706](https://github.com/ipfs/js-ipfs/issues/3706)) ([d910aea](https://github.com/ipfs/js-ipfs/commit/d910aead8c8be6798cf838245511331b3f69634c)), closes [#3468](https://github.com/ipfs/js-ipfs/issues/3468)
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
 # [50.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.0.0...ipfs-http-client@50.1.0) (2021-05-26)
 
 

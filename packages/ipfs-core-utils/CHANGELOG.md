@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.1...ipfs-core-utils@0.8.2) (2021-06-05)
+
+
+### Bug Fixes
+
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
 ## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.0...ipfs-core-utils@0.8.1) (2021-05-26)
 
 **Note:** Version bump only for package ipfs-core-utils

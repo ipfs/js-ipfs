@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.0...ipfs-daemon@0.7.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* move wrtc to optional deps ([#3705](https://github.com/ipfs/js-ipfs/issues/3705)) ([7cf404c](https://github.com/ipfs/js-ipfs/commit/7cf404c8fd11888fa803c6167bd2ec62d94a2b34))
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
 # [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.6.1...ipfs-daemon@0.7.0) (2021-05-26)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-server",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -39,9 +39,9 @@
     "dlv": "^1.1.3",
     "err-code": "^3.0.1",
     "hapi-pino": "^8.3.0",
-    "ipfs-core-types": "^0.5.0",
-    "ipfs-core-utils": "^0.8.1",
-    "ipfs-http-gateway": "^0.4.1",
+    "ipfs-core-types": "^0.5.1",
+    "ipfs-core-utils": "^0.8.2",
+    "ipfs-http-gateway": "^0.4.2",
     "ipfs-unixfs": "^4.0.3",
     "ipld-block": "^0.11.1",
     "ipld-dag-pb": "^0.22.1",
@@ -73,7 +73,7 @@
     "@types/hapi__hapi": "^20.0.5",
     "aegir": "^33.0.0",
     "form-data": "^4.0.0",
-    "ipfs-http-client": "^50.1.0",
+    "ipfs-http-client": "^50.1.1",
     "iso-random-stream": "^2.0.0",
     "it-to-buffer": "^2.0.0",
     "qs": "^6.9.4",

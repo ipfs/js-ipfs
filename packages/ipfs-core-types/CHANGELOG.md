@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.5.0...ipfs-core-types@0.5.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* add onError to pubsub.subscribe types ([#3706](https://github.com/ipfs/js-ipfs/issues/3706)) ([d910aea](https://github.com/ipfs/js-ipfs/commit/d910aead8c8be6798cf838245511331b3f69634c)), closes [#3468](https://github.com/ipfs/js-ipfs/issues/3468)
+
+
+
+
+
 # [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.4.0...ipfs-core-types@0.5.0) (2021-05-26)
 
 
