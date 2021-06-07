@@ -7,7 +7,7 @@ const cli = require('./utils/cli')
 const sinon = require('sinon')
 
 const defaultOptions = {
-  recursive: false,
+  recursive: true,
   cidBase: undefined,
   timeout: undefined
 }

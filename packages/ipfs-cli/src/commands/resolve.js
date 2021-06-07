@@ -15,7 +15,7 @@ module.exports = {
     recursive: {
       alias: 'r',
       type: 'boolean',
-      default: false
+      default: true
     },
     'cid-base': {
       describe: 'Number base to display CIDs in.',
