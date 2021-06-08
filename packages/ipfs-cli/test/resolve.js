@@ -31,27 +31,24 @@ describe('resolve', () => {
     expect(out).to.equal(resolved + '\n')
   })
 
-  it('resolves a CID recursively', async () => {
+  it('resolves a CID recursively by default', async () => {
     const resolved = `/ipfs/${cid}`
 
-    ipfs.resolve.withArgs(cid.toString(), {
-      ...defaultOptions,
-      recursive: true
-    }).resolves(resolved)
+    ipfs.resolve.withArgs(cid.toString(), defaultOptions).resolves(resolved)
 
     const out = await cli(`resolve ${cid} --recursive`, { ipfs })
     expect(out).to.equal(resolved + '\n')
   })
 
-  it('resolves a CID recursively (short option)', async () => {
+  it('allows non-recursive lookups with flag', async () => {
     const resolved = `/ipfs/${cid}`
 
     ipfs.resolve.withArgs(cid.toString(), {
       ...defaultOptions,
-      recursive: true
+      recursive: false
     }).resolves(resolved)
 
-    const out = await cli(`resolve ${cid} -r`, { ipfs })
+    const out = await cli(`resolve ${cid} --recursive=false`, { ipfs })
     expect(out).to.equal(resolved + '\n')
   })
 
