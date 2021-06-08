@@ -84,7 +84,7 @@
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
     "ipld-raw": "^7.0.0",
-    "ipns": "^0.11.0",
+    "ipns": "ipfs/js-ipns#feat/validate-v2-sigs",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^5.0.0",
     "it-all": "^1.0.4",

@@ -51,7 +51,7 @@
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
-    "ipns": "^0.11.0",
+    "ipns": "ipfs/js-ipns#feat/validate-v2-sigs",
     "is-ipfs": "^5.0.0",
     "iso-random-stream": "^2.0.0",
     "it-all": "^1.0.4",
