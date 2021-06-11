@@ -29,12 +29,12 @@ module.exports = ({ ipld, name }) => {
       }
     }
 
-    const [, , hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
+    const [, scheme, hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
     const cid = new CID(hash)
 
     // nothing to resolve return the input
     if (rest.length === 0) {
-      return `/ipfs/${cidToString(cid, { base: opts.cidBase })}`
+      return `/${scheme}/${cidToString(cid, { base: opts.cidBase })}`
     }
 
     path = rest.join('/')
