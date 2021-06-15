@@ -102,7 +102,7 @@
     "libp2p-kad-dht": "^0.22.0",
     "libp2p-mdns": "^0.16.0",
     "libp2p-mplex": "^0.10.2",
-    "libp2p-noise": "^3.0.0",
+    "libp2p-noise": "^3.1.0",
     "libp2p-record": "^0.10.3",
     "libp2p-tcp": "^0.15.4",
     "libp2p-webrtc-star": "^0.22.2",
