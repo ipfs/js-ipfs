@@ -150,7 +150,7 @@ describe('resolve directory (CIDv0)', function () {
   })
 
   it('should return HTML listing of files of a directory', async () => {
-    const res = await ipfsResolver.directory(ipfs, `/ipfs/${directory.cid}`, directory.cid)
+    const res = await ipfsResolver.directory(ipfs, `/ipfs/${directory.cid}`, new CID(directory.cid))
 
     expect(res).to.exist()
     expect(res).to.include('</html>')
@@ -207,7 +207,7 @@ describe('resolve directory (CIDv1)', function () {
   })
 
   it('should return HTML listing of files of a directory', async () => {
-    const res = await ipfsResolver.directory(ipfs, `/ipfs/${directory.cid}`, directory.cid)
+    const res = await ipfsResolver.directory(ipfs, `/ipfs/${directory.cid}`, new CID(directory.cid))
     expect(res).to.exist()
     expect(res).to.include('pp.txt')
     expect(res).to.include('holmes.txt')
