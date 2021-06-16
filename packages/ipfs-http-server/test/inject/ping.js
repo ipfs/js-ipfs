@@ -8,7 +8,6 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const allNdjson = require('../utils/all-ndjson')
 const { AbortSignal } = require('native-abort-controller')
-const CID = require('cids')
 
 const defaultOptions = {
   count: 10,
@@ -48,19 +47,20 @@ describe('/ping', function () {
     expect(res).to.have.property('statusCode', 400)
   })
 
-  it('returns 500 for incorrect Peer Id', async () => {
-    ipfs.ping.withArgs(new CID(peerId)).throws(new Error('derp'))
+  it('returns error for incorrect Peer Id', async () => {
+    ipfs.ping.withArgs(peerId).throws(new Error('derp'))
 
     const res = await http({
       method: 'POST',
       url: `/api/v0/ping?arg=${peerId}`
     }, { ipfs })
 
-    expect(res).to.have.property('statusCode', 500)
+    expect(res).to.have.property('statusCode', 200)
+    expect(res).to.have.nested.property('trailers.x-stream-error')
   })
 
   it('pings with a count', async () => {
-    ipfs.ping.withArgs(new CID(peerId), {
+    ipfs.ping.withArgs(peerId, {
       ...defaultOptions,
       count: 5
     }).returns([])
@@ -74,7 +74,7 @@ describe('/ping', function () {
   })
 
   it('pings with a count as n', async () => {
-    ipfs.ping.withArgs(new CID(peerId), {
+    ipfs.ping.withArgs(peerId, {
       ...defaultOptions,
       count: 5
     }).returns([])
@@ -88,7 +88,7 @@ describe('/ping', function () {
   })
 
   it('pings a remote peer', async () => {
-    ipfs.ping.withArgs(new CID(peerId), defaultOptions).returns([{
+    ipfs.ping.withArgs(peerId, defaultOptions).returns([{
       success: true,
       time: 1,
       text: 'hello'
@@ -116,7 +116,7 @@ describe('/ping', function () {
   })
 
   it('accepts a timeout', async () => {
-    ipfs.ping.withArgs(new CID(peerId), {
+    ipfs.ping.withArgs(peerId, {
       ...defaultOptions,
       timeout: 1000
     }).returns([])

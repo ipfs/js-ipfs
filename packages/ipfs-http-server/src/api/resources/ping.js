@@ -51,7 +51,7 @@ module.exports = {
     } = request
 
     return streamResponse(request, h, () => pipe(
-      ipfs.ping(peerId, {
+      ipfs.ping(peerId.toString(), {
         count,
         signal,
         timeout

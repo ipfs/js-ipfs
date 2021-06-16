@@ -21,13 +21,19 @@ async function streamResponse (request, h, getSource, options = {}) {
   request.raw.res.setHeader('Trailer', errorTrailer)
 
   pipe(
-    getSource(),
+    async function * () {
+      yield * getSource()
+    },
     options.objectMode ? ndjson.stringify : (/** @type {Uint8Array} */ chunk) => chunk,
     toIterable.sink(request.raw.res)
   )
     .catch((/** @type {Error} */ err) => {
       if (options.onError) {
         options.onError(err)
+      }
+
+      if (!request.raw.res.writableEnded) {
+        request.raw.res.write(' ')
       }
 
       request.raw.res.addTrailers({

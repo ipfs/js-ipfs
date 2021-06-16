@@ -351,7 +351,7 @@ exports.add = {
       .catch((/** @type {Error} */ err) => {
         log.error(err)
 
-        if (!filesParsed) {
+        if (!filesParsed && !request.raw.res.writableEnded) {
           request.raw.res.write(' ')
         }
 
