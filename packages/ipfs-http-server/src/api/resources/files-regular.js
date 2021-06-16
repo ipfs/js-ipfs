@@ -11,7 +11,6 @@ const log = Object.assign(debug('ipfs:http-api:files'), {
 const toIterable = require('stream-to-it')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const { PassThrough } = require('stream')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { pipe } = require('it-pipe')
 const all = require('it-all')
@@ -261,17 +260,20 @@ exports.add = {
     } = request
 
     let filesParsed = false
-    const output = new PassThrough()
     /**
      * @type {import('ipfs-core-types/src/root').AddProgressFn}
      */
     const progressHandler = (bytes, path) => {
       // TODO: path should be passed as a second option
-      output.write(JSON.stringify({
+      request.raw.res.write(JSON.stringify({
         Name: path,
         Bytes: bytes
       }) + '\n')
     }
+
+    request.raw.res.setHeader('x-chunked-output', '1')
+    request.raw.res.setHeader('content-type', 'application/json')
+    request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
     pipe(
       multipart(request.raw.req),
@@ -339,7 +341,7 @@ exports.add = {
         }
       }),
       ndjson.stringify,
-      toIterable.sink(output)
+      toIterable.sink(request.raw.res)
     )
       .then(() => {
         if (!filesParsed) {
@@ -349,8 +351,8 @@ exports.add = {
       .catch((/** @type {Error} */ err) => {
         log.error(err)
 
-        if (!filesParsed && output.writable) {
-          output.write(' ')
+        if (!filesParsed) {
+          request.raw.res.write(' ')
         }
 
         request.raw.res.addTrailers({
@@ -361,13 +363,10 @@ exports.add = {
         })
       })
       .finally(() => {
-        output.end()
+        request.raw.res.end()
       })
 
-    return h.response(output)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
+    return h.abandon
   }
 }
 

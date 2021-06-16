@@ -8,7 +8,6 @@ const ndjson = require('iterable-ndjson')
 // @ts-ignore no types
 const toStream = require('it-to-stream')
 const { map } = require('streaming-iterables')
-const { PassThrough } = require('stream')
 // @ts-ignore no types
 const toIterable = require('stream-to-it')
 const debug = require('debug')
@@ -124,7 +123,10 @@ exports.findProvs = {
     } = request
 
     let providersFound = false
-    const output = new PassThrough()
+
+    request.raw.res.setHeader('x-chunked-output', '1')
+    request.raw.res.setHeader('content-type', 'application/json')
+    request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
     pipe(
       ipfs.dht.findProvs(cid, {
@@ -144,13 +146,13 @@ exports.findProvs = {
         }
       }),
       ndjson.stringify,
-      toIterable.sink(output)
+      toIterable.sink(request.raw.res)
     )
       .catch((/** @type {Error} */ err) => {
         log.error(err)
 
-        if (!providersFound && output.writable) {
-          output.write(' ')
+        if (!providersFound) {
+          request.raw.res.write(' ')
         }
 
         request.raw.res.addTrailers({
@@ -161,13 +163,10 @@ exports.findProvs = {
         })
       })
       .finally(() => {
-        output.end()
+        request.raw.res.end()
       })
 
-    return h.response(output)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
+    return h.abandon
   }
 }
 
