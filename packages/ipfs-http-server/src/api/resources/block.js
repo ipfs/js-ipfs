@@ -9,8 +9,6 @@ const { cidToString } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
 exports.get = {
@@ -234,8 +232,7 @@ exports.rm = {
         timeout,
         signal
       }),
-      map(({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined })),
-      ndjson.stringify
+      map(({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined }))
     ))
   }
 }

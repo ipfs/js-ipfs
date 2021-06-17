@@ -4,8 +4,6 @@ const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { map, reduce } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const streamResponse = require('../../utils/stream-response')
 const all = require('it-all')
@@ -105,8 +103,7 @@ exports.ls = {
 
     return streamResponse(request, h, () => pipe(
       source,
-      map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata)),
-      ndjson.stringify
+      map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata))
     ))
   }
 }

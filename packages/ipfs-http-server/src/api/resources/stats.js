@@ -2,8 +2,6 @@
 
 const { map } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 const Joi = require('../../utils/joi')
 
@@ -64,8 +62,7 @@ exports.bw = {
         TotalOut: stat.totalOut.toString(),
         RateIn: stat.rateIn.toString(),
         RateOut: stat.rateOut.toString()
-      })),
-      ndjson.stringify
+      }))
     ))
   }
 }

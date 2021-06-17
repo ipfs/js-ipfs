@@ -3,8 +3,6 @@
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
 module.exports = {
@@ -56,8 +54,7 @@ module.exports = {
         signal,
         timeout
       }),
-      map(pong => ({ Success: pong.success, Time: pong.time, Text: pong.text })),
-      ndjson.stringify
+      map(pong => ({ Success: pong.success, Time: pong.time, Text: pong.text }))
     ))
   }
 }

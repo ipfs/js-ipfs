@@ -75,9 +75,7 @@ const mfsLs = {
           timeout
         }),
         source => map(source, (entry) => mapEntry(entry, { cidBase, long }))
-      ), {
-        objectMode: true
-      })
+      ))
     }
 
     const files = await all(ipfs.files.ls(path, {

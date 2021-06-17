@@ -1,51 +1,59 @@
 'use strict'
 
 const { pipe } = require('it-pipe')
+const log = require('debug')('ipfs:http-api:utils:stream-response')
 // @ts-ignore no types
 const toIterable = require('stream-to-it')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 
-const errorTrailer = 'X-Stream-Error'
+const ERROR_TRAILER = 'X-Stream-Error'
 
 /**
- *
  * @param {import('../types').Request} request
  * @param {import('@hapi/hapi').ResponseToolkit} h
  * @param {() => AsyncIterable<any>} getSource
- * @param {{ objectMode?: boolean, onError?: (error: Error) => void }} [options]
+ * @param {{onError?: (error: Error) => void }} [options]
  */
 async function streamResponse (request, h, getSource, options = {}) {
-  request.raw.res.setHeader('x-chunked-output', '1')
-  request.raw.res.setHeader('content-type', 'application/json')
-  request.raw.res.setHeader('Trailer', errorTrailer)
+  request.raw.res.setHeader('X-Chunked-Output', '1')
+  request.raw.res.setHeader('Content-Type', 'application/json')
+  request.raw.res.setHeader('Trailer', ERROR_TRAILER)
 
   pipe(
     async function * () {
-      yield * getSource()
+      try {
+        for await (const chunk of getSource()) {
+          if (chunk instanceof Uint8Array || typeof chunk === 'string') {
+            yield chunk
+          } else {
+            yield JSON.stringify(chunk) + '\n'
+          }
+        }
+      } catch (err) {
+        log(err)
+
+        if (options.onError) {
+          options.onError(err)
+        }
+
+        if (request.raw.res.headersSent) {
+          request.raw.res.addTrailers({
+            [ERROR_TRAILER]: JSON.stringify({
+              Message: err.message,
+              Code: 0
+            })
+          })
+        } else {
+          request.raw.res.statusCode = 500
+
+          yield JSON.stringify({
+            Message: err.message,
+            Code: 0
+          }) + '\n'
+        }
+      }
     },
-    options.objectMode ? ndjson.stringify : (/** @type {Uint8Array} */ chunk) => chunk,
     toIterable.sink(request.raw.res)
   )
-    .catch((/** @type {Error} */ err) => {
-      if (options.onError) {
-        options.onError(err)
-      }
-
-      if (!request.raw.res.writableEnded) {
-        request.raw.res.write(' ')
-      }
-
-      request.raw.res.addTrailers({
-        [errorTrailer]: JSON.stringify({
-          Message: err.message,
-          Code: 0
-        })
-      })
-    })
-    .finally(() => {
-      request.raw.res.end()
-    })
 
   return h.abandon
 }

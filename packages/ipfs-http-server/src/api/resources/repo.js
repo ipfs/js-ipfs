@@ -3,8 +3,6 @@
 const Joi = require('../../utils/joi')
 const { map, filter } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
 exports.gc = {
@@ -53,8 +51,7 @@ exports.gc = {
       map(r => ({
         Error: (r.err && r.err.message) || undefined,
         Key: (!r.err && { '/': r.cid.toString() }) || undefined
-      })),
-      ndjson.stringify
+      }))
     ))
   }
 }

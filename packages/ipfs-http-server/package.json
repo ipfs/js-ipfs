@@ -50,6 +50,7 @@
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
+    "it-merge": "^1.0.1",
     "it-multipart": "^2.0.0",
     "it-pipe": "^1.1.0",
     "it-tar": "^3.0.0",
