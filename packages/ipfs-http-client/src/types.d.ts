@@ -3,7 +3,6 @@ import { Agent as HttpAgent } from 'http'
 import { Agent as HttpsAgent } from 'https'
 import { Multiaddr } from 'multiaddr'
 import { CodecName } from 'multicodec'
-import SubscriptionTracker from './pubsub/subscription-tracker'
 
 export type LoadFormatFn = (name: CodecName) => Promise<IPLDFormat<any>>
 
@@ -16,8 +15,7 @@ export interface Options {
   apiPath?: string
   url?: URL|string|Multiaddr
   ipld?: IPLDOptions
-  agent?: HttpAgent | HttpsAgent,
-  subscriptionTracker?: SubscriptionTracker
+  agent?: HttpAgent | HttpsAgent
 }
 
 export interface IPLDOptions {

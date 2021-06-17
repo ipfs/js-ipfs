@@ -3,18 +3,14 @@
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
+ * @typedef {import('../types').Options} Options
  */
 
 /**
- * @param {import('../types').Options} opts
+ * @param {Options} options
+ * @param {import('./subscription-tracker')} subsTracker
  */
-module.exports = opts => {
-  if (!opts.subscriptionTracker) {
-    throw new Error('Please configure a subscription tracker')
-  }
-
-  const subsTracker = opts.subscriptionTracker
-
+module.exports = (options, subsTracker) => {
   /**
    * @type {PubsubAPI["unsubscribe"]}
    */
