@@ -67,7 +67,7 @@ exports.resolve = {
         timeout
       }),
       async function * (source) {
-        yield map(source, value => ({ Path: value }))
+        yield * map(source, value => ({ Path: value }))
       }
     ))
   }
