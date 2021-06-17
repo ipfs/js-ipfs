@@ -2,7 +2,7 @@
 
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
-const { map } = require('streaming-iterables')
+const map = require('it-map')
 const last = require('it-last')
 const streamResponse = require('../../utils/stream-response')
 
@@ -66,7 +66,9 @@ exports.resolve = {
         signal,
         timeout
       }),
-      map(value => ({ Path: value }))
+      async function * (source) {
+        yield map(source, value => ({ Path: value }))
+      }
     ))
   }
 }

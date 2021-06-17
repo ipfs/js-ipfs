@@ -8,7 +8,7 @@ const Boom = require('@hapi/boom')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const { pipe } = require('it-pipe')
-const { map } = require('streaming-iterables')
+const map = require('it-map')
 const streamResponse = require('../../utils/stream-response')
 
 exports.get = {
@@ -232,7 +232,9 @@ exports.rm = {
         timeout,
         signal
       }),
-      map(({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined }))
+      async function * (source) {
+        yield * map(source, ({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined }))
+      }
     ))
   }
 }

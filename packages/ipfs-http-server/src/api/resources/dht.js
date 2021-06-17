@@ -3,17 +3,8 @@
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
-// @ts-ignore no types
-const toStream = require('it-to-stream')
-const { map } = require('streaming-iterables')
-// @ts-ignore no types
-const toIterable = require('stream-to-it')
-const debug = require('debug')
-const log = Object.assign(debug('ipfs:http-api:dht'), {
-  error: debug('ipfs:http-api:dht:error')
-})
+const map = require('it-map')
+const streamResponse = require('../../utils/stream-response')
 
 exports.findPeer = {
   options: {
@@ -122,51 +113,26 @@ exports.findProvs = {
       }
     } = request
 
-    let providersFound = false
-
-    request.raw.res.setHeader('x-chunked-output', '1')
-    request.raw.res.setHeader('content-type', 'application/json')
-    request.raw.res.setHeader('Trailer', 'X-Stream-Error')
-
-    pipe(
-      ipfs.dht.findProvs(cid, {
-        numProviders,
-        signal,
-        timeout
-      }),
-      map(({ id, addrs }) => {
-        providersFound = true
-
-        return {
-          Responses: [{
-            ID: id.toString(),
-            Addrs: (addrs || []).map((/** @type {import('multiaddr').Multiaddr} */ a) => a.toString())
-          }],
-          Type: 4
-        }
-      }),
-      ndjson.stringify,
-      toIterable.sink(request.raw.res)
-    )
-      .catch((/** @type {Error} */ err) => {
-        log.error(err)
-
-        if (!providersFound) {
-          request.raw.res.write(' ')
-        }
-
-        request.raw.res.addTrailers({
-          'X-Stream-Error': JSON.stringify({
-            Message: err.message,
-            Code: 0
+    return streamResponse(request, h, () => {
+      return pipe(
+        ipfs.dht.findProvs(cid, {
+          numProviders,
+          signal,
+          timeout
+        }),
+        async function * (source) {
+          yield * map(source, ({ id, addrs }) => {
+            return {
+              Responses: [{
+                ID: id.toString(),
+                Addrs: (addrs || []).map(a => a.toString())
+              }],
+              Type: 4
+            }
           })
-        })
-      })
-      .finally(() => {
-        request.raw.res.end()
-      })
-
-    return h.abandon
+        }
+      )
+    })
   }
 }
 
@@ -351,17 +317,16 @@ exports.query = {
       }
     } = request
 
-    const response = toStream.readable(
-      pipe(
+    return streamResponse(request, h, () => {
+      return pipe(
         ipfs.dht.query(peerId, {
           signal,
           timeout
         }),
-        map(({ id }) => ({ ID: id.toString() })),
-        ndjson.stringify
+        async function * (source) {
+          yield * map(source, ({ id }) => ({ ID: id.toString() }))
+        }
       )
-    )
-
-    return h.response(response)
+    })
   }
 }

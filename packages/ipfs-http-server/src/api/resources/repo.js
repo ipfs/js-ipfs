@@ -1,7 +1,8 @@
 'use strict'
 
 const Joi = require('../../utils/joi')
-const { map, filter } = require('streaming-iterables')
+const map = require('it-map')
+const filter = require('it-filter')
 const { pipe } = require('it-pipe')
 const streamResponse = require('../../utils/stream-response')
 
@@ -47,11 +48,15 @@ exports.gc = {
         signal,
         timeout
       }),
-      filter(r => !r.err || streamErrors),
-      map(r => ({
-        Error: (r.err && r.err.message) || undefined,
-        Key: (!r.err && { '/': r.cid.toString() }) || undefined
-      }))
+      async function * filterErrors (source) {
+        yield * filter(source, r => !r.err || streamErrors)
+      },
+      async function * transformGcOutput (source) {
+        yield * map(source, r => ({
+          Error: (r.err && r.err.message) || undefined,
+          Key: (!r.err && { '/': r.cid.toString() }) || undefined
+        }))
+      }
     ))
   }
 }

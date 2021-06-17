@@ -1,6 +1,6 @@
 'use strict'
 
-const { map } = require('streaming-iterables')
+const map = require('it-map')
 const { pipe } = require('it-pipe')
 const streamResponse = require('../../utils/stream-response')
 const Joi = require('../../utils/joi')
@@ -57,12 +57,14 @@ exports.bw = {
         signal,
         timeout
       }),
-      map(stat => ({
-        TotalIn: stat.totalIn.toString(),
-        TotalOut: stat.totalOut.toString(),
-        RateIn: stat.rateIn.toString(),
-        RateOut: stat.rateOut.toString()
-      }))
+      async function * (source) {
+        yield * map(source, stat => ({
+          TotalIn: stat.totalIn.toString(),
+          TotalOut: stat.totalOut.toString(),
+          RateIn: stat.rateIn.toString(),
+          RateOut: stat.rateOut.toString()
+        }))
+      }
     ))
   }
 }
