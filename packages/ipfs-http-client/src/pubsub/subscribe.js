@@ -3,7 +3,6 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
-const SubscriptionTracker = require('./subscription-tracker')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -14,8 +13,12 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
  */
 
-module.exports = configure((api, options) => {
-  const subsTracker = SubscriptionTracker.singleton()
+module.exports = configure((api, opts) => {
+  if (!opts.subscriptionTracker) {
+    throw new Error('Please configure a subscription tracker')
+  }
+
+  const subsTracker = opts.subscriptionTracker
 
   /**
    * @type {PubsubAPI["subscribe"]}

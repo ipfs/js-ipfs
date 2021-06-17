@@ -10,7 +10,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/refs').API<HTTPClientExtraOptions>} RefsAPI
  */
 
-module.exports = configure((api, options) => {
+module.exports = configure((api, opts) => {
   /**
    * @type {RefsAPI["refs"]}
    */
@@ -34,6 +34,6 @@ module.exports = configure((api, options) => {
   }
 
   return Object.assign(refs, {
-    local: require('./local')(options)
+    local: require('./local')(opts)
   })
 })

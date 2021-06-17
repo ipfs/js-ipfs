@@ -55,8 +55,7 @@ describe('/ping', function () {
       url: `/api/v0/ping?arg=${peerId}`
     }, { ipfs })
 
-    expect(res).to.have.property('statusCode', 200)
-    expect(res).to.have.nested.property('trailers.x-stream-error')
+    expect(res).to.have.property('statusCode', 500)
   })
 
   it('pings with a count', async () => {

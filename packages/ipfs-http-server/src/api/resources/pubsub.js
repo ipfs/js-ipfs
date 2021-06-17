@@ -6,6 +6,8 @@ const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const streamResponse = require('../../utils/stream-response')
+const pushable = require('it-pushable')
 
 exports.subscribe = {
   options: {
@@ -45,38 +47,42 @@ exports.subscribe = {
       }
     } = request
 
-    request.raw.res.setHeader('x-chunked-output', '1')
+    // request.raw.res.setHeader('x-chunked-output', '1')
     request.raw.res.setHeader('content-type', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
-    request.raw.res.setHeader('Trailer', 'X-Stream-Error')
+    // request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
-    /**
-     * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
-     */
-    const handler = (msg) => {
-      request.raw.res.write(JSON.stringify({
-        from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
-        data: uint8ArrayToString(msg.data, 'base64pad'),
-        seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
-        topicIDs: msg.topicIDs
-      }) + '\n', 'utf8')
-    }
+    return streamResponse(request, h, () => {
+      const output = pushable()
 
-    // js-ipfs-http-client needs a reply, and go-ipfs does the same thing
-    request.raw.res.write('{}\n')
+      /**
+       * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+       */
+      const handler = (msg) => {
+        output.push({
+          from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
+          data: uint8ArrayToString(msg.data, 'base64pad'),
+          seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
+          topicIDs: msg.topicIDs
+        })
+      }
 
-    const unsubscribe = () => {
-      ipfs.pubsub.unsubscribe(topic, handler)
-      request.raw.res.end()
-    }
+      // js-ipfs-http-client needs a reply, and go-ipfs does the same thing
+      output.push({})
 
-    request.events.once('disconnect', unsubscribe)
-    request.events.once('finish', unsubscribe)
+      const unsubscribe = () => {
+        ipfs.pubsub.unsubscribe(topic, handler)
+        output.end()
+      }
 
-    await ipfs.pubsub.subscribe(topic, handler, {
-      signal
+      request.raw.res.once('close', unsubscribe)
+
+      ipfs.pubsub.subscribe(topic, handler, {
+        signal
+      })
+        .catch(err => output.end(err))
+
+      return output
     })
-
-    return h.abandon
   }
 }
 
