@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "50.1.1",
+  "version": "50.1.2",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -49,8 +49,8 @@
     "cids": "^1.1.6",
     "debug": "^4.1.1",
     "form-data": "^4.0.0",
-    "ipfs-core-types": "^0.5.1",
-    "ipfs-core-utils": "^0.8.2",
+    "ipfs-core-types": "^0.5.2",
+    "ipfs-core-utils": "^0.8.3",
     "ipfs-unixfs": "^4.0.3",
     "ipfs-utils": "^8.1.2",
     "ipld-block": "^0.11.0",
