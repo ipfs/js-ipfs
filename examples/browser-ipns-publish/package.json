@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "human-crypto-keys": "^0.1.4",
-    "ipfs": "^0.55.3",
-    "ipfs-http-client": "^50.1.1",
+    "ipfs": "^0.55.4",
+    "ipfs-http-client": "^50.1.2",
     "ipfs-utils": "^8.1.2",
     "ipns": "^0.12.0",
     "it-last": "^1.0.4",

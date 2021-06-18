@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "cids": "^1.1.6",
-    "ipfs": "^0.55.3",
+    "ipfs": "^0.55.4",
     "ipld-block": "^0.11.0",
     "ipld-dag-pb": "^0.22.1",
     "ipld-git": "^0.6.1",

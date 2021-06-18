@@ -15,10 +15,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^50.1.1"
+    "ipfs-http-client": "^50.1.2"
   },
   "devDependencies": {
-    "ipfs": "^0.55.3",
+    "ipfs": "^0.55.4",
     "parcel": "2.0.0-beta.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
