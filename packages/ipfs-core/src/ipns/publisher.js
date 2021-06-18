@@ -254,10 +254,10 @@ class IpnsPublisher {
     }
 
     // Determinate the record sequence number
-    let seqNumber = 0
+    let seqNumber = 0n
 
     if (record && record.sequence !== undefined) {
-      seqNumber = !uint8ArrayEquals(record.value, value) ? record.sequence + 1 : record.sequence
+      seqNumber = !uint8ArrayEquals(record.value, value) ? BigInt(record.sequence) + 1n : BigInt(record.sequence)
     }
 
     let entryData
