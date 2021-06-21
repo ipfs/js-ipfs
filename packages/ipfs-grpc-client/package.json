@@ -43,7 +43,7 @@
     "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.0",
-    "multiaddr": "^9.0.1",
+    "multiaddr": "multiformats/js-multiaddr#chore/update-to-new-multiformats",
     "protobufjs": "^6.10.2",
     "wherearewe": "1.0.0",
     "ws": "^7.3.1"

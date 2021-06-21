@@ -41,11 +41,11 @@
     "ipfs-http-server": "^0.5.2",
     "ipfs-utils": "^8.1.2",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.31.6",
-    "libp2p-delegated-content-routing": "^0.10.0",
-    "libp2p-delegated-peer-routing": "^0.9.0",
+    "libp2p": "libp2p/js-libp2p#chore/update-to-new-multiformats",
+    "libp2p-delegated-content-routing": "libp2p/js-libp2p-delegated-content-routing#chore/update-to-new-multiformats",
+    "libp2p-delegated-peer-routing": "libp2p/js-libp2p-delegated-peer-routing#chore/update-to-new-multiformats",
     "libp2p-webrtc-star": "^0.22.2",
-    "multiaddr": "^9.0.1"
+    "multiaddr": "multiformats/js-multiaddr#chore/update-to-new-multiformats"
   },
   "devDependencies": {
     "aegir": "^33.0.0",
