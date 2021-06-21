@@ -17,28 +17,22 @@ module.exports = function ({ blockStorage, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["get"]}
    */
-  async function * get (legacyIpfsPath, options = {}) {
+  async function * get (ipfsPath, options = {}) {
     if (options.preload !== false) {
       let pathComponents
 
       try {
-        pathComponents = normalizeCidPath(legacyIpfsPath).split('/')
+        pathComponents = normalizeCidPath(ipfsPath).split('/')
       } catch (err) {
         throw errCode(err, 'ERR_INVALID_PATH')
       }
 
-      preload(new CID(pathComponents[0]))
+      preload(CID.parse(pathComponents[0]))
     }
 
-    // Make sure that the exporter doesn't get a legacy CID
-    let ipfsPath
-    if (CID.asCID(legacyIpfsPath) !== null) {
-      ipfsPath = CID.asCID(legacyIpfsPath).bytes
-    } else {
-      ipfsPath = legacyIpfsPath
-    }
+    const ipfsPathOrCid = CID.asCID(ipfsPath) || ipfsPath
 
-    for await (const file of exporter.recursive(ipfsPath, blockStorage, options)) {
+    for await (const file of exporter.recursive(ipfsPathOrCid, blockStorage, options)) {
       yield mapFile(file, {
         ...options,
         includeContent: true

@@ -22,18 +22,12 @@ module.exports = function ({ blockStorage, preload }) {
     const pathComponents = legacyPath.split('/')
 
     if (options.preload !== false) {
-      preload(new CID(pathComponents[0]))
+      preload(CID.parse(pathComponents[0]))
     }
 
-    // Make sure that the exporter doesn't get a legacy CID
-    let path
-    if (CID.asCID(legacyPath) !== null) {
-      path = CID.asCID(legacyPath).bytes
-    } else {
-      path = legacyPath
-    }
+    let ipfsPathOrCid = CID.asCID(legacyPath) || legacyPath
 
-    const file = await exporter(path, blockStorage, options)
+    const file = await exporter(ipfsPathOrCid, blockStorage, options)
 
     if (file.type === 'file') {
       yield mapFile(file, options)

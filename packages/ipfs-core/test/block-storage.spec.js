@@ -34,7 +34,7 @@ const blockFromString = async (data) => {
 
 describe('block-storage', () => {
   /** @type {IPFSRepo} */
-  const repo = createTempRepo()
+  let repo
   const mockGcLock = { readLock: () => () => {}, writeLock: () => () => {} }
   const mockPinManager = { isPinnedWithType: () => { return { pinned: false } } }
 
@@ -44,6 +44,7 @@ describe('block-storage', () => {
   let testBlocks
 
   before(async () => {
+    repo = await createTempRepo()
     await repo.init({})
     await repo.open()
     bs = new BlockStorage({ repo, gcLock: mockGcLock, pinManager: mockPinManager })

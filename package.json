@@ -258,8 +258,5 @@
     "leekt216 <leekt216@gmail.com>",
     "Jacob Karlsson <jacob.karlsson95@gmail.com>",
     "noah the goodra <peterpan0413@live.com>"
-  ],
-  "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.0"
-  }
+  ]
 }
