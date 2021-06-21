@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const { expect } = require('aegir/utils/chai')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')

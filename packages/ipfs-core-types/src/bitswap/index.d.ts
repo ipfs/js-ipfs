@@ -24,7 +24,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlistForPeer: (peerId: CID | string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlistForPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
 
   /**
    * Removes one or more CIDs from the wantlist
@@ -60,7 +60,7 @@ export interface API<OptionExtension = {}> {
 export interface Stats {
   provideBufLen: number
   wantlist: CID[]
-  peers: CID[]
+  peers: string[]
   blocksReceived: BigInt
   dataReceived: BigInt
   blocksSent: BigInt

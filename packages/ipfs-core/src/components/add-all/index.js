@@ -190,7 +190,7 @@ function pinFile (pin, opts) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
-      const isRootDir = !file.path?.includes('/')
+      const isRootDir = !(file.path && file.path.includes('/'))
       const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {

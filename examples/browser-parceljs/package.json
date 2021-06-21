@@ -8,7 +8,7 @@
     "last 2 versions and not dead and > 2%"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist ./.cache ./.parcel-cache",
     "lint": "standard public/**/*.js",
     "start": "parcel public/index.html",
     "build": "parcel build public/index.html --no-scope-hoist",
@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ipfs": "^0.54.4"
+    "ipfs": "^0.55.4"
   },
   "devDependencies": {
     "parcel": "2.0.0-beta.2",

@@ -1,19 +1,15 @@
 import type { KeyType } from 'libp2p-crypto'
 import type PeerId from 'peer-id'
-import type { IPFSConfig } from 'ipfs-core-types/src/config'
-import type { ProfileNames } from 'ipfs-core-types/src/config/profiles'
-import type IPLD from 'ipld'
+import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
 import type { Options as IPLDOptions } from 'ipld'
 import type Libp2p from 'libp2p'
-import type { Libp2pConfig as Libp2pOptions } from 'libp2p'
+import type { Libp2pOptions } from 'libp2p'
 import type IPFSRepo from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type { Datastore } from 'interface-datastore'
-import type Network, { Options as NetworkOptions } from './components/network'
+import type Network from './components/network'
+import type { Options as NetworkOptions } from './components/network'
 import type Service from './utils/service'
-//import type LegacyCID from 'cids'
-// TODO vmx 2021-03-31: import this as CID and the legacy `cids` as LegacyCID, once `Preload` can deal with it
-import type { CID as NewCID } from 'multiformats/cid'
+import type { CID } from 'multiformats/cid'
 
 export interface Options {
   /**
@@ -103,7 +99,7 @@ export interface Options {
  * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
  * in browsers)
    */
-  ipld?: IPLDOptions
+  ipld?: Partial<IPLDOptions>
 
   /**
    * The libp2p option allows you to build
@@ -120,7 +116,7 @@ export interface Options {
  * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
  * browsers.
    */
-  libp2p?: Libp2pOptions | Libp2pFactoryFn
+  libp2p?: Partial<Libp2pOptions> | Libp2pFactoryFn
 
   silent?: boolean
 }
@@ -155,7 +151,7 @@ export interface InitOptions {
   /**
    * Apply profile settings to config
    */
-  profiles?: ProfileNames[]
+  profiles?: string[]
 
   /**
    * Set to `false` to disallow initialization if the repo does not already exist
@@ -236,7 +232,7 @@ export type NetworkService = Service<NetworkOptions, Network>
 export interface PbLink {
  Name: string,
  Tsize: number,
- Hash: NewCID
+ Hash: CID
 }
 
 export interface PbNode {
@@ -245,7 +241,7 @@ export interface PbNode {
 }
 
 export interface Block {
- cid: NewCID,
+ cid: CID,
  bytes: Uint8Array
 }
 

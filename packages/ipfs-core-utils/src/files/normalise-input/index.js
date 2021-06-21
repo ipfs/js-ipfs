@@ -3,8 +3,8 @@
 const normaliseContent = require('./normalise-content')
 const normaliseInput = require('./normalise-input')
 
-/*
- * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
+/**
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
  */
 
@@ -17,7 +17,7 @@ const normaliseInput = require('./normalise-input')
  *
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
- * @param {ImportSource} input
+ * @param {ImportCandidateStream} input
  * @returns {AsyncGenerator<ImportCandidate, void, undefined>}
  */
 // @ts-ignore TODO vmx 2021-03-30 enable again

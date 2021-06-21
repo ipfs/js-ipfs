@@ -5,9 +5,8 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -101,20 +100,6 @@ module.exports = (common, options) => {
       } catch (err) {
         expect(err.message).to.contain('does not exist')
       }
-    })
-
-    it('should respect timeout option when moving files', async () => {
-      const source = `/source-file-${Math.random()}.txt`
-      const destination = `/dest-file-${Math.random()}.txt`
-      const data = randomBytes(500)
-
-      await ipfs.files.write(source, data, {
-        create: true
-      })
-
-      await testTimeout(() => ipfs.files.mv(source, destination, {
-        timeout: 1
-      }))
     })
 
     describe('with sharding', () => {

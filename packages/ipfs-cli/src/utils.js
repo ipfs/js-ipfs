@@ -9,7 +9,7 @@ const Progress = require('progress')
 const byteman = require('byteman')
 const IPFS = require('ipfs-core')
 const CID = require('cids')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 

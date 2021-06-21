@@ -13,7 +13,6 @@ const { supportsFileReader } = require('ipfs-utils/src/supports')
 const globSource = require('ipfs-utils/src/files/glob-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const bufferStream = require('it-buffer-stream')
 
@@ -60,12 +59,6 @@ module.exports = (common, options) => {
     before(async () => { ipfs = (await common.spawn()).api })
 
     after(() => common.clean())
-
-    it('should respect timeout option when adding files', () => {
-      return testTimeout(() => drain(ipfs.addAll(uint8ArrayFromString('Hello'), {
-        timeout: 1
-      })))
-    })
 
     it('should add a File as array of tuples', async function () {
       if (!supportsFileReader) return this.skip('skip in node')

@@ -3,7 +3,7 @@
 const Hapi = require('@hapi/hapi')
 const Pino = require('hapi-pino')
 const debug = require('debug')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 // @ts-ignore no types
 const toMultiaddr = require('uri-to-multiaddr')
 const Boom = require('@hapi/boom')
@@ -17,7 +17,6 @@ const LOG_ERROR = 'ipfs:http-api:error'
  * @typedef {import('./types').Server} Server
  * @typedef {import('ipld')} IPLD
  * @typedef {import('libp2p')} libp2p
- * @typedef {IPFS & { ipld: IPLD, libp2p: libp2p }} JSIPFS
  */
 
 /**
@@ -38,8 +37,8 @@ function hapiInfoToMultiaddr (info) {
 
 /**
  * @param {string | string[]} serverAddrs
- * @param {(host: string, port: string, ipfs: JSIPFS, cors: Record<string, any>) => Promise<Server>} createServer
- * @param {JSIPFS} ipfs
+ * @param {(host: string, port: string, ipfs: IPFS, cors: Record<string, any>) => Promise<Server>} createServer
+ * @param {IPFS} ipfs
  * @param {Record<string, any>} cors
  */
 async function serverCreator (serverAddrs, createServer, ipfs, cors) {
@@ -59,9 +58,39 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   return servers
 }
 
+/**
+ * @param {string} [str]
+ * @param {string[]} [allowedOrigins]
+ */
+function isAllowedOrigin (str, allowedOrigins = []) {
+  if (!str) {
+    return false
+  }
+
+  let origin
+
+  try {
+    origin = (new URL(str)).origin
+  } catch {
+    return false
+  }
+
+  for (const allowedOrigin of allowedOrigins) {
+    if (allowedOrigin === '*') {
+      return true
+    }
+
+    if (allowedOrigin === origin) {
+      return true
+    }
+  }
+
+  return false
+}
+
 class HttpApi {
   /**
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    */
   constructor (ipfs) {
     this._ipfs = ipfs
@@ -98,7 +127,7 @@ class HttpApi {
   /**
    * @param {string} host
    * @param {string} port
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    * @param {Record<string, any>} cors
    */
   async _createApiServer (host, port, ipfs, cors) {
@@ -176,11 +205,17 @@ class HttpApi {
 
         const headers = request.headers || {}
         const origin = headers.origin || ''
-        const referrer = headers.referrer || ''
+        const referer = headers.referer || ''
         const userAgent = headers['user-agent'] || ''
 
-        // If these are set, we leave up to CORS and CSRF checks.
-        if (origin || referrer) {
+        // If these are set, check them against the configured list
+        if (origin || referer) {
+          if (!isAllowedOrigin(origin || referer, cors.origin)) {
+            // Hapi will not allow an empty CORS origin list so we have to manually
+            // reject the request if CORS origins have not been configured
+            throw Boom.forbidden()
+          }
+
           return h.continue
         }
 
@@ -228,7 +263,7 @@ class HttpApi {
     if (!this._apiServers || !this._apiServers.length) {
       throw new Error('API address unavailable - server is not started')
     }
-    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
+    return new Multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
   async stop () {

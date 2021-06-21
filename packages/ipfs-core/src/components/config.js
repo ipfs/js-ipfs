@@ -1,5 +1,6 @@
 'use strict'
 
+const set = require('just-safe-set')
 const getDefaultConfig = require('../runtime/config-nodejs.js')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const log = require('debug')('ipfs:core:config')
@@ -115,8 +116,8 @@ const profiles = {
   server: {
     description: 'Recommended for nodes with public IPv4 address (servers, VPSes, etc.), disables host and content discovery and UPnP in local networks.',
     transform: (config) => {
-      config.Discovery.MDNS.Enabled = false
-      config.Discovery.webRTCStar.Enabled = false
+      set(config, 'Discovery.MDNS.Enabled', false)
+      set(config, 'Discovery.webRTCStar.Enabled', false)
       config.Swarm = {
         ...(config.Swarm || {}),
         DisableNatPortMap: true
@@ -128,12 +129,12 @@ const profiles = {
   'local-discovery': {
     description: 'Sets default values to fields affected by `server` profile, enables discovery and UPnP in local networks.',
     transform: (config) => {
-      config.Discovery.MDNS.Enabled = true
-      config.Discovery.webRTCStar.Enabled = true
-      config.Swarm = {
+      set(config, 'Discovery.MDNS.Enabled', true)
+      set(config, 'Discovery.webRTCStar.Enabled', true)
+      set(config, 'Swarm', {
         ...(config.Swarm || {}),
         DisableNatPortMap: false
-      }
+      })
 
       return config
     }
@@ -143,17 +144,17 @@ const profiles = {
     transform: (config) => {
       const defaultConfig = getDefaultConfig()
 
-      config.Addresses.API = defaultConfig.Addresses.API ? '/ip4/127.0.0.1/tcp/0' : ''
-      config.Addresses.Gateway = defaultConfig.Addresses.Gateway ? '/ip4/127.0.0.1/tcp/0' : ''
-      config.Addresses.Swarm = defaultConfig.Addresses.Swarm.length ? ['/ip4/127.0.0.1/tcp/0'] : []
-      config.Addresses.Delegates = []
-      config.Bootstrap = []
-      config.Discovery.MDNS.Enabled = false
-      config.Discovery.webRTCStar.Enabled = false
-      config.Swarm = {
+      set(config, 'Addresses.API', defaultConfig.Addresses.API ? '/ip4/127.0.0.1/tcp/0' : '')
+      set(config, 'Addresses.Gateway', defaultConfig.Addresses.Gateway ? '/ip4/127.0.0.1/tcp/0' : '')
+      set(config, 'Addresses.Swarm', defaultConfig.Addresses.Swarm.length ? ['/ip4/127.0.0.1/tcp/0'] : [])
+      set(config, 'Addresses.Delegates', [])
+      set(config, 'Bootstrap', [])
+      set(config, 'Discovery.MDNS.Enabled', false)
+      set(config, 'Discovery.webRTCStar.Enabled', false)
+      set(config, 'Swarm', {
         ...(config.Swarm || {}),
         DisableNatPortMap: true
-      }
+      })
 
       return config
     }
@@ -163,17 +164,17 @@ const profiles = {
     transform: (config) => {
       const defaultConfig = getDefaultConfig()
 
-      config.Addresses.API = defaultConfig.Addresses.API
-      config.Addresses.Gateway = defaultConfig.Addresses.Gateway
-      config.Addresses.Swarm = defaultConfig.Addresses.Swarm
-      config.Addresses.Delegates = defaultConfig.Addresses.Delegates
-      config.Bootstrap = defaultConfig.Bootstrap
-      config.Discovery.MDNS.Enabled = defaultConfig.Discovery.MDNS.Enabled
-      config.Discovery.webRTCStar.Enabled = defaultConfig.Discovery.webRTCStar.Enabled
-      config.Swarm = {
+      set(config, 'Addresses.API', defaultConfig.Addresses.API)
+      set(config, 'Addresses.Gateway', defaultConfig.Addresses.Gateway)
+      set(config, 'Addresses.Swarm', defaultConfig.Addresses.Swarm)
+      set(config, 'Addresses.Delegates', defaultConfig.Addresses.Delegates)
+      set(config, 'Bootstrap', defaultConfig.Bootstrap)
+      set(config, 'Discovery.MDNS.Enabled', defaultConfig.Discovery.MDNS.Enabled)
+      set(config, 'Discovery.webRTCStar.Enabled', defaultConfig.Discovery.webRTCStar.Enabled)
+      set(config, 'Swarm', {
         ...(config.Swarm || {}),
         DisableNatPortMap: false
-      }
+      })
 
       return config
     }

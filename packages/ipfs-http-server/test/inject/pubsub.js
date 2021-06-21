@@ -8,7 +8,7 @@ const http = require('../utils/http')
 const FormData = require('form-data')
 const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const streamToPromise = require('stream-to-promise')
 
 const sendData = async (data) => {

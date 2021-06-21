@@ -14,7 +14,7 @@ export interface API<OptionExtension = {}> {
 }
 
 export interface BWOptions extends AbortOptions {
-  peer?: CID | string
+  peer?: string
   proto?: string
   poll?: boolean
   interval?: number

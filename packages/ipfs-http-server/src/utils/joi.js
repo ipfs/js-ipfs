@@ -3,7 +3,7 @@
 const Joi = require('joi')
 const CID = require('cids')
 const { default: parseDuration } = require('parse-duration')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const multibase = require('multibase')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
@@ -95,7 +95,7 @@ module.exports = Joi
             return
           }
 
-          return { value: multiaddr(value).toString() }
+          return { value: new Multiaddr(value).toString() }
         }
       }
     },

@@ -121,7 +121,7 @@ The regular, top-level API for add, cat, get and ls Files on IPFS
 
 ```js
 {
-  // The path you want to the file to be accessible at from the root CID _after_ it has been added
+  // The path you want the file to be accessible at from the root CID _after_ it has been added
   path?: string
   // The contents of the file (see below for definition)
   content?: FileContent

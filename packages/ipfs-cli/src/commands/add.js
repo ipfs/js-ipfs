@@ -2,6 +2,7 @@
 'use strict'
 
 const { promisify } = require('util')
+// @ts-ignore no types
 const getFolderSize = promisify(require('get-folder-size'))
 // @ts-ignore no types
 const byteman = require('byteman')

@@ -31,6 +31,7 @@ async function startCliNode () {
   await execa(ipfs, ['config', 'Addresses.Swarm', '--json', JSON.stringify([`/ip4/0.0.0.0/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`])], opts)
   await execa(ipfs, ['config', 'Addresses.API', `/ip4/127.0.0.1/tcp/0`], opts)
   await execa(ipfs, ['config', 'Addresses.Gateway', `/ip4/127.0.0.1/tcp/0`], opts)
+  await execa(ipfs, ['config', 'Addresses.RPC', `/ip4/127.0.0.1/tcp/0`], opts)
 
   return waitForOutput('Daemon is ready', ipfs, ['daemon'], opts)
 }
@@ -53,7 +54,8 @@ async function startProgramaticNode () {
           `/ip4/127.0.0.1/tcp/0/ws`
         ],
         API: `/ip4/127.0.0.1/tcp/0`,
-        Gateway: `/ip4/127.0.0.1/tcp/0`
+        Gateway: `/ip4/127.0.0.1/tcp/0`,
+        RPC: `/ip4/127.0.0.1/tcp/0`
       },
       Bootstrap: []
     }

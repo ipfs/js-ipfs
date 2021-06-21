@@ -26,14 +26,16 @@ export interface GCOptions extends AbortOptions {
 }
 
 export interface GCError {
-  err: Error
+  err: Error,
+  cid?: never
 }
 
 export interface GCSuccess {
+  err?: never,
   cid: CID
 }
 
-export type GCResult  = GCSuccess | GCError
+export type GCResult = GCSuccess | GCError
 
 export interface StatResult {
   numObjects: BigInt

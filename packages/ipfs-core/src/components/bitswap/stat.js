@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
@@ -20,7 +19,7 @@ module.exports = ({ network }) => {
       provideBufLen: parseInt(snapshot.providesBufferLength.toString()),
       blocksReceived: BigInt(snapshot.blocksReceived.toString()),
       wantlist: Array.from(bitswap.getWantlist()).map(e => e[1].cid),
-      peers: bitswap.peers().map(id => new CID(id.toB58String())),
+      peers: bitswap.peers().map(id => id.toB58String()),
       dupBlksReceived: BigInt(snapshot.dupBlksReceived.toString()),
       dupDataReceived: BigInt(snapshot.dupDataReceived.toString()),
       dataReceived: BigInt(snapshot.dataReceived.toString()),

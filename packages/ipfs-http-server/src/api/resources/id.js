@@ -10,8 +10,13 @@ module.exports = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        timeout: Joi.timeout()
+        timeout: Joi.timeout(),
+        peerId: Joi.string()
       })
+        .rename('arg', 'peerId', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
   },
   /**
@@ -29,13 +34,15 @@ module.exports = {
         }
       },
       query: {
-        timeout
+        timeout,
+        peerId
       }
     } = request
 
     const id = await ipfs.id({
       signal,
-      timeout
+      timeout,
+      peerId
     })
     return h.response({
       ID: id.id,

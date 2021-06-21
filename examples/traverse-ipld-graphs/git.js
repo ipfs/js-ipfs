@@ -42,7 +42,7 @@ async function main () {
     await ipfs.block.put(new Block(data, cid))
   }))
 
-  const v1tag = 'z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue'
+  const v1tag = new CID('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
 
   async function logResult (fn, comment) {
     const result = await fn()
@@ -56,11 +56,11 @@ async function main () {
     console.log(result.value)
   }
 
-  await logResult(() => ipfs.dag.get(v1tag + '/'), 'Tag object:')
-  await logResult(() => ipfs.dag.get(v1tag + '/object/message'), 'Tagged commit message:')
-  await logResult(() => ipfs.dag.get(v1tag + '/object/parents/0/message'), 'Parent of tagged commit:')
-  await logResult(() => ipfs.dag.get(v1tag + '/object/tree/src/hash/hello/hash'), '/src/hello file:')
-  await logResult(() => ipfs.dag.get(v1tag + '/object/parents/0/tree/src/hash/hello/hash'), 'previous version of /src/hello file:')
+  await logResult(() => ipfs.dag.get(v1tag), 'Tag object:')
+  await logResult(() => ipfs.dag.get(v1tag, { path: '/object/message' }), 'Tagged commit message:')
+  await logResult(() => ipfs.dag.get(v1tag, { path: '/object/parents/0/message' }), 'Parent of tagged commit:')
+  await logResult(() => ipfs.dag.get(v1tag, { path: '/object/tree/src/hash/hello/hash' }), '/src/hello file:')
+  await logResult(() => ipfs.dag.get(v1tag, { path: '/object/parents/0/tree/src/hash/hello/hash' }), 'previous version of /src/hello file:')
 }
 
 main()

@@ -2,9 +2,7 @@
 
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
-const { map } = require('streaming-iterables')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
+const map = require('it-map')
 const streamResponse = require('../../utils/stream-response')
 
 module.exports = {
@@ -51,13 +49,14 @@ module.exports = {
     } = request
 
     return streamResponse(request, h, () => pipe(
-      ipfs.ping(peerId, {
+      ipfs.ping(peerId.toString(), {
         count,
         signal,
         timeout
       }),
-      map(pong => ({ Success: pong.success, Time: pong.time, Text: pong.text })),
-      ndjson.stringify
+      async function * (source) {
+        yield * map(source, pong => ({ Success: pong.success, Time: pong.time, Text: pong.text }))
+      }
     ))
   }
 }

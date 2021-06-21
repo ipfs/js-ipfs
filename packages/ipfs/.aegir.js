@@ -118,7 +118,7 @@ module.exports = {
     }
   },
   build: {
-    bundlesizeMax: '614kB',
+    bundlesizeMax: '500KB',
     config: esbuild
   },
   dependencyCheck: {

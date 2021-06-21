@@ -10,10 +10,9 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const mh = require('multihashing-async').multihash
 const Block = require('ipld-block')
 const CID = require('cids')
-const randomBytes = require('iso-random-stream/src/random')
+const { randomBytes } = require('iso-random-stream')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -335,12 +334,6 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(testDestPath)
       expect(stats).to.have.deep.property('mtime', expectedMtime)
       expect(stats).to.have.property('mode', mode)
-    })
-
-    it('should respect timeout option when copying a file', async () => {
-      await testTimeout(() => ipfs.files.cp('/ipfs/QmaWLMK8yg36wMZX4Ybz7PAbKi1z5FzEtg5iEVeXHtNBqa', '/derp', {
-        timeout: 1
-      }))
     })
 
     describe('with sharding', () => {

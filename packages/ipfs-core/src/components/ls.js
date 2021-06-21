@@ -5,7 +5,6 @@ const errCode = require('err-code')
 const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { CID } = require('multiformats/cid')
-const LegacyCID = require('cids')
 
 /**
  * @typedef {Object} Context
@@ -23,13 +22,13 @@ module.exports = function ({ blockStorage, preload }) {
     const pathComponents = legacyPath.split('/')
 
     if (options.preload !== false) {
-      preload(pathComponents[0])
+      preload(new CID(pathComponents[0]))
     }
 
     // Make sure that the exporter doesn't get a legacy CID
     let path
-    if (LegacyCID.isCID(legacyPath)) {
-      path = CID.decode(legacyPath.bytes)
+    if (CID.asCID(legacyPath) !== null) {
+      path = CID.asCID(legacyPath).bytes
     } else {
       path = legacyPath
     }

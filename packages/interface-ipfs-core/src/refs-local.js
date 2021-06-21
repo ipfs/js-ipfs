@@ -6,7 +6,6 @@ const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
 const { importer } = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
-const testTimeout = require('./utils/test-timeout')
 const CID = require('cids')
 const uint8ArrayEquals = require('uint8arrays/equals')
 const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
@@ -30,12 +29,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when listing local refs', () => {
-      return testTimeout(() => drain(ipfs.refs.local({
-        timeout: 1
-      })))
-    })
 
     it('should get local refs', async function () {
       const content = (name) => ({

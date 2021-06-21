@@ -1,24 +1,17 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
-const debug = require('debug')
 // @ts-ignore no types
 const tar = require('it-tar')
-const log = Object.assign(debug('ipfs:http-api:files'), {
-  error: debug('ipfs:http-api:files:error')
-})
-// @ts-ignore no types
-const toIterable = require('stream-to-it')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const { PassThrough } = require('stream')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { pipe } = require('it-pipe')
 const all = require('it-all')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
-const { map } = require('streaming-iterables')
 const streamResponse = require('../../utils/stream-response')
+const merge = require('it-merge')
+const { PassThrough } = require('stream')
+const map = require('it-map')
 
 /**
  * @param {AsyncIterable<Uint8Array>} source
@@ -260,25 +253,14 @@ exports.add = {
       }
     } = request
 
-    let filesParsed = false
-    const output = new PassThrough()
-    /**
-     * @type {import('ipfs-core-types/src/root').AddProgressFn}
-     */
-    const progressHandler = (bytes, path) => {
-      // TODO: path should be passed as a second option
-      output.write(JSON.stringify({
-        Name: path,
-        Bytes: bytes
-      }) + '\n')
-    }
-
-    pipe(
+    return streamResponse(request, h, () => pipe(
       multipart(request.raw.req),
       /**
        * @param {AsyncIterable<import('../../types').MultipartEntry>} source
        */
       async function * (source) {
+        let filesParsed = false
+
         for await (const entry of source) {
           if (entry.type === 'file') {
             filesParsed = true
@@ -301,73 +283,69 @@ exports.add = {
             }
           }
         }
-      },
-      /**
-       * @param {import('ipfs-core-types/src/utils').ImportSource} source
-       */
-      function (source) {
-        return ipfs.addAll(source, {
-          cidVersion,
-          rawLeaves,
-          progress: progress ? progressHandler : () => {},
-          onlyHash,
-          hashAlg,
-          wrapWithDirectory,
-          pin,
-          chunker,
-          trickle,
-          preload,
-          shardSplitThreshold,
 
-          // this has to be hardcoded to 1 because we can only read one file
-          // at a time from a http request and we have to consume it completely
-          // before we can read the next file
-          fileImportConcurrency: 1,
-          blockWriteConcurrency,
-          signal,
-          timeout
-        })
-      },
-      map(file => {
-        return {
-          Name: file.path,
-          Hash: cidToString(file.cid, { base: cidBase }),
-          Size: file.size,
-          Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
-          Mtime: file.mtime ? file.mtime.secs : undefined,
-          MtimeNsecs: file.mtime ? file.mtime.nsecs : undefined
-        }
-      }),
-      ndjson.stringify,
-      toIterable.sink(output)
-    )
-      .then(() => {
         if (!filesParsed) {
           throw new Error("File argument 'data' is required.")
         }
-      })
-      .catch((/** @type {Error} */ err) => {
-        log.error(err)
-
-        if (!filesParsed && output.writable) {
-          output.write(' ')
-        }
-
-        request.raw.res.addTrailers({
-          'X-Stream-Error': JSON.stringify({
-            Message: err.message,
-            Code: 0
-          })
+      },
+      /**
+       * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} source
+       */
+      async function * (source) {
+        const progressStream = new PassThrough({
+          objectMode: true
         })
-      })
-      .finally(() => {
-        output.end()
-      })
 
-    return h.response(output)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
+        yield * merge(
+          progressStream,
+          pipe(
+            ipfs.addAll(source, {
+              cidVersion,
+              rawLeaves,
+              progress: progress
+                ? (bytes, path) => {
+                    progressStream.write({
+                      Name: path,
+                      Bytes: bytes
+                    })
+                  }
+                : () => {},
+              onlyHash,
+              hashAlg,
+              wrapWithDirectory,
+              pin,
+              chunker,
+              trickle,
+              preload,
+              shardSplitThreshold,
+
+              // this has to be hardcoded to 1 because we can only read one file
+              // at a time from a http request and we have to consume it completely
+              // before we can read the next file
+              fileImportConcurrency: 1,
+              blockWriteConcurrency,
+              signal,
+              timeout
+            }),
+            async function * (source) {
+              yield * map(source, file => {
+                return {
+                  Name: file.path,
+                  Hash: cidToString(file.cid, { base: cidBase }),
+                  Size: file.size,
+                  Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
+                  Mtime: file.mtime ? file.mtime.secs : undefined,
+                  MtimeNsecs: file.mtime ? file.mtime.nsecs : undefined
+                }
+              })
+
+              // no more files, end the progress stream
+              progressStream.end()
+            }
+          )
+        )
+      }
+    ))
   }
 }
 
@@ -438,7 +416,10 @@ exports.ls = {
       }
     }
 
-    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`)
+    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`, {
+      signal,
+      timeout
+    })
 
     if (stat.type === 'file') {
       // return single object with metadata
@@ -472,8 +453,9 @@ exports.ls = {
         signal,
         timeout
       }),
-      map(link => ({ Objects: [{ Hash: path, Links: [mapLink(link)] }] })),
-      ndjson.stringify
+      async function * (source) {
+        yield * map(source, link => ({ Objects: [{ Hash: path, Links: [mapLink(link)] }] }))
+      }
     ))
   }
 }
@@ -554,8 +536,9 @@ exports.refs = {
         signal,
         timeout
       }),
-      map(({ ref, err }) => ({ Ref: ref, Err: err })),
-      ndjson.stringify
+      async function * (source) {
+        yield * map(source, ({ ref, err }) => ({ Ref: ref, Err: err }))
+      }
     ))
   }
 }
@@ -597,8 +580,9 @@ exports.refsLocal = {
         signal,
         timeout
       }),
-      map(({ ref, err }) => ({ Ref: ref, Err: err })),
-      ndjson.stringify
+      async function * (source) {
+        yield * map(source, ({ ref, err }) => ({ Ref: ref, Err: err }))
+      }
     ))
   }
 }

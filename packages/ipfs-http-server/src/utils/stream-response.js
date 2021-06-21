@@ -6,18 +6,16 @@ const log = require('debug')('ipfs:http-api:utils:stream-response')
 // @ts-ignore no types
 const toIterable = require('stream-to-it')
 
-const errorTrailer = 'X-Stream-Error'
+const ERROR_TRAILER = 'X-Stream-Error'
 
 /**
  *
  * @param {import('../types').Request} request
  * @param {import('@hapi/hapi').ResponseToolkit} h
  * @param {() => AsyncIterable<any>} getSource
- * @param {{ objectMode?: boolean, onError?: (error: Error) => void }} [options]
+ * @param {{ onError?: (error: Error) => void }} [options]
  */
 async function streamResponse (request, h, getSource, options = {}) {
-  options.objectMode = options.objectMode !== false
-
   // eslint-disable-next-line no-async-promise-executor
   const stream = await new Promise(async (resolve, reject) => {
     let started = false
@@ -32,7 +30,12 @@ async function streamResponse (request, h, getSource, options = {}) {
                 started = true
                 resolve(stream)
               }
-              yield chunk
+
+              if (chunk instanceof Uint8Array || typeof chunk === 'string') {
+                yield chunk
+              } else {
+                yield JSON.stringify(chunk) + '\n'
+              }
             }
 
             if (!started) { // Maybe it was an empty source?
@@ -46,9 +49,9 @@ async function streamResponse (request, h, getSource, options = {}) {
               options.onError(err)
             }
 
-            if (started) {
+            if (request.raw.res.headersSent) {
               request.raw.res.addTrailers({
-                [errorTrailer]: JSON.stringify({
+                [ERROR_TRAILER]: JSON.stringify({
                   Message: err.message,
                   Code: 0
                 })
@@ -66,9 +69,9 @@ async function streamResponse (request, h, getSource, options = {}) {
   })
 
   return h.response(stream)
-    .header('x-chunked-output', '1')
-    .header('content-type', 'application/json')
-    .header('Trailer', errorTrailer)
+    .header('X-Chunked-Output', '1')
+    .header('Content-Type', 'application/json')
+    .header('Trailer', ERROR_TRAILER)
 }
 
 module.exports = streamResponse

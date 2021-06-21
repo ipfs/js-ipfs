@@ -5,7 +5,6 @@ const { waitForPeers, getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const { isWebWorker } = require('ipfs-utils/src/env')
-const testTimeout = require('../utils/test-timeout')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -53,12 +52,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when listing pubsub peers', () => {
-      return testTimeout(() => ipfs1.pubsub.peers(getTopic(), {
-        timeout: 1
-      }))
-    })
 
     it('should not error when not subscribed to a topic', async () => {
       const topic = getTopic()

@@ -16,12 +16,6 @@ class SubscriptionTracker {
     this._subs = new Map()
   }
 
-  static singleton () {
-    if (SubscriptionTracker.instance) return SubscriptionTracker.instance
-    SubscriptionTracker.instance = new SubscriptionTracker()
-    return SubscriptionTracker.instance
-  }
-
   /**
    * @param {string} topic
    * @param {MessageHandlerFn} handler
@@ -63,13 +57,12 @@ class SubscriptionTracker {
       unsubs = subs
     }
 
+    if (!(this._subs.get(topic) || []).length) {
+      this._subs.delete(topic)
+    }
+
     unsubs.forEach(s => s.controller.abort())
   }
 }
-
-/**
- * @type {SubscriptionTracker | null}
- */
-SubscriptionTracker.instance = null
 
 module.exports = SubscriptionTracker

@@ -1,6 +1,6 @@
 'use strict'
 /* eslint-env browser */
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
 const { default: parseDuration } = require('parse-duration')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
@@ -15,8 +15,6 @@ const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
 const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
 
 /**
- * @typedef {import('ipfs-utils/dist/types/native-fetch').Response} Response
- * @typedef {import('ipfs-utils/dist/types/native-fetch').Request} Request
  * @typedef {import('ipfs-utils/src/types').HTTPOptions} HTTPOptions
  * @typedef {import('../types').Options} Options
  */

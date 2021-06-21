@@ -2,8 +2,7 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -24,12 +23,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when resetting the bootstrap nodes', () => {
-      return testTimeout(() => ipfs.bootstrap.reset({
-        timeout: 1
-      }))
-    })
 
     it('should return a list of bootstrap peers when resetting the bootstrap nodes', async () => {
       const res = await ipfs.bootstrap.reset()

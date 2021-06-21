@@ -3,7 +3,6 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { expectIsBitswap } = require('../stats/utils')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,12 +22,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when getting bitswap stats', () => {
-      return testTimeout(() => ipfs.bitswap.stat({
-        timeout: 1
-      }))
-    })
 
     it('should get bitswap stats', async () => {
       const res = await ipfs.bitswap.stat()

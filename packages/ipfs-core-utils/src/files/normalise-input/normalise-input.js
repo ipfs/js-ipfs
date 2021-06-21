@@ -18,12 +18,12 @@ const {
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
- * typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
- * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
+ * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImporterImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
 
 /**
- * @param {import('ipfs-core-types/src/utils').ImportSource} input
+ * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} input
  * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
@@ -77,7 +77,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // (Async)Iterable<String>
     // (Async)Iterable<{ path, content }>
     if (isFileObject(value) || isBlob(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, (/** @type {ToEntry} */ value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
 
@@ -86,7 +86,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
     if (value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
-      yield * map(peekable, (/** @type {ToEntry} */ value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
   }
@@ -103,15 +103,14 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 }
 
 /**
- * @param {ToEntry} input
+ * @param {ImportCandidate} input
  * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
 
-  /* type {ImportCandidate} */
-  // @ts-ignore TODO vmx 2021-03-30 enable again
+  /** @type {ImporterImportCandidate} */
   const file = {
     path: path || '',
     mode: parseMode(mode),

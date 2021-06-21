@@ -9,7 +9,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 const PeerId = require('peer-id')
 const { mergeOptions } = require('../utils')
 const configService = require('./config')
-const { NotEnabledError } = require('../errors')
+const { NotEnabledError, NotInitializedError } = require('../errors')
 const createLibP2P = require('./libp2p')
 
 /**
@@ -45,10 +45,14 @@ class Storage {
    * @param {IPFSOptions} options
    */
   static async start (print, options) {
-    const { repoAutoMigrate, repo: inputRepo } = options
+    const { repoAutoMigrate, repo: inputRepo, onMigrationProgress } = options
 
     const repo = (typeof inputRepo === 'string' || inputRepo == null)
-      ? createRepo(print, { path: inputRepo, autoMigrate: Boolean(repoAutoMigrate) })
+      ? createRepo(print, {
+        path: inputRepo,
+        autoMigrate: repoAutoMigrate,
+        onMigrationProgress: onMigrationProgress
+      })
       : inputRepo
 
     const { peerId, keychain, isNew } = await loadRepo(print, repo, options)
@@ -120,13 +124,13 @@ const initRepo = async (print, repo, options) => {
   }
   await repo.init(config)
 
-  // 4. Open initalized repo.
+  // 4. Open initialized repo.
   await repo.open()
 
   log('repo opened')
 
   // Create libp2p for Keychain creation
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,
@@ -198,16 +202,18 @@ const configureRepo = async (repo, options) => {
   const profiles = (options.init && options.init.profiles) || []
   const pass = options.pass
   const original = await repo.config.getAll()
-  // @ts-ignore TODO: move config types to repo
   const changed = mergeConfigs(applyProfiles(original, profiles), config)
 
   if (original !== changed) {
     await repo.config.replace(changed)
   }
 
-  // @ts-ignore - Identity may not be present
+  if (!changed.Identity || !changed.Identity.PrivKey) {
+    throw new NotInitializedError('No private key was found in the config, please intialize the repo')
+  }
+
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,

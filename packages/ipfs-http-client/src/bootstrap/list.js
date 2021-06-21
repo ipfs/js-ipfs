@@ -2,7 +2,7 @@
 
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions

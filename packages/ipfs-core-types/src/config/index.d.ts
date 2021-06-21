@@ -30,11 +30,11 @@ export interface API<OptionExtension = {}> {
 }
 
 export interface Config {
-  Addresses: AddressConfig
+  Addresses?: AddressConfig
   API?: APIConfig,
   Profiles?: string
-  Bootstrap: string[]
-  Discovery: DiscoveryConfig
+  Bootstrap?: string[]
+  Discovery?: DiscoveryConfig
   Datastore?: DatastoreConfig
   Identity?: IdentityConfig
   Keychain?: KeychainConfig
@@ -51,16 +51,18 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm: string[]
+  Swarm?: string[],
+  Announce?: string[],
+  NoAnnounce?: string[]
 }
 
 export interface APIConfig {
-  HTTPHeaders?: Record<string, string>
+  HTTPHeaders?: Record<string, string[]>
 }
 
 export interface DiscoveryConfig {
-  MDNS: MDNSDiscovery
-  webRTCStar: WebRTCStarDiscovery
+  MDNS?: MDNSDiscovery
+  webRTCStar?: WebRTCStarDiscovery
 }
 
 export interface MDNSDiscovery {
@@ -76,22 +78,38 @@ export interface DatastoreConfig {
   Spec?: DatastoreSpec
 }
 
-export interface DatastoreSpec {
+export interface DatastoreType {
+  type: string,
+  path: string,
+  sync?: boolean,
+  shardFunc?: string,
+  compression?: string
+}
 
+export interface DatastoreMountPoint {
+  mountpoint: string,
+  type: string,
+  prefix: string,
+  child: DatastoreType
+}
+
+export interface DatastoreSpec {
+  type?: string,
+  mounts?: DatastoreMountPoint[]
 }
 
 export interface IdentityConfig {
   /**
    * The unique PKI identity label for this configs peer. Set on init and never
- * read, its merely here for convenience. IPFS will always generate the peerID
- * from its keypair at runtime.
+   * read, its merely here for convenience. IPFS will always generate the peerID
+   * from its keypair at runtime.
    */
   PeerID: string
 
   /**
    * The base64 encoded protobuf describing (and containing) the nodes private key.
    */
-  PrivateKey: string
+  PrivKey: string
 }
 
 export interface KeychainConfig {
