@@ -22,7 +22,7 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
-    "ipfs": "^0.55.3",
+    "ipfs": "^0.55.4",
     "it-to-stream": "^1.0.0",
     "videostream": "^3.2.0"
   }

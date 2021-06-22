@@ -5,7 +5,7 @@ const IPFS = require('../../')
 const createTempRepo = require('./create-repo-nodejs')
 
 module.exports = async (config = {}) => {
-  const repo = createTempRepo()
+  const repo = await createTempRepo()
   const ipfs = await IPFS.create(mergeOptions({
     silent: true,
     repo,

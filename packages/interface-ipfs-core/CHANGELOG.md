@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.147.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.146.1...interface-ipfs-core@0.147.0) (2021-06-18)
+
+
+### Features
+
+* support v2 ipns signatures ([#3708](https://github.com/ipfs/js-ipfs/issues/3708)) ([ade01d1](https://github.com/ipfs/js-ipfs/commit/ade01d138bb185fda902c0a3f7fa14d5bfd48a5e))
+
+
+
+
+
 ## [0.146.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.146.0...interface-ipfs-core@0.146.1) (2021-06-05)
 
 

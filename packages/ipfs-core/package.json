@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -72,8 +72,8 @@
     "interface-datastore": "^4.0.0",
     "ipfs-bitswap": "^5.0.3",
     "ipfs-block-service": "^0.19.0",
-    "ipfs-core-types": "^0.5.1",
-    "ipfs-core-utils": "^0.8.2",
+    "ipfs-core-types": "^0.5.2",
+    "ipfs-core-utils": "^0.8.3",
     "ipfs-repo": "^9.1.6",
     "ipfs-unixfs": "^4.0.3",
     "ipfs-unixfs-exporter": "^5.0.3",
@@ -84,7 +84,7 @@
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
     "ipld-raw": "^7.0.0",
-    "ipns": "^0.11.0",
+    "ipns": "^0.12.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^5.0.0",
     "it-all": "^1.0.4",
@@ -102,7 +102,7 @@
     "libp2p-kad-dht": "^0.22.0",
     "libp2p-mdns": "^0.16.0",
     "libp2p-mplex": "^0.10.2",
-    "libp2p-noise": "^3.0.0",
+    "libp2p-noise": "^3.1.0",
     "libp2p-record": "^0.10.3",
     "libp2p-tcp": "^0.15.4",
     "libp2p-webrtc-star": "^0.22.2",
@@ -127,11 +127,12 @@
     "aegir": "^33.0.0",
     "delay": "^5.0.0",
     "go-ipfs": "0.8.0",
-    "interface-ipfs-core": "^0.146.1",
+    "interface-ipfs-core": "^0.147.0",
     "ipfsd-ctl": "^8.0.1",
     "ipld-git": "^0.6.1",
     "iso-url": "^1.0.0",
     "nanoid": "^3.1.12",
+    "p-defer": "^3.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^10.0.1"
   }

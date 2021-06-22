@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.146.1",
+  "version": "0.147.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -51,7 +51,7 @@
     "ipld-block": "^0.11.0",
     "ipld-dag-cbor": "^1.0.0",
     "ipld-dag-pb": "^0.22.1",
-    "ipns": "^0.11.0",
+    "ipns": "^0.12.0",
     "is-ipfs": "^5.0.0",
     "iso-random-stream": "^2.0.0",
     "it-all": "^1.0.4",

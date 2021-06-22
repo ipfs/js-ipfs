@@ -5,12 +5,17 @@ const IPFSRepo = require('ipfs-repo')
 const path = require('path')
 
 /**
+ * @typedef {import('ipfs-repo-migrations').ProgressCallback} MigrationProgressCallback
+ */
+
+/**
  * @param {import('../types').Print} print
  * @param {object} options
  * @param {string} [options.path]
- * @param {boolean} options.autoMigrate
+ * @param {boolean} [options.autoMigrate]
+ * @param {MigrationProgressCallback} [options.onMigrationProgress]
  */
-module.exports = (print, options = { autoMigrate: true }) => {
+module.exports = (print, options = {}) => {
   const repoPath = options.path || path.join(os.homedir(), '.jsipfs')
   /**
    * @type {number}
@@ -18,11 +23,9 @@ module.exports = (print, options = { autoMigrate: true }) => {
   let lastMigration
 
   /**
-   * @param {number} version
-   * @param {string} percentComplete
-   * @param {string} message
+   * @type {MigrationProgressCallback}
    */
-  const onMigrationProgress = (version, percentComplete, message) => {
+  const onMigrationProgress = options.onMigrationProgress || function (version, percentComplete, message) {
     if (version !== lastMigration) {
       lastMigration = version
 
@@ -33,7 +36,7 @@ module.exports = (print, options = { autoMigrate: true }) => {
   }
 
   return new IPFSRepo(repoPath, {
-    autoMigrate: options.autoMigrate,
+    autoMigrate: options.autoMigrate != null ? options.autoMigrate : true,
     onMigrationProgress: onMigrationProgress
   })
 }

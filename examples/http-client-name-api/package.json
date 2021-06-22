@@ -13,7 +13,7 @@
   "author": "Tara Vancil <tbvanc@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^50.1.1"
+    "ipfs-http-client": "^50.1.2"
   },
   "devDependencies": {
     "execa": "^5.0.0",

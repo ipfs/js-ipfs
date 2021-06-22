@@ -1,12 +1,13 @@
 'use strict'
 
 const Joi = require('../../utils/joi')
-const PassThrough = require('stream').PassThrough
 const all = require('it-all')
 const multipart = require('../../utils/multipart-request-parser')
 const Boom = require('@hapi/boom')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const streamResponse = require('../../utils/stream-response')
+const pushable = require('it-pushable')
 
 exports.subscribe = {
   options: {
@@ -45,39 +46,43 @@ exports.subscribe = {
         topic
       }
     } = request
-    const res = new PassThrough({ highWaterMark: 1 })
 
-    /**
-     * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
-     */
-    const handler = (msg) => {
-      res.write(JSON.stringify({
-        from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
-        data: uint8ArrayToString(msg.data, 'base64pad'),
-        seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
-        topicIDs: msg.topicIDs
-      }) + '\n', 'utf8')
-    }
+    // request.raw.res.setHeader('x-chunked-output', '1')
+    request.raw.res.setHeader('content-type', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
+    // request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
-    // js-ipfs-http-client needs a reply, and go-ipfs does the same thing
-    res.write('{}\n')
+    return streamResponse(request, h, () => {
+      const output = pushable()
 
-    const unsubscribe = () => {
-      ipfs.pubsub.unsubscribe(topic, handler)
-      res.end()
-    }
+      /**
+       * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+       */
+      const handler = (msg) => {
+        output.push({
+          from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
+          data: uint8ArrayToString(msg.data, 'base64pad'),
+          seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
+          topicIDs: msg.topicIDs
+        })
+      }
 
-    request.events.once('disconnect', unsubscribe)
-    request.events.once('finish', unsubscribe)
+      // js-ipfs-http-client needs a reply, and go-ipfs does the same thing
+      output.push({})
 
-    await ipfs.pubsub.subscribe(topic, handler, {
-      signal
+      const unsubscribe = () => {
+        ipfs.pubsub.unsubscribe(topic, handler)
+        output.end()
+      }
+
+      request.raw.res.once('close', unsubscribe)
+
+      ipfs.pubsub.subscribe(topic, handler, {
+        signal
+      })
+        .catch(err => output.end(err))
+
+      return output
     })
-
-    return h.response(res)
-      .header('X-Chunked-Output', '1')
-      .header('content-encoding', 'identity') // stop gzip from buffering, see https://github.com/hapijs/hapi/issues/2975
-      .header('content-type', 'application/json')
   }
 }
 

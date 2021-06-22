@@ -122,7 +122,7 @@ describe('/files/ls', () => {
   })
 
   it('accepts a timeout when streaming', async () => {
-    ipfs.files.ls.withArgs({
+    ipfs.files.ls.withArgs(path, {
       ...defaultOptions,
       timeout: 1000
     }).returns([file])
