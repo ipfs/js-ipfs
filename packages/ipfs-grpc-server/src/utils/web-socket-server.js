@@ -10,7 +10,7 @@ const { camelCase } = require('change-case')
 const { Multiaddr } = require('multiaddr')
 
 /**
- * @param {Buffer} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
+ * @param {import('ws').Data} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
  * @returns {Record<string, any>} - e.g. `{ foorBar: 'baz' }`
  **/
 const fromHeaders = (buf) => {

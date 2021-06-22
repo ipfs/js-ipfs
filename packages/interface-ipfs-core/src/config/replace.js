@@ -2,7 +2,6 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,12 +25,6 @@ module.exports = (common, options) => {
     const config = {
       Fruit: 'Bananas'
     }
-
-    it('should respect timeout option when replacing config', () => {
-      return testTimeout(() => ipfs.config.replace(config, {
-        timeout: 1
-      }))
-    })
 
     it('should replace the whole config', async () => {
       await ipfs.config.replace(config)

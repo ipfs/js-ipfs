@@ -96,33 +96,42 @@ const resolvePath = async function (ipld, ipfsPath, options = {}) {
  * @param {boolean} [options.includeContent]
  */
 const mapFile = (file, options = {}) => {
+  if (file.type !== 'file' && file.type !== 'directory' && file.type !== 'raw') {
+    // file.type === object | identity not supported yet
+    throw new Error(`Unknown node type '${file.type}'`)
+  }
+
   /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
   const output = {
     cid: file.cid,
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,
-    size: 0,
+    size: file.size,
     type: 'file'
   }
 
-  if (file.type === 'file' || file.type === 'directory') {
+  if (file.type === 'directory') {
     // @ts-ignore - TS type can't be changed from File to Directory
-    output.type = file.type === 'directory' ? 'dir' : 'file'
+    output.type = 'dir'
+  }
 
-    if (file.type === 'file') {
-      output.size = file.unixfs.fileSize()
+  if (file.type === 'file') {
+    output.size = file.unixfs.fileSize()
+  }
 
-      if (options.includeContent) {
-        // @ts-expect-error - content is readonly
-        output.content = file.content()
-      }
-    }
-
+  if (file.type === 'file' || file.type === 'directory') {
     output.mode = file.unixfs.mode
 
     if (file.unixfs.mtime !== undefined) {
       output.mtime = file.unixfs.mtime
+    }
+  }
+
+  if (options.includeContent) {
+    if (file.type === 'file' || file.type === 'raw') {
+      // @ts-expect-error - content is readonly
+      output.content = file.content()
     }
   }
 

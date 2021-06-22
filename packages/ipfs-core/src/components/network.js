@@ -48,15 +48,14 @@ class Network {
       await repo.open()
     }
 
+    /** @type {IPFSConfig} */
     const config = await repo.config.getAll()
 
     const libp2p = await createLibP2P({
       options,
       repo,
       peerId,
-      // @ts-ignore - TODO move config types into ipfs-repo
       multiaddrs: readAddrs(peerId, config),
-      // @ts-ignore - TODO move config types into ipfs-repo
       config,
       keychainConfig: undefined
     })
@@ -90,10 +89,8 @@ class Network {
 module.exports = Network
 
 /**
- *
  * @param {PeerId} peerId
  * @param {IPFSConfig} config
- * @returns {Multiaddr[]}
  */
 const readAddrs = (peerId, config) => {
   const peerIdStr = peerId.toB58String()

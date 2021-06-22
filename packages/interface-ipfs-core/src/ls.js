@@ -4,7 +4,6 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
-const drain = require('it-drain')
 const CID = require('cids')
 const testTimeout = require('./utils/test-timeout')
 
@@ -31,9 +30,9 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when listing files', () => {
-      return testTimeout(() => drain(ipfs.ls(new CID('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
+      return testTimeout(() => ipfs.ls(new CID('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
         timeout: 1
-      })))
+      }))
     })
 
     it('should ls with a base58 encoded CID', async function () {

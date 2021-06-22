@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.3.1",
+  "version": "0.5.2",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "types": "src/index.d.ts",
@@ -29,7 +29,8 @@
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
     "cids": "^1.1.6",
-    "ipld": "^0.29.0",
+    "interface-datastore": "^4.0.0",
+    "ipld-block": "^0.11.1",
     "multiaddr": "^9.0.1",
     "multibase": "^4.0.2"
   },

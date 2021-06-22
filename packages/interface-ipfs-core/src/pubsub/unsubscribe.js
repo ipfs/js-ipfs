@@ -4,7 +4,6 @@
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -41,9 +40,7 @@ module.exports = (common, options) => {
         await ipfs.pubsub.unsubscribe(someTopic, handlers[i])
       }
 
-      await delay(100)
-      const topics = await ipfs.pubsub.ls()
-      expect(topics).to.eql([])
+      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
     })
 
     it(`should subscribe ${count} handlers and unsubscribe once with no reference to the handlers`, async () => {
@@ -53,9 +50,7 @@ module.exports = (common, options) => {
       }
       await ipfs.pubsub.unsubscribe(someTopic)
 
-      await delay(100)
-      const topics = await ipfs.pubsub.ls()
-      expect(topics).to.eql([])
+      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
     })
   })
 }

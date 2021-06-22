@@ -5,6 +5,7 @@ const multicodec = require('multicodec')
 
 /**
  * @typedef {import('interface-ipld-format').Format<?>} IPLDFormat
+ * @typedef {import('ipld').Options} IPLDOptions
  */
 
 /**
@@ -26,7 +27,7 @@ const IpldFormats = {
 
 /**
  * @param {import('ipfs-block-service')} blockService
- * @param {import('ipld').Options} [options]
+ * @param {Partial<IPLDOptions>} [options]
  */
 module.exports = (blockService, options) => {
   return mergeOptions.call(

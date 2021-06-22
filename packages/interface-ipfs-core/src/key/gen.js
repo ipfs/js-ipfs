@@ -3,7 +3,6 @@
 
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -26,14 +25,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when generating a key', () => {
-      return testTimeout(() => ipfs.key.gen(nanoid(), {
-        type: 'rsa',
-        size: 2048,
-        timeout: 1
-      }))
-    })
 
     keyTypes.forEach((kt) => {
       it(`should generate a new ${kt.type} key`, async function () {

@@ -6,14 +6,14 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist ./.cache ./.parcel-cache",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --no-scope-hoist",
     "start": "parcel index.html -p 8888",
     "test": "test-ipfs-example"
   },
   "author": "Tara Vancil <tbvanc@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^49.0.4"
+    "ipfs-http-client": "^50.1.2"
   },
   "devDependencies": {
     "execa": "^5.0.0",

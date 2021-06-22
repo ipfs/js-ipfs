@@ -4,6 +4,7 @@ const IPFS = require('ipfs')
 const all = require('it-all')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function main () {
   const node = await IPFS.create()
@@ -20,7 +21,7 @@ async function main () {
 
   const data = uint8ArrayConcat(await all(node.cat(file.cid)))
 
-  console.log('Added file contents:', data.toString())
+  console.log('Added file contents:', uint8ArrayToString(data))
 }
 
 main()

@@ -5,7 +5,6 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const CID = require('cids')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -28,14 +27,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when providing a value on the DHT', async () => {
-      const res = await ipfs.add(uint8ArrayFromString('test'))
-
-      await testTimeout(() => ipfs.dht.provide(res.cid, {
-        timeout: 1
-      }))
-    })
 
     it('should provide local CID', async () => {
       const res = await ipfs.add(uint8ArrayFromString('test'))

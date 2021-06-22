@@ -2,10 +2,8 @@
 
 const Joi = require('../../utils/joi')
 const { pipe } = require('it-pipe')
-const { map } = require('streaming-iterables')
+const map = require('it-map')
 const last = require('it-last')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const streamResponse = require('../../utils/stream-response')
 
 exports.resolve = {
@@ -68,8 +66,9 @@ exports.resolve = {
         signal,
         timeout
       }),
-      map(value => ({ Path: value })),
-      ndjson.stringify
+      async function * (source) {
+        yield * map(source, value => ({ Path: value }))
+      }
     ))
   }
 }

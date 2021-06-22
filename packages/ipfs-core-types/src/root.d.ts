@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
+import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
 import CID, { CIDVersion } from 'cids'
 import { Mtime } from 'ipfs-unixfs'
 import { Multiaddr } from 'multiaddr'
@@ -8,12 +8,12 @@ export interface API<OptionExtension = {}> {
   /**
    * Import a file or data into IPFS
    */
-  add: (entry: ToEntry, options?: AddOptions & OptionExtension) => Promise<AddResult>
+  add: (entry: ImportCandidate, options?: AddOptions & OptionExtension) => Promise<AddResult>
 
   /**
    * Import multiple files and data into IPFS
    */
-  addAll: (source: ImportSource, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
+  addAll: (source: ImportCandidateStream, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
 
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID
@@ -40,7 +40,7 @@ export interface API<OptionExtension = {}> {
    * console.log(identity)
    * ```
    */
-  id: (options?: AbortOptions & OptionExtension) => Promise<IDResult>
+  id: (options?: IDOptions & OptionExtension) => Promise<IDResult>
 
   /**
    * Returns the implementation version
@@ -82,7 +82,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: CID | string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping: (peerId: string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS
@@ -287,6 +287,10 @@ export interface GetOptions extends AbortOptions, PreloadOptions {}
 export interface ListOptions extends AbortOptions, PreloadOptions {
   recursive?: boolean
   includeContent?: boolean
+}
+
+export interface IDOptions extends AbortOptions {
+  peerId?: string
 }
 
 export interface IDResult {

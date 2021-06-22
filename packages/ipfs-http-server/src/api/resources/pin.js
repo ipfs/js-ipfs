@@ -2,10 +2,9 @@
 
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const { map, reduce } = require('streaming-iterables')
+const map = require('it-map')
+const reduce = require('it-reduce')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const streamResponse = require('../../utils/stream-response')
 const all = require('it-all')
@@ -94,10 +93,16 @@ exports.ls = {
     if (!stream) {
       const res = await pipe(
         source,
-        reduce((/** @type {{ Keys: Record<string, any> }} */ res, { type, cid, metadata }) => {
-          res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, undefined, metadata)
-          return res
-        }, { Keys: {} })
+        function collectKeys (source) {
+          /** @type {{ Keys: Record<string, any> }} */
+          const init = { Keys: {} }
+
+          return reduce(source, (res, { type, cid, metadata }) => {
+            res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, undefined, metadata)
+
+            return res
+          }, init)
+        }
       )
 
       return h.response(res)
@@ -105,8 +110,9 @@ exports.ls = {
 
     return streamResponse(request, h, () => pipe(
       source,
-      map(({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata)),
-      ndjson.stringify
+      async function * transform (source) {
+        yield * map(source, ({ type, cid, metadata }) => toPin(type, cidToString(cid, { base: cidBase }), metadata))
+      }
     ))
   }
 }

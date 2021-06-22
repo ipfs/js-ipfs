@@ -4,7 +4,6 @@
 const { clearRemotePins, addRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const all = require('it-all')
-const testTimeout = require('../../utils/test-timeout')
 const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -420,13 +419,6 @@ module.exports = (common, options) => {
           }
         ])
       })
-    })
-
-    it('should respect timeout option', () => {
-      return testTimeout(() => all(ipfs.pin.remote.ls({
-        timeout: 1,
-        service: SERVICE
-      })))
     })
   })
 }

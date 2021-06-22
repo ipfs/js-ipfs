@@ -1,7 +1,8 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
-const mh = require('multihashing-async').multihash
+const mha = require('multihashing-async')
+const mh = mha.multihash
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const {
@@ -9,6 +10,8 @@ const {
 } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const Block = require('ipld-block')
+const CID = require('cids')
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj
@@ -169,14 +172,17 @@ exports.put = {
           }
         } else {
           // the node is an uncommon format which the client should have
-          // serialized so deserialize it before continuing
-          const ipldFormat = await request.server.app.ipfs.ipld.getFormat(format)
+          // serialized so add it to the block store and fetch it deserialized
+          // before continuing
+          const hash = await mha(data, request.query.hash)
+          const cid = new CID(request.query.cidVersion, format, hash)
 
-          if (!ipldFormat) {
-            throw new Error(`Missing IPLD format "${format}"`)
-          }
+          await request.server.app.ipfs.block.put(new Block(data, cid))
 
-          node = await ipldFormat.util.deserialize(data)
+          const {
+            value
+          } = await request.server.app.ipfs.dag.get(cid)
+          node = value
         }
 
         return {
@@ -197,6 +203,7 @@ exports.put = {
         pin: Joi.boolean().default(false),
         hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
         cidBase: Joi.cidBase(),
+        cidVersion: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
         .rename('input-enc', 'inputEncoding', {
@@ -204,6 +211,10 @@ exports.put = {
           ignoreUndefined: true
         })
         .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('cid-version', 'cidVersion', {
           override: true,
           ignoreUndefined: true
         })

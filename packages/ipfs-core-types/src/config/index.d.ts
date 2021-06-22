@@ -51,11 +51,13 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm?: string[]
+  Swarm?: string[],
+  Announce?: string[],
+  NoAnnounce?: string[]
 }
 
 export interface APIConfig {
-  HTTPHeaders?: Record<string, string>
+  HTTPHeaders?: Record<string, string[]>
 }
 
 export interface DiscoveryConfig {
@@ -107,7 +109,7 @@ export interface IdentityConfig {
   /**
    * The base64 encoded protobuf describing (and containing) the nodes private key.
    */
-  PrivateKey: string
+  PrivKey: string
 }
 
 export interface KeychainConfig {

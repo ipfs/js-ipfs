@@ -21,7 +21,7 @@ export interface API<OptionExtension = {}> {
      * // '/ip4/147.75.94.115/tcp/4001'
      * ```
      */
-  findPeer: (peerId: CID | string, options?: AbortOptions & OptionExtension) => Promise<PeerResult>
+  findPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<PeerResult>
 
   /**
      * Find peers in the DHT that can provide a specific value, given a CID.
@@ -59,7 +59,7 @@ export interface API<OptionExtension = {}> {
   /**
    * Find the closest peers to a given `PeerId`, by querying the DHT.
    */
-  query: (peerId: CID | string, options?: AbortOptions & OptionExtension) => AsyncIterable<PeerResult>
+  query: (peerId: string, options?: AbortOptions & OptionExtension) => AsyncIterable<PeerResult>
 }
 
 export interface PeerResult {

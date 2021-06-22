@@ -1,5 +1,7 @@
 import CID from 'cids'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
+import { Options as DatastoreOptions, Query, KeyQuery } from 'interface-datastore'
+import Block from 'ipld-block'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
   | FileEntry<Content>
@@ -18,11 +20,11 @@ export interface DirectoryEntry extends BaseEntry {
   content?: undefined
 }
 
-export type ImportSource =
-| AwaitIterable<ToEntry>
-| ReadableStream<ToEntry>
+export type ImportCandidateStream =
+| AwaitIterable<ImportCandidate>
+| ReadableStream<ImportCandidate>
 
-export type ToEntry =
+export type ImportCandidate =
   | ToFile
   | ToDirectory
   | ToContent

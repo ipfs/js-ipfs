@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.7.2...ipfs-message-port-server@0.7.3) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.7.1...ipfs-message-port-server@0.7.2) (2021-06-05)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.7.0...ipfs-message-port-server@0.7.1) (2021-05-26)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.6.3...ipfs-message-port-server@0.7.0) (2021-05-10)
+
+
+### chore
+
+* update node version in docker build ([#3603](https://github.com/ipfs/js-ipfs/issues/3603)) ([087fd1e](https://github.com/ipfs/js-ipfs/commit/087fd1eb402d1b933730e09c1d0cfb21067e9992))
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* Minimum supported node version is 14
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.6.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.6.2...ipfs-message-port-server@0.6.3) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-message-port-server

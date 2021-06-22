@@ -3,7 +3,6 @@
 
 const { clearRemotePins, addRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const testTimeout = require('../../utils/test-timeout')
 const CID = require('cids')
 const all = require('it-all')
 
@@ -150,13 +149,6 @@ module.exports = (common, options) => {
           name: 'failed-d'
         }
       ].sort(byCID))
-    })
-
-    it('should respect timeout option', () => {
-      return testTimeout(() => ipfs.pin.remote.rmAll({
-        timeout: 1,
-        service: SERVICE
-      }))
     })
   })
 }

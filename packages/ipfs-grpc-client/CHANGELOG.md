@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.3.2...ipfs-grpc-client@0.3.3) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-grpc-client
+
+
+
+
+
+## [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.3.1...ipfs-grpc-client@0.3.2) (2021-06-05)
+
+**Note:** Version bump only for package ipfs-grpc-client
+
+
+
+
+
+## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.3.0...ipfs-grpc-client@0.3.1) (2021-05-26)
+
+**Note:** Version bump only for package ipfs-grpc-client
+
+
+
+
+
+# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.2.4...ipfs-grpc-client@0.3.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* ignore the ts error caused by the recent protobufjs type change ([#3656](https://github.com/ipfs/js-ipfs/issues/3656)) ([084589c](https://github.com/ipfs/js-ipfs/commit/084589c0116d8f27ce1462424fb93b6037b776a9))
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.2.4](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-client@0.2.3...ipfs-grpc-client@0.2.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-grpc-client

@@ -4,6 +4,7 @@ const { exporter, recursive } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const CID = require('cids')
 
 /**
  * @typedef {Object} Context
@@ -21,7 +22,7 @@ module.exports = function ({ ipld, preload }) {
     const pathComponents = path.split('/')
 
     if (options.preload !== false) {
-      preload(pathComponents[0])
+      preload(new CID(pathComponents[0]))
     }
 
     const file = await exporter(ipfsPath, ipld, options)

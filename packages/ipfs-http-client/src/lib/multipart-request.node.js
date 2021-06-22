@@ -8,19 +8,19 @@ const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toStream = require('it-to-stream')
 
 /**
- * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
- * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
 
 /**
- * @param {ImportSource|ToEntry} source
+ * @param {ImportCandidateStream|ImportCandidate} source
  * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]
  */
 async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   /**
-   * @param {ImportSource|ToEntry} source
+   * @param {ImportCandidateStream|ImportCandidate} source
    */
   async function * streamFiles (source) {
     try {

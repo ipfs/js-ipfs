@@ -39,11 +39,11 @@ const {
  * @typedef {import('./interface').MessagePortClientOptions} MessagePortClientOptions
  * @typedef {import('ipfs-core-types/src/root').API<MessagePortClientOptions>} RootAPI
  *
- * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ToFile} ToFile
  * @typedef {import('ipfs-core-types/src/utils').ToDirectory} ToDirectory
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
- * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  */
 
 /**
@@ -181,7 +181,7 @@ const identity = (v) => v
  * Encodes input passed to the `ipfs.add` via the best possible strategy for the
  * given input.
  *
- * @param {ToEntry} input
+ * @param {ImportCandidate} input
  * @param {Transferable[]} transfer
  * @returns {EncodedAddInput}
  */
@@ -235,7 +235,7 @@ const encodeAddInput = (input, transfer) => {
  * Encodes input passed to the `ipfs.add` via the best possible strategy for the
  * given input.
  *
- * @param {ImportSource} input
+ * @param {ImportCandidateStream} input
  * @param {Transferable[]} transfer
  * @returns {EncodedAddAllInput}
  */
@@ -272,7 +272,7 @@ const encodeAddAllInput = (input, transfer) => {
  * Function encodes individual item of some `AsyncIterable` by choosing most
  * effective strategy.
  *
- * @param {ToEntry} content
+ * @param {ImportCandidate} content
  * @param {Transferable[]} transfer
  * @returns {EncodedAddInput}
  */
@@ -296,7 +296,7 @@ const encodeAsyncIterableContent = (content, transfer) => {
 }
 
 /**
- * @param {ToEntry} content
+ * @param {ImportCandidate} content
  * @param {Transferable[]} transfer
  * @returns {EncodedAddInput}
  */
@@ -388,7 +388,7 @@ const encodeFileContent = (content, transfer) => {
  * iterable or `null`.
  *
  * @template I
- * @param {Iterable<I>|ToEntry|ImportSource} input
+ * @param {Iterable<I>|ImportCandidate|ImportCandidateStream} input
  * @returns {Iterable<I>|null}
  */
 const asIterable = (input) => {
@@ -406,7 +406,7 @@ const asIterable = (input) => {
  * matched `AsyncIterable` or `null`.
  *
  * @template I
- * @param {AsyncIterable<I>|ToEntry|ImportSource} input
+ * @param {AsyncIterable<I>|ImportCandidate|ImportCandidateStream} input
  * @returns {AsyncIterable<I>|null}
  */
 const asAsyncIterable = (input) => {

@@ -75,7 +75,7 @@ module.exports = (factory, options) => {
 
     describe('transfer a file between', () => {
       it('2 peers', async () => {
-        const content = randomBytes(1024 * 1024 * 10)
+        const content = randomBytes(1024)
         const remote = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
         const local = (await factory.spawn({ type: 'proc', ipfsOptions })).api
         local.swarm.connect(remote.peerId.addresses[0])

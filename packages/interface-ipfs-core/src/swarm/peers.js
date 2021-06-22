@@ -6,7 +6,6 @@ const CID = require('cids')
 const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -35,12 +34,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when listing swarm peers', () => {
-      return testTimeout(() => ipfsA.swarm.peers({
-        timeout: 1
-      }))
-    })
 
     it('should list peers this node is connected to', async () => {
       const peers = await ipfsA.swarm.peers()
@@ -118,7 +111,13 @@ module.exports = (common, options) => {
             '/ip4/127.0.0.1/tcp/26546/ws'
           ])
 
-      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      const nodeA = (await common.spawn({
+        // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
+        // peer a js-ipfs node to get a tcp address that can be dialled. Also, webworkers are not
+        // diable so don't use a in-proc node for webworkers
+        type: ((isBrowser && common.opts.type === 'go') || isWebWorker) ? 'js' : 'proc',
+        ipfsOptions
+      })).api
       const nodeB = (await common.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
@@ -126,10 +125,7 @@ module.exports = (common, options) => {
         }
       })).api
 
-      // TODO: the webrtc-star transport only keeps the last listened on address around
-      // so the browser has to use 1 as the array index
-      // await nodeA.swarm.connect(nodeB.peerId.addresses[0])
-      await nodeA.swarm.connect(nodeB.peerId.addresses[isBrowser ? 1 : 0])
+      await nodeB.swarm.connect(nodeA.peerId.addresses[0])
 
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

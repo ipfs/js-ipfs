@@ -6,7 +6,6 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const all = require('it-all')
 const drain = require('it-drain')
-const testTimeout = require('../utils/test-timeout')
 const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -26,12 +25,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when garbage collecting', () => {
-      return testTimeout(() => ipfs.repo.gc({
-        timeout: 1
-      }))
-    })
 
     it('should run garbage collection', async () => {
       const res = await ipfs.add(uint8ArrayFromString('apples'))

@@ -8,7 +8,9 @@ const { isNode } = require('ipfs-utils/src/env')
 const tmpDir = require('ipfs-utils/src/temp-dir')
 const PeerId = require('peer-id')
 const { supportedKeys } = require('libp2p-crypto/src/keys')
-const IPFS = require('../')
+const IPFS = require('../src')
+const defer = require('p-defer')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 // This gets replaced by `create-repo-browser.js` in the browser
 const createTempRepo = require('./utils/create-repo-nodejs.js')
@@ -16,11 +18,13 @@ const createTempRepo = require('./utils/create-repo-nodejs.js')
 describe('create node', function () {
   let tempRepo
 
-  beforeEach(() => {
-    tempRepo = createTempRepo()
+  beforeEach(async () => {
+    tempRepo = await createTempRepo()
   })
 
-  afterEach(() => tempRepo.teardown())
+  afterEach(() => {
+    tempRepo.teardown()
+  })
 
   it('should create a node with a custom repo path', async function () {
     this.timeout(80 * 1000)
@@ -240,8 +244,8 @@ describe('create node', function () {
       })
     }
 
-    const repoA = createTempRepo()
-    const repoB = createTempRepo()
+    const repoA = await createTempRepo()
+    const repoB = await createTempRepo()
     const [nodeA, nodeB] = await Promise.all([createNode(repoA), createNode(repoB)])
     const [idA, idB] = await Promise.all([nodeA.id(), nodeB.id()])
 
@@ -284,5 +288,39 @@ describe('create node', function () {
     })
 
     await expect(node.start()).to.eventually.be.rejected().with.property('code', 'ERR_WEBSOCKET_STAR_SWARM_ADDR_NOT_SUPPORTED')
+  })
+
+  it('should auto-migrate repos by default', async function () {
+    this.timeout(80 * 1000)
+
+    const deferred = defer()
+    const id = await PeerId.create({
+      bits: 512
+    })
+
+    // create an old-looking repo
+    const repo = await createTempRepo({
+      version: 1,
+      spec: 1,
+      config: {
+        Identity: {
+          PeerId: id.toString(),
+          PrivKey: uint8ArrayToString(id.marshalPrivKey(), 'base64pad')
+        }
+      }
+    })
+
+    const node = await IPFS.create({
+      repo: repo.path,
+      onMigrationProgress: () => {
+        // migrations are happening
+        deferred.resolve()
+      }
+    })
+
+    await deferred.promise
+
+    await node.stop()
+    await repo.teardown()
   })
 })
