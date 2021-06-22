@@ -1,12 +1,11 @@
 /* eslint-env mocha */
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const CID = require('cids')
 const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -36,12 +35,6 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should respect timeout option when listing swarm peers', () => {
-      return testTimeout(() => ipfsA.swarm.peers({
-        timeout: 1
-      }))
-    })
-
     it('should list peers this node is connected to', async () => {
       const peers = await ipfsA.swarm.peers()
       expect(peers).to.have.length.above(0)
@@ -49,7 +42,7 @@ module.exports = (common, options) => {
       const peer = peers[0]
 
       expect(peer).to.have.a.property('addr')
-      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer').that.is.a('string')
       expect(CID.isCID(new CID(peer.peer))).to.equal(true)
       expect(peer).to.not.have.a.property('latency')
@@ -66,7 +59,7 @@ module.exports = (common, options) => {
 
       const peer = peers[0]
       expect(peer).to.have.a.property('addr')
-      expect(multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer')
       expect(peer).to.have.a.property('latency')
       expect(peer.latency).to.match(/n\/a|[0-9]+[mµ]?s/) // n/a or 3ms or 3µs or 3s
@@ -110,15 +103,21 @@ module.exports = (common, options) => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
       const config = getConfig(isBrowser && common.opts.type !== 'go'
         ? [
-            '/ip4/127.0.0.1/tcp/14578/ws/p2p-webrtc-star',
-            '/ip4/127.0.0.1/tcp/14579/ws/p2p-webrtc-star'
+            process.env.SIGNALA_SERVER,
+            process.env.SIGNALB_SERVER
           ]
         : [
             '/ip4/127.0.0.1/tcp/26545/ws',
             '/ip4/127.0.0.1/tcp/26546/ws'
           ])
 
-      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      const nodeA = (await common.spawn({
+        // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
+        // peer a js-ipfs node to get a tcp address that can be dialled. Also, webworkers are not
+        // diable so don't use a in-proc node for webworkers
+        type: ((isBrowser && common.opts.type === 'go') || isWebWorker) ? 'js' : 'proc',
+        ipfsOptions
+      })).api
       const nodeB = (await common.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
@@ -126,10 +125,7 @@ module.exports = (common, options) => {
         }
       })).api
 
-      // TODO: the webrtc-star transport only keeps the last listened on address around
-      // so the browser has to use 1 as the array index
-      // await nodeA.swarm.connect(nodeB.peerId.addresses[0])
-      await nodeA.swarm.connect(nodeB.peerId.addresses[isBrowser ? 1 : 0])
+      await nodeB.swarm.connect(nodeA.peerId.addresses[0])
 
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

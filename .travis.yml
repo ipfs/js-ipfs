@@ -1,4 +1,9 @@
 language: node_js
+dist: bionic
+
+cache:
+  # https://travis-ci.community/t/npm-cache-on-windows-supplies-incorrect-dependency-versions/11335
+  npm: false
 
 services:
   - xvfb
@@ -31,25 +36,39 @@ env:
 addons:
   apt:
     packages:
-      # Fixes error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
-      # https://github.com/electron/electron/issues/1518
-      - libgconf-2-4
-      # Ensure chrome is the latest version
-      # https://stackoverflow.com/questions/57903415/travis-ci-chrome-62-instead-of-77
-      - dpkg
+    #   # These are required to run webkit
+    # - libwoff1
+    # - libopus0
+    # - libwebp6
+    # - libwebpdemux2
+    # - libenchant1c2a
+    # - libgudev-1.0-0
+    # - libsecret-1-0
+    # - libhyphen0
+    # - libgdk-pixbuf2.0-0
+    # - libegl1
+    # - libgles2
+    # - libevent-2.1-6
+    # - libnotify4
+    # - libxslt1.1
+    # - libvpx5
+    # # gstreamer and plugins to support video playback in WebKit.
+    # - gstreamer1.0-gl
+    # - gstreamer1.0-plugins-base
+    # - gstreamer1.0-plugins-good
+    # - gstreamer1.0-plugins-bad
+    # This is required to run chromium
+    - libgbm1
   chrome: stable
-  firefox: latest
 
 before_install:
   # prevents windows error: npm ERR! ... git-sh-setup: file not found
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH=/c/PROGRA~1/Git/usr/bin:/c/PROGRA~1/Git/mingw64/libexec/git-core:$PATH ; fi
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
-  # modules with pre-built binaries may not have deployed versions for bleeding-edge node so this lets us fall back to building from source
-  - npm install -g node-pre-gyp
 
 script:
-  - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail
+  - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
 jobs:
   allow_failures:
@@ -60,7 +79,6 @@ jobs:
     - name: external - service-worker-gateway
     - name: external - orbit-db
     - name: external - ipfs-log
-    - name: external - sidetree
 
   include:
     - stage: test
@@ -91,12 +109,12 @@ jobs:
     - stage: test
       name: firefox
       script:
-        - npm run test:browser -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless
+        - npm run test:browser -- $RUN_SINCE -- -- --bail -- --browser firefox
 
     - stage: test
       name: firefox webworker
       script:
-        - npm run test:webworker -- $RUN_SINCE -- -- --bail --browsers FirefoxHeadless --timeout 60000
+        - npm run test:webworker -- $RUN_SINCE -- -- --bail --timeout 60000 -- --browser firefox
 
     - stage: test
       name: electron-main
@@ -131,7 +149,7 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - node
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: js-ipfs interface tests - chrome
@@ -146,12 +164,12 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - firefox
       script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
-    - stage: test
-      name: js-ipfs interface tests - firefox webworker
-      script:
-        - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+    #- stage: test
+    #  name: js-ipfs interface tests - firefox webworker
+    #  script:
+    #    - npm run test:interface:core -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - electron main
@@ -166,7 +184,7 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - ipfs-client - node
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - chrome
@@ -181,12 +199,12 @@ jobs:
     - stage: test
       name: js-ipfs interface tests - ipfs-client - firefox
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - firefox webworker
       script:
-        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:client -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: js-ipfs interface tests - ipfs-client - electron main
@@ -201,7 +219,7 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - node
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - chrome
@@ -216,17 +234,17 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t node -- --exit # TODO remove --exit https://mochajs.org/#-exit
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - chrome
@@ -241,12 +259,12 @@ jobs:
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t browser --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --browsers FirefoxHeadless --timeout 60000
+        - npm run test:interface:http-js -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - electron main
@@ -266,7 +284,7 @@ jobs:
     - stage: test
       name: ipfs-message-port-client interface tests - firefox
       script:
-        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser --browsers FirefoxHeadless
+        - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: examples
@@ -349,13 +367,6 @@ jobs:
       name: external - ipfs-log
       script:
         - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
-
-    - stage: test-external
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: external - sidetree
-      script:
-        - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false

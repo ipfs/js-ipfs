@@ -3,8 +3,6 @@
 
 const { fixtures, clearRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const testTimeout = require('../../utils/test-timeout')
-const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -137,13 +135,6 @@ module.exports = (common, options) => {
         status: 'queued',
         name: ''
       })
-    })
-
-    it('should respect timeout option when pinning a block', () => {
-      return testTimeout(() => ipfs.pin.remote.add(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1,
-        service: SERVICE
-      }))
     })
   })
 }

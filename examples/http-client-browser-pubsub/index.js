@@ -1,6 +1,6 @@
 'use strict'
 
-const IpfsHttpClient = require('ipfs-http-client')
+const { create: IpfsHttpClient } = require('ipfs-http-client')
 const { sleep, Logger, onEnterPress, catchAndLog } = require('./util')
 const uint8ArrayToString = require('uint8arrays/to-string')
 

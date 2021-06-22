@@ -2,10 +2,12 @@
 
 const multipart = require('../../utils/multipart-request-parser')
 const debug = require('debug')
+// @ts-ignore no types
 const tar = require('it-tar')
 const log = Object.assign(debug('ipfs:http-api:files'), {
   error: debug('ipfs:http-api:files:error')
 })
+// @ts-ignore no types
 const toIterable = require('stream-to-it')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
@@ -13,10 +15,14 @@ const { PassThrough } = require('stream')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const { pipe } = require('it-pipe')
 const all = require('it-all')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const { map } = require('streaming-iterables')
 const streamResponse = require('../../utils/stream-response')
 
+/**
+ * @param {AsyncIterable<Uint8Array>} source
+ */
 const toBuffer = async function * (source) {
   for await (const chunk of source) {
     yield chunk.slice()
@@ -44,7 +50,10 @@ exports.cat = {
     }
   },
 
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -100,7 +109,10 @@ exports.get = {
     }
   },
 
-  // main route handler which is called after the above `parseArgs`, but only if the args were valid
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -113,28 +125,25 @@ exports.get = {
       },
       query: {
         path,
-        archive,
-        compress,
-        compressionLevel,
         timeout
       }
     } = request
 
     return streamResponse(request, h, () => pipe(
       ipfs.get(path, {
-        archive,
-        compress,
-        compressionLevel,
         timeout,
         signal
       }),
+      /**
+       * @param {AsyncIterable<import('ipfs-core-types/src/root').IPFSEntry>} source
+       */
       async function * (source) {
         for await (const file of source) {
           const header = {
             name: file.path
           }
 
-          if (file.content) {
+          if (file.type === 'file' && file.content != null) {
             yield { header: { ...header, size: file.size }, body: toBuffer(file.content) }
           } else {
             yield { header: { ...header, type: 'directory' } }
@@ -214,6 +223,11 @@ exports.add = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     if (!request.payload) {
       throw Boom.badRequest('Array, Buffer, or String is required.')
@@ -247,21 +261,25 @@ exports.add = {
     } = request
 
     let filesParsed = false
-    let currentFileName
     const output = new PassThrough()
-    const progressHandler = bytes => {
+    /**
+     * @type {import('ipfs-core-types/src/root').AddProgressFn}
+     */
+    const progressHandler = (bytes, path) => {
+      // TODO: path should be passed as a second option
       output.write(JSON.stringify({
-        Name: currentFileName,
+        Name: path,
         Bytes: bytes
       }) + '\n')
     }
 
     pipe(
-      multipart(request),
+      multipart(request.raw.req),
+      /**
+       * @param {AsyncIterable<import('../../types').MultipartEntry>} source
+       */
       async function * (source) {
         for await (const entry of source) {
-          currentFileName = entry.name || ''
-
           if (entry.type === 'file') {
             filesParsed = true
 
@@ -284,6 +302,9 @@ exports.add = {
           }
         }
       },
+      /**
+       * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} source
+       */
       function (source) {
         return ipfs.addAll(source, {
           cidVersion,
@@ -308,19 +329,14 @@ exports.add = {
         })
       },
       map(file => {
-        const entry = {
+        return {
           Name: file.path,
           Hash: cidToString(file.cid, { base: cidBase }),
           Size: file.size,
-          Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0')
+          Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
+          Mtime: file.mtime ? file.mtime.secs : undefined,
+          MtimeNsecs: file.mtime ? file.mtime.nsecs : undefined
         }
-
-        if (file.mtime) {
-          entry.Mtime = file.mtime.secs
-          entry.MtimeNsecs = file.mtime.nsecs
-        }
-
-        return entry
       }),
       ndjson.stringify,
       toIterable.sink(output)
@@ -330,7 +346,7 @@ exports.add = {
           throw new Error("File argument 'data' is required.")
         }
       })
-      .catch(err => {
+      .catch((/** @type {Error} */ err) => {
         log.error(err)
 
         if (!filesParsed && output.writable) {
@@ -380,6 +396,11 @@ exports.ls = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -399,34 +420,28 @@ exports.ls = {
       }
     } = request
 
+    /**
+     * TODO: can be ipfs.files.stat result or ipfs.ls result
+     *
+     * @param {any} link
+     */
     const mapLink = link => {
-      const output = {
+      return {
         Hash: cidToString(link.cid, { base: cidBase }),
         Size: link.size,
         Type: toTypeCode(link.type),
-        Depth: link.depth
+        Depth: link.depth,
+        Name: link.name ? link.name : undefined,
+        Mode: link.mode != null ? link.mode.toString(8).padStart(4, '0') : undefined,
+        Mtime: link.mtime ? link.mtime.secs : undefined,
+        MtimeNsecs: link.mtime ? link.mtime.nsecs : undefined
       }
-
-      if (link.name) {
-        output.Name = link.name
-      }
-
-      if (link.mode != null) {
-        output.Mode = link.mode.toString(8).padStart(4, '0')
-      }
-
-      if (link.mtime) {
-        output.Mtime = link.mtime.secs
-
-        if (link.mtime.nsecs !== null && link.mtime.nsecs !== undefined) {
-          output.MtimeNsecs = link.mtime.nsecs
-        }
-      }
-
-      return output
     }
 
-    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`)
+    const stat = await ipfs.files.stat(path.startsWith('/ipfs/') ? path : `/ipfs/${path}`, {
+      signal,
+      timeout
+    })
 
     if (stat.type === 'file') {
       // return single object with metadata
@@ -466,6 +481,9 @@ exports.ls = {
   }
 }
 
+/**
+ * @param {string} type
+ */
 function toTypeCode (type) {
   switch (type) {
     case 'dir':
@@ -503,6 +521,11 @@ exports.refs = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {
@@ -552,6 +575,11 @@ exports.refsLocal = {
       })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   handler (request, h) {
     const {
       app: {

@@ -5,24 +5,18 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('.').IPNS} config.ipns
- * @param {import('.').Options} [config.options]
+ * @param {import('../../ipns')} config.ipns
+ * @param {import('../../../types').Options} config.options
  */
-module.exports = ({ ipns, options: routingOptions }) => {
+module.exports = ({ ipns, options }) => {
+  const experimental = options.EXPERIMENTAL
+
   /**
-   * Query the state of IPNS pubsub.
-   *
-   * @param {import('.').AbortOptions} [_options]
-   * @returns {Promise<{ enabled: boolean }>}
-   * ```js
-   * const result = await ipfs.name.pubsub.state()
-   * console.log(result.enabled)
-   * // Logs: true
-   * ```
+   * @type {import('ipfs-core-types/src/name/pubsub').API["state"]}
    */
-  async function state (_options) { // eslint-disable-line require-await
+  async function state (_options = {}) { // eslint-disable-line require-await
     try {
-      return { enabled: Boolean(getPubsubRouting(ipns, routingOptions)) }
+      return { enabled: Boolean(getPubsubRouting(ipns, experimental)) }
     } catch (err) {
       return { enabled: false }
     }

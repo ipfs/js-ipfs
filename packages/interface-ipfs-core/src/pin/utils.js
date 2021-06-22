@@ -1,7 +1,7 @@
 'use strict'
 
 const { expect } = require('../utils/mocha')
-const loadFixture = require('aegir/fixtures')
+const loadFixture = require('aegir/utils/fixtures')
 const CID = require('cids')
 const drain = require('it-drain')
 const map = require('it-map')

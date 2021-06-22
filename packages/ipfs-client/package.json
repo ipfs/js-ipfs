@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.3.2",
+  "version": "0.4.2",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -11,17 +11,11 @@
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
   "main": "src/index.js",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*",
-        "dist/*/index"
-      ]
-    }
-  },
+  "types": "dist/src/index.d.ts",
   "eslintConfig": {
     "extends": "ipfs"
   },
@@ -30,21 +24,20 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "test": "aegir test",
+    "build": "aegir build",
+    "test": "echo please run test:interface:client in the ipfs package instead",
     "lint": "aegir lint",
-    "prepare": "aegir build --no-bundle",
-    "prepublishOnly": "aegir build",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "^0.2.2",
-    "ipfs-http-client": "^49.0.2",
+    "ipfs-grpc-client": "^0.3.2",
+    "ipfs-http-client": "^50.1.1",
     "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "^33.0.0",
     "rimraf": "^3.0.2"
   }
 }

@@ -1,12 +1,11 @@
 'use strict'
 
-const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const { DAGNode } = require('ipld-dag-pb')
-const { normalizeCidPath } = require('../../utils')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 const Format = {
   default: '<dst>',
@@ -14,18 +13,25 @@ const Format = {
 }
 
 /**
+ * @typedef {object} Node
+ * @property {string} [name]
+ * @property {CID} cid
+ *
+ * @typedef {object} TraversalResult
+ * @property {Node} parent
+ * @property {Node} node
+ * @property {boolean} isDuplicate
+ */
+
+/**
  * @param {Object} config
- * @param {import('..').IPLD} config.ipld
- * @param {import('..').Resolve} config.resolve
- * @param {import('..').Preload} config.preload
+ * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-core-types/src/root').API["resolve"]} config.resolve
+ * @param {import('../../types').Preload} config.preload
  */
 module.exports = function ({ ipld, resolve, preload }) {
   /**
-   * Get links (references) from an object
-   *
-   * @param {CID|string} ipfsPath - The object to search for references
-   * @param {RefsOptions & AbortOptions} [options]
-   * @returns {AsyncIterable<RefResult>}
+   * @type {import('ipfs-core-types/src/refs').API["refs"]}
    */
   async function * refs (ipfsPath, options = {}) {
     if (options.maxDepth === 0) {
@@ -36,7 +42,7 @@ module.exports = function ({ ipld, resolve, preload }) {
       throw new Error('Cannot set edges to true and also specify format')
     }
 
-    options.format = options.edges ? Format.edges : options.format || Format.default
+    options.format = options.edges ? Format.edges : options.format
 
     if (typeof options.maxDepth !== 'number') {
       options.maxDepth = options.recursive ? Infinity : 1
@@ -57,34 +63,44 @@ module.exports = function ({ ipld, resolve, preload }) {
 
 module.exports.Format = Format
 
+/**
+ * @param {import('../../types').Preload} preload
+ * @param {string | CID} ipfsPath
+ * @param {import('ipfs-core-types/src/refs').RefsOptions} options
+ */
 function getFullPath (preload, ipfsPath, options) {
-  // normalizeCidPath() strips /ipfs/ off the front of the path so the CID will
-  // be at the front of the path
-  const path = normalizeCidPath(ipfsPath)
-  const pathComponents = path.split('/')
-  const cid = pathComponents[0]
-
-  if (!isIpfs.cid(cid)) {
-    throw new Error(`Error resolving path '${path}': '${cid}' is not a valid CID`)
-  }
+  const {
+    cid,
+    path
+  } = toCIDAndPath(ipfsPath)
 
   if (options.preload !== false) {
     preload(cid)
   }
 
-  return '/ipfs/' + path
+  return `/ipfs/${cid}${path || ''}`
 }
 
-// Get a stream of refs at the given path
+/**
+ * Get a stream of refs at the given path
+ *
+ * @param {import('ipfs-core-types/src/root').API["resolve"]} resolve
+ * @param {import('ipld')} ipld
+ * @param {string} path
+ * @param {import('ipfs-core-types/src/refs').RefsOptions} options
+ */
 async function * refsStream (resolve, ipld, path, options) {
   // Resolve to the target CID of the path
   const resPath = await resolve(path)
-  // path is /ipfs/<cid>
-  const parts = resPath.split('/')
-  const cid = parts[2]
+  const {
+    cid
+  } = toCIDAndPath(resPath)
+
+  const maxDepth = options.maxDepth != null ? options.maxDepth : Infinity
+  const unique = options.unique || false
 
   // Traverse the DAG, converting it into a stream
-  for await (const obj of objectStream(ipld, cid, options.maxDepth, options.unique)) {
+  for await (const obj of objectStream(ipld, cid, maxDepth, unique)) {
     // Root object will not have a parent
     if (!obj.parent) {
       continue
@@ -103,18 +119,37 @@ async function * refsStream (resolve, ipld, path, options) {
   }
 }
 
-// Get formatted link
-function formatLink (srcCid, dstCid, linkName, format) {
+/**
+ * Get formatted link
+ *
+ * @param {CID} srcCid
+ * @param {CID} dstCid
+ * @param {string} [linkName]
+ * @param {string} [format]
+ */
+function formatLink (srcCid, dstCid, linkName = '', format = Format.default) {
   let out = format.replace(/<src>/g, srcCid.toString())
   out = out.replace(/<dst>/g, dstCid.toString())
   out = out.replace(/<linkname>/g, linkName)
   return out
 }
 
-// Do a depth first search of the DAG, starting from the given root cid
+/**
+ * Do a depth first search of the DAG, starting from the given root cid
+ *
+ * @param {import('ipld')} ipld
+ * @param {CID} rootCid
+ * @param {number} maxDepth
+ * @param {boolean} uniqueOnly
+ */
 async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
   const seen = new Set()
 
+  /**
+   * @param {Node} parent
+   * @param {number} depth
+   * @returns {AsyncGenerator<TraversalResult, void, undefined>}
+   */
   async function * traverseLevel (parent, depth) {
     const nextLevelDepth = depth + 1
 
@@ -151,19 +186,35 @@ async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-
   yield * traverseLevel({ cid: rootCid }, 0)
 }
 
-// Fetch a node from IPLD then get all its links
+/**
+ * Fetch a node from IPLD then get all its links
+ *
+ * @param {import('ipld')} ipld
+ * @param {CID} cid
+ */
 async function getLinks (ipld, cid) {
-  const node = await ipld.get(new CID(cid))
+  const node = await ipld.get(cid)
 
-  if (DAGNode.isDAGNode(node)) {
-    return node.Links.map(({ Name, Hash }) => ({ name: Name, cid: new CID(Hash) }))
+  if (node instanceof DAGNode) {
+    /**
+     * @param {import('ipld-dag-pb').DAGLink} arg
+     */
+    const mapper = ({ Name, Hash }) => ({ name: Name, cid: Hash })
+    return node.Links.map(mapper)
   }
 
   return getNodeLinks(node)
 }
 
-// Recursively search the node for CIDs
+/**
+ * Recursively search the node for CIDs
+ *
+ * @param {object} node
+ * @param {string} [path]
+ * @returns {Node[]}
+ */
 function getNodeLinks (node, path = '') {
+  /** @type {Node[]} */
   let links = []
   for (const [name, value] of Object.entries(node)) {
     if (CID.isCID(value)) {
@@ -177,17 +228,3 @@ function getNodeLinks (node, path = '') {
   }
   return links
 }
-
-/**
- * @typedef {Object} RefsOptions
- * @property {boolean} [recursive=false] - Recursively list references of child nodes
- * @property {boolean} [unique=false] - Omit duplicate references from output
- * @property {string} [format='<dst>'] - Output edges with given format. Available tokens: `<src>`, `<dst>`, `<linkname>`
- * @property {boolean} [edges=false] - output references in edge format: `"<src> -> <dst>"`
- * @property {number} [maxDepth=1] - only for recursive refs, limits fetch and listing to the given depth
- *
- * @typedef {{ref:string, err?:null}|{ref?:undefined, err:Error}} RefResult
- *
- * @typedef {import('..').AbortOptions} AbortOptions
- * @typedef {import('..').Repo} Repo
- */

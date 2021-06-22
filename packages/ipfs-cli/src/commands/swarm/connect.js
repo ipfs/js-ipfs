@@ -1,6 +1,9 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
+const {
+  coerceMultiaddr
+} = require('../../utils')
 
 module.exports = {
   command: 'connect <address>',
@@ -8,19 +11,31 @@ module.exports = {
   describe: 'Open connection to a given address',
 
   builder: {
+    address: {
+      type: 'string',
+      coerce: coerceMultiaddr
+    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { print, ipfs, isDaemon }, address, timeout }) {
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('multiaddr').Multiaddr} argv.address
+   * @param {number} argv.timeout
+   */
+  async handler ({ ctx: { ipfs, isDaemon, print }, address, timeout }) {
     if (!isDaemon) {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
     }
-    const res = await ipfs.swarm.connect(address, {
+
+    await ipfs.swarm.connect(address, {
       timeout
     })
-    res.forEach(msg => print(msg))
+
+    print(`${address}`)
   }
 }

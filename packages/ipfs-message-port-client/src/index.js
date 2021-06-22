@@ -6,12 +6,6 @@ const BlockClient = require('./block')
 const DAGClient = require('./dag')
 const CoreClient = require('./core')
 const FilesClient = require('./files')
-
-/**
- * @typedef {Object} ClientOptions
- * @property {MessagePort} port
- */
-
 class IPFSClient extends CoreClient {
   /**
    * @param {MessageTransport} transport
@@ -60,39 +54,3 @@ class IPFSClient extends CoreClient {
 }
 
 module.exports = IPFSClient
-
-/**
- * @typedef {Object} MessagePortOptions
- * @property {Array} [transfer] - A list of ArrayBuffers whose ownership will be transferred to the shared worker
- *
- * @typedef {import('ipfs-core/src/utils').AbortOptions} AbortOptions}
- */
-
-/**
- * This is an utility type that can be used to derive type of the HTTP Client
- * API from the Core API. It takes type of the API factory (from ipfs-core),
- * derives API from it's return type and extends it last `options` parameter
- * with `HttpOptions`.
- *
- * This can be used to avoid (re)typing API interface when implementing it in
- * http client e.g you can annotate `ipfs.addAll` implementation with
- *
- * `@type {Implements<typeof import('ipfs-core/src/components/add-all')>}`
- *
- * **Caution**: This supports APIs with up to four parameters and last optional
- * `options` parameter, anything else will result to `never` type.
- *
- * @template {(config:any) => any} APIFactory
- * @typedef {APIWithExtraOptions<ReturnType<APIFactory>, MessagePortOptions>} Implements
- */
-
-/**
- * @template Key
- * @template {(config:any) => any} APIFactory
- * @typedef {import('./interface').APIMethodWithExtraOptions<ReturnType<APIFactory>, Key, MessagePortOptions>} ImplementsMethod
- */
-
-/**
- * @template API, Extra
- * @typedef {import('./interface').APIWithExtraOptions<API, Extra>} APIWithExtraOptions
- */

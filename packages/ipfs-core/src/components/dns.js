@@ -1,6 +1,6 @@
 'use strict'
 
-// dns-nodejs gets replaced by dns-browser when webpacked/browserified
+// dns-nodejs gets replaced by dns-browser when bundled
 const dns = require('../runtime/dns-nodejs')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -19,13 +19,9 @@ function fqdnFixups (domain) {
 
 module.exports = () => {
   /**
-   * Resolve DNS links
-   *
-   * @param {string} domain
-   * @param {DNSOptions} [options]
-   * @returns {Promise<string>}
+   * @type {import('ipfs-core-types/src/root').API["dns"]}
    */
-  const resolveDNS = async (domain, options = {}) => { // eslint-disable-line require-await
+  const resolveDNS = async (domain, options = { recursive: true }) => { // eslint-disable-line require-await
     if (typeof domain !== 'string') {
       throw new Error('Invalid arguments, domain must be a string')
     }
@@ -37,12 +33,3 @@ module.exports = () => {
 
   return withTimeoutOption(resolveDNS)
 }
-
-/**
- * @typedef {DNSSettings & AbortOptions} DNSOptions
- *
- * @typedef {Object} DNSSettings
- * @property {boolean} [recursive=true] - Resolve until result is not a domain name
- *
- * @typedef {import('../utils').AbortOptions} AbortOptions
- */

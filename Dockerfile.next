@@ -1,17 +1,18 @@
-FROM mhart/alpine-node:12
+FROM node:16-alpine
 
 ENV IPFS_VERSION=next
 ENV IPFS_MONITORING=1
 ENV IPFS_PATH=/root/.jsipfs
 ENV BUILD_DEPS='libnspr4 libnspr4-dev libnss3'
 
-RUN apk add --no-cache git python build-base
+RUN apk add --no-cache git python3 build-base
 
-RUN npm install --unsafe-perm -g ipfs@"$IPFS_VERSION"
+# Hopefully remove when https://github.com/node-webrtc/node-webrtc/pull/694 is merged
+RUN npm install -g ipfs@"$IPFS_VERSION"
 
 # Make the image a bit smaller
 RUN npm cache clear --force
-RUN apk del build-base python git
+RUN apk del build-base python3 git
 
 # Configure jsipfs
 RUN jsipfs init

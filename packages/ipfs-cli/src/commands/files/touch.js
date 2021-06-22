@@ -55,6 +55,18 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {boolean} argv.flush
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.mtime
+   * @param {number} argv.mtimeNsecs
+   * @param {number} argv.timeout
+   */
   handler ({
     ctx: { ipfs },
     path,

@@ -17,17 +17,21 @@ module.exports = {
       alias: 'r',
       desc: 'Resolve until the result is not a DNS link'
     },
-    format: {
-      type: 'string'
-    },
     timeout: {
       type: 'string',
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, domain, recursive, format, timeout }) {
-    const path = await ipfs.dns(domain, { recursive, format, timeout })
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.domain
+   * @param {boolean} argv.recursive
+   * @param {number} argv.timeout
+   */
+  async handler ({ ctx: { ipfs, print }, domain, recursive, timeout }) {
+    const path = await ipfs.dns(domain, { recursive, timeout })
     print(stripControlCharacters(path))
   }
 }

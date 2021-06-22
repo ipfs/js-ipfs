@@ -6,8 +6,6 @@ const dagPB = require('ipld-dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { asDAGLink } = require('./utils')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -28,12 +26,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when statting an object', () => {
-      return testTimeout(() => ipfs.object.stat(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1
-      }))
-    })
 
     it('should get stats by multihash', async () => {
       const testObj = {

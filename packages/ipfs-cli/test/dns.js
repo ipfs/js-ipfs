@@ -7,7 +7,6 @@ const sinon = require('sinon')
 
 const defaultOptions = {
   recursive: true,
-  format: undefined,
   timeout: undefined
 }
 
@@ -57,21 +56,6 @@ describe('dns', () => {
     }).returns(path)
 
     const out = await cli('dns ipfs.io -r false', {
-      ipfs
-    })
-    expect(out).to.equal(`${path}\n`)
-  })
-
-  it('resolves ipfs.io dns with a format', async () => {
-    const domain = 'ipfs.io'
-    const path = 'path'
-
-    ipfs.dns.withArgs(domain, {
-      ...defaultOptions,
-      format: 'derp'
-    }).returns(path)
-
-    const out = await cli('dns ipfs.io --format derp', {
       ipfs
     })
     expect(out).to.equal(`${path}\n`)

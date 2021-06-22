@@ -47,13 +47,18 @@ function WebsocketTransport (options) {
 function websocketRequest (options) {
   const webSocketAddress = constructWebSocketAddress(options.url)
 
+  /** @type {Array<number | Uint8Array>} */
   let sendQueue = []
+  /** @type {WebSocket} */
   let ws
 
+  /**
+   * @param {number | Uint8Array} toSend
+   */
   function sendToWebsocket (toSend) {
     if (toSend === WebsocketSignal.FINISH_SEND) {
       ws.send(finishSendFrame)
-    } else {
+    } else if (toSend instanceof Uint8Array) {
       const byteArray = toSend
       const c = new Int8Array(byteArray.byteLength + 1)
       c.set(new Uint8Array([0]))
@@ -64,6 +69,9 @@ function websocketRequest (options) {
   }
 
   return {
+    /**
+     * @param {Uint8Array} msgBytes
+     */
     sendMessage: (msgBytes) => {
       if (!ws || ws.readyState === ws.CONNECTING) {
         sendQueue.push(msgBytes)
@@ -78,6 +86,9 @@ function websocketRequest (options) {
         sendToWebsocket(WebsocketSignal.FINISH_SEND)
       }
     },
+    /**
+     * @param {import('@improbable-eng/grpc-web').grpc.Metadata} metadata
+     */
     start: (metadata) => {
       ws = new WebSocket(webSocketAddress, ['grpc-websockets'], options)
       ws.binaryType = 'arraybuffer'
@@ -101,7 +112,12 @@ function websocketRequest (options) {
       }
 
       ws.onmessage = function (e) {
-        options.onChunk(new Uint8Array(e.data, 0, e.data.byteLength))
+        if (e.data instanceof ArrayBuffer) {
+          options.onChunk(new Uint8Array(e.data, 0, e.data.byteLength))
+        } else {
+          options.onEnd(new Error(`Incorrect message type received - expected ArrayBuffer, got ${typeof e.data}`))
+          ws.close()
+        }
       }
     },
     cancel: () => {
@@ -110,6 +126,9 @@ function websocketRequest (options) {
   }
 }
 
+/**
+ * @param {string} url
+ */
 function constructWebSocketAddress (url) {
   if (url.startsWith('wss://') || url.startsWith('ws://')) {
     return url
@@ -122,6 +141,11 @@ function constructWebSocketAddress (url) {
   throw new Error('Websocket transport url must start with ws:// or wss:// or http:// or https://')
 }
 
+/**
+ * TODO: type properly after https://github.com/ipfs/js-ipfs/issues/3594
+ *
+ * @param {import('@improbable-eng/grpc-web').grpc.Metadata} headers
+ */
 function headersToBytes (headers) {
   let asString = ''
   headers.forEach((key, values) => {
@@ -130,6 +154,9 @@ function headersToBytes (headers) {
   return encodeASCII(asString)
 }
 
+/**
+ * @param {string} input
+ */
 function encodeASCII (input) {
   const encoded = new Uint8Array(input.length)
   for (let i = 0; i !== input.length; ++i) {
@@ -142,8 +169,14 @@ function encodeASCII (input) {
   return encoded
 }
 
+/**
+ * @param {number} char
+ */
 const isAllowedControlChars = (char) => char === 0x9 || char === 0xa || char === 0xd
 
+/**
+ * @param {number} val
+ */
 function isValidHeaderAscii (val) {
   return isAllowedControlChars(val) || (val >= 0x20 && val <= 0x7e)
 }

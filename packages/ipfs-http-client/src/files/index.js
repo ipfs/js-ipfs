@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @param {import('../types').Options} config
+ */
 module.exports = config => ({
   chmod: require('./chmod')(config),
   cp: require('./cp')(config),

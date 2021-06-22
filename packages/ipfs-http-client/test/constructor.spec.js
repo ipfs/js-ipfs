@@ -1,10 +1,10 @@
 /* eslint-env mocha, browser */
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { expect } = require('aegir/utils/chai')
 const f = require('./utils/factory')()
-const ipfsClient = require('../src/index.js')
+const { create: ipfsClient } = require('../src/index.js')
 const { isBrowser } = require('ipfs-utils/src/env')
 
 describe('ipfs-http-client constructor tests', () => {
@@ -75,7 +75,7 @@ describe('ipfs-http-client constructor tests', () => {
     it('multiaddr instance', () => {
       const host = 'ace.place'
       const port = '1001'
-      const addr = multiaddr(`/dns4/${host}/tcp/${port}`)
+      const addr = new Multiaddr(`/dns4/${host}/tcp/${port}`)
       const ipfs = ipfsClient(addr)
       expectConfig(ipfs, { host, port })
     })
@@ -132,7 +132,7 @@ describe('ipfs-http-client constructor tests', () => {
       const port = '1001'
       const protocol = 'http' // default to http if not specified in multiaddr
       const addr = `/dns4/${host}/tcp/${port}`
-      const ipfs = ipfsClient({ url: multiaddr(addr) })
+      const ipfs = ipfsClient({ url: new Multiaddr(addr) })
       expectConfig(ipfs, { host, port, protocol })
     })
 
@@ -141,7 +141,7 @@ describe('ipfs-http-client constructor tests', () => {
       const port = '1001'
       const protocol = 'https'
       const addr = `/dns4/${host}/tcp/${port}/https`
-      const ipfs = ipfsClient({ url: multiaddr(addr) })
+      const ipfs = ipfsClient({ url: new Multiaddr(addr) })
       expectConfig(ipfs, { host, port, protocol })
     })
 

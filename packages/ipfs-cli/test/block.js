@@ -94,7 +94,7 @@ describe('block', () => {
     }
 
     it('should get a block', async () => {
-      ipfs.block.get.withArgs(cid.toString(), defaultOptions).resolves({
+      ipfs.block.get.withArgs(cid, defaultOptions).resolves({
         cid,
         data: uint8ArrayFromString('hello world\n')
       })
@@ -109,7 +109,7 @@ describe('block', () => {
     })
 
     it('should get a block with a timeout', async () => {
-      ipfs.block.get.withArgs(cid.toString(), {
+      ipfs.block.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves({
@@ -128,7 +128,7 @@ describe('block', () => {
     }
 
     it('should stat a block', async () => {
-      ipfs.block.stat.withArgs(cid.toString(), defaultOptions).resolves({
+      ipfs.block.stat.withArgs(cid, defaultOptions).resolves({
         cid,
         size: 12
       })
@@ -142,7 +142,7 @@ describe('block', () => {
 
     it('should stat and print CID encoded in specified base', async () => {
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-      ipfs.block.stat.withArgs(cid.toString(), defaultOptions).resolves({
+      ipfs.block.stat.withArgs(cid, defaultOptions).resolves({
         cid,
         size: 12
       })
@@ -155,7 +155,7 @@ describe('block', () => {
     })
 
     it('should stat a block with a timeout', async () => {
-      ipfs.block.stat.withArgs(cid.toString(), {
+      ipfs.block.stat.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).resolves({
@@ -180,7 +180,7 @@ describe('block', () => {
 
     it('should remove a block', async () => {
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-      ipfs.block.rm.withArgs([cid.toString()], defaultOptions).returns([{
+      ipfs.block.rm.withArgs([cid], defaultOptions).returns([{
         cid,
         error: false
       }])
@@ -192,7 +192,7 @@ describe('block', () => {
     it('rm prints error when removing fails', async () => {
       const err = new Error('Yikes!')
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-      ipfs.block.rm.withArgs([cid.toString()], defaultOptions).returns([{
+      ipfs.block.rm.withArgs([cid], defaultOptions).returns([{
         cid,
         error: err
       }])
@@ -203,7 +203,7 @@ describe('block', () => {
 
     it('rm quietly', async () => {
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
-      ipfs.block.rm.withArgs([cid.toString()], {
+      ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         quiet: true
       }).returns([{
@@ -217,7 +217,7 @@ describe('block', () => {
 
     it('rm force', async () => {
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
-      ipfs.block.rm.withArgs([cid.toString()], {
+      ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         force: true
       }).returns([{
@@ -231,7 +231,7 @@ describe('block', () => {
 
     it('fails to remove non-existent block', async () => {
       const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
-      ipfs.block.rm.withArgs([cid.toString()]).returns([{
+      ipfs.block.rm.withArgs([cid]).returns([{
         cid,
         error: new Error('block not found')
       }])

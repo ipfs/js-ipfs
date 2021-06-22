@@ -5,10 +5,21 @@ const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 const stat = require('./files/stat')
 
+/**
+ * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
+ */
+
 module.exports = configure((api, opts) => {
-  return async function * ls (path, options = {}) {
+  /**
+   * @type {RootAPI["ls"]}
+   */
+  async function * ls (path, options = {}) {
     const pathStr = `${path instanceof Uint8Array ? new CID(path) : path}`
 
+    /**
+     * @param {*} link
+     */
     async function mapLink (link) {
       let hash = link.Hash
 
@@ -20,6 +31,7 @@ module.exports = configure((api, opts) => {
         hash = stats.cid
       }
 
+      /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
       const entry = {
         name: link.Name,
         path: pathStr + (link.Name ? `/${link.Name}` : ''),
@@ -83,8 +95,12 @@ module.exports = configure((api, opts) => {
       yield * links.map(mapLink)
     }
   }
+  return ls
 })
 
+/**
+ * @param {any} link
+ */
 function typeOf (link) {
   switch (link.Type) {
     case 1:
@@ -93,6 +109,6 @@ function typeOf (link) {
     case 2:
       return 'file'
     default:
-      return 'unknown'
+      return 'file'
   }
 }

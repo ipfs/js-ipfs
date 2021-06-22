@@ -28,6 +28,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.name
+   * @param {boolean} argv.recursive
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { print, ipfs }, name, recursive, cidBase, timeout }) {
     const res = await ipfs.resolve(name, { recursive, cidBase, timeout })
     print(stripControlCharacters(res))

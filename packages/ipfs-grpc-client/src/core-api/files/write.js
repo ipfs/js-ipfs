@@ -2,43 +2,57 @@
 
 const clientStreamToPromise = require('../../utils/client-stream-to-promise')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
-const { mtimeToObject, modeToNumber } = require('ipfs-core-utils/src/files/normalise-input/utils')
+const normaliseContent = require('ipfs-core-utils/src/files/normalise-input/normalise-content')
+const {
+  parseMtime,
+  parseMode
+} = require('ipfs-unixfs')
 
+/**
+ * @param {string} path
+ * @param {*} content
+ */
 async function * stream (path, content) {
-  for await (const { content: bufs } of normaliseInput(content)) {
-    if (!bufs) {
-      return
-    }
-
-    for await (const content of bufs) {
-      yield { path, content }
-    }
+  for await (const buf of normaliseContent(content)) {
+    yield { path, content: buf }
   }
 }
 
-module.exports = function grpcMfsWrite (grpc, service, opts = {}) {
+/**
+ * @param {import('@improbable-eng/grpc-web').grpc} grpc
+ * @param {*} service
+ * @param {import('../../types').Options} opts
+ */
+module.exports = function grpcMfsWrite (grpc, service, opts) {
+  /**
+   * @type {import('ipfs-core-types/src/files').API["write"]}
+   */
   async function mfsWrite (path, content, options = {}) {
-    const mtime = mtimeToObject(options.mtime)
+    /**
+     * TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+     *
+     * @type {Record<string, any>}
+     */
+    const metadata = {
+      ...options
+    }
+    const mtime = parseMtime(options.mtime)
 
     if (mtime != null) {
-      options = {
-        ...options,
-        mtime: mtime.secs,
-        mtimeNsecs: mtime.nsecs
-      }
+      metadata.mtime = mtime.secs
+      metadata.mtimeNsecs = mtime.nsecs
     }
 
-    const mode = modeToNumber(options.mode)
+    const mode = parseMode(options.mode)
 
     if (mode != null) {
-      options.mode = mode
+      metadata.mode = mode
     }
 
     await clientStreamToPromise(grpc, service, stream(path, content), {
       host: opts.url,
       debug: Boolean(process.env.DEBUG),
-      metadata: options,
+      metadata,
       agent: opts.agent
     })
   }

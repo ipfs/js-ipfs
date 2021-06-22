@@ -1,7 +1,8 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
-const DAGLink = dagPB.DAGLink
+const {
+  DAGLink
+} = require('ipld-dag-pb')
 const CID = require('cids')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -42,24 +43,22 @@ function findLinks (node, links = []) {
 
 /**
  * @param {Object} config
- * @param {import('.').Dag} config.dag
+ * @param {import('ipld')} config.ipld
  */
-module.exports = ({ dag }) => {
+module.exports = ({ ipld }) => {
   /**
-   * @param {CID} multihash
-   * @param {import('.').AbortOptions} options
-   * @returns {Promise<DAGLink[]>}
+   * @type {import('ipfs-core-types/src/object').API["links"]}
    */
   async function links (multihash, options = {}) {
     const cid = new CID(multihash)
-    const result = await dag.get(cid, options)
+    const result = await ipld.get(cid, options)
 
     if (cid.codec === 'raw') {
       return []
     }
 
     if (cid.codec === 'dag-pb') {
-      return result.value.Links
+      return result.Links
     }
 
     if (cid.codec === 'dag-cbor') {

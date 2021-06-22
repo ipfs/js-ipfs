@@ -5,10 +5,14 @@ const isIpfs = require('is-ipfs')
 const CID = require('cids')
 const Key = require('interface-datastore').Key
 const errCode = require('err-code')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 /** @type {typeof Object.assign} */
 const mergeOptions = require('merge-options')
+const resolve = require('./components/dag/resolve')
+
+/**
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
 
 exports.mergeOptions = mergeOptions
 
@@ -23,12 +27,12 @@ exports.MFS_MAX_LINKS = 174
  * Returns a well-formed ipfs Path.
  * The returned path will always be prefixed with /ipfs/ or /ipns/.
  *
- * @param  {string} pathStr - An ipfs-path, or ipns-path or a cid
+ * @param  {string | CID} pathStr - An ipfs-path, or ipns-path or a cid
  * @returns {string} - ipfs-path or ipns-path
  * @throws on an invalid @param pathStr
  */
 const normalizePath = (pathStr) => {
-  if (isIpfs.cid(pathStr)) {
+  if (isIpfs.cid(pathStr) || CID.isCID(pathStr)) {
     return `/ipfs/${new CID(pathStr)}`
   } else if (isIpfs.path(pathStr)) {
     return pathStr
@@ -38,6 +42,7 @@ const normalizePath = (pathStr) => {
 }
 
 // TODO: do we need both normalizePath and normalizeCidPath?
+// TODO: don't forget ipfs-core-utils/src/to-cid-and-path
 /**
  * @param {Uint8Array|CID|string} path
  * @returns {string}
@@ -68,71 +73,66 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('./components').DagReader} dag
+ * @param {import('ipld')} ipld
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
  */
-const resolvePath = async function (dag, ipfsPath, options = {}) {
-  if (isIpfs.cid(ipfsPath)) {
-    // @ts-ignore - CID|string seems to confuse typedef
-    return new CID(ipfsPath)
-  }
+const resolvePath = async function (ipld, ipfsPath, options = {}) {
+  const preload = () => {}
+  preload.stop = () => {}
+  preload.start = () => {}
 
-  const {
-    cid,
-    path
-  } = toCidAndPath(ipfsPath)
+  const { cid } = await resolve({ ipld, preload })(ipfsPath, { preload: false })
 
-  if (!path) {
-    return cid
-  }
-
-  const result = await dag.resolve(cid, {
-    ...options,
-    path
-  })
-
-  return result.cid
+  return cid
 }
 
 /**
- * @typedef {import('ipfs-core-types/src/files').InputFile} InputFile
- * @typedef {import('ipfs-core-types/src/files').UnixFSFile} UnixFSFile
- * @typedef {import('ipfs-core-types/src/files').IPFSEntry} IPFSEntry
- * @typedef {import('ipfs-core-types/src').AbortOptions} AbortOptions
+ * @typedef {import('ipfs-unixfs-exporter').UnixFSEntry} UnixFSEntry
  *
- * @param {InputFile|UnixFSFile} file
+ * @param {UnixFSEntry} file
  * @param {Object} [options]
  * @param {boolean} [options.includeContent]
- * @returns {IPFSEntry}
  */
 const mapFile = (file, options = {}) => {
-  /** @type {IPFSEntry} */
+  if (file.type !== 'file' && file.type !== 'directory' && file.type !== 'raw') {
+    // file.type === object | identity not supported yet
+    throw new Error(`Unknown node type '${file.type}'`)
+  }
+
+  /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
   const output = {
     cid: file.cid,
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,
-    size: 0,
+    size: file.size,
     type: 'file'
   }
 
-  if (file.unixfs) {
+  if (file.type === 'directory') {
     // @ts-ignore - TS type can't be changed from File to Directory
-    output.type = file.unixfs.type === 'directory' ? 'dir' : 'file'
+    output.type = 'dir'
+  }
 
-    if (file.unixfs.type === 'file') {
-      output.size = file.unixfs.fileSize()
+  if (file.type === 'file') {
+    output.size = file.unixfs.fileSize()
+  }
 
-      if (options.includeContent) {
-        // @ts-expect-error - content is readonly
-        output.content = file.content()
-      }
-    }
-
+  if (file.type === 'file' || file.type === 'directory') {
     output.mode = file.unixfs.mode
-    output.mtime = file.unixfs.mtime
+
+    if (file.unixfs.mtime !== undefined) {
+      output.mtime = file.unixfs.mtime
+    }
+  }
+
+  if (options.includeContent) {
+    if (file.type === 'file' || file.type === 'raw') {
+      // @ts-expect-error - content is readonly
+      output.content = file.content()
+    }
   }
 
   return output

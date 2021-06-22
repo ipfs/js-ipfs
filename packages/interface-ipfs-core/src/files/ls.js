@@ -6,9 +6,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const CID = require('cids')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
-const drain = require('it-drain')
-const randomBytes = require('iso-random-stream/src/random')
-const testTimeout = require('../utils/test-timeout')
+const { randomBytes } = require('iso-random-stream')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -156,12 +154,6 @@ module.exports = (common, options) => {
         size: 262144,
         type: 'file'
       }])
-    })
-
-    it('should respect timeout option when listing files', async () => {
-      await testTimeout(() => drain(ipfs.files.ls('/', {
-        timeout: 1
-      })))
     })
 
     describe('with sharding', () => {

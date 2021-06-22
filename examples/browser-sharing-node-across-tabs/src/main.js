@@ -2,7 +2,6 @@
 
 import IPFSClient from "ipfs-message-port-client"
 
-
 const main = async () => {
   // connect / spawn shared ipfs worker & create a client.
   const worker = new SharedWorker(

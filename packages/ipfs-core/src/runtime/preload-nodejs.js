@@ -7,6 +7,10 @@ const log = Object.assign(debug('ipfs:preload'), {
   error: debug('ipfs:preload:error')
 })
 
+/**
+ * @param {string} url
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} options
+ */
 module.exports = async function preload (url, options = {}) {
   log(url)
 

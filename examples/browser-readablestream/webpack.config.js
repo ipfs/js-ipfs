@@ -1,55 +1,33 @@
 'use strict'
 
 const path = require('path')
-const TerserPlugin = require('terser-webpack-plugin')
+const webpack = require('webpack')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: 'eval',
   entry: [
     './index.js'
   ],
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js'
+  },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'IPFS Videostream example',
       template: 'index.html'
+    }),
+    // fixes Module not found: Error: Can't resolve 'stream' in '.../node_modules/nofilter/lib'
+    new NodePolyfillPlugin(),
+    // Note: stream-browserify has assumption about `Buffer` global in its
+    // dependencies causing runtime errors. This is a workaround to provide
+    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
+    // is fixed.
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser'
     })
-  ],
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          parse: {
-            // we want terser to parse ecma 8 code. However, we don't want it
-            // to apply any minfication steps that turns valid ecma 5 code
-            // into invalid ecma 5 code. This is why the 'compress' and 'output'
-            // sections only apply transformations that are ecma 5 safe
-            // https://github.com/facebook/create-react-app/pull/4234
-            ecma: 8
-          },
-          compress: {
-            ecma: 5,
-            warnings: false
-          },
-          mangle: {
-            safari10: true
-          },
-          output: {
-            ecma: 5,
-            comments: false
-          }
-        },
-        // Use multi-process parallel running to improve the build speed
-        // Default number of concurrent runs: os.cpus().length - 1
-        parallel: true,
-        // Enable file caching
-        cache: true,
-        sourceMap: true
-      })
-    ]
-  },
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
-  }
+  ]
 }

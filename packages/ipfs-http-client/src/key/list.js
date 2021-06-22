@@ -4,8 +4,16 @@ const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/key').API<HTTPClientExtraOptions>} KeyAPI
+ */
+
 module.exports = configure(api => {
-  return async (options = {}) => {
+  /**
+   * @type {KeyAPI["list"]}
+   */
+  async function list (options = {}) {
     const res = await api.post('key/list', {
       timeout: options.timeout,
       signal: options.signal,
@@ -14,6 +22,8 @@ module.exports = configure(api => {
     })
     const data = await res.json()
 
-    return (data.Keys || []).map(k => toCamel(k))
+    // @ts-ignore server output is not typed
+    return (data.Keys || []).map((/** @type {any} **/ k) => toCamel(k))
   }
+  return list
 })

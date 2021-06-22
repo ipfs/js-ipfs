@@ -3,11 +3,15 @@
 const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
-  command: 'id',
+  command: 'id [peerId]',
 
   describe: 'Shows IPFS Node ID info',
 
   builder: {
+    peerid: {
+      type: 'string',
+      describe: 'Peer.ID of node to look up'
+    },
     format: {
       alias: 'f',
       type: 'string',
@@ -19,9 +23,17 @@ module.exports = {
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, format, timeout }) {
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.format
+   * @param {number} argv.timeout
+   * @param {string} [argv.peerId]
+   */
+  async handler ({ ctx: { ipfs, print }, format, timeout, peerId }) {
     const id = await ipfs.id({
-      timeout
+      timeout,
+      peerId
     })
 
     if (format) {

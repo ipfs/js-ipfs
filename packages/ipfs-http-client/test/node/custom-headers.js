@@ -3,7 +3,7 @@
 
 const { isNode } = require('ipfs-utils/src/env')
 const { expect } = require('aegir/utils/chai')
-const ipfsClient = require('../../src')
+const ipfsClient = require('../../src').create
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 function startServer (fn) {

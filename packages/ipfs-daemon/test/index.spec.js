@@ -15,10 +15,7 @@ function createDaemon () {
     repo: `${os.tmpdir()}/ipfs-test-${Math.random()}`,
     config: {
       Addresses: {
-        Swarm: [
-          '/ip4/0.0.0.0/tcp/0',
-          '/ip4/127.0.0.1/tcp/0/ws'
-        ],
+        Swarm: [],
         API: '/ip4/127.0.0.1/tcp/0',
         Gateway: '/ip4/127.0.0.1/tcp/0',
         RPC: '/ip4/127.0.0.1/tcp/0'

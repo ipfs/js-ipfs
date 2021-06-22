@@ -4,6 +4,20 @@ const get = require('dlv')
 const mergeOptions = require('merge-options')
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
+const pkgversion = require('../../package.json').version
+
+/**
+ * @typedef {Object} KeychainConfig
+ * @property {string} [pass]
+ *
+ * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('../types').Options} IPFSOptions
+ * @typedef {import('libp2p')} LibP2P
+ * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
+ * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ * @typedef {import('multiaddr').Multiaddr} Multiaddr
+ */
 
 /**
  * @param {Object} config
@@ -13,7 +27,6 @@ const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
  * @param {Multiaddr[]|undefined} config.multiaddrs
  * @param {KeychainConfig|undefined} config.keychainConfig
  * @param {Partial<IPFSConfig>|undefined} config.config
- * @returns {LibP2P}
  */
 module.exports = ({
   options = {},
@@ -42,7 +55,7 @@ module.exports = ({
   // Required inline to reduce startup time
   const Libp2p = require('libp2p')
 
-  return new Libp2p(libp2pOptions)
+  return Libp2p.create(libp2pOptions)
 }
 
 /**
@@ -54,15 +67,18 @@ module.exports = ({
  * @param {KeychainConfig} input.keychainConfig
  * @param {PeerId} input.peerId
  * @param {Multiaddr[]} input.multiaddrs
+ * @returns {Libp2pOptions}
  */
 function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
+    // @ts-ignore - `router` value is not constrained
     if (!PubsubRouters[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
     }
 
+    // @ts-ignore - `router` value is not constrained
     return PubsubRouters[router]
   }
 
@@ -79,25 +95,20 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     config: {
       peerDiscovery: {
         mdns: {
-          enabled: get(options, 'config.Discovery.MDNS.Enabled',
-            get(config, 'Discovery.MDNS.Enabled', true))
+          enabled: get(options, 'config.Discovery.MDNS.Enabled', get(config, 'Discovery.MDNS.Enabled', true))
         },
         webRTCStar: {
-          enabled: get(options, 'config.Discovery.webRTCStar.Enabled',
-            get(config, 'Discovery.webRTCStar.Enabled', true))
+          enabled: get(options, 'config.Discovery.webRTCStar.Enabled', get(config, 'Discovery.webRTCStar.Enabled', true))
         },
         bootstrap: {
           list: get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
         }
       },
       relay: {
-        enabled: get(options, 'relay.enabled',
-          get(config, 'relay.enabled', true)),
+        enabled: get(options, 'relay.enabled', get(config, 'relay.enabled', true)),
         hop: {
-          enabled: get(options, 'relay.hop.enabled',
-            get(config, 'relay.hop.enabled', false)),
-          active: get(options, 'relay.hop.active',
-            get(config, 'relay.hop.active', false))
+          enabled: get(options, 'relay.hop.enabled', get(config, 'relay.hop.enabled', false)),
+          active: get(options, 'relay.hop.active', get(config, 'relay.hop.active', false))
         }
       },
       dht: {
@@ -106,34 +117,27 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         kBucketSize: get(options, 'dht.kBucketSize', 20)
       },
       pubsub: {
-        enabled: get(options, 'config.Pubsub.Enabled',
-          get(config, 'Pubsub.Enabled', true))
+        enabled: get(options, 'config.Pubsub.Enabled', get(config, 'Pubsub.Enabled', true))
       },
       nat: {
-        enabled: get(options, 'nat.enabled', !get(config, 'Swarm.DisableNatPortMap', false)),
-        ttl: get(options, 'nat.ttl', 7200),
-        autoUpdate: get(options, 'nat.autoUpdate', true),
-        gateway: get(options, 'nat.gateway'),
-        externalIp: get(options, 'nat.externalIp'),
-        pmp: {
-          enabled: get(options, 'nat.pmp.enabled', false)
-        }
+        enabled: !get(config, 'Swarm.DisableNatPortMap', false)
       }
     },
     addresses: {
-      listen: multiaddrs,
-      announce: get(options, 'addresses.announce',
-        get(config, 'Addresses.Announce', []))
+      listen: multiaddrs.map(ma => ma.toString()),
+      announce: get(options, 'addresses.announce', get(config, 'Addresses.Announce', [])),
+      noAnnounce: get(options, 'addresses.noAnnounce', get(config, 'Addresses.NoAnnounce', []))
     },
     connectionManager: get(options, 'connectionManager', {
-      maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater',
-        get(config, 'Swarm.ConnMgr.HighWater')),
-      minConnections: get(options, 'config.Swarm.ConnMgr.LowWater',
-        get(config, 'Swarm.ConnMgr.LowWater'))
+      maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater', get(config, 'Swarm.ConnMgr.HighWater')),
+      minConnections: get(options, 'config.Swarm.ConnMgr.LowWater', get(config, 'Swarm.ConnMgr.LowWater'))
     }),
     keychain: {
       datastore: keys,
       ...keychainConfig
+    },
+    host: {
+      agentVersion: `js-ipfs/${pkgversion}`
     }
   }
 
@@ -141,10 +145,11 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
   const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
 
-  let constructorOptions = get(options, 'libp2p', {})
+  /** @type {import('libp2p').Libp2pOptions | undefined} */
+  let constructorOptions = get(options, 'libp2p', undefined)
 
   if (typeof constructorOptions === 'function') {
-    constructorOptions = {}
+    constructorOptions = undefined
   }
 
   // Merge defaults with Node.js/browser/other environments options and configuration
@@ -163,16 +168,3 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 
   return libp2pConfig
 }
-
-/**
- * @typedef {Object} KeychainConfig
- * @property {string} [pass]
- *
- * @typedef {import('.').Repo} Repo
- * @typedef {import('.').Multiaddr} Multiaddr
- * @typedef {import('.').PeerId} PeerId
- * @typedef {import('.').Options} IPFSOptions
- * @typedef {import('libp2p')} LibP2P
- * @typedef {import('libp2p').Libp2pOptions & import('libp2p').constructorOptions} Options
- * @typedef {import('.').IPFSConfig} IPFSConfig
- */

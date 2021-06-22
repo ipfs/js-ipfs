@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+// @ts-ignore no types
 const toIterable = require('stream-to-it')
 const { pipe } = require('it-pipe')
 const { map } = require('streaming-iterables')
@@ -32,6 +33,14 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.ipfsPath
+   * @param {string} argv.output
+   * @param {boolean} argv.force
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, output, force, timeout }) {
     print(`Saving file(s) ${stripControlCharacters(ipfsPath)}`)
 
@@ -44,7 +53,7 @@ module.exports = {
         throw new Error(`File prefix invalid, would write to files outside of ${output}, pass --force to override`)
       }
 
-      if (file.content) {
+      if (file.type === 'file') {
         await fs.promises.mkdir(path.join(output, path.dirname(file.path)), { recursive: true })
         await pipe(
           file.content,

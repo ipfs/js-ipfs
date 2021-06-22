@@ -1,6 +1,6 @@
 'use strict'
 /* eslint-env browser */
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
 const { default: parseDuration } = require('parse-duration')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
@@ -15,11 +15,17 @@ const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
 const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
 
 /**
- * @param {ClientOptions|URL|Multiaddr|string} [options]
- * @returns {ClientOptions}
+ * @typedef {import('ipfs-utils/src/types').HTTPOptions} HTTPOptions
+ * @typedef {import('../types').Options} Options
+ */
+
+/**
+ * @param {Options|URL|Multiaddr|string} [options]
+ * @returns {Options}
  */
 const normalizeOptions = (options = {}) => {
   let url
+  /** @type {Options} */
   let opts = {}
   let agent
 
@@ -70,6 +76,9 @@ const normalizeOptions = (options = {}) => {
   }
 }
 
+/**
+ * @param {Response} response
+ */
 const errorHandler = async (response) => {
   let msg
 
@@ -92,12 +101,12 @@ const errorHandler = async (response) => {
 
   // This is what go-ipfs returns where there's a timeout
   if (msg && msg.includes('context deadline exceeded')) {
-    error = new HTTP.TimeoutError(response)
+    error = new HTTP.TimeoutError('Request timed out')
   }
 
   // This also gets returned
   if (msg && msg.includes('request timed out')) {
-    error = new HTTP.TimeoutError(response)
+    error = new HTTP.TimeoutError('Request timed out')
   }
 
   // If we managed to extract a message from the response, use it
@@ -109,42 +118,32 @@ const errorHandler = async (response) => {
 }
 
 const KEBAB_REGEX = /[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g
+
+/**
+ * @param {string} str
+ */
 const kebabCase = (str) => {
   return str.replace(KEBAB_REGEX, function (match) {
     return '-' + match.toLowerCase()
   })
 }
 
+/**
+ * @param {string | number} value
+ */
 const parseTimeout = (value) => {
   return typeof value === 'string' ? parseDuration(value) : value
 }
 
-/**
- * @typedef {import('http').Agent} HttpAgent
- * @typedef {import('https').Agent} HttpsAgent
- *
- * @typedef {Object} ClientOptions
- * @property {string} [host]
- * @property {number} [port]
- * @property {string} [protocol]
- * @property {Headers|Record<string, string>} [headers] - Request headers.
- * @property {number|string} [timeout] - Amount of time until request should timeout in ms or humand readable. https://www.npmjs.com/package/parse-duration for valid string values.
- * @property {string} [apiPath] - Path to the API.
- * @property {URL|string|Multiaddr} [url] - Full API URL.
- * @property {object} [ipld]
- * @property {any[]} [ipld.formats] - An array of additional [IPLD formats](https://github.com/ipld/interface-ipld-format) to support
- * @property {(format: string) => Promise<any>} [ipld.loadFormat] - an async function that takes the name of an [IPLD format](https://github.com/ipld/interface-ipld-format) as a string and should return the implementation of that codec
- * @property {HttpAgent|HttpsAgent} [agent] - A [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used to control connection persistence and reuse for HTTP clients (only supported in node.js)
- */
 class Client extends HTTP {
   /**
-   * @param {ClientOptions|URL|Multiaddr|string} [options]
+   * @param {Options|URL|Multiaddr|string} [options]
    */
   constructor (options = {}) {
     const opts = normalizeOptions(options)
 
     super({
-      timeout: parseTimeout(opts.timeout) || 60000 * 20,
+      timeout: parseTimeout(opts.timeout || 0) || 60000 * 20,
       headers: opts.headers,
       base: `${opts.url}`,
       handleError: errorHandler,
@@ -173,17 +172,21 @@ class Client extends HTTP {
       agent: opts.agent
     })
 
-    // @ts-ignore
+    // @ts-ignore - cannot delete no-optional fields
     delete this.get
-    // @ts-ignore
+    // @ts-ignore - cannot delete no-optional fields
     delete this.put
-    // @ts-ignore
+    // @ts-ignore - cannot delete no-optional fields
     delete this.delete
-    // @ts-ignore
+    // @ts-ignore - cannot delete no-optional fields
     delete this.options
 
     const fetch = this.fetch
 
+    /**
+     * @param {string | Request} resource
+     * @param {HTTPOptions} options
+     */
     this.fetch = (resource, options = {}) => {
       if (typeof resource === 'string' && !resource.startsWith('/')) {
         resource = `${opts.url}/${resource}`

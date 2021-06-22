@@ -1,7 +1,7 @@
 'use strict'
 
 const CID = require('cids')
-const UnixFs = require('ipfs-unixfs')
+const { UnixFS } = require('ipfs-unixfs')
 const {
   DAGNode
 } = require('ipld-dag-pb')
@@ -14,6 +14,14 @@ const {
   MFS_ROOT_KEY
 } = require('../../../utils')
 
+/**
+ * @typedef {import('../').MfsContext} MfsContext
+ */
+
+/**
+ * @param {MfsContext} context
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
+ */
 const loadMfsRoot = async (context, options) => {
   if (options && options.signal && options.signal.aborted) {
     throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
@@ -35,7 +43,7 @@ const loadMfsRoot = async (context, options) => {
     }
 
     log('Creating new MFS root')
-    const node = new DAGNode(new UnixFs({ type: 'directory' }).marshal())
+    const node = new DAGNode(new UnixFS({ type: 'directory' }).marshal())
     cid = await context.ipld.put(node, mc.DAG_PB, {
       cidVersion: 0,
       hashAlg: mh.names['sha2-256'] // why can't ipld look this up?

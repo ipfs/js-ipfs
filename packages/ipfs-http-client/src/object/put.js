@@ -7,25 +7,38 @@ const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
-const unit8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/object').API<HTTPClientExtraOptions>} ObjectAPI
+ */
+
 module.exports = configure(api => {
-  return async (obj, options = {}) => {
+  /**
+   * @type {ObjectAPI["put"]}
+   */
+  async function put (obj, options = {}) {
     let tmpObj = {
+      /** @type {string | undefined} */
+      Data: undefined,
+      /** @type {{ Name: string, Hash: string, Size: number }[]} */
       Links: []
     }
 
     if (obj instanceof Uint8Array) {
       if (!options.enc) {
         tmpObj = {
-          Data: unit8ArrayToString(obj),
+          // FIXME: this will corrupt data for byte values over 127
+          Data: uint8ArrayToString(obj),
           Links: []
         }
       }
-    } else if (DAGNode.isDAGNode(obj)) {
+    } else if (obj instanceof DAGNode) {
       tmpObj = {
-        Data: unit8ArrayToString(obj.Data),
+        // FIXME: this will corrupt data for byte values over 127
+        Data: uint8ArrayToString(obj.Data),
         Links: obj.Links.map(l => ({
           Name: l.Name,
           Hash: l.Hash.toString(),
@@ -33,8 +46,15 @@ module.exports = configure(api => {
         }))
       }
     } else if (typeof obj === 'object') {
-      tmpObj.Data = unit8ArrayToString(obj.Data)
-      tmpObj.Links = obj.Links
+      // FIXME: this will corrupt data for for byte values over 127
+      if (obj.Data) {
+        tmpObj.Data = uint8ArrayToString(obj.Data)
+      }
+
+      if (obj.Links) {
+        // @ts-ignore Size is Tsize
+        tmpObj.Links = obj.Links
+      }
     } else {
       throw new Error('obj not recognized')
     }
@@ -65,4 +85,5 @@ module.exports = configure(api => {
 
     return new CID(Hash)
   }
+  return put
 })

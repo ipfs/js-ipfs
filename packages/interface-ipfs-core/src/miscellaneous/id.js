@@ -2,10 +2,10 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const CID = require('cids')
-const testTimeout = require('../utils/test-timeout')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const retry = require('p-retry')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -25,12 +25,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when getting the node id', () => {
-      return testTimeout(() => ipfs.id({
-        timeout: 1
-      }))
-    })
 
     it('should get the node ID', async () => {
       const res = await ipfs.id()
@@ -72,6 +66,35 @@ module.exports = (common, options) => {
       }
 
       await expect(ipfs.id()).to.eventually.have.property('addresses').that.is.not.empty()
+    })
+
+    it('should get the id of another node in the swarm', async function () {
+      if (isWebWorker) {
+        // TODO: https://github.com/libp2p/js-libp2p-websockets/issues/129
+        return this.skip()
+      }
+
+      const ipfsB = (await common.spawn()).api
+      await ipfs.swarm.connect(ipfsB.peerId.addresses[0])
+
+      // have to wait for identify to complete before protocols etc are available for remote hosts
+      await retry(async () => {
+        const result = await ipfs.id({
+          peerId: ipfsB.peerId.id
+        })
+
+        expect(result).to.deep.equal(ipfsB.peerId)
+      }, { retries: 5 })
+    })
+
+    it('should get our own id when passed as an option', async function () {
+      const res = await ipfs.id()
+
+      const result = await ipfs.id({
+        peerId: res.id
+      })
+
+      expect(result).to.deep.equal(res)
     })
   })
 }

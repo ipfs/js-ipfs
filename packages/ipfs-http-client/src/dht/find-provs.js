@@ -1,14 +1,19 @@
 'use strict'
 
 const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const { Provider } = require('./response-types')
 
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'findProvs', import('ipfs-core/src/components/dht')>}
+   * @type {DHTAPI["findProvs"]}
    */
   async function * findProvs (cid, options = {}) {
     const res = await api.post('dht/findprovs', {
@@ -26,7 +31,7 @@ module.exports = configure(api => {
         for (const { ID, Addrs } of message.Responses) {
           yield {
             id: ID,
-            addrs: (Addrs || []).map(a => multiaddr(a))
+            addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))
           }
         }
       }

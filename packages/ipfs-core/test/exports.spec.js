@@ -4,7 +4,7 @@
 const crypto = require('libp2p-crypto')
 const isIPFS = require('is-ipfs')
 const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { multiaddr } = require('multiaddr')
 const multibase = require('multibase')
 const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash

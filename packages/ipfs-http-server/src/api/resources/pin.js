@@ -4,12 +4,23 @@ const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { map, reduce } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
+// @ts-ignore no types
 const ndjson = require('iterable-ndjson')
 const { cidToString } = require('ipfs-core-utils/src/cid')
 const streamResponse = require('../../utils/stream-response')
 const all = require('it-all')
 
+/**
+ * @typedef {import('cids')} CID
+ */
+
+/**
+ * @param {string} type
+ * @param {string} [cid]
+ * @param {Record<string, any>} [metadata]
+ */
 function toPin (type, cid, metadata) {
+  /** @type {{ Type: string, Cid?: string, Metadata?: Record<string, any> }} */
   const output = {
     Type: type
   }
@@ -50,6 +61,10 @@ exports.ls = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -79,8 +94,8 @@ exports.ls = {
     if (!stream) {
       const res = await pipe(
         source,
-        reduce((res, { type, cid, metadata }) => {
-          res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, metadata)
+        reduce((/** @type {{ Keys: Record<string, any> }} */ res, { type, cid, metadata }) => {
+          res.Keys[cidToString(cid, { base: cidBase })] = toPin(type, undefined, metadata)
           return res
         }, { Keys: {} })
       )
@@ -120,6 +135,10 @@ exports.add = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -141,7 +160,7 @@ exports.add = {
 
     let result
     try {
-      result = await all(ipfs.pin.addAll(cids.map(cid => ({ cid, recursive, metadata })), {
+      result = await all(ipfs.pin.addAll(cids.map((/** @type {CID} */ cid) => ({ cid, recursive, metadata })), {
         signal,
         timeout
       }))
@@ -186,6 +205,10 @@ exports.rm = {
         })
     }
   },
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -206,7 +229,7 @@ exports.rm = {
 
     let result
     try {
-      result = await all(ipfs.pin.rmAll(cids.map(cid => ({ cid, recursive })), {
+      result = await all(ipfs.pin.rmAll(cids.map((/** @type {CID} */ cid) => ({ cid, recursive })), {
         signal,
         timeout
       }))

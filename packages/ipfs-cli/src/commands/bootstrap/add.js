@@ -1,6 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
+const { coerceMultiaddr } = require('../../utils')
 
 module.exports = {
   command: 'add [<peer>]',
@@ -8,6 +9,10 @@ module.exports = {
   describe: 'Add peers to the bootstrap list',
 
   builder: {
+    peer: {
+      type: 'string',
+      coerce: coerceMultiaddr
+    },
     default: {
       describe: 'Add default bootstrap nodes.',
       type: 'boolean',
@@ -19,6 +24,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('multiaddr').Multiaddr} argv.peer
+   * @param {boolean} argv.default
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, peer, default: defaultPeers, timeout }) {
     let list
 
@@ -34,6 +46,6 @@ module.exports = {
       throw new Error('Please specify a peer or the --default flag')
     }
 
-    list.Peers.forEach((peer) => print(peer))
+    list.Peers.forEach((peer) => print(peer.toString()))
   }
 }

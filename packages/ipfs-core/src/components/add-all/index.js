@@ -1,6 +1,6 @@
 'use strict'
 
-const importer = require('ipfs-unixfs-importer')
+const { importer } = require('ipfs-unixfs-importer')
 const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
@@ -8,11 +8,16 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-unixfs-importer').ImportResult} ImportResult
+ */
+
+/**
  * @typedef {Object} Context
- * @property {import('..').Block} block
- * @property {import('..').GCLock} gcLock
- * @property {import('..').Preload} preload
- * @property {import('..').Pin} pin
+ * @property {import('ipfs-core-types/src/block').API} block
+ * @property {import('../gc-lock').GCLock} gcLock
+ * @property {import('../../types').Preload} preload
+ * @property {import('ipfs-core-types/src/pin').API} pin
  * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
  *
  * @param {Context} context
@@ -21,11 +26,7 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
   const isShardingEnabled = options && options.sharding
 
   /**
-   * Import multiple files and data into IPFS.
-   *
-   * @param {import('ipfs-core-types/src/files').ImportSource} source
-   * @param {import('ipfs-core-types/src/root').AddAllOptions} [options]
-   * @returns {AsyncIterable<import('ipfs-core-types/src/files').UnixFSEntry>}
+   * @type {import('ipfs-core-types/src/root').API["addAll"]}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({
@@ -63,11 +64,16 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
 
     delete opts.trickle
 
+    /** @type {Record<string, number>} */
     const totals = {}
 
     if (opts.progress) {
       const prog = opts.progress
 
+      /**
+       * @param {number} bytes
+       * @param {string} path
+       */
       opts.progress = (bytes, path) => {
         if (!totals[path]) {
           totals[path] = 0
@@ -81,6 +87,9 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
 
     const iterator = pipe(
       normaliseAddInput(source),
+      /**
+       * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
+       */
       source => importer(source, block, {
         ...opts,
         pin: false
@@ -107,8 +116,14 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
   return withTimeoutOption(addAll)
 }
 
+/**
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function transformFile (opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * transformFile (source) {
     for await (const file of source) {
       let cid = file.cid
 
@@ -131,10 +146,19 @@ function transformFile (opts) {
       }
     }
   }
+
+  return transformFile
 }
 
+/**
+ * @param {(cid: CID) => void} preload
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function preloadFile (preload, opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * maybePreloadFile (source) {
     for await (const file of source) {
       const isRootFile = !file.path || opts.wrapWithDirectory
         ? file.path === ''
@@ -149,14 +173,23 @@ function preloadFile (preload, opts) {
       yield file
     }
   }
+
+  return maybePreloadFile
 }
 
+/**
+ * @param {import('ipfs-core-types/src/pin').API} pin
+ * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
+ */
 function pinFile (pin, opts) {
-  return async function * (source) {
+  /**
+   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   */
+  async function * maybePinFile (source) {
     for await (const file of source) {
       // Pin a file if it is the root dir of a recursive add or the single file
       // of a direct add.
-      const isRootDir = !file.path.includes('/')
+      const isRootDir = !(file.path && file.path.includes('/'))
       const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {
@@ -171,4 +204,6 @@ function pinFile (pin, opts) {
       yield file
     }
   }
+
+  return maybePinFile
 }

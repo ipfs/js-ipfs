@@ -8,7 +8,6 @@ module.exports = {
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
       .waitForElementVisible('body')
 
-
     browser.expect.element('body').text.to.contain('Load content by adding IPFS path to the URL')
     browser.expect.element('a').text.to.contain('/ipfs/bafy')
 
@@ -19,8 +18,6 @@ module.exports = {
       .waitForElementVisible('body')
       .waitForElementVisible('iframe')
 
-
-    
     browser.element('css selector', 'iframe', frame => {
       browser.frame({ ELEMENT: frame.value.ELEMENT }, () => {
         browser.waitForElementPresent('body')

@@ -13,7 +13,6 @@ const {
 
 /**
  * @param {import('./normalise-input').ToContent} input
- * @returns {Promise<Blob>}
  */
 async function toBlob (input) {
   // Bytes
@@ -37,7 +36,7 @@ async function toBlob (input) {
   }
 
   // (Async)Iterator<?>
-  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+  if (Symbol.iterator in input || Symbol.asyncIterator in input) {
     /** @type {any} peekable */
     const peekable = itPeekable(input)
 
@@ -67,7 +66,6 @@ async function toBlob (input) {
 
 /**
  * @param {AsyncIterable<BlobPart>|Iterable<BlobPart>} stream
- * @returns {Promise<Blob>}
  */
 async function itToBlob (stream) {
   const parts = []

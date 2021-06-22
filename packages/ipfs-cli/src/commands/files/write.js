@@ -107,6 +107,27 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.path
+   * @param {number} argv.offset
+   * @param {number} argv.length
+   * @param {boolean} argv.create
+   * @param {boolean} argv.truncate
+   * @param {boolean} argv.rawLeaves
+   * @param {boolean} argv.reduceSingleLeafToSelf
+   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {boolean} argv.parents
+   * @param {'trickle' | 'balanced'} argv.strategy
+   * @param {boolean} argv.flush
+   * @param {number} argv.shardSplitThreshold
+   * @param {number} argv.mode
+   * @param {number} argv.mtime
+   * @param {number} argv.mtimeNsecs
+   * @param {number} argv.timeout
+   */
   async handler ({
     ctx: { ipfs, getStdin },
     path,
@@ -119,7 +140,6 @@ module.exports = {
     cidVersion,
     hashAlg,
     parents,
-    progress,
     strategy,
     flush,
     shardSplitThreshold,
@@ -138,7 +158,6 @@ module.exports = {
       cidVersion,
       hashAlg,
       parents,
-      progress,
       strategy,
       flush,
       shardSplitThreshold,

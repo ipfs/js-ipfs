@@ -5,7 +5,19 @@ const CID = require('cids')
 const bidiToDuplex = require('../utils/bidi-to-duplex')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
+/**
+ * @param {number} index
+ * @param {import('it-pushable').Pushable<any>} sink
+ * @param {string} path
+ * @param {number} [mode]
+ * @param {import('ipfs-unixfs').Mtime} [mtime]
+ */
 function sendDirectory (index, sink, path, mode, mtime) {
+  /**
+   * TODO: type properly after https://github.com/ipfs/js-ipfs/issues/3594
+   *
+   * @type {Record<string, any>}
+   */
   const message = {
     index,
     type: 'DIRECTORY',
@@ -24,8 +36,25 @@ function sendDirectory (index, sink, path, mode, mtime) {
   sink.push(message)
 }
 
+/**
+ * @param {number} index
+ * @param {import('it-pushable').Pushable<any>} sink
+ * @param {AsyncIterable<Uint8Array> | Iterable<Uint8Array> | Uint8Array} content
+ * @param {string} [path]
+ * @param {number} [mode]
+ * @param {import('ipfs-unixfs').Mtime} [mtime]
+ */
 async function sendFile (index, sink, content, path, mode, mtime) {
+  if (content instanceof Uint8Array) {
+    content = [content]
+  }
+
   for await (const buf of content) {
+    /**
+     * TODO: type properly after https://github.com/ipfs/js-ipfs/issues/3594
+     *
+     * @type {Record<string, any>}
+     */
     const message = {
       index,
       type: 'FILE',
@@ -56,6 +85,10 @@ async function sendFile (index, sink, content, path, mode, mtime) {
   sink.push(message)
 }
 
+/**
+ * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} stream
+ * @param {import('it-pushable').Pushable<any>} sink
+ */
 async function sendFiles (stream, sink) {
   let i = 1
 
@@ -65,13 +98,23 @@ async function sendFiles (stream, sink) {
 
     if (content) {
       await sendFile(index, sink, content, path, mode, mtime)
-    } else {
+    } else if (path) {
       sendDirectory(index, sink, path, mode, mtime)
+    } else {
+      throw new Error('Must pass path or content or both')
     }
   }
 }
 
-module.exports = function grpcAddAll (grpc, service, opts = {}) {
+/**
+ * @param {import('@improbable-eng/grpc-web').grpc} grpc
+ * @param {*} service
+ * @param {import('../types').Options} opts
+ */
+module.exports = function grpcAddAll (grpc, service, opts) {
+  /**
+   * @type {import('ipfs-core-types/src/root').API["addAll"]}
+   */
   async function * addAll (stream, options = {}) {
     const {
       source,

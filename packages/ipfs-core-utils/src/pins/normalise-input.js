@@ -4,6 +4,22 @@ const errCode = require('err-code')
 const CID = require('cids')
 
 /**
+ * @typedef {Object} Pinnable
+ * @property {string | InstanceType<typeof window.String> | CID} [path]
+ * @property {CID} [cid]
+ * @property {boolean} [recursive]
+ * @property {any} [metadata]
+ *
+ * @typedef {CID|string|InstanceType<typeof window.String>|Pinnable} ToPin
+ * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
+ *
+ * @typedef {Object} Pin
+ * @property {string|CID} path
+ * @property {boolean} recursive
+ * @property {any} [metadata]
+ */
+
+/**
  * Transform one of:
  *
  * ```ts
@@ -55,7 +71,8 @@ module.exports = async function * normaliseInput (input) {
   }
 
   // Iterable<?>
-  if (input[Symbol.iterator]) {
+  if (Symbol.iterator in input) {
+    // @ts-ignore
     const iterator = input[Symbol.iterator]()
     const first = iterator.next()
     if (first.done) return iterator
@@ -82,7 +99,8 @@ module.exports = async function * normaliseInput (input) {
   }
 
   // AsyncIterable<?>
-  if (input[Symbol.asyncIterator]) {
+  if (Symbol.asyncIterator in input) {
+    // @ts-ignore
     const iterator = input[Symbol.asyncIterator]()
     const first = await iterator.next()
     if (first.done) return iterator
@@ -112,12 +130,18 @@ module.exports = async function * normaliseInput (input) {
 }
 
 /**
- * @param {ToPinWithPath|ToPinWithCID} input
- * @returns {Pin}
+ * @param {Pinnable} input
  */
 function toPin (input) {
+  const path = input.cid || `${input.path}`
+
+  if (!path) {
+    throw errCode(new Error('Unexpected input: Please path either a CID or an IPFS path'), 'ERR_UNEXPECTED_INPUT')
+  }
+
+  /** @type {Pin} */
   const pin = {
-    path: input.path == null ? input.cid : `${input.path}`,
+    path,
     recursive: input.recursive !== false
   }
 
@@ -127,25 +151,3 @@ function toPin (input) {
 
   return pin
 }
-
-/**
- * @typedef {Object} ToPinWithPath
- * @property {string | InstanceType<typeof window.String> | CID} path
- * @property {undefined} [cid]
- * @property {boolean} [recursive]
- * @property {any} [metadata]
- *
- * @typedef {Object} ToPinWithCID
- * @property {undefined} [path]
- * @property {CID} cid
- * @property {boolean} [recursive]
- * @property {any} [metadata]
- *
- * @typedef {CID|string|InstanceType<typeof window.String>|ToPinWithPath|ToPinWithPath} ToPin
- * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
- *
- * @typedef {Object} Pin
- * @property {string|CID} path
- * @property {boolean} recursive
- * @property {any} [metadata]
- */

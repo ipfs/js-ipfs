@@ -3,10 +3,18 @@
 const { PassThrough } = require('stream')
 const { pipe } = require('it-pipe')
 const log = require('debug')('ipfs:http-api:utils:stream-response')
+// @ts-ignore no types
 const toIterable = require('stream-to-it')
 
 const errorTrailer = 'X-Stream-Error'
 
+/**
+ *
+ * @param {import('../types').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} h
+ * @param {() => AsyncIterable<any>} getSource
+ * @param {{ objectMode?: boolean, onError?: (error: Error) => void }} [options]
+ */
 async function streamResponse (request, h, getSource, options = {}) {
   options.objectMode = options.objectMode !== false
 

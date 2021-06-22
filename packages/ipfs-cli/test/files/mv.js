@@ -8,7 +8,6 @@ const { isNode } = require('ipfs-utils/src/env')
 
 const defaultOptions = {
   parents: false,
-  recursive: false,
   cidVersion: 0,
   hashAlg: 'sha2-256',
   flush: true,
@@ -66,32 +65,6 @@ describe('mv', () => {
       dest, {
         ...defaultOptions,
         parents: true
-      }
-    ])
-  })
-
-  it('should move an entry recursively', async () => {
-    await cli(`files mv --recursive ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest, {
-        ...defaultOptions,
-        recursive: true
-      }
-    ])
-  })
-
-  it('should move an entry recursively (short option)', async () => {
-    await cli(`files mv -r ${source} ${dest}`, { ipfs })
-
-    expect(ipfs.files.mv.callCount).to.equal(1)
-    expect(ipfs.files.mv.getCall(0).args).to.deep.equal([
-      source,
-      dest, {
-        ...defaultOptions,
-        recursive: true
       }
     ])
   })

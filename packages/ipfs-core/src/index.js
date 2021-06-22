@@ -5,7 +5,7 @@ const urlSource = require('ipfs-utils/src/files/url-source')
 const PeerId = require('peer-id')
 const crypto = require('libp2p-crypto')
 const isIPFS = require('is-ipfs')
-const multiaddr = require('multiaddr')
+const { multiaddr } = require('multiaddr')
 const multibase = require('multibase')
 const multicodec = require('multicodec')
 const multihashing = require('multihashing-async')
@@ -15,6 +15,7 @@ const { create } = require('./components')
 
 /**
  * @typedef {import('./components')} IPFS
+ * @typedef {import('./types').Options} Options
  */
 
 module.exports = {

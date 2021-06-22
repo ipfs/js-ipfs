@@ -46,13 +46,25 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {string} argv.block
+   * @param {import('multicodec').CodecName} argv.format
+   * @param {import('multihashes').HashName} argv.mhtype
+   * @param {number} argv.mhlen
+   * @param {import('cids').CIDVersion} argv.version
+   * @param {boolean} argv.pin
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print, getStdin }, block, timeout, format, mhtype, mhlen, version, cidBase, pin }) {
     let data
 
     if (block) {
       data = fs.readFileSync(block)
     } else {
-      data = (await concat(getStdin())).slice()
+      data = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
 
     const { cid } = await ipfs.block.put(data, {

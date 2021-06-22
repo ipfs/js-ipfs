@@ -4,18 +4,21 @@ const Service = require('../utils/service')
 
 /**
  * @param {Object} config
- * @param {import('.').NetworkService} config.network
- * @param {import('.').PeerId} config.peerId
- * @param {import('.').Repo} config.repo
- * @param {import('.').BlockService} config.blockService
- * @param {import('.').Print} config.print
- * @param {import('.').Preload} config.preload
- * @param {import('.').MFSPreload} config.mfsPreload
- * @param {import('.').IPNS} config.ipns
- * @param {import('.').Keychain} config.keychain
- * @param {import('.').Options} config.options
+ * @param {import('../types').NetworkService} config.network
+ * @param {import('peer-id')} config.peerId
+ * @param {import('ipfs-repo')} config.repo
+ * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('../types').Print} config.print
+ * @param {import('../types').Preload} config.preload
+ * @param {import('../types').MfsPreload} config.mfsPreload
+ * @param {import('./ipns')} config.ipns
+ * @param {import('libp2p/src/keychain')} config.keychain
+ * @param {import('../types').Options} config.options
  */
 module.exports = ({ network, preload, peerId, keychain, repo, ipns, blockService, mfsPreload, print, options }) => {
+  /**
+   * @type {import('ipfs-core-types/src/root').API["start"]}
+   */
   const start = async () => {
     const { bitswap, libp2p } = await Service.start(network, {
       peerId,

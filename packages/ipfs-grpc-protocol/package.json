@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-protocol",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Protobuf definitions for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -21,7 +21,8 @@
   "scripts": {
     "test": "echo 'No tests here'",
     "clean": "rimraf ./dist",
-    "prepare": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"
+    "prepare": "npm run build",
+    "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"
   },
   "devDependencies": {
     "mkdirp": "^1.0.4",

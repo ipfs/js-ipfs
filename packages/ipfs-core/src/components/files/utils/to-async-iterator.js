@@ -7,6 +7,9 @@ const {
 } = require('../../../utils')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
+/**
+ * @param {*} content
+ */
 const toAsyncIterator = (content) => {
   if (!content) {
     throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')
@@ -58,7 +61,11 @@ const toAsyncIterator = (content) => {
 
           const reader = new global.FileReader()
 
+          /**
+           * @param {{ error?: Error }} ev
+           */
           const handleLoad = (ev) => {
+            // @ts-ignore No overload matches this call.
             reader.removeEventListener('loadend', handleLoad, false)
 
             if (ev.error) {
@@ -71,6 +78,7 @@ const toAsyncIterator = (content) => {
             })
           }
 
+          // @ts-ignore No overload matches this call.
           reader.addEventListener('loadend', handleLoad)
           reader.readAsArrayBuffer(chunk)
         })

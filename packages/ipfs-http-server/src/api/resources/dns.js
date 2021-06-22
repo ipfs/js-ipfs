@@ -25,6 +25,11 @@ module.exports = {
         })
     }
   },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
   async handler (request, h) {
     const {
       app: {
@@ -38,14 +43,12 @@ module.exports = {
       query: {
         domain,
         recursive,
-        format,
         timeout
       }
     } = request
 
     const path = await ipfs.dns(domain, {
       recursive,
-      format,
       signal,
       timeout
     })

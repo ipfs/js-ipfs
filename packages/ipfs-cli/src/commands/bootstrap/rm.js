@@ -1,6 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
+const { coerceMultiaddr } = require('../../utils')
 
 module.exports = {
   command: 'rm [<peer>]',
@@ -8,6 +9,10 @@ module.exports = {
   describe: 'Removes peers from the bootstrap list',
 
   builder: {
+    peer: {
+      type: 'string',
+      coerce: coerceMultiaddr
+    },
     all: {
       type: 'boolean',
       describe: 'Remove all bootstrap peers.',
@@ -19,6 +24,13 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../../types').Context} argv.ctx
+   * @param {import('multiaddr').Multiaddr} argv.peer
+   * @param {boolean} argv.all
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, all, peer, timeout }) {
     let list
 
@@ -34,6 +46,6 @@ module.exports = {
       throw new Error('Please specify a peer or the --all flag')
     }
 
-    list.Peers.forEach((peer) => print(peer))
+    list.Peers.forEach((peer) => print(peer.toString()))
   }
 }

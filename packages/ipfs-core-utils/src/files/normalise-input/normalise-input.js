@@ -8,27 +8,27 @@ const {
   isBytes,
   isBlob,
   isReadableStream,
-  isFileObject,
-  mtimeToObject,
-  modeToNumber
+  isFileObject
 } = require('./utils')
-
-// eslint-disable-next-line complexity
+const {
+  parseMtime,
+  parseMode
+} = require('ipfs-unixfs')
 
 /**
- * @typedef {import('ipfs-core-types/src/files').ToContent} ToContent
+ * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
+ * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImporterImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
+
 /**
- * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {import('ipfs-core-types/src/files').ImportSource} input
- * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {AsyncIterable<import('ipfs-core-types/src/files').Entry<Content>>}
+ * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} input
+ * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
 module.exports = async function * normaliseInput (input, normaliseContent) {
-  // must give us something
   if (input === null || input === undefined) {
-    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
+    return
   }
 
   // String
@@ -50,7 +50,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
   }
 
   // Iterable<?>
-  if (input[Symbol.iterator] || input[Symbol.asyncIterator]) {
+  if (Symbol.iterator in input || Symbol.asyncIterator in input) {
     /** @type {any} peekable */
     const peekable = itPeekable(input)
 
@@ -76,7 +76,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // (Async)Iterable<String>
     // (Async)Iterable<{ path, content }>
     if (isFileObject(value) || isBlob(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
 
@@ -85,7 +85,7 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
     if (value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
-      yield * map(peekable, (value) => toFileObject(value, normaliseContent))
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
   }
@@ -102,16 +102,19 @@ module.exports = async function * normaliseInput (input, normaliseContent) {
 }
 
 /**
- * @template {Blob|AsyncIterable<Uint8Array>} Content
- * @param {import('ipfs-core-types/src/files').ToEntry} input
- * @param {(content:ToContent) => Content|Promise<Content>} normaliseContent
- * @returns {Promise<import('ipfs-core-types/src/files').Entry<Content>>}
+ * @param {ImportCandidate} input
+ * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
 
-  const file = { path: path || '', mode: modeToNumber(mode), mtime: mtimeToObject(mtime) }
+  /** @type {ImporterImportCandidate} */
+  const file = {
+    path: path || '',
+    mode: parseMode(mode),
+    mtime: parseMtime(mtime)
+  }
 
   if (content) {
     file.content = await normaliseContent(content)

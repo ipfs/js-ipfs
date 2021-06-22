@@ -34,14 +34,14 @@ async function main () {
     await ipfs.block.put(new Block(data, cid))
   }
 
-  const block302516 = 'z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA'
-  const block302517 = 'z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj'
+  const block302516 = new CID('z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA')
+  const block302517 = new CID('z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj')
   let res
 
-  res = await ipfs.dag.get(block302516 + '/number')
+  res = await ipfs.dag.get(block302516, { path: 'number' })
   console.log(uint8ArrayToString(res.value, 'base16'))
 
-  res = await ipfs.dag.get(block302517 + '/parent/number')
+  res = await ipfs.dag.get(block302517, { path: 'parent/number' })
   console.log(uint8ArrayToString(res.value, 'base16'))
 }
 

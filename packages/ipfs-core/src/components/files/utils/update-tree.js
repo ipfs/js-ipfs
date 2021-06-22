@@ -7,7 +7,25 @@ const defaultOptions = {
   shardSplitThreshold: 1000
 }
 
-// loop backwards through the trail, replacing links of all components to update CIDs
+/**
+ * @typedef {import('multihashes').HashName} HashName
+ * @typedef {import('cids')} CID
+ * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('../').MfsContext} MfsContext
+ * @typedef {import('./to-trail').MfsTrail} MfsTrail
+ */
+
+/**
+ * Loop backwards through the trail, replacing links of all components to update CIDs
+ *
+ * @param {MfsContext} context
+ * @param {MfsTrail[]} trail
+ * @param {object} options
+ * @param {number} options.shardSplitThreshold
+ * @param {HashName} options.hashAlg
+ * @param {CIDVersion} options.cidVersion
+ * @param {boolean} options.flush
+ */
 const updateTree = async (context, trail, options) => {
   options = Object.assign({}, defaultOptions, options)
 
@@ -32,6 +50,7 @@ const updateTree = async (context, trail, options) => {
       continue
     }
 
+    /** @type {{ cid: CID, size: number }} */
     const result = await addLink(context, {
       parent: node,
       name: child.name,

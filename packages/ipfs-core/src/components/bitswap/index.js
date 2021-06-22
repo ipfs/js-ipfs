@@ -5,6 +5,13 @@ const createWantlistForPeer = require('./wantlist-for-peer')
 const createUnwant = require('./unwant')
 const createStat = require('./stat')
 
+/**
+ * @typedef {import('../../types').NetworkService} NetworkService
+ * @typedef {import('peer-id')} PeerId
+ * @typedef {import('cids')} CID
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
+
 class BitswapAPI {
   /**
    * @param {Object} config
@@ -18,10 +25,3 @@ class BitswapAPI {
   }
 }
 module.exports = BitswapAPI
-
-/**
- * @typedef {import('..').NetworkService} NetworkService
- * @typedef {import('..').PeerId} PeerId
- * @typedef {import('..').CID} CID
- * @typedef {import('..').AbortOptions} AbortOptions
- */

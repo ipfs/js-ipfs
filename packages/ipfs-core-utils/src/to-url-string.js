@@ -1,6 +1,7 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
+// @ts-ignore no types
 const multiAddrToUri = require('multiaddr-to-uri')
 
 /**
@@ -10,14 +11,10 @@ const multiAddrToUri = require('multiaddr-to-uri')
 module.exports = (url) => {
   try {
     // @ts-expect-error
-    url = multiAddrToUri(multiaddr(url))
+    url = multiAddrToUri(new Multiaddr(url))
   } catch (err) { }
 
   url = url.toString()
 
   return url
 }
-
-/**
- * @typedef {import('multiaddr')} Multiaddr
- */

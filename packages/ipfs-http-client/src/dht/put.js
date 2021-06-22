@@ -1,16 +1,22 @@
 'use strict'
 
 const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
+
+/**
+ * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
+ * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
+ */
+
 module.exports = configure(api => {
   /**
-   * @type {import('..').ImplementsMethod<'put', import('ipfs-core/src/components/dht')>}
+   * @type {DHTAPI["put"]}
    */
   async function * put (key, value, options = {}) {
     // allow aborting requests on body errors
@@ -34,9 +40,9 @@ module.exports = configure(api => {
       message = toCamel(message)
       message.id = new CID(message.id)
       if (message.responses) {
-        message.responses = message.responses.map(({ ID, Addrs }) => ({
+        message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,
-          addrs: (Addrs || []).map(a => multiaddr(a))
+          addrs: (Addrs || []).map(a => new Multiaddr(a))
         }))
       }
       yield message

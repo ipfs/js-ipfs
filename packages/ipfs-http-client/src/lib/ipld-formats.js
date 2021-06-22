@@ -5,19 +5,26 @@ const dagCBOR = require('ipld-dag-cbor')
 const raw = require('ipld-raw')
 const multicodec = require('multicodec')
 
-const noop = () => {}
-
 /**
  * @typedef {import('cids')} CID
+ * @typedef {import('interface-ipld-format').Format<any>} IPLDFormat
+ * @typedef {import('multicodec').CodecName} CodecName
+ * @typedef {import('../types').LoadFormatFn} LoadFormatFn
  */
+
+/**
+ * @type {LoadFormatFn}
+ */
+const noop = (codec) => {
+  return Promise.reject(new Error(`Missing IPLD format "${codec}"`))
+}
 
 /**
  * Return an object containing supported IPLD Formats
  *
  * @param {object} [options] - IPLD options passed to the http client constructor
- * @param {Array} [options.formats] - A list of IPLD Formats to use
- * @param {Function} [options.loadFormat] - An async function that can load a format when passed a codec number
- * @returns {Function}
+ * @param {IPLDFormat[]} [options.formats] - A list of IPLD Formats to use
+ * @param {LoadFormatFn} [options.loadFormat] - An async function that can load a format when passed a codec name
  */
 module.exports = ({ formats = [], loadFormat = noop } = {}) => {
   formats = formats || []
@@ -36,12 +43,10 @@ module.exports = ({ formats = [], loadFormat = noop } = {}) => {
   /**
    * Attempts to load an IPLD format for the passed CID
    *
-   * @param {import('multicodec').CodecName} codec - The code to load the format for
-   * @returns {Promise<object>} - An IPLD format
+   * @param {CodecName} codec - The code to load the format for
    */
   const loadResolver = async (codec) => {
-    // @ts-ignore - codec is a string and not a CodecName
-    const number = multicodec.getNumber(codec)
+    const number = multicodec.getCodeFromName(codec)
     const format = configuredFormats[number] || await loadFormat(codec)
 
     if (!format) {

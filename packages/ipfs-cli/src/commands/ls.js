@@ -41,6 +41,15 @@ module.exports = {
     }
   },
 
+  /**
+   * @param {object} argv
+   * @param {import('../types').Context} argv.ctx
+   * @param {string} argv.key
+   * @param {boolean} argv.recursive
+   * @param {boolean} argv.headers
+   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {number} argv.timeout
+   */
   async handler ({ ctx: { ipfs, print }, key, recursive, headers, cidBase, timeout }) {
     // replace multiple slashes
     key = key.replace(/\/(\/+)/g, '/')
@@ -58,12 +67,24 @@ module.exports = {
 
     let first = true
 
+    /** @type {number[]} */
     let maxWidths = []
+    /**
+     * @param  {...string} args
+     */
     const getMaxWidths = (...args) => {
       maxWidths = args.map((v, i) => Math.max(maxWidths[i] || 0, v.length))
       return maxWidths
     }
 
+    /**
+     * @param {*} mode
+     * @param {*} mtime
+     * @param {*} cid
+     * @param {*} size
+     * @param {*} name
+     * @param {*} depth
+     */
     const printLink = (mode, mtime, cid, size, name, depth = 0) => {
       name = stripControlCharacters(name)
       const widths = getMaxWidths(mode, mtime, cid, size, name)
@@ -79,8 +100,8 @@ module.exports = {
     }
 
     for await (const link of ipfs.ls(key, { recursive, timeout })) {
-      const mode = formatMode(link.mode, link.type === 'dir')
-      const mtime = formatMtime(link.mtime)
+      const mode = link.mode != null ? formatMode(link.mode, link.type === 'dir') : ''
+      const mtime = link.mtime != null ? formatMtime(link.mtime) : '-'
       const cid = cidToString(link.cid, { base: cidBase })
       const size = link.size ? String(link.size) : '-'
       const name = stripControlCharacters(link.type === 'dir' ? `${link.name || ''}/` : link.name)

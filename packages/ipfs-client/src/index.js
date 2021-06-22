@@ -1,18 +1,18 @@
 'use strict'
 
-const httpClient = require('ipfs-http-client')
-const grpcClient = require('ipfs-grpc-client')
+const { create: httpClient } = require('ipfs-http-client')
+const { create: grpcClient } = require('ipfs-grpc-client')
 const mergeOptions = require('merge-options')
 
 /**
- * @typedef {import('ipfs-http-client/src/lib/core').ClientOptions} HTTPOptions
- * @typedef {import('ipfs-grpc-client/src/index').Options} GRPCOptions
- * @typedef {string|URL|import('multiaddr')} Address
+ * @typedef {import('ipfs-http-client').Options} HTTPOptions
+ * @typedef {import('ipfs-grpc-client').Options} GRPCOptions
+ * @typedef {string|URL|import('multiaddr').Multiaddr} Address
  * @typedef {{http?: Address, grpc?: Address} & Partial<HTTPOptions & GRPCOptions>} Options
  *
  * @param {Options} [opts]
  */
-module.exports = function createClient (opts = {}) {
+function create (opts = {}) {
   const clients = []
 
   if (opts.http) {
@@ -31,4 +31,8 @@ module.exports = function createClient (opts = {}) {
 
   // override http methods with grpc if address is supplied
   return mergeOptions.apply({ ignoreUndefined: true }, clients)
+}
+
+module.exports = {
+  create
 }

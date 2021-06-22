@@ -3,10 +3,13 @@
 const Joi = require('joi')
 const CID = require('cids')
 const { default: parseDuration } = require('parse-duration')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const multibase = require('multibase')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
+/**
+ * @param {*} value
+ */
 const toIpfsPath = (value) => {
   if (!value) {
     throw new Error('Must have value')
@@ -33,11 +36,18 @@ const toIpfsPath = (value) => {
   return `${startedWithIpfs ? '/ipfs/' : ''}${parts.join('/')}`
 }
 
+/**
+ * @param {*} value
+ */
 const toCID = (value) => {
   return new CID(value.toString().replace('/ipfs/', ''))
 }
 
-const reqiureIfRequired = (value, helpers) => {
+/**
+ * @param {*} value
+ * @param {import('joi').CustomHelpers} helpers
+ */
+const requireIfRequired = (value, helpers) => {
   if (helpers.schema.$_getFlag('presence') === 'required' && !value) {
     return { value, errors: helpers.error('required') }
   }
@@ -51,7 +61,7 @@ module.exports = Joi
       return {
         type: 'cid',
         base: joi.any(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
@@ -65,7 +75,7 @@ module.exports = Joi
       return {
         type: 'ipfsPath',
         base: joi.string(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
@@ -77,29 +87,15 @@ module.exports = Joi
     },
     (joi) => {
       return {
-        type: 'peerId',
-        base: joi.string(),
-        validate: reqiureIfRequired,
-        coerce (value, _helpers) {
-          if (!value) {
-            return
-          }
-
-          return { value: new CID(value).toString() }
-        }
-      }
-    },
-    (joi) => {
-      return {
         type: 'multiaddr',
         base: joi.string(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
           }
 
-          return { value: multiaddr(value).toString() }
+          return { value: new Multiaddr(value).toString() }
         }
       }
     },
@@ -107,7 +103,7 @@ module.exports = Joi
       return {
         type: 'timeout',
         base: joi.number(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
@@ -121,7 +117,7 @@ module.exports = Joi
       return {
         type: 'cidAndPath',
         base: joi.any(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
@@ -135,12 +131,13 @@ module.exports = Joi
       return {
         type: 'cidBase',
         base: joi.string(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return
           }
 
+          // @ts-ignore value is not a BaseName
           if (!multibase.names[value]) {
             throw new Error('Invalid base name')
           }
@@ -153,7 +150,7 @@ module.exports = Joi
       return {
         type: 'json',
         base: joi.any(),
-        validate: reqiureIfRequired,
+        validate: requireIfRequired,
         coerce (value, _helpers) {
           if (!value) {
             return

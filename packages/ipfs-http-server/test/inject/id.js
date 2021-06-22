@@ -9,7 +9,8 @@ const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal),
-  timeout: undefined
+  timeout: undefined,
+  peerId: undefined
 }
 
 describe('/id', () => {
@@ -61,6 +62,28 @@ describe('/id', () => {
     const res = await http({
       method: 'POST',
       url: '/api/v0/id?timeout=1s'
+    }, { ipfs })
+
+    expect(res).to.have.property('statusCode', 200)
+  })
+
+  it('get the id of another peer', async () => {
+    const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+
+    ipfs.id.withArgs({
+      ...defaultOptions,
+      peerId
+    }).returns({
+      id: 'id',
+      publicKey: 'publicKey',
+      addresses: 'addresses',
+      agentVersion: 'agentVersion',
+      protocolVersion: 'protocolVersion'
+    })
+
+    const res = await http({
+      method: 'POST',
+      url: `/api/v0/id?peerId=${peerId}`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)

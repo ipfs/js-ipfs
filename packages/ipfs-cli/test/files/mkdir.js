@@ -171,7 +171,8 @@ describe('mkdir', () => {
       path, {
         ...defaultOptions,
         mtime: {
-          secs: 5
+          secs: 5,
+          nsecs: undefined
         }
       }
     ])

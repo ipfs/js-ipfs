@@ -2,6 +2,9 @@
 
 const Remote = require('./remote')
 
+/**
+ * @param {import('../types').Options} config
+ */
 module.exports = config => ({
   add: require('./add')(config),
   addAll: require('./add-all')(config),

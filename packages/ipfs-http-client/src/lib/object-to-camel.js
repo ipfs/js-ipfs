@@ -1,13 +1,24 @@
 'use strict'
 
-// Convert object properties to camel case.
-// NOT recursive!
-// e.g.
-// AgentVersion => agentVersion
-// ID => id
+/**
+ * Convert object properties to camel case.
+ * NOT recursive!
+ * e.g.
+ * AgentVersion => agentVersion
+ * ID => id
+ *
+ * @param {Record<string, any>} obj
+ */
 module.exports = obj => {
-  if (obj == null) return obj
+  if (obj == null) {
+    return obj
+  }
+
   const caps = /^[A-Z]+$/
+
+  /** @type {Record<string, any>} */
+  const output = {}
+
   return Object.keys(obj).reduce((camelObj, k) => {
     if (caps.test(k)) { // all caps
       camelObj[k.toLowerCase()] = obj[k]
@@ -17,5 +28,5 @@ module.exports = obj => {
       camelObj[k] = obj[k]
     }
     return camelObj
-  }, {})
+  }, output)
 }

@@ -3,7 +3,6 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -23,12 +22,6 @@ module.exports = (common, options) => {
     })
 
     after(() => common.clean())
-
-    it('should respect timeout option when setting config values', () => {
-      return testTimeout(() => ipfs.config.set('Fruit', 'banana', {
-        timeout: 1
-      }))
-    })
 
     it('should set a new key', async () => {
       await ipfs.config.set('Fruit', 'banana')

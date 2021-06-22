@@ -28,7 +28,7 @@ async function test () {
       console.info('Dialling', address)
 
       const peerId = await PeerId.create()
-      const libp2p = new Libp2p({
+      const libp2p = await Libp2p.create({
         peerId,
         addresses: {
           listen: ['/ip4/127.0.0.1/tcp/0']
