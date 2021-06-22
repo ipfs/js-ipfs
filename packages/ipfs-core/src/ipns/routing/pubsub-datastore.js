@@ -15,7 +15,7 @@ const log = Object.assign(debug('ipfs:ipns:pubsub'), {
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 class IpnsPubsubDatastore {
   /**
-   * @param {import('libp2p').Pubsub} pubsub
+   * @param {import('libp2p-interfaces/src/pubsub')} pubsub
    * @param {import('interface-datastore').Datastore} localDatastore
    * @param {import('peer-id')} peerId
    */

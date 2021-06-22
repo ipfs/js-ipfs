@@ -165,7 +165,6 @@ describe('interface-ipfs-core tests', () => {
 
   tests.pin(factory, {
     skip: [
-      // pin.addAll
       {
         name: 'should add an array of CIDs',
         reason: 'ipfs.pin.addAll is not implemented'
