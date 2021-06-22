@@ -2,5 +2,5 @@
 // JSDoc syntax or that result in a different behaviour when typed in JSDoc.
 
 export interface MessagePortClientOptions {
-  transfer?: Transferable[]
+  transfer?: Set<Transferable>
 }

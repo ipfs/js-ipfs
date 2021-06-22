@@ -106,10 +106,6 @@ exports.CoreService = class CoreService {
   }
 
   /**
-   * @typedef {Object} AddResult
-   * @property {AddedEntry} data
-   * @property {Set<Transferable>} transfer
-   *
    * @param {AddQuery} query
    */
   async add (query) {

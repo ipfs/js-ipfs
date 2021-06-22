@@ -70,8 +70,8 @@ class CoreClient extends Client {
  */
 CoreClient.prototype.addAll = async function * addAll (input, options = {}) {
   const { timeout, signal } = options
-    const transfer = options.transfer || new Set()
-    const progressCallback = options.progress
+  const transfer = options.transfer || new Set()
+  const progressCallback = options.progress
     ? encodeCallback(options.progress, transfer)
     : undefined
 
