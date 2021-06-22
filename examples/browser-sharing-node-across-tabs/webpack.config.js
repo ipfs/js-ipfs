@@ -26,9 +26,11 @@ module.exports = {
     }
   },
   plugins: [
-    new CopyWebpackPlugin([{
-      from: 'index.html'
-    }]),
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'index.html'
+      }]
+    }),
     // Note: stream-browserify has assumption about `Buffer` global in its
     // dependencies causing runtime errors. This is a workaround to provide
     // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
