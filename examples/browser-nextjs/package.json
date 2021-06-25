@@ -1,0 +1,23 @@
+{
+  "name": "example-browser-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export -o dist",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "test-ipfs-example"
+  },
+  "dependencies": {
+    "ipfs": "^0.55.4",
+    "next": "11.0.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "eslint": "7.30.0",
+    "eslint-config-next": "11.0.1",
+    "test-ipfs-example": "^3.0.0"
+  }
+}
