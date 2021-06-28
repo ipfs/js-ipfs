@@ -35,7 +35,7 @@ const NO_LINKS_CODECS = [
 module.exports = {
   command: 'export <root cid>',
 
-  describe: 'Streams the DAG beginning at the given root CID as a .car stream on stdout.',
+  describe: 'Streams the DAG beginning at the given root CID as a CAR stream on stdout.',
 
   builder: {
     timeout: {
