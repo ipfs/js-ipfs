@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script defer src="index.js"></script>
+  </head>
+  <body>
+    <h1>IPFS in the Browser</h1>
+    <p>
+      This page creates an IPFS node in your browser and drops it into the global
+      Javascript namespace as
+      <b><em style="background-color: #d7d6d6">node</em></b
+      >. Open the console to play around with it.
+    </p>
+    <p>
+      Note that opening two tabs of this page in the same browser won't work well, because
+      they will share node configuration. You'll end up trying to run two instances of the
+      same node, with the same private key and identity, which is a Bad Idea.
+    </p>
+
+    <h3>IPFS</h3>
+    <div id="status">Creating the IPFS node...</div>
+
+  </body>
+</html>
