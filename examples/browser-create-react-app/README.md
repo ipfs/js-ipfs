@@ -24,9 +24,9 @@ $ npm start
 ```
 ## Call structure in `App.js`
 All React applications store their main logic in `App.js`. For this demo, the calling sequence of `App.js` is ![App.js](./images/appJsStructure.png)
-* `App.js` renders the cosmetics of the demo
+* `App.js` renders the cosmetics of the demo and call `useIpfs` to retrieve the `id` of the node
 * `useIpfsFactory.js` initialises and closes the IPFS local node 
-* `useIpfs.js` does the actual calls to IPFS
+* `useIpfs.js` does the actual calls to IPFS to retrieve the property specified in argument (here it's `id`, sent from `App.js`)
 
 ## Annexes
 ### Console message `[HMR] Waiting for update signal from WDS...`
