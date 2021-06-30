@@ -92,7 +92,7 @@ class IPFS {
     const pinManager = new PinManagerAPI({ repo, ipld })
     const pin = new PinAPI({ gcLock, pinManager, ipld })
     const block = new BlockAPI({ blockService, preload, gcLock, pinManager, pin })
-    const dag = new DagAPI({ ipld, preload, gcLock, pin })
+    const dag = new DagAPI({ blockService, ipld, preload, gcLock, pin })
     const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })

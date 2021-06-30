@@ -57,6 +57,10 @@
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
+    "@ipld/car": "^3.1.0",
+    "@ipld/dag-cbor": "^6.0.4",
+    "@ipld/dag-json": "^7.0.4",
+    "@ipld/dag-pb": "^2.1.0",
     "abort-controller": "^3.0.0",
     "array-shuffle": "^2.0.0",
     "cborg": "^1.2.1",
@@ -114,6 +118,7 @@
     "multiaddr-to-uri": "^7.0.0",
     "multibase": "^4.0.2",
     "multicodec": "^3.0.1",
+    "multiformats": "^9.1.0",
     "multihashing-async": "^2.1.2",
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",

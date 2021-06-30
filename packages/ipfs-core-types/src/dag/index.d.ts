@@ -130,6 +130,10 @@ export interface API<OptionExtension = {}> {
    * ```
    */
   resolve: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => Promise<ResolveResult>
+
+  export: (root: CID, options?: ExportOptions & OptionExtension) => AsyncIterable<AddResult>
+
+  // import: (source: AsyncIterable<AsyncIterable<Uint8Array>>, options?: ExportOptions & OptionExtension) => AsyncIterable<ImportResult>
 }
 
 export interface GetOptions extends AbortOptions, PreloadOptions {
@@ -225,3 +229,21 @@ export interface ResolveResult {
    */
   remainderPath?: string
 }
+
+export interface ExportOptions extends AbortOptions, PreloadOptions {
+}
+
+/*
+export interface ImportOptions extends AbortOptions, PreloadOptions {
+  pinRoots?: boolean
+}
+
+export interface ImportUnitResult {
+  blockCount: number
+  rootStatus: { cid: CID, present: boolean }
+}
+
+export interface ImportResult {
+  results: ImportUnitResult[]
+}
+*/
