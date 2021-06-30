@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('./cid')
 
 /**

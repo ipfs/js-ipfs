@@ -13,7 +13,7 @@ module.exports = ({ network }) => {
    */
   async function wantlistForPeer (peerId, options = {}) {
     const { bitswap } = await network.use(options)
-    const list = bitswap.wantlistForPeer(PeerId.createFromCID(peerId), options)
+    const list = bitswap.wantlistForPeer(PeerId.createFromB58String(peerId), options)
 
     return Array.from(list).map(e => e[1].cid)
   }

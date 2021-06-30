@@ -6,7 +6,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { DAGNode } = require('ipld-dag-pb')
 const all = require('it-all')
 const drain = require('it-drain')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

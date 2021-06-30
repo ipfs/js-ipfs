@@ -18,9 +18,17 @@ export interface Options {
   agent?: HttpAgent | HttpsAgent
 }
 
+export type LoadBaseFn = (codeOrName: number | string) => Promise<MultibaseCodec<any>>
+export type LoadCodecFn = (codeOrName: number | string) => Promise<BlockCodec<any, any>>
+export type LoadHasherFn = (codeOrName: number | string) => Promise<MultihashHasher>
+
 export interface IPLDOptions {
-  formats?: IPLDFormat<any>[]
-  loadFormat?: LoadFormatFn
+  loadBase: LoadBaseFn
+  loadCodec: LoadCodecFn
+  loadHasher: LoadHasherFn
+  bases: MultibaseCodec<any>[]
+  codecs: BlockCodec<any, any>[]
+  hashers: MultihashHasher[]
 }
 
 export interface HTTPClientExtraOptions {

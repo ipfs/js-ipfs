@@ -7,9 +7,8 @@ const { nanoid } = require('nanoid')
 const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const mh = require('multihashing-async').multihash
-const Block = require('ipld-block')
-const CID = require('cids')
+const { identity } = require('multiformats/hashes/identity')
+const { CID } = require('multiformats/cid')
 const { randomBytes } = require('iso-random-stream')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
@@ -72,8 +71,11 @@ module.exports = (common, options) => {
       const src1 = `/src2-${Math.random()}`
       const parent = `/output-${Math.random()}`
 
-      const cid = new CID(1, 'identity', mh.encode(uint8ArrayFromString('derp'), 'identity'))
-      await ipfs.block.put(new Block(uint8ArrayFromString('derp'), cid), { cid })
+      const hash = await identity.digest(uint8ArrayFromString('derp'))
+      const cid = CID.createV1(identity.code, hash)
+      await ipfs.block.put(uint8ArrayFromString('derp'), {
+        mhtype: 'identity'
+      })
       await ipfs.files.cp(`/ipfs/${cid}`, parent)
 
       await ipfs.files.write(src1, [], {

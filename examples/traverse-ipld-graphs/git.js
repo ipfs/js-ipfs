@@ -2,11 +2,20 @@
 
 const createNode = require('./create-node')
 const path = require('path')
-const multihashing = require('multihashing-async')
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
+const { from } = require('multiformats/hashes/hasher')
+const { coerce } = require('multiformats/hashes/bytes')
 const fs = require('fs').promises
 const uint8ArrayToString = require('uint8arrays/to-string')
+const crypto = require('crypto')
+
+const sha1 = from({
+  name: 'sha1',
+  code: 0x11,
+  encode: (input) => coerce(crypto.createHash('sha1').update(input).digest())
+})
+
+const GIT_RAW = 0x78
 
 async function main () {
   const ipfs = await createNode({
@@ -14,6 +23,14 @@ async function main () {
       formats: [
         require('ipld-git')
       ]
+    },
+    multiformats: {
+      hashes: {
+        [0x11]: sha1
+      },
+      codecs: {
+        'git-raw': GIT_RAW
+      }
     }
   })
 
@@ -34,15 +51,15 @@ async function main () {
 
   await Promise.all(gitObjects.map(async gitObjectsPath => {
     const data = await fs.readFile(gitObjectsPath)
-    const multihash = await multihashing(data, 'sha1')
+    const cid = await ipfs.block.put(data, {
+      format: 'git-raw',
+      mhtype: 'sha1'
+    })
 
-    const cid = new CID(1, 'git-raw', multihash)
     console.log(cid.toString())
-
-    await ipfs.block.put(new Block(data, cid))
   }))
 
-  const v1tag = new CID('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
+  const v1tag = CID.parse('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
 
   async function logResult (fn, comment) {
     const result = await fn()

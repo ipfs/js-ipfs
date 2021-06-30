@@ -7,14 +7,12 @@ const getFolderSize = promisify(require('get-folder-size'))
 // @ts-ignore no types
 const byteman = require('byteman')
 const mh = require('multihashing-async').multihash
-const multibase = require('multibase')
 const {
   createProgressBar,
   coerceMtime,
   coerceMtimeNsecs,
   stripControlCharacters
 } = require('../utils')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const globSource = require('ipfs-utils/src/files/glob-source')
 const { default: parseDuration } = require('parse-duration')
 
@@ -95,7 +93,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     hash: {
       type: 'string',
@@ -171,7 +169,7 @@ module.exports = {
    * @param {import('../types').Context} argv.ctx
    * @param {boolean} argv.trickle
    * @param {number} argv.shardSplitThreshold
-   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
    * @param {boolean} argv.rawLeaves
    * @param {boolean} argv.onlyHash
    * @param {import('multihashes').HashName} argv.hash
@@ -194,7 +192,7 @@ module.exports = {
    * @param {boolean} argv.preserveMode
    * @param {boolean} argv.preserveMtime
    * @param {number} argv.mode
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {boolean} argv.enableShardingExperiment
    */
   async handler ({
@@ -305,6 +303,7 @@ module.exports = {
         }] // Pipe to ipfs.add tagging with mode and mtime
 
     let finalCid
+    const base = await ipfs.bases.getBase(cidBase)
 
     try {
       for await (const { cid, path } of ipfs.addAll(source, options)) {
@@ -318,7 +317,7 @@ module.exports = {
         }
 
         const pathStr = stripControlCharacters(path)
-        const cidStr = cidToString(cid, { base: cidBase })
+        const cidStr = cid.toString(base.encoder)
         let message = cidStr
 
         if (!quiet) {
@@ -342,7 +341,7 @@ module.exports = {
     }
 
     if (quieter && finalCid) {
-      log(cidToString(finalCid, { base: cidBase }))
+      log(finalCid.toString(base.encoder))
     }
   }
 }

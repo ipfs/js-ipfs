@@ -63,10 +63,10 @@ Mtime: <mtime>`,
    * @param {boolean} argv.hash
    * @param {boolean} argv.size
    * @param {boolean} argv.withLocal
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
-  handler ({
+  async handler ({
     ctx: { ipfs, print },
     path,
     format,
@@ -76,28 +76,28 @@ Mtime: <mtime>`,
     cidBase,
     timeout
   }) {
-    return ipfs.files.stat(path, {
+    const stats = await ipfs.files.stat(path, {
       withLocal,
       timeout
     })
-      .then((stats) => {
-        if (hash) {
-          return print(stats.cid.toString(cidBase))
-        }
+    const base = await ipfs.bases.getBase(cidBase)
 
-        if (size) {
-          return print(`${stats.size}`)
-        }
+    if (hash) {
+      return print(stats.cid.toString(base))
+    }
 
-        print(format
-          .replace('<hash>', stats.cid.toString(cidBase))
-          .replace('<size>', `${stats.size}`)
-          .replace('<cumulsize>', `${stats.cumulativeSize}`)
-          .replace('<childs>', `${stats.blocks}`)
-          .replace('<type>', stats.type)
-          .replace('<mode>', stats.mode ? formatMode(stats.mode, stats.type === 'directory') : '')
-          .replace('<mtime>', stats.mtime ? formatMtime(stats.mtime) : '')
-        )
-      })
+    if (size) {
+      return print(`${stats.size}`)
+    }
+
+    print(format
+      .replace('<hash>', stats.cid.toString(base.encoder))
+      .replace('<size>', `${stats.size}`)
+      .replace('<cumulsize>', `${stats.cumulativeSize}`)
+      .replace('<childs>', `${stats.blocks}`)
+      .replace('<type>', stats.type)
+      .replace('<mode>', stats.mode ? formatMode(stats.mode, stats.type === 'directory') : '')
+      .replace('<mtime>', stats.mtime ? formatMtime(stats.mtime) : '')
+    )
   }
 }

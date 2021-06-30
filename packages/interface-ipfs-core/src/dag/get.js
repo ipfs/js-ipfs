@@ -8,10 +8,10 @@ const dagCBOR = require('ipld-dag-cbor')
 const { importer } = require('ipfs-unixfs-importer')
 const { UnixFS } = require('ipfs-unixfs')
 const all = require('it-all')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
-const multihashing = require('multihashing-async')
+const { identity } = require('multiformats/hashes/identity')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -229,8 +229,8 @@ module.exports = (common, options) => {
 
     it('should be able to get a dag-cbor node with the identity hash', async () => {
       const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
-      const identityHash = await multihashing(identityData, 'identity')
-      const identityCID = new CID(1, 'dag-cbor', identityHash)
+      const identityHash = await identity.encode(identityData)
+      const identityCID = CID.createV1(0x71, identityHash)
       const result = await ipfs.dag.get(identityCID)
       expect(result.value).to.deep.equal({ asdf: 324 })
     })

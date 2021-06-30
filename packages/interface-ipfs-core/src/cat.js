@@ -5,13 +5,12 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const { fixtures } = require('./utils')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -32,8 +31,8 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     before(() => Promise.all([
-      all(importer([{ content: fixtures.smallFile.data }], ipfs.blockStorage)),
-      all(importer([{ content: fixtures.bigFile.data }], ipfs.blockStorage))
+      all(importer([{ content: fixtures.smallFile.data }], ipfs.block)),
+      all(importer([{ content: fixtures.bigFile.data }], ipfs.block))
     ]))
 
     it('should respect timeout option when catting files', () => {
@@ -64,12 +63,11 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.blockStorage))
+      const res = await all(importer([{ content: input }], ipfs.block))
 
-      const cidv0 = asLegacyCid(res[0].cid)
-      expect(cidv0.version).to.equal(0)
+      expect(res).to.have.nested.property('[0].cid.version', 0)
 
-      const cidv1 = cidv0.toV1()
+      const cidv1 = res[0].cid.toV1()
 
       const output = uint8ArrayConcat(await all(ipfs.cat(cidv1)))
       expect(output).to.eql(input)
@@ -78,12 +76,11 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv1 with a CIDv0', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.blockStorage, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
-      const cidv1 = asLegacyCid(res[0].cid)
-      expect(cidv1.version).to.equal(1)
+      expect(res).to.have.nested.property('[0].cid.version', 1)
 
-      const cidv0 = cidv1.toV0()
+      const cidv0 = res[0].cid.toV0()
 
       const output = uint8ArrayConcat(await all(ipfs.cat(cidv0)))
       expect(output.slice()).to.eql(input)
@@ -105,7 +102,7 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, nested value', async () => {
       const fileToAdd = { path: 'a/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.blockStorage))
+      const filesAdded = await all(importer([fileToAdd], ipfs.block))
 
       const file = await filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
@@ -118,7 +115,7 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, deeply nested value', async () => {
       const fileToAdd = { path: 'a/b/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.blockStorage))
+      const filesAdded = await all(importer([fileToAdd], ipfs.block))
 
       const file = filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
@@ -146,7 +143,7 @@ module.exports = (common, options) => {
     it('should error on dir path', async () => {
       const file = { path: 'dir/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([file], ipfs.blockStorage))
+      const filesAdded = await all(importer([file], ipfs.block))
       expect(filesAdded.length).to.equal(2)
 
       const files = filesAdded.filter((file) => file.path === 'dir')
@@ -154,7 +151,7 @@ module.exports = (common, options) => {
 
       const dir = files[0]
 
-      const err = await expect(drain(ipfs.cat(asLegacyCid(dir.cid)))).to.eventually.be.rejected()
+      const err = await expect(drain(ipfs.cat(dir.cid))).to.eventually.be.rejected()
       expect(err.message).to.contain('this dag node is a directory')
     })
 

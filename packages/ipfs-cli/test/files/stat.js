@@ -5,7 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 const defaultOptions = {

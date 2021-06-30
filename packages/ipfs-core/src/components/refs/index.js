@@ -1,13 +1,10 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
-// @ts-ignore
 const { decode } = require('@ipld/dag-pb')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 const Format = {
   default: '<dst>',
@@ -15,12 +12,11 @@ const Format = {
 }
 
 /**
- * @typedef {import('../../types').PbNode} PbNode
- * @typedef {import('cids')} LegacyCID
+ * @typedef {import('multiformats/cid').CID} CID
  *
  * @typedef {object} Node
  * @property {string} [name]
- * @property {LegacyCID} cid
+ * @property {CID} cid
  *
  * @typedef {object} TraversalResult
  * @property {Node} parent
@@ -30,11 +26,11 @@ const Format = {
 
 /**
  * @param {Object} config
- * @param {import('../../block-storage')} config.blockStorage
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-types/src/root').API["resolve"]} config.resolve
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = function ({ blockStorage, resolve, preload }) {
+module.exports = function ({ repo, resolve, preload }) {
   /**
    * @type {import('ipfs-core-types/src/refs').API["refs"]}
    */
@@ -53,13 +49,13 @@ module.exports = function ({ blockStorage, resolve, preload }) {
       options.maxDepth = options.recursive ? Infinity : 1
     }
 
-    /** @type {(string|LegacyCID)[]} */
+    /** @type {(string|CID)[]} */
     const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
 
     const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {
-      yield * refsStream(resolve, blockStorage, path, options)
+      yield * refsStream(resolve, repo, path, options)
     }
   }
 
@@ -70,7 +66,7 @@ module.exports.Format = Format
 
 /**
  * @param {import('../../types').Preload} preload
- * @param {string | LegacyCID} ipfsPath
+ * @param {string | CID} ipfsPath
  * @param {import('ipfs-core-types/src/refs').RefsOptions} options
  */
 function getFullPath (preload, ipfsPath, options) {
@@ -90,11 +86,11 @@ function getFullPath (preload, ipfsPath, options) {
  * Get a stream of refs at the given path
  *
  * @param {import('ipfs-core-types/src/root').API["resolve"]} resolve
- * @param {import('../../block-storage')} blockStorage
+ * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {string} path
  * @param {import('ipfs-core-types/src/refs').RefsOptions} options
  */
-async function * refsStream (resolve, blockStorage, path, options) {
+async function * refsStream (resolve, repo, path, options) {
   // Resolve to the target CID of the path
   const resPath = await resolve(path)
   const {
@@ -105,7 +101,7 @@ async function * refsStream (resolve, blockStorage, path, options) {
   const unique = options.unique || false
 
   // Traverse the DAG, converting it into a stream
-  for await (const obj of objectStream(blockStorage, cid, maxDepth, unique)) {
+  for await (const obj of objectStream(repo, cid, maxDepth, unique)) {
     // Root object will not have a parent
     if (!obj.parent) {
       continue
@@ -127,8 +123,8 @@ async function * refsStream (resolve, blockStorage, path, options) {
 /**
  * Get formatted link
  *
- * @param {LegacyCID} srcCid
- * @param {LegacyCID} dstCid
+ * @param {CID} srcCid
+ * @param {CID} dstCid
  * @param {string} [linkName]
  * @param {string} [format]
  */
@@ -142,12 +138,12 @@ function formatLink (srcCid, dstCid, linkName = '', format = Format.default) {
 /**
  * Do a depth first search of the DAG, starting from the given root cid
  *
- * @param {import('../../block-storage')} blockStorage
- * @param {LegacyCID} rootCid
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {CID} rootCid
  * @param {number} maxDepth
  * @param {boolean} uniqueOnly
  */
-async function * objectStream (blockStorage, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
+async function * objectStream (repo, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
   const seen = new Set()
 
   /**
@@ -166,7 +162,7 @@ async function * objectStream (blockStorage, rootCid, maxDepth, uniqueOnly) { //
     // Get this object's links
     try {
       // Look at each link, parent and the new depth
-      for (const link of await getLinks(blockStorage, parent.cid)) {
+      for (const link of await getLinks(repo, parent.cid)) {
         yield {
           parent: parent,
           node: link,
@@ -195,16 +191,15 @@ async function * objectStream (blockStorage, rootCid, maxDepth, uniqueOnly) { //
 /**
  * Fetch a node and then get all its links
  *
- * @param {import('../../block-storage')} blockStorage
- * @param {LegacyCID} cid
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {CID} cid
  */
-async function getLinks (blockStorage, cid) {
-  const block = await blockStorage.get(CID.decode(cid.bytes))
-  /** @type {PbNode} */
-  const node = decode(block.bytes)
+async function getLinks (repo, cid) {
+  const block = await repo.blocks.get(cid)
+  const node = decode(block)
   // TODO vmx 2021-03-18: Add support for non DAG-PB nodes. this is what `getNodeLinks()` does
   // return getNodeLinks(node)
-  return node.Links.map(({ Name, Hash }) => ({ name: Name, cid: asLegacyCid(Hash) }))
+  return node.Links.map(({ Name, Hash }) => ({ name: Name, cid: Hash }))
 }
 
 // /**

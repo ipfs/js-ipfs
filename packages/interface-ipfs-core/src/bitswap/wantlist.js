@@ -6,7 +6,7 @@ const { waitForWantlistKey, waitForWantlistKeyToBeRemoved } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
 const { AbortController } = require('native-abort-controller')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const delay = require('delay')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 

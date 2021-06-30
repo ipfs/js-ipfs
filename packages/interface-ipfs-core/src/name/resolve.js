@@ -4,7 +4,7 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const last = require('it-last')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

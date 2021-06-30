@@ -2,14 +2,13 @@
 'use strict'
 
 const isIpfs = require('is-ipfs')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const Key = require('interface-datastore').Key
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 /** @type {typeof Object.assign} */
 const mergeOptions = require('merge-options')
-const resolve = require('./components/dag/resolve')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
+const dagResolve = require('./components/dag/resolve')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
@@ -33,9 +32,11 @@ exports.MFS_MAX_LINKS = 174
  * @throws on an invalid @param pathStr
  */
 const normalizePath = (pathStr) => {
-  if (isIpfs.cid(pathStr) || CID.isCID(pathStr)) {
-    return `/ipfs/${new CID(pathStr)}`
-  } else if (isIpfs.path(pathStr)) {
+  if (pathStr instanceof CID) {
+    return `/ipfs/${pathStr}`
+  }
+
+  if (isIpfs.path(pathStr)) {
     return pathStr
   } else {
     throw errCode(new Error(`invalid path: ${pathStr}`), ERR_BAD_PATH)
@@ -50,7 +51,7 @@ const normalizePath = (pathStr) => {
  */
 const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
-    return new CID(path).toString()
+    return CID.decode(path).toString()
   }
   if (CID.isCID(path)) {
     return path.toString()
@@ -74,17 +75,18 @@ const normalizeCidPath = (path) => {
  * - /ipfs/<base58 string>/link/to/pluto
  * - multihash Buffer
  *
- * @param {import('ipld')} ipld
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {CID | string} ipfsPath - A CID or IPFS path
  * @param {Object} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<CID>}
  */
-const resolvePath = async function (ipld, ipfsPath, options = {}) {
+const resolvePath = async function (repo, codecs, ipfsPath, options = {}) {
   const preload = () => {}
   preload.stop = () => {}
   preload.start = () => {}
 
-  const { cid } = await resolve({ ipld, preload })(ipfsPath, { preload: false })
+  const { cid } = await dagResolve({ repo, codecs, preload })(ipfsPath, { preload: false })
 
   return cid
 }
@@ -104,7 +106,7 @@ const mapFile = (file, options = {}) => {
 
   /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
   const output = {
-    cid: asLegacyCid(file.cid),
+    cid: file.cid,
     path: file.path,
     name: file.name,
     depth: file.path.split('/').length,
@@ -149,9 +151,59 @@ const withTimeout = withTimeoutOption(
   async (promise, _options) => await promise
 )
 
+/**
+ * Retrieves IPLD Nodes along the `path` that is rooted at `cid`.
+ *
+ * @param {CID} cid - the CID where the resolving starts
+ * @param {string} path - the path that should be resolved
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {AbortOptions} [options]
+ */
+const resolve = async function * (cid, path, codecs, repo, options) {
+  /**
+   * @param {CID} cid
+   */
+  const load = async (cid) => {
+    const codec = await codecs.getCodec(cid.code)
+    const block = await repo.blocks.get(cid, options)
+
+    return codec.decode(block)
+  }
+
+  const parts = path.split('/').filter(Boolean)
+  let value = await load(cid)
+  let lastCid = cid
+
+  // End iteration if there isn't a CID to follow any more
+  while (parts.length) {
+    const key = parts.shift()
+
+    if (!key) {
+      throw errCode(new Error(`Could not resolve path "${path}"`), 'ERR_INVALID_PATH')
+    }
+
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      value = value[key]
+
+      yield {
+        value,
+        remainderPath: parts.join('/')
+      }
+    } else {
+      throw errCode(new Error(`No link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
+    }
+
+    if (value instanceof CID) {
+      lastCid = value
+      value = await load(value)
+    }
+  }
+}
+
 exports.normalizePath = normalizePath
 exports.normalizeCidPath = normalizeCidPath
 exports.resolvePath = resolvePath
 exports.mapFile = mapFile
-exports.withTimeoutOption = withTimeoutOption
 exports.withTimeout = withTimeout
+exports.resolve = resolve

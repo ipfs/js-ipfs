@@ -105,7 +105,7 @@ console.log(block.cid.toString())
 // the CID of the object
 
 // With custom format and hashtype through CID
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const buf = new TextEncoder().encode('another serialized object')
 const cid = new CID(1, 'dag-pb', multihash)
 

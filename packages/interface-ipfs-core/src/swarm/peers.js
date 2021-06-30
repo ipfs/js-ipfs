@@ -2,7 +2,7 @@
 'use strict'
 
 const { Multiaddr } = require('multiaddr')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const delay = require('delay')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('../utils/mocha')

@@ -117,7 +117,7 @@ module.exports = {
    * @param {boolean} argv.truncate
    * @param {boolean} argv.rawLeaves
    * @param {boolean} argv.reduceSingleLeafToSelf
-   * @param {import('cids').CIDVersion} argv.cidVersion
+   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
    * @param {import('multihashes').HashName} argv.hashAlg
    * @param {boolean} argv.parents
    * @param {'trickle' | 'balanced'} argv.strategy

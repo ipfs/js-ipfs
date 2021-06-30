@@ -15,7 +15,6 @@ const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
 const gRPCServer = require('ipfs-grpc-server')
-const createRepo = require('ipfs-core/src/runtime/repo-nodejs')
 const { isElectron } = require('ipfs-utils/src/env')
 
 class Daemon {
@@ -43,31 +42,17 @@ class Daemon {
   async start () {
     log('starting')
 
-    const repo = typeof this._options.repo === 'string' || this._options.repo == null
-      ? createRepo(console.info, { // eslint-disable-line no-console
-        path: this._options.repo,
-        autoMigrate: Boolean(this._options.repoAutoMigrate)
-      })
-      : this._options.repo
-
     // start the daemon
-    const ipfsOpts = Object.assign({}, { start: true, libp2p: getLibp2p }, this._options, { repo })
-    this._ipfs = await IPFS.create(ipfsOpts)
+    this._ipfs = await IPFS.create(
+      Object.assign({}, { start: true, libp2p: getLibp2p }, this._options)
+    )
 
     // start HTTP servers (if API or Gateway is enabled in options)
-    // @ts-ignore http api expects .libp2p and .ipld properties
-    const httpApi = new HttpApi(this._ipfs)
-    this._httpApi = await httpApi.start()
+    this._httpApi = new HttpApi(this._ipfs)
+    await this._httpApi.start()
 
-    const httpGateway = new HttpGateway(this._ipfs)
-    this._httpGateway = await httpGateway.start()
-
-    // for the CLI to know the whereabouts of the API
-    // @ts-ignore - _apiServers is possibly undefined
-    if (this._httpApi._apiServers.length) {
-      // @ts-ignore - _apiServers is possibly undefined
-      await repo.apiAddr.set(this._httpApi._apiServers[0].info.ma)
-    }
+    this._httpGateway = new HttpGateway(this._ipfs)
+    await this._httpGateway.start()
 
     this._grpcServer = await gRPCServer(this._ipfs)
 

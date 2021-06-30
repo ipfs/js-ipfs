@@ -1,11 +1,11 @@
-import CID from 'cids';
+import type { CID } from 'multiformts/cid';
 import type { AbortOptions, PreloadOptions } from '../utils'
-import type { DAGNode, DAGNodeLike, DAGLink } from 'ipld-dag-pb'
 import type { API as PatchAPI } from './patch'
+import type { PBNode as DAGNode, PBLink as DAGLink } from '@ipld/dag-pb'
 
 export interface API<OptionExtension = {}> {
   new: (options?: NewObjectOptions & OptionExtension) => Promise<CID>
-  put: (obj: DAGNode | DAGNodeLike | Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>
+  put: (obj: DAGNode, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<CID>
   get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGNode>
   data: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Uint8Array>
   links: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGLink[]>
@@ -18,17 +18,11 @@ export interface NewObjectOptions extends AbortOptions, PreloadOptions {
   template?: 'unixfs-dir'
 }
 
-export interface PutOptions extends AbortOptions, PreloadOptions {
-  enc?: PutEncoding
-}
-
 export interface StatResult {
-  Hash: string
+  Hash: CID
   NumLinks: number
   BlockSize: number
   LinksSize: number
   DataSize: number
   CumulativeSize: number
 }
-
-export type PutEncoding = 'json' | 'protobuf'

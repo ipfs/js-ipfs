@@ -34,7 +34,6 @@
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
-    "cids": "^1.1.6",
     "ipfs-core-types": "^0.5.2",
     "ipfs-message-port-protocol": "^0.7.3",
     "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb"

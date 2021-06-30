@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')

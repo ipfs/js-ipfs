@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('joi')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { default: parseDuration } = require('parse-duration')
 const { Multiaddr } = require('multiaddr')
 const multibase = require('multibase')
@@ -27,7 +27,7 @@ const toIpfsPath = (value) => {
   const parts = value.split('/')
 
   // will throw if not valid
-  parts[0] = new CID(parts[0])
+  parts[0] = CID.parse(parts[0])
 
   // go-ipfs returns /ipfs/ prefix for ipfs paths when passed to the http api
   // and not when it isn't.  E.g.
@@ -40,7 +40,7 @@ const toIpfsPath = (value) => {
  * @param {*} value
  */
 const toCID = (value) => {
-  return new CID(value.toString().replace('/ipfs/', ''))
+  return CID.parse(value.toString().replace('/ipfs/', ''))
 }
 
 /**

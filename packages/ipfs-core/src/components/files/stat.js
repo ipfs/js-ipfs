@@ -6,7 +6,6 @@ const { exporter } = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -30,7 +29,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = ({ blockStorage, repo }) => {
+module.exports = (context) => {
   /**
    * @type {import('ipfs-core-types/src/files').API["stat"]}
    */
@@ -44,13 +43,13 @@ module.exports = ({ blockStorage, repo }) => {
       type,
       cid,
       mfsPath
-    } = await toMfsPath({ blockStorage, repo }, path, options)
+    } = await toMfsPath(context, path, options)
 
     const exportPath = type === 'ipfs' && cid ? cid : mfsPath
     let file
 
     try {
-      file = await exporter(exportPath, blockStorage)
+      file = await exporter(exportPath, context.blockstore)
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error(`${path} does not exist`), 'ERR_NOT_FOUND')
@@ -76,7 +75,7 @@ const statters = {
    */
   raw: (file) => {
     return {
-      cid: asLegacyCid(file.cid),
+      cid: file.cid,
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
       // cumulativeSize: file.node.length,
@@ -94,7 +93,7 @@ const statters = {
   file: (file) => {
     /** @type {StatResult} */
     const stat = {
-      cid: asLegacyCid(file.cid),
+      cid: file.cid,
       type: 'file',
       size: file.unixfs.fileSize(),
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
@@ -119,7 +118,7 @@ const statters = {
   directory: (file) => {
     /** @type {StatResult} */
     const stat = {
-      cid: asLegacyCid(file.cid),
+      cid: file.cid,
       type: 'directory',
       size: 0,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
@@ -144,7 +143,7 @@ const statters = {
   object: (file) => {
     /** @type {StatResult} */
     return {
-      cid: asLegacyCid(file.cid),
+      cid: file.cid,
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
       // cumulativeSize: file.node.length,
@@ -162,7 +161,7 @@ const statters = {
   identity: (file) => {
     /** @type {StatResult} */
     return {
-      cid: asLegacyCid(file.cid),
+      cid: file.cid,
       size: file.node.length,
       // TODO vmx 2021-05-04: Decide if returning 0 is OK
       // cumulativeSize: file.node.length,

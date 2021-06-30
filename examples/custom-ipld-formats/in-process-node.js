@@ -16,7 +16,7 @@ table.baseTable = {
 const IPFS = require('ipfs-core')
 const multihashing = require('multihashing-async')
 const multicodec = require('multicodec')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 async function main () {
   // see https://github.com/ipld/interface-ipld-format for the interface definition

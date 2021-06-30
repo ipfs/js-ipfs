@@ -11,7 +11,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} recursive

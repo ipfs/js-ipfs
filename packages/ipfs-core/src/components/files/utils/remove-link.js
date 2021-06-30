@@ -3,8 +3,6 @@
 // @ts-ignore - TODO vmx 2021-03-31
 const dagPb = require('@ipld/dag-pb')
 const { CID } = require('multiformats/cid')
-const { sha256 } = require('multiformats/hashes/sha2')
-const Block = require('multiformats/block')
 const log = require('debug')('ipfs:mfs:core:utils:remove-link')
 const { UnixFS } = require('ipfs-unixfs')
 const {
@@ -18,7 +16,7 @@ const errCode = require('err-code')
  * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('cids').CIDVersion} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
- * @typedef {import('../../../types').PbNode} PbNode
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  *
  * @typedef {object} RemoveLinkOptions
  * @property {string} name
@@ -27,7 +25,7 @@ const errCode = require('err-code')
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
  * @property {CID} [parentCid]
- * @property {PbNode} [parent]
+ * @property {PBNode} [parent]
  *
  * @typedef {object} RemoveLinkOptionsInternal
  * @property {string} name
@@ -35,7 +33,7 @@ const errCode = require('err-code')
  * @property {HashName} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
- * @property {PbNode} parent
+ * @property {PBNode} parent
  */
 
 /**
@@ -52,8 +50,8 @@ const removeLink = async (context, options) => {
     }
 
     log(`Loading parent node ${parentCid}`)
-    const block = await context.blockStorage.get(parentCid)
-    parent = dagPb.decode(block.bytes)
+    const block = await context.repo.blocks.get(parentCid)
+    parent = dagPb.decode(block)
   }
 
   if (!parent) {
@@ -62,6 +60,10 @@ const removeLink = async (context, options) => {
 
   if (!options.name) {
     throw errCode(new Error('No child name passed to removeLink'), 'EINVALIDCHILDNAME')
+  }
+
+  if (!parent.Data) {
+    throw errCode(new Error('Parent node had no data'), 'ERR_INVALID_NODE')
   }
 
   const meta = UnixFS.unmarshal(parent.Data)
@@ -93,33 +95,18 @@ const removeFromDirectory = async (context, options) => {
     return link.Name !== options.name
   })
 
-  let hasher
-  switch (options.hashAlg) {
-    case 'sha2-256':
-      hasher = sha256
-      break
-    default:
-      throw new Error('TODO vmx 2021-03-31: support hashers that are not sha2-256')
-  }
+  const parentBlock = await dagPb.encode(options.parent)
+  const hasher = await context.hashers.getHasher(options.hashAlg)
+  const hash = await hasher.digest(parentBlock)
+  const parentCid = CID.create(options.cidVersion, dagPb.code, hash)
 
-  // TODO vmx 2021-03-04: Check if the CID version matters
-  const parentBlock = await Block.encode({
-    value: options.parent,
-    codec: dagPb,
-    hasher
-  })
-  await context.blockStorage.put(parentBlock)
+  await context.repo.blocks.put(parentCid, parentBlock)
 
-  let cid = parentBlock.cid
-  if (options.cidVersion === 0) {
-    cid = cid.toV0()
-  }
-
-  log(`Updated regular directory ${cid}`)
+  log(`Updated regular directory ${parentCid}`)
 
   return {
     node: options.parent,
-    cid
+    cid: parentCid
   }
 }
 
@@ -143,10 +130,10 @@ const removeFromShardedDirectory = async (context, options) => {
 
 /**
  * @param {MfsContext} context
- * @param {{ bucket: Bucket, prefix: string, node?: PbNode }[]} positions
+ * @param {{ bucket: Bucket, prefix: string, node?: PBNode }[]} positions
  * @param {string} name
  * @param {RemoveLinkOptionsInternal} options
- * @returns {Promise<{ node: PbNode, cid: CID, size: number }>}
+ * @returns {Promise<{ node: PBNode, cid: CID, size: number }>}
  */
 const updateShard = async (context, positions, name, options) => {
   const last = positions.pop()
@@ -166,7 +153,7 @@ const updateShard = async (context, positions, name, options) => {
   }
 
   const link = node.Links
-    .find(link => link.Name.substring(0, 2) === prefix)
+    .find(link => (link.Name || '').substring(0, 2) === prefix)
 
   if (!link) {
     throw errCode(new Error(`No link found with prefix ${prefix} for file ${name}`), 'ERR_NOT_FOUND')
@@ -198,9 +185,9 @@ const updateShard = async (context, positions, name, options) => {
     // convert shard back to normal dir
     const link = result.node.Links[0]
 
-    newName = `${prefix}${link.Name.substring(2)}`
+    newName = `${prefix}${(link.Name || '').substring(2)}`
     cid = link.Hash
-    size = link.Tsize
+    size = link.Tsize || 0
   }
 
   log(`Updating shard ${prefix} with name ${newName}`)
@@ -211,7 +198,7 @@ const updateShard = async (context, positions, name, options) => {
 /**
  * @param {MfsContext} context
  * @param {Bucket} bucket
- * @param {PbNode} parent
+ * @param {PBNode} parent
  * @param {string} oldName
  * @param {string} newName
  * @param {number} size

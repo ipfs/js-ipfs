@@ -1,23 +1,21 @@
 'use strict'
 
-const Block = require('ipld-block')
-const multihashing = require('multihashing-async')
-const CID = require('cids')
-const isIPFS = require('is-ipfs')
+const { CID } = require('multiformats/cid')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  */
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('ipfs-core-types/src/pin').API} config.pin
- * @param {import('.').GCLock} config.gcLock
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/src/multihashes')} config.hashers
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
+ *
  */
-module.exports = ({ blockService, pin, gcLock, preload }) => {
+module.exports = ({ codecs, hashers, repo, preload }) => {
   /**
    * @type {import('ipfs-core-types/src/block').API["put"]}
    */
@@ -26,54 +24,29 @@ module.exports = ({ blockService, pin, gcLock, preload }) => {
       throw new Error('Array is not supported')
     }
 
-    if (!Block.isBlock(block)) {
-      /** @type {Uint8Array} */
-      const bytes = (block)
-      if (options.cid && isIPFS.cid(options.cid)) {
-        const cid = CID.isCID(options.cid) ? options.cid : new CID(options.cid)
-        block = new Block(bytes, cid)
-      } else {
-        const mhtype = options.mhtype || 'sha2-256'
-        const format = options.format || 'dag-pb'
-
-        /** @type {CIDVersion} */
-        let cidVersion = 1
-
-        if (options.version == null) {
-          // Pick appropriate CID version
-          cidVersion = mhtype === 'sha2-256' && format === 'dag-pb' ? 0 : 1
-        } else {
-          // @ts-ignore - options.version is a {number} but the CID constructor arg version is a {0|1}
-          // TODO: https://github.com/multiformats/js-cid/pull/129
-          cidVersion = options.version
-        }
-
-        const multihash = await multihashing(bytes, mhtype)
-        const cid = new CID(cidVersion, format, multihash)
-
-        block = new Block(bytes, cid)
-      }
-    }
-
-    const release = await gcLock.readLock()
+    const release = await repo.gcLock.readLock()
 
     try {
-      await blockService.put(block, {
+      const hasher = await hashers.getHasher(options.mhtype || 'sha2-256')
+      const hash = await hasher.digest(block)
+      const codec = await codecs.getCodec(options.format)
+      const cid = CID.create(options.version, codec.code, hash)
+
+      await repo.blocks.put(cid, block, {
         signal: options.signal
       })
 
       if (options.preload !== false) {
-        preload(block.cid)
+        preload(cid)
       }
 
       if (options.pin === true) {
-        await pin.add(block.cid, {
-          recursive: true,
+        await repo.pins.pinRecursively(cid, {
           signal: options.signal
         })
       }
 
-      return block
+      return cid
     } finally {
       release()
     }

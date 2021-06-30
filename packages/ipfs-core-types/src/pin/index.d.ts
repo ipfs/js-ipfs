@@ -1,5 +1,5 @@
 import type { AbortOptions, AwaitIterable } from '../utils'
-import type CID from 'cids'
+import type { CID } from 'multiformts/cid'
 import type { API as Remote } from './remote'
 
 export interface API<OptionExtension = {}> {

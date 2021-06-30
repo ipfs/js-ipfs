@@ -31,11 +31,13 @@ const {
 
 /**
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {import('./utils/to-mfs-path').FilePath} FilePath
  * @typedef {import('./utils/to-mfs-path').MfsPath} MfsPath
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ *
  * @typedef {object} DefaultOptions
  * @property {number} offset
  * @property {number} length
@@ -178,8 +180,8 @@ const updateOrImport = async (context, path, source, destination, options) => {
       throw errCode(new Error(`cannot write to ${parent.name}: Not a directory`), 'ERR_NOT_A_DIRECTORY')
     }
 
-    const parentBlock = await context.blockStorage.get(parent.cid)
-    const parentNode = decode(parentBlock.bytes)
+    const parentBlock = await context.blockstore.get(parent.cid)
+    const parentNode = decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,
@@ -310,15 +312,14 @@ const write = async (context, source, destination, options) => {
     // persist mode & mtime if set previously
     mode,
     mtime
-  }], context.blockStorage, {
+  }], context.blockstore, {
     progress: options.progress,
     hasher,
     cidVersion: options.cidVersion,
     strategy: options.strategy,
     rawLeaves: options.rawLeaves,
     reduceSingleLeafToSelf: options.reduceSingleLeafToSelf,
-    leafType: options.leafType,
-    pin: false
+    leafType: options.leafType
   }))
 
   if (!result) {

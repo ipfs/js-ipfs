@@ -23,7 +23,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {

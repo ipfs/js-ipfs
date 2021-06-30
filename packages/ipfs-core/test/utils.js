@@ -4,17 +4,17 @@
 
 const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
-const { fromB58String } = require('multihashing-async').multihash
+const { base58btc } = require('multiformats/bases/base58')
 const utils = require('../src/utils')
 const createNode = require('./utils/create-node')
 
 describe('utils', () => {
   const rootHash = 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'
   const rootPath = `/ipfs/${rootHash}`
-  const rootMultihash = fromB58String(rootHash)
+  const rootMultihash = base58btc.decode(`z${rootHash}`)
   const aboutHash = 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'
   const aboutPath = `${rootPath}/mercury`
-  const aboutMultihash = fromB58String(aboutHash)
+  const aboutMultihash = base58btc.decode(`z${aboutHash}`)
 
   describe('resolvePath', function () {
     this.timeout(100 * 1000)

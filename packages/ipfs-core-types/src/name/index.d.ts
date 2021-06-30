@@ -1,4 +1,4 @@
-import CID from 'cids';
+import { CID } from 'multiformts/cid';
 import type { AbortOptions } from '../utils'
 import type { API as PubsubAPI } from './pubsub'
 

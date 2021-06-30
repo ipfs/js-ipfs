@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const first = require('it-first')
 const cli = require('./utils/cli')
 const sinon = require('sinon')

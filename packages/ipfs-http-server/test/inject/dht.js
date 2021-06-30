@@ -7,7 +7,7 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const errCode = require('err-code')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { AbortSignal } = require('native-abort-controller')
 const allNdjson = require('../utils/all-ndjson')
 

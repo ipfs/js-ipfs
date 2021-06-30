@@ -1,6 +1,6 @@
 import type { AbortOptions } from '../utils'
 import type { Multiaddr } from 'multiaddr'
-import type CID from 'cids'
+import type { CID } from 'multiformts/cid'
 
 export interface API<OptionExtension = {}> {
   /**

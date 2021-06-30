@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
@@ -16,13 +16,14 @@ module.exports = configure(api => {
    * @type {DHTAPI["provide"]}
    */
   async function * provide (cids, options = { recursive: false }) {
-    cids = Array.isArray(cids) ? cids : [cids]
+    /** @type {CID[]} */
+    const cidArr = Array.isArray(cids) ? cids : [cids]
 
     const res = await api.post('dht/provide', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: cids.map(cid => new CID(cid).toString()),
+        arg: cidArr.map(cid => cid.toString()),
         ...options
       }),
       headers: options.headers
@@ -30,7 +31,7 @@ module.exports = configure(api => {
 
     for await (let message of res.ndjson()) {
       message = toCamel(message)
-      message.id = new CID(message.id)
+      message.id = CID.parse(message.id)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,

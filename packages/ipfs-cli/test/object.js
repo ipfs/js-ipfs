@@ -6,7 +6,7 @@ const fs = require('fs')
 const multibase = require('multibase')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const {
   DAGNode,

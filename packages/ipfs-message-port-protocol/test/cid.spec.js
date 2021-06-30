@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('../src/cid')
 const { expect } = require('aegir/utils/chai')
 

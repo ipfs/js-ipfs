@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -50,7 +50,7 @@ module.exports = configure(api => {
  */
 function toCoreInterface (entry) {
   if (entry.hash) {
-    entry.cid = new CID(entry.hash)
+    entry.cid = CID.parse(entry.hash)
   }
 
   delete entry.hash

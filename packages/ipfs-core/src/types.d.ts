@@ -1,7 +1,6 @@
 import type { KeyType } from 'libp2p-crypto'
 import type PeerId from 'peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
-import type { Options as IPLDOptions } from 'ipld'
 import type Libp2p from 'libp2p'
 import type { Libp2pOptions } from 'libp2p'
 import type IPFSRepo from 'ipfs-repo'
@@ -10,6 +9,9 @@ import type Network from './components/network'
 import type { Options as NetworkOptions } from './components/network'
 import type Service from './utils/service'
 import type { CID } from 'multiformats/cid'
+import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultihashHasher } from 'multiformats/hashes/interface'
+import type { MultibaseCodec } from 'multiformats/codecs/interface'
 
 export interface Options {
   /**
@@ -92,12 +94,12 @@ export interface Options {
 
   /**
    * Modify the default IPLD config. This object
- * will be *merged* with the default config; it will not replace it. Check IPLD
- * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
- * on the available options. (Default: [`ipld.js`]
- * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
- * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
- * in browsers)
+   * will be *merged* with the default config; it will not replace it. Check IPLD
+   * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
+   * on the available options. (Default: [`ipld.js`]
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
+   * in browsers)
    */
   ipld?: Partial<IPLDOptions>
 
@@ -228,20 +230,28 @@ export interface MfsPreload {
 
 export type NetworkService = Service<NetworkOptions, Network>
 
-// TODO vmx 2021-03-31: Just temporary until js-dag-pb has porper types
-export interface PbLink {
- Name: string,
- Tsize: number,
- Hash: CID
-}
-
-export interface PbNode {
- Data: Uint8Array,
- Links: PbLink[]
-}
-
 export interface Block {
  cid: CID,
  bytes: Uint8Array
 }
 
+export type LoadBaseFn = (codeOrName: number | string) => Promise<MultibaseCodec<any>>
+export type LoadCodecFn = (codeOrName: number | string) => Promise<BlockCodec<any, any>>
+export type LoadHasherFn = (codeOrName: number | string) => Promise<MultihashHasher>
+
+export interface IPLDOptions {
+  loadBase: LoadBaseFn
+  loadCodec: LoadCodecFn
+  loadHasher: LoadHasherFn
+  bases: MultibaseCodec<any>[]
+  codecs: BlockCodec<any, any>[]
+  hashers: MultihashHasher[]
+}
+
+export interface BlockCodecStore {
+  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any. any>>
+}
+
+export interface MultihashHasherStore {
+  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any. any>>
+}

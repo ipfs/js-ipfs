@@ -24,20 +24,11 @@ const toTrail = async (context, path) => {
 
   const output = []
 
-  for await (const fsEntry of walkPath(path, context.blockStorage)) {
-    let size
-
-    // TODO: include `.size` property in unixfs-exporter output
-    if (fsEntry.node instanceof Uint8Array) {
-      size = fsEntry.node.length
-    } else {
-      size = fsEntry.node.size
-    }
-
+  for await (const fsEntry of walkPath(path, context.blockstore)) {
     output.push({
       name: fsEntry.name,
       cid: fsEntry.cid,
-      size,
+      size: fsEntry.size,
       type: fsEntry.type
     })
   }

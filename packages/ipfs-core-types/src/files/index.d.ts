@@ -1,5 +1,5 @@
 import { AbortOptions, IPFSPath } from '../utils'
-import CID, { CIDVersion } from 'cids'
+import { CID, CIDVersion } from 'multiformats/cid'
 import { CodecName } from 'multicodec'
 import { HashName } from 'multihashes'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'

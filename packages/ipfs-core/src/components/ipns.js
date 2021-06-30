@@ -58,7 +58,7 @@ class IPNSAPI {
    * initializeKeyspace feature.
    *
    * @param {Object} config
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('peer-id')} config.peerId
    * @param {import('libp2p/src/keychain')} config.keychain
    */
@@ -78,7 +78,7 @@ class IPNSAPI {
   /**
    * @param {Object} config
    * @param {import('libp2p')} config.libp2p
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('peer-id')} config.peerId
    * @param {import('libp2p/src/keychain')} config.keychain
    */

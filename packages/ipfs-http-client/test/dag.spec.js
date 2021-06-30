@@ -7,7 +7,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const ipldDagPb = require('ipld-dag-pb')
 const { DAGNode } = ipldDagPb
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const f = require('./utils/factory')()
 const ipfsHttpClient = require('../src')
 

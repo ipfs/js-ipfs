@@ -1,7 +1,7 @@
 'use strict'
 
 const errCode = require('err-code')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {Object} Pinnable

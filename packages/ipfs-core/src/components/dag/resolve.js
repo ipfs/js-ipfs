@@ -1,19 +1,21 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const { resolve } = require('../../utils')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ ipld, preload }) => {
+module.exports = ({ repo, codecs, preload }) => {
   /**
    * @type {import('ipfs-core-types/src/dag').API["resolve"]}
    */
-  async function resolve (ipfsPath, options = {}) {
+  async function dagResolve (ipfsPath, options = {}) {
     const {
       cid,
       path
@@ -36,7 +38,7 @@ module.exports = ({ ipld, preload }) => {
 
     if (options.path) {
       try {
-        for await (const { value, remainderPath } of ipld.resolve(cid, options.path, {
+        for await (const { value, remainderPath } of resolve(cid, options.path, codecs, repo, {
           signal: options.signal
         })) {
           if (!CID.isCID(value)) {
@@ -62,5 +64,5 @@ module.exports = ({ ipld, preload }) => {
     }
   }
 
-  return withTimeoutOption(resolve)
+  return withTimeoutOption(dagResolve)
 }

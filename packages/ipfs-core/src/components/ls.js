@@ -8,12 +8,12 @@ const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {Object} Context
- * @property {import('../block-storage')} blockStorage
+ * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../types').Preload} preload
  *
  * @param {Context} context
  */
-module.exports = function ({ blockStorage, preload }) {
+module.exports = function ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["ls"]}
    */
@@ -25,9 +25,9 @@ module.exports = function ({ blockStorage, preload }) {
       preload(CID.parse(pathComponents[0]))
     }
 
-    let ipfsPathOrCid = CID.asCID(legacyPath) || legacyPath
+    const ipfsPathOrCid = CID.asCID(legacyPath) || legacyPath
 
-    const file = await exporter(ipfsPathOrCid, blockStorage, options)
+    const file = await exporter(ipfsPathOrCid, repo.blocks, options)
 
     if (file.type === 'file') {
       yield mapFile(file, options)
@@ -36,7 +36,7 @@ module.exports = function ({ blockStorage, preload }) {
 
     if (file.type === 'directory') {
       if (options.recursive) {
-        for await (const child of recursive(file.cid, blockStorage, options)) {
+        for await (const child of recursive(file.cid, repo.blocks, options)) {
           if (file.cid.toString() === child.cid.toString()) {
             continue
           }

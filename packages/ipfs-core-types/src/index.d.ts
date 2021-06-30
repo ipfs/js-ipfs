@@ -18,6 +18,9 @@ import { API as RepoAPI } from './repo'
 import { API as StatsAPI } from './stats'
 import { API as SwarmAPI } from './swarm'
 import { AbortOptions, Await, AwaitIterable } from './utils'
+import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultihashHasher } from 'multiformats/hashes/interface'
+import type { MultibaseCodec } from 'multiformats/codecs/interface'
 
 interface RefsAPI extends Refs {
   local: Local
@@ -42,6 +45,21 @@ export interface IPFS extends RootAPI {
   repo: RepoAPI
   stats: StatsAPI
   swarm: SwarmAPI
+  bases: Bases
+  codecs: Codecs
+  hashers: Hashers
+}
+
+interface Bases {
+  getBase: (code: string) => Promise<MultibaseCodec<any>>
+}
+
+interface Codecs {
+  getCodec: (code: number | string) => Promise<BlockCodec<any, any>>
+}
+
+interface Hashers {
+  getHasher: (code: number | string) => Promise<MultihashHasher<any, any>>
 }
 
 export type {

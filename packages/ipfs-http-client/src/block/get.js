@@ -1,7 +1,6 @@
 'use strict'
 
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -28,7 +27,7 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    return new Block(new Uint8Array(await res.arrayBuffer()), cid)
+    return new Uint8Array(await res.arrayBuffer())
   }
   return get
 })

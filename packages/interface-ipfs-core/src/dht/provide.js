@@ -2,7 +2,7 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 

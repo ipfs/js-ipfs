@@ -34,7 +34,7 @@ const mfsLs = {
       query: Joi.object().keys({
         path: Joi.string().default('/'),
         long: Joi.boolean().default(false),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.cidBase().default('base32'),
         stream: Joi.boolean().default(false),
         timeout: Joi.timeout()
       })

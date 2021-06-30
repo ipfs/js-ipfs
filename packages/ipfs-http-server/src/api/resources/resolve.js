@@ -12,7 +12,7 @@ module.exports = {
       query: Joi.object().keys({
         path: Joi.string().required(),
         recursive: Joi.boolean().default(true),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.cidBase().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'path', {

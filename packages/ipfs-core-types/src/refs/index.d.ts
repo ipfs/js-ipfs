@@ -1,5 +1,5 @@
 import type { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import type CID from 'cids'
+import type { CID } from 'multiformts/cid'
 
 export type API<OptionExtension = {}> = {
   /**

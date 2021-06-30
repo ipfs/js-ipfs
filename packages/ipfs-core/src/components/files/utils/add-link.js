@@ -3,7 +3,6 @@
 // @ts-ignore
 const dagPb = require('@ipld/dag-pb')
 const { sha256, sha512 } = require('multiformats/hashes/sha2')
-const Block = require('multiformats/block')
 const { CID } = require('multiformats/cid')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const { UnixFS } = require('ipfs-unixfs')
@@ -24,12 +23,11 @@ const last = require('it-last')
 
 /**
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
  * @typedef {import('../').MfsContext} MfsContext
- * @typedef {import('../../../types').PbNode} PbNode
- * @typedef {import('../../../types').PbLink} PbLink
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
+ * @typedef {import('@ipld/dag-pb').PBLink} PBLink
  */
 
 /**
@@ -39,11 +37,11 @@ const last = require('it-last')
  * @param {string} options.name
  * @param {number} options.size
  * @param {number} options.shardSplitThreshold
- * @param {HashName} options.hashAlg
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  * @param {CID} [options.parentCid]
- * @param {PbNode} [options.parent]
+ * @param {PBNode} [options.parent]
  */
 const addLink = async (context, options) => {
   let parent = options.parent
@@ -59,8 +57,8 @@ const addLink = async (context, options) => {
     }
 
     log(`Loading parent node ${parentCid}`)
-    const block = await context.blockStorage.get(parentCid)
-    parent = dagPb.decode(block.bytes)
+    const block = await context.blockstore.get(parentCid)
+    parent = dagPb.decode(block)
   }
 
   if (!parent) {
@@ -77,6 +75,10 @@ const addLink = async (context, options) => {
 
   if (!options.size && options.size !== 0) {
     throw errCode(new Error('No child size passed to addLink'), 'EINVALIDCHILDSIZE')
+  }
+
+  if (!parent.Data) {
+    throw errCode(new Error('Parent node with no data passed to addLink'), 'ERR_INVALID_PARENT')
   }
 
   const meta = UnixFS.unmarshal(parent.Data)
@@ -115,8 +117,8 @@ const addLink = async (context, options) => {
  * @param {CID} options.cid
  * @param {string} options.name
  * @param {number} options.size
- * @param {PbNode} options.parent
- * @param {HashName} options.hashAlg
+ * @param {PBNode} options.parent
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  * @param {Mtime} [options.mtime]
@@ -124,8 +126,8 @@ const addLink = async (context, options) => {
  */
 const convertToShardedDirectory = async (context, options) => {
   const result = await createShard(context, options.parent.Links.map(link => ({
-    name: link.Name,
-    size: link.Tsize,
+    name: (link.Name || ''),
+    size: link.Tsize || 0,
     cid: link.Hash
   })).concat({
     name: options.name,
@@ -144,8 +146,8 @@ const convertToShardedDirectory = async (context, options) => {
  * @param {CID} options.cid
  * @param {string} options.name
  * @param {number} options.size
- * @param {PbNode} options.parent
- * @param {HashName} options.hashAlg
+ * @param {PBNode} options.parent
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  * @param {Mtime} [options.mtime]
@@ -161,6 +163,10 @@ const addToDirectory = async (context, options) => {
     Tsize: options.size,
     Hash: options.cid
   })
+
+  if (!options.parent.Data) {
+    throw errCode(new Error('Parent node with no data passed to addToDirectory'), 'ERR_INVALID_PARENT')
+  }
 
   const node = UnixFS.unmarshal(options.parent.Data)
 
@@ -184,39 +190,20 @@ const addToDirectory = async (context, options) => {
     Links: parentLinks
   })
 
-  let hasher
-  switch (options.hashAlg) {
-    case 'sha2-256':
-      hasher = sha256
-      break
-    case 'sha2-512':
-      hasher = sha512
-      break
-    default:
-      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
-  }
-
   // Persist the new parent PbNode
-  const block = await Block.encode({
-    value: options.parent,
-    codec: dagPb,
-    hasher
-  })
+  const hasher = await context.hashers.getHasher(options.hashAlg)
+  const buf = dagPb.encode(options.parent)
+  const hash = await hasher.digest(buf)
+  const cid = CID.create(options.cidVersion, dagPb.code, hash)
 
   if (options.flush) {
-    await context.blockStorage.put(block)
-  }
-
-  let cid = block.cid
-  if (options.cidVersion === 0) {
-    cid = cid.toV0()
+    await context.blockstore.put(cid, buf)
   }
 
   return {
     node: options.parent,
     cid,
-    // TODO vmx 2021-03-31: `size` should be removed completely
-    size: 0
+    size: buf.length
   }
 }
 
@@ -226,8 +213,8 @@ const addToDirectory = async (context, options) => {
  * @param {CID} options.cid
  * @param {string} options.name
  * @param {number} options.size
- * @param {PbNode} options.parent
- * @param {HashName} options.hashAlg
+ * @param {PBNode} options.parent
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  */
@@ -235,21 +222,19 @@ const addToShardedDirectory = async (context, options) => {
   const {
     shard, path
   } = await addFileToShardedDirectory(context, options)
-  const result = await last(shard.flush(context.blockStorage))
-  const block = await context.blockStorage.get(result.cid)
-  // TODO vmx 2021-03-31: this type annotation shouldn't be needed once js-dag-pb has proper types
-  /** @type {PbNode} */
-  const node = dagPb.decode(block.bytes)
+  const result = await last(shard.flush(context.blockstore))
+  const block = await context.blockstore.get(result.cid)
+  const node = dagPb.decode(block)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
   const parentLinks = options.parent.Links.filter((link) => {
     // TODO vmx 2021-03-31: Check that there cannot be multiple ones matching
     // Remove the old link
-    return link.Name.substring(0, 2) !== path[0].prefix
+    return (link.Name || '').substring(0, 2) !== path[0].prefix
   })
 
   const newLink = node.Links
-    .find(link => link.Name.substring(0, 2) === path[0].prefix)
+    .find(link => (link.Name || '').substring(0, 2) === path[0].prefix)
 
   if (!newLink) {
     throw new Error(`No link found with prefix ${path[0].prefix}`)
@@ -266,8 +251,8 @@ const addToShardedDirectory = async (context, options) => {
  * @param {CID} options.cid
  * @param {string} options.name
  * @param {number} options.size
- * @param {PbNode} options.parent
- * @param {HashName} options.hashAlg
+ * @param {PBNode} options.parent
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  */
 const addFileToShardedDirectory = async (context, options) => {
@@ -275,6 +260,10 @@ const addFileToShardedDirectory = async (context, options) => {
     name: options.name,
     cid: options.cid,
     size: options.size
+  }
+
+  if (!options.parent.Data) {
+    throw errCode(new Error('Parent node with no data passed to addFileToShardedDirectory'), 'ERR_INVALID_PARENT')
   }
 
   // start at the root bucket and descend, loading nodes as we go
@@ -336,7 +325,7 @@ const addFileToShardedDirectory = async (context, options) => {
     }
 
     const link = node.Links
-      .find(link => link.Name.substring(0, 2) === segment.prefix)
+      .find(link => (link.Name || '').substring(0, 2) === segment.prefix)
 
     if (!link) {
       // prefix is new, file will be added to the current bucket
@@ -354,7 +343,7 @@ const addFileToShardedDirectory = async (context, options) => {
       break
     }
 
-    if (link.Name.length > 2) {
+    if ((link.Name || '').length > 2) {
       // another file had the same prefix, will be replaced with a subshard
       log(`Link ${link.Name} ${link.Hash} will be replaced with a subshard`)
       index = path.length
@@ -364,8 +353,8 @@ const addFileToShardedDirectory = async (context, options) => {
 
     // load sub-shard
     log(`Found subshard ${segment.prefix}`)
-    const block = await context.blockStorage.get(link.Hash)
-    const subShard = dagPb.decode(block.bytes)
+    const block = await context.blockstore.get(link.Hash)
+    const subShard = dagPb.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[index]) {
@@ -404,7 +393,7 @@ const addFileToShardedDirectory = async (context, options) => {
 
 /**
  * @param {{ pos: number, bucket: Bucket }} position
- * @returns {{ bucket: Bucket, prefix: string, node?: PbNode }[]}
+ * @returns {{ bucket: Bucket, prefix: string, node?: PBNode }[]}
  */
 const toBucketPath = (position) => {
   const path = [{

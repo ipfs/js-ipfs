@@ -4,7 +4,6 @@ const log = require('debug')('ipfs:mfs:utils:update-tree')
 const addLink = require('./add-link')
 const {
   decode
-// @ts-ignore - TODO vmx 2021-03-31
 } = require('@ipld/dag-pb')
 
 const defaultOptions = {
@@ -12,9 +11,8 @@ const defaultOptions = {
 }
 
 /**
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('./to-trail').MfsTrail} MfsTrail
  */
@@ -26,7 +24,7 @@ const defaultOptions = {
  * @param {MfsTrail[]} trail
  * @param {object} options
  * @param {number} options.shardSplitThreshold
- * @param {HashName} options.hashAlg
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  */
@@ -39,8 +37,8 @@ const updateTree = async (context, trail, options) => {
   let index = 0
   let child
 
-  for await (const block of context.blockStorage.getMany(trail.map(node => node.cid))) {
-    const node = decode(block.bytes)
+  for await (const block of context.blockstore.getMany(trail.map(node => node.cid))) {
+    const node = decode(block)
     const cid = trail[index].cid
     const name = trail[index].name
     index++
@@ -49,9 +47,7 @@ const updateTree = async (context, trail, options) => {
       child = {
         cid,
         name,
-        // TODO vmx 2021-03-04: Check if the size should be 0 or the actual size
-        size: block.bytes.length
-        // size: 0
+        size: block.length
       }
 
       continue

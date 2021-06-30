@@ -7,15 +7,17 @@ const createVersion = require('./version')
 class RepoAPI {
   /**
    * @param {Object} config
-   * @param {import('../gc-lock').GCLock} config.gcLock
-   * @param {import('ipfs-core-types/src/pin').API} config.pin
-   * @param {import('ipfs-repo')} config.repo
-   * @param {import('ipfs-core-types/src/refs').API["refs"]} config.refs
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
-  constructor ({ gcLock, pin, repo, refs }) {
-    this.gc = createGC({ gcLock, pin, refs, repo })
+  constructor ({ repo }) {
+    this.gc = createGC({ repo })
     this.stat = createStat({ repo })
     this.version = createVersion({ repo })
+
+    /**
+     * @param {string} addr
+     */
+    this.setApiAddr = (addr) => repo.apiAddr.set(addr)
   }
 }
 module.exports = RepoAPI

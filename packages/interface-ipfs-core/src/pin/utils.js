@@ -2,7 +2,7 @@
 
 const { expect } = require('../utils/mocha')
 const loadFixture = require('aegir/utils/fixtures')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const drain = require('it-drain')
 const map = require('it-map')
 const fromString = require('uint8arrays/from-string')

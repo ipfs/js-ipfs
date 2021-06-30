@@ -1,5 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import CID, { CIDVersion } from 'cids'
+import { CID, CIDVersion } from 'multiformats/cid'
 import { CodecName } from 'multicodec'
 import { HashName } from 'multihashes'
 
@@ -65,43 +65,6 @@ export interface API<OptionExtension = {}> {
   put: (node: any, options?: PutOptions & OptionExtension) => Promise<CID>
 
   /**
-   * Enumerate all the entries in a graph
-   *
-   * @example
-   * ```js
-   * // example obj
-   * const obj = {
-   *   a: 1,
-   *   b: [1, 2, 3],
-   *   c: {
-   *     ca: [5, 6, 7],
-   *     cb: 'foo'
-   *   }
-   * }
-   *
-   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
-   * console.log(cid.toString())
-   * // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
-   *
-   * const result = await ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5')
-   * console.log(result)
-   * // Logs:
-   * // a
-   * // b
-   * // b/0
-   * // b/1
-   * // b/2
-   * // c
-   * // c/ca
-   * // c/ca/0
-   * // c/ca/1
-   * // c/ca/2
-   * // c/cb
-   * ```
-   */
-  tree: (cid: CID, options?: TreeOptions & OptionExtension) => Promise<string[]>
-
-  /**
    * Returns the CID and remaining path of the node at the end of the passed IPFS path
    *
    * @example
@@ -158,22 +121,17 @@ export interface GetResult {
 
 export interface PutOptions extends AbortOptions, PreloadOptions {
   /**
-   *  CID to store the value with
-   */
-  cid?: CID
-
-  /**
-   * The codec to use to create the CID (ignored if `cid` is passed)
+   * The codec to use to create the CID (defaults to 'dag-cbor')
    */
   format?: CodecName
 
   /**
-   * Multihash hashing algorithm to use (ignored if `cid` is passed)
+   * Multihash hashing algorithm to use (defaults to 'sha2-256')
    */
   hashAlg?: HashName
 
   /**
-   * The version to use to create the CID (ignored if `cid` is passed)
+   * The version to use to create the CID (default to 1)
    */
   version?: CIDVersion
 

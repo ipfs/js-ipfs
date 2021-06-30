@@ -28,11 +28,9 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
-    "cids": "^1.1.6",
-    "interface-datastore": "^4.0.0",
-    "ipld-block": "^0.11.1",
+    "interface-datastore": "^5.0.0",
     "multiaddr": "multiformats/js-multiaddr#chore/update-to-new-multiformats",
-    "multibase": "^4.0.2"
+    "multiformats": "^9.1.0"
   },
   "devDependencies": {
     "aegir": "^33.0.0"

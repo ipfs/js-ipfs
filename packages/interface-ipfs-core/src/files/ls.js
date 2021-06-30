@@ -3,7 +3,7 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
 const { randomBytes } = require('iso-random-stream')

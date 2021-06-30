@@ -1,5 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
-import CID, { CIDVersion } from 'cids'
+import { CID, CIDVersion } from 'multiformats/cid'
 import { Mtime } from 'ipfs-unixfs'
 import { Multiaddr } from 'multiaddr'
 import { BaseName } from 'multibase'
@@ -334,7 +334,7 @@ export interface PingResult {
 
 export interface ResolveOptions extends AbortOptions {
   recursive?: boolean
-  cidBase?: BaseName
+  cidBase?: string
 }
 
 export interface MountOptions extends AbortOptions {

@@ -3,7 +3,7 @@
 
 const { clearRemotePins, addRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

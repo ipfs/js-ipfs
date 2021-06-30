@@ -1,11 +1,12 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {Object} EncodedCID
- * @property {string} codec
- * @property {Uint8Array} multihash
+ * @property {number} code
+ * @property {object} multihash
+ * @property {Uint8Array} multihash.digest
  * @property {number} version
  */
 
@@ -20,7 +21,7 @@ const CID = require('cids')
  */
 const encodeCID = (cid, transfer) => {
   if (transfer) {
-    transfer.push(cid.multihash.buffer)
+    transfer.push(cid.bytes)
   }
   return cid
 }

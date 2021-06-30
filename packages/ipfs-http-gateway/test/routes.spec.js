@@ -5,7 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const FileType = require('file-type')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const http = require('./utils/http')
 const sinon = require('sinon')
 const fs = require('fs')

@@ -7,7 +7,7 @@ const { nanoid } = require('nanoid')
 const all = require('it-all')
 const last = require('it-last')
 const drain = require('it-drain')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

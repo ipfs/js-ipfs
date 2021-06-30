@@ -5,13 +5,8 @@ const mha = require('multihashing-async')
 const mh = mha.multihash
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const {
-  cidToString
-} = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
-const Block = require('ipld-block')
-const CID = require('cids')
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj
@@ -174,10 +169,11 @@ exports.put = {
           // the node is an uncommon format which the client should have
           // serialized so add it to the block store and fetch it deserialized
           // before continuing
-          const hash = await mha(data, request.query.hash)
-          const cid = new CID(request.query.cidVersion, format, hash)
-
-          await request.server.app.ipfs.block.put(new Block(data, cid))
+          const cid = await request.server.app.ipfs.block.put(data, {
+            version: request.query.cidVersion,
+            format,
+            mhtype: request.query.hash
+          })
 
           const {
             value
@@ -202,7 +198,7 @@ exports.put = {
         inputEncoding: Joi.string().default('json'),
         pin: Joi.boolean().default(false),
         hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.cidBase().default('base32'),
         cidVersion: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
@@ -265,9 +261,7 @@ exports.put = {
 
     return h.response({
       Cid: {
-        '/': cidToString(cid, {
-          base: cidBase
-        })
+        '/': cid.toString(await ipfs.bases.getBase(cidBase))
       }
     })
   }
@@ -282,7 +276,7 @@ exports.resolve = {
       },
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.cidBase().default('base32'),
         timeout: Joi.timeout(),
         path: Joi.string()
       })
@@ -329,9 +323,7 @@ exports.resolve = {
 
       return h.response({
         Cid: {
-          '/': cidToString(result.cid, {
-            base: cidBase
-          })
+          '/': cid.toString(await ipfs.bases.getBase(cidBase))
         },
         RemPath: result.remainderPath
       })

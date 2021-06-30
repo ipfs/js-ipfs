@@ -14,7 +14,7 @@ const mfsStat = {
         hash: Joi.boolean().default(false),
         size: Joi.boolean().default(false),
         withLocal: Joi.boolean().default(false),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.cidBase().default('base32'),
         timeout: Joi.timeout()
       })
     }

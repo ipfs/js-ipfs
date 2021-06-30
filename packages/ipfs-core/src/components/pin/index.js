@@ -6,26 +6,20 @@ const createLs = require('./ls')
 const createRm = require('./rm')
 const createRmAll = require('./rm-all')
 
-/**
- * @typedef {import('../gc-lock').GCLock} GCLock
- * @typedef {import('./pin-manager')} PinManager
- */
-
 class PinAPI {
   /**
    * @param {Object} config
-   * @param {GCLock} config.gcLock
-   * @param {import('ipld')} config.ipld
-   * @param {PinManager} config.pinManager
+   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
-  constructor ({ gcLock, ipld, pinManager }) {
-    const addAll = createAddAll({ gcLock, ipld, pinManager })
+  constructor ({ codecs, repo }) {
+    const addAll = createAddAll({ codecs, repo })
     this.addAll = addAll
     this.add = createAdd({ addAll })
-    const rmAll = createRmAll({ gcLock, ipld, pinManager })
+    const rmAll = createRmAll({ codecs, repo })
     this.rmAll = rmAll
     this.rm = createRm({ rmAll })
-    this.ls = createLs({ ipld, pinManager })
+    this.ls = createLs({ codecs, repo })
 
     /** @type {import('ipfs-core-types/src/pin/remote').API} */
     this.remote = {

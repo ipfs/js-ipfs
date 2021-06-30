@@ -8,7 +8,7 @@ const dagCBOR = require('ipld-dag-cbor')
 const all = require('it-all')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

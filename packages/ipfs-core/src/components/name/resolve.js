@@ -3,7 +3,7 @@
 const debug = require('debug')
 const errcode = require('err-code')
 const { mergeOptions } = require('../../utils')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 // @ts-ignore no types
 const isDomain = require('is-domain-name')
 const uint8ArrayToString = require('uint8arrays/to-string')
@@ -62,7 +62,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
 
     const [namespace, hash, ...remainder] = name.slice(1).split('/')
     try {
-      new CID(hash) // eslint-disable-line no-new
+      CID.parse(hash) // eslint-disable-line no-new
     } catch (err) {
       // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
       if (isDomain(hash)) {

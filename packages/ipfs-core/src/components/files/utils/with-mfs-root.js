@@ -2,11 +2,8 @@
 
 const { CID } = require('multiformats/cid')
 const { UnixFS } = require('ipfs-unixfs')
-// @ts-ignore
 const dagPb = require('@ipld/dag-pb')
 const { sha256 } = require('multiformats/hashes/sha2')
-const Block = require('multiformats/block')
-// @ts-ignore
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
 const errCode = require('err-code')
 
@@ -43,14 +40,13 @@ const loadMfsRoot = async (context, options) => {
     }
 
     log('Creating new MFS root')
-    const node = dagPb.prepare({ Data: new UnixFS({ type: 'directory' }).marshal() })
-    const block = await Block.encode({
-      value: node,
-      codec: dagPb,
-      hasher: sha256
+    const buf = dagPb.encode({
+      Data: new UnixFS({ type: 'directory' }).marshal(),
+      Links: []
     })
-    cid = block.cid.toV0()
-    await context.blockStorage.put(block)
+    const hash = await sha256.digest(buf)
+    cid = CID.createV0(hash)
+    await context.blockstore.put(cid, buf)
 
     if (options && options.signal && options.signal.aborted) {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })

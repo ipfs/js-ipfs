@@ -2,8 +2,8 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const multihashing = require('multihashing-async')
-const CID = require('cids')
+const { identity } = require('multiformats/hashes/identity')
+const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
@@ -35,18 +35,11 @@ module.exports = (common, options) => {
     })
 
     it('should get by CID object', async () => {
-      const cid = new CID(hash)
+      const cid = CID.parse(hash)
       const block = await ipfs.block.get(cid)
 
       expect(block.data).to.eql(uint8ArrayFromString('blorb'))
       expect(block.cid.multihash).to.eql(cid.multihash)
-    })
-
-    it('should get by CID in string', async () => {
-      const block = await ipfs.block.get(multihashing.multihash.toB58String(hash))
-
-      expect(block.data).to.eql(uint8ArrayFromString('blorb'))
-      expect(block.cid.multihash).to.eql(hash)
     })
 
     it('should get an empty block', async () => {
@@ -91,8 +84,8 @@ module.exports = (common, options) => {
 
     it('should get a block with an identity CID, without putting first', async () => {
       const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
-      const identityHash = await multihashing(identityData, 'identity')
-      const identityCID = new CID(1, 'dag-cbor', identityHash)
+      const identityHash = await identity.encode(identityData)
+      const identityCID = CID.createV1(0x71, identityHash)
       const block = await ipfs.block.get(identityCID)
       expect(block.data).to.eql(identityData)
     })

@@ -1,7 +1,7 @@
 /* eslint-env mocha, browser */
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { multiaddr } = require('multiaddr')
 const multibase = require('multibase')
 const multicodec = require('multicodec')

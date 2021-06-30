@@ -18,7 +18,7 @@ const errCode = require('err-code')
  *
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('../types').Options} IPFSOptions
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('../types').Print} Print
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('ipfs-bitswap')} Bitswap

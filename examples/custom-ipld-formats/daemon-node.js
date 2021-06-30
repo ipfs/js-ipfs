@@ -17,7 +17,7 @@ const IPFSDaemon = require('ipfs-daemon')
 const multihashing = require('multihashing-async')
 const multihash = multihashing.multihash
 const multicodec = require('multicodec')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const ipfsHttpClient = require('ipfs-http-client')
 const uint8ArrayToString = require('uint8arrays/to-string')
 

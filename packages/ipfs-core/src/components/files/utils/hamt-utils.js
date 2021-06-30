@@ -1,9 +1,6 @@
 'use strict'
 
-// @ts-ignore - TODO vmx 2021-03-31
 const dagPb = require('@ipld/dag-pb')
-const Block = require('multiformats/block')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const {
   Bucket,
   createHAMT
@@ -15,29 +12,32 @@ const defaultImporterOptions = require('ipfs-unixfs-importer/src/options')
 const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
 const { UnixFS } = require('ipfs-unixfs')
 const last = require('it-last')
+const { CID } = require('multiformats/cid')
 
 /**
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('../').MfsContext} MfsContext
- * @typedef {import('../../../types').PbNode} PbNode
- * @typedef {import('../../../types').PbLink} PbLink
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
+ * @typedef {import('@ipld/dag-pb').PBLink} PBLink
  */
 
 /**
  * @param {MfsContext} context
- * @param {PbLink[]} links
+ * @param {PBLink[]} links
  * @param {Bucket<any>} bucket
  * @param {object} options
- * @param {PbNode} options.parent
+ * @param {PBNode} options.parent
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
- * @param {HashName} options.hashAlg
+ * @param {string} options.hashAlg
  */
 const updateHamtDirectory = async (context, links, bucket, options) => {
   const importerOptions = defaultImporterOptions()
+
+  if (!options.parent.Data) {
+    throw new Error('Could not update HAMT directory because parent had no data')
+  }
 
   // update parent with new bit field
   const data = Uint8Array.from(bucket._children.bitField().reverse())
@@ -51,48 +51,28 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     mtime: node.mtime
   })
 
-  let hasher
-  switch (options.hashAlg) {
-    case 'sha2-256':
-      hasher = sha256
-      break
-    case 'sha2-512':
-      hasher = sha512
-      break
-    default:
-      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
-  }
-
-  const parent = dagPb.prepare({
+  const hasher = await context.hashers.getHasher(options.hashAlg)
+  const parent = {
     Data: dir.marshal(),
     Links: links
-  })
-
-  const parentBlock = await Block.encode({
-    value: parent,
-    codec: dagPb,
-    hasher
-  })
+  }
+  const buf = dagPb.encode(parent)
+  const hash = await hasher.digest(buf)
+  const cid = CID.create(options.cidVersion, dagPb.code, hash)
 
   if (options.flush) {
-    await context.blockStorage.put(parentBlock)
-  }
-
-  let cid = parentBlock.cid
-  if (options.cidVersion === 0) {
-    cid = cid.toV0()
+    await context.blockstore.put(cid, buf)
   }
 
   return {
     node: parent,
     cid,
-    // TODO vmx 2021-03-04: Decide whether the size matters or not
-    size: parent.Links.reduce((sum, link) => sum + link.Tsize, parentBlock.bytes.length)
+    size: links.reduce((sum, link) => sum + (link.Tsize || 0), buf.length)
   }
 }
 
 /**
- * @param {PbLink[]} links
+ * @param {PBLink[]} links
  * @param {Bucket<any>} rootBucket
  * @param {Bucket<any>} parentBucket
  * @param {number} positionAtParent
@@ -111,7 +91,7 @@ const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtPare
 }
 
 /**
- * @param {PbLink[]} links
+ * @param {PBLink[]} links
  */
 const recreateInitialHamtLevel = async (links) => {
   const importerOptions = defaultImporterOptions()
@@ -126,15 +106,17 @@ const recreateInitialHamtLevel = async (links) => {
 }
 
 /**
- * @param {PbLink[]} links
+ * @param {PBLink[]} links
  * @param {Bucket<any>} bucket
  * @param {Bucket<any>} rootBucket
  */
 const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
   await Promise.all(
     links.map(link => {
-      if (link.Name.length === 2) {
-        const pos = parseInt(link.Name, 16)
+      const linkName = (link.Name || '')
+
+      if (linkName.length === 2) {
+        const pos = parseInt(linkName, 16)
 
         bucket._putObjectAt(pos, new Bucket({
           hash: rootBucket._options.hash,
@@ -144,7 +126,7 @@ const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
         return Promise.resolve()
       }
 
-      return rootBucket.put(link.Name.substring(2), {
+      return rootBucket.put(linkName.substring(2), {
         size: link.Tsize,
         cid: link.Hash
       })
@@ -166,7 +148,7 @@ const toPrefix = (position) => {
 /**
  * @param {MfsContext} context
  * @param {string} fileName
- * @param {PbNode} rootNode
+ * @param {PBNode} rootNode
  */
 const generatePath = async (context, fileName, rootNode) => {
   // start at the root bucket and descend, loading nodes as we go
@@ -174,7 +156,7 @@ const generatePath = async (context, fileName, rootNode) => {
   const position = await rootBucket._findNewBucketAndPos(fileName)
 
   // the path to the root bucket
-  /** @type {{ bucket: Bucket<any>, prefix: string, node?: PbNode }[]} */
+  /** @type {{ bucket: Bucket<any>, prefix: string, node?: PBNode }[]} */
   const path = [{
     bucket: position.bucket,
     prefix: toPrefix(position.pos)
@@ -204,7 +186,7 @@ const generatePath = async (context, fileName, rootNode) => {
 
     // find prefix in links
     const link = segment.node.Links
-      .filter(link => link.Name.substring(0, 2) === segment.prefix)
+      .filter(link => (link.Name || '').substring(0, 2) === segment.prefix)
       .pop()
 
     // entry was not in shard
@@ -225,8 +207,8 @@ const generatePath = async (context, fileName, rootNode) => {
 
     // found subshard
     log(`Found subshard ${segment.prefix}`)
-    const block = await context.blockStorage.get(link.Hash)
-    const node = dagPb.decode(block.bytes)
+    const block = await context.blockstore.get(link.Hash)
+    const node = dagPb.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[i + 1]) {
@@ -299,7 +281,7 @@ const createShard = async (context, contents, options = {}) => {
     })
   }
 
-  return last(shard.flush(context.blockStorage))
+  return last(shard.flush(context.blockstore))
 }
 
 module.exports = {

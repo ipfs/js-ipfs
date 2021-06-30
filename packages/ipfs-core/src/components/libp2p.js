@@ -10,7 +10,7 @@ const pkgversion = require('../../package.json').version
  * @typedef {Object} KeychainConfig
  * @property {string} [pass]
  *
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P

@@ -3,7 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/utils/fixtures')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')

@@ -26,7 +26,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = ({ blockStorage, repo }) => {
+module.exports = (context) => {
   /**
    * @type {import('ipfs-core-types/src/files').API["read"]}
    */
@@ -36,8 +36,8 @@ module.exports = ({ blockStorage, repo }) => {
 
     return {
       [Symbol.asyncIterator]: async function * read () {
-        const mfsPath = await toMfsPath({ blockStorage, repo }, path, options)
-        const result = await exporter(mfsPath.mfsPath, blockStorage)
+        const mfsPath = await toMfsPath(context, path, options)
+        const result = await exporter(mfsPath.mfsPath, context.blockstore)
 
         if (result.type !== 'file') {
           throw errCode(new Error(`${path} was not a file`), 'ERR_NOT_FILE')

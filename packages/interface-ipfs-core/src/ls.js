@@ -4,7 +4,7 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const testTimeout = require('./utils/test-timeout')
 
 const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`

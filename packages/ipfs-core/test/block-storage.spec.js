@@ -3,7 +3,6 @@
 
 const { expect } = require('aegir/utils/chai')
 
-const IpldBlock = require('ipld-block')
 const range = require('lodash.range')
 const all = require('it-all')
 const rawCodec = require('multiformats/codecs/raw')
@@ -16,7 +15,7 @@ const drain = require('it-drain')
 const createTempRepo = require('./utils/create-repo-nodejs.js')
 
 /**
- * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  */
 
 const BlockStorage = require('../src/block-storage.js')
@@ -173,7 +172,7 @@ describe('block-storage', () => {
          * @param {CID} cid
          */
         get (cid) {
-          return new IpldBlock(uint8ArrayFromString('secret'), cid)
+          return uint8ArrayFromString('secret')
         }
       }
 

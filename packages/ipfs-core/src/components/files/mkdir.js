@@ -13,10 +13,10 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('../../types').PbNode} PbNode
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
@@ -90,7 +90,7 @@ module.exports = (context) => {
       const subPath = `/ipfs/${root}/${subPathComponents.join('/')}`
 
       try {
-        parent = await exporter(subPath, context.blockStorage)
+        parent = await exporter(subPath, context.blockstore)
 
         if (parent.type !== 'file' && parent.type !== 'directory') {
           throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
@@ -138,8 +138,8 @@ module.exports = (context) => {
 /**
  * @param {MfsContext} context
  * @param {string} childName
- * @param {{ cid: CID, node: { size: number }}} emptyDir
- * @param {{ cid?: CID, node?: PbNode }} parent
+ * @param {{ cid: CID, node?: PBNode }} emptyDir
+ * @param {{ cid?: CID, node?: PBNode }} parent
  * @param {{ name: string, cid: CID }[]} trail
  * @param {DefaultOptions} options
  */

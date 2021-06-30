@@ -3,7 +3,7 @@
 /* eslint-env browser */
 
 const Client = require('./client')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,

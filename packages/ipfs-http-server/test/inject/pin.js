@@ -7,7 +7,7 @@ const multibase = require('multibase')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const allNdjson = require('../utils/all-ndjson')
 const { AbortSignal } = require('native-abort-controller')
 

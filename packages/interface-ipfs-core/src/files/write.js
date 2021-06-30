@@ -6,7 +6,7 @@ const uint8ArrayConcat = require('uint8arrays/concat')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
-const multihash = require('multihashing-async').multihash
+const { sha512 } = require('multiformats/hashes/sha2')
 const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
@@ -570,10 +570,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-512'
       })
 
-      await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.multihash')
-        .that.satisfies(hash => {
-          return multihash.decode(hash).name === 'sha2-512'
-        })
+      await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.multihash.code', sha512.code)
 
       const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 

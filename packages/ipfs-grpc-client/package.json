@@ -34,7 +34,6 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.14.0",
     "change-case": "^4.1.1",
-    "cids": "^1.1.6",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.5.2",

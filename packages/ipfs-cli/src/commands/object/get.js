@@ -1,7 +1,6 @@
 'use strict'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
+const dagPB = require('@ipld/dag-pb')
 const { default: parseDuration } = require('parse-duration')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const {
@@ -26,7 +25,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -37,9 +36,9 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {'base64' | 'text' | 'hex'} argv.dataEncoding
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
@@ -60,15 +59,18 @@ module.exports = {
       encoding = 'base16'
     }
 
+    const buf = dagPB.encode(node)
+    const base = await ipfs.bases.getBase(cidBase)
+
     const answer = {
-      Data: uint8ArrayToString(node.Data, encoding),
-      Hash: cidToString(key, { base: cidBase, upgrade: false }),
-      Size: node.size,
+      Data: node.Data ? uint8ArrayToString(node.Data, encoding) : '',
+      Hash: key.toString(base),
+      Size: buf.length,
       Links: node.Links.map((l) => {
         return {
           Name: stripControlCharacters(l.Name),
           Size: l.Tsize,
-          Hash: cidToString(l.Hash, { base: cidBase, upgrade: false })
+          Hash: l.Hash.toString(base)
         }
       })
     }

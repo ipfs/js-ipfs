@@ -6,9 +6,8 @@ const { nanoid } = require('nanoid')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
-const CID = require('cids')
-const mh = require('multihashing-async').multihash
-const Block = require('ipld-block')
+const { CID } = require('multiformats/cid')
+const { identity } = require('multiformats/hashes/identity')
 const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
@@ -165,8 +164,11 @@ module.exports = (common, options) => {
     it('stats an identity CID', async () => {
       const data = uint8ArrayFromString('derp')
       const path = `/test-${nanoid()}/identity.node`
-      const cid = new CID(1, 'identity', mh.encode(data, 'identity'))
-      await ipfs.block.put(new Block(data, cid))
+      const hash = await identity.digest(data)
+      const cid = CID.createV1(identity.code, hash)
+      await ipfs.block.put(data, {
+        mhtype: 'identity'
+      })
       await ipfs.files.cp(`/ipfs/${cid}`, path, {
         parents: true
       })

@@ -5,7 +5,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const { fixtures } = require('./utils')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const last = require('it-last')
@@ -13,7 +13,6 @@ const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -31,8 +30,8 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfs = (await common.spawn()).api
-      await drain(importer([{ content: fixtures.smallFile.data }], ipfs.blockStorage))
-      await drain(importer([{ content: fixtures.bigFile.data }], ipfs.blockStorage))
+      await drain(importer([{ content: fixtures.smallFile.data }], ipfs.block))
+      await drain(importer([{ content: fixtures.bigFile.data }], ipfs.block))
     })
 
     after(() => common.clean())
@@ -62,28 +61,28 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.blockStorage))
+      const res = await all(importer([{ content: input }], ipfs.block))
 
       const cidv0 = res[0].cid
       expect(cidv0.version).to.equal(0)
 
       const cidv1 = cidv0.toV1()
 
-      const output = await all(ipfs.get(asLegacyCid(cidv1)))
+      const output = await all(ipfs.get(cidv1))
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 
     it('should get a file added as CIDv1 with a CIDv0', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.blockStorage, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
 
       const cidv0 = cidv1.toV0()
 
-      const output = await all(ipfs.get(asLegacyCid(cidv0)))
+      const output = await all(ipfs.get(cidv0))
       expect(uint8ArrayConcat(await all(output[0].content))).to.eql(input)
     })
 
@@ -128,7 +127,7 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(importer(dirs, ipfs.blockStorage))
+      const res = await all(importer(dirs, ipfs.block))
       const root = res[res.length - 1]
 
       expect(root.path).to.equal('test-folder')
@@ -185,13 +184,13 @@ module.exports = (common, options) => {
         content('jungle.txt', 'foo/bar/jungle.txt')
       ]
 
-      const res = await all(importer(dirs, ipfs.blockStorage))
+      const res = await all(importer(dirs, ipfs.block))
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal('QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g')
 
       let files = await all(
-        map(ipfs.get(asLegacyCid(root.cid)), async ({ path, content }) => {
+        map(ipfs.get(root.cid), async ({ path, content }) => {
           content = content ? uint8ArrayToString(uint8ArrayConcat(await all(content))) : null
           return { path, content }
         })
@@ -226,7 +225,7 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      const fileAdded = await last(importer([file], ipfs.blockStorage))
+      const fileAdded = await last(importer([file], ipfs.block))
       expect(fileAdded).to.have.property('path', 'a')
 
       const files = await all(ipfs.get(`/ipfs/${fileAdded.cid}/testfile.txt`))

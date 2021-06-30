@@ -1,7 +1,6 @@
-import CID from 'cids'
+import { CID } from 'multiformts/cid'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
 import { Options as DatastoreOptions, Query, KeyQuery } from 'interface-datastore'
-import Block from 'ipld-block'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
   | FileEntry<Content>

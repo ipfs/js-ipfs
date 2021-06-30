@@ -6,7 +6,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

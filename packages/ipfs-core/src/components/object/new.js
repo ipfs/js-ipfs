@@ -1,19 +1,17 @@
 'use strict'
 
-const {
-  DAGNode
-} = require('ipld-dag-pb')
-const multicodec = require('multicodec')
-const mh = require('multihashing-async').multihash
+const dagPb = require('@ipld/dag-pb')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { UnixFS } = require('ipfs-unixfs')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const { CID } = require('multiformats/cid')
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ ipld, preload }) => {
+module.exports = ({ repo, preload }) => {
   /**
    * @type {import('ipfs-core-types/src/object').API["new"]}
    */
@@ -30,11 +28,14 @@ module.exports = ({ ipld, preload }) => {
       data = new Uint8Array(0)
     }
 
-    const node = new DAGNode(data)
+    const buf = dagPb.encode({
+      Data: data,
+      Links: []
+    })
+    const hash = await sha256.digest(buf)
+    const cid = CID.createV0(hash)
 
-    const cid = await ipld.put(node, multicodec.DAG_PB, {
-      cidVersion: 0,
-      hashAlg: mh.names['sha2-256'],
+    await repo.blocks.put(cid, buf, {
       signal: options.signal
     })
 

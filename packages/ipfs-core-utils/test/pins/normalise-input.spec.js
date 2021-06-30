@@ -5,7 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const normalise = require('../../src/pins/normalise-input')
 const all = require('it-all')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
 const PLAIN_CID = () => new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')

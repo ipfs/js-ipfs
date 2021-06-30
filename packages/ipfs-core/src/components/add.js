@@ -1,7 +1,6 @@
 'use strict'
 
 const last = require('it-last')
-const asLegacyCid = require('ipfs-core-utils/src/as-legacy-cid')
 
 /**
  * @param {Object} context
@@ -21,10 +20,7 @@ module.exports = ({ addAll }) => {
       throw Error('Failed to add a file, if you see this please report a bug')
     }
 
-    const legacyResult = result
-    legacyResult.cid = asLegacyCid(result.cid)
-
-    return legacyResult
+    return result
   }
 
   return add

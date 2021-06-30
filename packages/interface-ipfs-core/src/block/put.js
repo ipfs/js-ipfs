@@ -2,9 +2,8 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const Block = require('ipld-block')
-const multihash = require('multihashing-async').multihash
-const CID = require('cids')
+const { base58btc } = require('multiformats/bases/base58')
+const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 
@@ -30,59 +29,36 @@ module.exports = (common, options) => {
       const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
       const blob = uint8ArrayFromString('blorb')
 
-      const block = await ipfs.block.put(blob)
+      const cid = await ipfs.block.put(blob)
 
-      expect(block.data).to.be.eql(blob)
-      expect(block.cid.multihash).to.eql(multihash.fromB58String(expectedHash))
-    })
-
-    it('should put a buffer, using CID', async () => {
-      const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-      const cid = new CID(expectedHash)
-      const blob = uint8ArrayFromString('blorb')
-
-      const block = await ipfs.block.put(blob, { cid: cid })
-
-      expect(block.data).to.be.eql(blob)
-      expect(block.cid.multihash).to.eql(multihash.fromB58String(expectedHash))
-    })
-
-    it('should put a buffer, using CID string', async () => {
-      const expectedCid = 'bafyreietui4xdkiu4xvmx4fi2jivjtndbhb4drzpxomrjvd4mdz4w2avra'
-      const blob = uint8ArrayFromString(JSON.stringify({ hello: 'world' }))
-
-      const block = await ipfs.block.put(blob, { cid: expectedCid })
-
-      expect(block.data).to.be.eql(blob)
-      expect(block.cid.toString()).to.eql(expectedCid)
+      expect(cid.multihash.bytes).to.equalBytes(base58btc.decode(`z${expectedHash}`))
     })
 
     it('should put a buffer, using options', async () => {
       const blob = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const block = await ipfs.block.put(blob, {
+      const cid = await ipfs.block.put(blob, {
         format: 'raw',
         mhtype: 'sha2-512',
         version: 1,
         pin: true
       })
 
-      expect(block.data).to.be.eql(blob)
-      expect(block.cid.version).to.equal(1)
-      expect(block.cid.codec).to.equal('raw')
-      expect(multihash.decode(block.cid.multihash).name).to.equal('sha2-512')
-      expect(await all(ipfs.pin.ls({ paths: block.cid }))).to.have.lengthOf(1)
+      expect(cid.version).to.equal(1)
+      expect(cid.code).to.equal(0x55)
+      expect(cid.multihash.codec).to.equal(0x13)
+
+      expect(await all(ipfs.pin.ls({ paths: cid }))).to.have.lengthOf(1)
     })
 
     it('should put a Block instance', async () => {
       const expectedHash = 'QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'
-      const cid = new CID(expectedHash)
-      const b = new Block(uint8ArrayFromString('blorb'), cid)
+      const expectedCID = CID.parse(expectedHash)
+      const b = uint8ArrayFromString('blorb')
 
-      const block = await ipfs.block.put(b)
+      const cid = await ipfs.block.put(b)
 
-      expect(block.data).to.eql(uint8ArrayFromString('blorb'))
-      expect(block.cid.multihash).to.eql(multihash.fromB58String(expectedHash))
+      expect(cid.multihash.bytes).to.equalBytes(expectedCID.multihash.bytes)
     })
 
     it('should error with array of blocks', () => {

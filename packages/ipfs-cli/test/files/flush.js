@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 
 const defaultOptions = {
