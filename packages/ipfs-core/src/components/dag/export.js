@@ -31,6 +31,7 @@ const NO_LINKS_CODECS = [
  * @typedef {import('../../types').Preload} Preload
  * @typedef {import('ipfs-block-service')} BlockService
  * @typedef {import('@ipld/car/api').BlockWriter} BlockWriter
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 /**
@@ -61,7 +62,11 @@ module.exports = ({ blockService, preload }) => {
     let err = null
     ;(async () => {
       try {
-        await traverseWrite(blockService, cid, writer)
+        await traverseWrite(
+          blockService,
+          { signal: options.signal, timeout: options.timeout },
+          cid,
+          writer)
         writer.close()
       } catch (e) {
         err = e
@@ -84,33 +89,35 @@ module.exports = ({ blockService, preload }) => {
 
 /**
  * @param {BlockService} blockService
+ * @param {AbortOptions} options
  * @param {CID} cid
  * @param {BlockWriter} writer
  * @param {Set<string>} seen
  * @returns {Promise<void>}
  */
-async function traverseWrite (blockService, cid, writer, seen = new Set()) {
+async function traverseWrite (blockService, options, cid, writer, seen = new Set()) {
   const b58Cid = cid.toString(base58btc)
   if (seen.has(b58Cid)) {
     return
   }
-  const block = await getBlock(blockService, cid)
+  const block = await getBlock(blockService, options, cid)
   await writer.put(block)
   seen.add(b58Cid)
 
   // recursive traversal of all links
   for (const link of block.links) {
-    await traverseWrite(blockService, link, writer, seen)
+    await traverseWrite(blockService, options, link, writer, seen)
   }
 }
 
 /**
  * @param {BlockService} blockService
+ * @param {AbortOptions} options
  * @param {CID} cid
  * @returns {Promise<{cid:CID, bytes:Uint8Array, links:CID[]}>}
  */
-async function getBlock (blockService, cid) {
-  const block = await blockService.get(new LegacyCID(cid.bytes))
+async function getBlock (blockService, options, cid) {
+  const block = await blockService.get(new LegacyCID(cid.bytes), options)
   if (!block) { // TODO: is this possible? or does BlockService.get throw?
     throw new Error(`Failed to fetch block ${cid}`)
   }

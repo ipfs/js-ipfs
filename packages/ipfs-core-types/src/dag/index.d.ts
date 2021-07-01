@@ -131,7 +131,7 @@ export interface API<OptionExtension = {}> {
    */
   resolve: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => Promise<ResolveResult>
 
-  export: (root: CID, options?: ExportOptions & OptionExtension) => AsyncIterable<AddResult>
+  export: (root: CID, options?: ExportOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   // import: (source: AsyncIterable<AsyncIterable<Uint8Array>>, options?: ExportOptions & OptionExtension) => AsyncIterable<ImportResult>
 }

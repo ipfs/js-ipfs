@@ -17,5 +17,10 @@ module.exports = [
     method: 'POST',
     path: '/api/v0/dag/resolve',
     ...resources.dag.resolve
+  },
+  {
+    method: 'POST',
+    path: '/api/v0/dag/export',
+    ...resources.dag.export
   }
 ]

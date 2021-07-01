@@ -1,6 +1,7 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
+const streamResponse = require('../../utils/stream-response')
 const mha = require('multihashing-async')
 const mh = mha.multihash
 const Joi = require('../../utils/joi')
@@ -338,5 +339,58 @@ exports.resolve = {
     } catch (err) {
       throw Boom.boomify(err)
     }
+  }
+}
+
+exports.export = {
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        arg: Joi.cid().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('root', 'arg', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        arg,
+        timeout
+      }
+    } = request
+
+    return streamResponse(request, h, () => ipfs.dag.export(arg, {
+      timeout,
+      signal
+    }), {
+      onError (err) {
+        err.message = 'Failed to export DAG: ' + err.message
+      }
+    })
   }
 }
