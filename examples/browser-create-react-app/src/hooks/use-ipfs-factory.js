@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 let ipfs = null
 
 /*
- * A quick demo using React hooks to create an ipfs instance. June 2020
+ * A quick demo using React hooks to create an ipfs instance.
  *
  * Hooks are brand new at the time of writing, and this pattern
  * is intended to show it is possible. I don't know if it is wise.
@@ -41,10 +41,6 @@ export default function useIpfsFactory () {
         // initialise IPFS daemon
         if (ipfs) {
             console.log('IPFS already started')
-        } else if (window.ipfs && window.ipfs.enable) {
-            // legacy IPFS. Disabled. See here: https://docs.ipfs.io/how-to/companion-window-ipfs/
-            console.log('Found window.ipfs')
-            ipfs = await window.ipfs.enable({ commands: ['id'] })
         } else {
             try {
                 console.time('IPFS Started')    // start timer
