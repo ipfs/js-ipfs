@@ -25,7 +25,7 @@ module.exports = {
    * @param {string} argv.rootcid
    * @param {number} argv.timeout
    */
-  async handler ({ ctx: { ipfs, print }, rootcid, timeout }) {
+  async handler ({ ctx: { ipfs }, rootcid, timeout }) {
     const options = { timeout }
     const cid = new CID(rootcid)
 

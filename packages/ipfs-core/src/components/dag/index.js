@@ -2,9 +2,10 @@
 
 const createExport = require('./export')
 const createGet = require('./get')
+const createImport = require('./import')
+const createPut = require('./put')
 const createResolve = require('./resolve')
 const createTree = require('./tree')
-const createPut = require('./put')
 
 /**
  * @typedef {Object} ReaderConfig
@@ -29,11 +30,13 @@ class DagAPI {
    * @param {GCLock} config.gcLock
    */
   constructor ({ blockService, ipld, pin, preload, gcLock }) {
+    console.error('DagAPI')
     this.export = createExport({ blockService, preload })
     this.get = createGet({ ipld, preload })
+    this.import = createImport({ blockService, gcLock, pin })
+    this.put = createPut({ ipld, preload, pin, gcLock })
     this.resolve = createResolve({ ipld, preload })
     this.tree = createTree({ ipld, preload })
-    this.put = createPut({ ipld, preload, pin, gcLock })
   }
 }
 

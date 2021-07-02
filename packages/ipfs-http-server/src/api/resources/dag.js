@@ -10,6 +10,7 @@ const {
   cidToString
 } = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
+const { pipe } = require('it-pipe')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const Block = require('ipld-block')
 const CID = require('cids')
@@ -344,10 +345,6 @@ exports.resolve = {
 
 exports.export = {
   options: {
-    payload: {
-      parse: false,
-      output: 'stream'
-    },
     validate: {
       options: {
         allowUnknown: true,
@@ -390,6 +387,76 @@ exports.export = {
     }), {
       onError (err) {
         err.message = 'Failed to export DAG: ' + err.message
+      }
+    })
+  }
+}
+
+exports.import = {
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream',
+      maxBytes: Number.MAX_SAFE_INTEGER
+    },
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        pinRoots: Joi.boolean().default(true),
+        timeout: Joi.timeout()
+      })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        pinRoots,
+        timeout
+      }
+    } = request
+
+    return streamResponse(request, h, () => pipe(
+      multipart(request.raw.req),
+      /**
+       * @param {AsyncIterable<import('../../types').MultipartEntry>} source
+       */
+      async function * (source) {
+        for await (const entry of source) {
+          if (entry.type !== 'file') {
+            throw new Error('Unexpected upload type')
+          }
+          yield entry.content
+        }
+      },
+      /**
+       * @param {AsyncIterable<AsyncIterable<Uint8Array>>} source
+       */
+      async function * (source) {
+        yield * ipfs.dag.import(source, {
+          pinRoots,
+          timeout,
+          signal
+        })
+      }
+    ), {
+      onError (err) {
+        err.message = 'Failed to import DAG: ' + err.message
       }
     })
   }
