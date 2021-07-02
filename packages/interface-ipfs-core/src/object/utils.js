@@ -1,6 +1,6 @@
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 
 const calculateCid = node => dagPB.util.cid(node.serialize(), { cidVersion: 0 })
 

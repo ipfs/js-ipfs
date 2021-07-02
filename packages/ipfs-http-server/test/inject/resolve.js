@@ -16,7 +16,7 @@ const defaultOptions = {
 }
 
 describe('/resolve', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
   let ipfs
 
   beforeEach(() => {

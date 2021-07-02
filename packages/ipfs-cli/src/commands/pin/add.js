@@ -17,7 +17,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      default: 'base58tbc'
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',

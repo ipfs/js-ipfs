@@ -2,9 +2,9 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 const DAGNode = dagPB.DAGNode
-const dagCBOR = require('ipld-dag-cbor')
+const dagCBOR = require('@ipld/dag-cbor')
 const all = require('it-all')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -47,7 +47,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect timeout option when resolving a DAG tree', () => {
-      return testTimeout(() => drain(ipfs.dag.tree(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA8'), {
+      return testTimeout(() => drain(ipfs.dag.tree(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA8'), {
         timeout: 1
       })))
     })

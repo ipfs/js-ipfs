@@ -36,7 +36,7 @@ module.exports = (common, options) => {
     ]))
 
     it('should respect timeout option when catting files', () => {
-      return testTimeout(() => drain(ipfs.cat(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+      return testTimeout(() => drain(ipfs.cat(CID.parse('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
         timeout: 1
       })))
     })
@@ -47,14 +47,14 @@ module.exports = (common, options) => {
     })
 
     it('should cat with a Uint8Array multihash', async () => {
-      const cid = new CID(fixtures.smallFile.cid).multihash
+      const cid = fixtures.smallFile.cid
 
       const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
       expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat with a CID object', async () => {
-      const cid = new CID(fixtures.smallFile.cid)
+      const cid = fixtures.smallFile.cid
 
       const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
       expect(uint8ArrayToString(data)).to.contain('Plz add me!')

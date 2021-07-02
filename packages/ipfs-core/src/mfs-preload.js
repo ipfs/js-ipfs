@@ -4,7 +4,6 @@ const debug = require('debug')
 const log = Object.assign(debug('ipfs:mfs-preload'), {
   error: debug('ipfs:mfs-preload:error')
 })
-const { base32 } = require('multiformats/bases/base32')
 
 /**
  * @typedef {PreloadOptions & MFSPreloadOptions} Options
@@ -35,7 +34,7 @@ module.exports = ({ preload, files, options = {} }) => {
   const preloadMfs = async () => {
     try {
       const stats = await files.stat('/')
-      const nextRootCid = stats.cid.toString(base32)
+      const nextRootCid = stats.cid.toString()
 
       if (rootCid !== nextRootCid) {
         log(`preloading updated MFS root ${rootCid} -> ${stats.cid}`)
@@ -55,7 +54,7 @@ module.exports = ({ preload, files, options = {} }) => {
      */
     async start () {
       const stats = await files.stat('/')
-      rootCid = stats.cid.toString(base32)
+      rootCid = stats.cid.toString()
       log(`monitoring MFS root ${stats.cid}`)
       timeoutId = setTimeout(preloadMfs, options.interval)
     },

@@ -5,7 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const http = require('../../utils/http')
 const sinon = require('sinon')
 const { CID } = require('multiformats/cid')
-const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+const cid = CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 const testHttpMethod = require('../../utils/test-http-method')
 const { AbortSignal } = require('native-abort-controller')
 

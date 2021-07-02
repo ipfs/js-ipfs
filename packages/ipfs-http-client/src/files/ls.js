@@ -14,7 +14,7 @@ module.exports = configure(api => {
    * @type {FilesAPI["ls"]}
    */
   async function * ls (path, options = {}) {
-    if (!path || typeof path !== 'string') {
+    if (!path) {
       throw new Error('ipfs.files.ls requires a path')
     }
 
@@ -22,7 +22,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: CID.isCID(path) ? `/ipfs/${path}` : path,
+        arg: path instanceof CID ? `/ipfs/${path}` : path,
         // default long to true, diverges from go-ipfs where its false by default
         long: true,
         ...options,

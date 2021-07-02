@@ -11,7 +11,7 @@ describe('Server', function () {
   this.timeout(10 * 1000)
 
   it('should be able to transfer multiple of the same CID instances', () => {
-    const cid = new CID('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
+    const cid = CID.parse('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     return new Promise((resolve, reject) => {
       const channel = process.browser

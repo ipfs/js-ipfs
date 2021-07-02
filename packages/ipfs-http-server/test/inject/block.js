@@ -25,7 +25,7 @@ const sendData = async (data) => {
 }
 
 describe('/block', () => {
-  const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+  const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
   const data = Buffer.from('hello world\n')
   const expectedResult = {
     Key: cid.toString(),
@@ -402,7 +402,7 @@ describe('/block', () => {
     })
 
     it('returns 200 for multiple CIDs', async () => {
-      const cid2 = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Ka')
+      const cid2 = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Ka')
 
       ipfs.block.rm.withArgs([cid, cid2], defaultOptions).returns([{ cid, cid2 }])
 

@@ -50,17 +50,17 @@ module.exports = (common, options) => {
 
       expect(
         cids.find(cid => {
-          const multihash = new CID(cid).multihash
+          const multihash = CID.parse(cid).multihash.bytes
 
-          return uint8ArrayEquals(imported[0].cid.multihash.digest, multihash)
+          return uint8ArrayEquals(imported[0].cid.multihash.bytes, multihash)
         })
       ).to.be.ok()
 
       expect(
         cids.find(cid => {
-          const multihash = new CID(cid).multihash
+          const multihash = CID.parse(cid).multihash.bytes
 
-          return uint8ArrayEquals(imported[1].cid.multihash.digest, multihash)
+          return uint8ArrayEquals(imported[1].cid.multihash.bytes, multihash)
         })
       ).to.be.ok()
     })

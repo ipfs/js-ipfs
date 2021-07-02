@@ -8,7 +8,7 @@ const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
 
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 const DAGNode = dagPB.DAGNode
 const DAGLink = dagPB.DAGLink
 
@@ -346,7 +346,7 @@ function loadDagContent (ipfs, node) {
     putLinks: (links) => {
       const obj = {}
       for (const { name, cid } of links) {
-        obj[name] = new CID(cid)
+        obj[name] = CID.parse(cid)
       }
       return ipfs.dag.put(obj)
     }

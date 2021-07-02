@@ -61,7 +61,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   const cid = CID.create(options.cidVersion, dagPb.code, hash)
 
   if (options.flush) {
-    await context.blockstore.put(cid, buf)
+    await context.repo.blocks.put(cid, buf)
   }
 
   return {
@@ -207,7 +207,7 @@ const generatePath = async (context, fileName, rootNode) => {
 
     // found subshard
     log(`Found subshard ${segment.prefix}`)
-    const block = await context.blockstore.get(link.Hash)
+    const block = await context.repo.blocks.get(link.Hash)
     const node = dagPb.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
@@ -281,7 +281,7 @@ const createShard = async (context, contents, options = {}) => {
     })
   }
 
-  return last(shard.flush(context.blockstore))
+  return last(shard.flush(context.repo.blocks))
 }
 
 module.exports = {

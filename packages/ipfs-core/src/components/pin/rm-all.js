@@ -20,7 +20,7 @@ module.exports = ({ repo, codecs }) => {
     try {
       // verify that each hash can be unpinned
       for await (const { path, recursive } of normaliseInput(source)) {
-        const cid = await resolvePath(repo, codecs, path)
+        const { cid } = await resolvePath(repo, codecs, path)
         const { pinned, reason } = await repo.pins.isPinnedWithType(cid, PinTypes.all)
 
         if (!pinned) {

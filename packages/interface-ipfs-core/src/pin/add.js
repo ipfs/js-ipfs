@@ -8,7 +8,7 @@ const all = require('it-all')
 const drain = require('it-drain')
 const {
   DAGNode
-} = require('ipld-dag-pb')
+} = require('@ipld/dag-pb')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

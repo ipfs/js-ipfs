@@ -16,12 +16,12 @@ const { AbortSignal } = require('native-abort-controller')
 const {
   DAGNode,
   DAGLink
-} = require('ipld-dag-pb')
+} = require('@ipld/dag-pb')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('/object', () => {
-  const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-  const cid2 = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1a')
+  const cid = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+  const cid2 = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1a')
   const unixfs = new UnixFS({
     type: 'file'
   })

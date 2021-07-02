@@ -42,7 +42,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls('/'))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'
@@ -70,7 +70,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls(`/${dirName}`))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'
@@ -88,7 +88,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls(`/${fileName}`))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'

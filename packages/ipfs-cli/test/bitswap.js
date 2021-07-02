@@ -3,13 +3,15 @@
 
 const { expect } = require('aegir/utils/chai')
 const { CID } = require('multiformats/cid')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 
 describe('bitswap', () => {
   const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA'
-  const key0 = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
-  const key1 = 'zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU'
+  const key0 = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const key1 = CID.parse('zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU')
 
   let ipfs
 
@@ -20,6 +22,9 @@ describe('bitswap', () => {
         wantlistForPeer: sinon.stub(),
         stat: sinon.stub(),
         unwant: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -31,25 +36,28 @@ describe('bitswap', () => {
 
     it('should return the wantlist', async () => {
       ipfs.bitswap.wantlist.withArgs(defaultOptions).resolves([
-        new CID(key0),
-        new CID(key1)
+        key0,
+        key1
       ])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('bitswap wantlist', { ipfs })
-      expect(out).to.include(key0)
-      expect(out).to.include(key1)
+      expect(out).to.include(key0.toString(base58btc))
+      expect(out).to.include(key1.toString(base58btc))
     })
 
     it('should get wantlist with CIDs encoded in specified base', async () => {
       ipfs.bitswap.wantlist.withArgs({
         ...defaultOptions
       }).resolves([
-        new CID(key0),
-        new CID(key1)
+        key0.toV1(),
+        key1.toV1()
       ])
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli('bitswap wantlist --cid-base=base64', { ipfs })
-      expect(out).to.include(new CID(key1).toBaseEncodedString('base64') + '\n')
+      expect(out).to.include(key0.toV1().toString(base64) + '\n')
+      expect(out).to.include(key1.toV1().toString(base64) + '\n')
     })
 
     it('wantlist peerid', async () => {
@@ -95,11 +103,12 @@ describe('bitswap', () => {
         dupDataReceived: BigInt(10),
         dataSent: BigInt(10),
         wantlist: [
-          new CID(key0),
-          new CID(key1)
+          key0,
+          key1
         ],
         peers: []
       })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('bitswap stat', { ipfs })
 
@@ -112,8 +121,8 @@ describe('bitswap', () => {
       expect(out).to.match(/dup blocks received:\s\d+$/m)
       expect(out).to.match(/dup data received:\s\d+$/m)
       expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
-      expect(out).to.include(key0)
-      expect(out).to.include(key1)
+      expect(out).to.include(key0.toString(base58btc))
+      expect(out).to.include(key1.toString(base58btc))
       expect(out).to.match(/partners\s\[\d+\]$/m)
     })
 
@@ -127,11 +136,12 @@ describe('bitswap', () => {
         dupDataReceived: BigInt(10),
         dataSent: BigInt(10),
         wantlist: [
-          new CID(key0),
-          new CID(key1)
+          key0,
+          key1
         ],
         peers: []
       })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('bitswap stat --human', { ipfs })
 
@@ -144,8 +154,6 @@ describe('bitswap', () => {
       expect(out).to.match(/dup blocks received:\s\d+$/m)
       expect(out).to.match(/dup data received:\s+[\d.]+\s[PTGMK]?B$/m)
       expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
-      expect(out).to.not.include(key0)
-      expect(out).to.not.include(key1)
       expect(out).to.match(/partners\s\[\d+\]$/m)
     })
 
@@ -159,14 +167,15 @@ describe('bitswap', () => {
         dupDataReceived: BigInt(10),
         dataSent: BigInt(10),
         wantlist: [
-          new CID(key0),
-          new CID(key1)
+          key0.toV1(),
+          key1.toV1()
         ],
         peers: []
       })
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli('bitswap stat --cid-base=base64', { ipfs })
-      expect(out).to.include(new CID(key1).toBaseEncodedString('base64'))
+      expect(out).to.include(key1.toV1().toString(base64))
     })
 
     it('should return bitswap stats with a timeout', async () => {
@@ -182,11 +191,12 @@ describe('bitswap', () => {
         dupDataReceived: BigInt(10),
         dataSent: BigInt(10),
         wantlist: [
-          new CID(key0),
-          new CID(key1)
+          key0,
+          key1
         ],
         peers: []
       })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('bitswap stat --timeout=1s', { ipfs })
 
@@ -199,8 +209,8 @@ describe('bitswap', () => {
       expect(out).to.match(/dup blocks received:\s\d+$/m)
       expect(out).to.match(/dup data received:\s\d+$/m)
       expect(out).to.match(/wantlist\s\[\d+\skeys\]$/m)
-      expect(out).to.include(key0)
-      expect(out).to.include(key1)
+      expect(out).to.include(key0.toString(base58btc))
+      expect(out).to.include(key1.toString(base58btc))
       expect(out).to.match(/partners\s\[\d+\]$/m)
     })
   })
@@ -211,16 +221,20 @@ describe('bitswap', () => {
     }
 
     it('should unwant a block', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
       const out = await cli('bitswap unwant ' + key0, { ipfs })
       expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
       expect(ipfs.bitswap.unwant.called).to.be.true()
     })
 
     it('should unwant a block with a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
       const out = await cli(`bitswap unwant ${key0} --timeout=1s`, { ipfs })
       expect(out).to.eql(`Key ${key0} removed from wantlist\n`)
       expect(ipfs.bitswap.unwant.called).to.be.true()
-      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([new CID(key0), {
+      expect(ipfs.bitswap.unwant.getCall(0).args).to.deep.equal([key0, {
         ...defaultOptions,
         timeout: 1000
       }])

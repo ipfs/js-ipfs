@@ -5,7 +5,7 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
-const ipldDagPb = require('ipld-dag-pb')
+const ipldDagPb = require('@ipld/dag-pb')
 const { DAGNode } = ipldDagPb
 const { CID } = require('multiformats/cid')
 const f = require('./utils/factory')()
@@ -64,7 +64,7 @@ describe('.dag', function () {
 
   it('should error when missing DAG resolver for multicodec from requested CID', async () => {
     const block = await ipfs.block.put(Uint8Array.from([0, 1, 2, 3]), {
-      cid: new CID('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
+      cid: CID.parse('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
     })
 
     await expect(ipfs.dag.get(block.cid)).to.eventually.be.rejectedWith('Missing IPLD format "git-raw"')

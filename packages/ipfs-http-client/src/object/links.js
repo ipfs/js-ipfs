@@ -1,7 +1,7 @@
 'use strict'
 
 const { CID } = require('multiformats/cid')
-const { DAGLink } = require('ipld-dag-pb')
+const { DAGLink } = require('@ipld/dag-pb')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 

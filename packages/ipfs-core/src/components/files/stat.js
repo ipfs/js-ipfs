@@ -49,7 +49,7 @@ module.exports = (context) => {
     let file
 
     try {
-      file = await exporter(exportPath, context.blockstore)
+      file = await exporter(exportPath, context.repo.blocks)
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error(`${path} does not exist`), 'ERR_NOT_FOUND')

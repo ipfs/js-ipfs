@@ -35,7 +35,7 @@ module.exports = (common, options) => {
     })
 
     it('should not provide if block not found locally', () => {
-      const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
+      const cid = CID.parse('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
 
       return expect(all(ipfs.dht.provide(cid))).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)

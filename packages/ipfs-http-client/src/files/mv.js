@@ -1,6 +1,5 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -22,7 +21,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: sources.concat(destination).map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
+        arg: sources.concat(destination),
         ...options
       }),
       headers: options.headers

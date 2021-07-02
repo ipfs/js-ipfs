@@ -37,22 +37,13 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when getting files', () => {
-      return testTimeout(() => drain(ipfs.get(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+      return testTimeout(() => drain(ipfs.get(CID.parse('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
         timeout: 1
       })))
     })
 
     it('should get with a base58 encoded multihash', async () => {
       const files = await all(ipfs.get(fixtures.smallFile.cid))
-      expect(files).to.be.length(1)
-      expect(files[0].path).to.eql(fixtures.smallFile.cid)
-      expect(uint8ArrayToString(uint8ArrayConcat(await all(files[0].content)))).to.contain('Plz add me!')
-    })
-
-    it('should get with a Uint8Array multihash', async () => {
-      const cidBuf = new CID(fixtures.smallFile.cid).multihash
-
-      const files = await all(ipfs.get(cidBuf))
       expect(files).to.be.length(1)
       expect(files[0].path).to.eql(fixtures.smallFile.cid)
       expect(uint8ArrayToString(uint8ArrayConcat(await all(files[0].content)))).to.contain('Plz add me!')

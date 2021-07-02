@@ -10,7 +10,7 @@ const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
 
 describe('/name', function () {
-  const cid = new CID('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')
+  const cid = CID.parse('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')
   let ipfs
 
   beforeEach(() => {

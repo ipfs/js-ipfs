@@ -2,9 +2,9 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 const DAGNode = dagPB.DAGNode
-const dagCBOR = require('ipld-dag-cbor')
+const dagCBOR = require('@ipld/dag-cbor')
 const { importer } = require('ipfs-unixfs-importer')
 const { UnixFS } = require('ipfs-unixfs')
 const all = require('it-all')
@@ -56,7 +56,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect timeout option when getting a DAG node', () => {
-      return testTimeout(() => ipfs.dag.get(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'), {
+      return testTimeout(() => ipfs.dag.get(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'), {
         timeout: 1
       }))
     })

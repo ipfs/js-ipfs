@@ -15,7 +15,7 @@ module.exports = configure(api => {
    * @type {FilesAPI["stat"]}
    */
   async function stat (path, options = {}) {
-    if (path && !CID.isCID(path) && typeof path !== 'string') {
+    if (path && !(path instanceof CID) && typeof path !== 'string') {
       options = path || {}
       path = '/'
     }

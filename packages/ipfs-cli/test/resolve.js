@@ -8,13 +8,13 @@ const sinon = require('sinon')
 
 const defaultOptions = {
   recursive: false,
-  cidBase: undefined,
+  cidBase: 'base58btc',
   timeout: undefined
 }
 
 describe('resolve', () => {
   let ipfs
-  const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+  const cid = CID.parse('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
 
   beforeEach(() => {
     ipfs = {

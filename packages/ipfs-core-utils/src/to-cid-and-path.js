@@ -18,7 +18,7 @@ const toCidAndPath = (string) => {
     }
   }
 
-  if (CID.isCID(string)) {
+  if (string instanceof CID) {
     return {
       cid: string,
       path: undefined

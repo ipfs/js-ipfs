@@ -29,8 +29,8 @@ module.exports = ({ codecs, hashers, repo, preload }) => {
     try {
       const hasher = await hashers.getHasher(options.mhtype || 'sha2-256')
       const hash = await hasher.digest(block)
-      const codec = await codecs.getCodec(options.format)
-      const cid = CID.create(options.version, codec.code, hash)
+      const codec = await codecs.getCodec(options.format || 'raw')
+      const cid = CID.create(options.version || 1, codec.code, hash)
 
       await repo.blocks.put(cid, block, {
         signal: options.signal

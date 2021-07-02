@@ -9,7 +9,7 @@ const http = require('../utils/http')
 const { AbortSignal } = require('native-abort-controller')
 
 describe('/bitswap', () => {
-  const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
   let ipfs
 
   beforeEach(() => {
@@ -96,7 +96,7 @@ describe('/bitswap', () => {
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), defaultOptions).returns([
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).returns([
         cid
       ])
 
@@ -112,7 +112,7 @@ describe('/bitswap', () => {
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D&timeout=1s', async () => {
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), {
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).returns([
@@ -285,7 +285,7 @@ describe('/bitswap', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), defaultOptions)).to.be.true()
+      expect(ipfs.bitswap.unwant.calledWith(cid, defaultOptions)).to.be.true()
     })
 
     it('accepts a timeout', async () => {
@@ -295,7 +295,7 @@ describe('/bitswap', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), {
+      expect(ipfs.bitswap.unwant.calledWith(cid, {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()

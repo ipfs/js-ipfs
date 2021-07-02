@@ -49,8 +49,8 @@ async function main () {
     console.log(cid.toString())
   }
 
-  const block302516 = new CID('z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA')
-  const block302517 = new CID('z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj')
+  const block302516 = CID.parse('z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA')
+  const block302517 = CID.parse('z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj')
   let res
 
   res = await ipfs.dag.get(block302516, { path: 'number' })

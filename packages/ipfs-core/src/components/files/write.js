@@ -180,7 +180,7 @@ const updateOrImport = async (context, path, source, destination, options) => {
       throw errCode(new Error(`cannot write to ${parent.name}: Not a directory`), 'ERR_NOT_A_DIRECTORY')
     }
 
-    const parentBlock = await context.blockstore.get(parent.cid)
+    const parentBlock = await context.repo.blocks.get(parent.cid)
     const parentNode = decode(parentBlock)
 
     const result = await addLink(context, {
@@ -312,7 +312,7 @@ const write = async (context, source, destination, options) => {
     // persist mode & mtime if set previously
     mode,
     mtime
-  }], context.blockstore, {
+  }], context.repo.blocks, {
     progress: options.progress,
     hasher,
     cidVersion: options.cidVersion,

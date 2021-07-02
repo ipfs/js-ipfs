@@ -1,6 +1,5 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -18,8 +17,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        // @ts-ignore - CID|string seems to confuse typedef
-        arg: typeof cid === 'string' ? cid : new CID(cid).toString(),
+        arg: cid.toString(),
         ...options
       }),
       headers: options.headers

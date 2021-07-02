@@ -29,7 +29,7 @@ module.exports = (common, options) => {
     it('should get the node ID', async () => {
       const res = await ipfs.id()
       expect(res).to.have.a.property('id').that.is.a('string')
-      expect(CID.isCID(new CID(res.id))).to.equal(true)
+      expect(res.id).to.be.an.instanceOf(CID)
       expect(res).to.have.a.property('publicKey')
       expect(res).to.have.a.property('agentVersion').that.is.a('string')
       expect(res).to.have.a.property('protocolVersion').that.is.a('string')

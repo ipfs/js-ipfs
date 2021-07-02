@@ -2,7 +2,7 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 const DAGNode = dagPB.DAGNode
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 const { asDAGLink } = require('../utils')

@@ -58,7 +58,7 @@ module.exports = (common, options) => {
 
     it('should remove blocks from the wantlist when requests are cancelled', async () => {
       const controller = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal
@@ -76,7 +76,7 @@ module.exports = (common, options) => {
     it('should keep blocks in the wantlist when only one request is cancelled', async () => {
       const controller = new AbortController()
       const otherController = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal

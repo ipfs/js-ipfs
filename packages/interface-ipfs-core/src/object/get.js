@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const dagPB = require('ipld-dag-pb')
+const dagPB = require('@ipld/dag-pb')
 const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')

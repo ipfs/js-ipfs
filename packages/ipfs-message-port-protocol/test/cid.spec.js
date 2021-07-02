@@ -12,7 +12,7 @@ describe('cid', function () {
   describe('encodeCID / decodeCID', () => {
     it('should encode CID', () => {
       const { multihash, codec, version } = encodeCID(
-        new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+        CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
       )
       expect(multihash).to.be.an.instanceof(Uint8Array)
       expect(version).to.be.a('number')
@@ -21,9 +21,9 @@ describe('cid', function () {
 
     it('should decode CID', () => {
       const { multihash, codec, version } = encodeCID(
-        new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+        CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
       )
-      const cid = new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+      const cid = CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
       const decodecCID = decodeCID({ multihash, codec, version })
 
       expect(cid.equals(decodecCID)).to.be.true()

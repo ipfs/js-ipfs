@@ -37,7 +37,7 @@ const updateTree = async (context, trail, options) => {
   let index = 0
   let child
 
-  for await (const block of context.blockstore.getMany(trail.map(node => node.cid))) {
+  for await (const block of context.repo.blocks.getMany(trail.map(node => node.cid))) {
     const node = decode(block)
     const cid = trail[index].cid
     const name = trail[index].name

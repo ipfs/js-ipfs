@@ -32,7 +32,7 @@ module.exports = ({ repo, codecs, hashers, preload }) => {
 
       const buf = codec.encode(dagNode)
       const hash = await hasher.digest(buf)
-      const cid = CID.create(options.cidVersion, codec.code, hash)
+      const cid = CID.create(options.cidVersion || 1, codec.code, hash)
 
       await repo.blocks.put(cid, buf, {
         signal: options.signal

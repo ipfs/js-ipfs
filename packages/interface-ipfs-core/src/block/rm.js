@@ -8,6 +8,7 @@ const all = require('it-all')
 const last = require('it-last')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
+const raw = require('multiformats/codecs/raw')
 const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -27,7 +28,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when removing a block', () => {
-      return testTimeout(() => drain(ipfs.block.rm(new CID('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
+      return testTimeout(() => drain(ipfs.block.rm(CID.parse('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
         timeout: 1
       })))
     })
@@ -41,7 +42,7 @@ module.exports = (common, options) => {
       // block should be present in the local store
       const localRefs = await all(ipfs.refs.local())
       expect(localRefs).to.have.property('length').that.is.greaterThan(0)
-      expect(localRefs.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.be.ok()
+      expect(localRefs.find(ref => ref.ref === CID.createV1(raw.code, cid.multihash).toString())).to.be.ok()
 
       const result = await all(ipfs.block.rm(cid))
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
@@ -50,7 +51,7 @@ module.exports = (common, options) => {
 
       // did we actually remove the block?
       const localRefsAfterRemove = await all(ipfs.refs.local())
-      expect(localRefsAfterRemove.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.not.be.ok()
+      expect(localRefsAfterRemove.find(ref => ref.ref === CID.createV1(raw.code, cid.multihash).toString())).to.not.be.ok()
     })
 
     it('should remove by CID in string', async () => {

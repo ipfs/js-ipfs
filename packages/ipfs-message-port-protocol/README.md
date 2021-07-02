@@ -47,7 +47,7 @@ Codecs for [CID][] implementation in JavaScript.
 ```js
 const { CID, encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 
-const cid = new CID('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu')
+const cid = CID.parse('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu')
 
 const { port1, port2 } = new MessageChannel()
 

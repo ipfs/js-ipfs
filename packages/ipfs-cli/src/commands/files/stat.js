@@ -47,7 +47,8 @@ Mtime: <mtime>`,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
     },
     'cid-base': {
-      describe: 'CID base to use.'
+      describe: 'CID base to use.',
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',

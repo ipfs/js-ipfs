@@ -24,7 +24,7 @@ const toTrail = async (context, path) => {
 
   const output = []
 
-  for await (const fsEntry of walkPath(path, context.blockstore)) {
+  for await (const fsEntry of walkPath(path, context.repo.blocks)) {
     output.push({
       name: fsEntry.name,
       cid: fsEntry.cid,

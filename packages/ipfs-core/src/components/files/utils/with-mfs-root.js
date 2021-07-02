@@ -46,7 +46,7 @@ const loadMfsRoot = async (context, options) => {
     })
     const hash = await sha256.digest(buf)
     cid = CID.createV0(hash)
-    await context.blockstore.put(cid, buf)
+    await context.repo.blocks.put(cid, buf)
 
     if (options && options.signal && options.signal.aborted) {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })

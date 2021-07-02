@@ -30,7 +30,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when listing files', () => {
-      return testTimeout(() => ipfs.ls(new CID('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
+      return testTimeout(() => ipfs.ls(CID.parse('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
         timeout: 1
       }))
     })

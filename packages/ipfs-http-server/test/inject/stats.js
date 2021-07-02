@@ -71,7 +71,7 @@ describe('/stats', () => {
 
       ipfs.stats.bw.withArgs({
         ...defaultOptions,
-        peer: new CID(peer)
+        peer: CID.parse(peer)
       }).returns([{
         totalIn: 'totalIn1',
         totalOut: 'totalOut1',

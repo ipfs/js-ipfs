@@ -12,10 +12,10 @@ describe('dag', function () {
 
   describe('encodeNode / decodeNode', () => {
     it('shoud encode node', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
       const dagNode = {
         hi: 'hello',
         link: cid1,
@@ -36,10 +36,10 @@ describe('dag', function () {
     })
 
     it('shoud encode and add buffers to transfer list', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
       const hi = uint8ArrayFromString('hello world')
       const dagNode = {
@@ -73,10 +73,10 @@ describe('dag', function () {
     })
 
     it('shoud decode node', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
       const hi = uint8ArrayFromString('hello world')
       const dagNode = {

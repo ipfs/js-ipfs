@@ -12,8 +12,8 @@ const allNdjson = require('../utils/all-ndjson')
 const { AbortSignal } = require('native-abort-controller')
 
 describe('/pin', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
-  const cid2 = new CID('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid2 = CID.parse('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V')
   let ipfs
 
   beforeEach(() => {

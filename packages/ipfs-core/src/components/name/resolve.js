@@ -2,7 +2,7 @@
 
 const debug = require('debug')
 const errcode = require('err-code')
-const { mergeOptions } = require('../../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const { CID } = require('multiformats/cid')
 // @ts-ignore no types
 const isDomain = require('is-domain-name')

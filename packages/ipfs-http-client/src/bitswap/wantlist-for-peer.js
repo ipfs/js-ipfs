@@ -14,15 +14,12 @@ module.exports = configure(api => {
    * @type {BitswapAPI["wantlistForPeer"]}
    */
   async function wantlistForPeer (peerId, options = {}) {
-    // @ts-ignore - CID|string seems to confuse typedef
-    peerId = typeof peerId === 'string' ? peerId : new CID(peerId).toString()
-
     const res = await (await api.post('bitswap/wantlist', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,
-        peer: peerId
+        peer: peerId.toString()
       }),
       headers: options.headers
     })).json()

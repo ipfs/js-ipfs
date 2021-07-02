@@ -39,7 +39,7 @@ const createNode = async (context, type, options) => {
   const cid = CID.create(options.cidVersion, dagPb.code, hash)
 
   if (options.flush) {
-    await context.blockstore.put(cid, buf)
+    await context.repo.blocks.put(cid, buf)
   }
 
   return {

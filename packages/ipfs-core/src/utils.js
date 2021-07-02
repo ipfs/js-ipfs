@@ -6,22 +6,13 @@ const { CID } = require('multiformats/cid')
 const Key = require('interface-datastore').Key
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-/** @type {typeof Object.assign} */
-const mergeOptions = require('merge-options')
-const dagResolve = require('./components/dag/resolve')
+const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
-exports.mergeOptions = mergeOptions
-
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
-
-exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
-exports.MFS_ROOT_KEY = new Key('/local/filesroot')
-exports.MFS_MAX_CHUNK_SIZE = 262144
-exports.MFS_MAX_LINKS = 174
 
 /**
  * Returns a well-formed ipfs Path.
@@ -53,7 +44,7 @@ const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
     return CID.decode(path).toString()
   }
-  if (CID.isCID(path)) {
+  if (path instanceof CID) {
     return path.toString()
   }
   if (path.indexOf('/ipfs/') === 0) {
@@ -67,28 +58,57 @@ const normalizeCidPath = (path) => {
 
 /**
  * Resolve various styles of an ipfs-path to the hash of the target node.
- * Follows links in the path.
- *
- * Accepts formats:
- * - <base58 string>
- * - <base58 string>/link/to/venus
- * - /ipfs/<base58 string>/link/to/pluto
- * - multihash Buffer
+ * Follows links in the path
  *
  * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {CID | string} ipfsPath - A CID or IPFS path
- * @param {Object} [options] - Optional options passed directly to dag.resolve
- * @returns {Promise<CID>}
+ * @param {{ path?: string, signal?: AbortSignal }} [options] - Optional options passed directly to dag.resolve
+ * @returns {Promise<{ cid: CID, remainderPath: string}>}
  */
 const resolvePath = async function (repo, codecs, ipfsPath, options = {}) {
-  const preload = () => {}
-  preload.stop = () => {}
-  preload.start = () => {}
+  const {
+    cid,
+    path
+  } = toCidAndPath(ipfsPath)
 
-  const { cid } = await dagResolve({ repo, codecs, preload })(ipfsPath, { preload: false })
+  if (path) {
+    options.path = path
+  }
 
-  return cid
+  let lastCid = cid
+  let lastRemainderPath = options.path || ''
+
+  if (lastRemainderPath.startsWith('/')) {
+    lastRemainderPath = lastRemainderPath.substring(1)
+  }
+
+  if (options.path) {
+    try {
+      for await (const { value, remainderPath } of resolve(cid, options.path, codecs, repo, {
+        signal: options.signal
+      })) {
+        if (!(value instanceof CID)) {
+          break
+        }
+
+        lastRemainderPath = remainderPath
+        lastCid = value
+      }
+    } catch (err) {
+      // TODO: add error codes to IPLD
+      if (err.message.startsWith('Object has no property')) {
+        err.message = `no link named "${lastRemainderPath.split('/')[0]}" under ${lastCid}`
+        err.code = 'ERR_NO_LINK'
+      }
+      throw err
+    }
+  }
+
+  return {
+    cid: lastCid,
+    remainderPath: lastRemainderPath || ''
+  }
 }
 
 /**
@@ -201,9 +221,16 @@ const resolve = async function * (cid, path, codecs, repo, options) {
   }
 }
 
-exports.normalizePath = normalizePath
-exports.normalizeCidPath = normalizeCidPath
-exports.resolvePath = resolvePath
-exports.mapFile = mapFile
-exports.withTimeout = withTimeout
-exports.resolve = resolve
+module.exports = {
+  normalizePath,
+  normalizeCidPath,
+  resolvePath,
+  mapFile,
+  withTimeout,
+  resolve,
+
+  OFFLINE_ERROR: 'This command must be run in online mode. Try running \'ipfs daemon\' first.',
+  MFS_ROOT_KEY: new Key('/local/filesroot'),
+  MFS_MAX_CHUNK_SIZE: 262144,
+  MFS_MAX_LINKS: 174
+}

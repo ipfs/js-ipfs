@@ -3,12 +3,14 @@
 
 const { expect } = require('aegir/utils/chai')
 const { CID } = require('multiformats/cid')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 describe('block', () => {
-  const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+  const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
   let ipfs
 
   beforeEach(() => {
@@ -18,6 +20,9 @@ describe('block', () => {
         put: sinon.stub(),
         rm: sinon.stub(),
         stat: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -26,16 +31,14 @@ describe('block', () => {
     const defaultOptions = {
       format: 'dag-pb',
       mhtype: 'sha2-256',
-      mhlen: undefined,
       version: 0,
       pin: false,
       timeout: undefined
     }
 
     it('should put a file', async () => {
-      ipfs.block.put.withArgs(sinon.match.any, defaultOptions).resolves({
-        cid: new CID(cid)
-      })
+      ipfs.block.put.withArgs(sinon.match.any, defaultOptions).resolves(cid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('block put README.md', { ipfs })
       expect(out).to.eql(`${cid}\n`)
@@ -46,30 +49,27 @@ describe('block', () => {
         ...defaultOptions,
         format: 'eth-block',
         mhtype: 'keccak-256'
-      }).resolves({
-        cid: new CID(cid)
-      })
+      }).resolves(cid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('block put --format eth-block --mhtype keccak-256 README.md', { ipfs })
       expect(out).to.eql(`${cid}\n`)
     })
 
     it('should put and print CID encoded in specified base', async () => {
-      ipfs.block.put.withArgs(sinon.match.any, defaultOptions).resolves({
-        cid: new CID(cid)
-      })
+      ipfs.block.put.withArgs(sinon.match.any, defaultOptions).resolves(cid.toV1())
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli('block put README.md --cid-base=base64', { ipfs })
-      expect(out).to.eql(`${cid.toV1().toString('base64')}\n`)
+      expect(out).to.eql(`${cid.toV1().toString(base64)}\n`)
     })
 
     it('should put and pin the block', async () => {
       ipfs.block.put.withArgs(sinon.match.any, {
         ...defaultOptions,
         pin: true
-      }).resolves({
-        cid: new CID(cid)
-      })
+      }).resolves(cid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('block put README.md --pin', { ipfs })
       expect(out).to.eql(`${cid}\n`)
@@ -79,9 +79,8 @@ describe('block', () => {
       ipfs.block.put.withArgs(sinon.match.any, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves({
-        cid: new CID(cid)
-      })
+      }).resolves(cid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('block put --timeout=1s README.md', { ipfs })
       expect(out).to.eql(`${cid}\n`)
@@ -94,10 +93,10 @@ describe('block', () => {
     }
 
     it('should get a block', async () => {
-      ipfs.block.get.withArgs(cid, defaultOptions).resolves({
-        cid,
-        data: uint8ArrayFromString('hello world\n')
-      })
+      ipfs.block.get.withArgs(cid, defaultOptions).resolves(
+        uint8ArrayFromString('hello world\n')
+      )
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`block get ${cid}`, { ipfs })
       expect(out).to.eql('hello world\n')
@@ -112,10 +111,10 @@ describe('block', () => {
       ipfs.block.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves({
-        cid,
-        data: uint8ArrayFromString('hello world\n')
-      })
+      }).resolves(
+        uint8ArrayFromString('hello world\n')
+      )
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`block get ${cid} --timeout=1s`, { ipfs })
       expect(out).to.eql('hello world\n')
@@ -132,6 +131,7 @@ describe('block', () => {
         cid,
         size: 12
       })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`block stat ${cid}`, { ipfs })
       expect(out).to.eql([
@@ -141,11 +141,12 @@ describe('block', () => {
     })
 
     it('should stat and print CID encoded in specified base', async () => {
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp').toV1()
       ipfs.block.stat.withArgs(cid, defaultOptions).resolves({
         cid,
         size: 12
       })
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli(`block stat ${cid} --cid-base=base64`, { ipfs })
       expect(out).to.eql([
@@ -162,6 +163,7 @@ describe('block', () => {
         cid,
         size: 12
       })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`block stat ${cid} --timeout=1s`, { ipfs })
       expect(out).to.eql([
@@ -179,7 +181,7 @@ describe('block', () => {
     }
 
     it('should remove a block', async () => {
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       ipfs.block.rm.withArgs([cid], defaultOptions).returns([{
         cid,
         error: false
@@ -191,7 +193,7 @@ describe('block', () => {
 
     it('rm prints error when removing fails', async () => {
       const err = new Error('Yikes!')
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       ipfs.block.rm.withArgs([cid], defaultOptions).returns([{
         cid,
         error: err
@@ -202,7 +204,7 @@ describe('block', () => {
     })
 
     it('rm quietly', async () => {
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         quiet: true
@@ -216,7 +218,7 @@ describe('block', () => {
     })
 
     it('rm force', async () => {
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
       ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         force: true
@@ -230,7 +232,7 @@ describe('block', () => {
     })
 
     it('fails to remove non-existent block', async () => {
-      const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
+      const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kh')
       ipfs.block.rm.withArgs([cid]).returns([{
         cid,
         error: new Error('block not found')

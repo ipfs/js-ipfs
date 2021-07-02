@@ -33,7 +33,7 @@ module.exports = ({ repo, codecs }) => {
      */
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
-        const cid = await resolvePath(repo, codecs, path)
+        const { cid } = await resolvePath(repo, codecs, path)
 
         // verify that each hash can be pinned
         const { reason } = await repo.pins.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])

@@ -40,7 +40,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, { allowOffline: true })
       expect(res).to.exist()
 
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
+      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(self.id).toV1().toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -67,7 +67,7 @@ module.exports = (common, options) => {
 
       const res = await ipfs.name.publish(value, options)
       expect(res).to.exist()
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
+      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(self.id).toV1().toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -87,7 +87,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, options)
 
       expect(res).to.exist()
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(key.id).toV1().toString('base36'))
+      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(key.id).toV1().toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
   })

@@ -1,10 +1,10 @@
 'use strict'
 
-const fs = require('fs')
 const concat = require('it-concat')
 const dagPB = require('@ipld/dag-pb')
 const { default: parseDuration } = require('parse-duration')
 const uint8arrayToString = require('uint8arrays/to-string')
+const uint8arrayFromString = require('uint8arrays/from-string')
 
 module.exports = {
   command: 'put [data]',
@@ -40,7 +40,7 @@ module.exports = {
     let buf
 
     if (data) {
-      buf = fs.readFileSync(data)
+      buf = uint8arrayFromString(data)
     } else {
       buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }

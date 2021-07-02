@@ -51,7 +51,7 @@ module.exports = ({ repo, codecs }) => {
       let matched = false
 
       for await (const { path } of normaliseInput(options.paths)) {
-        const cid = await resolvePath(repo, codecs, path)
+        const { cid } = await resolvePath(repo, codecs, path)
         const { reason, pinned, parent, metadata } = await repo.pins.isPinnedWithType(cid, type)
 
         if (!pinned) {

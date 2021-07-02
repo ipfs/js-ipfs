@@ -1,6 +1,6 @@
 'use strict'
 
-const { mergeOptions } = require('../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const { isTest } = require('ipfs-utils/src/env')
 const log = require('debug')('ipfs')
 const errCode = require('err-code')
@@ -55,7 +55,6 @@ const createPubSubAPI = require('./pubsub')
 const Multicodecs = require('ipfs-core-utils/src/multicodecs')
 const Multihashes = require('ipfs-core-utils/src/multihashes')
 const Multibases = require('ipfs-core-utils/src/multibases')
-const NetworkedBlockStorage = require('../block-storage')
 
 /**
  * @typedef {import('../types').Options} Options
@@ -74,9 +73,6 @@ class IPFS {
   constructor ({ print, storage, codecs, options }) {
     const { peerId, repo, keychain } = storage
     const network = Service.create(Network)
-
-    const blockstore = new NetworkedBlockStorage(repo.blocks)
-    repo.blocks = blockstore
 
     const preload = createPreloadAPI(options.preload)
 
@@ -125,6 +121,7 @@ class IPFS {
     const files = createFilesAPI({
       repo,
       preload,
+      hashers,
       options
     })
 
@@ -146,7 +143,6 @@ class IPFS {
       network,
       peerId,
       repo,
-      blockstore,
       preload,
       ipns,
       mfsPreload,
@@ -159,7 +155,6 @@ class IPFS {
       network,
       preload,
       mfsPreload,
-      blockstore,
       ipns,
       repo
     })

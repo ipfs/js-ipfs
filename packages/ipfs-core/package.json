@@ -24,7 +24,6 @@
     "./src/runtime/libp2p-pubsub-routers-nodejs.js": "./src/runtime/libp2p-pubsub-routers-browser.js",
     "./src/runtime/preload-nodejs.js": "./src/runtime/preload-browser.js",
     "./src/runtime/repo-nodejs.js": "./src/runtime/repo-browser.js",
-    "./test/utils/create-repo-nodejs.js": "./test/utils/create-repo-browser.js",
     "ipfs-utils/src/files/glob-source": false
   },
   "typesVersions": {
@@ -73,6 +72,7 @@
     "err-code": "^3.0.1",
     "hamt-sharding": "^2.0.0",
     "hashlru": "^2.3.0",
+    "interface-blockstore": "^0.2.1",
     "interface-datastore": "^5.0.0",
     "ipfs-bitswap": "ipfs/js-ipfs-bitswap#chore/update-to-new-multiformats",
     "ipfs-core-types": "^0.5.2",
@@ -127,6 +127,7 @@
     "aegir": "^33.0.0",
     "delay": "^5.0.0",
     "go-ipfs": "0.8.0",
+    "interface-blockstore-tests": "^0.0.5",
     "interface-ipfs-core": "^0.147.0",
     "ipfsd-ctl": "^8.0.1",
     "ipld-git": "^0.6.1",

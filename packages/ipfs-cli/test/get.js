@@ -15,7 +15,7 @@ const defaultOptions = {
 }
 
 describe('get', () => {
-  const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+  const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
   const buf = uint8ArrayFromString('hello world')
   let ipfs
 

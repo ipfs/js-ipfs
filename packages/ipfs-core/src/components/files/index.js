@@ -5,11 +5,12 @@ const isIpfs = require('is-ipfs')
 
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('ipfs-core-utils/src/multihashes')} Multihashes
+ * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  *
  * @typedef {object} MfsContext
- * @property {import('interface-blockstore').Blockstore} blockstore
- * @property {import('ipfs-repo').IPFSRepo} repo
- * @property {import('ipfs-core-utils/src/multihashes')} hashers
+ * @property {IPFSRepo} repo
+ * @property {Multihashes} hashers
  */
 
 /**
@@ -49,7 +50,7 @@ const unwrappedOperations = {
 
 /**
  * @param {object} arg
- * @param {*} arg.options
+ * @param {MfsContext} arg.options
  * @param {*} arg.mfs
  * @param {*} arg.operations
  * @param {*} arg.lock
@@ -69,8 +70,9 @@ const defaultOptions = {
 
 /**
  * @param {object} options
- * @param {import('ipfs-repo').IPFSRepo} options.repo
+ * @param {IPFSRepo} options.repo
  * @param {boolean} options.repoOwner
+ * @param {Multihashes} options.hashers
  */
 function createMfs (options) {
   const {
@@ -112,15 +114,17 @@ function createMfs (options) {
 
 /**
  * @param {object} context
- * @param {import('ipfs-repo').IPFSRepo} context.repo
+ * @param {IPFSRepo} context.repo
  * @param {import('../../types').Preload} context.preload
  * @param {import('..').Options} context.options
+ * @param {Multihashes} context.hashers
  * @returns {import('ipfs-core-types/src/files').API}
  */
-module.exports = ({ repo, preload, options: constructorOptions }) => {
+module.exports = ({ repo, preload, hashers, options: constructorOptions }) => {
   const methods = createMfs({
     repo,
-    repoOwner: Boolean(constructorOptions.repoOwner)
+    repoOwner: Boolean(constructorOptions.repoOwner),
+    hashers
   })
 
   /**

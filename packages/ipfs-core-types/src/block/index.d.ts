@@ -18,12 +18,13 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
+   * const dagPb = require('@ipld/dag-pb')
    * // Defaults
    * const encoder = new TextEncoder()
    * const decoder = new TextDecoder()
    *
    * const bytes = encoder.encode('a serialized object')
-   * const block = await ipfs.block.put(bytes)
+   * const cid = await ipfs.block.put(bytes)
    *
    * console.log(decoder.decode(block.data))
    * // Logs:
@@ -35,7 +36,7 @@ export interface API<OptionExtension = {}> {
    * // With custom format and hashtype through CID
    * const { CID } = require('multiformats/cid')
    * const another = encoder.encode('another serialized object')
-   * const cid = new CID(1, 'dag-pb', multihash)
+   * const cid = CID.createV1(dagPb.code, multihash)
    * const block = await ipfs.block.put(another, cid)
    * console.log(decoder.decode(block.data))
    *
@@ -69,7 +70,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ')
+   * const cid = CID.parse('QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ')
    * const stats = await ipfs.block.stat(cid)
    * console.log(stats.cid.toString())
    * // Logs: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ

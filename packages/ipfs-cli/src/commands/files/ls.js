@@ -22,7 +22,8 @@ module.exports = {
       describe: 'Use long listing format.'
     },
     'cid-base': {
-      describe: 'CID base to use.'
+      describe: 'CID base to use.',
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',

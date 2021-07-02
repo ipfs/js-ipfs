@@ -39,7 +39,7 @@ module.exports = (context) => {
    */
   async function * mfsLs (path, options = {}) {
     const mfsPath = await toMfsPath(context, path, options)
-    const fsEntry = await exporter(mfsPath.mfsPath, context.blockstore)
+    const fsEntry = await exporter(mfsPath.mfsPath, context.repo.blocks)
 
     // directory, perhaps sharded
     if (fsEntry.type === 'directory') {

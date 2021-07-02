@@ -90,7 +90,7 @@ module.exports = (context) => {
       const subPath = `/ipfs/${root}/${subPathComponents.join('/')}`
 
       try {
-        parent = await exporter(subPath, context.blockstore)
+        parent = await exporter(subPath, context.repo.blocks)
 
         if (parent.type !== 'file' && parent.type !== 'directory') {
           throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')

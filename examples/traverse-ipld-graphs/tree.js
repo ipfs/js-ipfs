@@ -3,7 +3,7 @@
 const createNode = require('./create-node')
 const {
   DAGNode
-} = require('ipld-dag-pb')
+} = require('@ipld/dag-pb')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function main () {

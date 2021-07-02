@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const DAGNode = require('ipld-dag-pb').DAGNode
+const DAGNode = require('@ipld/dag-pb').DAGNode
 const Readable = require('stream').Readable
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -28,7 +28,7 @@ const toHeadersAndPayload = async (thing) => {
 }
 
 describe('/dag', () => {
-  const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
   let ipfs
 
   beforeEach(() => {
@@ -296,7 +296,7 @@ describe('/dag', () => {
     })
 
     it('adds a node with an esoteric format', async () => {
-      const cid = new CID('baf4beiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
+      const cid = CID.parse('baf4beiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
       const data = Buffer.from('some data')
       const codec = 'git-raw'
 
@@ -429,7 +429,7 @@ describe('/dag', () => {
     })
 
     it('resolves across multiple nodes, returning the CID of the last node traversed', async () => {
-      const cid2 = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
+      const cid2 = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
 
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,

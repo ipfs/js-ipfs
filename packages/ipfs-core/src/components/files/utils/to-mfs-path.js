@@ -99,8 +99,10 @@ const toMfsPath = async (context, path, options) => {
 
   let ipfsPath = ''
 
-  if (CID.asCID(path) !== null) {
+  if (path instanceof CID) {
     ipfsPath = `/ipfs/${path}`
+  } else {
+    ipfsPath = path
   }
 
   ipfsPath = ipfsPath.trim()
@@ -167,7 +169,7 @@ const toMfsPath = async (context, path, options) => {
   const cidPath = output.type === 'mfs' ? output.mfsPath : output.path
 
   try {
-    const res = await exporter(cidPath, context.blockstore)
+    const res = await exporter(cidPath, context.repo.blocks)
 
     output.cid = res.cid
     output.mfsPath = `/ipfs/${res.path}`

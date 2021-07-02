@@ -29,7 +29,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when getting a block', () => {
-      return testTimeout(() => ipfs.block.get(new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA3'), {
+      return testTimeout(() => ipfs.block.get(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA3'), {
         timeout: 1
       }))
     })

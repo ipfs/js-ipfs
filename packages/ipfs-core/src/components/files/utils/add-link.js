@@ -57,7 +57,7 @@ const addLink = async (context, options) => {
     }
 
     log(`Loading parent node ${parentCid}`)
-    const block = await context.blockstore.get(parentCid)
+    const block = await context.repo.blocks.get(parentCid)
     parent = dagPb.decode(block)
   }
 
@@ -197,7 +197,7 @@ const addToDirectory = async (context, options) => {
   const cid = CID.create(options.cidVersion, dagPb.code, hash)
 
   if (options.flush) {
-    await context.blockstore.put(cid, buf)
+    await context.repo.blocks.put(cid, buf)
   }
 
   return {
@@ -222,8 +222,8 @@ const addToShardedDirectory = async (context, options) => {
   const {
     shard, path
   } = await addFileToShardedDirectory(context, options)
-  const result = await last(shard.flush(context.blockstore))
-  const block = await context.blockstore.get(result.cid)
+  const result = await last(shard.flush(context.repo.blocks))
+  const block = await context.repo.blocks.get(result.cid)
   const node = dagPb.decode(block)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
@@ -353,7 +353,7 @@ const addFileToShardedDirectory = async (context, options) => {
 
     // load sub-shard
     log(`Found subshard ${segment.prefix}`)
-    const block = await context.blockstore.get(link.Hash)
+    const block = await context.repo.blocks.get(link.Hash)
     const subShard = dagPb.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT

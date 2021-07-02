@@ -38,7 +38,7 @@ module.exports = (common, options) => {
       expect(peers).to.be.an('array')
 
       for (const peer of peers) {
-        expect(CID.isCID(new CID(peer.id))).to.be.true()
+        expect(CID.parse(peer.id)).to.be.ok()
         expect(peer).to.have.a.property('addrs').that.is.an('array')
 
         for (const ma of peer.addrs) {

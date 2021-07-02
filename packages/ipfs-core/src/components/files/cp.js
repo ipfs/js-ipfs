@@ -206,7 +206,7 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
  * @returns {Promise<MfsTrail>}
  */
 const addSourceToParent = async (context, source, childName, parent, options) => {
-  const sourceBlock = await context.blockstore.get(source.cid)
+  const sourceBlock = await context.repo.blocks.get(source.cid)
   const {
     node,
     cid

@@ -1,6 +1,5 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -14,9 +13,6 @@ module.exports = configure(api => {
    * @type {BlockAPI["get"]}
    */
   async function get (cid, options = {}) {
-    // @ts-ignore - CID|string seems to confuse typedef
-    cid = new CID(cid)
-
     const res = await api.post('block/get', {
       timeout: options.timeout,
       signal: options.signal,

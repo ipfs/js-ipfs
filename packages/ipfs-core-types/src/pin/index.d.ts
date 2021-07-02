@@ -9,7 +9,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * const pinned of ipfs.pin.add(cid))
    * console.log(pinned)
    * // Logs:
@@ -24,7 +24,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * for await (const cid of ipfs.pin.addAll([cid])) {
    *   console.log(cid)
    * }
@@ -47,9 +47,9 @@ export interface API<OptionExtension = {}> {
    * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
    *
    * const paths = [
-   *   CID.from('Qmc5..'),
-   *   CID.from('QmZb..'),
-   *   CID.from('QmSo..')
+   *   CID.parse('Qmc5..'),
+   *   CID.parse('QmZb..'),
+   *   CID.parse('QmSo..')
    * ]
    * for await (const { cid, type } of ipfs.pin.ls({ paths })) {
    *   console.log({ cid, type })
@@ -66,7 +66,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * const result = await ipfs.pin.rm(cid)
    * console.log(result)
    * // prints the CID that was unpinned
@@ -81,7 +81,7 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * const source = [
-   *   CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   *   CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ]
    * for await (const cid of ipfs.pin.rmAll(source)) {
    *   console.log(cid)

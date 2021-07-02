@@ -3,17 +3,20 @@
 
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
-const dagCBOR = require('ipld-dag-cbor')
-const dagPB = require('ipld-dag-pb')
+const dagCBOR = require('@ipld/dag-cbor')
+const dagPB = require('@ipld/dag-pb')
 const sinon = require('sinon')
 const { CID } = require('multiformats/cid')
+const raw = require('multiformats/codecs/raw')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 describe('dag', () => {
-  const dagPbCid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
-  const rawCid = new CID(1, 'raw', dagPbCid.multihash)
-  const dagCborCid = new CID(1, 'dag-cbor', dagPbCid.multihash)
+  const dagPbCid = CID.parse('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+  const rawCid = CID.createV1(raw.code, dagPbCid.multihash)
+  const dagCborCid = CID.createV1(dagCBOR.code, dagPbCid.multihash)
   let ipfs
 
   beforeEach(() => {
@@ -22,6 +25,9 @@ describe('dag', () => {
         get: sinon.stub(),
         resolve: sinon.stub(),
         put: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -39,6 +45,7 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(rawCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${rawCid} --data-enc base16`, { ipfs })
 
@@ -58,10 +65,11 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagPbCid}`, { ipfs })
 
-      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString()}"}}]}\n`)
+      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base58btc)}"}}]}\n`)
     })
 
     it('should get a dag-pb node and specify data encoding', async () => {
@@ -77,10 +85,11 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagPbCid} --data-enc base16`, { ipfs })
 
-      expect(out).to.equal(`{"data":"000103","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString()}"}}]}\n`)
+      expect(out).to.equal(`{"data":"000103","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base58btc)}"}}]}\n`)
     })
 
     it('should get a dag-pb node and specify CID encoding', async () => {
@@ -96,10 +105,11 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
-      const out = await cli(`dag get ${dagPbCid} --cid-base base16`, { ipfs })
+      const out = await cli(`dag get ${dagPbCid} --cid-base base64`, { ipfs })
 
-      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString('base16')}"}}]}\n`)
+      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base64)}"}}]}\n`)
     })
 
     it('should get a dag-cbor node', async () => {
@@ -110,6 +120,7 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
@@ -125,6 +136,7 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
@@ -140,10 +152,11 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli(`dag get ${dagCborCid} --cid-base=base64`, { ipfs })
 
-      expect(out).to.equal(`{"foo":"bar","baz":{"/":"${rawCid.toString('base64')}"}}\n`)
+      expect(out).to.equal(`{"foo":"bar","baz":{"/":"${rawCid.toString(base64)}"}}\n`)
     })
 
     it('should get a node with a deep path', async () => {
@@ -222,10 +235,11 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagPbCid}`, { ipfs })
 
-      expect(out).to.equal(`{"links":[{"Name":"foo.txt","Size":9000,"Cid":{"/":"${dagPbCid}"}}]}\n`)
+      expect(out).to.equal(`{"links":[{"Name":"foo.txt","Size":9000,"Cid":{"/":"${dagPbCid.toString(base58btc)}"}}]}\n`)
     })
 
     it('should strip control characters from dag-cbor nodes', async () => {
@@ -288,7 +302,7 @@ describe('dag', () => {
 
     it('resolves a cid ref', async () => {
       ipfs.dag.resolve.withArgs(dagPbCid.toString(), defaultOptions).returns([{
-        value: new CID(dagPbCid)
+        value: dagPbCid
       }])
 
       const out = await cli(`dag resolve ${dagPbCid}`, { ipfs })
@@ -297,7 +311,7 @@ describe('dag', () => {
 
     it('resolves an ipfs path', async () => {
       ipfs.dag.resolve.withArgs(`/ipfs/${dagPbCid}`, defaultOptions).returns([{
-        value: new CID(dagPbCid)
+        value: dagPbCid
       }])
 
       const out = await cli(`dag resolve /ipfs/${dagPbCid}`, { ipfs })
@@ -309,7 +323,7 @@ describe('dag', () => {
         ...defaultOptions,
         timeout: 1000
       }).returns([{
-        value: new CID(dagPbCid)
+        value: dagPbCid
       }])
 
       const out = await cli(`dag resolve ${dagPbCid} --timeout=1s`, { ipfs })
@@ -329,14 +343,16 @@ describe('dag', () => {
     }
 
     it('puts json string', async () => {
-      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(dagCborCid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put "{}"', { ipfs })
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
 
     it('puts piped json string', async () => {
-      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(dagCborCid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put', {
         getStdin: function * () {
@@ -344,26 +360,28 @@ describe('dag', () => {
         },
         ipfs
       })
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
 
     it('puts piped cbor node', async () => {
-      ipfs.dag.put.withArgs({}, defaultOptions).resolves(new CID(dagCborCid))
+      ipfs.dag.put.withArgs({}, defaultOptions).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --input-encoding cbor', {
         getStdin: function * () {
-          yield dagCBOR.util.serialize({})
+          yield dagCBOR.encode({})
         },
         ipfs
       })
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
 
     it('puts piped raw node', async () => {
       ipfs.dag.put.withArgs(Buffer.alloc(10), {
         ...defaultOptions,
         format: 'raw'
-      }).resolves(new CID(rawCid))
+      }).resolves(rawCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --input-encoding raw --format raw', {
         getStdin: function * () {
@@ -371,23 +389,24 @@ describe('dag', () => {
         },
         ipfs
       })
-      expect(out).to.equal(`${rawCid}\n`)
+      expect(out).to.equal(`${rawCid.toString(base58btc)}\n`)
     })
 
     it('puts piped protobuf node', async () => {
-      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), {
+      ipfs.dag.put.withArgs(dagPB.decode(dagPB.encode({ Links: [] })), {
         ...defaultOptions,
         format: 'dag-pb',
         version: 0
-      }).resolves(new CID(dagPbCid))
+      }).resolves(dagPbCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --input-encoding protobuf --format protobuf', {
         getStdin: function * () {
-          yield dagPB.util.serialize({})
+          yield dagPB.encode({ Links: [] })
         },
         ipfs
       })
-      expect(out).to.equal(`${dagPbCid}\n`)
+      expect(out).to.equal(`${dagPbCid.toString(base58btc)}\n`)
     })
 
     it('puts protobuf node as json', async () => {
@@ -395,66 +414,72 @@ describe('dag', () => {
         ...defaultOptions,
         format: 'dag-pb',
         version: 0
-      }).resolves(new CID(dagPbCid))
+      }).resolves(dagPbCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --format protobuf \'{"Links":[]}\'', {
         ipfs
       })
-      expect(out).to.equal(`${dagPbCid}\n`)
+      expect(out).to.equal(`${dagPbCid.toString(base58btc)}\n`)
     })
 
     it('puts piped protobuf node with cid-v1', async () => {
-      ipfs.dag.put.withArgs(dagPB.util.deserialize(dagPB.util.serialize({})), {
+      ipfs.dag.put.withArgs(dagPB.decode(dagPB.encode({ Links: [] })), {
         ...defaultOptions,
         format: 'dag-pb',
         version: 1
-      }).resolves(new CID(dagPbCid))
+      }).resolves(dagPbCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --input-encoding protobuf --format protobuf --cid-version=1', {
         getStdin: function * () {
-          yield dagPB.util.serialize({})
+          yield dagPB.encode({ Links: [] })
         },
         ipfs
       })
-      expect(out).to.equal(`${dagPbCid}\n`)
+      expect(out).to.equal(`${dagPbCid.toString(base58btc)}\n`)
     })
 
     it('puts json string with esoteric hashing algorithm', async () => {
       ipfs.dag.put.withArgs({}, {
         ...defaultOptions,
         hashAlg: 'blake2s-40'
-      }).resolves(new CID(dagCborCid))
+      }).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --hash-alg blake2s-40 "{}"', { ipfs })
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
 
     it('puts json string with cid base', async () => {
       ipfs.dag.put.withArgs({}, defaultOptions).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const out = await cli('dag put --cid-base base64 "{}"', { ipfs })
-      expect(out).to.equal(`${dagCborCid.toV1().toString('base64')}\n`)
+      expect(out).to.equal(`${dagCborCid.toV1().toString(base64)}\n`)
     })
 
     it('pins node after putting', async () => {
       ipfs.dag.put.withArgs({ hello: 'world' }, {
         ...defaultOptions,
         pin: true
-      }).resolves(new CID(dagCborCid))
+      }).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put --pin \'{"hello":"world"}\'', { ipfs })
 
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
 
     it('puts json string with a timeout', async () => {
       ipfs.dag.put.withArgs({}, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves(new CID(dagCborCid))
+      }).resolves(dagCborCid)
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli('dag put "{}" --timeout=1s', { ipfs })
-      expect(out).to.equal(`${dagCborCid}\n`)
+      expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
     })
   })
 })

@@ -1,7 +1,7 @@
 'use strict'
 
 const get = require('dlv')
-const mergeOptions = require('merge-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
 const pkgversion = require('../../package.json').version
