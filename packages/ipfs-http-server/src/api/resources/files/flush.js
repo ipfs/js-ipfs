@@ -11,7 +11,7 @@ const mfsFlush = {
       },
       query: Joi.object().keys({
         path: Joi.string().default('/'),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'path', {

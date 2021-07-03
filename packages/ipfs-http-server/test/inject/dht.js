@@ -49,7 +49,7 @@ describe('/dht', () => {
       expect(res).to.have.nested.property('result.Code', 1)
     })
 
-    it('returns 404 if peerId is provided as there is no peers in the routing table', async () => {
+    it('returns 404 if peerId is provided and there are no peers in the routing table', async () => {
       ipfs.dht.findPeer.withArgs(peerId, defaultOptions).throws(errCode(new Error('Nope'), 'ERR_LOOKUP_FAILED'))
 
       const res = await http({

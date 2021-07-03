@@ -7,10 +7,7 @@ const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
-
 const dagPB = require('@ipld/dag-pb')
-const DAGNode = dagPB.DAGNode
-const DAGLink = dagPB.DAGLink
 
 const { UnixFS } = require('ipfs-unixfs')
 
@@ -322,13 +319,24 @@ function getRefsTests () {
 function loadPbContent (ipfs, node) {
   const store = {
     putData: async (data) => {
-      const res = await ipfs.block.put(new DAGNode(data).serialize())
+      const res = await ipfs.block.put(
+        dagPb.encode({
+          Data: data,
+          Links: []
+        })
+      )
       return res.cid
     },
     putLinks: async (links) => {
-      const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
-        return new DAGLink(name, 8, cid)
-      })).serialize())
+      const res = await ipfs.block.put(dagPB.encode({
+        Links: links.map(({ name, cid }) => {
+          return {
+            Name: name,
+            Tsize: 8,
+            Hash: cid
+          }
+        })
+      }))
       return res.cid
     }
   }
@@ -339,7 +347,10 @@ function loadDagContent (ipfs, node) {
   const store = {
     putData: async (data) => {
       const inner = new UnixFS({ type: 'file', data: data })
-      const serialized = new DAGNode(inner.marshal()).serialize()
+      const serialized = dagPb.encode({
+        Data: inner.marshal(),
+        Links: []
+      })
       const res = await ipfs.block.put(serialized)
       return res.cid
     },

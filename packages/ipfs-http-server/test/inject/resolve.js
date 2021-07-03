@@ -10,7 +10,7 @@ const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   recursive: true,
-  cidBase: undefined,
+  cidBase: 'base58btc',
   signal: sinon.match.instanceOf(AbortSignal),
   timeout: undefined
 }

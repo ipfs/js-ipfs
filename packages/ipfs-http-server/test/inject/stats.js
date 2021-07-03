@@ -7,7 +7,6 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const allNdjson = require('../utils/all-ndjson')
 const { AbortSignal } = require('native-abort-controller')
-const { CID } = require('multiformats/cid')
 
 describe('/stats', () => {
   let ipfs
@@ -71,7 +70,7 @@ describe('/stats', () => {
 
       ipfs.stats.bw.withArgs({
         ...defaultOptions,
-        peer: CID.parse(peer)
+        peer: peer
       }).returns([{
         totalIn: 'totalIn1',
         totalOut: 'totalOut1',

@@ -3,12 +3,13 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
-const DAGNode = dagPB.DAGNode
 const dagCBOR = require('@ipld/dag-cbor')
 const { importer } = require('ipfs-unixfs-importer')
 const { UnixFS } = require('ipfs-unixfs')
 const all = require('it-all')
 const { CID } = require('multiformats/cid')
+const { sha256 } = require('multformats/sha2')
+const { base32 } = require('multiformats/bases/base32')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 const { identity } = require('multiformats/hashes/identity')
@@ -37,13 +38,19 @@ module.exports = (common, options) => {
 
     before(async () => {
       const someData = uint8ArrayFromString('some other data')
-      pbNode = new DAGNode(someData)
+      pbNode = {
+        Data: someData,
+        Links: []
+      }
       cborNode = {
         data: someData
       }
 
-      nodePb = new DAGNode(uint8ArrayFromString('I am inside a Protobuf'))
-      cidPb = await dagPB.util.cid(nodePb.serialize())
+      nodePb = {
+        Data: uint8ArrayFromString('I am inside a Protobuf'),
+        Links: []
+      }
+      cidPb = CID.createV0(sha256.digest(dagPB.encode(nodePb)))
       nodeCbor = {
         someData: 'I am inside a Cbor object',
         pb: cidPb
@@ -156,7 +163,9 @@ module.exports = (common, options) => {
     it('should get a node added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const node = new DAGNode(input)
+      const node = {
+        Data: input
+      }
 
       const cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' })
       expect(cid.version).to.equal(0)
@@ -191,7 +200,7 @@ module.exports = (common, options) => {
 
       const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.codec).to.equal('dag-cbor')
-      expect(cid.toBaseEncodedString('base32')).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
+      expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
       const result = await ipfs.dag.get(cid, {
         path: 'foo'

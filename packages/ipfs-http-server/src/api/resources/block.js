@@ -109,7 +109,7 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         format: Joi.string().valid(...Object.keys(codecs)),
         mhtype: Joi.string().valid(...Object.keys(multihash.names)),
         mhlen: Joi.number(),
@@ -187,7 +187,7 @@ exports.rm = {
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         force: Joi.boolean().default(false),
         quiet: Joi.boolean().default(false),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -249,7 +249,7 @@ exports.stat = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'cid', {

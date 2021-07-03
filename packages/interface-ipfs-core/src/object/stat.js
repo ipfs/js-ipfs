@@ -3,9 +3,10 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
-const DAGNode = dagPB.DAGNode
+const { nanoid } = require('nanoid')
+const { CID } = require('multiformats/cid')
+const sha256 = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { asDAGLink } = require('./utils')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -47,12 +48,24 @@ module.exports = (common, options) => {
     })
 
     it('should get stats for object with links by multihash', async () => {
-      const node1a = new DAGNode(uint8ArrayFromString('Some data 1'))
-      const node2 = new DAGNode(uint8ArrayFromString('Some data 2'))
-
-      const link = await asDAGLink(node2, 'some-link')
-
-      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1a = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2 = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2Buf = dagPB.encode(node2)
+      const link = {
+        Name: 'some-link',
+        Tsize: node2Buf.length,
+        Hash: CID.createV0(await sha256.digest(node2Buf))
+      }
+      const node1b = {
+        Data: node1a.Data,
+        Links: node1a.Links.concat(link)
+      }
       const node1bCid = await ipfs.object.put(node1b)
 
       const stats = await ipfs.object.stat(node1bCid)
@@ -95,7 +108,7 @@ module.exports = (common, options) => {
 
       const cid = await ipfs.object.put(testObj)
 
-      const stats = await ipfs.object.stat(cid.toBaseEncodedString())
+      const stats = await ipfs.object.stat(cid.toString())
       const expected = {
         Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
         NumLinks: 0,

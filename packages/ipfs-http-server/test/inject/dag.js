@@ -3,7 +3,6 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const DAGNode = require('@ipld/dag-pb').DAGNode
 const Readable = require('stream').Readable
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -12,6 +11,8 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()
@@ -40,6 +41,9 @@ describe('/dag', () => {
       },
       block: {
         put: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -74,7 +78,10 @@ describe('/dag', () => {
     })
 
     it('returns value', async () => {
-      const node = new DAGNode(Uint8Array.from([]), [])
+      const node = {
+        Data: Uint8Array.from([]),
+        Links: []
+      }
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
@@ -83,27 +90,33 @@ describe('/dag', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.links').that.is.empty()
-      expect(res).to.have.nested.property('result.data').that.is.empty()
+      expect(res).to.have.nested.property('result.Links').that.is.empty()
+      expect(res).to.have.nested.property('result.Data').that.is.empty()
     })
 
     it('uses text encoding for data by default', async () => {
-      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
+      const node = {
+        Data: Uint8Array.from([0, 1, 2, 3]),
+        Links: []
+      }
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/dag/get?arg=${cid.toBaseEncodedString()}`
+        url: `/api/v0/dag/get?arg=${cid}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
       expect(res.result).to.be.ok()
-      expect(res).to.have.nested.property('result.links').that.is.empty()
-      expect(res).to.have.nested.property('result.data', '\u0000\u0001\u0002\u0003')
+      expect(res).to.have.nested.property('result.Links').that.is.empty()
+      expect(res).to.have.nested.property('result.Data', '\u0000\u0001\u0002\u0003')
     })
 
     it('overrides data encoding', async () => {
-      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
+      const node = {
+        Data: Uint8Array.from([0, 1, 2, 3]),
+        Links: []
+      }
       ipfs.dag.get.withArgs(cid, defaultOptions).returns({ value: node })
 
       const res = await http({
@@ -112,8 +125,8 @@ describe('/dag', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.links').that.is.empty()
-      expect(res).to.have.nested.property('result.data').that.equals('AAECAw==')
+      expect(res).to.have.nested.property('result.Links').that.is.empty()
+      expect(res).to.have.nested.property('result.Data').that.equals('AAECAw==')
     })
 
     it('returns value with a path as part of the cid', async () => {
@@ -132,7 +145,10 @@ describe('/dag', () => {
     })
 
     it('returns value with a path as part of the cid for dag-pb nodes', async () => {
-      const node = new DAGNode(Uint8Array.from([0, 1, 2, 3]), [])
+      const node = {
+        Data: Uint8Array.from([0, 1, 2, 3]),
+        Links: []
+      }
       ipfs.dag.get.withArgs(cid, {
         ...defaultOptions,
         path: '/Data'
@@ -224,6 +240,7 @@ describe('/dag', () => {
     })
 
     it('adds a dag-cbor node by default', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const node = {
         foo: 'bar'
       }
@@ -240,6 +257,7 @@ describe('/dag', () => {
     })
 
     it('adds a dag-pb node', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const node = {
         data: [],
         links: []
@@ -260,6 +278,7 @@ describe('/dag', () => {
     })
 
     it('adds a raw node', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const node = Buffer.from([0, 1, 2, 3])
       ipfs.dag.put.withArgs(node, {
         ...defaultOptions,
@@ -277,6 +296,7 @@ describe('/dag', () => {
     })
 
     it('pins a node after adding', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const node = {
         foo: 'bar'
       }
@@ -296,10 +316,12 @@ describe('/dag', () => {
     })
 
     it('adds a node with an esoteric format', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const cid = CID.parse('baf4beiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
       const data = Buffer.from('some data')
       const codec = 'git-raw'
 
+      ipfs.block.put.withArgs(data).returns(cid)
       ipfs.dag.get.withArgs(cid).returns({
         value: data
       })
@@ -316,10 +338,11 @@ describe('/dag', () => {
 
       expect(ipfs.block.put.called).to.be.true()
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
+      expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString(base58btc) })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const node = {
         foo: 'bar'
       }
@@ -360,6 +383,7 @@ describe('/dag', () => {
     })
 
     it('resolves a node', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.dag.resolve.withArgs(cid, defaultOptions).returns({
         cid,
         remainderPath: ''
@@ -376,6 +400,7 @@ describe('/dag', () => {
     })
 
     it('resolves a node with a path arg', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         path: '/foo'
@@ -395,6 +420,7 @@ describe('/dag', () => {
     })
 
     it('returns the remainder path from within the resolved node', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         path: '/foo'
@@ -429,6 +455,7 @@ describe('/dag', () => {
     })
 
     it('resolves across multiple nodes, returning the CID of the last node traversed', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const cid2 = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
 
       ipfs.dag.resolve.withArgs(cid, {
@@ -450,6 +477,7 @@ describe('/dag', () => {
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.dag.resolve.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000

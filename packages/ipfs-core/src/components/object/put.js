@@ -15,7 +15,7 @@ module.exports = ({ repo, preload }) => {
    * @type {import('ipfs-core-types/src/object').API["put"]}
    */
   async function put (obj, options = {}) {
-    const release = await repo.gcLock.readLock()
+    const release = await repo.gcLock.writeLock()
 
     try {
       const buf = dagPb.encode(obj)
@@ -28,6 +28,12 @@ module.exports = ({ repo, preload }) => {
 
       if (options.preload !== false) {
         preload(cid)
+      }
+
+      if (options.pin !== false) {
+        await repo.pins.pinRecursively(cid, {
+          signal: options.signal
+        })
       }
 
       return cid

@@ -1,7 +1,6 @@
 'use strict'
 
 const { CID } = require('multiformats/cid')
-const { DAGLink } = require('@ipld/dag-pb')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -26,7 +25,11 @@ module.exports = configure(api => {
     })
     const data = await res.json()
 
-    return (data.Links || []).map((/** @type {any} */ l) => new DAGLink(l.Name, l.Size, l.Hash))
+    return (data.Links || []).map((/** @type {any} */ l) => ({
+      Name: l.Name,
+      Tsize: l.Size,
+      Hash: CID.parse(l.Hash)
+    }))
   }
   return links
 })

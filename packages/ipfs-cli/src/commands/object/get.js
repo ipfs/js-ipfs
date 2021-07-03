@@ -64,13 +64,13 @@ module.exports = {
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, encoding) : '',
-      Hash: key.toString(base),
+      Hash: key.toString(base.encoder),
       Size: buf.length,
       Links: node.Links.map((l) => {
         return {
           Name: stripControlCharacters(l.Name),
           Size: l.Tsize,
-          Hash: l.Hash.toString(base)
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }

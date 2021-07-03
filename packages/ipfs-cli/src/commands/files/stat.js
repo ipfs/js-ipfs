@@ -84,7 +84,7 @@ Mtime: <mtime>`,
     const base = await ipfs.bases.getBase(cidBase)
 
     if (hash) {
-      return print(stats.cid.toString(base))
+      return print(stats.cid.toString(base.encoder))
     }
 
     if (size) {

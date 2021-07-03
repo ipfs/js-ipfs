@@ -10,8 +10,8 @@ exports.wantlist = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.cid(),
-        cidBase: Joi.cidBase().default('base32'),
+        peer: Joi.string(),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -74,7 +74,7 @@ exports.stat = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -136,7 +136,7 @@ exports.unwant = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'cid', {

@@ -8,6 +8,8 @@ const { CID } = require('multiformats/cid')
 const cid = CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 const testHttpMethod = require('../../utils/test-http-method')
 const { AbortSignal } = require('native-abort-controller')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 
 const defaultOptions = {
   timeout: undefined,
@@ -22,6 +24,9 @@ describe('/files/flush', () => {
     ipfs = {
       files: {
         flush: sinon.stub().resolves(cid)
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -31,6 +36,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/flush?arg=${path}`
@@ -42,6 +48,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush without a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: '/api/v0/files/flush'
@@ -53,6 +60,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush with a different CID base', async () => {
+    ipfs.bases.getBase.withArgs('base64').returns(base64)
     ipfs.files.flush.resolves(cid.toV1())
 
     const response = await http({
@@ -62,10 +70,11 @@ describe('/files/flush', () => {
 
     expect(ipfs.files.flush.callCount).to.equal(1)
     expect(ipfs.files.flush.calledWith('/', defaultOptions)).to.be.true()
-    expect(response).to.have.nested.property('result.Cid', cid.toV1().toString('base64'))
+    expect(response).to.have.nested.property('result.Cid', cid.toV1().toString(base64))
   })
 
   it('accepts a timeout', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: '/api/v0/files/flush?timeout=1s'

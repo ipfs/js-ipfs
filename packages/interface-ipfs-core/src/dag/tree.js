@@ -3,12 +3,12 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
-const DAGNode = dagPB.DAGNode
 const dagCBOR = require('@ipld/dag-cbor')
 const all = require('it-all')
 const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { CID } = require('multiformats/cid')
+const { sha256 } = require('multiformats/hashes/sha2')
 const testTimeout = require('../utils/test-timeout')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -33,8 +33,11 @@ module.exports = (common, options) => {
     let cidCbor
 
     before(async function () {
-      nodePb = new DAGNode(uint8ArrayFromString('I am inside a Protobuf'))
-      cidPb = await dagPB.util.cid(nodePb.serialize())
+      nodePb = {
+        Data: uint8ArrayFromString('I am inside a Protobuf'),
+        Links: []
+      }
+      cidPb = CID.createV0(await sha256.digest(dagPB.encode(nodePb)))
 
       nodeCbor = {
         someData: 'I am inside a Cbor object',

@@ -1,8 +1,6 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
-const mha = require('multihashing-async')
-const mh = mha.multihash
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const all = require('it-all')
@@ -197,8 +195,8 @@ exports.put = {
         format: Joi.string().default('cbor'),
         inputEncoding: Joi.string().default('json'),
         pin: Joi.boolean().default(false),
-        hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
-        cidBase: Joi.cidBase().default('base32'),
+        hash: Joi.string().default('sha2-256'),
+        cidBase: Joi.cidBase().default('base58btc'),
         cidVersion: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
@@ -259,9 +257,11 @@ exports.put = {
       throw Boom.boomify(err, { message: 'Failed to put node' })
     }
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
       Cid: {
-        '/': cid.toString(await ipfs.bases.getBase(cidBase))
+        '/': cid.toString(base.encoder)
       }
     })
   }
@@ -276,7 +276,7 @@ exports.resolve = {
       },
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout(),
         path: Joi.string()
       })
@@ -321,9 +321,11 @@ exports.resolve = {
         timeout
       })
 
+      const base = await ipfs.bases.getBase(cidBase)
+
       return h.response({
         Cid: {
-          '/': cid.toString(await ipfs.bases.getBase(cidBase))
+          '/': result.cid.toString(base.encoder)
         },
         RemPath: result.remainderPath
       })

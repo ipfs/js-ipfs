@@ -13,7 +13,7 @@ const toTrail = require('./utils/to-trail')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
+ * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
  * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion

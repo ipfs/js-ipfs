@@ -3,7 +3,6 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { DAGNode } = require('@ipld/dag-pb')
 const all = require('it-all')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
@@ -175,11 +174,14 @@ module.exports = (common, options) => {
       await ipfs.pin.rm(dataCid)
 
       // Create a link to the data from an object
-      const obj = await new DAGNode(uint8ArrayFromString('fruit'), [{
-        Name: 'p',
-        Hash: dataCid,
-        Tsize: addRes.size
-      }])
+      const obj = {
+        Data: uint8ArrayFromString('fruit'),
+        Links: [{
+          Name: 'p',
+          Hash: dataCid,
+          Tsize: addRes.size
+        }]
+      }
 
       // Put the object into IPFS
       const objCid = await ipfs.object.put(obj)

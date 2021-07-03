@@ -78,7 +78,7 @@ module.exports = {
     const base = await ipfs.bases.getBase(cidBase)
 
     if (cid.code === dagPB.code) {
-      /** @type {import('ipld-dag-pb').DAGNode} */
+      /** @type {import('@ipld/dag-pb').PBNode} */
       const dagNode = node
 
       print(JSON.stringify({

@@ -3,10 +3,10 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
-const DAGNode = dagPB.DAGNode
 const { nanoid } = require('nanoid')
+const { CID } = require('multiformats/cid')
+const sha256 = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { asDAGLink } = require('./utils')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -42,6 +42,21 @@ module.exports = (common, options) => {
       expect(obj.Links).to.deep.equal(nodeJSON.links)
     })
 
+    it('should pin an object when putting', async () => {
+      const obj = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+
+      const cid = await ipfs.object.put(obj, {
+        pin: true
+      })
+      const pin = await all(ipfs.pin.ls(cid))
+
+      expect(pin).to.have.deep.property('cid', cid)
+      expect(pin).to.have.property('type', 'recursive')
+    })
+
     it('should put a JSON encoded Uint8Array', async () => {
       const obj = {
         Data: uint8ArrayFromString(nanoid()),
@@ -63,7 +78,10 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf encoded Uint8Array', async () => {
-      const node = new DAGNode(uint8ArrayFromString(nanoid()))
+      const node = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
       const serialized = node.serialize()
 
       const cid = await ipfs.object.put(serialized, { enc: 'protobuf' })
@@ -83,7 +101,10 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf DAGNode', async () => {
-      const dNode = new DAGNode(uint8ArrayFromString(nanoid()))
+      const dNode = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
 
       const cid = await ipfs.object.put(dNode)
       const node = await ipfs.object.get(cid)
@@ -96,12 +117,24 @@ module.exports = (common, options) => {
     })
 
     it('should put a Protobuf DAGNode with a link', async () => {
-      const node1a = new DAGNode(uint8ArrayFromString(nanoid()))
-      const node2 = new DAGNode(uint8ArrayFromString(nanoid()))
-
-      const link = await asDAGLink(node2, 'some-link')
-
-      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1a = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2 = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2Buf = dagPB.encode(node2)
+      const link = {
+        Name: 'some-link',
+        Tsize: node2Buf.length,
+        Hash: CID.createV0(await sha256.digest(node2Buf))
+      }
+      const node1b = {
+        Data: node1a.Data,
+        Links: node1a.Links.concat(link)
+      }
 
       const cid = await ipfs.object.put(node1b)
       const node = await ipfs.object.get(cid)

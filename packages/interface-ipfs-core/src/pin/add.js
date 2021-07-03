@@ -6,9 +6,6 @@ const { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } = require
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
-const {
-  DAGNode
-} = require('@ipld/dag-pb')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -153,7 +150,10 @@ module.exports = (common, options) => {
     })
 
     it('should pin dag-cbor with dag-pb child', async () => {
-      const child = await ipfs.dag.put(new DAGNode(uint8ArrayFromString(`${Math.random()}`)), {
+      const child = await ipfs.dag.put({
+        Data: uint8ArrayFromString(`${Math.random()}`),
+        Links: []
+      }, {
         format: 'dag-pb',
         hashAlg: 'sha2-256'
       })

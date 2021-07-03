@@ -14,7 +14,7 @@ exports.findPeer = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.cid().required(),
+        peerId: Joi.string().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -287,7 +287,7 @@ exports.query = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.cid().required(),
+        peerId: Joi.string().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {

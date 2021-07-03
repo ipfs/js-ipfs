@@ -8,6 +8,8 @@ const { CID } = require('multiformats/cid')
 const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 const testHttpMethod = require('../../utils/test-http-method')
 const { AbortSignal } = require('native-abort-controller')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 
 const defaultOptions = {
   withLocal: false,
@@ -34,6 +36,9 @@ describe('/files/stat', () => {
     ipfs = {
       files: {
         stat: sinon.stub().resolves(stats)
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -43,6 +48,7 @@ describe('/files/stat', () => {
   })
 
   it('should stat a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}`
@@ -54,6 +60,7 @@ describe('/files/stat', () => {
   })
 
   it('should stat a path with local', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}&withLocal=true`
@@ -67,6 +74,7 @@ describe('/files/stat', () => {
   })
 
   it('should stat a path and only show hashes', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}&hash=true`
@@ -77,10 +85,11 @@ describe('/files/stat', () => {
       ...defaultOptions,
       hash: true
     })).to.be.true()
-    expect(response).to.have.nested.property('result.Hash', stats.cid.toString())
+    expect(response).to.have.nested.property('result.Hash', stats.cid.toString(base58btc))
   })
 
   it('should stat a path and only show sizes', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}&size=true`
@@ -95,6 +104,7 @@ describe('/files/stat', () => {
   })
 
   it('should stat a path and show hashes with a different base', async () => {
+    ipfs.bases.getBase.withArgs('base64').returns(base64)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}&cidBase=base64`
@@ -102,10 +112,11 @@ describe('/files/stat', () => {
 
     expect(ipfs.files.stat.callCount).to.equal(1)
     expect(ipfs.files.stat.calledWith(path, defaultOptions)).to.be.true()
-    expect(response).to.have.nested.property('result.Hash', stats.cid.toString('base64'))
+    expect(response).to.have.nested.property('result.Hash', stats.cid.toString(base64))
   })
 
   it('accepts a timeout', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/stat?arg=${path}&timeout=1s`

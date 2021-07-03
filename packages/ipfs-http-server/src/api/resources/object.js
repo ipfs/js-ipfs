@@ -7,10 +7,24 @@ const Joi = require('../../utils/joi')
 const multibase = require('multibase')
 const Boom = require('@hapi/boom')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const debug = require('debug')
 const log = Object.assign(debug('ipfs:http-api:object'), {
   error: debug('ipfs:http-api:object:error')
 })
+const { base64pad } = require('multiformats/bases/base64')
+const { base16 } = require('multiformats/bases/base16')
+const { CID } = require('multiformats/cid')
+
+/**
+ * @type {Record<string, (str: string) => Uint8Array>}
+ */
+const DECODINGS = {
+  ascii: (str) => uint8ArrayFromString(str),
+  utf8: (str) => uint8ArrayFromString(str),
+  base64pad: (str) => base64pad.decode(`M${str}`),
+  base16: (str) => base16.decode(`f${str}`)
+}
 
 /**
  * @param {import('../../types').Request} request
@@ -232,10 +246,19 @@ exports.put = {
           .replace(/base64/, 'base64pad')
           .replace(/hex/, 'base16')
           .default('base64pad'),
-        enc: Joi.string().valid('json', 'protobuf'),
+        enc: Joi.string().valid('json', 'protobuf').default('json'),
+        pin: Joi.boolean().default(false),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('datafieldenc', 'dataEncoding', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('inputenc', 'enc', {
           override: true,
           ignoreUndefined: true
         })
@@ -261,17 +284,38 @@ exports.put = {
         }
       },
       query: {
+        enc,
         cidBase,
         dataEncoding,
-        timeout
+        timeout,
+        pin
       }
     } = request
 
+    /** @type {import('@ipld/dag-pb').PBNode} */
+    let input
+
+    if (enc === 'json') {
+      input = {
+        Data: data.Data ? DECODINGS[dataEncoding](data.Data) : undefined,
+        Links: (data.Links || []).map((/** @type {any} */ l) => {
+          return {
+            Name: l.Name || '',
+            Tsize: l.Size || l.Tsize || 0,
+            Hash: CID.parse(l.Hash)
+          }
+        })
+      }
+    } else {
+      input = dagPB.decode(data)
+    }
+
     let cid, node, block
     try {
-      cid = await ipfs.object.put(data, {
+      cid = await ipfs.object.put(input, {
         signal,
-        timeout
+        timeout,
+        pin
       })
       node = await ipfs.object.get(cid, {
         signal,
@@ -371,7 +415,7 @@ exports.data = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -500,7 +544,7 @@ exports.patchAppendData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -601,7 +645,7 @@ exports.patchSetData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -681,7 +725,7 @@ exports.patchAddLink = {
           Joi.string().required(),
           Joi.cid().required()
         ).required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -777,7 +821,7 @@ exports.patchRmLink = {
           Joi.cid().required(),
           Joi.string().required()
         ).required(),
-        cidBase: Joi.cidBase().default('base32'),
+        cidBase: Joi.cidBase().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
